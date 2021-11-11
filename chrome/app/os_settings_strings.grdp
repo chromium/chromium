@@ -2685,6 +2685,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING" desc="Settings > Internet > Network details: Toggle label to allow mobile data roaming.">
     Allow mobile data roaming
   </message>
+  <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_REQUIRED" desc="Settings > Internet > Network details: Toggle sublabel when mobile data roaming is required by provider.">
+    Roaming required by provider
+  </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_HOME" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to the home network.">
     Not currently roaming
   </message>

@@ -123,6 +123,10 @@ Polymer({
    * @private
    */
   getRoamingDetails_() {
+    if (this.managedProperties.typeProperties.cellular.roamingState ===
+        'Required') {
+      return this.i18n('networkAllowDataRoamingRequired');
+    }
     if (!this.getRoamingAllowedForNetwork_()) {
       return this.i18n('networkAllowDataRoamingDisabled');
     }
