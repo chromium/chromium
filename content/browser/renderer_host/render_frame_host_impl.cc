@@ -5184,15 +5184,6 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting(
   frame_.FlushForTesting();  // IN-TEST
 }
 
-std::string
-RenderFrameHostImpl::GetBackForwardCanStoreNowDebugStringForTesting() {
-  return frame_tree()
-      ->controller()
-      .GetBackForwardCache()
-      .CanRestorePageNowForTesting(GetMainFrame())  // IN-TEST
-      .ToString();
-}
-
 void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
     PrepareForInnerWebContentsAttachCallback callback) {
   frame_tree_node_->render_manager()->PrepareForInnerDelegateAttach(

@@ -590,9 +590,9 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   }
 
   auto* matching_entry = FindMatchingEntry(render_frame_host->GetPage());
-  // |matching_entry| can be nullptr for tests because
-  // |GetBackForwardCanStoreNowDebugStringForTesting()| can be called after the
-  // entry is destroyed.
+  // |matching_entry| can be nullptr for tests because this can be called from
+  // |CanStorePageNow()|, at which point |rfh| may not have a matching entry
+  // yet.
   if (!matching_entry)
     return;
 

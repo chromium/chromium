@@ -419,7 +419,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsSandboxed(network::mojom::WebSandboxFlags flags) override;
   void FlushNetworkAndNavigationInterfacesForTesting(
       bool do_nothing_if_no_network_service_connection = false) override;
-  std::string GetBackForwardCanStoreNowDebugStringForTesting() override;
   void PrepareForInnerWebContentsAttach(
       PrepareForInnerWebContentsAttachCallback callback) override;
   blink::FrameOwnerElementType GetFrameOwnerElementType() override;
