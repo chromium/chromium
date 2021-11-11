@@ -294,7 +294,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    * @private
    */
   onRightScrollClick_() {
-    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-container');
     let lastVisibleIndex = 0;
     for (let i = 0; i < carts.length; i++) {
       if (this.getVisibilityForIndex_(i)) {
@@ -311,7 +311,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    * @private
    */
   onLeftScrollClick_() {
-    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-container');
     let visibleRange = 0, firstVisibleIndex = 0;
     for (let i = carts.length - 1; i >= 0; i--) {
       if (this.getVisibilityForIndex_(i)) {
@@ -328,7 +328,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    * @private
    */
   scrollToIndex_(index) {
-    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-container');
     // Calculate scroll shadow width as scroll offset.
     const leftScrollShadow = this.shadowRoot.getElementById('leftScrollShadow');
     const rightScrollShadow =
@@ -359,7 +359,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    */
   getVisibilityForIndex_(index) {
     const cartCarousel = this.$.cartCarousel;
-    const cart = cartCarousel.querySelectorAll('.cart-item')[index];
+    const cart = cartCarousel.querySelectorAll('.cart-container')[index];
     return cart && (cart.offsetLeft > cartCarousel.scrollLeft) &&
         (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
         (cart.offsetLeft + cart.offsetWidth);
