@@ -1351,7 +1351,6 @@ component("base") {
     ":base_implementation",
     ":memory_tagging",
     "//build/config:precompiled_headers",
-    "//build/config/compiler:noshadowing",
     "//build/config/compiler:wglobal_constructors",
   ]
 
@@ -3737,10 +3736,7 @@ test("base_unittests") {
     ]
   }
 
-  configs += [
-    ":memory_tagging",
-    "//build/config/compiler:noshadowing",
-  ]
+  configs += [ ":memory_tagging" ]
 }
 
 action("build_date") {

@@ -19,6 +19,8 @@ config("x11_private_config") {
 
 config("build_xprotos_config") {
   cflags = [
+    "-Wno-shadow",
+
     # Generated proto files pull all fields from a struct into scope
     # even if they aren't used.  Rather than adding logic in the
     # generator to determine which fields are used and keeping only

@@ -7,7 +7,6 @@ import("//testing/test.gni")
 cc_remove_configs = []
 cc_add_configs = [
   "//build/config:precompiled_headers",
-  "//build/config/compiler:noshadowing",
   "//build/config/compiler:wexit_time_destructors",
 ]
 
