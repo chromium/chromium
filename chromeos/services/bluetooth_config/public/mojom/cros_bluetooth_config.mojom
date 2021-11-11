@@ -130,6 +130,12 @@ interface SystemPropertiesObserver {
   OnPropertiesUpdated(BluetoothSystemProperties properties);
 };
 
+// Observer for changes to Bluetooth device status.
+interface BluetoothDeviceStatusObserver {
+  // Invoked when a device has been newly-paired.
+  OnDevicePaired(PairedBluetoothDeviceProperties device);
+};
+
 // Provided to the pairing UI to handle keys that have been entered
 // on the user's keyboard during a pairing attempt which requires
 // that the user types in a PIN or passkey.

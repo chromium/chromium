@@ -10,6 +10,10 @@ static_library("bluetooth_config") {
     "adapter_state_controller.h",
     "adapter_state_controller_impl.cc",
     "adapter_state_controller_impl.h",
+    "bluetooth_device_status_notifier.cc",
+    "bluetooth_device_status_notifier.h",
+    "bluetooth_device_status_notifier_impl.cc",
+    "bluetooth_device_status_notifier_impl.h",
     "bluetooth_power_controller.h",
     "bluetooth_power_controller_impl.cc",
     "bluetooth_power_controller_impl.h",
@@ -88,6 +92,10 @@ static_library("test_support") {
   sources = [
     "fake_adapter_state_controller.cc",
     "fake_adapter_state_controller.h",
+    "fake_bluetooth_device_status_notifier.cc",
+    "fake_bluetooth_device_status_notifier.h",
+    "fake_bluetooth_device_status_observer.cc",
+    "fake_bluetooth_device_status_observer.h",
     "fake_bluetooth_discovery_delegate.cc",
     "fake_bluetooth_discovery_delegate.h",
     "fake_bluetooth_power_controller.cc",
@@ -131,6 +139,7 @@ source_set("unit_tests") {
 
   sources = [
     "adapter_state_controller_impl_unittest.cc",
+    "bluetooth_device_status_notifier_impl_unittest.cc",
     "bluetooth_power_controller_impl_unittest.cc",
     "cros_bluetooth_config_unittest.cc",
     "device_cache_impl_unittest.cc",
