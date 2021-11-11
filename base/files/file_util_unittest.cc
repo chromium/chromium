@@ -32,12 +32,12 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_environment_variable_override.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -1054,7 +1054,7 @@ TEST_F(FileUtilTest, ExecutableExistsInPath) {
   ASSERT_TRUE(CreateDirectory(dir1));
   ASSERT_TRUE(CreateDirectory(dir2));
 
-  test::ScopedEnvironmentVariableOverride scoped_env(
+  ScopedEnvironmentVariableOverride scoped_env(
       "PATH", dir1.value() + ":" + dir2.value());
   ASSERT_TRUE(scoped_env.IsOverridden());
 

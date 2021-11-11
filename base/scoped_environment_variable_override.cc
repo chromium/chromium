@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_environment_variable_override.h"
+#include "base/scoped_environment_variable_override.h"
 
 #include "base/environment.h"
 
 namespace base {
-namespace test {
 
 ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
     const std::string& variable_name,
@@ -33,6 +32,12 @@ ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
     const std::string& variable_name)
     : ScopedEnvironmentVariableOverride(variable_name, "", true) {}
 
+ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
+    ScopedEnvironmentVariableOverride&&) = default;
+
+ScopedEnvironmentVariableOverride& ScopedEnvironmentVariableOverride::operator=(
+    ScopedEnvironmentVariableOverride&&) = default;
+
 ScopedEnvironmentVariableOverride::~ScopedEnvironmentVariableOverride() {
   if (overridden_) {
     if (was_set_)
@@ -42,5 +47,4 @@ ScopedEnvironmentVariableOverride::~ScopedEnvironmentVariableOverride() {
   }
 }
 
-}  // namespace test
 }  // namespace base

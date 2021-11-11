@@ -564,6 +564,8 @@ component("base") {
     "sampling_heap_profiler/sampling_heap_profiler.cc",
     "sampling_heap_profiler/sampling_heap_profiler.h",
     "scoped_clear_last_error.h",
+    "scoped_environment_variable_override.cc",
+    "scoped_environment_variable_override.h",
     "scoped_generic.h",
     "scoped_multi_source_observation.h",
     "scoped_native_library.cc",
