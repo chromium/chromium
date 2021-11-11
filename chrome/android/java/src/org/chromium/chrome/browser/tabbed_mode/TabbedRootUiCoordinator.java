@@ -419,6 +419,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * Show navigation history sheet.
      */
     public void showFullHistorySheet() {
+        if (mActivity == null) return;
         Tab tab = mActivityTabProvider.get();
         if (tab == null || tab.getWebContents() == null || !tab.isUserInteractable()) return;
         Profile profile = Profile.fromWebContents(tab.getWebContents());
