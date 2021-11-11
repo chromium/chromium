@@ -108,7 +108,7 @@ export class CropDocument extends Review {
       for (let i = 0; i < 4; i++) {
         const tpl = util.instantiateTemplate('#document-drag-point-template');
         ret.push({
-          el: dom.getFrom(tpl, `.dot`, HTMLButtonElement),
+          el: dom.getFrom(tpl, `.dot`, HTMLDivElement),
           pt: new Point(0, 0),
           pointerId: null,
         });
@@ -117,21 +117,25 @@ export class CropDocument extends Review {
       return ret;
     })();
 
+    const updateRotation = (newRotation) => {
+      this.rotation_ = newRotation;
+      this.updateImage_();
+      this.updateCornerElAriaLabel_();
+    };
+
     const clockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_clockwise_button]',
         HTMLButtonElement);
     clockwiseBtn.addEventListener('click', () => {
-      this.rotation_ = (this.rotation_ + 1) % ROTATIONS.length;
-      this.updateImage_();
+      updateRotation((this.rotation_ + 1) % ROTATIONS.length);
     });
 
     const counterclockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_counterclockwise_button]',
         HTMLButtonElement);
     counterclockwiseBtn.addEventListener('click', () => {
-      this.rotation_ =
-          (this.rotation_ + ROTATIONS.length - 1) % ROTATIONS.length;
-      this.updateImage_();
+      updateRotation(
+          (this.rotation_ + ROTATIONS.length - 1) % ROTATIONS.length);
     });
 
     const cornerSize = (() => {
@@ -444,6 +448,22 @@ export class CropDocument extends Review {
   }
 
   /**
+   * @private
+   */
+  updateCornerElAriaLabel_() {
+    [I18nString.LABEL_DOCUMENT_TOP_LEFT_CORNER,
+     I18nString.LABEL_DOCUMENT_BOTTOM_LEFT_CORNER,
+     I18nString.LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER,
+     I18nString.LABEL_DOCUMENT_TOP_RIGHT_CORNER,
+    ].forEach((label, index) => {
+      const cornEl =
+          this.corners_[(this.rotation_ + index) % this.corners_.length].el;
+      cornEl.setAttribute('i18n-aria', label);
+    });
+    util.setupI18nElements(this.root);
+  }
+
+  /**
    * Updates image position/size with respect to |this.rotation_|,
    * |this.frameSize_| and |this.imageOriginalSize_|.
    * @private
@@ -515,6 +535,7 @@ export class CropDocument extends Review {
     style.set('background-image', `url('${image.src}')`);
 
     this.rotation_ = 0;
+    this.updateCornerElAriaLabel_();
   }
 
   /**

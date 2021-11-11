@@ -287,6 +287,8 @@
       </div>
     </div>
     <div id="view-crop-document" class="review-views">
+      <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
+      </div>
       <div class="review-frame">
         <div class="review-image">
           <svg class="crop-area-container">
@@ -666,7 +668,9 @@
       <div class="side line"></div>
     </template>
     <template id="document-drag-point-template">
-      <button tabindex="0" class="dot"></button>
+      <div tabindex="0" class="dot"
+           aria-describedby="document-corner-move-desc">
+      </div>
     </template>
     <template id="inkdrop-template">
       <div class="inkdrop-ripple"></div>

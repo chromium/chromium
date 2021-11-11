@@ -347,6 +347,11 @@ body.enable-scan-barcode .barcode-scan-box {
   stroke: var(--blue-500);
 }
 
+#document-drag-point-desc {
+  position: absolute;
+  visibility: none;
+}
+
 #view-crop-document .review-image .dot {
   --icon-size: 12px;
   --focus-ring-style: none;

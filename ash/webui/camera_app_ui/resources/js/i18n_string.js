@@ -26,6 +26,7 @@ export const I18nString = {
   DESCRIPTION: 'description',
   DIALOG_CANCEL_BUTTON: 'dialog_cancel_button',
   DIALOG_OK_BUTTON: 'dialog_ok_button',
+  DOCUMENT_CORNER_MOVE_DESC: 'document_corner_move_desc',
   DOCUMENT_MODE_DIALOG_GOT_IT: 'document_mode_dialog_got_it',
   DOCUMENT_MODE_DIALOG_MSG: 'document_mode_dialog_msg',
   DOCUMENT_MODE_DIALOG_INTRO_TITLE: 'document_mode_dialog_intro_title',
@@ -66,6 +67,10 @@ export const I18nString = {
   LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME:
       'label_current_and_maximal_record_time',
   LABEL_DETAIL_PHOTO_RESOLUTION: 'label_detail_photo_resolution',
+  LABEL_DOCUMENT_BOTTOM_LEFT_CORNER: 'label_document_bottom_left_corner',
+  LABEL_DOCUMENT_BOTTOM_RIGHT_CORNER: 'label_document_bottom_right_corner',
+  LABEL_DOCUMENT_TOP_LEFT_CORNER: 'label_document_top_left_corner',
+  LABEL_DOCUMENT_TOP_RIGHT_CORNER: 'label_document_top_right_corner',
   LABEL_EXTERNAL_CAMERA: 'label_external_camera',
   LABEL_FIX_DOCUMENT: 'label_fix_document',
   LABEL_FRONT_CAMERA: 'label_front_camera',
