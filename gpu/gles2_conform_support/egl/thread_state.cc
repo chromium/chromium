@@ -29,10 +29,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
 namespace gles2_conform_support {
 // Thread local key for ThreadState instance. Accessed when holding g_egl_lock
 // only, since the initialization can not be Guaranteed otherwise.  Not in
@@ -89,8 +85,7 @@ egl::ThreadState* ThreadState::Get() {
       // argc, argv in CommandLine::Init(argc, argv).
       command_line->InitFromArgv(argv);
 #if defined(USE_OZONE)
-      if (features::IsUsingOzonePlatform())
-        ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
       gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
       gpu::GpuFeatureInfo gpu_feature_info;

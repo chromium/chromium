@@ -14,12 +14,8 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
-#endif
 
 namespace gpu {
 namespace {
@@ -69,20 +65,20 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    pixmap = ui::OzonePlatform::GetInstance()
-                 ->GetSurfaceFactoryOzone()
-                 ->CreateNativePixmap(gfx::kNullAcceleratedWidget,
-                                      VK_NULL_HANDLE, size, format, usage);
-    handle->native_pixmap_handle = pixmap->ExportHandle();
-  } else
-#endif
-  {
+  pixmap = ui::OzonePlatform::GetInstance()
+               ->GetSurfaceFactoryOzone()
+               ->CreateNativePixmap(gfx::kNullAcceleratedWidget, VK_NULL_HANDLE,
+                                    size, format, usage);
+  if (!pixmap) {
     // TODO(j.isorce): use gbm_bo_create / gbm_bo_get_fd from system libgbm.
     NOTIMPLEMENTED();
+  } else {
+    handle->native_pixmap_handle = pixmap->ExportHandle();
+    handle->type = gfx::NATIVE_PIXMAP;
   }
-  handle->type = gfx::NATIVE_PIXMAP;
+  // It's safe to bind FreeNativePixmapForTesting even if pixmap is not created
+  // as it does nothing with the pixmap. See the comment in
+  // FreeNativePixmapForTesting for more details.
   return base::BindOnce(&FreeNativePixmapForTesting, pixmap);
 }
 

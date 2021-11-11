@@ -17,19 +17,11 @@
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_implementation.h"
-
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
-#if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
-#endif
 
-#if defined(USE_X11)
-#include "ui/gfx/linux/gbm_buffer.h"                     // nogncheck
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"  // nogncheck
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 #include "ui/gl/gl_image_glx_native_pixmap.h"            // nogncheck
 #endif
 
@@ -74,36 +66,13 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     int client_id,
     SurfaceHandle surface_handle) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    scoped_refptr<gfx::NativePixmap> pixmap =
-        ui::OzonePlatform::GetInstance()
-            ->GetSurfaceFactoryOzone()
-            ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size,
-                                 format, usage, framebuffer_size);
-    return CreateGpuMemoryBufferFromNativePixmap(id, size, format, usage,
-                                                 client_id, std::move(pixmap));
-  }
-#endif
-  DCHECK_EQ(framebuffer_size, size);
-
-#if defined(USE_X11)
-  DCHECK(!features::IsUsingOzonePlatform());
-  std::unique_ptr<ui::GbmBuffer> buffer =
-      ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(format, size,
-                                                                 usage);
-  if (!buffer)
-    return gfx::GpuMemoryBufferHandle();
-  gfx::NativePixmapHandle handle = buffer->ExportHandle();
-  scoped_refptr<gfx::NativePixmapDmaBuf> pixmap =
-      base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
-                                                    std::move(handle));
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size, format,
+                               usage, framebuffer_size);
   return CreateGpuMemoryBufferFromNativePixmap(id, size, format, usage,
                                                client_id, std::move(pixmap));
-#else
-  NOTIMPLEMENTED();
-  return gfx::GpuMemoryBufferHandle();
-#endif
 }
 
 void GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferAsync(
@@ -114,28 +83,14 @@ void GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferAsync(
     int client_id,
     SurfaceHandle surface_handle,
     CreateGpuMemoryBufferAsyncCallback callback) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::GetInstance()
-        ->GetSurfaceFactoryOzone()
-        ->CreateNativePixmapAsync(
-            surface_handle, GetVulkanDevice(), size, format, usage,
-            base::BindOnce(
-                &GpuMemoryBufferFactoryNativePixmap::OnNativePixmapCreated, id,
-                size, format, usage, client_id, std::move(callback),
-                weak_factory_.GetWeakPtr()));
-    return;
-  }
-#endif
-
-#if defined(USE_X11)
-  std::move(callback).Run(
-      CreateGpuMemoryBuffer(id, size, /*framebuffer_size=*/size, format, usage,
-                            client_id, surface_handle));
-#else
-  NOTIMPLEMENTED();
-  std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-#endif
+  ui::OzonePlatform::GetInstance()
+      ->GetSurfaceFactoryOzone()
+      ->CreateNativePixmapAsync(
+          surface_handle, GetVulkanDevice(), size, format, usage,
+          base::BindOnce(
+              &GpuMemoryBufferFactoryNativePixmap::OnNativePixmapCreated, id,
+              size, format, usage, client_id, std::move(callback),
+              weak_factory_.GetWeakPtr()));
 }
 
 void GpuMemoryBufferFactoryNativePixmap::DestroyGpuMemoryBuffer(
@@ -182,15 +137,11 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 
   // Create new pixmap from handle if one doesn't already exist.
   if (!pixmap) {
-#if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
-      pixmap = ui::OzonePlatform::GetInstance()
-                   ->GetSurfaceFactoryOzone()
-                   ->CreateNativePixmapFromHandle(
-                       surface_handle, size, format,
-                       std::move(handle.native_pixmap_handle));
-    }
-#endif
+    pixmap = ui::OzonePlatform::GetInstance()
+                 ->GetSurfaceFactoryOzone()
+                 ->CreateNativePixmapFromHandle(
+                     surface_handle, size, format,
+                     std::move(handle.native_pixmap_handle));
 #if !defined(OS_FUCHSIA)
     if (!pixmap) {
       DCHECK_EQ(surface_handle, gpu::kNullSurfaceHandle);
@@ -213,15 +164,8 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
       // EGL
       return CreateImageFromPixmap<gl::GLImageNativePixmap>(
           plane_size, plane_format, pixmap, plane);
-#if defined(USE_X11)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
     case gl::kGLImplementationDesktopGL:
-#if defined(USE_OZONE)
-      if (features::IsUsingOzonePlatform()) {
-        NOTREACHED();
-        return nullptr;
-      }
-#endif
-      // GLX
       return CreateImageFromPixmap<gl::GLImageGLXNativePixmap>(size, format,
                                                                pixmap, plane);
 #endif
@@ -232,11 +176,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 }
 
 bool GpuMemoryBufferFactoryNativePixmap::SupportsCreateAnonymousImage() const {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return true;
-#endif
-  return false;
+  return true;
 }
 
 scoped_refptr<gl::GLImage>
@@ -247,16 +187,10 @@ GpuMemoryBufferFactoryNativePixmap::CreateAnonymousImage(
     SurfaceHandle surface_handle,
     bool* is_cleared) {
   scoped_refptr<gfx::NativePixmap> pixmap;
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    pixmap = ui::OzonePlatform::GetInstance()
-                 ->GetSurfaceFactoryOzone()
-                 ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size,
-                                      format, usage);
-  }
-#else
-  NOTIMPLEMENTED();
-#endif
+  pixmap = ui::OzonePlatform::GetInstance()
+               ->GetSurfaceFactoryOzone()
+               ->CreateNativePixmap(surface_handle, GetVulkanDevice(), size,
+                                    format, usage);
   if (!pixmap.get()) {
     LOG(ERROR) << "Failed to create pixmap " << size.ToString() << ", "
                << gfx::BufferFormatToString(format) << ", usage "

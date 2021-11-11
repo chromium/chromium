@@ -91,7 +91,7 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
   }
 #endif
 
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   tty_file_ = base::OpenFile(
       base::FilePath(FILE_PATH_LITERAL("/sys/class/tty/tty0/active")), "r");
   UpdateActiveTTY();
@@ -119,7 +119,7 @@ GpuWatchdogThread::~GpuWatchdogThread() {
     CloseHandle(watched_thread_handle_);
 #endif
 
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   if (tty_file_)
     fclose(tty_file_);
 #endif
@@ -471,7 +471,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   if (foregrounded_event_)
     num_of_timeout_after_foregrounded_++;
 
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   UpdateActiveTTY();
 #endif
 
@@ -740,7 +740,7 @@ bool GpuWatchdogThread::WithinOneMinFromForegrounded() {
   return foregrounded_event_ && num_of_timeout_after_foregrounded_ <= count;
 }
 
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 void GpuWatchdogThread::UpdateActiveTTY() {
   last_active_tty_ = active_tty_;
 
@@ -757,7 +757,7 @@ void GpuWatchdogThread::UpdateActiveTTY() {
 #endif
 
 bool GpuWatchdogThread::ContinueOnNonHostX11ServerTty() {
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   if (host_tty_ == -1 || active_tty_ == -1)
     return false;
 

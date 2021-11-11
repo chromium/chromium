@@ -4,7 +4,7 @@
 
 import("//build/config/ui.gni")
 
-if ((is_linux || is_chromeos) && use_x11 && current_cpu != "arm") {
+if (ozone_platform_x11 && current_cpu != "arm") {
   executable("compositor_model_bench") {
     sources = [
       "compositor_model_bench.cc",

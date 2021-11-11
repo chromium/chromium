@@ -133,18 +133,12 @@ component("service") {
   if (is_linux || is_chromeos) {
     sources += [ "image_transport_surface_linux.cc" ]
   }
-  if (is_linux || is_chromeos || use_ozone) {
+  if (use_ozone) {
     sources += [
       "gpu_memory_buffer_factory_native_pixmap.cc",
       "gpu_memory_buffer_factory_native_pixmap.h",
     ]
-  }
-  if (use_x11) {
-    sources += [ "x_util.h" ]
-    libs += [ "X11" ]
-    deps += [ "//ui/gfx/linux:gpu_memory_buffer_support_x11" ]
-  }
-  if (use_ozone) {
+
     deps += [ "//ui/ozone" ]
   }
   if (is_fuchsia) {

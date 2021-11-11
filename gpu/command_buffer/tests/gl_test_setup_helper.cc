@@ -11,7 +11,6 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -35,16 +34,14 @@ void GLTestSetupHelper::OnTestStart(const testing::TestInfo& test_info) {
       base::test::TaskEnvironment::MainThreadType::UI);
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    // Make Ozone run in single-process mode.
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
+  // Make Ozone run in single-process mode.
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
 
-    // This initialization must be done after TaskEnvironment has
-    // initialized the UI thread.
-    ui::OzonePlatform::InitializeForUI(params);
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  // This initialization must be done after TaskEnvironment has
+  // initialized the UI thread.
+  ui::OzonePlatform::InitializeForUI(params);
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif  // defined(USE_OZONE)
 
   gpu::GLTestHelper::InitializeGLDefault();

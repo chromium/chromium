@@ -55,10 +55,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
 namespace gpu {
 namespace {
 
@@ -333,8 +329,7 @@ class CommandBufferSetup {
     ALLOW_UNUSED_LOCAL(command_line);
 
 #if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform())
-      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+    ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
 
 #if defined(GPU_FUZZER_USE_ANGLE)
