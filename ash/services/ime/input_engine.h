@@ -5,7 +5,7 @@
 #ifndef ASH_SERVICES_IME_INPUT_ENGINE_H_
 #define ASH_SERVICES_IME_INPUT_ENGINE_H_
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 // Base class for all input engines.
@@ -17,6 +17,6 @@ struct InputEngine {
 };
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_SERVICES_IME_INPUT_ENGINE_H_

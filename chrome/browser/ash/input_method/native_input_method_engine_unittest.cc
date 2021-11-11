@@ -38,6 +38,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ime = ::chromeos::ime;
+
 MATCHER_P(MojoEq, value, "") {
   return *arg == value;
 }

@@ -140,7 +140,7 @@ int UtilityMain(MainFunctionParams parameters) {
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kIme:
-      pre_sandbox_hook = base::BindOnce(&ash::ime::ImePreSandboxHook);
+      pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);

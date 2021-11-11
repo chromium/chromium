@@ -11,7 +11,7 @@
 namespace ash {
 namespace input_method {
 
-ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
+chromeos::ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id);
 

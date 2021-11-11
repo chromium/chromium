@@ -23,7 +23,8 @@ namespace ash {
 namespace input_method {
 
 // The connector of an ImeService which runs in its own process.
-class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
+class ImeServiceConnector
+    : public chromeos::ime::mojom::PlatformAccessProvider {
  public:
   explicit ImeServiceConnector(Profile* profile);
 
@@ -39,7 +40,7 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
 
   // Launch an out-of-process IME service and grant necessary Platform access.
   void SetupImeService(
-      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver);
+      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver);
 
   void OnFileDownloadComplete(DownloadImeFileToCallback client_callback,
                               base::FilePath path);
@@ -53,9 +54,9 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Persistent connection to the IME service process.
-  mojo::Remote<ime::mojom::ImeService> remote_service_;
-  mojo::Receiver<ime::mojom::PlatformAccessProvider> platform_access_receiver_{
-      this};
+  mojo::Remote<chromeos::ime::mojom::ImeService> remote_service_;
+  mojo::Receiver<chromeos::ime::mojom::PlatformAccessProvider>
+      platform_access_receiver_{this};
 };
 
 }  // namespace input_method

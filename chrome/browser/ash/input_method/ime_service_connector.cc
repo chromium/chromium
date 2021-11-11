@@ -49,8 +49,8 @@ bool IsDownloadPathValid(const base::FilePath& file_path) {
     return false;
 
   // Target path must be restricted in the provided path.
-  base::FilePath parent(ime::kInputMethodsDirName);
-  parent = parent.Append(ime::kLanguageDataDirName);
+  base::FilePath parent(chromeos::ime::kInputMethodsDirName);
+  parent = parent.Append(chromeos::ime::kLanguageDataDirName);
   return parent.IsParent(file_path);
 }
 
@@ -58,7 +58,7 @@ bool IsDownloadURLValid(const GURL& url) {
   // TODO(https://crbug.com/837156): Allowlist all URLs instead of some general
   // checks below.
   return url.SchemeIs(url::kHttpsScheme) &&
-         url.DomainIs(ime::kGoogleKeyboardDownloadDomain);
+         url.DomainIs(chromeos::ime::kGoogleKeyboardDownloadDomain);
 }
 
 }  // namespace
@@ -107,7 +107,7 @@ void ImeServiceConnector::DownloadImeFileTo(
 }
 
 void ImeServiceConnector::SetupImeService(
-    mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {
+    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
   if (!remote_service_) {
     content::ServiceProcessHost::Launch(
         remote_service_.BindNewPipeAndPassReceiver(),

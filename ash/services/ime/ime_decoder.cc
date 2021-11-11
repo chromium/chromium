@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 namespace {
@@ -142,4 +142,4 @@ void FakeDecoderEntryPointsForTesting(  // IN-TEST
 }
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos

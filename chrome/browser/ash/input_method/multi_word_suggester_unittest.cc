@@ -17,9 +17,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::ash::ime::TextSuggestion;
-using ::ash::ime::TextSuggestionMode;
-using ::ash::ime::TextSuggestionType;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 
 constexpr int kFocusedContextId = 5;
 

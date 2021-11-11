@@ -1169,7 +1169,7 @@ void InputMethodManagerImpl::ActivateInputMethodMenuItem(
 }
 
 void InputMethodManagerImpl::ConnectInputEngineManager(
-    mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {
+    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
   DCHECK(state_);
   ImeServiceConnectorMap::iterator iter =
       ime_service_connectors_.find(state_->GetProfile());

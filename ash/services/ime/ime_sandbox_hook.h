@@ -7,12 +7,12 @@
 
 #include "sandbox/policy/linux/sandbox_linux.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options);
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_SERVICES_IME_IME_SANDBOX_HOOK_H_

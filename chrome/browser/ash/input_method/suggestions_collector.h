@@ -27,10 +27,10 @@ class SuggestionsCollector {
   ~SuggestionsCollector();
 
   using GatherSuggestionsCallback =
-      base::OnceCallback<void(ime::mojom::SuggestionsResponsePtr)>;
+      base::OnceCallback<void(chromeos::ime::mojom::SuggestionsResponsePtr)>;
 
   // Collects all suggestions from the system.
-  void GatherSuggestions(ime::mojom::SuggestionsRequestPtr request,
+  void GatherSuggestions(chromeos::ime::mojom::SuggestionsRequestPtr request,
                          GatherSuggestionsCallback callback);
 
  private:

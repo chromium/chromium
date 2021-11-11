@@ -40,7 +40,7 @@ namespace input_method {
 
 namespace {
 
-namespace mojom = ::ash::ime::mojom;
+namespace mojom = ::chromeos::ime::mojom;
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change.
@@ -954,7 +954,7 @@ void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
 }
 
 void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
-    mojom::CandidatesWindowPtr window) {
+    chromeos::ime::mojom::CandidatesWindowPtr window) {
   if (!GetCandidateWindowHandler()) {
     return;
   }

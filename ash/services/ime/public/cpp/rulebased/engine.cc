@@ -7,7 +7,7 @@
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 namespace rulebased {
 
@@ -148,4 +148,4 @@ ProcessKeyResult Engine::ProcessBackspace() {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
