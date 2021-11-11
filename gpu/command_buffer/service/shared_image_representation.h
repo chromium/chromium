@@ -431,6 +431,10 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     AHardwareBuffer* GetAHardwareBuffer() {
       return representation()->GetAHardwareBuffer();
     }
+#elif defined(USE_OZONE)
+    scoped_refptr<gfx::NativePixmap> GetNativePixmap() {
+      return representation()->GetNativePixmap();
+    }
 #endif
 
     std::vector<gfx::GpuFence> TakeAcquireFences() {
@@ -476,6 +480,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
 
 #if defined(OS_ANDROID)
   virtual AHardwareBuffer* GetAHardwareBuffer();
+#elif defined(USE_OZONE)
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #endif
 
   // TODO(penghuang): Refactor it to not depend on GL.

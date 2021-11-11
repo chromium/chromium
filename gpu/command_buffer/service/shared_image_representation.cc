@@ -270,6 +270,11 @@ AHardwareBuffer* SharedImageRepresentationOverlay::GetAHardwareBuffer() {
   NOTREACHED();
   return nullptr;
 }
+#elif defined(USE_OZONE)
+scoped_refptr<gfx::NativePixmap>
+SharedImageRepresentationOverlay::GetNativePixmap() {
+  return backing()->GetNativePixmap();
+}
 #endif
 
 SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
