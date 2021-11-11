@@ -633,11 +633,6 @@
     'browsing_data': {
       'filepath': 'browsing_data|BrowsingData',
     },
-    'bubble': {
-      'filepath': 'ui/views/bubble/|'\
-                  'chrome/browser/ui/views/bubble/|'\
-                  'components/bubble/',
-    },
     'cast_certificate': {
       'filepath': 'components/cast_certificate/'\
                   '|components/test/data/cast_certificate/',
@@ -2347,7 +2342,6 @@
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
-    'bubble': ['hcarmona+bubble@chromium.org'],
     'cast_certificate': ['dougsteed+watch@chromium.org',
                          'mfoltz+watch@chromium.org',
                          'ryanchung+watch@chromium.org'],
