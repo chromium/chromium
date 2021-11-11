@@ -152,12 +152,7 @@ class TestInputMethodManager : public MockInputMethodManager {
 class NativeInputMethodEngineTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAssistPersonalInfo,
-                              features::kAssistPersonalInfoEmail,
-                              features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition},
-        /*disabled_features=*/{});
+    EnableDefaultFeatureList();
 
     // Needed by NativeInputMethodEngine to interact with the input field.
     ui::IMEBridge::Initialize();
@@ -171,15 +166,41 @@ class NativeInputMethodEngineTest : public ::testing::Test {
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
-  void EnableMultiWordFeatureFlag() {
+  void EnableFeatureList(const std::vector<base::Feature>& features) {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAssistPersonalInfo,
-                              features::kAssistPersonalInfoEmail,
-                              features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition,
-                              features::kAssistMultiWord},
+        /*enabled_features=*/features,
         /*disabled_features=*/{});
+  }
+
+  void EnableDefaultFeatureList() {
+    EnableFeatureList({
+        features::kAssistPersonalInfo,
+        features::kAssistPersonalInfoEmail,
+        features::kAssistPersonalInfoName,
+        features::kEmojiSuggestAddition,
+    });
+  }
+
+  void EnableDefaultFeatureListWithMultiWord() {
+    EnableFeatureList({
+        features::kAssistPersonalInfo,
+        features::kAssistPersonalInfoEmail,
+        features::kAssistPersonalInfoName,
+        features::kEmojiSuggestAddition,
+        features::kAssistMultiWord,
+    });
+  }
+
+  void EnableDefaultFeatureListWithMultiWordAndLacros() {
+    EnableFeatureList({
+        features::kAssistPersonalInfo,
+        features::kAssistPersonalInfoEmail,
+        features::kAssistPersonalInfoName,
+        features::kEmojiSuggestAddition,
+        features::kAssistMultiWord,
+        features::kLacrosSupport,
+    });
   }
 
  private:
@@ -229,7 +250,7 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
 }
 
 TEST_F(NativeInputMethodEngineTest,
-       DoesNotLaunchImeServiceIfPredictiveWritingIsOnAndMultiWordDisabled) {
+       PredictiveWritingDoesNotLaunchImeServiceWithMultiWordFlagDisabled) {
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
   SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
@@ -248,9 +269,9 @@ TEST_F(NativeInputMethodEngineTest,
 }
 
 TEST_F(NativeInputMethodEngineTest,
-       DoesNotLaunchImeServiceIfPredictiveWritingAndMultiWordEnabledWithNonEn) {
+       PredictiveWritingDoesNotLaunchImeServiceWithNonEnUsEngineId) {
   TestingProfile testing_profile;
-  EnableMultiWordFeatureFlag();
+  EnableDefaultFeatureListWithMultiWord();
   SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
   SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
 
@@ -263,6 +284,46 @@ TEST_F(NativeInputMethodEngineTest,
 
   engine.Enable(kEngineIdEs);
   EXPECT_FALSE(engine.IsConnectedForTesting());
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest,
+       PredictiveWritingDoesNotLaunchImeServiceWithLacrosEnabled) {
+  TestingProfile testing_profile;
+  EnableDefaultFeatureListWithMultiWordAndLacros();
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
+  SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdUs);
+  EXPECT_FALSE(engine.IsConnectedForTesting());
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest,
+       PredictiveWritingLaunchesImeServiceWithEnglishEngineId) {
+  TestingProfile testing_profile;
+  EnableDefaultFeatureListWithMultiWord();
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
+  SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdUs);
+  EXPECT_TRUE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
 }
@@ -352,7 +413,7 @@ TEST_F(NativeInputMethodEngineTest,
   TestingProfile testing_profile;
   SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
   SetPhysicalTypingPredictiveWritingEnabled(testing_profile, true);
-  EnableMultiWordFeatureFlag();
+  EnableDefaultFeatureListWithMultiWord();
 
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(

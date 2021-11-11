@@ -111,9 +111,13 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
   return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 
+bool IsLacrosEnabled() {
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+}
+
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
-  return (features::IsAssistiveMultiWordEnabled() &&
+  return (!IsLacrosEnabled() && features::IsAssistiveMultiWordEnabled() &&
           pref_service->GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
           IsUsEnglishEngine(engine_id));
 }
