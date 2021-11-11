@@ -479,6 +479,14 @@ void FakeShillManagerClient::ConnectToBestServices(
                                      std::move(error_callback));
 }
 
+void FakeShillManagerClient::AddPasspointCredentials(
+    const dbus::ObjectPath& profile_path,
+    const base::Value& properties,
+    ObjectPathCallback callback,
+    ErrorCallback error_callback) {
+  return;
+}
+
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
   return this;
 }

@@ -67,6 +67,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetNetworkThrottlingStatus(const NetworkThrottlingStatus& status,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;
+  void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
+                               const base::Value& properties,
+                               ObjectPathCallback callback,
+                               ErrorCallback error_callback) override;
 
   ShillManagerClient::TestInterface* GetTestInterface() override;
 
