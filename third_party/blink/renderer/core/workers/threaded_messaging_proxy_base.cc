@@ -43,8 +43,7 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
               ? FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()
               : execution_context->GetScheduler()->RegisterFeature(
                     SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
-                    {SchedulingPolicy::DisableBackForwardCache()})),
-      keep_alive_(PERSISTENT_FROM_HERE, this) {
+                    {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(IsParentContextThread());
   g_live_messaging_proxy_count++;
 }

@@ -39,7 +39,7 @@ class CORE_EXPORT WebFormElementObserverImpl final
   Member<ObserverCallback> mutation_callback_;
 
   // WebFormElementObserverImpl must remain alive until Disconnect() is called.
-  SelfKeepAlive<WebFormElementObserverImpl> self_keep_alive_;
+  SelfKeepAlive<WebFormElementObserverImpl> self_keep_alive_{this};
 };
 
 }  // namespace blink

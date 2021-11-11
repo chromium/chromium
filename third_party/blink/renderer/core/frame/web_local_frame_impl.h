@@ -615,7 +615,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Oilpan: WebLocalFrameImpl must remain alive until close() is called.
   // Accomplish that by keeping a self-referential Persistent<>. It is
   // cleared upon close().
-  SelfKeepAlive<WebLocalFrameImpl> self_keep_alive_;
+  SelfKeepAlive<WebLocalFrameImpl> self_keep_alive_{this};
 
 #if DCHECK_IS_ON()
   // True if DispatchBeforePrintEvent() was called, and

@@ -17,8 +17,7 @@ ScriptState::ScriptState(v8::Local<v8::Context> context,
     : isolate_(context->GetIsolate()),
       context_(isolate_, context),
       world_(std::move(world)),
-      per_context_data_(MakeGarbageCollected<V8PerContextData>(context)),
-      reference_from_v8_context_(PERSISTENT_FROM_HERE, this) {
+      per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
   context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this);

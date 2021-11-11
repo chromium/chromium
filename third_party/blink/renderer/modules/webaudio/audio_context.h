@@ -207,7 +207,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   // all that's needed.
   size_t total_audible_renders_ = 0;
 
-  SelfKeepAlive<AudioContext> keep_alive_;
+  SelfKeepAlive<AudioContext> keep_alive_{this};
 };
 
 }  // namespace blink

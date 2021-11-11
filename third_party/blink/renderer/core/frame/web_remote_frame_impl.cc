@@ -424,8 +424,7 @@ WebRemoteFrameImpl::WebRemoteFrameImpl(
       client_(client),
       frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)),
       interface_registry_(interface_registry),
-      associated_interface_provider_(associated_interface_provider),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
+      associated_interface_provider_(associated_interface_provider) {
   DCHECK(client);
 }
 

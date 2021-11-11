@@ -293,8 +293,7 @@ ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,
           TaskType::kUserInteraction)),
       file_reading_task_runner_(promise->GetExecutionContext()->GetTaskRunner(
           TaskType::kFileReading)),
-      system_clipboard_(system_clipboard),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
+      system_clipboard_(system_clipboard) {}
 
 ClipboardWriter::~ClipboardWriter() {
   DCHECK(!file_reader_);

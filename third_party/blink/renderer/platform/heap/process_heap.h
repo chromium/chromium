@@ -8,13 +8,11 @@
 #include "gin/public/cppgc.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "v8/include/cppgc/platform.h"
 #include "v8/include/cppgc/process-heap-statistics.h"
 
 namespace blink {
 
-// TODO(1056170): Implement wrapper.
-class PLATFORM_EXPORT ProcessHeap {
+class PLATFORM_EXPORT ProcessHeap final {
   STATIC_ONLY(ProcessHeap);
 
  public:

@@ -85,7 +85,7 @@ class CORE_EXPORT PausableScriptExecutor final
   bool wait_for_promise_ = false;
 
   // A keepalive used when waiting on promises to settle.
-  SelfKeepAlive<PausableScriptExecutor> keep_alive_{PERSISTENT_FROM_HERE};
+  SelfKeepAlive<PausableScriptExecutor> keep_alive_;
 };
 
 }  // namespace blink

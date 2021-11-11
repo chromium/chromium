@@ -66,9 +66,8 @@ namespace {
 class DetachedClient final : public GarbageCollected<DetachedClient>,
                              public ThreadableLoaderClient {
  public:
-  explicit DetachedClient(ThreadableLoader* loader)
-      : self_keep_alive_(PERSISTENT_FROM_HERE, this), loader_(loader) {}
-  ~DetachedClient() override {}
+  explicit DetachedClient(ThreadableLoader* loader) : loader_(loader) {}
+  ~DetachedClient() override = default;
 
   void DidFinishLoading(uint64_t identifier) override {
     self_keep_alive_.Clear();
@@ -85,7 +84,7 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   }
 
  private:
-  SelfKeepAlive<DetachedClient> self_keep_alive_;
+  SelfKeepAlive<DetachedClient> self_keep_alive_{this};
   // Keep it alive.
   const Member<ThreadableLoader> loader_;
 };

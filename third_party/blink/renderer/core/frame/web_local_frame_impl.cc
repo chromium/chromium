@@ -1965,8 +1965,7 @@ WebLocalFrameImpl::WebLocalFrameImpl(
           MakeGarbageCollected<FindInPage>(*this, interface_registry)),
       interface_registry_(interface_registry),
       input_method_controller_(*this),
-      spell_check_panel_host_client_(nullptr),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
+      spell_check_panel_host_client_(nullptr) {
   CHECK(client_);
   g_frame_count++;
   client_->BindToFrame(this);

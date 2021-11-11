@@ -1684,7 +1684,7 @@ int ThingWithDestructor::live_things_with_destructor_;
 class RefCountedAndGarbageCollected final
     : public GarbageCollected<RefCountedAndGarbageCollected> {
  public:
-  RefCountedAndGarbageCollected() : keep_alive_(PERSISTENT_FROM_HERE) {}
+  RefCountedAndGarbageCollected() = default;
   ~RefCountedAndGarbageCollected() { ++destructor_calls_; }
 
   void AddRef() {
