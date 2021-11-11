@@ -5047,6 +5047,32 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   }
   for (auto& observer : internal_observers_)
     observer.RenderProcessBackgroundedChanged(this);
+
+  // Update the priority of the process running the controller service worker
+  // when client's background state changed. We can make the service worker
+  // process backgrounded if all of its clients are backgrounded.
+  if (background_state_changed &&
+      base::FeatureList::IsEnabled(
+          features::
+              kChangeServiceWorkerPriorityForClientForegroundStateChange)) {
+    UpdateControllerServiceWorkerProcessPriority();
+  }
+}
+
+void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
+  ServiceWorkerContextWrapper* context =
+      storage_partition_impl_->GetServiceWorkerContext();
+  if (!context)
+    return;
+
+  for (const auto& kv : context->GetRunningServiceWorkerInfos()) {
+    ServiceWorkerVersion* version = context->GetLiveVersion(kv.first);
+    DCHECK(version);
+    if (version->IsControlleeProcessID(GetID())) {
+      version->UpdateForegroundPriority();
+      break;
+    }
+  }
 }
 
 void RenderProcessHostImpl::SendProcessStateToRenderer() {

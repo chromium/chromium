@@ -34,6 +34,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_service.mojom.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/test_completion_callback.h"
@@ -135,6 +136,7 @@ class ServiceWorkerVersionTest : public testing::Test {
   }
 
   void TearDown() override {
+    client_render_process_hosts_.clear();
     version_ = nullptr;
     registration_ = nullptr;
     helper_.reset();
@@ -177,11 +179,25 @@ class ServiceWorkerVersionTest : public testing::Test {
     return ServiceWorkerVersion::FetchHandlerExistence::EXISTS;
   }
 
+  // Make the client in a different process from the service worker when
+  // |in_different_process| is true.
   ServiceWorkerRemoteContainerEndpoint ActivateWithControllee(
-      int controllee_process_id = 33) {
+      bool in_different_process = false) {
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
+    int controllee_process_id = ChildProcessHost::kInvalidUniqueID;
+
+    if (in_different_process) {
+      auto client_render_process_host =
+          std::make_unique<MockRenderProcessHost>(helper_->browser_context());
+      controllee_process_id = client_render_process_host->GetID();
+      client_render_process_hosts_.push_back(
+          std::move(client_render_process_host));
+    } else {
+      controllee_process_id = version_->embedded_worker()->process_id();
+    }
+
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(
             GlobalRenderFrameHostId(controllee_process_id,
@@ -204,6 +220,10 @@ class ServiceWorkerVersionTest : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
+  // Used to hold render process hosts for clients which reside in different
+  // processes from the service worker.
+  std::vector<std::unique_ptr<MockRenderProcessHost>>
+      client_render_process_hosts_;
   GURL scope_;
 };
 
@@ -1177,7 +1197,7 @@ TEST_F(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee();
+  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1207,8 +1227,7 @@ TEST_F(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in the same process as the service worker.
-  auto remote_endpoint =
-      ActivateWithControllee(version_->embedded_worker()->process_id());
+  auto remote_endpoint = ActivateWithControllee();
 
   // RenderProcessHost should be notified of foreground worker.
   base::RunLoop().RunUntilIdle();
@@ -1282,7 +1301,7 @@ TEST_F(ServiceWorkerVersionTest,
 TEST_F(ServiceWorkerVersionTest,
        ForegroundServiceWorkerCountUpdatedByWorkerStatus) {
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee();
+  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should not be notified of foreground worker yet since
   // there is no worker running.
@@ -1308,6 +1327,53 @@ TEST_F(ServiceWorkerVersionTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 }
 
+class ChangeServiceWorkerPriorityForClientForegroundStateChangeTest
+    : public ServiceWorkerVersionTest {
+ public:
+  ChangeServiceWorkerPriorityForClientForegroundStateChangeTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kChangeServiceWorkerPriorityForClientForegroundStateChange);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChangeServiceWorkerPriorityForClientForegroundStateChangeTest,
+       ForegroundServiceWorkerCountUpdatedByControlleeForegroundStateChange) {
+  // Start the worker before we have a controllee.
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StartServiceWorker(version_.get()));
+  EXPECT_EQ(
+      0,
+      helper_->mock_render_process_host()->foreground_service_worker_count());
+
+  // Add a controllee in a different process from the service worker.
+  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
+
+  // RenderProcessHost should be notified of foreground worker.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      1,
+      helper_->mock_render_process_host()->foreground_service_worker_count());
+
+  // Set controllee process to background priority.
+  client_render_process_hosts_[0]->set_is_process_backgrounded(true);
+  version_->UpdateForegroundPriority();
+
+  EXPECT_EQ(
+      0,
+      helper_->mock_render_process_host()->foreground_service_worker_count());
+
+  // Set controllee process to foreground priority.
+  client_render_process_hosts_[0]->set_is_process_backgrounded(false);
+  version_->UpdateForegroundPriority();
+
+  EXPECT_EQ(
+      1,
+      helper_->mock_render_process_host()->foreground_service_worker_count());
+}
+
 class ServiceWorkerVersionNoFetchHandlerTest : public ServiceWorkerVersionTest {
  protected:
   ServiceWorkerVersion::FetchHandlerExistence GetFetchHandlerExistence()
@@ -1326,7 +1392,7 @@ TEST_F(ServiceWorkerVersionNoFetchHandlerTest,
       helper_->mock_render_process_host()->foreground_service_worker_count());
 
   // Add a controllee in a different process from the service worker.
-  auto remote_endpoint = ActivateWithControllee();
+  auto remote_endpoint = ActivateWithControllee(/*in_different_process=*/true);
 
   // RenderProcessHost should not be notified if the service worker does not
   // have a FetchEvent handler.

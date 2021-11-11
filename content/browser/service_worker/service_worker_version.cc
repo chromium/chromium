@@ -1071,6 +1071,14 @@ void ServiceWorkerVersion::InitializeGlobalScope(
   is_endpoint_ready_ = true;
 }
 
+bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
+  for (const auto& controllee : controllee_map_) {
+    if (controllee.second.get()->GetProcessId() == process_id)
+      return true;
+  }
+  return false;
+}
+
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
   origin_trial_tokens_ = validator_.GetValidTokens(
@@ -2421,24 +2429,34 @@ bool ServiceWorkerVersion::ShouldRequireForegroundPriority(
   if (fetch_handler_existence_ != FetchHandlerExistence::EXISTS)
     return false;
 
-  // Keep the service worker at foreground priority if its controlling clients
-  // from a different process.  In this situation we are likely to need to
+  // Keep the service worker at foreground priority if it has clients from
+  // different foreground processes.  In this situation we are likely to need to
   // quickly service FetchEvents when the worker's process does not have any
   // visible windows and would have otherwise been moved to the background.
-  //
-  // Ideally we would check the visibility of all clients as well, but that
-  // would also require triggering additional checks on every visibility
-  // change of all clients.  That would add a lot of complexity and its
-  // unclear we need to pay that cost yet.  This may get easier once the
-  // service worker code runs on the UI thread directly. (crbug.com/824858)
   //
   // For now the requirement for cross-process clients should filter out most
   // service workers.  The impact of foreground service workers is further
   // limited by the automatic shutdown mechanism.
   for (const auto& controllee : controllee_map_) {
-    ServiceWorkerContainerHost* container_host = controllee.second.get();
-    if (container_host->GetProcessId() != worker_process_id)
+    const int controllee_process_id = controllee.second->GetProcessId();
+    RenderProcessHost* render_host =
+        RenderProcessHost::FromID(controllee_process_id);
+
+    // It's possible that |controllee_process_id| and |render_host| won't be
+    // valid until the controllee commits. Require foreground priority in this
+    // case.
+    if (!render_host)
       return true;
+
+    // Require foreground if the controllee is in different process and is
+    // foreground.
+    if (controllee_process_id != worker_process_id &&
+        (!base::FeatureList::IsEnabled(
+             features::
+                 kChangeServiceWorkerPriorityForClientForegroundStateChange) ||
+         !render_host->IsProcessBackgrounded())) {
+      return true;
+    }
   }
   return false;
 }

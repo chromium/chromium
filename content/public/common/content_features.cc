@@ -1047,6 +1047,12 @@ const base::Feature kWebXr{"WebXR", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebXrArModule{"WebXRARModule",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether service worker process priority is affected by client
+// process fore/background state change.
+const base::Feature kChangeServiceWorkerPriorityForClientForegroundStateChange{
+    "ChangeServiceWorkerPriorityForClientForegroundStateChange",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_ANDROID)
 // Allows the use of page zoom in place of accessibility text autosizing, and
 // updated UI to replace existing Chrome Accessibility Settings.

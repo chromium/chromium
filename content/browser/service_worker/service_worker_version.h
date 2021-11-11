@@ -640,6 +640,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories);
 
+  // Returns true if |process_id| is a controllee process ID of this version.
+  bool IsControlleeProcessID(int process_id) const;
+
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
   friend class EmbeddedWorkerInstanceTest;

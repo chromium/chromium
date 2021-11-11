@@ -828,6 +828,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // change.
   void UpdateProcessPriority();
 
+  // When the |kChangeServiceWorkerPriorityForClientForegroundStateChange| is
+  // enabled, if this render process's foreground state has changed, notify its
+  // controller service worker to update its process priority if needed.
+  void UpdateControllerServiceWorkerProcessPriority();
+
   // Called if the backgrounded or visibility state of the process changes.
   void SendProcessStateToRenderer();
 

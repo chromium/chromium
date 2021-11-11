@@ -265,6 +265,8 @@ CONTENT_EXPORT extern const base::Feature kWebUIReportOnlyTrustedTypes;
 CONTENT_EXPORT extern const base::Feature kWebUsb;
 CONTENT_EXPORT extern const base::Feature kWebXr;
 CONTENT_EXPORT extern const base::Feature kWebXrArModule;
+CONTENT_EXPORT extern const base::Feature
+    kChangeServiceWorkerPriorityForClientForegroundStateChange;
 
 #if defined(OS_ANDROID)
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
