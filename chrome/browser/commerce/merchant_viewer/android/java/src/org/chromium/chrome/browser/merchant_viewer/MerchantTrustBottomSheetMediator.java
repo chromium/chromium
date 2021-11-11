@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -252,7 +253,10 @@ public class MerchantTrustBottomSheetMediator {
      */
     private void loadFavicon(GURL url) {
         Profile profile = mProfileSupplier.get();
-        if (profile == null) {
+        // TODO(crbug.com/1266143): {@link FaviconHelper#getLocalFaviconImageForURL} may return
+        // wrong non-null bitmap for the first navigation within bottom sheet, so we use Google icon
+        // directly for valid urls.
+        if (isValidUrl(url) || (profile == null)) {
             mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE,
                     getDefaultFaviconDrawable(url));
             return;
@@ -274,9 +278,12 @@ public class MerchantTrustBottomSheetMediator {
     // Used when we cannot find a favicon for the url. If url is valid, we use the Google icon.
     // Otherwise, we use the default icon.
     private Drawable getDefaultFaviconDrawable(GURL url) {
-        return UiUtils.getTintedDrawable(mContext,
-                isValidUrl(url) ? R.drawable.ic_logo_googleg_24dp : R.drawable.ic_globe_24dp,
-                R.color.default_icon_color_tint_list);
+        if (isValidUrl(url)) {
+            return AppCompatResources.getDrawable(mContext, R.drawable.ic_logo_googleg_24dp);
+        } else {
+            return UiUtils.getTintedDrawable(
+                    mContext, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);
+        }
     }
 
     @VisibleForTesting
