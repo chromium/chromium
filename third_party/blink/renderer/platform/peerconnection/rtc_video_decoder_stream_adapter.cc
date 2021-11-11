@@ -407,20 +407,44 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       return FallBackToSoftwareLocked();
     }
 
-  // Fall back to software decoding if there's no support for VP9 spatial
-  // layers. See https://crbug.com/webrtc/9304.
-  // TODO(chromium:1187565): Update RTCVideoDecoderFactory::QueryCodecSupport()
-  // if RTCVideoDecoderStream is changed to handle SW decoding and not return
-  // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
-  if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
-      input_image.SpatialIndex().value_or(0) > 0 &&
-      !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
-    DLOG(ERROR) << __func__ << " multiple spatial layers.";
-    RecordRTCVideoDecoderFallbackReason(
-        config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
+    // Fall back to software decoding if there's no support for VP9 spatial
+    // layers. See https://crbug.com/webrtc/9304.
+    // TODO(chromium:1187565): Update
+    // RTCVideoDecoderFactory::QueryCodecSupport() if RTCVideoDecoderStream is
+    // changed to handle SW decoding and not return
+    // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
 
-    return FallBackToSoftwareLocked();
-  }
+    // This dapater is diffrent from rtc_video_decoder_dapater.
+    // Consider two cases:
+    // 1. If it's hardware decoder, the D3D11 supports decoding the VP9 kSVC
+    // stream, but DXVA not. Currently just a reasonably temporary measure. Once
+    // the DXVA supports decoding VP9 kSVC stream, the boolen
+    // |need_fallback_to_software| should be removed, and if the OS is windows
+    // but not win7, we will return true in 'Vp9HwSupportForSpatialLayers'
+    // instead of false to Media Capability.
+    // 2. If it's software(libvpx) decoder, currently libvpx can decode vp9 kSVC
+    // stream properly. So only when |decoder_info_.is_hardware_accelerated| is
+    // true, we will do the decoder capability check.
+    if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
+        input_image.SpatialIndex().value_or(0) > 0 &&
+        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers() &&
+        decoder_configured_ && decoder_info_.is_hardware_accelerated) {
+      bool need_fallback_to_software = true;
+#if defined(OS_WIN)
+      if (video_decoder_type_ == media::VideoDecoderType::kD3D11 &&
+          base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
+        need_fallback_to_software = false;
+      }
+#endif
+      if (need_fallback_to_software) {
+        DLOG(ERROR) << __func__
+                    << " fallback to software due to decoder doesn't support "
+                       "decoding VP9 multiple spatial layers.";
+        RecordRTCVideoDecoderFallbackReason(
+            config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
+        return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+      }
+    }
   }
 
   if (missing_frames) {
@@ -885,13 +909,16 @@ void RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread() {
 void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
     media::VideoDecoder* decoder) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  if (!decoder)
-    return;
-
   base::AutoLock auto_lock(lock_);
 
+  if (!decoder) {
+    decoder_configured_ = false;
+    return;
+  }
+
+  decoder_configured_ = true;
   decoder_info_.is_hardware_accelerated = decoder->IsPlatformDecoder();
+  video_decoder_type_ = decoder->GetDecoderType();
 
   // In order not to break RTC statistics collection, name these in a way that
   // third_party/webrtc/video/receive_statistics_proxy2.cc understands.
@@ -900,7 +927,7 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
     return;
   }
 
-  switch (decoder->GetDecoderType()) {
+  switch (video_decoder_type_) {
     case media::VideoDecoderType::kVpx:
       decoder_info_.implementation_name = "libvpx (DecoderStream)";
       break;

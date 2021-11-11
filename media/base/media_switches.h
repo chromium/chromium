@@ -248,6 +248,7 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationVP8Decoding;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
+MEDIA_EXPORT extern const base::Feature kD3D11Vp9kSVCHWDecoding;
 #endif  // defined(OS_WIN)
 
 #if defined(OS_CHROMEOS)

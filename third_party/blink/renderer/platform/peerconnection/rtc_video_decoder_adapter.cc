@@ -289,9 +289,23 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
   if (video_codec_type_ == webrtc::kVideoCodecVP9 &&
       input_image.SpatialIndex().value_or(0) > 0 &&
       !Vp9HwSupportForSpatialLayers()) {
-    RecordRTCVideoDecoderFallbackReason(
-        config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    // D3D11 supports decoding the VP9 kSVC stream, but DXVA not. Currently just
+    // a reasonably temporary measure. Once the DXVA supports decoding VP9 kSVC
+    // stream, the boolen |need_fallback_to_software| should be removed, and if
+    // the OS is windows but not win7, we will return true in
+    // 'Vp9HwSupportForSpatialLayers' instead of false.
+    bool need_fallback_to_software = true;
+#if defined(OS_WIN)
+    if (video_decoder_->GetDecoderType() == media::VideoDecoderType::kD3D11 &&
+        base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
+      need_fallback_to_software = false;
+    }
+#endif
+    if (need_fallback_to_software) {
+      RecordRTCVideoDecoderFallbackReason(
+          config_.codec(), RTCVideoDecoderFallbackReason::kSpatialLayers);
+      return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+    }
   }
 
   if (missing_frames) {

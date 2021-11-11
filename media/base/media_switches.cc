@@ -794,6 +794,10 @@ const base::Feature kMediaFoundationClearPlayback{
 const base::Feature MEDIA_EXPORT kWasapiRawAudioCapture{
     "WASAPIRawAudioCapture", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
+const base::Feature kD3D11Vp9kSVCHWDecoding{"D3D11Vp9kSVCHWDecoding",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // defined(OS_WIN)
 
 #if defined(OS_CHROMEOS)

@@ -227,6 +227,11 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool logged_init_status_ GUARDED_BY(lock_) = false;
   // Current decoder info, as reported by GetDecoderInfo().
   webrtc::VideoDecoder::DecoderInfo decoder_info_ GUARDED_BY(lock_);
+  // Current decoder type.
+  media::VideoDecoderType video_decoder_type_ GUARDED_BY(lock_) =
+      media::VideoDecoderType::kUnknown;
+  // If it's true, it indicates the decoder has been initialized successfully.
+  bool decoder_configured_ GUARDED_BY(lock_) = false;
   // Current decode callback, if any.
   webrtc::DecodedImageCallback* decode_complete_callback_ GUARDED_BY(lock_) =
       nullptr;
