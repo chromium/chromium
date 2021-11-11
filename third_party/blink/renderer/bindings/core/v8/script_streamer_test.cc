@@ -543,7 +543,7 @@ TEST_F(ScriptStreamingTest, GarbageCollectDuringStreaming) {
 
   resource_ = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 }
 
 TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {

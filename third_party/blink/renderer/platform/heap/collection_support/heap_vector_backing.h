@@ -89,7 +89,8 @@ void HeapVectorBacking<T, Traits>::Finalize() {
       cppgc::subtle::ObjectSizeTrait<HeapVectorBacking<T, Traits>>::GetSize(
           *this);
   const size_t length = object_size / sizeof(T);
-  Address payload = reinterpret_cast<Address>(this);
+  using ByteBuffer = uint8_t*;
+  ByteBuffer payload = reinterpret_cast<ByteBuffer>(this);
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
   ANNOTATE_CHANGE_SIZE(payload, length * sizeof(T), 0, length * sizeof(T));
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
@@ -97,7 +98,7 @@ void HeapVectorBacking<T, Traits>::Finalize() {
   // no-ops.
   if (std::is_polymorphic<T>::value) {
     for (size_t i = 0; i < length; ++i) {
-      Address element = payload + i * sizeof(T);
+      ByteBuffer element = payload + i * sizeof(T);
       if (internal::VTableInitialized(element))
         reinterpret_cast<T*>(element)->~T();
     }

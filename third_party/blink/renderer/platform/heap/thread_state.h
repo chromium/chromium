@@ -7,12 +7,13 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/heap/blink_gc.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/thread_local.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8-profiler.h"
+#include "v8/include/cppgc/common.h"
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-callbacks.h"
@@ -73,6 +74,8 @@ class PLATFORM_EXPORT ThreadState final {
   class NoAllocationScope;
   class GCForbiddenScope;
 
+  using StackState = cppgc::EmbedderStackState;
+
   BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Current,
                                          ThreadState*,
                                          g_thread_specific_)
@@ -98,7 +101,7 @@ class PLATFORM_EXPORT ThreadState final {
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
   ALWAYS_INLINE v8::Isolate* GetIsolate() const { return isolate_; }
 
-  void SafePoint(BlinkGC::StackState);
+  void SafePoint(StackState);
 
   bool IsMainThread() const { return this == MainThreadState(); }
   bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
@@ -128,8 +131,7 @@ class PLATFORM_EXPORT ThreadState final {
   //
   // Collects garbage as long as live memory decreases (capped at 5).
   void CollectAllGarbageForTesting(
-      BlinkGC::StackState stack_state =
-          BlinkGC::StackState::kNoHeapPointersOnStack);
+      StackState stack_state = StackState::kNoHeapPointers);
 
   void EnableDetachedGarbageCollectionsForTesting();
 

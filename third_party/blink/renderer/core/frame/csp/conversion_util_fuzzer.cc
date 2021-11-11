@@ -71,7 +71,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Specify namespace explicitly. Otherwise it conflicts on Mac OS X with:
   // CoreServices.framework/Frameworks/CarbonCore.framework/Headers/Threads.h.
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 
   return 0;
 }

@@ -287,7 +287,7 @@ void CanvasRenderingContext2DTest::SetUp() {
 
 void CanvasRenderingContext2DTest::TearDown() {
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 
   ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
 

@@ -123,7 +123,7 @@ class ImageResourceTest : public testing::Test,
     // Trigger a GC so MockFinishObserver gets destroyed and EXPECT_CALL gets
     // checked before the test ends.
     ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
+        ThreadState::StackState::kNoHeapPointers);
   }
 };
 

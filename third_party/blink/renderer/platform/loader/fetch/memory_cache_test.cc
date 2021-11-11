@@ -315,7 +315,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   WeakPersistent<Resource> resource2_weak = resource2;
 
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   // Resources are garbage-collected (WeakMemoryCache) and thus removed
   // from MemoryCache.
   EXPECT_FALSE(resource1_weak);

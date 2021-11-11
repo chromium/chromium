@@ -615,7 +615,7 @@ TEST_F(TimerTest, DestructOnHeapTimer) {
 
   owner = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   EXPECT_TRUE(record->OwnerIsDestructed());
 
   EXPECT_FALSE(record->TimerHasFired());

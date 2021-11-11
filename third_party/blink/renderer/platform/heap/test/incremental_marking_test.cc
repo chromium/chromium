@@ -1114,7 +1114,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             holder->set_value(thiz);
             // Finish call incremental steps.
             driver->TriggerMarkingSteps(
-                BlinkGC::StackState::kHeapPointersOnStack);
+                ThreadState::StackState::kMayContainHeapPointers);
           },
           &driver, holder.Get()),
       MakeGarbageCollected<LinkedObject>());
@@ -1142,7 +1142,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             holder->set_value(thiz);
             // Finish call incremental steps.
             driver->TriggerMarkingSteps(
-                BlinkGC::StackState::kHeapPointersOnStack);
+                ThreadState::StackState::kMayContainHeapPointers);
           },
           &driver, holder.Get()),
       MakeGarbageCollected<LinkedObject>());

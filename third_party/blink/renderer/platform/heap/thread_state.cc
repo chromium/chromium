@@ -165,9 +165,9 @@ ThreadState::~ThreadState() {
   cpp_heap_->Terminate();
 }
 
-void ThreadState::SafePoint(BlinkGC::StackState stack_state) {
+void ThreadState::SafePoint(StackState stack_state) {
   DCHECK(IsCreationThread());
-  if (stack_state != BlinkGC::kNoHeapPointersOnStack)
+  if (stack_state != ThreadState::StackState::kNoHeapPointers)
     return;
 
   if (forced_scheduled_gc_for_testing_) {
@@ -192,14 +192,11 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
   }
 }
 
-void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
+void ThreadState::CollectAllGarbageForTesting(StackState stack_state) {
   size_t previous_live_bytes = 0;
   for (size_t i = 0; i < 5; i++) {
     // Either triggers unified heap or stand-alone garbage collections.
-    cpp_heap().CollectGarbageForTesting(
-        stack_state == BlinkGC::kHeapPointersOnStack
-            ? cppgc::EmbedderStackState::kMayContainHeapPointers
-            : cppgc::EmbedderStackState::kNoHeapPointers);
+    cpp_heap().CollectGarbageForTesting(stack_state);
     const size_t live_bytes =
         cpp_heap()
             .CollectStatistics(cppgc::HeapStatistics::kBrief)

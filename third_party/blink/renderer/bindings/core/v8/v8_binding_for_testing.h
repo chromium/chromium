@@ -81,11 +81,7 @@ class BindingTestSupportingGC : public testing::Test {
   void RunV8FullGC(
       v8::EmbedderHeapTracer::EmbedderStackState stack_state =
           v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers) {
-    ThreadState::Current()->CollectAllGarbageForTesting(
-        stack_state ==
-                v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers
-            ? BlinkGC::kNoHeapPointersOnStack
-            : BlinkGC::kHeapPointersOnStack);
+    ThreadState::Current()->CollectAllGarbageForTesting(stack_state);
   }
 
  private:

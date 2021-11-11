@@ -49,9 +49,9 @@ class GCTaskObserver final : public Thread::TaskObserver {
   void DidProcessTask(const base::PendingTask&) final {
     CHECK(nesting_);
     nesting_--;
-    ThreadState::Current()->SafePoint(nesting_
-                                          ? BlinkGC::kHeapPointersOnStack
-                                          : BlinkGC::kNoHeapPointersOnStack);
+    ThreadState::Current()->SafePoint(
+        nesting_ ? ThreadState::StackState::kMayContainHeapPointers
+                 : ThreadState::StackState::kNoHeapPointers);
   }
 
  private:

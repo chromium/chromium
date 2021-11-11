@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/heap-consistency.h"
+#include "v8/include/cppgc/trace-trait.h"
+#include "v8/include/cppgc/visitor.h"
 
 namespace blink {
 
@@ -24,6 +26,8 @@ class PLATFORM_EXPORT HeapAllocator {
  public:
   using HeapConsistency = cppgc::subtle::HeapConsistency;
   using LivenessBroker = blink::LivenessBroker;
+  using TraceCallback = cppgc::TraceCallback;
+  using WeakCallback = cppgc::WeakCallback;
 
   static constexpr bool kIsGarbageCollected = true;
 

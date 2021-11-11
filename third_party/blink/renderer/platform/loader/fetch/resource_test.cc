@@ -463,7 +463,7 @@ TEST(ResourceTest, GarbageCollection) {
   WeakPersistent<MockResourceClient> weak_client = client.Get();
   client = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 
   EXPECT_FALSE(resource->IsAlive());
   EXPECT_FALSE(weak_client);
@@ -480,7 +480,7 @@ TEST(ResourceTest, GarbageCollection) {
   WeakPersistent<MockResource> weak_resource = resource.Get();
   resource = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 
   EXPECT_FALSE(weak_client);
   EXPECT_FALSE(weak_resource);

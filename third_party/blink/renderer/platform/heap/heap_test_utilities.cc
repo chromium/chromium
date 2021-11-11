@@ -21,15 +21,6 @@ bool IsGCInProgress() {
              ThreadState::Current()->heap_handle());
 }
 
-cppgc::EmbedderStackState ConvertStackState(BlinkGC::StackState stack_state) {
-  switch (stack_state) {
-    case BlinkGC::StackState::kNoHeapPointersOnStack:
-      return cppgc::EmbedderStackState::kNoHeapPointers;
-    case BlinkGC::StackState::kHeapPointersOnStack:
-      return cppgc::EmbedderStackState::kMayContainHeapPointers;
-  }
-}
-
 }  // namespace
 
 TestSupportingGC::~TestSupportingGC() {
@@ -39,13 +30,13 @@ TestSupportingGC::~TestSupportingGC() {
 // static
 void TestSupportingGC::PreciselyCollectGarbage() {
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 }
 
 // static
 void TestSupportingGC::ConservativelyCollectGarbage() {
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kHeapPointersOnStack);
+      ThreadState::StackState::kMayContainHeapPointers);
 }
 
 // static
@@ -85,9 +76,9 @@ void IncrementalMarkingTestDriver::StartGC() {
 }
 
 void IncrementalMarkingTestDriver::TriggerMarkingSteps(
-    BlinkGC::StackState stack_state) {
+    ThreadState::StackState stack_state) {
   CHECK(ThreadState::Current()->IsIncrementalMarking());
-  while (!heap_.PerformMarkingStep(ConvertStackState(stack_state))) {
+  while (!heap_.PerformMarkingStep(stack_state)) {
   }
 }
 
@@ -107,9 +98,9 @@ void ConcurrentMarkingTestDriver::StartGC() {
 }
 
 void ConcurrentMarkingTestDriver::TriggerMarkingSteps(
-    BlinkGC::StackState stack_state) {
+    ThreadState::StackState stack_state) {
   CHECK(ThreadState::Current()->IsIncrementalMarking());
-  heap_.PerformMarkingStep(ConvertStackState(stack_state));
+  heap_.PerformMarkingStep(stack_state);
 }
 
 void ConcurrentMarkingTestDriver::FinishGC() {
