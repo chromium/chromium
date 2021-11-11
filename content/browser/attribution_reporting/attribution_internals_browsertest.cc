@@ -56,7 +56,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
-  void OverrideWebUIAttributionManager(AttributionManager* manager) {
+  void OverrideWebUIAttributionManager() {
     content::WebUI* web_ui = shell()->web_contents()->GetWebUI();
 
     // Performs a safe downcast to the concrete AttributionInternalsUI subclass.
@@ -65,7 +65,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
                : nullptr;
     EXPECT_TRUE(attribution_internals_ui);
     attribution_internals_ui->SetAttributionManagerProviderForTesting(
-        std::make_unique<TestManagerProvider>(manager));
+        std::make_unique<TestManagerProvider>(&manager_));
   }
 
   // Registers a mutation observer that sets the window title to |title| when
@@ -86,6 +86,11 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
 
  protected:
   AttributionDisallowingContentBrowserClient disallowed_browser_client_;
+
+  // The manager must outlive the `AttributionInternalsHandler` so that the
+  // latter can remove itself as an observer of the former on the latter's
+  // destruction.
+  TestAttributionManager manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
@@ -104,8 +109,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_MeasurementConsideredEnabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to TestAttributionManager is not sufficient because the
@@ -131,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SetBrowserClientForTesting(&disallowed_browser_client_);
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to TestAttributionManager is not sufficient because the
@@ -158,8 +161,7 @@ IN_PROC_BROWSER_TEST_F(
     WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
@@ -186,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // are properly handled as `bigint` values in JS and don't run into issues
   // with `Number.MAX_SAFE_INTEGER`.
 
-  TestAttributionManager manager;
-  manager.SetActiveSourcesForWebUI(
+  manager_.SetActiveSourcesForWebUI(
       {SourceBuilder(base::Time::Now())
            .SetSourceEventId(std::numeric_limits<uint64_t>::max())
            .SetAttributionLogic(StorableSource::AttributionLogic::kNever)
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
            .SetPriority(std::numeric_limits<int64_t>::max())
            .SetDedupKeys({13, 17})
            .Build()});
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
@@ -228,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
@@ -241,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to TestAttributionManager is not sufficient because the
@@ -269,8 +268,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
-  OverrideWebUIAttributionManager(&manager);
+  OverrideWebUIAttributionManager();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to TestAttributionManager is not sufficient because the
@@ -296,8 +294,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  TestAttributionManager manager;
-  manager.GetSessionStorage().AddSentReport(SentReportInfo(
+  OverrideWebUIAttributionManager();
+
+  manager_.NotifyReportSent(SentReportInfo(
       AttributionReport(SourceBuilder(now).SetSourceEventId(100).Build(),
                         /*trigger_data=*/5,
                         /*conversion_time=*/now,
@@ -305,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         /*priority=*/0, AttributionReport::Id(2)),
       SentReportInfo::Status::kSent,
       /*http_response_code=*/200));
-  manager.SetReportsForWebUI({AttributionReport(
+  manager_.SetReportsForWebUI({AttributionReport(
       SourceBuilder(now)
           .SetSourceEventId(200)
           .SetSourceType(StorableSource::SourceType::kEvent)
@@ -313,24 +312,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .Build(),
       /*trigger_data=*/7, /*conversion_time=*/now,
       /*report_time=*/now, /*priority=*/13, AttributionReport::Id(1))});
-  manager.GetSessionStorage().AddDroppedReport(
-      AttributionStorage::CreateReportResult(
-          CreateReportStatus::kPriorityTooLow,
-          AttributionReport(SourceBuilder(now).Build(),
-                            /*trigger_data=*/8,
-                            /*conversion_time=*/now,
-                            /*report_time=*/now + base::Hours(1),
-                            /*priority=*/11, AttributionReport::Id(3))));
-  manager.GetSessionStorage().AddDroppedReport(
-      AttributionStorage::CreateReportResult(
-          CreateReportStatus::kDroppedForNoise,
-          AttributionReport(SourceBuilder(now).Build(),
-                            /*trigger_data=*/9,
-                            /*conversion_time=*/now,
-                            /*report_time=*/now + base::Hours(2),
-                            /*priority=*/12,
-                            /*conversion_id=*/absl::nullopt)));
-  OverrideWebUIAttributionManager(&manager);
+  manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
+      CreateReportStatus::kPriorityTooLow,
+      AttributionReport(SourceBuilder(now).Build(),
+                        /*trigger_data=*/8,
+                        /*conversion_time=*/now,
+                        /*report_time=*/now + base::Hours(1),
+                        /*priority=*/11, AttributionReport::Id(3))));
+  manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
+      CreateReportStatus::kDroppedForNoise,
+      AttributionReport(SourceBuilder(now).Build(),
+                        /*trigger_data=*/9,
+                        /*conversion_time=*/now,
+                        /*report_time=*/now + base::Hours(2),
+                        /*priority=*/12,
+                        /*conversion_id=*/absl::nullopt)));
 
   {
     static constexpr char wait_script[] = R"(
@@ -431,17 +427,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  TestAttributionManager manager;
+  OverrideWebUIAttributionManager();
+
   AttributionReport report(SourceBuilder(now).SetSourceEventId(100).Build(),
                            /*trigger_data=*/0, /*conversion_time=*/now,
                            /*report_time=*/now, /*priority=*/7,
                            AttributionReport::Id(1));
-  manager.SetReportsForWebUI({report});
+  manager_.SetReportsForWebUI({report});
   report.report_time += base::Hours(1);
-  manager.GetSessionStorage().AddSentReport(
-      SentReportInfo(report, SentReportInfo::Status::kSent,
-                     /*http_response_code=*/200));
-  OverrideWebUIAttributionManager(&manager);
+  manager_.NotifyReportSent(SentReportInfo(report,
+                                           SentReportInfo::Status::kSent,
+                                           /*http_response_code=*/200));
 
   // Verify both rows get rendered.
   static constexpr char wait_script[] = R"(
@@ -477,14 +473,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  TestAttributionManager manager;
   AttributionReport report(
       SourceBuilder(base::Time::Now()).SetSourceEventId(100).Build(),
       /*trigger_data=*/0, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/7,
       AttributionReport::Id(1));
-  manager.SetReportsForWebUI({report});
-  OverrideWebUIAttributionManager(&manager);
+  manager_.SetReportsForWebUI({report});
+  OverrideWebUIAttributionManager();
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#report-table-wrapper tbody");

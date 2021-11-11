@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -101,17 +101,21 @@ class CodeColumn extends Column {
 
 /**
  * @template T
+ * @abstract
  */
 class TableModel {
   constructor() {
+    /** @type {?Table<T>} */
+    this.table;
+
     /** @type {!Array<Column<T, ?>>} */
     this.cols;
 
     /** @type {string} */
     this.emptyRowText;
 
-    /** @type {!Array<!T>} */
-    this.rows;
+    /** @type {number} */
+    this.sortIdx = -1;
   }
 
   /**
@@ -121,13 +125,10 @@ class TableModel {
   styleRow(tr, data) {}
 
   /**
-   * @param {number} idx
-   * @param {boolean} descending
+   * @abstract
+   * @return {!Array<!T>}
    */
-  sort(idx, descending) {
-    const multiplier = descending ? -1 : 1;
-    this.rows.sort((a, b) => this.cols[idx].compare(a, b) * multiplier);
-  }
+  getRows() {}
 }
 
 /**
@@ -145,9 +146,6 @@ class Table {
     /** @private {!TableModel<T>} */
     this.model;
 
-    /** @private {number} */
-    this.sortIdx;
-
     /** @private {boolean} */
     this.sortDesc;
 
@@ -164,8 +162,9 @@ class Table {
     self.__proto__ = Table.prototype;
     self = /** @type {!Table} */ (self);
 
+    model.table = self;
+
     self.model = model;
-    self.sortIdx = -1;
     self.sortDesc = false;
 
     const tr = self.ownerDocument.createElement('tr');
@@ -240,39 +239,48 @@ class Table {
   changeSortHeader(idx) {
     const ths = this.querySelectorAll('thead th');
 
-    if (idx === this.sortIdx) {
+    if (idx === this.model.sortIdx) {
       this.sortDesc = !this.sortDesc;
     } else {
       this.sortDesc = false;
-      if (this.sortIdx >= 0) {
-        Table.setSortAttrs(ths[this.sortIdx], /*descending=*/ null);
+      if (this.model.sortIdx >= 0) {
+        Table.setSortAttrs(ths[this.model.sortIdx], /*descending=*/ null);
       }
     }
 
-    this.sortIdx = idx;
-    Table.setSortAttrs(ths[this.sortIdx], this.sortDesc);
-    this.sort();
+    this.model.sortIdx = idx;
+    Table.setSortAttrs(ths[this.model.sortIdx], this.sortDesc);
     this.updateTbody();
   }
 
-  /** @private */
-  sort() {
-    if (this.sortIdx < 0) {
+  /**
+   * @param {!Array<T>} rows
+   * @private
+   */
+  sort(rows) {
+    if (this.model.sortIdx < 0) {
       return;
     }
-    this.model.sort(this.sortIdx, this.sortDesc);
+
+    const multiplier = this.sortDesc ? -1 : 1;
+    rows.sort(
+        (a, b) =>
+            this.model.cols[this.model.sortIdx].compare(a, b) * multiplier);
   }
 
-  /** @private */
   updateTbody() {
     this.tbody.innerText = '';
 
-    if (this.model.rows.length === 0) {
+    const rows = this.model.getRows();
+
+    if (rows.length === 0) {
       this.setSpanningText(this.model.emptyRowText);
       return;
     }
 
-    this.model.rows.forEach((row) => {
+    this.sort(rows);
+
+    rows.forEach((row) => {
       const tr = this.ownerDocument.createElement('tr');
       this.model.cols.forEach((col) => {
         const td = this.ownerDocument.createElement('td');
@@ -282,15 +290,6 @@ class Table {
       this.model.styleRow(tr, row);
       this.tbody.appendChild(tr);
     });
-  }
-
-  /**
-   * @param {!Array<!T>} rows
-   */
-  setRows(rows) {
-    this.model.rows = rows;
-    this.sort();
-    this.updateTbody();
   }
 }
 
@@ -333,6 +332,20 @@ class SourceTableModel extends TableModel {
     ];
 
     this.emptyRowText = 'No active sources.';
+
+    /** @type {!Array<!Source>} */
+    this.rows = [];
+  }
+
+  /** @override */
+  getRows() {
+    return this.rows;
+  }
+
+  /** @param {!Array<!Source>} rows */
+  setRows(rows) {
+    this.rows = rows;
+    this.table.updateTbody();
   }
 }
 
@@ -384,6 +397,15 @@ class ReportTableModel extends TableModel {
     ];
 
     this.emptyRowText = 'No sent or pending reports.';
+
+    // Sort by report time by default.
+    this.sortIdx = 4;
+
+    /** @type {!Array<!Report>} */
+    this.sentOrDroppedReports = [];
+
+    /** @type {!Array<!Report>} */
+    this.storedReports = [];
   }
 
   /** @override */
@@ -392,6 +414,35 @@ class ReportTableModel extends TableModel {
         'http-error',
         report.httpResponseCode < 200 || report.httpResponseCode >= 400);
   }
+
+  /** @override */
+  getRows() {
+    return this.sentOrDroppedReports.concat(this.storedReports);
+  }
+
+  /** @param {!Array<!Report>} storedReports */
+  setStoredReports(storedReports) {
+    this.storedReports = storedReports;
+    this.table.updateTbody();
+  }
+
+  /** @param {!Report} report */
+  addSentOrDroppedReport(report) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.sentOrDroppedReports.length >= 1000) {
+      this.sentOrDroppedReports = [];
+    }
+
+    this.sentOrDroppedReports.push(report);
+    updatePageData();
+  }
+
+  clear() {
+    this.storedReports = [];
+    this.sentOrDroppedReports = [];
+    this.table.updateTbody();
+  }
 }
 
 /**
@@ -399,6 +450,13 @@ class ReportTableModel extends TableModel {
  * @type {?AttributionInternalsHandlerRemote}
  */
 let pageHandler = null;
+
+
+/** @type {?SourceTableModel} */
+let sourceTableModel = null;
+
+/** @type {?ReportTableModel} */
+let reportTableModel = null;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -456,13 +514,12 @@ function updatePageData() {
   });
 
   pageHandler.getActiveSources().then((response) => {
-    $('source-table-wrapper')
-        .setRows(response.sources.map((mojo) => new Source(mojo)));
+    sourceTableModel.setRows(response.sources.map((mojo) => new Source(mojo)));
   });
 
   pageHandler.getReports().then((response) => {
-    $('report-table-wrapper')
-        .setRows(response.reports.map((mojo) => new Report(mojo)));
+    reportTableModel.setStoredReports(
+        response.reports.map((mojo) => new Report(mojo)));
   });
 }
 
@@ -471,6 +528,7 @@ function updatePageData() {
  * page data once this operation has finished.
  */
 function clearStorage() {
+  reportTableModel.clear();
   pageHandler.clearStorage().then(() => {
     updatePageData();
   });
@@ -493,18 +551,35 @@ function sendReports() {
   });
 }
 
+/** @implements {AttributionInternalsObserverInterface} */
+class Observer {
+  /** @override */
+  onReportSent(mojo) {
+    reportTableModel.addSentOrDroppedReport(new Report(mojo));
+  }
+
+  /** @override */
+  onReportDropped(mojo) {
+    reportTableModel.addSentOrDroppedReport(new Report(mojo));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Setup the mojo interface.
   pageHandler = AttributionInternalsHandler.getRemote();
+
+  sourceTableModel = new SourceTableModel();
+  reportTableModel = new ReportTableModel();
 
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);
   $('send-reports').addEventListener('click', sendReports);
 
-  Table.decorate(
-      getRequiredElement('source-table-wrapper'), new SourceTableModel());
-  Table.decorate(
-      getRequiredElement('report-table-wrapper'), new ReportTableModel());
+  Table.decorate(getRequiredElement('source-table-wrapper'), sourceTableModel);
+  Table.decorate(getRequiredElement('report-table-wrapper'), reportTableModel);
+
+  const receiver = new AttributionInternalsObserverReceiver(new Observer());
+  pageHandler.addObserver(receiver.$.bindNewPipeAndPassRemote());
 
   // Automatically refresh every 2 minutes.
   setInterval(updatePageData, 2 * 60 * 1000);

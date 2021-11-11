@@ -144,6 +144,14 @@ TestAttributionManager::TestAttributionManager() = default;
 
 TestAttributionManager::~TestAttributionManager() = default;
 
+void TestAttributionManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TestAttributionManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void TestAttributionManager::HandleSource(StorableSource source) {
   num_sources_++;
   last_impression_source_type_ = source.source_type();
@@ -168,18 +176,9 @@ void TestAttributionManager::GetPendingReportsForWebUI(
   std::move(callback).Run(reports_);
 }
 
-const AttributionSessionStorage& TestAttributionManager::GetSessionStorage()
-    const {
-  return session_storage_;
-}
-
 void TestAttributionManager::SendReportsForWebUI(base::OnceClosure done) {
   reports_.clear();
   std::move(done).Run();
-}
-
-AttributionSessionStorage& TestAttributionManager::GetSessionStorage() {
-  return session_storage_;
 }
 
 const AttributionPolicy& TestAttributionManager::GetAttributionPolicy() const {
@@ -193,7 +192,6 @@ void TestAttributionManager::ClearData(
     base::OnceClosure done) {
   sources_.clear();
   reports_.clear();
-  session_storage_.Reset();
   std::move(done).Run();
 }
 
@@ -205,6 +203,17 @@ void TestAttributionManager::SetActiveSourcesForWebUI(
 void TestAttributionManager::SetReportsForWebUI(
     std::vector<AttributionReport> reports) {
   reports_ = std::move(reports);
+}
+
+void TestAttributionManager::NotifyReportSent(const SentReportInfo& info) {
+  for (Observer& observer : observers_)
+    observer.OnReportSent(info);
+}
+
+void TestAttributionManager::NotifyReportDropped(
+    const AttributionStorage::CreateReportResult& result) {
+  for (Observer& observer : observers_)
+    observer.OnReportDropped(result);
 }
 
 void TestAttributionManager::Reset() {

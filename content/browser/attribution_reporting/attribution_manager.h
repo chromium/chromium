@@ -9,8 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/containers/circular_deque.h"
+#include "base/observer_list_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/common/content_export.h"
 
@@ -25,7 +26,6 @@ class Origin;
 namespace content {
 
 class AttributionPolicy;
-class AttributionSessionStorage;
 class StorableTrigger;
 class StorableSource;
 class WebContents;
@@ -47,7 +47,22 @@ class CONTENT_EXPORT AttributionManager {
     // browser context is off the record.
     virtual AttributionManager* GetManager(WebContents* web_contents) const = 0;
   };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnReportSent(const SentReportInfo& info) {}
+
+    virtual void OnReportDropped(
+        const AttributionStorage::CreateReportResult& result) {}
+  };
+
   virtual ~AttributionManager() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Persists the given |source| to storage. Called when a navigation
   // originating from a source tag finishes.
@@ -66,9 +81,6 @@ class CONTENT_EXPORT AttributionManager {
   // for populating WebUI.
   virtual void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
-
-  virtual const AttributionSessionStorage& GetSessionStorage() const
-      WARN_UNUSED_RESULT = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.

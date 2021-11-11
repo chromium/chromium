@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_session_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
@@ -168,6 +168,8 @@ class TestAttributionManager : public AttributionManager {
   ~TestAttributionManager() override;
 
   // AttributionManager:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void HandleSource(StorableSource source) override;
   void HandleTrigger(StorableTrigger trigger) override;
   void GetActiveSourcesForWebUI(
@@ -175,7 +177,6 @@ class TestAttributionManager : public AttributionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
-  const AttributionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;
   void ClearData(base::Time delete_begin,
@@ -185,7 +186,10 @@ class TestAttributionManager : public AttributionManager {
 
   void SetActiveSourcesForWebUI(std::vector<StorableSource> sources);
   void SetReportsForWebUI(std::vector<AttributionReport> reports);
-  AttributionSessionStorage& GetSessionStorage();
+
+  void NotifyReportSent(const SentReportInfo& info);
+  void NotifyReportDropped(
+      const AttributionStorage::CreateReportResult& result);
 
   // Resets all counters on this.
   void Reset();
@@ -214,7 +218,6 @@ class TestAttributionManager : public AttributionManager {
 
  private:
   AttributionPolicy policy_;
-  AttributionSessionStorage session_storage_{INT_MAX};
   net::SchemefulSite last_conversion_destination_;
   absl::optional<StorableSource::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
@@ -225,6 +228,8 @@ class TestAttributionManager : public AttributionManager {
 
   std::vector<StorableSource> sources_;
   std::vector<AttributionReport> reports_;
+
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 
 // Helper class to construct a StorableSource for tests using default data.

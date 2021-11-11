@@ -42,8 +42,6 @@ enum class ConversionReportSendOutcome {
   kMaxValue = kDropped
 };
 
-const size_t kMaxSentReportsToStore = 100;
-
 // The shared-task runner for all attribution storage operations. Note that
 // different AttributionManagerImpl perform operations on the same task
 // runner. This prevents any potential races when a given context is destroyed
@@ -125,11 +123,10 @@ AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    size_t max_sent_reports_to_store) {
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   return base::WrapUnique<AttributionManagerImpl>(new AttributionManagerImpl(
       std::move(reporter), std::move(policy), clock, user_data_directory,
-      std::move(special_storage_policy), max_sent_reports_to_store));
+      std::move(special_storage_policy)));
 }
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -149,16 +146,14 @@ AttributionManagerImpl::AttributionManagerImpl(
                   switches::kConversionsDebugMode)),
           base::DefaultClock::GetInstance(),
           user_data_directory,
-          std::move(special_storage_policy),
-          kMaxSentReportsToStore) {}
+          std::move(special_storage_policy)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionReporter> reporter,
     std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    size_t max_sent_reports_to_store)
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : debug_mode_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kConversionsDebugMode)),
       clock_(clock),
@@ -168,7 +163,6 @@ AttributionManagerImpl::AttributionManagerImpl(
           user_data_directory,
           std::make_unique<AttributionStorageDelegateImpl>(debug_mode_),
           clock_)),
-      session_storage_(max_sent_reports_to_store),
       attribution_policy_(std::move(policy)),
       special_storage_policy_(std::move(special_storage_policy)),
       weak_factory_(this) {
@@ -204,6 +198,14 @@ AttributionManagerImpl::~AttributionManagerImpl() {
                 std::move(session_only_origin_predicate));
 }
 
+void AttributionManagerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AttributionManagerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void AttributionManagerImpl::HandleSource(StorableSource source) {
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(std::move(source));
@@ -227,7 +229,8 @@ void AttributionManagerImpl::OnReportStored(
   if (!result.dropped_report().has_value())
     return;
 
-  session_storage_.AddDroppedReport(std::move(result));
+  for (Observer& observer : observers_)
+    observer.OnReportDropped(result);
 }
 
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
@@ -243,11 +246,6 @@ void AttributionManagerImpl::GetPendingReportsForWebUI(
   const int kMaxReports = 1000;
   GetAndHandleReports(std::move(callback),
                       /*max_report_time=*/base::Time::Max(), kMaxReports);
-}
-
-const AttributionSessionStorage& AttributionManagerImpl::GetSessionStorage()
-    const {
-  return session_storage_;
 }
 
 void AttributionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
@@ -266,7 +264,6 @@ void AttributionManagerImpl::ClearData(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
-  session_storage_.Reset();
   reporter_->RemoveAllReportsFromQueue();
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter))
@@ -464,7 +461,8 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
       info.status != SentReportInfo::Status::kFailure)
     return;
 
-  session_storage_.AddSentReport(std::move(info));
+  for (Observer& observer : observers_)
+    observer.OnReportSent(info);
 }
 
 }  // namespace content
