@@ -19,7 +19,7 @@
 namespace {
 // The space after the new tab toolbar button item. Calculated to have
 // approximately 33 pts between the plus button and the done button.
-const int kNewTabButtonTrailingSpace = 20;
+const int kIconButtonAdditionalSpace = 20;
 const int kSelectionModeButtonSize = 17;
 }
 
@@ -30,10 +30,11 @@ const int kSelectionModeButtonSize = 17;
   UIBarButtonItem* _leadingButton;
   UIBarButtonItem* _spaceItem;
   UIBarButtonItem* _newTabButton;
-  UIBarButtonItem* _fixedTrailingSpaceItem;
+  UIBarButtonItem* _iconButtonAdditionalSpaceItem;
   UIBarButtonItem* _selectionModeFixedSpace;
   UIBarButtonItem* _selectAllButton;
   UIBarButtonItem* _selectedTabsItem;
+  UIBarButtonItem* _searchButton;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
@@ -80,6 +81,11 @@ const int kSelectionModeButtonSize = 17;
 - (void)setSelectAllButtonTarget:(id)target action:(SEL)action {
   _selectAllButton.target = target;
   _selectAllButton.action = action;
+}
+
+- (void)setSearchButtonTarget:(id)target action:(SEL)action {
+  _searchButton.target = target;
+  _searchButton.action = action;
 }
 
 - (void)setDoneButtonTarget:(id)target action:(SEL)action {
@@ -201,6 +207,10 @@ const int kSelectionModeButtonSize = 17;
   _selectionModeFixedSpace.width = 0;
   if (traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal)
+      _leadingButton = _searchButton;
+    else
+      _leadingButton = _spaceItem;
     if (_mode == TabGridModeSelection) {
       // In the selection mode, Done button is much smaller than SelectAll
       // we need to calculate the difference on the width and use it as a
@@ -211,7 +221,10 @@ const int kSelectionModeButtonSize = 17;
         _selectionModeFixedSpace, trailingButton
       ]];
     } else {
-      [self setItems:@[ _spaceItem, centralItem, _spaceItem ]];
+      trailingButton = _spaceItem;
+      [self setItems:@[
+        _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
+      ]];
     }
     return;
   }
@@ -227,7 +240,7 @@ const int kSelectionModeButtonSize = 17;
     // cases, there is a floating new tab button on the bottom.
     [self setItems:@[
       _leadingButton, _spaceItem, centralItem, _spaceItem, _newTabButton,
-      _fixedTrailingSpaceItem, trailingButton
+      _iconButtonAdditionalSpaceItem, trailingButton
     ]];
     return;
   }
@@ -239,6 +252,14 @@ const int kSelectionModeButtonSize = 17;
     _selectionModeFixedSpace.width = [self selectionModeFixedSpaceWidth];
     centralItem = _selectedTabsItem;
     _leadingButton = _selectAllButton;
+  }
+
+  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
+    [self setItems:@[
+      _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
+      centralItem, _spaceItem, trailingButton
+    ]];
+    return;
   }
 
   [self setItems:@[
@@ -318,17 +339,25 @@ const int kSelectionModeButtonSize = 17;
                                      forState:UIControlStateDisabled];
   }
 
+  if (IsTabsSearchEnabled()) {
+    _searchButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                             target:nil
+                             action:nil];
+    _searchButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+  }
+
   _newTabButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                            target:nil
                            action:nil];
   _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
-  _fixedTrailingSpaceItem = [[UIBarButtonItem alloc]
+  _iconButtonAdditionalSpaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                            target:nil
                            action:nil];
-  _fixedTrailingSpaceItem.width = kNewTabButtonTrailingSpace;
+  _iconButtonAdditionalSpaceItem.width = kIconButtonAdditionalSpace;
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
