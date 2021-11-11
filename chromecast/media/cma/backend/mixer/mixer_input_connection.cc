@@ -381,13 +381,13 @@ MixerInputConnection::MixerInputConnection(
                     base::BindRepeating(&MixerInputConnection::ChangeAudioRate,
                                         base::Unretained(this)))
               : nullptr),
-      timestamped_fader_(std::make_unique<TimestampedFader>(
-          this,
-          params.has_fade_frames()
-              ? params.fade_frames()
-              : ::media::AudioTimestampHelper::TimeToFrames(
-                    kDefaultFadeTime,
-                    input_samples_per_second_))),
+      fade_frames_(params.has_fade_frames()
+                       ? params.fade_frames()
+                       : ::media::AudioTimestampHelper::TimeToFrames(
+                             kDefaultFadeTime,
+                             input_samples_per_second_)),
+      timestamped_fader_(
+          std::make_unique<TimestampedFader>(this, fade_frames_)),
       rate_shifter_(timestamped_fader_.get(),
                     channel_layout_,
                     num_channels_,
@@ -885,10 +885,26 @@ void MixerInputConnection::InitializeAudioPlayback(
   {
     base::AutoLock lock(lock_);
     mixer_read_size_ = read_size;
-    if (start_threshold_frames_ == 0) {
-      start_threshold_frames_ = read_size + fill_size_;
+    AUDIO_LOG(INFO) << this << " Mixer read size: " << read_size;
+    // How many fills is >= 1 read?
+    const int fills_per_read = (read_size + fill_size_ - 1) / fill_size_;
+    // How many reads is >= 1 fill?
+    const int reads_per_fill = (fill_size_ + read_size - 1) / read_size;
+    // We need enough data to satisfy all the reads until the next fill, and
+    // enough to fill enough data before the next read (in case the next read
+    // happens immediately after we hit the start threshold) (+ fader buffer).
+    min_start_threshold_ =
+        std::max(fills_per_read * fill_size_, reads_per_fill * read_size) +
+        fade_frames_;
+    if (start_threshold_frames_ < min_start_threshold_) {
+      start_threshold_frames_ = min_start_threshold_;
       AUDIO_LOG(INFO) << this << " Updated start threshold: "
                       << start_threshold_frames_;
+    }
+    if (max_queued_frames_ < start_threshold_frames_) {
+      AUDIO_LOG(INFO) << this << " Boost queue size to "
+                      << start_threshold_frames_ << " to allow stream to start";
+      max_queued_frames_ = start_threshold_frames_;
     }
     mixer_rendering_delay_ = initial_rendering_delay;
     if (state_ == State::kUninitialized) {
@@ -921,11 +937,6 @@ void MixerInputConnection::CheckAndStartPlaybackIfNecessary(
     return;
   }
 
-  if (max_queued_frames_ < start_threshold_frames_) {
-    AUDIO_LOG(INFO) << "Boost queue size to " << start_threshold_frames_
-                    << " to allow stream to start";
-    max_queued_frames_ = start_threshold_frames_;
-  }
   const bool have_enough_queued_frames =
       (state_ == State::kGotEos || queued_frames_ >= start_threshold_frames_);
   if (!have_enough_queued_frames) {
@@ -1129,9 +1140,7 @@ int MixerInputConnection::FillAudio(int num_frames,
     return 0;
   }
 
-  if (in_underrun_ &&
-      (queued_frames_ < std::min(start_threshold_frames_,
-                                 num_frames + mixer_read_size_ + fill_size_))) {
+  if (in_underrun_ && (queued_frames_ < min_start_threshold_)) {
     // Allow buffer to refill a bit to prevent continuous underrun.
     return 0;
   }
@@ -1156,7 +1165,8 @@ void MixerInputConnection::LogUnderrun(int num_frames, int filled) {
       io_task_runner_->PostTask(FROM_HERE, post_stream_underrun_task_);
     }
   } else if (in_underrun_) {
-    AUDIO_LOG(INFO) << "Stream underrun recovered for " << this;
+    AUDIO_LOG(INFO) << "Stream underrun recovered for " << this << " with "
+                    << queued_frames_ << " queued frames";
     in_underrun_ = false;
   }
 }

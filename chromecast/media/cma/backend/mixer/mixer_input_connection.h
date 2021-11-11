@@ -177,6 +177,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   int max_queued_frames_;
   // Minimum number of frames buffered before starting to fill data.
   int start_threshold_frames_;
+  int min_start_threshold_;
 
   scoped_refptr<IOBufferPool> buffer_pool_;
 
@@ -201,6 +202,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   std::unique_ptr<RateAdjuster> rate_adjuster_ GUARDED_BY(lock_);
   int64_t total_filled_frames_ GUARDED_BY(lock_) = 0;
   bool filled_some_since_resume_ GUARDED_BY(lock_) = false;
+  const int fade_frames_;
   std::unique_ptr<TimestampedFader> timestamped_fader_ GUARDED_BY(lock_);
   PlaybackRateShifter rate_shifter_ GUARDED_BY(lock_);
   AudioClockSimulator audio_clock_simulator_ GUARDED_BY(lock_);
