@@ -295,7 +295,6 @@ if (is_win || is_mac) {
         "win/wrl_module_initializer.h",
       ]
       deps += [
-        "//build:branding_buildflags",
         "//chrome/installer/util:with_no_strings",
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",

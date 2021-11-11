@@ -31,7 +31,6 @@
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
-#include "build/branding_buildflags.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -462,7 +461,6 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     Microsoft::WRL::ComPtr<IUpdater> updater;
     EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
     EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
         scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
@@ -474,7 +472,6 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     Microsoft::WRL::ComPtr<IDispatch> dispatch;
     EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 
   // IUpdaterInternal.

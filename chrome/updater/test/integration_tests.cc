@@ -21,7 +21,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
@@ -423,7 +422,7 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   Clean();
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OS_WIN)
 TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ScopedServer test_server(test_commands_);
   ExpectRegistrationEvent(&test_server, kUpdaterAppId);
@@ -448,7 +447,7 @@ TEST_F(IntegrationTest, LegacyProcessLauncher) {
   ExpectLegacyProcessLauncherSucceeds();
   Uninstall();
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // OS_WIN
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Install();
