@@ -48,9 +48,8 @@ CORE_EXPORT IntRect AbsoluteCaretBoundsOf(
     const PositionWithAffinity&,
     LayoutUnit* extra_width_to_end_of_line = nullptr,
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
-CORE_EXPORT IntRect AbsoluteCaretBoundsOf(
-    const PositionInFlatTreeWithAffinity&,
-    EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
+CORE_EXPORT IntRect
+AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity&);
 
 CORE_EXPORT IntRect AbsoluteSelectionBoundsOf(const VisiblePosition&);
 

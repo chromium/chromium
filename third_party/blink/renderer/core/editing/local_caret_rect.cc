@@ -226,10 +226,9 @@ IntRect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
   return AbsoluteSelectionBoundsOfAlgorithm<EditingStrategy>(visible_position);
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position,
-                              EditingBoundaryCrossingRule rule) {
+IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
-      position, nullptr, rule);
+      position, nullptr, kCanCrossEditingBoundary);
 }
 
 }  // namespace blink
