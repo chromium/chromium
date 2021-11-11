@@ -235,7 +235,7 @@ public class RootUiCoordinator
     private final BooleanSupplier mSupportsAppMenuSupplier;
     protected final BooleanSupplier mSupportsFindInPageSupplier;
     protected final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
-    private final FullscreenManager mFullscreenManager;
+    protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected final StatusBarColorController mStatusBarColorController;
     protected final OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;

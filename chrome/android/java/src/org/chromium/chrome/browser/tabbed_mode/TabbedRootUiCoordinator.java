@@ -397,7 +397,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onPostInflationStartup();
 
         mSystemUiCoordinator = new TabbedSystemUiCoordinator(mActivity.getWindow(),
-                mTabModelSelectorSupplier.get(), mOverviewModeBehaviorSupplier);
+                mTabModelSelectorSupplier.get(), mOverviewModeBehaviorSupplier, mFullscreenManager);
     }
 
     @Override
