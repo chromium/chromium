@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <set>
 
-#include "base/macros.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/strings/string_piece.h"
 

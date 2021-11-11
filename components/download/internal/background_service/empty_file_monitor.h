@@ -7,7 +7,6 @@
 
 #include "components/download/internal/background_service/file_monitor.h"
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace download {

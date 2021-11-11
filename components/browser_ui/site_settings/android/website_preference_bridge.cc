@@ -18,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"

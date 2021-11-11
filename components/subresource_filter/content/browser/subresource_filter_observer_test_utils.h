@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"

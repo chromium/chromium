@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 

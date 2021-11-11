@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"

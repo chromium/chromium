@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"

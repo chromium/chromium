@@ -6,7 +6,6 @@
 #include <unordered_map>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_libsecret.h"
 #include "components/os_crypt/libsecret_util_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"

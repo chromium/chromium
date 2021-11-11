@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"

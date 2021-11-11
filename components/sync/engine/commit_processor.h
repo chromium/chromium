@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit.h"
 #include "components/sync/engine/model_type_registry.h"

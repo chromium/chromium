@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBFRAME_NAVIGATION_FILTERING_THROTTLE_H_
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"

@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"

@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"

@@ -21,7 +21,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

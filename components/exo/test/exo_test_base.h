@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/exo/test/exo_test_helper.h"
 
 namespace viz {

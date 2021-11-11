@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
 
-#include "base/macros.h"
-
 namespace autofill_assistant {
 
 // Superclass for workers of |WebController| that execute complex operations.

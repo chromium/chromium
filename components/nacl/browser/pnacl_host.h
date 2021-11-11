@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

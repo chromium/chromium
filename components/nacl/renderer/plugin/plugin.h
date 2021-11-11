@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/nacl/renderer/plugin/nacl_subprocess.h"
 #include "components/nacl/renderer/plugin/pnacl_coordinator.h"
 #include "components/nacl/renderer/plugin/service_runtime.h"

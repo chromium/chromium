@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_OBSERVER_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_OBSERVER_H_
 
-#include "base/macros.h"
-
 namespace gfx {
 class Image;
 }

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_SCOPED_GROUP_BOOKMARK_ACTIONS_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_SCOPED_GROUP_BOOKMARK_ACTIONS_H_
 
-#include "base/macros.h"
-
 namespace bookmarks {
 
 class BookmarkModel;

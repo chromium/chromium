@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/data_use_tracker.h"

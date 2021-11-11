@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

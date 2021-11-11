@@ -8,7 +8,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_entropy_provider.h"
 #include "components/variations/processed_study.h"

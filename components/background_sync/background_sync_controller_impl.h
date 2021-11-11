@@ -11,7 +11,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_delegate.h"

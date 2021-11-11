@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"

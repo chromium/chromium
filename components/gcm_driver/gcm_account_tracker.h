@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/gcm_driver/account_tracker.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_connection_observer.h"

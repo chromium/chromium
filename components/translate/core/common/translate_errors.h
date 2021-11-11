@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_ERRORS_H_
 #define COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_ERRORS_H_
 
-#include "base/macros.h"
-
 namespace translate {
 
 // This file consolidates all the error types for translation of a page.

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "content/public/browser/javascript_dialog_manager.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_JOURNEY_LOGGER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/payments/core/journey_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

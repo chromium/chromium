@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 

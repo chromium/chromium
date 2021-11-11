@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"

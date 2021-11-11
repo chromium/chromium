@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/model/data_batch.h"
 
 namespace syncer {

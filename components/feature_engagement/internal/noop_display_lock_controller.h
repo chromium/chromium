@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 
 namespace feature_engagement {

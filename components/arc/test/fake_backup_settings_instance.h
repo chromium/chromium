@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/backup_settings.mojom.h"
 
 namespace arc {

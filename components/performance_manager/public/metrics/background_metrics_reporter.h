@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_BACKGROUND_METRICS_REPORTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_BACKGROUND_METRICS_REPORTER_H_
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

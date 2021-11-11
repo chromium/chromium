@@ -5,7 +5,6 @@
 #include "components/google/core/common/google_util.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "components/google/core/common/google_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"

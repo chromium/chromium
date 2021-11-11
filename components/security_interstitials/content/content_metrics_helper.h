@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_
 
-#include "base/macros.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"

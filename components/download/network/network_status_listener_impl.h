@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_IMPL_H_
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

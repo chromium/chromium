@@ -12,7 +12,6 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/feature_engagement/internal/tracker_impl.h"
 #include "components/feature_engagement/public/feature_list.h"

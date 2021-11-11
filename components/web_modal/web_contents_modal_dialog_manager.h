@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/web_modal_export.h"

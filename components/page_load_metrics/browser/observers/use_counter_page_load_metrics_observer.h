@@ -7,7 +7,6 @@
 
 #include <bitset>
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom.h"

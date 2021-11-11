@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
 

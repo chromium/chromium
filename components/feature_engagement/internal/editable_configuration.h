@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EDITABLE_CONFIGURATION_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EDITABLE_CONFIGURATION_H_
 
-#include "base/macros.h"
 #include "components/feature_engagement/public/configuration.h"
 
 namespace base {

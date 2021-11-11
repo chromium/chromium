@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"

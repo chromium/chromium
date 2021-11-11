@@ -6,7 +6,6 @@
 #define COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_HELPER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/public/renderer/render_frame_observer.h"

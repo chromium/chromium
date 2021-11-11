@@ -6,7 +6,6 @@
 #define COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_observer.h"
 

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_TEST_CONTENT_SETTINGS_MOCK_PROVIDER_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_TEST_CONTENT_SETTINGS_MOCK_PROVIDER_H_
 
-
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

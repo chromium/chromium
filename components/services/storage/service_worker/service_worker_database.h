@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom.h"

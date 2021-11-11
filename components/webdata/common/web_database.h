@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/webdata/common/web_database_table.h"
 #include "components/webdata/common/webdata_export.h"
 #include "sql/database.h"

@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
 

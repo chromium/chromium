@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/model/metadata_change_list.h"
 
 namespace syncer {

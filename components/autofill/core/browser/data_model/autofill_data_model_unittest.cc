@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"

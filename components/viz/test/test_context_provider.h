@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"

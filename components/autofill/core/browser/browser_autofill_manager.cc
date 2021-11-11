@@ -28,7 +28,6 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/viz_dawn_context_provider_export.h"
 #include "third_party/dawn/src/include/dawn_native/DawnNative.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_SESSION_CONNECTION_NOTIFIER_H_
 #define COMPONENTS_ARC_SESSION_CONNECTION_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"

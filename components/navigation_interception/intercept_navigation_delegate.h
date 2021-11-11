@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 

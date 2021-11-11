@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread.h"

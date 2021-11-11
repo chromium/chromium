@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/animation/slide_animation.h"

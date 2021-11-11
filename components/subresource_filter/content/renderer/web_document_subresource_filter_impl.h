@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"

@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "ipc/ipc_sync_channel.h"

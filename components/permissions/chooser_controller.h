@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace permissions {
 
 // Subclass ChooserController to implement a chooser, which has some

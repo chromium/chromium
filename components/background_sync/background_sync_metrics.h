@@ -6,7 +6,6 @@
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

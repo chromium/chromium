@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"
 

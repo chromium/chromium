@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_STATUS_METRICS_PROVIDER_BASE_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 // The base class for collecting the sign-in status of all opened profiles

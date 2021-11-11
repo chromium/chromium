@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sessions/content/extended_info_handler.h"
 #include "components/sessions/core/serialized_navigation_driver.h"
 #include "components/sessions/core/sessions_export.h"

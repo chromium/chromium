@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/sessions/core/sessions_export.h"
 

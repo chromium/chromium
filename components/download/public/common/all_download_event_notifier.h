@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"

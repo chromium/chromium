@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CONTENT_BROWSER_WEB_CONTENTS_TOP_SITES_OBSERVER_H_
 #define COMPONENTS_HISTORY_CONTENT_BROWSER_WEB_CONTENTS_TOP_SITES_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

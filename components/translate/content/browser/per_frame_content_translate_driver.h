@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/language_detection/public/cpp/language_detection_service.h"
 #include "components/translate/content/browser/content_translate_driver.h"

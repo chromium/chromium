@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_REQUEST_FETCHER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "url/gurl.h"

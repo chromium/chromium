@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_context_base.h"

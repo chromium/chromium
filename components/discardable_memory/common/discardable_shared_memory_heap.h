@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

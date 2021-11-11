@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace variations {
 
 // Provides a mapping from hashes of generated resource names to their IDs. The

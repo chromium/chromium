@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/android/android_history_types.h"
 #include "sql/database.h"

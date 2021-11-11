@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace optimization_guide {
 
 // URLPatternWithWildcards parses and stores one URL pattern. A URL pattern is a

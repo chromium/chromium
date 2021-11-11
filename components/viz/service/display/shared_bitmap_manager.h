@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "third_party/skia/include/core/SkBitmap.h"

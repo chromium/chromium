@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_CLIPBOARD_ARC_CLIPBOARD_BRIDGE_H_
 #define COMPONENTS_ARC_CLIPBOARD_ARC_CLIPBOARD_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

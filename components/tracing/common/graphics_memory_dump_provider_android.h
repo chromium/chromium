@@ -11,7 +11,6 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/tracing/tracing_export.h"

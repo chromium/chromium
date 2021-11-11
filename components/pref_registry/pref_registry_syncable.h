@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 

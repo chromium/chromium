@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/viz_common_export.h"
 

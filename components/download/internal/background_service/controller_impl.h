@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/download/internal/background_service/controller.h"

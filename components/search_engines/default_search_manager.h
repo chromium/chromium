@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace base {

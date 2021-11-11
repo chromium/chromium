@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apdu {

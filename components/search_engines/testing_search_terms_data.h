@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TESTING_SEARCH_TERMS_DATA_H_
 #define COMPONENTS_SEARCH_ENGINES_TESTING_SEARCH_TERMS_DATA_H_
 
-#include "base/macros.h"
 #include "components/search_engines/search_terms_data.h"
 
 class TestingSearchTermsData : public SearchTermsData {

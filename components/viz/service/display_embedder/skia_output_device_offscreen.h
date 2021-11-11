@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/core/SkColorSpace.h"

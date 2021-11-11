@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_HOST_COMPOSITING_MODE_REPORTER_IMPL_H_
 #define COMPONENTS_VIZ_HOST_COMPOSITING_MODE_REPORTER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/viz/host/viz_host_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NETWORK_HINTS_RENDERER_WEB_PRESCIENT_NETWORKING_IMPL_H_
 #define COMPONENTS_NETWORK_HINTS_RENDERER_WEB_PRESCIENT_NETWORKING_IMPL_H_
 
-#include "base/macros.h"
 #include "components/network_hints/common/network_hints.mojom.h"
 #include "components/network_hints/renderer/renderer_dns_prefetch.h"
 #include "mojo/public/cpp/bindings/remote.h"

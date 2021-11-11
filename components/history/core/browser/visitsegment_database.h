@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace sql {

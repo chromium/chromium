@@ -10,8 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace visitedlink {

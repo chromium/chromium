@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/payments/content/payment_app_factory.h"
 
 namespace payments {

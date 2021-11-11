@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"

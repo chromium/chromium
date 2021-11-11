@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace gfx {
 class Image;

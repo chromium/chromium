@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"

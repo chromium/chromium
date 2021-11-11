@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"

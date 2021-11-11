@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "components/undo/undo_manager_observer.h"
 #include "components/undo/undo_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,7 +4,6 @@
 
 #include "components/feature_engagement/internal/system_time_provider.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

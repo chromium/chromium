@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"

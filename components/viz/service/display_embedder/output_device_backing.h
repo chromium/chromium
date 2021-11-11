@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/size.h"

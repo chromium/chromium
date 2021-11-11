@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/arc/mojom/usb_host.mojom.h"
 #include "components/arc/session/connection_observer.h"

@@ -5,7 +5,6 @@
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"

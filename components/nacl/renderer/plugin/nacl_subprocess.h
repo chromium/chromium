@@ -15,7 +15,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/nacl/renderer/plugin/service_runtime.h"
 
 namespace plugin {

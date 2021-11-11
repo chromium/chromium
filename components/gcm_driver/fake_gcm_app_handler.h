@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 
 namespace base {

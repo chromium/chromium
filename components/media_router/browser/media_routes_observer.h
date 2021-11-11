@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/media_router/common/media_route.h"
 
 namespace media_router {

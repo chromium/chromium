@@ -5,7 +5,6 @@
 #include "components/os_crypt/key_storage_util_linux.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

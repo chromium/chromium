@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/common/media_route.h"

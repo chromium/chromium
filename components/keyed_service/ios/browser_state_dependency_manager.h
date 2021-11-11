@@ -6,7 +6,6 @@
 #define COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 

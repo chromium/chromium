@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_CALL_STACK_PROFILE_COLLECTOR_H_
 #define COMPONENTS_METRICS_CALL_STACK_PROFILE_COLLECTOR_H_
 
-#include "base/macros.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

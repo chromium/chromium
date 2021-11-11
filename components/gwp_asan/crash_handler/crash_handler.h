@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GWP_ASAN_CRASH_HANDLER_CRASH_HANDLER_H_
 #define COMPONENTS_GWP_ASAN_CRASH_HANDLER_CRASH_HANDLER_H_
 
-#include "base/macros.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 namespace crashpad {

@@ -14,7 +14,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"

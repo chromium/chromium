@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"

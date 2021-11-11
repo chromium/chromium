@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/arc_stop_reason.h"
 

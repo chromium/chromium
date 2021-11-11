@@ -13,7 +13,6 @@
 #define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CTR_AGGREGATOR_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/contextual_search/core/browser/weekly_activity_storage.h"
 
 namespace contextual_search {

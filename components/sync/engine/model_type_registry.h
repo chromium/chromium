@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"

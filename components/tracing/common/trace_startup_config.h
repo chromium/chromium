@@ -6,7 +6,6 @@
 #define COMPONENTS_TRACING_COMMON_TRACE_STARTUP_CONFIG_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "components/tracing/tracing_export.h"

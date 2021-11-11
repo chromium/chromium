@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/regex_set_matcher.h"
 #include "components/url_matcher/substring_set_matcher.h"

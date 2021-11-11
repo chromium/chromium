@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/service/receiver_response.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/media_router/browser/android/media_router_android_bridge.h"
 #include "components/media_router/browser/media_router_base.h"

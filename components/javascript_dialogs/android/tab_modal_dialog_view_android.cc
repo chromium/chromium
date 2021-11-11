@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/javascript_dialogs/android/jni_headers/JavascriptTabModalDialog_jni.h"
 #include "content/public/browser/browser_thread.h"

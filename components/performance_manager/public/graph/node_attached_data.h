@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 
 namespace performance_manager {
 

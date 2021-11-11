@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"

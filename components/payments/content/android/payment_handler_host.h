@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/android/payment_request_update_event_listener.h"
 #include "components/payments/content/payment_handler_host.h"

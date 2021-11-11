@@ -5,7 +5,6 @@
 #include "cronet_c.h"
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/cronet/native/test/test_util.h"

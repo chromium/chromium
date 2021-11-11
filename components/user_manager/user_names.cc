@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "components/user_manager/user_names.h"
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"

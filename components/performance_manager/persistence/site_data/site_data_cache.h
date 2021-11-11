@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "components/performance_manager/persistence/site_data/tab_visibility.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"

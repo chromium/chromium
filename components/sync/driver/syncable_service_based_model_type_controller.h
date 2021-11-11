@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"

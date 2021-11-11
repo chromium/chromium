@@ -16,7 +16,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace url_pattern_index {

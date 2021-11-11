@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

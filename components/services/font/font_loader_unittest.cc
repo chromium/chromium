@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"

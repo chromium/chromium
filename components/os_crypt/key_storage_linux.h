@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_util_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

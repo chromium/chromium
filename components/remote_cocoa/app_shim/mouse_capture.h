@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
 @class NSWindow;

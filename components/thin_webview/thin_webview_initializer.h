@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_THIN_WEBVIEW_THIN_WEBVIEW_INITIALIZER_H_
 #define COMPONENTS_THIN_WEBVIEW_THIN_WEBVIEW_INITIALIZER_H_
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }  // namespace content

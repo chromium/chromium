@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/seat_observer.h"

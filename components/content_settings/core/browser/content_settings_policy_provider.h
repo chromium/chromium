@@ -7,8 +7,6 @@
 
 // A content settings provider that takes its settings out of policies.
 
-
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"

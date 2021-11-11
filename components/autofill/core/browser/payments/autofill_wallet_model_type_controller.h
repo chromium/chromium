@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_service_observer.h"

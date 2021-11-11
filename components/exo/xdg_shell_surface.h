@@ -9,7 +9,6 @@
 
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/macros.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"

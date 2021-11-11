@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/initialization_task.h"

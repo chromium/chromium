@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 

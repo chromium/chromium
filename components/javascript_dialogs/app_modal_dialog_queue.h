@@ -6,7 +6,6 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 
 namespace base {
 template <typename T>

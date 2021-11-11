@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"

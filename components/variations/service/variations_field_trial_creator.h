@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

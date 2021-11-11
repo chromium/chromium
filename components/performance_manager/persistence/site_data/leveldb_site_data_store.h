@@ -8,7 +8,6 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"

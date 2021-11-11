@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/download_driver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

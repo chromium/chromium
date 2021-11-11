@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/fake_gcm_driver.h"

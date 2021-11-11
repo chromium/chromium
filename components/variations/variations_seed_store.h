@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/variations/metrics.h"

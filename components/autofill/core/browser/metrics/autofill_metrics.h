@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"

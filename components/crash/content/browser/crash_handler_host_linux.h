@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/atomic_flag.h"

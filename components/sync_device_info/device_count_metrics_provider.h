@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace syncer {

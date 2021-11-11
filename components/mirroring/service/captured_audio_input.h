@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "media/audio/audio_input_ipc.h"

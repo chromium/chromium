@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_ISSUES_OBSERVER_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ISSUES_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/media_router/common/issue.h"
 
 namespace media_router {

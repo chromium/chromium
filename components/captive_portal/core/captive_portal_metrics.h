@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_METRICS_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_METRICS_H_
 
-#include "base/macros.h"
 #include "components/captive_portal/core/captive_portal_export.h"
 
 namespace captive_portal {

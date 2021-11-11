@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/nix/xdg_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

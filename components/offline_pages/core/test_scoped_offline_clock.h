@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_TEST_SCOPED_OFFLINE_CLOCK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_TEST_SCOPED_OFFLINE_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 
 namespace offline_pages {

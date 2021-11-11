@@ -9,7 +9,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/metrics/clean_exit_beacon.h"

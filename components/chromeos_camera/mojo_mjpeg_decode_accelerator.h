@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

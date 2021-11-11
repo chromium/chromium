@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 
 namespace signin {

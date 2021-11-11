@@ -6,7 +6,6 @@
 #define COMPONENTS_FIND_IN_PAGE_ANDROID_FIND_IN_PAGE_BRIDGE_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents.h"
 
 namespace find_in_page {

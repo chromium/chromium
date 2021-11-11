@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 
 namespace sessions {

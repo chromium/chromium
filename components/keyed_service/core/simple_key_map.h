@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 

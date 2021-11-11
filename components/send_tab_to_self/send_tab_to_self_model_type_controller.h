@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_TYPE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "components/sync/driver/model_type_controller.h"
 
 namespace send_tab_to_self {

@@ -16,7 +16,6 @@
 
 #include "base/callback.h"
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_context.h"

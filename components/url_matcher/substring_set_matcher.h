@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/url_matcher/string_pattern.h"
 #include "components/url_matcher/url_matcher_export.h"
 

@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"

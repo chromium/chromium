@@ -11,7 +11,6 @@
 
 #include "base/base64.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"

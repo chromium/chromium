@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_TEST_ENGINE_MOCK_NUDGE_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/nudge_handler.h"
 

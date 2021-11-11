@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"

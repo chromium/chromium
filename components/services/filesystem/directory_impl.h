@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "components/services/filesystem/shared_temp_dir.h"
 

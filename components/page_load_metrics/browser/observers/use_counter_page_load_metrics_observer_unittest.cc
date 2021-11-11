@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"

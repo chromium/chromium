@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 
-#include "base/macros.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 
 namespace captive_portal {

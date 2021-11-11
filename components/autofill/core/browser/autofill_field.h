@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"

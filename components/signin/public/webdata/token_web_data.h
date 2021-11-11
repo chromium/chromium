@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_data_results.h"

@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 class SigninStatusMetricsProvider;

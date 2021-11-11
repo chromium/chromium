@@ -6,7 +6,6 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"

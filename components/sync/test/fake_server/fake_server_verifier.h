@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "testing/gtest/include/gtest/gtest.h"

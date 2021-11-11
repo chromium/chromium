@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/session/connection_notifier.h"
 #include "components/arc/session/connection_observer.h"

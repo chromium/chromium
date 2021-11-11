@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"

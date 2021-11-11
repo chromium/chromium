@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
 
 namespace base {

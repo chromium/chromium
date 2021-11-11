@@ -7,7 +7,6 @@
 
 #include <sstream>
 
-#include "base/macros.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

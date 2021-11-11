@@ -15,7 +15,6 @@
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

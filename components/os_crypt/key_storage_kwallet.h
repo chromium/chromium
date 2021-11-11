@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "components/os_crypt/kwallet_dbus.h"
 

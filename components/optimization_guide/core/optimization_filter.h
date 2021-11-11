@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "third_party/re2/src/re2/re2.h"

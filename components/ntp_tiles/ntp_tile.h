@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"

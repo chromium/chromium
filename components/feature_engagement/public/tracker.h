@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"

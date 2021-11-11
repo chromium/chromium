@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/favicon_base/favicon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

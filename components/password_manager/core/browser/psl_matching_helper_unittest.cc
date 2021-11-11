@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <cctype>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"

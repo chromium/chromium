@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_WAKE_LOCK_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_WAKE_LOCK_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

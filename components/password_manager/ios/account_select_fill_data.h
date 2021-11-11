@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 

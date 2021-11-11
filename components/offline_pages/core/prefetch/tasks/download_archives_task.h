@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 #include "components/prefs/pref_service.h"

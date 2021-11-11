@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "crypto/sha2.h"
 

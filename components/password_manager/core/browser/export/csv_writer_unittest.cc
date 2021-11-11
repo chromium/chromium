@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/export/csv_writer.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

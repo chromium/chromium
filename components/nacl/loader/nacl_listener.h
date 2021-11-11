@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/synchronization/waitable_event.h"

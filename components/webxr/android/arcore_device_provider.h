@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

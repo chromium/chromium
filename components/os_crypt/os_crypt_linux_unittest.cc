@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker_linux.h"

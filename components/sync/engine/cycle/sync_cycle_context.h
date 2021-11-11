@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"

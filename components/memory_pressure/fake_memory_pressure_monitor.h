@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MEMORY_PRESSURE_FAKE_MEMORY_PRESSURE_MONITOR_H_
 #define COMPONENTS_MEMORY_PRESSURE_FAKE_MEMORY_PRESSURE_MONITOR_H_
 
-#include "base/macros.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
 namespace memory_pressure {

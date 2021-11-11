@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_ORIGIN_CONTEXT_IMPL_H_
 #define COMPONENTS_SERVICES_STORAGE_ORIGIN_CONTEXT_IMPL_H_
 
-#include "base/macros.h"
 #include "components/services/storage/public/mojom/origin_context.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

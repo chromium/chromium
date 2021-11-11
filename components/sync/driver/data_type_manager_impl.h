@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"

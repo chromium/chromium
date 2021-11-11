@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 

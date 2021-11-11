@@ -12,7 +12,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "components/viz/service/viz_service_export.h"

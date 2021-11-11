@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_SETTINGS_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/strings/grit/components_strings.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_IMPORT_COMPLETED_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_IMPORT_COMPLETED_TASK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"

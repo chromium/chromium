@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock_range.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_CLONED_INSTALL_DETECTOR_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 class PrefRegistrySimple;

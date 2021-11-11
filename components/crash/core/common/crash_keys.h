@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/crash/core/common/crash_export.h"
 

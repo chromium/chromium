@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/value_store/lazy_leveldb.h"
 #include "components/value_store/value_store.h"

@@ -19,7 +19,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace subresource_filter {

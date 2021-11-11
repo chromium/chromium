@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_errors.h"
 #include "services/network/test/test_url_loader_factory.h"

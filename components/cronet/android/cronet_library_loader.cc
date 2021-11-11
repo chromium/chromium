@@ -16,7 +16,6 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"

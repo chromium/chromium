@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_command_line.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"

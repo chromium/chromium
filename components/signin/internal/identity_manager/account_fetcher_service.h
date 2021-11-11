@@ -13,7 +13,6 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 

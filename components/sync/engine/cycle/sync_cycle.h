@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/status_controller.h"

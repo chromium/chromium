@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"

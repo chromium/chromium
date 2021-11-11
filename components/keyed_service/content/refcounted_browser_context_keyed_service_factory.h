@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"

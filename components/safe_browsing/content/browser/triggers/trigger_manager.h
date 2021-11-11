@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"

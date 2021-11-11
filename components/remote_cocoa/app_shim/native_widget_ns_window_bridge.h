@@ -11,7 +11,6 @@
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"

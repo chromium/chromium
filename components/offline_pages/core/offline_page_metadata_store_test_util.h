@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace password_manager {
 

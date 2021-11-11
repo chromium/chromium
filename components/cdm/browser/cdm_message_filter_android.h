@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CDM_BROWSER_CDM_MESSAGE_FILTER_ANDROID_H_
 #define COMPONENTS_CDM_BROWSER_CDM_MESSAGE_FILTER_ANDROID_H_
 
-#include "base/macros.h"
 #include "content/public/browser/browser_message_filter.h"
 
 struct SupportedKeySystemRequest;

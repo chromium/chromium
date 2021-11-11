@@ -30,8 +30,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace network_hints {
 
 // A queue of DNS lookup requests for internal use within the network_hints

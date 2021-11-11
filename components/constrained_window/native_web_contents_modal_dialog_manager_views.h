@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "ui/gfx/native_widget_types.h"

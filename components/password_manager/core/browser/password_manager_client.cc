@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"

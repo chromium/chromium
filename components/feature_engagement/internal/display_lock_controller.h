@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace feature_engagement {
 class DisplayLockHandle;
 

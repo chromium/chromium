@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {

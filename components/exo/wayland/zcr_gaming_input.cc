@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/exo/gamepad.h"
 #include "components/exo/gamepad_delegate.h"
 #include "components/exo/gamepad_observer.h"

@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace autofill {
 
 // The cross-platform UI interface which prompts the user to unlock a masked

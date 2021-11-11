@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 
 namespace dom_distiller {

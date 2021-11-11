@@ -6,7 +6,6 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_ANDROID_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 #define COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 
-#include "base/macros.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 

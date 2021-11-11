@@ -8,7 +8,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"

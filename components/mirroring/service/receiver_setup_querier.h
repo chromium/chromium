@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"

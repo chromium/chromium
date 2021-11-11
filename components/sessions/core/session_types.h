@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/chromeos_buildflags.h"

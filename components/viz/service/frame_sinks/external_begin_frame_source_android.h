@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/viz_service_export.h"
 

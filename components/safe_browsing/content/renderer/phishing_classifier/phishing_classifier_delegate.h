@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"

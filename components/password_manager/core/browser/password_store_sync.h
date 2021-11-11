@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/sync/model/sync_metadata_store.h"
 

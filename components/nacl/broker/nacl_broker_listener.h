@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "components/nacl/common/nacl_types.h"

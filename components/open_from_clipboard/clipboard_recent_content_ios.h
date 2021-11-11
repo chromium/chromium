@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "url/gurl.h"

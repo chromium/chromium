@@ -10,7 +10,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"

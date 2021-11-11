@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 #define COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 

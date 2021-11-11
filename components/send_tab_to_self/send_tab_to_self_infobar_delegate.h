@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 namespace content {

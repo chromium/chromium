@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_NOOP_SITE_DATA_WRITER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_NOOP_SITE_DATA_WRITER_H_
 
-#include "base/macros.h"
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 #include "url/origin.h"
 

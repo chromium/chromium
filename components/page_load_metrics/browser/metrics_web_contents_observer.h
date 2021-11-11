@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

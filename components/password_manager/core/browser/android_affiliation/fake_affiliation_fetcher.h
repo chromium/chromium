@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"

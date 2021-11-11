@@ -15,7 +15,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"

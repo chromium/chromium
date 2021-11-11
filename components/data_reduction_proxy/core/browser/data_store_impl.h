@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "components/data_reduction_proxy/core/browser/data_store.h"

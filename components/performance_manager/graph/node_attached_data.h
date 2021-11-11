@@ -6,7 +6,6 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_ATTACHED_DATA_H_
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 

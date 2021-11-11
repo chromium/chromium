@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"

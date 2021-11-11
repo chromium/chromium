@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "ui/gfx/geometry/size.h"

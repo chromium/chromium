@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_TEST_TEST_LATEST_LOCAL_SURFACE_ID_LOOKUP_DELEGATE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
 

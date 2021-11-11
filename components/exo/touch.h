@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_TOUCH_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/exo/surface_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point_f.h"

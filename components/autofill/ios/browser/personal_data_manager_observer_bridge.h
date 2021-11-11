@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 // PersonalDataManagerObserver is used by PersonalDataManager to informs its

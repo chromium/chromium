@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"

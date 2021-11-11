@@ -27,7 +27,6 @@
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_SUSPICIOUS_SITE_TRIGGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_SUSPICIOUS_SITE_TRIGGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

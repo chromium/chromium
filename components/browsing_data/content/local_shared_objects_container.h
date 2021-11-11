@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "storage/common/file_system/file_system_types.h"

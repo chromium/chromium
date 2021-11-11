@@ -6,7 +6,6 @@
 #define COMPONENTS_GCM_DRIVER_FAKE_GCM_CLIENT_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/gcm_driver/fake_gcm_client.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 

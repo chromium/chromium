@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {

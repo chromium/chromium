@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"

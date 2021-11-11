@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/permissions/chooser_controller.h"
 
 // A subclass of permissions::ChooserController that pretends to be a USB device

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_TEST_BROWSER_CONTEXT_H_
 #define COMPONENTS_ARC_TEST_TEST_BROWSER_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_browser_context.h"
 

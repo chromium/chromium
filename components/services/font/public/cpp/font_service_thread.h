@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

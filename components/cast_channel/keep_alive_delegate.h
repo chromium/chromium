@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_DELEGATE_H_
 #define COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_transport.h"

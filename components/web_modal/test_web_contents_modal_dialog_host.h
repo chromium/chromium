@@ -8,7 +8,6 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 

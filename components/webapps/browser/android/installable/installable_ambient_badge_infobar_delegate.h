@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"

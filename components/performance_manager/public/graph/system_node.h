@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "components/performance_manager/public/graph/node.h"
 

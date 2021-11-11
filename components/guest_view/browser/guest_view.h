@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/render_frame_host.h"

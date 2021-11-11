@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/network.h"

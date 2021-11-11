@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/sync_user_events/user_event_service.h"
 
 namespace syncer {

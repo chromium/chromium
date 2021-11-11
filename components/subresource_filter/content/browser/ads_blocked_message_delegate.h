@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/subresource_filter/android/ads_blocked_dialog.h"

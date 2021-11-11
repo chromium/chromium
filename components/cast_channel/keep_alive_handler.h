@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_HANDLER_H_
 #define COMPONENTS_CAST_CHANNEL_KEEP_ALIVE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"

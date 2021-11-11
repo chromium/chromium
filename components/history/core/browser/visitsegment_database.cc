@@ -15,7 +15,6 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/page_usage_data.h"

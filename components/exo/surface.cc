@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

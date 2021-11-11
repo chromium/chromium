@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace page_load_metrics {

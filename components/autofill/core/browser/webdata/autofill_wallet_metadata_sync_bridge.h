@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"

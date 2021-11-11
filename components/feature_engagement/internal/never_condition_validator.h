@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_NEVER_CONDITION_VALIDATOR_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_NEVER_CONDITION_VALIDATOR_H_
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
 

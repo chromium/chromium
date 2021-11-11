@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace gcm {
 class GCMDriver;
 }  // namespace gcm

@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

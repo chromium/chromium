@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/ime/key_event_result_receiver.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_metadata.pb.h"

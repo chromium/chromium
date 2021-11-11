@@ -6,7 +6,6 @@
 #define COMPONENTS_LANGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/web_state_user_data.h"
 

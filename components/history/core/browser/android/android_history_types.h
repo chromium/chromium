@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 

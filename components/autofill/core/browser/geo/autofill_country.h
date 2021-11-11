@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 
 namespace autofill {

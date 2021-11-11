@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBCRYPTO_WEBCRYPTO_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"

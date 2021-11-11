@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/arc_bridge.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"

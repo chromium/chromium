@@ -72,7 +72,6 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATION_SERVICE_TEST_TEMPLATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 #include "components/invalidation/public/ack_handle.h"

@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 #include "components/subresource_filter/tools/ruleset_converter/ruleset_format.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/test/test_renderer_host.h"

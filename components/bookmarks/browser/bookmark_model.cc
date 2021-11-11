@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"

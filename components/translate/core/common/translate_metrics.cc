@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"

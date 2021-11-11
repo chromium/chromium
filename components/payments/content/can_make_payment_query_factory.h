@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_CAN_MAKE_PAYMENT_QUERY_FACTORY_H_
 #define COMPONENTS_PAYMENTS_CONTENT_CAN_MAKE_PAYMENT_QUERY_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {

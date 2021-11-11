@@ -6,7 +6,6 @@
 #define COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 

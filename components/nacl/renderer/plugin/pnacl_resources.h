@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NACL_RENDERER_PLUGIN_PNACL_RESOURCES_H_
 #define COMPONENTS_NACL_RENDERER_PLUGIN_PNACL_RESOURCES_H_
 
-#include "base/macros.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "ppapi/cpp/completion_callback.h"
 

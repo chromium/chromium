@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace tab_groups {

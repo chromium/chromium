@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/sync/engine/model_type_processor.h"
 
 namespace syncer {

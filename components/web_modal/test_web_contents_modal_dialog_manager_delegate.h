@@ -8,7 +8,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace web_modal {
 

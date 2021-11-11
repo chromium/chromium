@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_CONTROLLER_CLIENT_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 
 namespace content {

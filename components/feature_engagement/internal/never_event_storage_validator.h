@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/event_storage_validator.h"
 
 namespace feature_engagement {

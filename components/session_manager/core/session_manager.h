@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/session_manager/session_manager_export.h"
 #include "components/session_manager/session_manager_types.h"

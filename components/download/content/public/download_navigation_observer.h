@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 #define COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

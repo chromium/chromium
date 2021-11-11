@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/persistence/site_data/site_data_writer.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"

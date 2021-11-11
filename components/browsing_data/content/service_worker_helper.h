@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"

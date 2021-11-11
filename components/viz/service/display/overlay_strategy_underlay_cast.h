@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/viz_service_export.h"

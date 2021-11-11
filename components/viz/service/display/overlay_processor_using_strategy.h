@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"

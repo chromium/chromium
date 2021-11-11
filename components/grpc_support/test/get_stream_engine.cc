@@ -8,7 +8,6 @@
 #include "components/grpc_support/test/get_stream_engine.h"
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_number_conversions.h"

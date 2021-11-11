@@ -9,8 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace metrics {
 
 // A data object used to pass data from outside the metrics component into the

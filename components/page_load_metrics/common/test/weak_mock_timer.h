@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_COMMON_TEST_WEAK_MOCK_TIMER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_COMMON_TEST_WEAK_MOCK_TIMER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/mock_timer.h"
 

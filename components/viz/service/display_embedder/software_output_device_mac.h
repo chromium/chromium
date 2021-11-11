@@ -9,7 +9,6 @@
 #include <list>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkRefCnt.h"

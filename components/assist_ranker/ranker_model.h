@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace assist_ranker {
 
 class RankerModelProto;

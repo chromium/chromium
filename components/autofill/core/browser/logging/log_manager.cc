@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 
 namespace autofill {

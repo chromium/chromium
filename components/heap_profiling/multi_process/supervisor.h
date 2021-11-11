@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 #define COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

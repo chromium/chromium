@@ -11,7 +11,6 @@
 
 #include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/surface_observer.h"

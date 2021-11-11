@@ -4,7 +4,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"

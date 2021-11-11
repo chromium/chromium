@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"

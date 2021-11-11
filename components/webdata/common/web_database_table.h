@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_
 
-#include "base/macros.h"
 #include "components/webdata/common/webdata_export.h"
 
 namespace sql {

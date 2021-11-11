@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_MANAGED_MANAGED_BOOKMARKS_POLICY_HANDLER_H_
 #define COMPONENTS_BOOKMARKS_MANAGED_MANAGED_BOOKMARKS_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"

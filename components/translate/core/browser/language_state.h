@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace translate {
 
 class TranslateDriver;

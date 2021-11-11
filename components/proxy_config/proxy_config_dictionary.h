@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/proxy_config/proxy_config_export.h"
 #include "components/proxy_config/proxy_prefs.h"

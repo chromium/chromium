@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager.h"

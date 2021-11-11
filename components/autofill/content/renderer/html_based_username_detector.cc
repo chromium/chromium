@@ -13,7 +13,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"

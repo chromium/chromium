@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/prefs/pref_store.h"
 
 namespace base {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/browser/web_contents_user_data.h"

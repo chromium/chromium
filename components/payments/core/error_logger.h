@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace payments {
 
 // Logs messages to stderr. See DeveloperConsoleLogger for an implementation

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/controller.h"
 #include "components/download/internal/background_service/startup_status.h"
 #include "components/download/public/background_service/download_params.h"

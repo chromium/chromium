@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"

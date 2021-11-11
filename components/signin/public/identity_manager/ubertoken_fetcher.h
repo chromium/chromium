@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 
 class GoogleServiceAuthError;
 

@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"

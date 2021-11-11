@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/engine/model_type_processor.h"

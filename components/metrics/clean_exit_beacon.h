@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

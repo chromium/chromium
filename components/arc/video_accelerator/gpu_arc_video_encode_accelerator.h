@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"

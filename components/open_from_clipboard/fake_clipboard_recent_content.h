@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

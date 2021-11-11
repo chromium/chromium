@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/subresource_filter/core/common/flat/indexed_ruleset_generated.h"
 #include "components/subresource_filter/core/common/load_policy.h"

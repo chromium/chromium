@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "mojo/public/cpp/system/message_pipe.h"

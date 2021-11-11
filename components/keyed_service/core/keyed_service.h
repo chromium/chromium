@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 // Interface for keyed services that support two-phase destruction order.

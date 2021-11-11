@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/shader.h"

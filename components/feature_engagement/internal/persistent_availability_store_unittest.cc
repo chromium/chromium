@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/feature_engagement/internal/proto/availability.pb.h"
 #include "components/feature_engagement/public/feature_list.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 #define COMPONENTS_SYNC_DRIVER_MODEL_LOAD_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_controller.h"

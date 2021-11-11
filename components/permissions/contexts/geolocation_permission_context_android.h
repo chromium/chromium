@@ -22,7 +22,6 @@
 // Otherwise the permission is already decided.
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_dialog_context.h"

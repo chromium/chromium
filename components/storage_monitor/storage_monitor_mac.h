@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
 

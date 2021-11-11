@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/arc/session/arc_management_transition.h"
 
 namespace arc {

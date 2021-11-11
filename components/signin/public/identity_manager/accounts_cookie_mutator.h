@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 

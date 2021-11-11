@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/offline_event_logger.h"

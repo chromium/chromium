@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/infobars/core/infobar_delegate.h"
 

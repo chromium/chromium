@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

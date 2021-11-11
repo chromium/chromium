@@ -5,7 +5,6 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/test_util.h"

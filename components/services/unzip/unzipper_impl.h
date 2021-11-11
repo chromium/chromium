@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_UNZIP_UNZIPPER_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

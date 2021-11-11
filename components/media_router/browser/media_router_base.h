@@ -11,7 +11,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/media_router.h"

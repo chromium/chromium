@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gl_scaler.h"
 #include "components/viz/common/gpu/context_lost_observer.h"

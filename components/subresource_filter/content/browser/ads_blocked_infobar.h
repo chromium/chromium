@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_H_
 
-#include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
 #include "components/subresource_filter/content/browser/ads_blocked_infobar_delegate.h"
 

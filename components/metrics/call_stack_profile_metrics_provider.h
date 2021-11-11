@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"

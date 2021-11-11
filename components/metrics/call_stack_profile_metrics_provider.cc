@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

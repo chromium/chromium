@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 

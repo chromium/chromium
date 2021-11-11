@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/background_download_service.h"
 

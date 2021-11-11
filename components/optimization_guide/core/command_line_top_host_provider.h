@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 
 namespace optimization_guide {

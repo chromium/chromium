@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
 // Mock class of DeviceAccountsProvider for testing.

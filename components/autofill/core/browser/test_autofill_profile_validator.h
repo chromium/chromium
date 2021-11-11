@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_PROFILE_VALIDATOR_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/test_autofill_profile_validator_delayed.h"
 

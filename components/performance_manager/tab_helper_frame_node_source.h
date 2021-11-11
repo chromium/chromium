@@ -7,7 +7,6 @@
 
 #include "components/performance_manager/frame_node_source.h"
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"

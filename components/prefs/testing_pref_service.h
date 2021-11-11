@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"

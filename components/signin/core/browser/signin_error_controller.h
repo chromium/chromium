@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"

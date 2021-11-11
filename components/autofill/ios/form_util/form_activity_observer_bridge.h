@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 
 @protocol FormActivityObserver<NSObject>

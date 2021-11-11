@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"

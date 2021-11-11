@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_MEDIA_SESSION_ARC_MEDIA_SESSION_BRIDGE_H_
 #define COMPONENTS_ARC_MEDIA_SESSION_ARC_MEDIA_SESSION_BRIDGE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/media_session.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/event_storage_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
 

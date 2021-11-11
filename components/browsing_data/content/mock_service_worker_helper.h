@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 
 namespace content {

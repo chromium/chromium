@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"

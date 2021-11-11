@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_TEST_TEST_ENABLED_STATE_PROVIDER_H_
 #define COMPONENTS_METRICS_TEST_TEST_ENABLED_STATE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/enabled_state_provider.h"
 
 namespace metrics {

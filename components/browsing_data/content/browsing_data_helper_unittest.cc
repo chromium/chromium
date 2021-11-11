@@ -4,7 +4,6 @@
 
 #include "components/browsing_data/content/browsing_data_helper.h"
 
-#include "base/macros.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

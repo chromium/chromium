@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

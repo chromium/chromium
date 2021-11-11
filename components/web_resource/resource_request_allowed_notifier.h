@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 

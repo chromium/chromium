@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"

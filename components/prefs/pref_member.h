@@ -31,7 +31,6 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"

@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/services/storage/origin_context_impl.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

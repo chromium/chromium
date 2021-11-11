@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_sync_bridge.h"

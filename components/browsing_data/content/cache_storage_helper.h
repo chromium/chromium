@@ -12,7 +12,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "url/origin.h"
 

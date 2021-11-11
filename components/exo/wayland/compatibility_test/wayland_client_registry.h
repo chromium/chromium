@@ -12,7 +12,6 @@
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
-#include "base/macros.h"
 #include "components/exo/wayland/compatibility_test/generated-wayland-client-helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

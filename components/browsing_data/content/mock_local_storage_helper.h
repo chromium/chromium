@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

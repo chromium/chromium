@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"

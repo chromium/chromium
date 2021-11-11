@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBAUTHN_ANDROID_INTERNAL_AUTHENTICATOR_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"

@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_uploader.h"

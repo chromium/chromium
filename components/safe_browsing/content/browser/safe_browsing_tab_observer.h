@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_user_data.h"
 

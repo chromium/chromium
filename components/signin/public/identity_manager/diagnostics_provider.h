@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_DIAGNOSTICS_PROVIDER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_DIAGNOSTICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 

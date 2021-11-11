@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"

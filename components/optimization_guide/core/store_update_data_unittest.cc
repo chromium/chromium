@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

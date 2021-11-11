@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"

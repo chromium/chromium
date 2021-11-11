@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/test/pixel_comparator.h"

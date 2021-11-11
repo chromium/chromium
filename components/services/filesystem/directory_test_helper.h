@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_FILESYSTEM_DIRECTORY_TEST_HELPER_H_
 #define COMPONENTS_SERVICES_FILESYSTEM_DIRECTORY_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

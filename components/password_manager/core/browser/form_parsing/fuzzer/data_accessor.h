@@ -10,8 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace password_manager {
 
 // DataAccessor is an encapsulation over the input string delivered by the

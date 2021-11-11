@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "components/feature_engagement/public/configuration.h"
 
 namespace base {

@@ -19,7 +19,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webrtc_logging {

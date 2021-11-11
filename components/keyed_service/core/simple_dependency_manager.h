@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 

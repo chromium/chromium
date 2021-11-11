@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_activity.h"
 #include "google_apis/gcm/engine/connection_factory.h"

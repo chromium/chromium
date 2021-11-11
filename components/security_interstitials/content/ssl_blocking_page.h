@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"

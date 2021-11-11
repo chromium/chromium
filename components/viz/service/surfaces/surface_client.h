@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/viz_service_export.h"

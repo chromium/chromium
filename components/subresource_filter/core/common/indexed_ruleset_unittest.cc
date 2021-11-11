@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"

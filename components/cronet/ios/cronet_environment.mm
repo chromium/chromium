@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/synchronization/waitable_event.h"

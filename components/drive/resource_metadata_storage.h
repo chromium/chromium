@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/file_errors.h"

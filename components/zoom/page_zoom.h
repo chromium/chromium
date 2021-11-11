@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/common/page_zoom.h"
 
 namespace content {

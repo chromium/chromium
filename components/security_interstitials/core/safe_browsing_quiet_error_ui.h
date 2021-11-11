@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_QUIET_ERROR_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_QUIET_ERROR_UI_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"

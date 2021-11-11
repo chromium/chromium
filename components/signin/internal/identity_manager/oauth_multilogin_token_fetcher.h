@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"

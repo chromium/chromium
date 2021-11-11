@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/json/json_value_converter.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "url/gurl.h"

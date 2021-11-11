@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"

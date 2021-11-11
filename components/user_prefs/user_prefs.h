@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_PREFS_USER_PREFS_H_
 #define COMPONENTS_USER_PREFS_USER_PREFS_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/user_prefs/user_prefs_export.h"
 

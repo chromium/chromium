@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DEBUGGING_CLIENT_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DEBUGGING_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 
 namespace download {

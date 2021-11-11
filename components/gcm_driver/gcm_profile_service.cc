@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_driver_constants.h"

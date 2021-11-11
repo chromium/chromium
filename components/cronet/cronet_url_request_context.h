@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"

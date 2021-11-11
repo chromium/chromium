@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"

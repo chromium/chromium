@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UKM_UNSENT_LOG_STORE_METRICS_IMPL_H_
 #define COMPONENTS_UKM_UNSENT_LOG_STORE_METRICS_IMPL_H_
 
-#include "base/macros.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 
 namespace ukm {

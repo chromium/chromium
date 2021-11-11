@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace background_task {
 
 // TaskParameters are passed to BackgroundTask whenever they are invoked. It

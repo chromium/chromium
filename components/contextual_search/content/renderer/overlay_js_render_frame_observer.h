@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_OVERLAY_JS_RENDER_FRAME_OBSERVER_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_OVERLAY_JS_RENDER_FRAME_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "content/public/renderer/render_frame.h"

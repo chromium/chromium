@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "content/public/test/test_utils.h"

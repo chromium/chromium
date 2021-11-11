@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/password_generation_util.h"

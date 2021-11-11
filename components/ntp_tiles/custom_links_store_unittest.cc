@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"

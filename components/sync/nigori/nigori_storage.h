@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_NIGORI_NIGORI_STORAGE_H_
 #define COMPONENTS_SYNC_NIGORI_NIGORI_STORAGE_H_
 
-#include "base/macros.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

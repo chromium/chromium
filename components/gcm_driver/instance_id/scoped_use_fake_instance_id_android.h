@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include "base/macros.h"
-
 namespace instance_id {
 
 // Tests depending on InstanceID must use this, to avoid hitting the

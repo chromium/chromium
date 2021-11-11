@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

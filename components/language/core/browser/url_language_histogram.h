@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 

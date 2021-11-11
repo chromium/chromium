@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/language/content/browser/language_code_locator.h"
 
 class PrefRegistrySimple;

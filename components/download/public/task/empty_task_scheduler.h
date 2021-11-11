@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "components/download/public/task/task_scheduler.h"
 
 namespace download {

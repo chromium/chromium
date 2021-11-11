@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"

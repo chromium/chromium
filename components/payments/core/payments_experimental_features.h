@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENTS_EXPERIMENTAL_FEATURES_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENTS_EXPERIMENTAL_FEATURES_H_
 
-#include "base/macros.h"
-
 namespace base {
 struct Feature;
 }  // namespace base

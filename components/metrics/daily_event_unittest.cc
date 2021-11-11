@@ -4,7 +4,6 @@
 
 #include "components/metrics/daily_event.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"

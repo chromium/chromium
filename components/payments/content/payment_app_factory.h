@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"

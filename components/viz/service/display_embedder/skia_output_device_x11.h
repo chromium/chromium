@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "ui/gfx/native_widget_types.h"

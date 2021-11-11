@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/origin.h"
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"

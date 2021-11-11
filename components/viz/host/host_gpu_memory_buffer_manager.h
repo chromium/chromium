@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"

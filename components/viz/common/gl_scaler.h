@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/viz_common_export.h"

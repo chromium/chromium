@@ -10,7 +10,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/entry.h"
 
 namespace download {

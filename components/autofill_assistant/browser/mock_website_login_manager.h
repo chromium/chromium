@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_WEBSITE_LOGIN_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

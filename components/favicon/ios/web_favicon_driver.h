@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #include "ios/web/public/web_state_observer.h"

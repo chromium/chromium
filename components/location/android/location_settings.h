@@ -6,7 +6,6 @@
 #define COMPONENTS_LOCATION_ANDROID_LOCATION_SETTINGS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/location/android/location_settings_dialog_context.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 

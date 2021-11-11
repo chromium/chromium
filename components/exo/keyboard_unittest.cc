@@ -15,7 +15,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"

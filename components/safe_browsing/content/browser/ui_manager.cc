@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"

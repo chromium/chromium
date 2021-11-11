@@ -24,7 +24,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"

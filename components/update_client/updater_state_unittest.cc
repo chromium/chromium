@@ -4,7 +4,6 @@
 
 #include "components/update_client/updater_state.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"

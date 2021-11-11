@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #import "ios/web/public/web_state.h"

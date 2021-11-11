@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_EXPECT_NAVIGATION_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_EXPECT_NAVIGATION_ACTION_H_
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {

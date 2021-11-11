@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_SYSTEM_TIME_PROVIDER_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_SYSTEM_TIME_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/internal/time_provider.h"
 

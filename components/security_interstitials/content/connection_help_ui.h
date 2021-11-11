@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONNECTION_HELP_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONNECTION_HELP_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace security_interstitials {

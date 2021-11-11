@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/wifi/network_properties.h"
 #include "components/wifi/wifi_service.h"

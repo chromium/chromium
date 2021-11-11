@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"

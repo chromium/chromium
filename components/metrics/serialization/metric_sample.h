@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace metrics {
 
 // This class is used by libmetrics (ChromeOS) to serialize

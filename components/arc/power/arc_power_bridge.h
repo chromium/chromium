@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

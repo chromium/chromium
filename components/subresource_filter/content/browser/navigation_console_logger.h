@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"

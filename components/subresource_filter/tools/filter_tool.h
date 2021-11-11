@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"

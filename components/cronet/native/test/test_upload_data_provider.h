@@ -13,7 +13,6 @@
 #include "cronet_c.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

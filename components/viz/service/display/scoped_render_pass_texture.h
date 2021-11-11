@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_SCOPED_RENDER_PASS_TEXTURE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SCOPED_RENDER_PASS_TEXTURE_H_
 
-#include "base/macros.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/khronos/GLES2/gl2.h"

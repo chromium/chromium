@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_helper.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"

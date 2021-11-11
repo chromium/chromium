@@ -4,8 +4,6 @@
 
 #include "components/sync/base/model_type_test_util.h"
 
-#include "base/macros.h"
-
 namespace syncer {
 
 void PrintTo(ModelTypeSet model_types, ::std::ostream* os) {

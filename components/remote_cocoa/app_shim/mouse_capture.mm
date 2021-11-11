@@ -7,7 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
 

@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 #include "components/embedder_support/pref_names.h"

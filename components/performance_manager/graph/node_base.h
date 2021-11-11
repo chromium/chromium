@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/graph_impl.h"

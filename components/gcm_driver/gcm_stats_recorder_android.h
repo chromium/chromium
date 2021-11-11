@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/gcm_driver/gcm_activity.h"
 
 namespace gcm {

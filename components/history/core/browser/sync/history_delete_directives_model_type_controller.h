@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_DELETE_DIRECTIVES_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 

@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

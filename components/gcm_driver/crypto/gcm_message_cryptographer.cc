@@ -11,7 +11,6 @@
 #include <sstream>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"

@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/lazy_thread_pool_task_runner.h"

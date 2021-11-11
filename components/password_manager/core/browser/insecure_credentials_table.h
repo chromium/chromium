@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INSECURE_CREDENTIALS_TABLE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/prefs/pref_service.h"
 
 // These values are persisted to logs. Entries should not be renumbered and

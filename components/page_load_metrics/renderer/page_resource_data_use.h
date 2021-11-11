@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_RESOURCE_DATA_USE_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_RENDERER_PAGE_RESOURCE_DATA_USE_H_
 
-#include "base/macros.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/previews_state.h"

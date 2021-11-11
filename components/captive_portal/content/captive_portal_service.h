@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

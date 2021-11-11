@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_PLATFORM_COLOR_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_PLATFORM_COLOR_H_
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/capabilities.h"

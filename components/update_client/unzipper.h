@@ -6,7 +6,6 @@
 #define COMPONENTS_UPDATE_CLIENT_UNZIPPER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {

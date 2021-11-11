@@ -14,7 +14,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/variations/variations_associated_data.h"
 
-#include "base/macros.h"
 #include "base/values.h"
 namespace safe_browsing {
 // Please define any new SafeBrowsing related features in this file, and add

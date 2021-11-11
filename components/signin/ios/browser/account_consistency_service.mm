@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"

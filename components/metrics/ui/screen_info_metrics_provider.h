@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_UI_SCREEN_INFO_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_UI_SCREEN_INFO_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"

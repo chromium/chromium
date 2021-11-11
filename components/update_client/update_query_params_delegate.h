@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace update_client {
 
 // Embedders can specify an UpdateQueryParamsDelegate to provide additional

@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_SESSIONS_CORE_SESSION_ID_GENERATOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
 #include "components/sessions/core/session_id.h"

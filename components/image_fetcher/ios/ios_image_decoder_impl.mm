@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #import "base/ios/ios_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

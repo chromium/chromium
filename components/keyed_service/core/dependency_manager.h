@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 

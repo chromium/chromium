@@ -9,7 +9,6 @@
 #include <queue>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
 #include "net/base/backoff_entry.h"

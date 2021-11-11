@@ -31,7 +31,6 @@
 #include <map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 

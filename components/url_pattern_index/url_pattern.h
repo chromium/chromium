@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

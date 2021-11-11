@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/service_worker_client.h"

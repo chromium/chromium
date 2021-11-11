@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/offline_pages/core/offline_page_archiver.h"

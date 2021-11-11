@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_TYPED_COUNT_SORTER_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_TYPED_COUNT_SORTER_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 
 namespace bookmarks {

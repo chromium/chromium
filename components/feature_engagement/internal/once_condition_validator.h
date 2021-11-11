@@ -7,7 +7,6 @@
 
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
 

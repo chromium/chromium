@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"

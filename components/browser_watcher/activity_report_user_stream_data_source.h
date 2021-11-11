@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 namespace crashpad {

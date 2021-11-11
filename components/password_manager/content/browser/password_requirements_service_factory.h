@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {

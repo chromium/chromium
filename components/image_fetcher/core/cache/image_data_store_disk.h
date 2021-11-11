@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/cache/image_data_store.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"

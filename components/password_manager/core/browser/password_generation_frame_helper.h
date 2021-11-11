@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
 

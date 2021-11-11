@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_BROWSER_CONTEXTUAL_SEARCH_JS_API_SERVICE_IMPL_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_BROWSER_CONTEXTUAL_SEARCH_JS_API_SERVICE_IMPL_H_
 
-#include "base/macros.h"
 #include "components/contextual_search/content/browser/contextual_search_js_api_handler.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -14,8 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace safe_browsing {

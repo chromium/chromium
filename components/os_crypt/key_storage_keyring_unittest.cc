@@ -7,7 +7,6 @@
 #include <cstdarg>  // Needed to mock ellipsis
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "components/os_crypt/keyring_util_linux.h"

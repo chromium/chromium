@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/network_time/network_time_tracker.h"
 

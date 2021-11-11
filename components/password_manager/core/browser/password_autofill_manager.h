@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"

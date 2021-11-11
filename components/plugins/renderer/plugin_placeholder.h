@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 #define COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/plugins/renderer/webview_plugin.h"
 #include "content/public/renderer/render_frame_observer.h"

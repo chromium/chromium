@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log_export.h"

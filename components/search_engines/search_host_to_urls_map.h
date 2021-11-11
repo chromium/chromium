@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/search_engines/template_url.h"
 

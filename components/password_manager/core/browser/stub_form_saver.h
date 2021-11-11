@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_FORM_SAVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_FORM_SAVER_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/form_saver.h"
 
 namespace password_manager {

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_UNDO_BOOKMARK_UNDO_UTILS_H_
 #define COMPONENTS_UNDO_BOOKMARK_UNDO_UTILS_H_
 
-#include "base/macros.h"
-
 class BookmarkUndoService;
 class UndoManager;
 

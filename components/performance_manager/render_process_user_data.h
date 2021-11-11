@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 

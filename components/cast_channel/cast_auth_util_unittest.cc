@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/cast_certificate/cast_cert_reader.h"

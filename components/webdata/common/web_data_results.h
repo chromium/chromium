@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/webdata/common/webdata_export.h"
 

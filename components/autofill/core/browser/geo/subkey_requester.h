@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_SUBKEY_REQUESTER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 
 namespace autofill {

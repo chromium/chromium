@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_VSYNC_PARAMETER_LISTENER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_VSYNC_PARAMETER_LISTENER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

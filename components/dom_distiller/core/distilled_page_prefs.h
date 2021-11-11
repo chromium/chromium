@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_CHANNEL_MOJO_DATA_PUMP_H_
 #define COMPONENTS_CAST_CHANNEL_MOJO_DATA_PUMP_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/cast_channel/cast_transport.h"
 #include "mojo/public/cpp/system/data_pipe.h"

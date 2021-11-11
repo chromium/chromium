@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_TEST_HISTORY_UNITTEST_BASE_H_
 #define COMPONENTS_HISTORY_CORE_TEST_HISTORY_UNITTEST_BASE_H_
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

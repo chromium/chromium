@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "ui/views/window/dialog_delegate.h"

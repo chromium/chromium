@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/json/values_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

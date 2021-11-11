@@ -15,7 +15,6 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"

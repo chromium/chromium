@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"

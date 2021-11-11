@@ -23,7 +23,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_UNINDEXED_RULESET_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_UNINDEXED_RULESET_H_
 
-#include "base/macros.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h"

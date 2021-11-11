@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
 #define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PANEL_H_
 
-#include "base/macros.h"
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"

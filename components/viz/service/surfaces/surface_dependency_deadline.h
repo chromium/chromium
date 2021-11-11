@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#include "base/macros.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace base {

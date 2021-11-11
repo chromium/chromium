@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {

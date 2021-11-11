@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

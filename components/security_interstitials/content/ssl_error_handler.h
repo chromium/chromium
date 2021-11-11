@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/captive_portal/content/captive_portal_service.h"

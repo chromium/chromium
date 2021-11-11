@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
 namespace gfx {

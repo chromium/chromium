@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/logging/log_router.h"
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"

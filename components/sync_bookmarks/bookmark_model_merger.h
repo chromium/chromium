@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 

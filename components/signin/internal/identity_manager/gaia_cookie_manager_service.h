@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"

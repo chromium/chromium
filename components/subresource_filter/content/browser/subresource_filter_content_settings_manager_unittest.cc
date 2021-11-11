@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"

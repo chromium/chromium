@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREF_SERVICE_MOCK_FACTORY_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREF_SERVICE_MOCK_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
 
 namespace sync_preferences {

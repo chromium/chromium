@@ -5,7 +5,6 @@
 #include "components/autofill/content/renderer/password_form_conversion_utils.h"
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"

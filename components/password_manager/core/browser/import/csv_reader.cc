@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 

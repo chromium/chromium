@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
 #define COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_storage.h"

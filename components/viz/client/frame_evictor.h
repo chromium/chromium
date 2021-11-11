@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 #define COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 
-#include "base/macros.h"
 #include "components/viz/client/frame_eviction_manager.h"
 
 namespace viz {

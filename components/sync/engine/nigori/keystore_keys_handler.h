@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 namespace syncer {
 
 // Sync internal interface for dealing with Nigori keystore keys.

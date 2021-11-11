@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"

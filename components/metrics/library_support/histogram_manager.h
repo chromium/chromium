@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/synchronization/lock.h"

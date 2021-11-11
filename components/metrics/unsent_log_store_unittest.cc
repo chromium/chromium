@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"

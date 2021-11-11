@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 
 namespace autofill {

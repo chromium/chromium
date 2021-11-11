@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {

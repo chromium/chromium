@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_LANGUAGE_CONTENT_BROWSER_GEO_LANGUAGE_MODEL_H_
 #define COMPONENTS_LANGUAGE_CONTENT_BROWSER_GEO_LANGUAGE_MODEL_H_
 
-#include "base/macros.h"
 #include "components/language/core/browser/language_model.h"
 
 namespace language {

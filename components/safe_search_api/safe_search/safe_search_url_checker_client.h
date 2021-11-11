@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "google_apis/google_api_keys.h"

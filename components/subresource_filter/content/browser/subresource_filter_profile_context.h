@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class HostContentSettingsMap;

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 #define COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/arc/session/connection_holder.h"
 

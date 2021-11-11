@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/test_browser_context.h"

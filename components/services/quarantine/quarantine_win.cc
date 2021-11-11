@@ -19,7 +19,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"

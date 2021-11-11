@@ -6,7 +6,6 @@
 #define COMPONENTS_MIRRORING_SERVICE_MEDIA_REMOTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/cast/cast_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/remoting_common.mojom.h"

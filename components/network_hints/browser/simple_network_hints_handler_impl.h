@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 #define COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/network_hints/common/network_hints.mojom.h"
 
 namespace content {

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"

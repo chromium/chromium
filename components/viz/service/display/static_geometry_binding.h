@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_STATIC_GEOMETRY_BINDING_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_STATIC_GEOMETRY_BINDING_H_
 
-#include "base/macros.h"
 #include "components/viz/service/display/geometry_binding.h"
 #include "components/viz/service/viz_service_export.h"
 

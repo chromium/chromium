@@ -7,7 +7,6 @@
 
 #include <xdg-shell-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

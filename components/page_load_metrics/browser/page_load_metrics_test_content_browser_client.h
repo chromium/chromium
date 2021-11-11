@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_TEST_CONTENT_BROWSER_CLIENT_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_TEST_CONTENT_BROWSER_CLIENT_H_
 
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace page_load_metrics {

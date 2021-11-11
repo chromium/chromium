@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/mojom/base/time.mojom.h"

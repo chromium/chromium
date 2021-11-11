@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
 // Manages user permissions for background sync. The context is scoped to the

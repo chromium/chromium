@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
 

@@ -13,7 +13,6 @@
 
 #include "base/guid.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 
 namespace base {

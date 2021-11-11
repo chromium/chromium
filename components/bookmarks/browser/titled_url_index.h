@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

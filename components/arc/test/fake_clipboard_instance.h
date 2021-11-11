@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

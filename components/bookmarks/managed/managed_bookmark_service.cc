@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

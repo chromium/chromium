@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
 
-#include "base/macros.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/frame_rate_decider.h"

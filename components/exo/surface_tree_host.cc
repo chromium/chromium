@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"

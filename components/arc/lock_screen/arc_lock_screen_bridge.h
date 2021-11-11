@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 #define COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/arc/session/connection_observer.h"

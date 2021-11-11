@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/form_saver.h"
 
 namespace password_manager {

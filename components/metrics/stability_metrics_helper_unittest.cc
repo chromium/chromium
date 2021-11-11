@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 

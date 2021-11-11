@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"

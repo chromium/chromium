@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_CONTROLLER_H_
 #define COMPONENTS_SERVICES_HEAP_PROFILING_PUBLIC_CPP_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"

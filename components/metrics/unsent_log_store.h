@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"

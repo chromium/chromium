@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"

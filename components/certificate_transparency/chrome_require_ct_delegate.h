@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/url_matcher.h"
 #include "net/base/hash_value.h"

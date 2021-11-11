@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"

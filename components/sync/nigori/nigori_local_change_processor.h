@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_metadata.pb.h"

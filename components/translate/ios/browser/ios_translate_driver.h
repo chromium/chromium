@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"

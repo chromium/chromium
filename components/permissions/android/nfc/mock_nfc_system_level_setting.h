@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_ANDROID_NFC_MOCK_NFC_SYSTEM_LEVEL_SETTING_H_
 #define COMPONENTS_PERMISSIONS_ANDROID_NFC_MOCK_NFC_SYSTEM_LEVEL_SETTING_H_
 
-#include "base/macros.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting.h"
 
 namespace permissions {

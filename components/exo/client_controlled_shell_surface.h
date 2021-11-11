@@ -13,7 +13,6 @@
 #include "ash/wm/client_controlled_state.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/exo/client_controlled_accelerators.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/hit_test.h"

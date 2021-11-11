@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"

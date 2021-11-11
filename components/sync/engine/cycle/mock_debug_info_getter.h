@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_ENGINE_CYCLE_MOCK_DEBUG_INFO_GETTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/protocol/client_debug_info.pb.h"
 

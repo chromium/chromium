@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "cc/layers/layer.h"
 #include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/android/compositor_client.h"

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"

@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/prefs/pref_change_registrar.h"

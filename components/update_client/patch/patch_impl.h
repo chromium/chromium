@@ -6,7 +6,6 @@
 #define COMPONENTS_UPDATE_CLIENT_PATCH_PATCH_IMPL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/update_client/patcher.h"

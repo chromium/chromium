@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 

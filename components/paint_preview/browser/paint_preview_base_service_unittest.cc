@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"

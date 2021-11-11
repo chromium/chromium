@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_IMPL_H_
 #define COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "components/signin/ios/browser/active_state_manager.h"

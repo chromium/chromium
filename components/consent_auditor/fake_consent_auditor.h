@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

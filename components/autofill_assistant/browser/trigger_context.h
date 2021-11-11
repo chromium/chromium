@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 

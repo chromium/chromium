@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"

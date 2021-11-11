@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"

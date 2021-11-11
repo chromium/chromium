@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"

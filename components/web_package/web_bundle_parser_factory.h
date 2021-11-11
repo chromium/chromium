@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

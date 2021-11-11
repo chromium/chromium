@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 
 namespace autofill {

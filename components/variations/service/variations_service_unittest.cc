@@ -17,7 +17,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_INITIALIZATION_TASK_H_
 #define COMPONENTS_PAYMENTS_CONTENT_INITIALIZATION_TASK_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 

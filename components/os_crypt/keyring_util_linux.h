@@ -18,7 +18,6 @@
 #include <gnome-keyring.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 // Many of the gnome_keyring_* functions use variable arguments, which makes
 // them difficult if not impossible to truly wrap in C. Therefore, we use

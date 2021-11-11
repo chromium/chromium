@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_handler.h"
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_POPUP_TRACKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_POPUP_TRACKER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"

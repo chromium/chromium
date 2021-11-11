@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SETTINGS_PAGE_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SETTINGS_PAGE_HELPER_H_
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }

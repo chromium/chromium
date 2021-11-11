@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NACL_LOADER_NACL_TRUSTED_LISTENER_H_
 #define COMPONENTS_NACL_LOADER_NACL_TRUSTED_LISTENER_H_
 
-#include "base/macros.h"
 #include "components/nacl/common/nacl.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

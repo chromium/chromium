@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_KEEP_ALIVE_REGISTRY_SCOPED_KEEP_ALIVE_H_
 #define COMPONENTS_KEEP_ALIVE_REGISTRY_SCOPED_KEEP_ALIVE_H_
 
-#include "base/macros.h"
-
 enum class KeepAliveOrigin;
 enum class KeepAliveRestartOption;
 

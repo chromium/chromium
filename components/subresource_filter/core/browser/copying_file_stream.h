@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_COPYING_FILE_STREAM_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 namespace subresource_filter {

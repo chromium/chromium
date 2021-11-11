@@ -6,7 +6,6 @@
 #define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_OBSERVER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 namespace content {
 class WebContents;

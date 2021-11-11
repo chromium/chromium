@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/initializable_background_download_service.h"
 #include "components/download/public/background_service/clients.h"
 

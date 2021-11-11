@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori.h"

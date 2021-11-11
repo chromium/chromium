@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"

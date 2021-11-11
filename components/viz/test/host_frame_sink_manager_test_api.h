@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 #define COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 
-#include "base/macros.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 
 namespace viz {

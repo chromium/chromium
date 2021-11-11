@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/wake_lock.mojom.h"
 #include "components/arc/session/connection_observer.h"

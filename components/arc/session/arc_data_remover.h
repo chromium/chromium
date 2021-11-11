@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_SESSION_ARC_DATA_REMOVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"

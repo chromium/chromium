@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trials.h"

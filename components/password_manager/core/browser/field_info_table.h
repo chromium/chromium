@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"

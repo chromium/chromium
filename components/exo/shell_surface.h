@@ -8,7 +8,6 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/ui_base_types.h"
 

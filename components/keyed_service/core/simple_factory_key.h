@@ -6,7 +6,6 @@
 #define COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_FACTORY_KEY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 // A key used by SimpleKeyedServiceFactory is used to associated the

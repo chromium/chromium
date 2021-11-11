@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface.h"

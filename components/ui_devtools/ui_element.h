@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
 #include "ui/base/interaction/element_identifier.h"

@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 // This class implements the native methods of HeapProfilingTestShim.java, and
 // acts as a bridge to TestDriver. Note that this class is only used for

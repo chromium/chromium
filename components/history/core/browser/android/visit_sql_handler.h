@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_VISIT_SQL_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_VISIT_SQL_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace base {

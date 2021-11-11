@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings_types.h"

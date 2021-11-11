@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"

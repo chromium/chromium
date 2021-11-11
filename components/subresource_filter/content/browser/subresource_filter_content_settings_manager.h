@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"

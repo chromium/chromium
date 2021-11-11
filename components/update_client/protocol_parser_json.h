@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/update_client/protocol_parser.h"
 
 namespace update_client {

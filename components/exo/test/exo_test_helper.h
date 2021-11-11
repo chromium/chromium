@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/buffer_types.h"

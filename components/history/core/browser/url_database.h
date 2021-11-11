@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"

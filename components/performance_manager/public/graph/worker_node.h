@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"

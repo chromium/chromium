@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {

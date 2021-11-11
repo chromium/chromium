@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/log_sink.h"

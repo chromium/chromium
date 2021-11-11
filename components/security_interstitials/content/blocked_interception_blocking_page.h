@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/blocked_interception_ui.h"

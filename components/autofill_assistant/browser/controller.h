@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"

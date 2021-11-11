@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 #include "components/arc/mojom/audio.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

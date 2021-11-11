@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_MOCK_PASSWORD_PROTECTION_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

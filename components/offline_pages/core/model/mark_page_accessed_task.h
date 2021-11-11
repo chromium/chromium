@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_MARK_PAGE_ACCESSED_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_MARK_PAGE_ACCESSED_TASK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/offline_pages/task/task.h"

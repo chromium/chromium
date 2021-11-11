@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEB_RESOURCE_EULA_ACCEPTED_NOTIFIER_H_
 #define COMPONENTS_WEB_RESOURCE_EULA_ACCEPTED_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

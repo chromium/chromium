@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/sync/driver/data_type_controller.h"
 
 namespace sync_sessions {

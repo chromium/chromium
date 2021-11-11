@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 

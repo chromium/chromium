@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_UNSENT_LOG_STORE_METRICS_H_
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/metrics/unsent_log_store.h"
 
 namespace metrics {

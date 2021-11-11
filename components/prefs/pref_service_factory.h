@@ -6,7 +6,6 @@
 #define COMPONENTS_PREFS_PREF_SERVICE_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry.h"

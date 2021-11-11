@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"

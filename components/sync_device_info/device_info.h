@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

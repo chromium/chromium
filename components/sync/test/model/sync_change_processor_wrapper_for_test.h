@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_TEST_MODEL_SYNC_CHANGE_PROCESSOR_WRAPPER_FOR_TEST_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/sync/model/sync_change_processor.h"
 
 namespace syncer {

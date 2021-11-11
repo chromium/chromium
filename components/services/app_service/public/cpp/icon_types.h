@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 

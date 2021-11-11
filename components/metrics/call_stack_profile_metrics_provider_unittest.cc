@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

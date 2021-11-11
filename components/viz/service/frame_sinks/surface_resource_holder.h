@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"

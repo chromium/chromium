@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content {

@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_CLIENT_H_
 
 #include <string>
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

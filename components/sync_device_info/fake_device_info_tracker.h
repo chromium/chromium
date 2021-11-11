@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

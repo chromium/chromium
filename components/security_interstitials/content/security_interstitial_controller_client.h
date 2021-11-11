@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 

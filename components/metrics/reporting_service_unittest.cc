@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

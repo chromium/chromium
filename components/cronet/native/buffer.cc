@@ -4,7 +4,6 @@
 
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 

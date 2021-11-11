@@ -6,7 +6,6 @@
 #define COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_SHUTDOWN_NOTIFIER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // This is a helper class for objects that depend on one or more keyed services,

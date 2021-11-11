@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace data_reduction_proxy {

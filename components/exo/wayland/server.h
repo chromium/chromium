@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/scoped_wl.h"
 #include "ui/display/display_observer.h"

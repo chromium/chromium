@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/synchronization/atomic_flag.h"

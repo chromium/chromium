@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

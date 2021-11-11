@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYSTEM_MEDIA_CONTROLS_MOCK_SYSTEM_MEDIA_CONTROLS_H_
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_MOCK_SYSTEM_MEDIA_CONTROLS_H_
 
-#include "base/macros.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

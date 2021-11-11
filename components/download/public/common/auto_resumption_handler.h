@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "components/download/public/common/download_export.h"

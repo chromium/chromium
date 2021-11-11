@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 
 namespace autofill {

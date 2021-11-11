@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/sandbox_buildflags.h"
 

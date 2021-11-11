@@ -6,7 +6,6 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_VIEWS_LAYER_DIMMER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace ui {

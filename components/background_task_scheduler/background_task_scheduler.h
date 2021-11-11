@@ -6,7 +6,6 @@
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/background_task_scheduler/task_info.h"
 #include "components/keyed_service/core/keyed_service.h"
 

@@ -6,7 +6,6 @@
 #define COMPONENTS_COMPONENT_UPDATER_TIMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

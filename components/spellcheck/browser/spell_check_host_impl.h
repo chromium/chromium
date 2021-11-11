@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 #define COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"

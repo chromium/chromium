@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_DIAGNOSTICS_PROVIDER_IMPL_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_DIAGNOSTICS_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 
 class GaiaCookieManagerService;

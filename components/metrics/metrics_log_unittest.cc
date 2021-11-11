@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/sample_vector.h"

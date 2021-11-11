@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_BROWSING_DATA_CORE_COUNTERS_AUTOFILL_COUNTER_H_
 #define COMPONENTS_BROWSING_DATA_CORE_COUNTERS_AUTOFILL_COUNTER_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"

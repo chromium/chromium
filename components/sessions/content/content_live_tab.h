@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/live_tab.h"

@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/instance_id.h"

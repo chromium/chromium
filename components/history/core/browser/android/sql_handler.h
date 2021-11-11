@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_SQL_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_SQL_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/android_history_types.h"
 
 namespace history {

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/value_store/value_store.h"

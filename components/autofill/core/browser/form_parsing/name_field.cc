@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"

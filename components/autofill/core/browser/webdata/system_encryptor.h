@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_SYSTEM_ENCRYPTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_SYSTEM_ENCRYPTOR_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/webdata/autofill_table_encryptor.h"
 
 namespace autofill {

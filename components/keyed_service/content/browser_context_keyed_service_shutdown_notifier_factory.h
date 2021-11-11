@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_
 #define COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_KEYED_SERVICE_SHUTDOWN_NOTIFIER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 

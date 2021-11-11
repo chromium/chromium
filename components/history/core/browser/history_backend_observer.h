@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history {

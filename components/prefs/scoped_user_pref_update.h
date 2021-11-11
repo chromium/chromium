@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"

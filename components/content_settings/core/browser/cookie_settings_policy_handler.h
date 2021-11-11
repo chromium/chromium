@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_POLICY_HANDLER_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_LOCATION_ANDROID_MOCK_LOCATION_SETTINGS_H_
 #define COMPONENTS_LOCATION_ANDROID_MOCK_LOCATION_SETTINGS_H_
 
-#include "base/macros.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_dialog_context.h"
 #include "components/location/android/location_settings_dialog_outcome.h"

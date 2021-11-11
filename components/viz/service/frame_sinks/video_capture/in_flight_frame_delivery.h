@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_IN_FLIGHT_FRAME_DELIVERY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/service/viz_service_export.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 

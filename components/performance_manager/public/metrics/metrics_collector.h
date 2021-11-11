@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/frame_node.h"

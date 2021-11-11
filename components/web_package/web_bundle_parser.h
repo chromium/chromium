@@ -6,7 +6,6 @@
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/payments/content/payment_app.h"

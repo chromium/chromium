@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {

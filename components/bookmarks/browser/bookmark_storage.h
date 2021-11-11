@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"

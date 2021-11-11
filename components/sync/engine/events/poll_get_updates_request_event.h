@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"

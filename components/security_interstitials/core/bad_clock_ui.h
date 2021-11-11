@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_BAD_CLOCK_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_BAD_CLOCK_UI_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"

@@ -13,7 +13,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"

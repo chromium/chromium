@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"

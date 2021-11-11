@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/browser/test/mock_screen_availability_listener.h"
 #include "components/media_router/common/media_source.h"

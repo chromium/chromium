@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

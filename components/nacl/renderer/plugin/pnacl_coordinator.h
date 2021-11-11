@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/nacl/renderer/plugin/nacl_subprocess.h"
 #include "components/nacl/renderer/plugin/plugin_error.h"

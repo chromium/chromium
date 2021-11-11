@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_DEVELOPER_CONSOLE_LOGGER_H_
 #define COMPONENTS_PAYMENTS_CONTENT_DEVELOPER_CONSOLE_LOGGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/core/error_logger.h"
 

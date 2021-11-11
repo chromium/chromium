@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
 
 class PrefService;

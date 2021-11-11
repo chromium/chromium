@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
 
 namespace payments {

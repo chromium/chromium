@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_TEST_WAIT_TOP_SITES_LOADED_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_TEST_WAIT_TOP_SITES_LOADED_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "components/history/core/browser/top_sites_observer.h"

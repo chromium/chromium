@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

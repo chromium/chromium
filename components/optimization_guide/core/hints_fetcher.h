@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"

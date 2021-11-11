@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_PAYMENT_HANDLER_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
 class GURL;

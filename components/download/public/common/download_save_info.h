@@ -11,7 +11,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_export.h"
 #include "crypto/secure_hash.h"
 

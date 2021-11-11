@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 
-#include "base/macros.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 namespace subresource_filter {

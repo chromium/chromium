@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_TEST_MOCK_CLIENT_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_TEST_MOCK_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"

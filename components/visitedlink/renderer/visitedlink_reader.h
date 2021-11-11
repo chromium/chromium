@@ -6,7 +6,6 @@
 #define COMPONENTS_VISITEDLINK_RENDERER_VISITEDLINK_READER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"

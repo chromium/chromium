@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

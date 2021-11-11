@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/timer/timer.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
