@@ -43,6 +43,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   void AddedToWidget() override;
   bool Accept() override;
   void OnThemeChanged() override;
+  views::View* GetInitiallyFocusedView() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

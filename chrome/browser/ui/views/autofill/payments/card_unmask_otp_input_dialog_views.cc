@@ -130,6 +130,11 @@ void CardUnmaskOtpInputDialogViews::OnThemeChanged() {
       GetColorProvider()->GetColor(ui::kColorThrobber));
 }
 
+views::View* CardUnmaskOtpInputDialogViews::GetInitiallyFocusedView() {
+  DCHECK(otp_input_textfield_);
+  return otp_input_textfield_;
+}
+
 void CardUnmaskOtpInputDialogViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
