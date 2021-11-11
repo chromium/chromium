@@ -8,17 +8,6 @@
 #include "v8/include/cppgc/garbage-collected.h"
 #include "v8/include/cppgc/type-traits.h"
 
-// GC_PLUGIN_IGNORE is used to make the plugin ignore a particular class or
-// field when checking for proper usage.  When using GC_PLUGIN_IGNORE
-// a bug-number should be provided as an argument where the bug describes
-// what needs to happen to remove the GC_PLUGIN_IGNORE again.
-#if defined(__clang__)
-#define GC_PLUGIN_IGNORE(bug) \
-  __attribute__((annotate("blink_gc_plugin_ignore")))
-#else
-#define GC_PLUGIN_IGNORE(bug)
-#endif
-
 namespace blink {
 
 using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;

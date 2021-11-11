@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -58,7 +59,7 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
 
  private:
   union {
-    GC_PLUGIN_IGNORE("1146383")
+    GC_PLUGIN_IGNORE("https://crbug.com/1146383")
     Member<LayoutBox> box_;  // Set if const_type_ == kBlock
 
     int line_number_;  // Set if const_type_ == kLine
