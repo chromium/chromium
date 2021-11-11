@@ -1,1 +1,1 @@
-mixins: "//chromeos/components/phonehub/COMMON_METADATA"
+mixins: "//ash/components/phonehub/COMMON_METADATA"

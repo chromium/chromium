@@ -8,12 +8,12 @@
 #include <stdint.h>
 #include <memory>
 
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

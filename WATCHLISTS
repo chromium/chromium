@@ -1554,7 +1554,7 @@
     },
     'phonehub': {
       'filepath': 'chrome/browser/ash/phonehub/'\
-                  '|chromeos/components/phonehub/'\
+                  '|ash/components/phonehub/'\
                   '|ash/system/phonehub/',
     },
     'picture_in_picture': {

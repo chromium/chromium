@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/fake_notification_access_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"

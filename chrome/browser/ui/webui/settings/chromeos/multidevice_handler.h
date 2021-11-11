@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 
+#include "ash/components/phonehub/notification_access_manager.h"
+#include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -13,8 +15,6 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/phonehub/notification_access_manager.h"
-#include "chromeos/components/phonehub/notification_access_setup_operation.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"

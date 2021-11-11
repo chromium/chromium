@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;

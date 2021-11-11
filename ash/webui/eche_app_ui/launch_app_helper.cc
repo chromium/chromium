@@ -4,11 +4,11 @@
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/phonehub/screen_lock_manager.h"
 
 namespace ash {
 namespace eche_app {

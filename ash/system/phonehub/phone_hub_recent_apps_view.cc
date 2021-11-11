@@ -7,6 +7,7 @@
 #include <numeric>
 #include <vector>
 
+#include "ash/components/phonehub/notification.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
@@ -14,7 +15,6 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/cxx17_backports.h"
-#include "chromeos/components/phonehub/notification.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"

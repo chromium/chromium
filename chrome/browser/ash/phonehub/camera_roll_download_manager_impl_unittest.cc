@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/phonehub/camera_roll_download_manager.h"
+#include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -26,8 +28,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/components/phonehub/camera_roll_download_manager.h"
-#include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"

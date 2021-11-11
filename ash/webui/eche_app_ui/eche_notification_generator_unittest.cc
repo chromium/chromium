@@ -4,8 +4,8 @@
 
 #include "ash/webui/eche_app_ui/eche_notification_generator.h"
 
+#include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
-#include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

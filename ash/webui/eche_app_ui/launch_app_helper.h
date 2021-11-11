@@ -5,10 +5,10 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 #define ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

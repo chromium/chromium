@@ -4,6 +4,7 @@
 
 #include "ash/system/model/system_tray_model.h"
 
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -21,7 +22,6 @@
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 
 namespace ash {
 

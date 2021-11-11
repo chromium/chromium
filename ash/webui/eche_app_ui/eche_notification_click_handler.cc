@@ -4,10 +4,10 @@
 
 #include "ash/webui/eche_app_ui/eche_notification_click_handler.h"
 
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 
 namespace ash {
 namespace eche_app {

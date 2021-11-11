@@ -5,8 +5,8 @@
 #define ASH_SYSTEM_PHONEHUB_CAMERA_ROLL_OPT_IN_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/system/phonehub/sub_feature_opt_in_view.h"
-#include "chromeos/components/phonehub/camera_roll_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {

@@ -6,9 +6,9 @@
 #define ASH_SYSTEM_PHONEHUB_CAMERA_ROLL_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/system/phonehub/camera_roll_opt_in_view.h"
 #include "base/gtest_prod_util.h"
-#include "chromeos/components/phonehub/camera_roll_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 

@@ -6,6 +6,11 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/browser_tabs_model_provider.h"
+#include "ash/components/phonehub/connection_scheduler.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/tether_controller.h"
+#include "ash/components/phonehub/user_action_recorder.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
@@ -18,11 +23,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "chromeos/components/phonehub/browser_tabs_model_provider.h"
-#include "chromeos/components/phonehub/connection_scheduler.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/phonehub/tether_controller.h"
-#include "chromeos/components/phonehub/user_action_recorder.h"
 
 using FeatureStatus = chromeos::phonehub::FeatureStatus;
 using TetherStatus = chromeos::phonehub::TetherController::Status;

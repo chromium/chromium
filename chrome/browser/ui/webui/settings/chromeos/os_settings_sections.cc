@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
 
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/chromeos/about_section.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/privacy_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/reset_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search_section.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
 
 namespace chromeos {
 namespace settings {

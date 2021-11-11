@@ -5,15 +5,15 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_RECENT_APP_CLICK_HANDLER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_RECENT_APP_CLICK_HANDLER_H_
 
+#include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/notification_click_handler.h"
+#include "ash/components/phonehub/notification_interaction_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/recent_app_click_observer.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/callback.h"
-#include "chromeos/components/phonehub/notification.h"
-#include "chromeos/components/phonehub/notification_click_handler.h"
-#include "chromeos/components/phonehub/notification_interaction_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/phonehub/recent_app_click_observer.h"
-#include "chromeos/components/phonehub/recent_apps_interaction_handler.h"
 
 namespace ash {
 namespace eche_app {

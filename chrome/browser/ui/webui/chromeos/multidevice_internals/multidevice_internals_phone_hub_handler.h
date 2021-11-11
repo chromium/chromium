@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 
+#include "ash/components/phonehub/do_not_disturb_controller.h"
+#include "ash/components/phonehub/find_my_device_controller.h"
+#include "ash/components/phonehub/notification_manager.h"
+#include "ash/components/phonehub/onboarding_ui_tracker.h"
+#include "ash/components/phonehub/tether_controller.h"
 #include "base/scoped_observation.h"
-#include "chromeos/components/phonehub/do_not_disturb_controller.h"
-#include "chromeos/components/phonehub/find_my_device_controller.h"
-#include "chromeos/components/phonehub/notification_manager.h"
-#include "chromeos/components/phonehub/onboarding_ui_tracker.h"
-#include "chromeos/components/phonehub/tether_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {

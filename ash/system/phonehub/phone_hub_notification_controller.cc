@@ -4,6 +4,10 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/notification_interaction_handler.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/phone_model.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -21,10 +25,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/phonehub/notification.h"
-#include "chromeos/components/phonehub/notification_interaction_handler.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/phonehub/phone_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/text_elider.h"

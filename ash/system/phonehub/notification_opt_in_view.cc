@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/phonehub/notification_access_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
-#include "chromeos/components/phonehub/notification_access_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
