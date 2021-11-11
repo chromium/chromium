@@ -13425,6 +13425,12 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedCount"
       label="Number of slots quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.MaxAllocatedSize"
+      label="Highwatermark for allocated memory for malloc(). Recorded only
+             when PartitionAlloc is used as malloc()."/>
+  <suffix name="Malloc.MaxCommittedSize"
+      label="Highwatermark for committed memory for malloc(). Recorded only
+             when PartitionAlloc is used as malloc()."/>
   <suffix name="Malloc.ThreadCache"
       label="Memory used by all thread caches, recorded when PartitionAlloc
              is used as malloc()."/>

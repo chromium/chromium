@@ -225,6 +225,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
      MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxAllocatedSize",
+     MetricSize::kLarge, "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxCommittedSize",
+     MetricSize::kLarge, "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
