@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
 
     chrome.enterprise.reportingPrivate.getDeviceInfo((deviceInfo) => {
       chrome.test.assertNoLastError();
-      let count = 8;
+      let count = 9;
       if(deviceInfo.windowsUserDomain){
         count++;
         chrome.test.assertEq(typeof deviceInfo.windowsUserDomain, "string");
@@ -244,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
       chrome.test.assertEq(count, Object.keys(deviceInfo).length);
       chrome.test.assertEq('%s', deviceInfo.osName);
       chrome.test.assertEq(typeof deviceInfo.osVersion, 'string');
+      chrome.test.assertEq(typeof deviceInfo.securityPatchLevel, 'string');
       chrome.test.assertEq(typeof deviceInfo.deviceHostName, 'string');
       chrome.test.assertEq(typeof deviceInfo.deviceModel, 'string');
       chrome.test.assertEq(typeof deviceInfo.serialNumber, 'string');
@@ -263,9 +264,10 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetDeviceInfo) {
     chrome.enterprise.reportingPrivate.getDeviceInfo((deviceInfo) => {
       chrome.test.assertNoLastError();
 
-      chrome.test.assertEq(8, Object.keys(deviceInfo).length);
+      chrome.test.assertEq(9, Object.keys(deviceInfo).length);
       chrome.test.assertEq('%s', deviceInfo.osName);
       chrome.test.assertEq(typeof deviceInfo.osVersion, 'string');
+      chrome.test.assertEq(typeof deviceInfo.securityPatchLevel, 'string');
       chrome.test.assertEq(typeof deviceInfo.deviceHostName, 'string');
       chrome.test.assertEq(typeof deviceInfo.deviceModel, 'string');
       chrome.test.assertEq(typeof deviceInfo.serialNumber, 'string');

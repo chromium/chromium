@@ -325,6 +325,8 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
 
   device_info.os_name = std::move(device_signals.os_name);
   device_info.os_version = std::move(device_signals.os_version);
+  device_info.security_patch_level =
+      std::move(device_signals.security_patch_level);
   device_info.device_host_name = std::move(device_signals.device_host_name);
   device_info.device_model = std::move(device_signals.device_model);
   device_info.serial_number = std::move(device_signals.serial_number);

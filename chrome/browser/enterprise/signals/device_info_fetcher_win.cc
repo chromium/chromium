@@ -14,12 +14,14 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
+#include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
@@ -304,6 +306,12 @@ absl::optional<std::string> GetWindowsUserDomain() {
              : absl::make_optional(domain);
 }
 
+std::string GetSecurityPatchLevel() {
+  base::win::OSInfo* gi = base::win::OSInfo::GetInstance();
+
+  return base::NumberToString(gi->version_number().patch);
+}
+
 }  // namespace
 
 DeviceInfoFetcherWin::DeviceInfoFetcherWin() = default;
@@ -314,6 +322,7 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "windows";
   device_info.os_version = base::SysInfo::OperatingSystemVersion();
+  device_info.security_patch_level = GetSecurityPatchLevel();
   device_info.device_host_name = GetComputerName();
   device_info.device_model = base::SysInfo::HardwareModelName();
   device_info.serial_number = GetSerialNumber();

@@ -35,6 +35,7 @@ class StubDeviceFetcher : public DeviceInfoFetcher {
     DeviceInfo device_info;
     device_info.os_name = "stubOS";
     device_info.os_version = "0.0.0.0";
+    device_info.security_patch_level = "security patch level";
     device_info.device_host_name = "midnightshift";
     device_info.device_model = "topshot";
     device_info.serial_number = "twirlchange";

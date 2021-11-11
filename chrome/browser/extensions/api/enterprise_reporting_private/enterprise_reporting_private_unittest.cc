@@ -339,6 +339,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   // Verify a stub implementation.
   EXPECT_EQ("stubOS", info.os_name);
   EXPECT_EQ("0.0.0.0", info.os_version);
+  EXPECT_EQ("security patch level", info.security_patch_level);
   EXPECT_EQ("midnightshift", info.device_host_name);
   EXPECT_EQ("topshot", info.device_model);
   EXPECT_EQ("twirlchange", info.serial_number);
@@ -364,6 +365,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
           device_info_fetcher->Fetch());
   EXPECT_EQ("stubOS", info.os_name);
   EXPECT_EQ("0.0.0.0", info.os_version);
+  EXPECT_EQ("security patch level", info.security_patch_level);
   EXPECT_EQ("midnightshift", info.device_host_name);
   EXPECT_EQ("topshot", info.device_model);
   EXPECT_EQ("twirlchange", info.serial_number);

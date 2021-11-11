@@ -22,6 +22,7 @@ struct DeviceInfo {
 
   std::string os_name;
   std::string os_version;
+  std::string security_patch_level;
   std::string device_host_name;
   std::string device_model;
   std::string serial_number;
