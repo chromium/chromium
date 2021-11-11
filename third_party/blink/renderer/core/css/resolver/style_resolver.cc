@@ -526,7 +526,7 @@ static void MatchVTTRules(const Element& element,
         style_sheet_index++;
       }
     }
-    collector.SortAndTransferMatchedRules();
+    collector.SortAndTransferMatchedRules(true /* is_vtt_embedded_style */);
   }
 }
 

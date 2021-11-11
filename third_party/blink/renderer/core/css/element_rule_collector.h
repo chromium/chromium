@@ -128,7 +128,7 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingPartPseudoRules(const MatchRequest&,
                                       PartNames&,
                                       bool for_shadow_pseudo);
-  void SortAndTransferMatchedRules();
+  void SortAndTransferMatchedRules(bool is_vtt_embedded_style = false);
   void ClearMatchedRules();
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  bool is_cacheable = true,

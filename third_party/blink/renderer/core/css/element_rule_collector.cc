@@ -121,6 +121,9 @@ class CascadeLayerSeeker {
 
  private:
   static const CascadeLayerMap* FindLayerMap(const MatchRequest& request) {
+    // VTT embedded style is not in any layer.
+    if (request.vtt_originating_element)
+      return nullptr;
     if (request.scope) {
       return request.scope->ContainingTreeScope()
           .GetScopedStyleResolver()
@@ -477,7 +480,8 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   EnsureRuleList()->emplace_back(css_rule, rule_data->SelectorIndex());
 }
 
-void ElementRuleCollector::SortAndTransferMatchedRules() {
+void ElementRuleCollector::SortAndTransferMatchedRules(
+    bool is_vtt_embedded_style) {
   if (matched_rules_.IsEmpty())
     return;
 
@@ -510,6 +514,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules() {
             .SetValidPropertyFilter(
                 rule_data->GetValidPropertyFilter(matching_ua_rules_))
             .SetLayerOrder(matched_rule.LayerOrder())
+            .SetIsInlineStyle(is_vtt_embedded_style)
             .Build());
   }
 }
