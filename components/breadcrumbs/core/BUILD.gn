@@ -8,6 +8,8 @@ source_set("core") {
     "application_breadcrumbs_logger.h",
     "breadcrumb_manager.cc",
     "breadcrumb_manager.h",
+    "breadcrumb_manager_browser_agent.cc",
+    "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_keyed_service.cc",
     "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_observer.h",
