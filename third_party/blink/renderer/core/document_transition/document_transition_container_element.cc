@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_container_element.h"
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 
@@ -76,6 +78,9 @@ DocumentTransitionContainerElement::~DocumentTransitionContainerElement() =
     default;
 
 void DocumentTransitionContainerElement::Prepare(Element* target_element) {
+  DCHECK_EQ(state_, State::kIdle);
+  state_ = State::kPreparing;
+
   if (target_element) {
     old_content_ =
         MakeGarbageCollected<DocumentTransitionContentElement>(GetDocument());
@@ -87,17 +92,27 @@ void DocumentTransitionContainerElement::Prepare(Element* target_element) {
         GetDocument().domWindow(),
         MakeGarbageCollected<ResizeObserverDelegate>(this, old_content_));
     resize_observer_->observe(target_element);
+
+    target_element_ = target_element;
+    UpdateTransform();
   }
 }
 
 void DocumentTransitionContainerElement::PrepareResolved() {
+  DCHECK_EQ(state_, State::kPreparing);
+  state_ = State::kPrepared;
+
   if (resize_observer_) {
     resize_observer_->disconnect();
     resize_observer_ = nullptr;
+    target_element_ = nullptr;
   }
 }
 
 void DocumentTransitionContainerElement::Start(Element* target_element) {
+  DCHECK_EQ(state_, State::kPrepared);
+  state_ = State::kStarted;
+
   if (target_element) {
     new_content_ =
         MakeGarbageCollected<DocumentTransitionContentElement>(GetDocument());
@@ -107,6 +122,9 @@ void DocumentTransitionContainerElement::Start(Element* target_element) {
         GetDocument().domWindow(),
         MakeGarbageCollected<ResizeObserverDelegate>(this, new_content_));
     resize_observer_->observe(target_element);
+
+    target_element_ = target_element;
+    UpdateTransform();
   }
 
   DCHECK(old_content_ || new_content_)
@@ -114,7 +132,17 @@ void DocumentTransitionContainerElement::Start(Element* target_element) {
 }
 
 void DocumentTransitionContainerElement::StartFinished() {
+  DCHECK_EQ(state_, State::kStarted);
+  state_ = State::kFinished;
+
   GetDocument().body()->removeChild(this);
+
+  if (resize_observer_) {
+    resize_observer_->disconnect();
+    resize_observer_ = nullptr;
+  }
+
+  target_element_ = nullptr;
 }
 
 void DocumentTransitionContainerElement::WasResized(
@@ -125,10 +153,28 @@ void DocumentTransitionContainerElement::WasResized(
                          CSSPrimitiveValue::UnitType::kPixels);
 }
 
+void DocumentTransitionContainerElement::UpdateTransform() {
+  if (!target_element_)
+    return;
+
+  if (auto* layout_object = target_element_->GetLayoutObject()) {
+    auto transform = layout_object->LocalToAbsoluteTransform();
+    if (transform == container_transform_)
+      return;
+
+    container_transform_ = transform;
+    SetInlineStyleProperty(
+        CSSPropertyID::kTransform,
+        ComputedStyleUtils::ValueForTransformationMatrix(transform, 1, false)
+            ->CssText());
+  }
+}
+
 void DocumentTransitionContainerElement::Trace(Visitor* visitor) const {
   visitor->Trace(old_content_);
   visitor->Trace(new_content_);
   visitor->Trace(resize_observer_);
+  visitor->Trace(target_element_);
   HTMLElement::Trace(visitor);
 }
 

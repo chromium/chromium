@@ -337,7 +337,6 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
 
   DCHECK(state_ == State::kPreparing);
   DCHECK(prepare_promise_resolver_);
-
   for (wtf_size_t i = 0; i < transition_elements_.size(); i++) {
     transition_elements_[i]->PrepareResolved();
   }
@@ -448,6 +447,14 @@ void DocumentTransition::VerifySharedElements() {
     }
     active_element = nullptr;
   }
+}
+
+void DocumentTransition::UpdateTransforms() {
+  DCHECK(document_->Lifecycle().GetState() >=
+         DocumentLifecycle::LifecycleState::kLayoutClean);
+
+  for (auto& transition_element : transition_elements_)
+    transition_element->UpdateTransform();
 }
 
 void DocumentTransition::SetActiveSharedElements(

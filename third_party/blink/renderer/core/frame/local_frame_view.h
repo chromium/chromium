@@ -964,6 +964,9 @@ class CORE_EXPORT LocalFrameView final
   bool RunResizeObserverSteps(DocumentLifecycle::LifecycleState target_state);
   void ClearResizeObserverLimit();
 
+  bool RunDocumentTransitionSteps(
+      DocumentLifecycle::LifecycleState target_state);
+
   bool CheckLayoutInvalidationIsAllowed() const;
 
   // This runs the intersection observer steps for observations that need to

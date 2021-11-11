@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_content_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
 
@@ -36,11 +37,18 @@ class CORE_EXPORT DocumentTransitionContainerElement : public HTMLElement {
 
   void Trace(Visitor* visitor) const override;
 
+  void UpdateTransform();
+
  private:
   class ResizeObserverDelegate;
 
+  // These state transitions are done in a serial order.
+  enum class State { kIdle, kPreparing, kPrepared, kStarted, kFinished };
+
   // Invoked when the element with the live snapshot is resized.
   void WasResized(const LayoutSize& new_size);
+
+  State state_ = State::kIdle;
 
   Member<DocumentTransitionContentElement> old_content_;
   Member<DocumentTransitionContentElement> new_content_;
@@ -48,6 +56,13 @@ class CORE_EXPORT DocumentTransitionContainerElement : public HTMLElement {
   // This is used to subscribe to changes in the size of the element's live
   // content.
   Member<ResizeObserver> resize_observer_;
+
+  // The element providing the live content.
+  Member<Element> target_element_;
+
+  // The transform set on the container. This is used to keep the container's
+  // transform in sync with the live element.
+  TransformationMatrix container_transform_;
 };
 
 }  // namespace blink

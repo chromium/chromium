@@ -78,6 +78,11 @@ class CORE_EXPORT DocumentTransition
   // https://github.com/vmpstr/shared-element-transitions/issues/17
   void VerifySharedElements();
 
+  // Updates the transform on |transition_elements_| to be consistent with the
+  // post layout transform on shared elements. This must be called with a clean
+  // layout.
+  void UpdateTransforms();
+
  private:
   friend class DocumentTransitionTest;
 
