@@ -60,6 +60,10 @@ class ElementFinder : public WebControllerWorker {
     ~Result();
     Result(const Result&);
 
+    // Create an instance that is deemed to be empty. This can be used for
+    // optional Elements (e.g. optional an frame).
+    static Result EmptyResult();
+
     DomObjectFrameStack dom_object;
 
     // The render frame host contains the element.
@@ -76,6 +80,10 @@ class ElementFinder : public WebControllerWorker {
     const std::vector<JsObjectIdentifier>& frame_stack() const {
       return dom_object.frame_stack;
     }
+
+    bool IsEmpty() const {
+      return object_id().empty() && node_frame_id().empty();
+    }
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
@@ -91,8 +99,9 @@ class ElementFinder : public WebControllerWorker {
   using Callback =
       base::OnceCallback<void(const ClientStatus&, std::unique_ptr<Result>)>;
 
-  // Finds the element and calls the callback.
-  void Start(Callback callback);
+  // Finds the element and calls the callback starting from the |start_element|.
+  // If it is empty, it will start looking for the Document of the main frame.
+  void Start(const Result& start_element, Callback callback);
 
  private:
   // Helper for building JavaScript functions.
@@ -165,15 +174,6 @@ class ElementFinder : public WebControllerWorker {
     // will be defined only once.
     void DefineQueryAllDeduplicated();
   };
-
-  // Finds the element, starting at |frame| and calls |callback|.
-  //
-  // |document_object_id| might be empty, in which case we first look for the
-  // frame's document.
-  void StartInternal(Callback callback,
-                     content::RenderFrameHost* frame,
-                     const std::string& frame_id,
-                     const std::string& document_object_id);
 
   // Update the log info with details about the current run.
   void UpdateLogInfo(const ClientStatus& status);
@@ -350,9 +350,6 @@ class ElementFinder : public WebControllerWorker {
   // context of the frame. Might be empty if no frame id needs to be
   // specified.
   std::string current_frame_id_;
-
-  // Object ID of the root of |current_frame_|.
-  std::string current_frame_root_;
 
   // Object IDs of the current set matching elements. Cleared once it's used to
   // query or filter.

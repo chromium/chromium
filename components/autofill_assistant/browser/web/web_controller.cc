@@ -840,7 +840,8 @@ void WebController::OnWaitForDocumentReadyState(
 void WebController::FindElement(const Selector& selector,
                                 bool strict_mode,
                                 ElementFinder::Callback callback) {
-  RunElementFinder(selector,
+  RunElementFinder(/* start_element= */ ElementFinder::Result::EmptyResult(),
+                   selector,
                    strict_mode ? ElementFinder::ResultType::kExactlyOneMatch
                                : ElementFinder::ResultType::kAnyMatch,
                    std::move(callback));
@@ -848,11 +849,13 @@ void WebController::FindElement(const Selector& selector,
 
 void WebController::FindAllElements(const Selector& selector,
                                     ElementFinder::Callback callback) {
-  RunElementFinder(selector, ElementFinder::ResultType::kMatchArray,
+  RunElementFinder(/* start_element= */ ElementFinder::Result::EmptyResult(),
+                   selector, ElementFinder::ResultType::kMatchArray,
                    std::move(callback));
 }
 
-void WebController::RunElementFinder(const Selector& selector,
+void WebController::RunElementFinder(const ElementFinder::Result& start_element,
+                                     const Selector& selector,
                                      ElementFinder::ResultType result_type,
                                      ElementFinder::Callback callback) {
   auto finder = std::make_unique<ElementFinder>(
@@ -861,9 +864,9 @@ void WebController::RunElementFinder(const Selector& selector,
 
   auto* ptr = finder.get();
   pending_workers_.emplace_back(std::move(finder));
-  ptr->Start(base::BindOnce(&WebController::OnFindElementResult,
-                            weak_ptr_factory_.GetWeakPtr(), ptr,
-                            std::move(callback)));
+  ptr->Start(start_element, base::BindOnce(&WebController::OnFindElementResult,
+                                           weak_ptr_factory_.GetWeakPtr(), ptr,
+                                           std::move(callback)));
 }
 
 void WebController::OnFindElementResult(

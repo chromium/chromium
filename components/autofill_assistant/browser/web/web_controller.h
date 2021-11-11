@@ -93,6 +93,13 @@ class WebController {
                            bool strict_mode,
                            ElementFinder::Callback callback);
 
+  // Find the element given by |selector| starting from the given
+  // |start_element|. Returns results or errors based on the |result_type|.
+  virtual void RunElementFinder(const ElementFinder::Result& start_element,
+                                const Selector& selector,
+                                ElementFinder::ResultType result_type,
+                                ElementFinder::Callback callback);
+
   // Find all elements matching |selector|. If there are no matches, the status
   // will be ELEMENT_RESOLUTION_FAILED.
   virtual void FindAllElements(const Selector& selector,
@@ -402,9 +409,6 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
-  void RunElementFinder(const Selector& selector,
-                        ElementFinder::ResultType result_type,
-                        ElementFinder::Callback callback);
   void OnFindElementResult(ElementFinder* finder_to_release,
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
