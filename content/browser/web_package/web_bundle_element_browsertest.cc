@@ -6,14 +6,12 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
@@ -29,7 +27,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -112,29 +109,32 @@ FrameTreeNode* GetFirstChild(WebContents* web_contents) {
       ->child_at(0);
 }
 
-enum UuidScheme { UrnUuid, UuidInPackage };
+enum class UuidScheme { UrnUuid, UuidInPackage };
+enum class ElementType { Link, Script };
 
 }  // namespace
 
-class LinkWebBundleBrowserTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<UuidScheme> {
+// Tests for both <script type=webbundle> and <link rel=webbundle>.
+class WebBundleElementBrowserTest : public ContentBrowserTest,
+                                    public ::testing::WithParamInterface<
+                                        std::tuple<ElementType, UuidScheme>> {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    switch (info.param) {
-      case UrnUuid:
-        return "UrnUuid";
-      case UuidInPackage:
-        return "UuidInPackage";
-    }
+    ElementType element_type;
+    UuidScheme uuid_scheme;
+    std::tie(element_type, uuid_scheme) = info.param;
+    return base::StringPrintf(
+        "%sElementWith%sScheme",
+        element_type == ElementType::Link ? "Link" : "Script",
+        uuid_scheme == UuidScheme::UrnUuid ? "UrnUuid" : "UuidInPackage");
   }
 
  protected:
-  LinkWebBundleBrowserTest() {
+  WebBundleElementBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
   }
-  ~LinkWebBundleBrowserTest() override = default;
+  ~WebBundleElementBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
@@ -147,11 +147,17 @@ class LinkWebBundleBrowserTest
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.RegisterRequestHandler(base::BindRepeating(
-        &LinkWebBundleBrowserTest::HandleHugeWebBundleRequest,
+        &WebBundleElementBrowserTest::HandleHugeWebBundleRequest,
         base::Unretained(this)));
-    https_server_.RegisterRequestHandler(
-        base::BindRepeating(&LinkWebBundleBrowserTest::InvalidResponseHandler,
-                            base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebBundleElementBrowserTest::HandleTestWebBundleRequest,
+        base::Unretained(this)));
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &WebBundleElementBrowserTest::MonitorResourceRequest,
+        base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebBundleElementBrowserTest::InvalidResponseHandler,
+        base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_server_.Start());
   }
@@ -171,26 +177,65 @@ class LinkWebBundleBrowserTest
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
+  ElementType GetElementType() { return std::get<0>(GetParam()); }
+
+  UuidScheme GetUuidScheme() { return std::get<1>(GetParam()); }
+
+  std::string GetScriptForWebBundle(const char* web_bundle_url) {
+    if (GetElementType() == ElementType::Link) {
+      return base::StringPrintf(R"HTML(
+        {
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = '%s';
+          link.onload = () => window.domAutomationController.send('loaded');
+          link.onerror = () => window.domAutomationController.send('failed');
+          document.body.appendChild(link);
+        }
+      )HTML",
+                                web_bundle_url);
+    }
+    return base::StringPrintf(R"HTML(
+        {
+          const script = document.createElement('script');
+          script.type = 'webbundle';
+          script.textContent = JSON.stringify({"source": '%s'});
+          script.onload = () => window.domAutomationController.send('loaded');
+          script.onerror = () => window.domAutomationController.send('failed');
+          document.body.appendChild(script);
+        }
+      )HTML",
+                              web_bundle_url);
+  }
+
   const char* GetUuidURLPrefix() {
-    return GetParam() == UrnUuid ? "urn:uuid:" : "uuid-in-package:";
+    return GetUuidScheme() == UuidScheme::UrnUuid ? "urn:uuid:"
+                                                  : "uuid-in-package:";
   }
 
   GURL GetUuidURL() {
-    return GetParam() == UrnUuid ? GURL(kUrnUuidURL) : GURL(kUuidInPackageURL);
+    return GetUuidScheme() == UuidScheme::UrnUuid ? GURL(kUrnUuidURL)
+                                                  : GURL(kUuidInPackageURL);
   }
 
   GURL GetUuidURL2() {
-    return GetParam() == UrnUuid ? GURL(kUrnUuidURL2)
-                                 : GURL(kUuidInPackageURL2);
+    return GetUuidScheme() == UuidScheme::UrnUuid ? GURL(kUrnUuidURL2)
+                                                  : GURL(kUuidInPackageURL2);
   }
 
   const char* GetUuidTestBundlePath() {
-    return GetParam() == UrnUuid ? "/web_bundle/urn-uuid.wbn"
-                                 : "/web_bundle/uuid-in-package.wbn";
+    return GetUuidScheme() == UuidScheme::UrnUuid
+               ? "/web_bundle/urn-uuid.wbn"
+               : "/web_bundle/uuid-in-package.wbn";
   }
 
   const char* GetUuidTestPagePath() {
-    return GetParam() == UrnUuid
+    if (GetElementType() == ElementType::Script) {
+      return GetUuidScheme() == UuidScheme::UrnUuid
+                 ? "/web_bundle/script_web_bundle_urn_uuid.html"
+                 : "/web_bundle/script_web_bundle_uuid_in_package.html";
+    }
+    return GetUuidScheme() == UuidScheme::UrnUuid
                ? "/web_bundle/link_web_bundle_urn_uuid.html"
                : "/web_bundle/link_web_bundle_uuid_in_package.html";
   }
@@ -239,6 +284,32 @@ class LinkWebBundleBrowserTest
     return http_response;
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> HandleTestWebBundleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/web_bundle/test.wbn")
+      return nullptr;
+    GURL test1_url(https_server_.GetURL("/web_bundle/test1.txt"));
+    GURL test2_url(https_server_.GetURL("/web_bundle/test2.txt"));
+    web_package::WebBundleBuilder builder("" /* fallback_url */,
+                                          "" /* manifest_url */);
+    builder.AddExchange(test1_url.spec(),
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "test1");
+    builder.AddExchange(test2_url.spec(),
+                        {{":status", "200"}, {"content-type", "text/plain"}},
+                        "test2");
+    auto bundle = builder.CreateBundle();
+    std::string body(reinterpret_cast<const char*>(bundle.data()),
+                     bundle.size());
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(body);
+    http_response->set_content_type("application/webbundle");
+    http_response->AddCustomHeader("X-Content-Type-Options", "nosniff");
+    return http_response;
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> InvalidResponseHandler(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url != "/web_bundle/invalid-response")
@@ -251,6 +322,20 @@ class LinkWebBundleBrowserTest
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    // This should be called on `EmbeddedTestServer::io_thread_`.
+    EXPECT_FALSE(
+        content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
+    request_count_by_path_[request.GetURL().PathForRequest()]++;
+  }
+
+  int GetRequestCount(const GURL& url) {
+    EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+    base::AutoLock auto_lock(lock_);
+    return request_count_by_path_[url.PathForRequest()];
+  }
+
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   ContentBrowserClient* original_client_ = nullptr;
@@ -258,6 +343,9 @@ class LinkWebBundleBrowserTest
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{
       net::EmbeddedTestServer::Type::TYPE_HTTPS};
+  // Counts of requests sent to the server. Keyed by path (not by full URL)
+  std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  base::Lock lock_;
 };
 
 #if defined(OS_MAC)
@@ -266,7 +354,11 @@ class LinkWebBundleBrowserTest
 #else
 #define MAYBE_ChangeLinkElementHref ChangeLinkElementHref
 #endif  // defined(OS_MAC)
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_ChangeLinkElementHref) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
+                       MAYBE_ChangeLinkElementHref) {
+  // This test is only for the <link> element.
+  if (GetElementType() == ElementType::Script)
+    return;
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -319,7 +411,10 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_ChangeLinkElementHref) {
 #else
 #define MAYBE_RemoveLinkElement RemoveLinkElement
 #endif  // defined(OS_MAC)
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_RemoveLinkElement) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, MAYBE_RemoveLinkElement) {
+  // This test is only for the <link> element.
+  if (GetElementType() == ElementType::Script)
+    return;
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -360,7 +455,80 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_RemoveLinkElement) {
   EXPECT_EQ("\"webbundle loaded\"", message);
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoad) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
+                       WebBundleResourceShouldBeReused) {
+  // The tentative spec:
+  // https://docs.google.com/document/d/1GEJ3wTERGEeTG_4J0QtAwaNXhPTza0tedd00A7vPVsw/edit
+
+  // Tests that webbundle resources are surely re-used when we remove a <script
+  // type=webbunble> and add a new <script type=webbundle> with the same bundle
+  // URL to the removed one, in the same microtask scope.
+  // Skip if the test's ElementType parameter is <link>.
+  if (GetElementType() == ElementType::Link)
+    return;
+
+  GURL url(https_server()->GetURL("/web_bundle/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  {
+    // Add a <script type=webbundle>.
+    DOMMessageQueue dom_message_queue(shell()->web_contents());
+    ExecuteScriptAsync(shell(),
+                       R"HTML(
+        const script = document.createElement("script");
+        script.type = "webbundle";
+        script.textContent =
+              JSON.stringify({"source": "/web_bundle/test.wbn",
+                              "resources": ["/web_bundle/test1.txt"]});
+        document.body.appendChild(script);
+        (async () => {
+          const response = await fetch("/web_bundle/test1.txt");
+          const text = await response.text();
+          window.domAutomationController.send(`fetch: ${text}`);
+        })();
+
+      )HTML");
+    std::string message;
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+    EXPECT_EQ(message, "\"fetch: test1\"");
+    EXPECT_EQ(GetRequestCount(https_server()->GetURL("/web_bundle/test.wbn")),
+              1);
+  }
+  {
+    // Remove the <script type=webbundle> from the document, and then add a new
+    // <script type=webbundle> whose bundle URL is same to the removed one in
+    // the same microtask scope, The added element should re-use the webbundle
+    // resource which the old <script type=webbundle> has been using. Thus, the
+    // bundle shouldn't be fetched twice.
+    DOMMessageQueue dom_message_queue(shell()->web_contents());
+    ExecuteScriptAsync(shell(),
+                       R"HTML(
+        script.remove();
+
+        const script2 = document.createElement("script");
+        script2.type = "webbundle";
+        script2.textContent =
+              JSON.stringify({"source": "/web_bundle/test.wbn",
+                              "resources": ["/web_bundle/test2.txt"]});
+        document.body.appendChild(script2);
+
+        (async () => {
+          const response = await fetch("/web_bundle/test2.txt");
+          const text = await response.text();
+          window.domAutomationController.send(`fetch: ${text}`);
+        })();
+      )HTML");
+    std::string message;
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+    EXPECT_EQ(message, "\"fetch: test2\"")
+        << "A new script element's rule should be effective.";
+    EXPECT_EQ(GetRequestCount(https_server()->GetURL("/web_bundle/test.wbn")),
+              1)
+        << "A bundle should not be fetched twice.";
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, SubframeLoad) {
   base::HistogramTester histogram_tester;
   GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -382,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoad) {
   // Check the metrics recorded in the network process.
   FetchHistogramsFromChildProcesses();
   int64_t web_bundle_size = GetTestDataFileSize(
-      GetParam() == UrnUuid
+      GetUuidScheme() == UuidScheme::UrnUuid
           ? FILE_PATH_LITERAL("content/test/data/web_bundle/urn-uuid.wbn")
           : FILE_PATH_LITERAL(
                 "content/test/data/web_bundle/uuid-in-package.wbn"));
@@ -392,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoad) {
                                       web_bundle_size, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoadError) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, SubframeLoadError) {
   GURL url(https_server()->GetURL("/web_bundle/invalid_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -411,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeLoadError) {
             *finish_navigation_observer.error_code());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleFetchError) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, BundleFetchError) {
   base::HistogramTester histogram_tester;
 
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
@@ -421,14 +589,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleFetchError) {
   // causes ERR_INVALID_HTTP_RESPONSE network error.
   DOMMessageQueue dom_message_queue(shell()->web_contents());
   ExecuteScriptAsync(shell(),
-                     R"HTML(
-        const link = document.createElement('link');
-        link.rel = 'webbundle';
-        link.href = '/web_bundle/invalid-response';
-        link.onload = () => window.domAutomationController.send('loaded');
-        link.onerror = () => window.domAutomationController.send('failed');
-        document.body.appendChild(link);
-      )HTML");
+                     GetScriptForWebBundle("/web_bundle/invalid-response"));
   std::string message;
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
   EXPECT_EQ("\"failed\"", message);
@@ -440,7 +601,8 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleFetchError) {
       -net::ERR_INVALID_HTTP_RESPONSE, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
+                       BundleRedirectionIsForbidden) {
   GURL url(https_server()->GetURL("/web_bundle/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -456,19 +618,9 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
       {"/server-redirect?/web_bundle/urn-uuid.wbn", "failed"}};
 
   for (const auto& pair : test_cases) {
-    const char* href = pair.first;
+    const char* url = pair.first;
     std::string expected_message = pair.second;
-    ExecuteScriptAsync(shell(), base::StringPrintf(R"HTML(
-        {
-          const link = document.createElement('link');
-          link.rel = 'webbundle';
-          link.href = '%s';
-          link.onload = () => window.domAutomationController.send('loaded');
-          link.onerror = () => window.domAutomationController.send('failed');
-          document.body.appendChild(link);
-        }
-      )HTML",
-                                                   href));
+    ExecuteScriptAsync(shell(), GetScriptForWebBundle(url));
     std::string message;
     EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
     EXPECT_EQ("\"" + expected_message + "\"", message);
@@ -478,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, FollowLink) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, FollowLink) {
   GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -494,11 +646,12 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, FollowLink) {
   EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeChangeSource) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, IframeChangeSource) {
   GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
+  // Or <script type="webbundle">, depending on the test param.
   CreateIframeAndWaitForOnload(GetUuidTestPagePath());
 
   // Attempt to navigate the iframe to a bundled resource.
@@ -512,11 +665,12 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeChangeSource) {
   EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeFollowLink) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, IframeFollowLink) {
   GURL main_url(https_server()->GetURL("/simple_page.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Create an iframe whose document has <link rel="webbundle">.
+  // Or <script type="webbundle">, depending on the test param.
   CreateIframeAndWaitForOnload(GetUuidTestPagePath());
 
   // Click a link inside the iframe. The resource should not be loaded from
@@ -531,7 +685,8 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, IframeFollowLink) {
   EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
+                       NavigationFromSiblingFrame) {
   GURL main_url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -580,7 +735,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NavigationFromSiblingFrame) {
   EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
                        GrandChildShouldNotBeLoadedFromBundle) {
   GURL main_url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -602,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest,
   EXPECT_EQ(GetUuidURL(), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NetworkIsolationKey) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, NetworkIsolationKey) {
   GURL bundle_url(
       https_server()->GetURL("bundle.test", GetUuidTestBundlePath()));
   GURL page_url(https_server()->GetURL(
@@ -619,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, NetworkIsolationKey) {
             urn_frame->GetNetworkIsolationKey().ToString());
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ReloadSubframe) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, ReloadSubframe) {
   GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -651,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, ReloadSubframe) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
+IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, SubframeHistoryNavigation) {
   GURL url(https_server()->GetURL(GetUuidTestPagePath()));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -768,9 +923,12 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, SubframeHistoryNavigation) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(LinkWebBundleBrowserTest,
-                         LinkWebBundleBrowserTest,
-                         testing::Values(UrnUuid, UuidInPackage),
-                         LinkWebBundleBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    WebBundleElementBrowserTest,
+    WebBundleElementBrowserTest,
+    testing::Combine(testing::Values(ElementType::Link, ElementType::Script),
+                     testing::Values(UuidScheme::UrnUuid,
+                                     UuidScheme::UuidInPackage)),
+    WebBundleElementBrowserTest::DescribeParams);
 
 }  // namespace content
