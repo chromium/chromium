@@ -121,12 +121,13 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (size_t i = 0; i < targets.GetList().size(); ++i) {
-    const base::DictionaryValue* target_dict = nullptr;
-    EXPECT_TRUE(targets.GetDictionary(i, &target_dict));
-    absl::optional<int> id = target_dict->FindIntKey("tabId");
+  for (const base::Value& target_value : targets.GetList()) {
+    EXPECT_TRUE(target_value.is_dict());
+    absl::optional<int> id = target_value.FindIntKey("tabId");
     if (id == tab_id) {
-      EXPECT_TRUE(target_dict->GetString("id", &debugger_target_id));
+      const base::DictionaryValue& target_dict =
+          base::Value::AsDictionaryValue(target_value);
+      EXPECT_TRUE(target_dict.GetString("id", &debugger_target_id));
       break;
     }
   }

@@ -102,12 +102,14 @@ void OSSyncHandler::HandleSetOsSyncFeatureEnabled(const base::ListValue* args) {
 
 void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
   CHECK_EQ(1u, args->GetList().size());
-  const base::DictionaryValue* result;
-  CHECK(args->GetDictionary(0, &result));
+  const base::Value& result_value = args->GetList()[0];
+  CHECK(result_value.is_dict());
+  const base::DictionaryValue& result =
+      base::Value::AsDictionaryValue(result_value);
 
   // Wallpaper sync status is stored directly to the profile's prefs.
   bool wallpaper_synced;
-  CHECK(result->GetBoolean(kWallpaperEnabledKey, &wallpaper_synced));
+  CHECK(result.GetBoolean(kWallpaperEnabledKey, &wallpaper_synced));
   profile_->GetPrefs()->SetBoolean(chromeos::settings::prefs::kSyncOsWallpaper,
                                    wallpaper_synced);
 
@@ -120,14 +122,14 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue* args) {
     return;
 
   bool sync_all_os_types;
-  CHECK(result->GetBoolean("syncAllOsTypes", &sync_all_os_types));
+  CHECK(result.GetBoolean("syncAllOsTypes", &sync_all_os_types));
 
   UserSelectableOsTypeSet selected_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     std::string key =
         syncer::GetUserSelectableOsTypeName(type) + std::string("Synced");
     bool sync_value;
-    CHECK(result->GetBoolean(key, &sync_value)) << key;
+    CHECK(result.GetBoolean(key, &sync_value)) << key;
     if (sync_value)
       selected_types.Put(type);
   }

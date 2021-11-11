@@ -156,10 +156,11 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
   size_t ix = 0;
   AudioDeviceDescriptions::const_iterator it = devices.begin();
   for (; ix < sink_list.GetList().size() && it != devices.end(); ++ix, ++it) {
-    const base::DictionaryValue* dict = NULL;
-    sink_list.GetDictionary(ix, &dict);
+    const base::Value& value = sink_list.GetList()[ix];
+    EXPECT_TRUE(value.is_dict());
+    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     std::string sink_id;
-    dict->GetString("sinkId", &sink_id);
+    dict.GetString("sinkId", &sink_id);
 
     std::string expected_id =
         media::AudioDeviceDescription::IsDefaultDevice(it->unique_id)
@@ -171,14 +172,14 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
 
     EXPECT_EQ(expected_id, sink_id);
     std::string sink_label;
-    dict->GetString("sinkLabel", &sink_label);
+    dict.GetString("sinkLabel", &sink_label);
     EXPECT_EQ(it->device_name, sink_label);
 
     // TODO(joi): Verify the contents of these once we start actually
     // filling them in.
-    EXPECT_TRUE(dict->HasKey("isDefault"));
-    EXPECT_TRUE(dict->HasKey("isReady"));
-    EXPECT_TRUE(dict->HasKey("sampleRate"));
+    EXPECT_TRUE(dict.HasKey("isDefault"));
+    EXPECT_TRUE(dict.HasKey("isReady"));
+    EXPECT_TRUE(dict.HasKey("sampleRate"));
   }
 }
 #endif  // OS_MAC

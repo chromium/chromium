@@ -172,11 +172,13 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   ASSERT_TRUE(dict->GetList("entries", &entries));
   ASSERT_EQ(1u, entries->GetList().size());
 
-  const base::DictionaryValue* entry;
-  ASSERT_TRUE(entries->GetDictionary(0u, &entry));
+  const base::Value& entry_value = entries->GetList()[0u];
+  ASSERT_TRUE(entry_value.is_dict());
+  const base::DictionaryValue& entry =
+      base::Value::AsDictionaryValue(entry_value);
 
   std::string url;
-  ASSERT_TRUE(entry->GetString("url", &url));
+  ASSERT_TRUE(entry.GetString("url", &url));
   EXPECT_EQ(url, error_url);
 }
 

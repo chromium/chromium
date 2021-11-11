@@ -384,9 +384,11 @@ void InspectMessageHandler::HandlePortForwardingConfigCommand(
   if (!profile)
     return;
 
-  const base::DictionaryValue* dict_src;
-  if (args->GetList().size() == 1 && args->GetDictionary(0, &dict_src))
-    profile->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig, *dict_src);
+  if (args->GetList().size() == 1) {
+    const base::Value& src = args->GetList()[0];
+    if (src.is_dict())
+      profile->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig, src);
+  }
 }
 
 void InspectMessageHandler::HandleTCPDiscoveryConfigCommand(

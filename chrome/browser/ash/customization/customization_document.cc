@@ -348,10 +348,13 @@ void StartupCustomizationDocument::Init(
             chromeos::system::kHardwareClassKey, &hwid)) {
       base::ListValue* hwid_list = NULL;
       if (root_->GetList(kHwidMapAttr, &hwid_list)) {
-        for (size_t i = 0; i < hwid_list->GetList().size(); ++i) {
-          base::DictionaryValue* hwid_dictionary = NULL;
+        for (const base::Value& hwid_value : hwid_list->GetList()) {
+          const base::DictionaryValue* hwid_dictionary = nullptr;
+          if (hwid_value.is_dict())
+            hwid_dictionary = &base::Value::AsDictionaryValue(hwid_value);
+
           std::string hwid_mask;
-          if (hwid_list->GetDictionary(i, &hwid_dictionary) &&
+          if (hwid_dictionary &&
               hwid_dictionary->GetString(kHwidMaskAttr, &hwid_mask)) {
             if (base::MatchPattern(hwid, hwid_mask)) {
               // If HWID for this machine matches some mask, use HWID specific
@@ -729,17 +732,19 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
   if (root.GetList(kDefaultAppsAttr, &apps_list)) {
     for (size_t i = 0; i < apps_list->GetList().size(); ++i) {
       std::string app_id;
-      const base::DictionaryValue* app_entry = nullptr;
       std::unique_ptr<base::DictionaryValue> entry;
+      const base::Value& app_entry_value = apps_list->GetList()[i];
       if (apps_list->GetString(i, &app_id)) {
         entry = std::make_unique<base::DictionaryValue>();
-      } else if (apps_list->GetDictionary(i, &app_entry)) {
-        if (!app_entry->GetString(kIdAttr, &app_id)) {
+      } else if (app_entry_value.is_dict()) {
+        const base::DictionaryValue& app_entry =
+            base::Value::AsDictionaryValue(app_entry_value);
+        if (!app_entry.GetString(kIdAttr, &app_id)) {
           LOG(ERROR) << "Wrong format of default application list";
           prefs->Clear();
           break;
         }
-        entry = app_entry->CreateDeepCopy();
+        entry = app_entry.CreateDeepCopy();
         entry->RemoveKey(kIdAttr);
       } else {
         LOG(ERROR) << "Wrong format of default application list";

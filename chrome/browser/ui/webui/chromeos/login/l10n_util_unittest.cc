@@ -25,11 +25,11 @@ namespace chromeos {
 namespace {
 
 void VerifyOnlyUILanguages(const base::ListValue& list) {
-  for (size_t i = 0; i < list.GetList().size(); ++i) {
-    const base::DictionaryValue* dict;
-    ASSERT_TRUE(list.GetDictionary(i, &dict));
+  for (const base::Value& value : list.GetList()) {
+    ASSERT_TRUE(value.is_dict());
+    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     std::string code;
-    ASSERT_TRUE(dict->GetString("code", &code));
+    ASSERT_TRUE(dict.GetString("code", &code));
     EXPECT_NE("ga", code)
         << "Irish is an example language which has input method "
         << "but can't use it as UI language.";
@@ -39,10 +39,11 @@ void VerifyOnlyUILanguages(const base::ListValue& list) {
 void VerifyLanguageCode(const base::ListValue& list,
                         size_t index,
                         const std::string& expected_code) {
-  const base::DictionaryValue* dict;
-  ASSERT_TRUE(list.GetDictionary(index, &dict));
+  const base::Value& value = list.GetList()[index];
+  ASSERT_TRUE(value.is_dict());
+  const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
   std::string actual_code;
-  ASSERT_TRUE(dict->GetString("code", &actual_code));
+  ASSERT_TRUE(dict.GetString("code", &actual_code));
   EXPECT_EQ(expected_code, actual_code)
       << "Wrong language code at index " << index << ".";
 }

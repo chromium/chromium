@@ -50,16 +50,17 @@ class SiteSettingsHelperTest : public testing::Test {
                      const std::string& pattern,
                      const std::string& pattern_display_name,
                      const ContentSetting setting) {
-    const base::DictionaryValue* dict;
-    exceptions.GetDictionary(index, &dict);
+    const base::Value& value = exceptions.GetList()[index];
+    EXPECT_TRUE(value.is_dict());
+    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
     std::string actual_pattern;
-    dict->GetString("origin", &actual_pattern);
+    dict.GetString("origin", &actual_pattern);
     EXPECT_EQ(pattern, actual_pattern);
     std::string actual_display_name;
-    dict->GetString(kDisplayName, &actual_display_name);
+    dict.GetString(kDisplayName, &actual_display_name);
     EXPECT_EQ(pattern_display_name, actual_display_name);
     std::string actual_setting;
-    dict->GetString(kSetting, &actual_setting);
+    dict.GetString(kSetting, &actual_setting);
     EXPECT_EQ(content_settings::ContentSettingToString(setting),
               actual_setting);
   }
@@ -270,7 +271,9 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
     // Fetch and check the first origin.
     const base::DictionaryValue* dictionary;
     std::string primary_pattern, display_name;
-    ASSERT_TRUE(exceptions.GetDictionary(0, &dictionary));
+    const base::Value* value = &exceptions.GetList()[0];
+    ASSERT_TRUE(value->is_dict());
+    dictionary = &base::Value::AsDictionaryValue(*value);
     ASSERT_TRUE(
         dictionary->GetString(site_settings::kOrigin, &primary_pattern));
     ASSERT_TRUE(
@@ -280,7 +283,9 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
     EXPECT_EQ(kOriginToBlock, display_name);
 
     // Fetch and check the second origin.
-    ASSERT_TRUE(exceptions.GetDictionary(1, &dictionary));
+    value = &exceptions.GetList()[1];
+    ASSERT_TRUE(value->is_dict());
+    dictionary = &base::Value::AsDictionaryValue(*value);
     ASSERT_TRUE(
         dictionary->GetString(site_settings::kOrigin, &primary_pattern));
     ASSERT_TRUE(

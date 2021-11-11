@@ -453,28 +453,35 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::ListValue* args) {
   }
   const std::string& callback_id = args->GetList()[0].GetString();
 
-  const base::DictionaryValue* printer_dict = nullptr;
-  if (!args->GetDictionary(1, &printer_dict)) {
+  if (args->GetList().size() < 2u) {
     NOTREACHED() << "Dictionary missing";
     return;
   }
 
+  const base::Value& printer_value = args->GetList()[1];
+  if (!printer_value.is_dict()) {
+    NOTREACHED() << "Dictionary missing";
+    return;
+  }
+  const base::DictionaryValue& printer_dict =
+      base::Value::AsDictionaryValue(printer_value);
+
   AllowJavascript();
 
   std::string printer_address;
-  if (!printer_dict->GetString("printerAddress", &printer_address)) {
+  if (!printer_dict.GetString("printerAddress", &printer_address)) {
     NOTREACHED() << "Address missing";
     return;
   }
 
   std::string printer_queue;
-  printer_dict->GetString("printerQueue", &printer_queue);
+  printer_dict.GetString("printerQueue", &printer_queue);
   // Path must start from '/' character.
   if (!printer_queue.empty() && printer_queue.front() != '/')
     printer_queue = "/" + printer_queue;
 
   std::string printer_protocol;
-  if (!printer_dict->GetString("printerProtocol", &printer_protocol)) {
+  if (!printer_dict.GetString("printerProtocol", &printer_protocol)) {
     NOTREACHED() << "Protocol missing";
     return;
   }
@@ -624,12 +631,14 @@ void CupsPrintersHandler::HandleReconfigureCupsPrinter(
 void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
                                                   bool is_printer_edit) {
   std::string callback_id;
-  const base::DictionaryValue* printer_dict = nullptr;
   CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetDictionary(1, &printer_dict));
+  const base::Value& printer_value = args->GetList()[1];
+  CHECK(printer_value.is_dict());
+  const base::DictionaryValue& printer_dict =
+      base::Value::AsDictionaryValue(printer_value);
 
-  std::unique_ptr<Printer> printer = DictToPrinter(*printer_dict);
+  std::unique_ptr<Printer> printer = DictToPrinter(printer_dict);
   if (!printer) {
     PRINTER_LOG(ERROR) << "Failed to parse printer URI";
     OnAddOrEditPrinterError(callback_id, PrinterSetupResult::kFatalError);
@@ -671,15 +680,15 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
   // Read PPD selection if it was used.
   std::string ppd_manufacturer;
   std::string ppd_model;
-  printer_dict->GetString("ppdManufacturer", &ppd_manufacturer);
-  printer_dict->GetString("ppdModel", &ppd_model);
+  printer_dict.GetString("ppdManufacturer", &ppd_manufacturer);
+  printer_dict.GetString("ppdModel", &ppd_model);
 
   // Read user provided PPD if it was used.
   std::string printer_ppd_path;
-  printer_dict->GetString("printerPPDPath", &printer_ppd_path);
+  printer_dict.GetString("printerPPDPath", &printer_ppd_path);
 
   // Check if the printer already has a valid ppd_reference.
-  Printer::PpdReference ppd_ref = GetPpdReference(printer_dict);
+  Printer::PpdReference ppd_ref = GetPpdReference(&printer_dict);
   if (ppd_ref.IsFilled()) {
     *printer->mutable_ppd_reference() = ppd_ref;
   } else if (!printer_ppd_path.empty()) {
@@ -976,10 +985,11 @@ void CupsPrintersHandler::HandleStopDiscovery(const base::ListValue* args) {
 
 void CupsPrintersHandler::HandleSetUpCancel(const base::ListValue* args) {
   PRINTER_LOG(DEBUG) << "Printer setup cancelled";
-  const base::DictionaryValue* printer_dict;
-  CHECK(args->GetDictionary(0, &printer_dict));
+  const base::Value& printer_value = args->GetList()[0];
+  CHECK(printer_value.is_dict());
 
-  std::unique_ptr<Printer> printer = DictToPrinter(*printer_dict);
+  std::unique_ptr<Printer> printer =
+      DictToPrinter(base::Value::AsDictionaryValue(printer_value));
   if (printer) {
     printers_manager_->RecordSetupAbandoned(*printer);
   }

@@ -248,15 +248,15 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
 
   std::set<std::string> account_ids;
   for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::DictionaryValue* entry = NULL;
-    if (!list->GetDictionary(i, &entry)) {
+    const base::Value& entry = list->GetList()[i];
+    if (!entry.is_dict()) {
       LOG(ERROR) << "Corrupt entry in device-local account list at index " << i
                  << ".";
       continue;
     }
 
     std::string account_id;
-    if (!GetString(*entry, ash::kAccountsPrefDeviceLocalAccountsKeyId,
+    if (!GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyId,
                    &account_id) ||
         account_id.empty()) {
       LOG(ERROR) << "Missing account ID in device-local account list at index "
@@ -265,7 +265,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     }
 
     absl::optional<int> type =
-        entry->FindIntKey(ash::kAccountsPrefDeviceLocalAccountsKeyType);
+        entry.FindIntKey(ash::kAccountsPrefDeviceLocalAccountsKeyType);
     if (!type || type.value() < 0 ||
         type.value() >= DeviceLocalAccount::TYPE_COUNT) {
       LOG(ERROR) << "Missing or invalid account type in device-local account "
@@ -291,14 +291,14 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       case DeviceLocalAccount::TYPE_KIOSK_APP: {
         std::string kiosk_app_id;
         std::string kiosk_app_update_url;
-        if (!GetString(*entry,
+        if (!GetString(entry,
                        ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                        &kiosk_app_id)) {
           LOG(ERROR) << "Missing app ID in device-local account entry at index "
                      << i << ".";
           continue;
         }
-        GetString(*entry,
+        GetString(entry,
                   ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                   &kiosk_app_update_url);
 
@@ -312,7 +312,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string class_name;
         std::string action;
         std::string display_name;
-        if (!GetString(*entry,
+        if (!GetString(entry,
                        ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
                        &package_name)) {
           LOG(ERROR) << "Missing package name in ARC kiosk type device-local "
@@ -320,12 +320,11 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
                      << i << ".";
           continue;
         }
-        GetString(*entry, ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
                   &class_name);
-        GetString(*entry,
-                  ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
                   &action);
-        GetString(*entry,
+        GetString(entry,
                   ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
                   &display_name);
         const ArcKioskAppBasicInfo arc_kiosk_app(package_name, class_name,
@@ -338,7 +337,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
         std::string url;
         std::string title;
         std::string icon_url;
-        if (!GetString(*entry,
+        if (!GetString(entry,
                        ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                        &url)) {
           LOG(ERROR) << "Missing install url in Web kiosk type device-local "
@@ -347,9 +346,9 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
           continue;
         }
 
-        GetString(*entry, ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+        GetString(entry, ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
                   &title);
-        GetString(*entry,
+        GetString(entry,
                   ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
                   &icon_url);
         accounts.push_back(DeviceLocalAccount(

@@ -105,29 +105,36 @@ void BuildTabSpecifics(const std::string& tag,
 testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
                                             size_t num_sessions) {
   EXPECT_EQ(5u, devices.GetList().size());
-  const base::DictionaryValue* device = NULL;
-  const base::ListValue* sessions = NULL;
+  const base::ListValue* sessions = nullptr;
   for (size_t i = 0; i < devices.GetList().size(); ++i) {
-    EXPECT_TRUE(devices.GetDictionary(i, &device));
-    EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "info"));
-    EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "deviceName"));
-    EXPECT_TRUE(device->GetList("sessions", &sessions));
+    const base::Value& device_value = devices.GetList()[i];
+    EXPECT_TRUE(device_value.is_dict());
+    const base::DictionaryValue& device =
+        base::Value::AsDictionaryValue(device_value);
+    EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(&device, "info"));
+    EXPECT_EQ(kSessionTags[i],
+              api_test_utils::GetString(&device, "deviceName"));
+    EXPECT_TRUE(device.GetList("sessions", &sessions));
     EXPECT_EQ(num_sessions, sessions->GetList().size());
     // Because this test is hurried, really there are only ever 0 or 1
     // sessions, and if 1, that will be a Window. Grab it.
     if (num_sessions == 0)
       continue;
-    const base::DictionaryValue* session = NULL;
-    EXPECT_TRUE(sessions->GetDictionary(0, &session));
-    const base::DictionaryValue* window = NULL;
-    EXPECT_TRUE(session->GetDictionary("window", &window));
+    const base::Value& session_value = sessions->GetList()[0];
+    EXPECT_TRUE(session_value.is_dict());
+    const base::DictionaryValue& session =
+        base::Value::AsDictionaryValue(session_value);
+    const base::DictionaryValue* window = nullptr;
+    EXPECT_TRUE(session.GetDictionary("window", &window));
     // Only the tabs are interesting.
-    const base::ListValue* tabs = NULL;
+    const base::ListValue* tabs = nullptr;
     EXPECT_TRUE(window->GetList("tabs", &tabs));
     EXPECT_EQ(base::size(kTabIDs), tabs->GetList().size());
     for (size_t j = 0; j < tabs->GetList().size(); ++j) {
-      const base::DictionaryValue* tab = NULL;
-      EXPECT_TRUE(tabs->GetDictionary(j, &tab));
+      const base::Value& tab_value = tabs->GetList()[j];
+      EXPECT_TRUE(tab_value.is_dict());
+      const base::DictionaryValue* tab =
+          &base::Value::AsDictionaryValue(tab_value);
       EXPECT_FALSE(tab->HasKey("id"));  // sessions API does not give tab IDs
       EXPECT_EQ(static_cast<int>(j), api_test_utils::GetInteger(tab, "index"));
       EXPECT_EQ(0, api_test_utils::GetInteger(tab, "windowId"));
@@ -318,13 +325,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
 
   base::ListValue* windows = result.get();
   EXPECT_EQ(2u, windows->GetList().size());
-  base::DictionaryValue* restored_window = NULL;
+  base::DictionaryValue* restored_window = nullptr;
   EXPECT_TRUE(
       restored_window_session->GetDictionary("window", &restored_window));
-  base::DictionaryValue* window = NULL;
+  const base::DictionaryValue* window = nullptr;
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
-  for (size_t i = 0; i < windows->GetList().size(); ++i) {
-    EXPECT_TRUE(windows->GetDictionary(i, &window));
+  for (const base::Value& window_value : windows->GetList()) {
+    EXPECT_TRUE(window_value.is_dict());
+    window = &base::Value::AsDictionaryValue(window_value);
     if (api_test_utils::GetInteger(window, "id") == restored_id)
       break;
   }

@@ -398,13 +398,14 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       continue;
     }
 
-    for (size_t i = 0; i < component_list->GetList().size(); ++i) {
-      const base::DictionaryValue* dictionary;
-      if (!component_list->GetDictionary(i, &dictionary))
+    for (const base::Value& value : component_list->GetList()) {
+      if (!value.is_dict())
         continue;
 
+      const base::DictionaryValue& dictionary =
+          base::Value::AsDictionaryValue(value);
       ComponentExtensionEngine engine;
-      ReadEngineComponent(component_ime, *dictionary, &engine);
+      ReadEngineComponent(component_ime, dictionary, &engine);
 
       if (base::StartsWith(engine.engine_id, "experimental_",
                            base::CompareCase::SENSITIVE) &&
