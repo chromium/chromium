@@ -673,12 +673,25 @@ Response InspectorEmulationAgent::setUserAgentOverride(
       for (const auto& bv : *ua_metadata->getBrands(nullptr)) {
         blink::UserAgentBrandVersion out_bv;
         out_bv.brand = bv->getBrand().Ascii();
-        out_bv.major_version = bv->getVersion().Ascii();
+        out_bv.version = bv->getVersion().Ascii();
         ua_metadata_override_->brand_version_list.push_back(std::move(out_bv));
       }
     } else {
       ua_metadata_override_->brand_version_list =
           std::move(default_ua_metadata.brand_version_list);
+    }
+
+    if (ua_metadata->hasFullVersionList()) {
+      for (const auto& bv : *ua_metadata->getFullVersionList(nullptr)) {
+        blink::UserAgentBrandVersion out_bv;
+        out_bv.brand = bv->getBrand().Ascii();
+        out_bv.version = bv->getVersion().Ascii();
+        ua_metadata_override_->brand_full_version_list.push_back(
+            std::move(out_bv));
+      }
+    } else {
+      ua_metadata_override_->brand_full_version_list =
+          std::move(default_ua_metadata.brand_full_version_list);
     }
 
     if (ua_metadata->hasFullVersion()) {

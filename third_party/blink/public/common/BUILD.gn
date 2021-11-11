@@ -221,6 +221,7 @@ source_set("headers") {
     "unique_name/unique_name_helper.h",
     "use_counter/use_counter_feature.h",
     "use_counter/use_counter_feature_tracker.h",
+    "user_agent/user_agent_brand_version_type.h",
     "user_agent/user_agent_metadata.h",
     "web_cache/web_cache_resource_type_stats.h",
     "web_package/signed_exchange_consts.h",

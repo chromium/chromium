@@ -29,6 +29,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   explicit NavigatorUAData(ExecutionContext* context);
 
   void SetBrandVersionList(const UserAgentBrandList& brand_version_list);
+  void SetFullVersionList(const UserAgentBrandList& full_version_list);
   void SetMobile(bool mobile);
   void SetPlatform(const String& brand, const String& version);
   void SetArchitecture(const String& architecture);
@@ -48,6 +49,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
  private:
   HeapVector<Member<NavigatorUABrandVersion>> brand_set_;
   HeapVector<Member<NavigatorUABrandVersion>> empty_brand_set_;
+  HeapVector<Member<NavigatorUABrandVersion>> full_version_list_;
   bool is_mobile_ = false;
   String platform_;
   String platform_version_;
@@ -57,6 +59,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   String bitness_;
 
   void AddBrandVersion(const String& brand, const String& version);
+  void AddBrandFullVersion(const String& brand, const String& version);
 };
 
 }  // namespace blink

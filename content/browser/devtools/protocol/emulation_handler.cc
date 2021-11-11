@@ -140,8 +140,9 @@ Response EmulationHandler::ClearIdleOverride() {
   return Response::Success();
 }
 
-Response EmulationHandler::SetGeolocationOverride(
-    Maybe<double> latitude, Maybe<double> longitude, Maybe<double> accuracy) {
+Response EmulationHandler::SetGeolocationOverride(Maybe<double> latitude,
+                                                  Maybe<double> longitude,
+                                                  Maybe<double> accuracy) {
   if (!host_)
     return Response::InternalError();
 
@@ -250,8 +251,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   int orientationAngle = 0;
   if (screen_orientation.isJust()) {
     Emulation::ScreenOrientation* orientation = screen_orientation.fromJust();
-    orientationType = WebScreenOrientationTypeFromString(
-        orientation->GetType());
+    orientationType =
+        WebScreenOrientationTypeFromString(orientation->GetType());
     if (orientationType == display::mojom::ScreenOrientation::kUndefined)
       return Response::InvalidParams("Invalid screen orientation type value");
     orientationAngle = orientation->GetAngle();
@@ -432,13 +433,31 @@ Response EmulationHandler::SetUserAgentOverride(
 
       if (!ValidateClientHintString(bv->GetVersion()))
         return Response::InvalidParams("Invalid brand version string");
-      out_bv.major_version = bv->GetVersion();
+      out_bv.version = bv->GetVersion();
 
       new_ua_metadata.brand_version_list.push_back(std::move(out_bv));
     }
   } else {
     new_ua_metadata.brand_version_list =
         std::move(default_ua_metadata.brand_version_list);
+  }
+
+  if (ua_metadata->HasFullVersionList()) {
+    for (const auto& bv : *ua_metadata->GetFullVersionList(nullptr)) {
+      blink::UserAgentBrandVersion out_bv;
+      if (!ValidateClientHintString(bv->GetBrand()))
+        return Response::InvalidParams("Invalid brand string");
+      out_bv.brand = bv->GetBrand();
+
+      if (!ValidateClientHintString(bv->GetVersion()))
+        return Response::InvalidParams("Invalid brand version string");
+      out_bv.version = bv->GetVersion();
+
+      new_ua_metadata.brand_full_version_list.push_back(std::move(out_bv));
+    }
+  } else {
+    new_ua_metadata.brand_full_version_list =
+        std::move(default_ua_metadata.brand_full_version_list);
   }
 
   if (ua_metadata->HasFullVersion()) {

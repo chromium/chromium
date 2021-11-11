@@ -33,6 +33,11 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
       if (!base::FeatureList::IsEnabled(features::kUserAgentClientHint))
         return true;
       break;
+    case WebClientHintsType::kUAFullVersionList:
+      if (!base::FeatureList::IsEnabled(
+              features::kUserAgentClientHintFullVersionList))
+        return true;
+      break;
     case WebClientHintsType::kPrefersColorScheme:
       if (!base::FeatureList::IsEnabled(
               features::kPrefersColorSchemeClientHintHeader))

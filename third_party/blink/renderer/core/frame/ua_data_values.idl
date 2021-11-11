@@ -13,4 +13,5 @@ dictionary UADataValues {
   DOMString model;
   DOMString uaFullVersion;
   DOMString bitness;
+  sequence<NavigatorUABrandVersion> fullVersionList;
 };

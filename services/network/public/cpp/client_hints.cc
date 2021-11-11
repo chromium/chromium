@@ -51,6 +51,8 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kResourceWidth, "sec-ch-width"},
       {network::mojom::WebClientHintsType::kViewportWidth,
        "sec-ch-viewport-width"},
+      {network::mojom::WebClientHintsType::kUAFullVersionList,
+       "sec-ch-ua-full-version-list"},
   };
 }
 

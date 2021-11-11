@@ -90,7 +90,7 @@ using ::testing::Key;
 using ::testing::Not;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 16u;
+constexpr unsigned expected_client_hints_number = 17u;
 constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
@@ -346,7 +346,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,"
         "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
-        "ViewportHeightClientHintHeader",
+        "ViewportHeightClientHintHeader,UserAgentClientHintFullVersionList",
         "");
     return feature_list;
   }
@@ -563,6 +563,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
     return main_frame_ua_full_version_observed_;
   }
 
+  const std::string& main_frame_ua_full_version_list_observed() const {
+    return main_frame_ua_full_version_list_observed_;
+  }
+
   const std::string& main_frame_ua_mobile_observed() const {
     return main_frame_ua_mobile_observed_;
   }
@@ -678,6 +682,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
       main_frame_ua_observed_ = UpdateHeaderObservation(request, "sec-ch-ua");
       main_frame_ua_full_version_observed_ =
           UpdateHeaderObservation(request, "sec-ch-ua-full-version");
+      main_frame_ua_full_version_list_observed_ =
+          UpdateHeaderObservation(request, "sec-ch-ua-full-version-list");
       main_frame_ua_mobile_observed_ =
           UpdateHeaderObservation(request, "sec-ch-ua-mobile");
       main_frame_ua_platform_observed_ =
@@ -960,6 +966,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 
   std::string main_frame_ua_observed_;
   std::string main_frame_ua_full_version_observed_;
+  std::string main_frame_ua_full_version_list_observed_;
   std::string main_frame_ua_mobile_observed_;
   std::string main_frame_ua_platform_observed_;
 
@@ -993,16 +1000,15 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 // use webpages that may contain http-equiv Accept-CH and Accept-CH-Lifetime
 // headers. When set to false, the tests use webpages that set the headers in
 // the HTTP response headers.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClientHintsBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, ClientHintsBrowserTest, testing::Bool());
 
 class ClientHintsAllowThirdPartyBrowserTest : public ClientHintsBrowserTest {
   std::unique_ptr<base::FeatureList> EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "AllowClientHintsToThirdParty,UserAgentClientHint,"
-        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader",
+        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader,"
+        "UserAgentClientHintFullVersionList",
         "");
     return feature_list;
   }
@@ -1308,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentVersion) {
   // the major version, and not contain the full version.
   SetClientHintExpectationsOnMainFrame(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  std::string expected_ua = ua.SerializeBrandVersionList();
+  std::string expected_ua = ua.SerializeBrandMajorVersionList();
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   EXPECT_TRUE(main_frame_ua_full_version_observed().empty());
 
@@ -1319,6 +1325,11 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentVersion) {
   std::string expected_full_version = "\"" + ua.full_version + "\"";
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   EXPECT_EQ(main_frame_ua_full_version_observed(), expected_full_version);
+
+  std::string expected_full_version_list = ua.SerializeBrandFullVersionList();
+  EXPECT_EQ(main_frame_ua_observed(), expected_ua);
+  EXPECT_EQ(main_frame_ua_full_version_list_observed(),
+            expected_full_version_list);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
@@ -1329,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   // First request: only minimal hints, no tablet override.
   SetClientHintExpectationsOnMainFrame(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  std::string expected_ua = ua.SerializeBrandVersionList();
+  std::string expected_ua = ua.SerializeBrandMajorVersionList();
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   EXPECT_EQ(main_frame_ua_full_version_observed(), "");
   EXPECT_EQ(main_frame_ua_mobile_observed(), "?0");
@@ -1342,6 +1353,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   std::string expected_full_version = "\"" + ua.full_version + "\"";
   EXPECT_EQ(main_frame_ua_full_version_observed(), expected_full_version);
+  std::string expected_full_version_list = ua.SerializeBrandFullVersionList();
+  EXPECT_EQ(main_frame_ua_full_version_list_observed(),
+            expected_full_version_list);
   EXPECT_EQ(main_frame_ua_mobile_observed(), "?1");
   EXPECT_EQ(main_frame_ua_platform_observed(), "\"Android\"");
 }
@@ -1437,7 +1451,7 @@ void ClientHintsBrowserTest::TestProfilesIndependent(Browser* browser_a,
   // end with the major version, and not contain the full version.
   SetClientHintExpectationsOnMainFrame(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_a, gurl));
-  std::string expected_ua = ua.SerializeBrandVersionList();
+  std::string expected_ua = ua.SerializeBrandMajorVersionList();
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   EXPECT_TRUE(main_frame_ua_full_version_observed().empty());
 
@@ -1447,6 +1461,11 @@ void ClientHintsBrowserTest::TestProfilesIndependent(Browser* browser_a,
   std::string expected_full_version = "\"" + ua.full_version + "\"";
   EXPECT_EQ(main_frame_ua_observed(), expected_ua);
   EXPECT_EQ(main_frame_ua_full_version_observed(), expected_full_version);
+  // verify full version list
+  std::string expected_full_version_list = ua.SerializeBrandFullVersionList();
+  EXPECT_EQ(main_frame_ua_observed(), expected_ua);
+  EXPECT_EQ(main_frame_ua_full_version_list_observed(),
+            expected_full_version_list);
 
   // Navigate on |browser_b|. That should still only have the major
   // version.
@@ -2317,7 +2336,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,PrefersColorSchemeClientHintHeader,"
-        "ViewportHeightClientHintHeader",
+        "ViewportHeightClientHintHeader,UserAgentClientHintFullVersionList",
         "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
@@ -2510,7 +2529,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     // Don't include PrefersColorSchemeClientHintHeader in the enabled
     // features; we will verify that PrefersColorScheme is not included.
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame", "");
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+        "UserAgentClientHintFullVersionList",
+        "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -2530,9 +2551,18 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL("/critical_ch_prefers-color-scheme.html");
   }
 
+  GURL critical_ch_ua_full_version_list_url() const {
+    return https_server_.GetURL("/critical_ch_ua_full_version_list.html");
+  }
+
   const absl::optional<std::string>& observed_ch_ua_full_version() {
     base::AutoLock lock(ch_ua_full_version_lock_);
     return ch_ua_full_version_;
+  }
+
+  const absl::optional<std::string>& observed_ch_ua_full_version_list() {
+    base::AutoLock lock(ch_ua_full_version_list_lock_);
+    return ch_ua_full_version_list_;
   }
 
   const absl::optional<std::string>& observed_ch_prefers_color_scheme() {
@@ -2545,6 +2575,10 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         request.headers.end()) {
       SetChUaFullVersion(request.headers.at("sec-ch-ua-full-version"));
     }
+    if (request.headers.find("sec-ch-ua-full-version-list") !=
+        request.headers.end()) {
+      SetChUaFullVersionList(request.headers.at("sec-ch-ua-full-version-list"));
+    }
     if (request.headers.find("prefers-color-scheme") != request.headers.end()) {
       SetChPrefersColorScheme(request.headers.at("prefers-color-scheme"));
     }
@@ -2554,6 +2588,11 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   void SetChUaFullVersion(const std::string& ch_ua_full_version) {
     base::AutoLock lock(ch_ua_full_version_lock_);
     ch_ua_full_version_ = ch_ua_full_version;
+  }
+
+  void SetChUaFullVersionList(const std::string& ch_ua_full_version_list) {
+    base::AutoLock lock(ch_ua_full_version_list_lock_);
+    ch_ua_full_version_list_ = ch_ua_full_version_list;
   }
 
   void SetChPrefersColorScheme(const std::string& ch_prefers_color_scheme) {
@@ -2566,6 +2605,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   base::Lock ch_ua_full_version_lock_;
   absl::optional<std::string> ch_ua_full_version_
       GUARDED_BY(ch_ua_full_version_lock_);
+  base::Lock ch_ua_full_version_list_lock_;
+  absl::optional<std::string> ch_ua_full_version_list_
+      GUARDED_BY(ch_ua_full_version_list_lock_);
   base::Lock ch_prefers_color_scheme_lock_;
   absl::optional<std::string> ch_prefers_color_scheme_
       GUARDED_BY(ch_prefers_color_scheme_lock_);
@@ -2583,6 +2625,27 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   const std::string expected_ch_ua_full_version = "\"" + ua.full_version + "\"";
   EXPECT_THAT(observed_ch_ua_full_version(),
               Optional(Eq(expected_ch_ua_full_version)));
+  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
+  EXPECT_EQ(observed_ch_ua_full_version_list(), absl::nullopt);
+}
+
+// Verify that setting Critical-CH in the response header causes the request to
+// be resent with the client hint included. Adding a separate test case for
+// Sec-CH-UA-Full-Version-List since Sec-CH-UA-Full-Version will be deprecated.
+IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
+                       CriticalClientHintFullVersionListInRequestHeader) {
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
+  // On the first navigation request, the client hints in the Critical-CH
+  // should be set on the request header.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), critical_ch_ua_full_version_list_url()));
+  const std::string expected_ch_ua_full_version_list =
+      ua.SerializeBrandFullVersionList();
+  EXPECT_THAT(observed_ch_ua_full_version_list(),
+              Optional(Eq(expected_ch_ua_full_version_list)));
+  // The request should not have been resent, so ch-ua-full-version and
+  // prefers-color-schemeshould also not be present.
+  EXPECT_EQ(observed_ch_ua_full_version(), absl::nullopt);
   EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
 }
 
@@ -2610,7 +2673,8 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ClientHintsBrowserTestWithEmulatedMedia()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitFromCommandLine(
-        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader",
+        "UserAgentClientHint,AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
+        "UserAgentClientHintFullVersionList",
         "");
 
     https_server_.ServeFilesFromSourceDirectory(

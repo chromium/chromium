@@ -35344,6 +35344,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4076" label="JoinAdInterestGroup"/>
   <int value="4077" label="FileSystemUrlNavigation"/>
   <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
+  <int value="4079" label="ClientHintsUAFullVersionList"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -35456,6 +35457,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="90" label="KeyboardMap"/>
   <int value="91" label="RunAdAuction"/>
   <int value="92" label="JoinAdInterestGroup"/>
+  <int value="93" label="ClientHintUAFullVersionList"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

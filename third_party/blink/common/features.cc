@@ -143,6 +143,10 @@ const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
 const base::Feature kUserAgentClientHint{"UserAgentClientHint",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable `sec-ch-ua-full-version-list` client hint.
+const base::Feature kUserAgentClientHintFullVersionList{
+    "UserAgentClientHintFullVersionList", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Handle prefers-color-scheme user preference media feature via client hints.
 const base::Feature kPrefersColorSchemeClientHintHeader{
     "PrefersColorSchemeClientHintHeader", base::FEATURE_ENABLED_BY_DEFAULT};

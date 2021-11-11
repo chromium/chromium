@@ -3383,7 +3383,8 @@ domain Emulation
   experimental type UserAgentMetadata extends object
     properties
       optional array of UserAgentBrandVersion brands
-      optional string fullVersion
+      optional array of UserAgentBrandVersion fullVersionList
+      deprecated optional string fullVersion
       string platform
       string platformVersion
       string architecture
@@ -6767,6 +6768,7 @@ domain Page
       ch-ua-model
       ch-ua-mobile
       ch-ua-full-version
+      ch-ua-full-version-list
       ch-ua-platform-version
       ch-ua-reduced
       ch-viewport-height

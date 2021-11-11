@@ -662,7 +662,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     // https://wicg.github.io/client-hints-infrastructure/#abstract-opdef-append-client-hints-to-request
     if (ShouldAddClientHint(data, WebClientHintsType::kUA)) {
       AddUAHeader(headers, WebClientHintsType::kUA,
-                  ua_metadata->SerializeBrandVersionList());
+                  ua_metadata->SerializeBrandMajorVersionList());
     }
     // The `Sec-CH-UA-Mobile client hint was also deemed "low entropy" and can
     // safely be sent with every request. Similarly to UA, ShouldAddClientHints
@@ -704,6 +704,10 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUAReduced,
                   SerializeHeaderString(true));
     }
+    if (ShouldAddClientHint(data, WebClientHintsType::kUAFullVersionList)) {
+      AddUAHeader(headers, WebClientHintsType::kUAFullVersionList,
+                  ua_metadata->SerializeBrandFullVersionList());
+    }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAMobile, headers);
@@ -714,6 +718,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUAModel, headers);
     RemoveClientHintHeader(WebClientHintsType::kUABitness, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAReduced, headers);
+    RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
   }
 }
 
@@ -791,7 +796,8 @@ void AddRequestClientHintsHeaders(
   if (ShouldAddClientHint(data, WebClientHintsType::kDpr)) {
     AddDPRHeader(headers, context, url);
   }
-  if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth_DEPRECATED)) {
+  if (ShouldAddClientHint(data,
+                          WebClientHintsType::kViewportWidth_DEPRECATED)) {
     AddViewportWidthHeader(headers, context, url,
                            /*use_deprecated_version*/ true);
   }
@@ -829,7 +835,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kViewportWidth ==
+      network::mojom::WebClientHintsType::kUAFullVersionList ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

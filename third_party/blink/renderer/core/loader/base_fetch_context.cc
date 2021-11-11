@@ -161,7 +161,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kUA)
               .c_str(),
-          ua->SerializeBrandVersionList().c_str());
+          ua->SerializeBrandMajorVersionList().c_str());
     }
 
     // We also send Sec-CH-UA-Mobile to all hints. It is a one-bit header
@@ -423,6 +423,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
               .at(network::mojom::blink::WebClientHintsType::kUAFullVersion)
               .c_str(),
           SerializeStringHeader(ua->full_version));
+    }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kUAFullVersionList,
+            hints_preferences)) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kUAFullVersionList)
+              .c_str(),
+          ua->SerializeBrandFullVersionList().c_str());
     }
 
     if (ShouldSendClientHint(

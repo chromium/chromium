@@ -16,6 +16,8 @@
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/common/user_agent/user_agent_brand_version_type.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-shared.h"
@@ -75,11 +77,12 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::FontRenderParams::SubpixelRendering,
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentBrandVersion)
   IPC_STRUCT_TRAITS_MEMBER(brand)
-  IPC_STRUCT_TRAITS_MEMBER(major_version)
+  IPC_STRUCT_TRAITS_MEMBER(version)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentMetadata)
   IPC_STRUCT_TRAITS_MEMBER(brand_version_list)
+  IPC_STRUCT_TRAITS_MEMBER(brand_full_version_list)
   IPC_STRUCT_TRAITS_MEMBER(full_version)
   IPC_STRUCT_TRAITS_MEMBER(platform)
   IPC_STRUCT_TRAITS_MEMBER(platform_version)
@@ -88,6 +91,9 @@ IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentMetadata)
   IPC_STRUCT_TRAITS_MEMBER(mobile)
   IPC_STRUCT_TRAITS_MEMBER(bitness)
 IPC_STRUCT_TRAITS_END()
+
+IPC_ENUM_TRAITS_MAX_VALUE(blink::UserAgentBrandVersionType,
+                          blink::UserAgentBrandVersionType::kMaxValue)
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentOverride)
   IPC_STRUCT_TRAITS_MEMBER(ua_string_override)

@@ -15,6 +15,7 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-full-version');
+  await printHeader('sec-ch-ua-full-version-list');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-platform');
   await printHeader('sec-ch-ua-platform-version');
@@ -30,6 +31,8 @@
     userAgentMetadata: {
       brands: [{brand: 'Ferrum', version: '42.0'},
                {brand: 'Iron', version: '3'}],
+      fullVersionList: [{brand: 'Ferrum', version: '42.0.3.14159'},
+               {brand: 'Iron', version: '3.1.4.159'}],
       fullVersion: '42.0.3.14159',
       platform: 'Typewriter',
       platformVersion: '1950',
@@ -43,9 +46,10 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["platform", "platformVersion", "architecture", "model", "uaFullVersion"])'));
+          '["platform", "platformVersion", "architecture", "model", "uaFullVersion", "fullVersionList"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-full-version');
+  await printHeader('sec-ch-ua-full-version-list');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-platform');
   await printHeader('sec-ch-ua-platform-version');
@@ -59,6 +63,7 @@
   let navHeaders = await session.evaluate('document.documentElement.textContent');
   printHeaderFromList('sec-ch-ua', navHeaders);
   printHeaderFromList('sec-ch-ua-full-version', navHeaders);
+  printHeaderFromList('sec-ch-ua-full-version-list', navHeaders);
   printHeaderFromList('sec-ch-ua-arch', navHeaders);
   printHeaderFromList('sec-ch-ua-platform', navHeaders);
   printHeaderFromList('sec-ch-ua-platform-version', navHeaders);
@@ -84,9 +89,10 @@
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
   testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["platform", "platformVersion", "architecture", "model", "uaFullVersion"])'));
+          '["platform", "platformVersion", "architecture", "model", "uaFullVersion", "fullVersionList"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-full-version');
+  await printHeader('sec-ch-ua-full-version-list');
   await printHeader('sec-ch-ua-arch');
   await printHeader('sec-ch-ua-platform');
   await printHeader('sec-ch-ua-platform-version');

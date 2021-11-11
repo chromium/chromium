@@ -15,6 +15,7 @@ def main(request, response):
         b"sec-ch-ua-platform-version",
         b"sec-ch-ua-model",
         b"sec-ch-ua-full-version",
+        b"sec-ch-ua-full-version-list",
     ]
 
     request_client_hints = {i: request.headers.get(i) for i in client_hint_headers}

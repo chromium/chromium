@@ -179,6 +179,9 @@ enum PermissionsPolicyFeature {
   // for the API.
   kJoinAdInterestGroup = 92,
 
+  // Client Hint for the full version for each brand.
+  kClientHintUAFullVersionList = 93,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

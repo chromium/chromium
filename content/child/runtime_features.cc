@@ -404,6 +404,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           // launched and released to stable with no issues.
           {"AutoExpandDetailsElement",
            blink::features::kAutoExpandDetailsElement},
+          {"UserAgentClientHintFullVersionList",
+           blink::features::kUserAgentClientHintFullVersionList},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

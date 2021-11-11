@@ -34,7 +34,9 @@ class EnabledClientHintsTest : public testing::Test {
     // The UserAgentClientHint feature is enabled, and the
     // PrefersColorSchemeClientHintHeader feature is disabled.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kUserAgentClientHint},
+        /*enabled_features=*/{blink::features::kUserAgentClientHint,
+                              blink::features::
+                                  kUserAgentClientHintFullVersionList},
         /*disabled_features=*/{
             blink::features::kPrefersColorSchemeClientHintHeader});
     TrialTokenValidator::SetOriginTrialPolicyGetter(
@@ -81,16 +83,20 @@ class EnabledClientHintsTest : public testing::Test {
 TEST_F(EnabledClientHintsTest, EnabledClientHint) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, true);
+  hints.SetIsEnabled(WebClientHintsType::kUAFullVersionList, true);
   hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, true);
   EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAFullVersion));
+  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAFullVersionList));
   EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kRtt_DEPRECATED));
 }
 
 TEST_F(EnabledClientHintsTest, DisabledClientHint) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, false);
+  hints.SetIsEnabled(WebClientHintsType::kUAFullVersionList, false);
   hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, false);
   EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAFullVersion));
+  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAFullVersionList));
   EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kRtt_DEPRECATED));
 }
 
@@ -194,10 +200,12 @@ TEST_F(EnabledClientHintsTest,
 TEST_F(EnabledClientHintsTest, GetEnabledHints) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, true);
+  hints.SetIsEnabled(WebClientHintsType::kUAFullVersionList, true);
   hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, true);
   EXPECT_THAT(hints.GetEnabledHints(),
               ElementsAre(WebClientHintsType::kRtt_DEPRECATED,
-                          WebClientHintsType::kUAFullVersion));
+                          WebClientHintsType::kUAFullVersion,
+                          WebClientHintsType::kUAFullVersionList));
 }
 
 }  // namespace blink

@@ -31,6 +31,8 @@ enum WebClientHintsType {
   kUAPlatform = 10,
   kUAModel = 11,
   kUAMobile = 12,
+  // Sec-CH-UA-Full-Version is soon to be deprecated,
+  // prefer Sec-CH-UA-Full-Version-List instead.
   kUAFullVersion = 13,
   kUAPlatformVersion = 14,
   kPrefersColorScheme = 15,
@@ -43,6 +45,8 @@ enum WebClientHintsType {
   kDpr = 20, // The `sec-ch-` variant of kDpr_DEPRECATED
   kResourceWidth = 21, // The `sec-ch-` variant of kResourceWidth_DEPRECATED
   kViewportWidth = 22, // The `sec-ch-` variant of kViewportWidth_DEPRECATED
+  // A new client hint to deprecate `sec-ch-ua-full-version`
+  kUAFullVersionList = 23,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

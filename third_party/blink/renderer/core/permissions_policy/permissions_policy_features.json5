@@ -141,6 +141,11 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
+      name: "ClientHintUAFullVersionList",
+      permissions_policy_name: "ch-ua-full-version-list",
+      depends_on: ["FeaturePolicyForClientHints", "UserAgentClientHintFullVersionList"],
+    },
+    {
       name: "ClientHintUAPlatformVersion",
       permissions_policy_name: "ch-ua-platform-version",
       depends_on: ["FeaturePolicyForClientHints"],

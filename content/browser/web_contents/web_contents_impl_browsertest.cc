@@ -2585,6 +2585,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
   ua_override.ua_string_override = "x";
   ua_override.ua_metadata_override.emplace();
   ua_override.ua_metadata_override->brand_version_list.emplace_back("x", "y");
+  ua_override.ua_metadata_override->brand_full_version_list.emplace_back("x1",
+                                                                         "y1");
   ua_override.ua_metadata_override->mobile = true;
   UserAgentInjector injector(shell()->web_contents(), ua_override);
   shell()->web_contents()->GetController().LoadURLWithParams(

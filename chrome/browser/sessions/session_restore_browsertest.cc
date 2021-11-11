@@ -347,12 +347,8 @@ class SmartSessionRestoreTest : public SessionRestoreTest,
 const size_t SmartSessionRestoreTest::kExpectedNumTabs = 6;
 // static
 const char* const SmartSessionRestoreTest::kUrls[] = {
-    "http://google.com/1",
-    "http://google.com/2",
-    "http://google.com/3",
-    "http://google.com/4",
-    "http://google.com/5",
-    "http://google.com/6"};
+    "http://google.com/1", "http://google.com/2", "http://google.com/3",
+    "http://google.com/4", "http://google.com/5", "http://google.com/6"};
 
 // Restore session with url passed in command line.
 class SessionRestoreWithURLInCommandLineTest : public SessionRestoreTest {
@@ -411,9 +407,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoredTabsShouldHaveWindow) {
 // have "visible" visibility state, the rest should not.
 // (http://crbug.com/155365 http://crbug.com/118269)
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
-    RestoredTabsHaveCorrectVisibilityState) {
+                       RestoredTabsHaveCorrectVisibilityState) {
   // Create tabs.
-  GURL test_page(ui_test_utils::GetTestUrl(base::FilePath(),
+  GURL test_page(ui_test_utils::GetTestUrl(
+      base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_page, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -440,7 +437,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   for (int i = 0; i < tabs; ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
     std::string document_visibility_state;
-    const char kGetStateJS[] = "window.domAutomationController.send("
+    const char kGetStateJS[] =
+        "window.domAutomationController.send("
         "window.document.visibilityState);";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         contents, kGetStateJS, &document_visibility_state));
@@ -606,16 +604,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreIndividualTabFromWindow) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(browser(), url2,
-                                  ui::PAGE_TRANSITION_LINK);
+    chrome::AddSelectedTabWithURL(browser(), url2, ui::PAGE_TRANSITION_LINK);
     observer.Wait();
   }
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::NotificationService::AllSources());
-    chrome::AddSelectedTabWithURL(browser(), url3,
-                                  ui::PAGE_TRANSITION_LINK);
+    chrome::AddSelectedTabWithURL(browser(), url3, ui::PAGE_TRANSITION_LINK);
     observer.Wait();
   }
 
@@ -1016,9 +1012,7 @@ class SessionRestoreTabGroupsTest : public SessionRestoreTest,
   SessionRestoreTabGroupsTest() = default;
 
  protected:
-  void SetUpOnMainThread() override {
-    SessionRestoreTest::SetUpOnMainThread();
-  }
+  void SetUpOnMainThread() override { SessionRestoreTest::SetUpOnMainThread(); }
 
   Browser* QuitBrowserAndRestore(Browser* browser) {
     // The test parameter determines whether to do a command reset.
@@ -1289,10 +1283,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoMemoryPressureLoadsAllTabs) {
 
   ASSERT_EQ(3, tab_strip_model->count());
   // All render widgets should be initialized by now.
-  ASSERT_TRUE(
-      tab_strip_model->GetWebContentsAt(0)->GetRenderWidgetHostView() &&
-      tab_strip_model->GetWebContentsAt(1)->GetRenderWidgetHostView() &&
-      tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
+  ASSERT_TRUE(tab_strip_model->GetWebContentsAt(0)->GetRenderWidgetHostView() &&
+              tab_strip_model->GetWebContentsAt(1)->GetRenderWidgetHostView() &&
+              tab_strip_model->GetWebContentsAt(2)->GetRenderWidgetHostView());
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MemoryPressureLoadsNotAllTabs) {
@@ -1588,8 +1581,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ActiveIndexUpdatedAtClose) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   browser()->tab_strip_model()->CloseWebContentsAt(
-      0,
-      TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+      0, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
 
   Browser* new_browser = QuitBrowserAndRestore(browser());
 
@@ -1775,6 +1767,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, PersistAndRestoreUserAgentOverride) {
   ua_override.ua_metadata_override.emplace();
   ua_override.ua_metadata_override->brand_version_list.emplace_back("Overrider",
                                                                     "0");
+  ua_override.ua_metadata_override->brand_full_version_list.emplace_back(
+      "Overrider", "0.0.0.0");
   browser()->tab_strip_model()->GetWebContentsAt(0)->SetUserAgentOverride(
       ua_override, false);
 

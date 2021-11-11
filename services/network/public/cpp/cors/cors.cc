@@ -371,6 +371,11 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // Simple range values are safelisted.
       // https://fetch.spec.whatwg.org/#simple-range-header-value
       "range",
+
+      // The `Sec-CH-UA-Full-Version-List` provide server information about the
+      // full version for each brand in its brands list.
+      // https://wicg.github.io/ua-client-hints/#sec-ch-ua-full-version-list
+      "sec-ch-ua-full-version-list",
   });
 
   if (!base::Contains(safe_names, lower_name))
