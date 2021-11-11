@@ -54,17 +54,47 @@ void WebRtcTimer::SchedulableCallback::Schedule(
   }
 }
 
+bool WebRtcTimer::SchedulableCallback::IsScheduled() {
+  base::AutoLock auto_scheduled_time_lock(scheduled_time_lock_);
+  return scheduled_time_ != base::TimeTicks::Max();
+}
+
 base::TimeTicks WebRtcTimer::SchedulableCallback::Inactivate() {
-  base::AutoLock auto_active_lock(active_lock_);
+  // If we're inside the task runner and the task is currently running, that
+  // means Inactivate() was called from inside the callback, and |active_lock_|
+  // is already aquired on the current task runner. Acquiring it again would
+  // cause deadlock.
+  bool is_inactivated_by_callback =
+      task_runner_->RunsTasksInCurrentSequence() && is_currently_running_;
+  std::unique_ptr<base::AutoLock> auto_active_lock;
+  if (!is_inactivated_by_callback) {
+    auto_active_lock = std::make_unique<base::AutoLock>(active_lock_);
+  }
   is_active_ = false;
+  repeated_delay_ = base::TimeDelta();  // Prevent automatic re-schedule.
   if (metronome_listener_) {
-    metronome_->RemoveListener(metronome_listener_);
+    if (!is_inactivated_by_callback) {
+      RemoveMetronomeListener();
+    } else {
+      // The metronome listener must not be removed from inside the callback.
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &WebRtcTimer::SchedulableCallback::RemoveMetronomeListener,
+              this));
+    }
   }
   base::AutoLock auto_scheduled_time_lock(scheduled_time_lock_);
   return scheduled_time_;
 }
 
+void WebRtcTimer::SchedulableCallback::RemoveMetronomeListener() {
+  DCHECK(metronome_listener_);
+  metronome_->RemoveListener(metronome_listener_);
+}
+
 void WebRtcTimer::SchedulableCallback::MaybeRun() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // Run unless we've been cancelled.
   base::AutoLock auto_active_lock(active_lock_);
   if (!is_active_) {
@@ -76,7 +106,9 @@ void WebRtcTimer::SchedulableCallback::MaybeRun() {
     base::AutoLock auto_scheduled_time_lock(scheduled_time_lock_);
     scheduled_time_ = base::TimeTicks::Max();
   }
+  is_currently_running_ = true;
   callback_.Run();
+  is_currently_running_ = false;
   if (!repeated_delay_.is_zero()) {
     Schedule(base::TimeTicks::Now() + repeated_delay_);
   }
@@ -130,10 +162,22 @@ void WebRtcTimer::StartRepeating(base::TimeDelta delay) {
   ScheduleCallback(base::TimeTicks::Now() + delay);
 }
 
+bool WebRtcTimer::IsActive() {
+  base::AutoLock auto_lock(lock_);
+  if (!schedulable_callback_) {
+    return false;
+  }
+  if (!repeated_delay_.is_zero()) {
+    return true;
+  }
+  return schedulable_callback_->IsScheduled();
+}
+
 void WebRtcTimer::Stop() {
   base::AutoLock auto_lock(lock_);
   if (!schedulable_callback_)
     return;
+  repeated_delay_ = base::TimeDelta();  // Not repeating.
   schedulable_callback_->Inactivate();
   schedulable_callback_ = nullptr;
 }

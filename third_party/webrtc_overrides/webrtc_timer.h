@@ -36,17 +36,14 @@ class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {
   // provider.
   void Shutdown();
 
-  // Schedules to invoke the callback |delay| time from now. Can be called again
-  // inside the callback to reschedule. Use this if you want a conditionally
-  // repeating timer or a timer with varying delay.
+  // Schedules to invoke the callback |delay| time from now.
   void StartOneShot(base::TimeDelta delay);
-
-  // Same behavior as calling StartOneShot(delay) every time the callback fires.
-  // Repeats unconditionally until the timer is stopped.
+  // Scheduldes to repeat unconditionally until the timer is stopped. This has
+  // the same behavior as calling StartOneShot(delay) inside each callback.
   void StartRepeating(base::TimeDelta delay);
-
-  // Cancels any scheduled callbacks. Must not be called from inside the
-  // callback.
+  // True if there is currently activity scheduled.
+  bool IsActive();
+  // Cancels any scheduled callbacks.
   void Stop();
 
   // Change which task runner to fire callbacks on. Seamlessy re-schedules
@@ -70,12 +67,14 @@ class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {
 
     // The task can be re-scheduled after each run.
     void Schedule(base::TimeTicks scheduled_time);
+    bool IsScheduled();
     // Inactivate the callback. Returns the cancelled scheduled time, or
     // base::TimeTicks::Max() if nothing was scheduled when cancelled.
     base::TimeTicks Inactivate();
 
    private:
     void MaybeRun();
+    void RemoveMetronomeListener();
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     const base::RepeatingCallback<void()> callback_;
@@ -83,10 +82,15 @@ class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {
     // task runner.
     const scoped_refptr<MetronomeSource> metronome_;
     const scoped_refptr<MetronomeSource::ListenerHandle> metronome_listener_;
-    const base::TimeDelta repeated_delay_;
 
+    // Only accessed on |task_runner_|.
+    bool is_currently_running_ = false;
     base::Lock active_lock_;
-    bool is_active_ GUARDED_BY(active_lock_) = true;
+    // Guarded by |active_lock_|, but to avoid deadlock we do not acquire the
+    // lock when Inactivate() is being called from inside the callback. In this
+    // case the lock is already being held by MaybeRun().
+    bool is_active_ = true;
+    base::TimeDelta repeated_delay_;
 
     base::Lock scheduled_time_lock_;
     base::TimeTicks scheduled_time_ GUARDED_BY(scheduled_time_lock_) =
