@@ -177,4 +177,44 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTestSystemWidePolicies) {
   provider.Shutdown();
 }
 
+TEST_F(PolicyLoaderLacrosTest, TwoLoaders) {
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+
+  PolicyLoaderLacros* system_wide_loader =
+      new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner(),
+                             PolicyPerProfileFilter::kFalse);
+  AsyncPolicyProvider system_wide_provider(
+      &schema_registry_,
+      std::unique_ptr<AsyncPolicyLoader>(system_wide_loader));
+  system_wide_provider.Init(&schema_registry_);
+
+  PolicyLoaderLacros* per_profile_loader =
+      new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner(),
+                             PolicyPerProfileFilter::kTrue);
+  AsyncPolicyProvider per_profile_provider(
+      &schema_registry_,
+      std::unique_ptr<AsyncPolicyLoader>(per_profile_loader));
+  per_profile_provider.Init(&schema_registry_);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetChromePolicyMap(system_wide_loader->Load().get()).size(),
+            (unsigned int)0);
+  EXPECT_EQ(GetChromePolicyMap(per_profile_loader->Load().get()).size(),
+            (unsigned int)0);
+
+  std::vector<uint8_t> data = GetValidPolicyFetchResponseWithAllPolicy();
+  system_wide_loader->OnPolicyUpdated(data);
+  per_profile_loader->OnPolicyUpdated(data);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GT(GetChromePolicyMap(system_wide_loader->Load().get()).size(),
+            static_cast<unsigned int>(0));
+  EXPECT_GT(GetChromePolicyMap(per_profile_loader->Load().get()).size(),
+            static_cast<unsigned int>(0));
+  system_wide_provider.Shutdown();
+  per_profile_provider.Shutdown();
+}
+
 }  // namespace policy

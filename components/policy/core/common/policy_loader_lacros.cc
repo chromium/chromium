@@ -119,7 +119,8 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   // Remember if the policy is managed or not.
   g_is_main_user_managed_ = validator.policy_data()->state() ==
                             enterprise_management::PolicyData::ACTIVE;
-  if (g_is_main_user_managed_) {
+  if (g_is_main_user_managed_ &&
+      per_profile_ == PolicyPerProfileFilter::kFalse) {
     *MainUserPolicyDataStorage() = *validator.policy_data();
   }
 
