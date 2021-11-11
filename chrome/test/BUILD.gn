@@ -2027,6 +2027,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.h",
       "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
+      "../browser/ui/webui/history_clusters/history_clusters_handler_browsertest.cc",
       "../browser/ui/webui/identity_internals_ui_browsertest.cc",
       "../browser/ui/webui/identity_internals_ui_browsertest.h",
       "../browser/ui/webui/inspect_ui_browsertest.cc",

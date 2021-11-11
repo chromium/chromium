@@ -118,7 +118,8 @@
     --cr-icon-button-icon-size: 24px;
   }
 
-  :host(:not([has-related-visits])) #removeAllButton {
+  :host(:not([has-related-visits])) #removeAllButton,
+  :host(:not([has-related-visits])) #openAllButton {
     display: none;
   }
 </style>
@@ -154,6 +155,10 @@
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="$i18n{actionMenuDescription}">
+      <button id="openAllButton" class="dropdown-item"
+          on-click="onOpenAllButtonClick_">
+        $i18n{openAllInTabGroup}
+      </button>
       <button class="dropdown-item" on-click="onRemoveSelfButtonClick_">
         $i18n{removeFromHistory}
       </button>

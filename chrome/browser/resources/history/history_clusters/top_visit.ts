@@ -37,6 +37,14 @@ class TopVisitElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * The index of the cluster this visit belongs to.
+       */
+      clusterIndex: {
+        type: Number,
+        value: -1,  // Initialized to an invalid value.
+      },
+
+      /**
        * The top visit to display
        */
       visit: Object,
