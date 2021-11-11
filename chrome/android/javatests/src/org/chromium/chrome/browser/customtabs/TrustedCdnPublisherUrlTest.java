@@ -181,16 +181,6 @@ public class TrustedCdnPublisherUrlTest {
     @Feature({"UiCatalogue"})
     @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
     @OverrideTrustedCdn
-    public void testUntrustedClient() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.someoneelse.bla", null, getDefaultSecurityIcon());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
-    @Features.EnableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
     public void testNoHeader() throws Exception {
         runTrustedCdnPublisherUrlTest(null, "com.example.test", null, getDefaultSecurityIcon());
     }
@@ -203,16 +193,6 @@ public class TrustedCdnPublisherUrlTest {
     public void testMalformedHeader() throws Exception {
         runTrustedCdnPublisherUrlTest(
                 "garbage", "com.example.test", null, getDefaultSecurityIcon());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"UiCatalogue"})
-    @Features.DisableFeatures(ChromeFeatureList.SHOW_TRUSTED_PUBLISHER_URL)
-    @OverrideTrustedCdn
-    public void testDisabled() throws Exception {
-        runTrustedCdnPublisherUrlTest(
-                "https://example.com/test", "com.example.test", null, getDefaultSecurityIcon());
     }
 
     @Test

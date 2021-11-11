@@ -84,6 +84,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/NavigationInfoCaptureTriggerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/PartialCustomTabHeightStrategyTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/RequestThrottlerTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/TrustedCdnTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityContentTestEnvironment.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityNavigationControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabControllerUnitTest.java",
