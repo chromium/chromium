@@ -2357,6 +2357,43 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             return ("v8::Local<v8::Array>",
                     S(blink_arg_name,
                       definition_constructor=create_definition))
+        elif argument.idl_type.unwrap().is_typed_array_type:
+            assert "AllowShared" in argument.idl_type.effective_annotations
+            unwrapped_idl_type = argument.idl_type.unwrap()
+            element_type_map = {
+                'Int8Array': 'int8_t',
+                'Int16Array': 'int16_t',
+                'Int32Array': 'int32_t',
+                'BigInt64Array': 'int64_t',
+                'Uint8Array': 'uint8_t',
+                'Uint16Array': 'uint16_t',
+                'Uint32Array': 'uint32_t',
+                'BigUint64Array': 'uint64_t',
+                'Uint8ClampedArray': 'uint8_t',
+                'Float32Array': 'float',
+                'Float64Array': 'double',
+            }
+            element_type = element_type_map.get(
+                unwrapped_idl_type.keyword_typename)
+
+            def create_definition(symbol_node):
+                binds = {
+                    "v8_arg_name": v8_arg_name,
+                    "blink_arg_name": blink_arg_name,
+                }
+
+                symbol_def_node = SymbolDefinitionNode(
+                    symbol_node,
+                    [F("auto& {blink_arg_name} = {v8_arg_name};", **binds)])
+                symbol_def_node.accumulate(
+                    CodeGenAccumulator.require_include_headers([
+                        "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h",
+                    ]))
+                return symbol_def_node
+
+            return ("const v8::FastApiTypedArray<{}>&".format(element_type),
+                    S(blink_arg_name,
+                      definition_constructor=create_definition))
         else:
             return (blink_type_info(argument.idl_type).value_t,
                     S(blink_arg_name,
