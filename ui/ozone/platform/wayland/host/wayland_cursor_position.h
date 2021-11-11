@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_POSITION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_POSITION_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {

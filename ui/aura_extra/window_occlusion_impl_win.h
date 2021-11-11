@@ -9,7 +9,6 @@
 #include <winuser.h>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura_extra/aura_extra_export.h"

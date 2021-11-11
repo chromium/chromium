@@ -9,8 +9,6 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"

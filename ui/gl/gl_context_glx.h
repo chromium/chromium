@@ -5,9 +5,7 @@
 #ifndef UI_GL_GL_CONTEXT_GLX_H_
 #define UI_GL_GL_CONTEXT_GLX_H_
 
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"

@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/events/ozone/device/device_event.h"

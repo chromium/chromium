@@ -6,7 +6,6 @@
 #define UI_AURA_SCOPED_SIMPLE_KEYBOARD_HOOK_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_recognizer.h"

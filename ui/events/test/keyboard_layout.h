@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_KEYBOARD_LAYOUT_H_
 #define UI_EVENTS_TEST_KEYBOARD_LAYOUT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

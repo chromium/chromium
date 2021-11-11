@@ -6,7 +6,6 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"

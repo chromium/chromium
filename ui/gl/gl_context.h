@@ -11,7 +11,6 @@
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/atomic_flag.h"

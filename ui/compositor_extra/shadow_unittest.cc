@@ -4,7 +4,6 @@
 
 #include "ui/compositor_extra/shadow.h"
 
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"

@@ -10,7 +10,6 @@
 #include <map>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace ui {

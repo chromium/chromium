@@ -9,7 +9,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"

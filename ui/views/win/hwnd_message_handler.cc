@@ -18,7 +18,6 @@
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util_win.h"
 #include "base/task/current_thread.h"

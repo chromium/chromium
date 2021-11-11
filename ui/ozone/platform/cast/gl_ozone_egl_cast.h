@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_surface.h"

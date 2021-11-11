@@ -11,7 +11,6 @@
 #include <queue>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/gl/gl_export.h"
 
 // The gpu_timing classes handles the abstraction of GL GPU Timing extensions

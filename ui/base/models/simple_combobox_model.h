@@ -6,7 +6,6 @@
 #define UI_BASE_MODELS_SIMPLE_COMBOBOX_MODEL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 

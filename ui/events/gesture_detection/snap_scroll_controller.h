@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_SNAP_SCROLL_CONTROLLER_H_
 #define UI_EVENTS_GESTURE_DETECTION_SNAP_SCROLL_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"

@@ -5,9 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_H_
 
-
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"

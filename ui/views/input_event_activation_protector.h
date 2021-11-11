@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_INPUT_EVENT_ACTIVATION_PROTECTOR_H_
 #define UI_VIEWS_INPUT_EVENT_ACTIVATION_PROTECTOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/views/views_export.h"
 

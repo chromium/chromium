@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 
 namespace ui {

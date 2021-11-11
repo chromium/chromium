@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_VIEW_TARGETER_DELEGATE_H_
 #define UI_VIEWS_VIEW_TARGETER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {

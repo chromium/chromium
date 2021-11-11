@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"

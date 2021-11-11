@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/views_export.h"
 

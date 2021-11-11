@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_CAST_PLATFORM_WINDOW_CAST_H_
 #define UI_OZONE_PLATFORM_CAST_PLATFORM_WINDOW_CAST_H_
 
-#include "base/macros.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/stub/stub_window.h"

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"

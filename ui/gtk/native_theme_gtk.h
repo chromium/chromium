@@ -6,7 +6,6 @@
 #define UI_GTK_NATIVE_THEME_GTK_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/glib/glib_signal.h"

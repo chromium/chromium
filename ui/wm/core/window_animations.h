@@ -5,8 +5,6 @@
 #ifndef UI_WM_CORE_WINDOW_ANIMATIONS_H_
 #define UI_WM_CORE_WINDOW_ANIMATIONS_H_
 
-
-#include "base/macros.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/wm_core_export.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "third_party/skia/include/core/SkSurface.h"

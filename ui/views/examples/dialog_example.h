@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"

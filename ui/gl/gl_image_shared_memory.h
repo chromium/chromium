@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gl/gl_export.h"

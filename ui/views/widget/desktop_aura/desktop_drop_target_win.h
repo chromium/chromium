@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drop_target_win.h"
 

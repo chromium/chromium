@@ -7,7 +7,6 @@
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/fuchsia/input_event_sink.h"

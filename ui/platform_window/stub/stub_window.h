@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_STUB_STUB_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"

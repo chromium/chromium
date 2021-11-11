@@ -6,7 +6,6 @@
 #define UI_BASE_PREDICTION_ONE_EURO_FILTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "third_party/one_euro_filter/src/one_euro_filter.h"
 #include "ui/base/prediction/input_filter.h"
 

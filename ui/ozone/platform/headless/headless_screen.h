@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/display/display_list.h"
 #include "ui/gfx/geometry/point.h"

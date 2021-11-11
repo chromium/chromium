@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"

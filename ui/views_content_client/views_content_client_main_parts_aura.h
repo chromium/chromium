@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
 namespace wm {

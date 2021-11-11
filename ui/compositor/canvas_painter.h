@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_CANVAS_PAINTER_H_
 #define UI_COMPOSITOR_CANVAS_PAINTER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/paint_context.h"

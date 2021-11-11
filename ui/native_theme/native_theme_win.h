@@ -13,7 +13,6 @@
 #include <windows.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 #include "ui/display/screen.h"
 

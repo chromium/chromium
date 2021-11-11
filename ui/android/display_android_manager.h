@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "ui/display/screen_base.h"
 #include "ui/gfx/geometry/size.h"
 

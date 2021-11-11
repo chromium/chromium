@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 
 namespace views {

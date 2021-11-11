@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/wm/core/wm_core_export.h"
 
 namespace wm {

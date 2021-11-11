@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-
-#include "base/macros.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/manager/managed_display_info.h"

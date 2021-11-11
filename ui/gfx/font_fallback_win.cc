@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

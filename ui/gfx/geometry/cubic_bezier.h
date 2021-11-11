@@ -5,7 +5,6 @@
 #ifndef UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 #define UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {

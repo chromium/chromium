@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_TRANSFORM_RECORDER_H_
 #define UI_COMPOSITOR_TRANSFORM_RECORDER_H_
 
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace cc {

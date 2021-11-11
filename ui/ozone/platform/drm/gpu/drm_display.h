@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/color_space.h"

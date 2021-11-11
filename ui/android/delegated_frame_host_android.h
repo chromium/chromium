@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 #define UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"

@@ -7,7 +7,6 @@
 #include <array>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_change_observer.h"

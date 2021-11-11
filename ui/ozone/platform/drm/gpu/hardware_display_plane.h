@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/trace_event/traced_value.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"

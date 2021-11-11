@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/viz/client/frame_eviction_manager.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/window_tracker.h"

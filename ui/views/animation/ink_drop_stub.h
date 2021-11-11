@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_STUB_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_STUB_H_
 
-#include "base/macros.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/views_export.h"
 

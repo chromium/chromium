@@ -6,7 +6,6 @@
 #define UI_EVENTS_PLATFORM_SCOPED_EVENT_DISPATCHER_H_
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {

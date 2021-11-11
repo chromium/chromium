@@ -6,7 +6,6 @@
 #define UI_BASE_WIN_SCOPED_OLE_INITIALIZER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/windows_types.h"
 

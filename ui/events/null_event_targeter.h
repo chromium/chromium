@@ -6,7 +6,6 @@
 #define UI_EVENTS_NULL_EVENT_TARGETER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_targeter.h"
 #include "ui/events/events_export.h"
 

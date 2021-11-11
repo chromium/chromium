@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
-#include "base/macros.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"

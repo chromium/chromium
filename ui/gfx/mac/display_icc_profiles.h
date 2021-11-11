@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"

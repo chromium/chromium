@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/views_test_base.h"

@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

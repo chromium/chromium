@@ -8,7 +8,6 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"

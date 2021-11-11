@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 #define UI_VIEWS_ANIMATION_SLIDE_OUT_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/views/view.h"

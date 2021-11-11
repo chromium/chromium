@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/msgfmt.h"
 #include "third_party/icu/source/i18n/unicode/plurrule.h"

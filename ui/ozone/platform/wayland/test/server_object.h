@@ -9,8 +9,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
-
 #include <wayland-server-core.h>
 
 struct wl_client;

@@ -9,7 +9,6 @@
 #include <map>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_base_export.h"

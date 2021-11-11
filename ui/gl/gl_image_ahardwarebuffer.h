@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_egl.h"

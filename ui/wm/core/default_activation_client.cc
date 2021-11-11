@@ -4,7 +4,6 @@
 
 #include "ui/wm/core/default_activation_client.h"
 
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"

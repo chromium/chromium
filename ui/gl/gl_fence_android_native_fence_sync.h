@@ -6,7 +6,6 @@
 #define UI_GL_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC_H_
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_fence_egl.h"

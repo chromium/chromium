@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"

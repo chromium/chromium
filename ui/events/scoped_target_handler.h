@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"

@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_SCROLL_BAR_VIEWS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"

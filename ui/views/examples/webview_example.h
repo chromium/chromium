@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_WEBVIEW_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_WEBVIEW_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/examples/example_base.h"

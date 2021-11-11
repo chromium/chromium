@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_TEST_TEST_LAYOUT_MANAGER_H_
 #define UI_VIEWS_TEST_TEST_LAYOUT_MANAGER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 

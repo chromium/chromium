@@ -7,7 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/base/hit_test.h"
 #import "ui/base/test/nswindow_fullscreen_notification_waiter.h"

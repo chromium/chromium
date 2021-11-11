@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"

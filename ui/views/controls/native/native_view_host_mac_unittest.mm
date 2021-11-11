@@ -10,7 +10,6 @@
 
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
 #include "ui/views/controls/native/native_view_host.h"

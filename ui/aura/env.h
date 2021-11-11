@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"

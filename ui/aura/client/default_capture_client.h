@@ -5,7 +5,6 @@
 #ifndef UI_AURA_CLIENT_DEFAULT_CAPTURE_CLIENT_H_
 #define UI_AURA_CLIENT_DEFAULT_CAPTURE_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/client/capture_client.h"

@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager.h"

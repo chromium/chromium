@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"

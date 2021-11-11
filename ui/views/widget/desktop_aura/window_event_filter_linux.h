@@ -6,7 +6,6 @@
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/views_export.h"
 

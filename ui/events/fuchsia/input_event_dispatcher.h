@@ -7,7 +7,6 @@
 
 #include <fuchsia/ui/input/cpp/fidl.h>
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {

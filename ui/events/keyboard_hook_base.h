@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_KEYBOARD_HOOK_BASE_H_
 #define UI_EVENTS_KEYBOARD_HOOK_BASE_H_
 
-
-#include "base/macros.h"
 #include "ui/events/keyboard_hook.h"
 
 namespace ui {

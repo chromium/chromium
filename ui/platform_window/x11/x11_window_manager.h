@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_X11_X11_WINDOW_MANAGER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/x11/x11_window_export.h"
 

@@ -8,7 +8,6 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 

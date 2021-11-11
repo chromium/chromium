@@ -4,7 +4,6 @@
 
 #include "ui/views/controls/menu/menu_config.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"

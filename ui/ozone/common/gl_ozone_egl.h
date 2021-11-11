@@ -6,7 +6,6 @@
 #define UI_OZONE_COMMON_GL_OZONE_EGL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/khronos/EGL/eglplatform.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"

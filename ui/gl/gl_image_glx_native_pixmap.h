@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_IMAGE_GLX_NATIVE_PIXMAP_H_
 #define UI_GL_GL_IMAGE_GLX_NATIVE_PIXMAP_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"

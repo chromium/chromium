@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"

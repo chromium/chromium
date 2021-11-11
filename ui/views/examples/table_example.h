@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/table/table_grouper.h"

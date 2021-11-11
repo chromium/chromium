@@ -6,7 +6,6 @@
 #define UI_NATIVE_THEME_NATIVE_THEME_MAC_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme_aura.h"

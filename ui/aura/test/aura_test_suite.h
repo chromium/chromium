@@ -5,8 +5,6 @@
 #ifndef UI_AURA_TEST_AURA_TEST_SUITE_H_
 #define UI_AURA_TEST_AURA_TEST_SUITE_H_
 
-#include "base/macros.h"
-
 namespace aura {
 namespace test {
 

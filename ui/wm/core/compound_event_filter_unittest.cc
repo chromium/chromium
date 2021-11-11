@@ -4,7 +4,6 @@
 
 #include "ui/wm/core/compound_event_filter.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/cursor_client.h"

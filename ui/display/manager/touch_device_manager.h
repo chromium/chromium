@@ -10,7 +10,6 @@
 #include <ostream>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"

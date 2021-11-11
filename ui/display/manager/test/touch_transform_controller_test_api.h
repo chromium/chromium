@@ -5,8 +5,6 @@
 #ifndef UI_DISPLAY_MANAGER_TEST_TOUCH_TRANSFORM_CONTROLLER_TEST_API_H_
 #define UI_DISPLAY_MANAGER_TEST_TOUCH_TRANSFORM_CONTROLLER_TEST_API_H_
 
-
-#include "base/macros.h"
 #include "ui/display/manager/touch_transform_controller.h"
 
 namespace display {

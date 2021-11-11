@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "ui/gfx/vsync_provider.h"
 
 namespace gl {

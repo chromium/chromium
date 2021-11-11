@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"

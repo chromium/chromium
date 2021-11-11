@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_DRM_RENDER_NODE_PATH_FINDER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace ui {
 

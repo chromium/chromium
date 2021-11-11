@@ -5,7 +5,6 @@
 #ifndef UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 #define UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {

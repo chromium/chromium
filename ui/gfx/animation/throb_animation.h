@@ -5,7 +5,6 @@
 #ifndef UI_GFX_ANIMATION_THROB_ANIMATION_H_
 #define UI_GFX_ANIMATION_THROB_ANIMATION_H_
 
-#include "base/macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 namespace gfx {

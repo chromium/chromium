@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/pointer_details.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

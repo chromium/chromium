@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "ui/views/event_monitor.h"
 
 namespace ui {

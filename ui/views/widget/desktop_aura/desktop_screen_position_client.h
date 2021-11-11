@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_POSITION_CLIENT_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_SCREEN_POSITION_CLIENT_H_
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 #include "ui/wm/core/default_screen_position_client.h"
 

@@ -5,7 +5,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #include "base/base_paths.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "ui/gfx/image/image.h"
 

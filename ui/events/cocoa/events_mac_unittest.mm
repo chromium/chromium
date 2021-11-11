@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"

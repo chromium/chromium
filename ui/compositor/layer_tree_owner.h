@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {

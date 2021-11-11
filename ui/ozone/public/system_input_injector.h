@@ -6,7 +6,6 @@
 #define UI_OZONE_PUBLIC_SYSTEM_INPUT_INJECTOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 

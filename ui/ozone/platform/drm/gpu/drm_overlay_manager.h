@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"

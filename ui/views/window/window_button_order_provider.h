@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/views/views_export.h"
 #include "ui/views/window/frame_buttons.h"
 

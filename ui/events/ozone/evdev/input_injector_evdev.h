@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_INPUT_INJECTOR_EVDEV_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/ozone/public/system_input_injector.h"
 

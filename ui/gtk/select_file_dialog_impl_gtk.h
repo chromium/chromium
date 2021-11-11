@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/select_file_dialog_impl.h"

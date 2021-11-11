@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 #define UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/non_client_view.h"

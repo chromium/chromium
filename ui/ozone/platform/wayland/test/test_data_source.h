@@ -7,7 +7,6 @@
 
 #include <wayland-server-protocol.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 

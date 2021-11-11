@@ -6,7 +6,6 @@
 #define UI_BASE_USER_ACTIVITY_USER_ACTIVITY_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 class Event;

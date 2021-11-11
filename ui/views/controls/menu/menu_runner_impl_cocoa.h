@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 

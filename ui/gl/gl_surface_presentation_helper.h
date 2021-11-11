@@ -6,7 +6,6 @@
 #define UI_GL_GL_SURFACE_PRESENTATION_HELPER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_CHECKBOX_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_CHECKBOX_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/examples/views_examples_export.h"
 

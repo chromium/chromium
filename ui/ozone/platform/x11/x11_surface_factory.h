@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_surface.h"

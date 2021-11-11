@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "build/build_config.h"

@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/gfx/geometry/rect.h"
 

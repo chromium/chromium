@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 namespace ui {
 struct InputDevice;
 struct TouchscreenDevice;

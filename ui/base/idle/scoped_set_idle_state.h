@@ -5,7 +5,6 @@
 #ifndef UI_BASE_IDLE_SCOPED_SET_IDLE_STATE_H_
 #define UI_BASE_IDLE_SCOPED_SET_IDLE_STATE_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 

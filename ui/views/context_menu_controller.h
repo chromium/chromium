@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 #define UI_VIEWS_CONTEXT_MENU_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/views_export.h"

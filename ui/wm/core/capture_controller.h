@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window_observer.h"

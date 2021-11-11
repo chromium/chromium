@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_snapshot.h"

@@ -6,7 +6,6 @@
 #define UI_AURA_INPUT_STATE_LOOKUP_WIN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/input_state_lookup.h"
 
 namespace aura {

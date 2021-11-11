@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_WIN_TEST_SCOPED_SCREEN_WIN_H_
 #define UI_DISPLAY_WIN_TEST_SCOPED_SCREEN_WIN_H_
 
-#include "base/macros.h"
 #include "ui/display/win/screen_win.h"
 
 namespace display {

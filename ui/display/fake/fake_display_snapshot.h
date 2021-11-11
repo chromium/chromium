@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"

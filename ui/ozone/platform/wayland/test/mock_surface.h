@@ -9,7 +9,6 @@
 #include <wayland-server-protocol.h>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"

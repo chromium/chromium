@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"

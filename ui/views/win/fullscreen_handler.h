@@ -8,8 +8,6 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gfx {

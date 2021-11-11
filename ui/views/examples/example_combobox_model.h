@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_
 #define UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_
 
-#include "base/macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace views {

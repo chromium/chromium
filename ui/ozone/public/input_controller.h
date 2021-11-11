@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/ozone/public/mojom/gesture_properties_service.mojom.h"
 

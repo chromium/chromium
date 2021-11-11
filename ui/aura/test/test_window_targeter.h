@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_TEST_WINDOW_TARGETER_H_
 #define UI_AURA_TEST_TEST_WINDOW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/events/event_targeter.h"
 

@@ -6,7 +6,6 @@
 #define UI_WM_CORE_BASE_FOCUS_RULES_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/wm/core/focus_rules.h"
 
 namespace wm {

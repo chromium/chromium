@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
 

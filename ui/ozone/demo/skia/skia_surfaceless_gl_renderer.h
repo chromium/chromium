@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/demo/skia/skia_gl_renderer.h"
 

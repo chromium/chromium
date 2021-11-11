@@ -7,7 +7,6 @@
 
 #include <set>
 #include <string>
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_export.h"

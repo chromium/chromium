@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/events_export.h"

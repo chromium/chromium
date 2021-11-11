@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 #define UI_VIEWS_STYLE_TYPOGRAPHY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"

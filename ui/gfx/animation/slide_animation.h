@@ -5,7 +5,6 @@
 #ifndef UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 #define UI_GFX_ANIMATION_SLIDE_ANIMATION_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"

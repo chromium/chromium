@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {

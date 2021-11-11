@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkFont.h"

@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"

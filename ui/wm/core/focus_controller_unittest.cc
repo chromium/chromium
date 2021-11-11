@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/default_capture_client.h"

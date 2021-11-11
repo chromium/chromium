@@ -7,7 +7,6 @@
 
 #include <text-input-unstable-v1-server-protocol.h>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"

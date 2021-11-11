@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_VIEWS_H_
 
-#include "base/macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 

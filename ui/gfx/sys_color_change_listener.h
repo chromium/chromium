@@ -5,7 +5,6 @@
 #ifndef UI_GFX_SYS_COLOR_CHANGE_LISTENER_H_
 #define UI_GFX_SYS_COLOR_CHANGE_LISTENER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {

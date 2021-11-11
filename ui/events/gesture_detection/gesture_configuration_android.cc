@@ -5,7 +5,6 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #include "base/android/build_info.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/android/view_configuration.h"

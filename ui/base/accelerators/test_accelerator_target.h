@@ -5,7 +5,6 @@
 #ifndef UI_BASE_ACCELERATORS_TEST_ACCELERATOR_TARGET_H_
 #define UI_BASE_ACCELERATORS_TEST_ACCELERATOR_TARGET_H_
 
-#include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {

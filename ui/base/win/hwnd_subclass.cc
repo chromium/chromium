@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "ui/base/win/touch_input.h"

@@ -6,7 +6,6 @@
 #define UI_BASE_PREDICTION_KALMAN_FILTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/matrix3_f.h"
 
 namespace ui {

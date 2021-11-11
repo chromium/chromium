@@ -6,7 +6,6 @@
 #define UI_AURA_TEST_TEST_CURSOR_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/cursor_client.h"
 

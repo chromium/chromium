@@ -5,8 +5,6 @@
 #ifndef UI_ANDROID_EDGE_EFFECT_H_
 #define UI_ANDROID_EDGE_EFFECT_H_
 
-
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"

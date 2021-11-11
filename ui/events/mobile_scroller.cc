@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 

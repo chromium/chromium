@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura_extra {

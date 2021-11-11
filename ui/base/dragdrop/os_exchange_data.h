@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;

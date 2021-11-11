@@ -9,7 +9,6 @@
 #include <memory>
 
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #include "ui/gfx/geometry/rect.h"

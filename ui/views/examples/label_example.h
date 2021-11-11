@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_LABEL_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_LABEL_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 

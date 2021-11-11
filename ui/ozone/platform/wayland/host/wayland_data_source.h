@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

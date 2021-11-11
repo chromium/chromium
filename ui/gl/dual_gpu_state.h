@@ -6,7 +6,6 @@
 #define UI_GL_DUAL_GPU_STATE_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {

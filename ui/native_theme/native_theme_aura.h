@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_AURA_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_AURA_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_base.h"
 

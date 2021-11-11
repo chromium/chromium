@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ui {

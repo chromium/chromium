@@ -5,7 +5,6 @@
 #ifndef UI_GFX_ANIMATION_TWEEN_H_
 #define UI_GFX_ANIMATION_TWEEN_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_export.h"
 #include "ui/gfx/geometry/rect.h"

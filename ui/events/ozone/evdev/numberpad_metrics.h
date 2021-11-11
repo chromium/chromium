@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_NUMBERPAD_METRICS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "ui/events/devices/input_device.h"

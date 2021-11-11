@@ -9,7 +9,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 

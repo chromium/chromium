@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_TEST_LAYER_ANIMATION_OBSERVER_TEST_API_H_
 #define UI_COMPOSITOR_TEST_LAYER_ANIMATION_OBSERVER_TEST_API_H_
 
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ui {

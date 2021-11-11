@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"

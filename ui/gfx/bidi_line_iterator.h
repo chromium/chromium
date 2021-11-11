@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"

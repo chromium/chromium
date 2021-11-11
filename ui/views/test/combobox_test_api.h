@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_TEST_COMBOBOX_TEST_API_H_
 #define UI_VIEWS_TEST_COMBOBOX_TEST_API_H_
 
-#include "base/macros.h"
-
 namespace gfx {
 class Size;
 }

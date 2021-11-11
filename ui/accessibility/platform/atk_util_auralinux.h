@@ -7,7 +7,6 @@
 
 #include <atk/atk.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"

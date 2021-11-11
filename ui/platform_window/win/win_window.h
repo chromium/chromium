@@ -6,7 +6,6 @@
 #define UI_PLATFORM_WINDOW_WIN_WIN_WINDOW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/msg_util.h"

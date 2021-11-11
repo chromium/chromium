@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/touch_selection/touch_handle.h"

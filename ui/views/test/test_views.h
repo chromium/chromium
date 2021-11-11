@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/view.h"
 

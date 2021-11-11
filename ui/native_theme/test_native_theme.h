@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 #define UI_NATIVE_THEME_TEST_NATIVE_THEME_H_
 
-#include "base/macros.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {

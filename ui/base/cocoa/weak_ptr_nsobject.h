@@ -6,7 +6,6 @@
 #define UI_BASE_COCOA_WEAK_PTR_NSOBJECT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 #if defined(__OBJC__)
 @class WeakPtrNSObject;

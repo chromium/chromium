@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_CLOSURE_ANIMATION_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/layer_animation_observer.h"
 

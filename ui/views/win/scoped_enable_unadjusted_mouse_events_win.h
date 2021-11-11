@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 
 namespace views {

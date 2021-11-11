@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager_export.h"

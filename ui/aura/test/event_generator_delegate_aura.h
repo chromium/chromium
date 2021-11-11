@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_EVENT_GENERATOR_DELEGATE_AURA_H_
 #define UI_AURA_TEST_EVENT_GENERATOR_DELEGATE_AURA_H_
 
-#include "base/macros.h"
 #include "ui/events/test/event_generator.h"
 
 #include <memory>

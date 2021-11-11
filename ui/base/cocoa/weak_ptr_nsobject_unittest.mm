@@ -5,7 +5,6 @@
 #import "ui/base/cocoa/weak_ptr_nsobject.h"
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {

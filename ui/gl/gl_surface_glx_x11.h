@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_SURFACE_GLX_X11_H_
 #define UI_GL_GL_SURFACE_GLX_X11_H_
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"

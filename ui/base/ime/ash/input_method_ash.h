@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/ime/ash/ime_input_context_handler_interface.h"
 #include "ui/base/ime/ash/typing_session_manager.h"

@@ -5,7 +5,6 @@
 #ifndef UI_AURA_EVENT_INJECTOR_H_
 #define UI_AURA_EVENT_INJECTOR_H_
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 
 namespace ui {

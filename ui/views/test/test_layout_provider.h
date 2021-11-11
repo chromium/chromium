@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 

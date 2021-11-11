@@ -5,8 +5,6 @@
 #ifndef UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 #define UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 
-#include "base/macros.h"
-
 namespace display {
 
 class Screen;

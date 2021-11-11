@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_fence.h"

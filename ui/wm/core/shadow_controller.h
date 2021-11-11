@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/wm/core/wm_core_export.h"
 #include "ui/wm/public/activation_change_observer.h"

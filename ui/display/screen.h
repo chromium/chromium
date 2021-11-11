@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"

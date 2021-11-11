@@ -6,7 +6,6 @@
 #define UI_BASE_PREDICTION_EMPTY_FILTER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/prediction/input_filter.h"
 
 namespace ui {

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 #define UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/tooltip_manager.h"
 
 namespace remote_cocoa {

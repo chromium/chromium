@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gmock/include/gmock/gmock.h"

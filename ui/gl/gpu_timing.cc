@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_bindings.h"

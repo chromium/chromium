@@ -6,7 +6,6 @@
 #define UI_VIEWS_ANIMATION_INK_DROP_MASK_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/views_export.h"

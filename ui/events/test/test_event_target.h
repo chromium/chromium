@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/filter/filter_source_stream.h"
 #include "ui/base/template_expressions.h"
 

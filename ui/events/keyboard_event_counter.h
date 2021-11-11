@@ -10,7 +10,6 @@
 #include <atomic>
 #include <set>
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"

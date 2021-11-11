@@ -6,7 +6,6 @@
 #include <stddef.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"

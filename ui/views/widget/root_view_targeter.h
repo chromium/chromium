@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_ROOT_VIEW_TARGETER_H_
 #define UI_VIEWS_WIDGET_ROOT_VIEW_TARGETER_H_
 
-#include "base/macros.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
 

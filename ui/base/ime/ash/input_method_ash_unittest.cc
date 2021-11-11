@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/i18n/char_iterator.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

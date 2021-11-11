@@ -6,7 +6,6 @@
 #define UI_GFX_ANIMATION_ANIMATION_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

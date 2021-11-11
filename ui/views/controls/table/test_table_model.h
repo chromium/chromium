@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_TABLE_TEST_TABLE_MODEL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/base/models/table_model.h"
 
 class TestTableModel : public ui::TableModel {

@@ -5,7 +5,6 @@
 #ifndef UI_GFX_ANIMATION_ANIMATION_SETTINGS_PROVIDER_LINUX_H_
 #define UI_GFX_ANIMATION_ANIMATION_SETTINGS_PROVIDER_LINUX_H_
 
-#include "base/macros.h"
 #include "ui/gfx/animation/animation_export.h"
 
 namespace gfx {

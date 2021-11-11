@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 #define UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/shadow_value.h"

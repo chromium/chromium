@@ -6,7 +6,6 @@
 #define UI_BASE_IME_VIRTUAL_KEYBOARD_CONTROLLER_STUB_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
 namespace ui {

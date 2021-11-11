@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/cocoa/views_hostable.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/views_export.h"

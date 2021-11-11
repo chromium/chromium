@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-
-#include "base/macros.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl_x11.h"

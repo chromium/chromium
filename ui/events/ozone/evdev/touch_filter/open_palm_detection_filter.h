@@ -8,7 +8,6 @@
 #include <bitset>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 

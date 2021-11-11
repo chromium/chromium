@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/snapshot/snapshot.h"
 

@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_TRANSIENT_WINDOW_CONTROLLER_H_
 #define UI_WM_CORE_TRANSIENT_WINDOW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/wm/core/wm_core_export.h"

@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_SURFACE_OVERLAY_H_
 #define UI_GL_GL_SURFACE_OVERLAY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_widget_types.h"

@@ -6,7 +6,6 @@
 #define UI_WEB_DIALOGS_TEST_TEST_WEB_CONTENTS_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 namespace ui {

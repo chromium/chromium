@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_COCOA_SCROLL_BAR_H_
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #import "components/remote_cocoa/app_shim/views_scrollbar_bridge.h"
 #include "ui/compositor/layer_animation_observer.h"

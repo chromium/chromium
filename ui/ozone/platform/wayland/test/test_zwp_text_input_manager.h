@@ -7,7 +7,6 @@
 
 #include <text-input-unstable-v1-server-protocol.h>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {

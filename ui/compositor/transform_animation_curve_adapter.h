@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"

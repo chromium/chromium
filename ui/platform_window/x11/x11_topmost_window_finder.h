@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/geometry/point.h"

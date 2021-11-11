@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/events_export.h"

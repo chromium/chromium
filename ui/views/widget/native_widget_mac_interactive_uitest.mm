@@ -8,7 +8,6 @@
 
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"

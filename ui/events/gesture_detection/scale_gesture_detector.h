@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 #define UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 

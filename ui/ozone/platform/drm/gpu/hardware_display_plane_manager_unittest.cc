@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

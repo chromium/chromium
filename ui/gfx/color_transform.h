@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/gfx_export.h"

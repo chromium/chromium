@@ -5,7 +5,6 @@
 #ifndef UI_GL_SCOPED_BINDERS_H_
 #define UI_GL_SCOPED_BINDERS_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {

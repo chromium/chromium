@@ -5,7 +5,6 @@
 #ifndef UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 #define UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(__OBJC__)

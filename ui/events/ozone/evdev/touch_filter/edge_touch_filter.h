@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_EDGE_TOUCH_FILTER_H_
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_EDGE_TOUCH_FILTER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/evdev/touch_filter/touch_filter.h"

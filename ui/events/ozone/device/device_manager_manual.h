@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 #include "ui/events/ozone/device/device_manager.h"

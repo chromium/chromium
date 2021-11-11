@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ROUND_RECT_PAINTER_H_
 #define UI_VIEWS_ROUND_RECT_PAINTER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/painter.h"
 #include "ui/views/views_export.h"

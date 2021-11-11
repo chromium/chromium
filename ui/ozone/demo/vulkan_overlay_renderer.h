@@ -8,7 +8,6 @@
 #include <vulkan/vulkan_core.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/buffer_types.h"

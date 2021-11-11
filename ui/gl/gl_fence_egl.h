@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_FENCE_EGL_H_
 #define UI_GL_GL_FENCE_EGL_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_fence.h"

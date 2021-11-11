@@ -9,7 +9,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/buffer_types.h"

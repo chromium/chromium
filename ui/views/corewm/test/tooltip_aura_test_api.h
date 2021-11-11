@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-
 namespace gfx {
 class Rect;
 class RenderText;

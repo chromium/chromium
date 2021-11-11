@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_OZONE_DEVICE_UDEV_DEVICE_MANAGER_UDEV_H_
 #define UI_EVENTS_OZONE_DEVICE_UDEV_DEVICE_MANAGER_UDEV_H_
 
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/observer_list.h"
 #include "device/udev_linux/scoped_udev.h"

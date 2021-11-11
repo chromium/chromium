@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"

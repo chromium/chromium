@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 #define UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 
-#include "base/macros.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/wm/core/wm_core_export.h"
 

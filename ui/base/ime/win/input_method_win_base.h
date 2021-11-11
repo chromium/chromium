@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/win/imm32_manager.h"
 

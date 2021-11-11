@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_MANAGER_TEST_TOUCH_DEVICE_MANAGER_TEST_API_H_
 #define UI_DISPLAY_MANAGER_TEST_TOUCH_DEVICE_MANAGER_TEST_API_H_
 
-#include "base/macros.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/manager/touch_device_manager.h"
 

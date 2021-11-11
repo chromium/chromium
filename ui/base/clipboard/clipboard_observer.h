@@ -6,7 +6,6 @@
 #define UI_BASE_CLIPBOARD_CLIPBOARD_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

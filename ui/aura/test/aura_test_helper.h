@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/wm/core/wm_state.h"

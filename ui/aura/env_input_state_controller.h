@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 
 namespace gfx {

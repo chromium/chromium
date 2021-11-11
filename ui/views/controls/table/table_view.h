@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/models/table_model.h"

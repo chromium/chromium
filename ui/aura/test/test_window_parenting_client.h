@@ -6,7 +6,6 @@
 #define UI_AURA_TEST_TEST_WINDOW_PARENTING_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/client/window_parenting_client.h"
 
 namespace aura {

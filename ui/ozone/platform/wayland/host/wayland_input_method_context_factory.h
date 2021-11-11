@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 
 namespace ui {

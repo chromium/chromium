@@ -6,7 +6,6 @@
 #define UI_BASE_COCOA_SECURE_PASSWORD_INPUT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 
