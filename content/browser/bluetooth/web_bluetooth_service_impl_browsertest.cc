@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
@@ -463,8 +464,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
 // Tests that navigator.bluetooth.requestDevice() has an error without a user
 // gesture in the prerendering and works in the prerendering activation.
+// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_RequestDeviceInPrerendering DISABLED_RequestDeviceInPrerendering
+#else
+#define MAYBE_RequestDeviceInPrerendering RequestDeviceInPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       RequestDeviceInPrerendering) {
+                       MAYBE_RequestDeviceInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -546,8 +553,16 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
 // Tests that GetBluetoothAllowed() only works with the main page in order to
 // ensure that it's no problem to get the main frame from the WebContents.
+// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
+  DISABLED_GetBluetoothAllowedNotCalledInPrerendering
+#else
+#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
+  GetBluetoothAllowedNotCalledInPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       GetBluetoothAllowedNotCalledInPrerendering) {
+                       MAYBE_GetBluetoothAllowedNotCalledInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
