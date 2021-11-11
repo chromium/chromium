@@ -41588,6 +41588,27 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="User opened survey"/>
 </enum>
 
+<enum name="HdrnetError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Initialization error"/>
+  <int value="2" label="Sync wait error"/>
+  <int value="3" label="HDRnet processor error"/>
+  <int value="4" label="Pre-processing error"/>
+  <int value="5" label="RGB pipeline error"/>
+  <int value="6" label="Post-processing error"/>
+  <int value="7" label="Camera HAL3 error"/>
+</enum>
+
+<enum name="HdrnetStreamConfiguration">
+  <int value="0" label="Single YUV stream"/>
+  <int value="1" label="Single YUV stream with BLOB"/>
+  <int value="2" label="Multiple YUV streams"/>
+  <int value="3" label="Multiple YUV streams with BLOB"/>
+  <int value="4" label="Multiple YUV streams of different aspect ratio"/>
+  <int value="5"
+      label="Multiple YUV streams of different aspect ratio with BLOB"/>
+</enum>
+
 <enum name="HeapProfilingMode">
   <int value="0" label="None"/>
   <int value="1" label="Minimal"/>

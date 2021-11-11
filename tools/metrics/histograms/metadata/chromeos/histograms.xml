@@ -281,6 +281,129 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageConvergenceLatency"
+    units="frames" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average auto exposure convergence latency in frame count
+    throughout a camera session that runs Gcam auto exposure. Emitted when the
+    camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageHdrRatio"
+    units="ratio" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average HDR ratio throughout a camera session that runs Gcam
+    auto exposure. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageTet" units="TET"
+    expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average total exposure time (TET) throughout a camera session
+    that runs Gcam auto exposure. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="ChromeOS.Camera.HDRnet.AverageLatency.{ProcessingType}"
+    units="microseconds" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average CPU latency in running a given type of processing
+    throughout a HDRnet camera session. Emitted when the camera session is
+    closed.
+
+    This metric is reported on all ChromeOS devices with HDRnet enabled.
+  </summary>
+  <token key="ProcessingType">
+    <variant name="Postprocessing"
+        summary="Post-processing of HDRnet RGB output to final YUV output(s)"/>
+    <variant name="Preprocessing"
+        summary="Pre-processing of input YUV into linear RGB domain"/>
+    <variant name="RgbPipeline"
+        summary="Main HDRnet inferencing and rendering"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.Error" enum="HdrnetError"
+    expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records whether there's an error that can compromise the HDRnet feature,
+    either causing frame drops or stops the pipeline from running completely,
+    throughout a HDRnet camera session. Emitted when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.MaxOutputBuffersRendered"
+    units="buffers" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the maximum number of output buffers a HDRnet stream produces
+    (greater than 1 means there are multiple streams with the same aspect ratio)
+    throughtout a HDRnet camera session. Emitted when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Camera.HDRnet.MaxStreamSize.{StreamType}"
+    units="pixels" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the maximum size (in width * height pixels) of the HDRnet stream
+    configured for a given output in a HDRnet camera session. Emitted when the
+    camera session is closed.
+  </summary>
+  <token key="StreamType">
+    <variant name="BLOB" summary="HDRnet stream for BLOB output"/>
+    <variant name="YUV" summary="HDRnet stream for YUV output"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.NumConcurrentStreams" units="streams"
+    expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of concurrent HDRnet streams in a HDRnet camera session.
+    Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.NumStillShotsTaken" units="captures"
+    expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of HDRnet-rendered still capture shots taken in a HDRnet
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.StreamConfiguration"
+    enum="HdrnetStreamConfiguration" expires_after="2022-11-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the stream configuration including the number of streams, the type
+    of streams, and if the streams are of the same aspect ratio in a HDRnet
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.Camera.Jpeg.Latency" units="microseconds"
     expires_after="2022-10-01">
 <!-- Name completed by histogram_suffixes
