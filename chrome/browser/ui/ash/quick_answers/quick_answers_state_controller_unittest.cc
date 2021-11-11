@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
+#include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "components/language/core/browser/pref_names.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
@@ -35,7 +35,7 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
   bool settings_enabled_ = false;
 };
 
-class QuickAnswersStateControllerTest : public AshTestBase {
+class QuickAnswersStateControllerTest : public ChromeQuickAnswersTestBase {
  protected:
   QuickAnswersStateControllerTest() = default;
   QuickAnswersStateControllerTest(const QuickAnswersStateControllerTest&) =
@@ -44,9 +44,9 @@ class QuickAnswersStateControllerTest : public AshTestBase {
       const QuickAnswersStateControllerTest&) = delete;
   ~QuickAnswersStateControllerTest() override = default;
 
-  // AshTestBase:
+  // ChromeQuickAnswersTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeQuickAnswersTestBase::SetUp();
 
     prefs_ = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
     DCHECK(prefs_);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

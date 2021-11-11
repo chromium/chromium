@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/quick_answers/quick_answers_controller_impl.h"
-#include "ash/quick_answers/quick_answers_ui_controller.h"
-#include "ash/test/ash_test_base.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 
 namespace ash {
 
@@ -18,7 +18,7 @@ constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
 
 }  // namespace
 
-class QuickAnswersUiControllerTest : public AshTestBase {
+class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
  protected:
   QuickAnswersUiControllerTest() = default;
   QuickAnswersUiControllerTest(const QuickAnswersUiControllerTest&) = delete;
@@ -26,9 +26,9 @@ class QuickAnswersUiControllerTest : public AshTestBase {
       delete;
   ~QuickAnswersUiControllerTest() override = default;
 
-  // AshTestBase:
+  // ChromeQuickAnswersTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeQuickAnswersTestBase::SetUp();
 
     ui_controller_ =
         static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())

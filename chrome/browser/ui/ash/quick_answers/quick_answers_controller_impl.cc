@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
-#include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"

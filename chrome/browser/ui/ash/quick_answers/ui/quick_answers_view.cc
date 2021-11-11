@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
-#include "ash/quick_answers/quick_answers_ui_controller.h"
-#include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -141,7 +141,7 @@ class MainView : public views::Button {
  public:
   METADATA_HEADER(MainView);
 
-  MainView(PressedCallback callback) : Button(std::move(callback)) {
+  explicit MainView(PressedCallback callback) : Button(std::move(callback)) {
     SetInstallFocusRingOnFocus(false);
     set_suppress_default_focus_handling();
 
@@ -189,7 +189,8 @@ class ReportQueryView : public views::Button {
  public:
   METADATA_HEADER(ReportQueryView);
 
-  ReportQueryView(PressedCallback callback) : Button(std::move(callback)) {
+  explicit ReportQueryView(PressedCallback callback)
+      : Button(std::move(callback)) {
     auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
     layout->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kStart);

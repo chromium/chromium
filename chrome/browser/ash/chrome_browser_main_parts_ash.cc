@@ -169,6 +169,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/common/channel_info.h"
@@ -1117,6 +1118,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
   login_screen_extensions_storage_cleaner_ =
       std::make_unique<LoginScreenExtensionsStorageCleaner>();
 
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
   QuickAnswersController::Get()->SetClient(
       std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),
@@ -1333,6 +1335,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
+  quick_answers_controller_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();

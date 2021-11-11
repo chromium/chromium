@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_
-#define ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_
 
-#include "ash/ash_export.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "ash/public/cpp/session/session_observer.h"
 
 namespace ash {
 
 // Provide access of Assistant related prefs and states to the clients.
-class ASH_EXPORT QuickAnswersStateController : public SessionObserver {
+class QuickAnswersStateController : public SessionObserver {
  public:
   QuickAnswersStateController();
 
@@ -33,4 +32,4 @@ class ASH_EXPORT QuickAnswersStateController : public SessionObserver {
 
 }  // namespace ash
 
-#endif  // ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_STATE_CONTROLLER_H_

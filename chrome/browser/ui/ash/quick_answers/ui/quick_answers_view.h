@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
-#define ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 
 #include <vector>
 
-#include "ash/ash_export.h"
-#include "ash/quick_answers/ui/quick_answers_focus_search.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -29,7 +28,7 @@ struct QuickAnswer;
 }  // namespace quick_answers
 
 // A bubble style view to show QuickAnswer.
-class ASH_EXPORT QuickAnswersView : public views::View {
+class QuickAnswersView : public views::View {
  public:
   QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                    const std::string& title,
@@ -101,4 +100,4 @@ class ASH_EXPORT QuickAnswersView : public views::View {
 };
 }  // namespace ash
 
-#endif  // ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_

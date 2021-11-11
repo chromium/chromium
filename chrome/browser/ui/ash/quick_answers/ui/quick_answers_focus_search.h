@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
-#define ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
 
 #include "base/callback.h"
 #include "ui/views/focus/focus_manager.h"
@@ -49,4 +49,4 @@ class QuickAnswersFocusSearch : public views::FocusSearch,
 
 }  // namespace ash
 
-#endif  // ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_

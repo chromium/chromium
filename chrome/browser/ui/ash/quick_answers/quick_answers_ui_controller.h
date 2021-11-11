@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
-#define ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
 
 #include <string>
 
-#include "ash/ash_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -22,7 +21,7 @@ struct QuickAnswer;
 
 // A controller to show/hide and handle interactions for quick
 // answers view.
-class ASH_EXPORT QuickAnswersUiController {
+class QuickAnswersUiController {
  public:
   explicit QuickAnswersUiController(QuickAnswersControllerImpl* controller);
   ~QuickAnswersUiController();
@@ -107,4 +106,4 @@ class ASH_EXPORT QuickAnswersUiController {
 
 }  // namespace ash
 
-#endif  // ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_UI_CONTROLLER_H_

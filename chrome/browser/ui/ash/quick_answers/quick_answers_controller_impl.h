@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
-#define ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
 
 #include <memory>
 #include <string>
 
-#include "ash/ash_export.h"
 #include "ash/components/quick_answers/quick_answers_client.h"
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
-#include "ash/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -21,9 +20,8 @@ class QuickAnswersUiController;
 
 // Implementation of QuickAnswerController. It fetches quick answers
 // result via QuickAnswersClient and manages quick answers UI.
-class ASH_EXPORT QuickAnswersControllerImpl
-    : public QuickAnswersController,
-      public quick_answers::QuickAnswersDelegate {
+class QuickAnswersControllerImpl : public QuickAnswersController,
+                                   public quick_answers::QuickAnswersDelegate {
  public:
   QuickAnswersControllerImpl();
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
@@ -114,4 +112,4 @@ class ASH_EXPORT QuickAnswersControllerImpl
 };
 
 }  // namespace ash
-#endif  // ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_

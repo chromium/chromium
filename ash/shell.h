@@ -170,7 +170,6 @@ class PowerPrefs;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
-class QuickAnswersController;
 class ResizeShadowController;
 class ResolutionNotificationController;
 class RootWindowController;
@@ -759,7 +758,6 @@ class ASH_EXPORT Shell : public SessionObserver,
       pcie_peripheral_notification_controller_;
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
-  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;

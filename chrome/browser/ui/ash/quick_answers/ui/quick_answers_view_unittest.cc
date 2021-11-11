@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/quick_answers/quick_answers_controller_impl.h"
-#include "ash/test/ash_test_base.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -24,16 +24,16 @@ constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
 
 }  // namespace
 
-class QuickAnswersViewsTest : public AshTestBase {
+class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
  protected:
   QuickAnswersViewsTest() = default;
   QuickAnswersViewsTest(const QuickAnswersViewsTest&) = delete;
   QuickAnswersViewsTest& operator=(const QuickAnswersViewsTest&) = delete;
   ~QuickAnswersViewsTest() override = default;
 
-  // AshTestBase:
+  // ChromeQuickAnswersTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeQuickAnswersTestBase::SetUp();
 
     anchor_bounds_ = kDefaultAnchorBoundsInScreen;
     CreateQuickAnswersView(anchor_bounds_, "default_title",
@@ -49,7 +49,7 @@ class QuickAnswersViewsTest : public AshTestBase {
     menu_model_.reset();
     menu_delegate_.reset();
 
-    AshTestBase::TearDown();
+    ChromeQuickAnswersTestBase::TearDown();
   }
 
   // Currently instantiated QuickAnswersView instance.

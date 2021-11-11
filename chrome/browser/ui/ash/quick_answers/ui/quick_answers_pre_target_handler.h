@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
-#define ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
 
 #include "ui/events/event_handler.h"
 #include "ui/views/view.h"
@@ -65,4 +65,4 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
 
 }  // namespace ash
 
-#endif  // ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
