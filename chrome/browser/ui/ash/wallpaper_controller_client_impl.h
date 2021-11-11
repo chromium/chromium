@@ -12,10 +12,10 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -184,7 +184,7 @@ class WallpaperControllerClientImpl
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
-  std::unique_ptr<backdrop_wallpaper_handlers::SurpriseMeImageFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
 
   base::ScopedObservation<file_manager::VolumeManager,

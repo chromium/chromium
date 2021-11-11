@@ -25,9 +25,9 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -150,7 +150,7 @@ void ChromePersonalizationAppUiDelegate::FetchCollections(
   }
 
   wallpaper_collection_info_fetcher_ =
-      std::make_unique<backdrop_wallpaper_handlers::CollectionInfoFetcher>();
+      std::make_unique<wallpaper_handlers::BackdropCollectionInfoFetcher>();
 
   // base::Unretained is safe to use because |this| outlives
   // |wallpaper_collection_info_fetcher_|.
@@ -163,7 +163,7 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   auto wallpaper_images_info_fetcher =
-      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
           collection_id);
 
   auto* wallpaper_images_info_fetcher_ptr = wallpaper_images_info_fetcher.get();
@@ -406,7 +406,7 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollections(
 
 void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     FetchImagesForCollectionCallback callback,
-    std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher> fetcher,
+    std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher> fetcher,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
@@ -479,7 +479,7 @@ void ChromePersonalizationAppUiDelegate::FindAttribution(
 
   std::size_t current_index = 0;
   wallpaper_attribution_info_fetcher_ =
-      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
           collections->at(current_index).collection_id());
 
   wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
@@ -536,9 +536,8 @@ void ChromePersonalizationAppUiDelegate::FindAttributionInCollection(
     return;
   }
 
-  auto fetcher =
-      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
-          collections->at(current_index).collection_id());
+  auto fetcher = std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
+      collections->at(current_index).collection_id());
   fetcher->Start(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::FindAttributionInCollection,
       attribution_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url,

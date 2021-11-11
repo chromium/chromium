@@ -39,10 +39,10 @@ class Collection;
 class Image;
 }  // namespace backdrop
 
-namespace backdrop_wallpaper_handlers {
-class CollectionInfoFetcher;
-class ImageInfoFetcher;
-}  // namespace backdrop_wallpaper_handlers
+namespace wallpaper_handlers {
+class BackdropCollectionInfoFetcher;
+class BackdropImageInfoFetcher;
+}  // namespace wallpaper_handlers
 
 namespace content {
 class WebUI;
@@ -51,7 +51,7 @@ class WebUI;
 class Profile;
 
 // Implemented in //chrome because this will rely on chrome
-// |backdrop_wallpaper_handlers| code when fully implemented.
+// |wallpaper_handlers| code when fully implemented.
 // TODO(b/182012641) add wallpaper API code here.
 class ChromePersonalizationAppUiDelegate
     : public ash::PersonalizationAppUiDelegate,
@@ -135,7 +135,7 @@ class ChromePersonalizationAppUiDelegate
 
   void OnFetchCollectionImages(
       FetchImagesForCollectionCallback callback,
-      std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher> fetcher,
+      std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher> fetcher,
       bool success,
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
@@ -182,11 +182,11 @@ class ChromePersonalizationAppUiDelegate
   void NotifyWallpaperChanged(
       ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper);
 
-  std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropCollectionInfoFetcher>
       wallpaper_collection_info_fetcher_;
   std::vector<FetchCollectionsCallback> pending_collections_callbacks_;
 
-  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
 
   SelectWallpaperCallback pending_select_wallpaper_callback_;

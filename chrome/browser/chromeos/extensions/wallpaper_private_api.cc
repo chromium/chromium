@@ -25,9 +25,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -677,7 +677,7 @@ WallpaperPrivateGetCollectionsInfoFunction::
 ExtensionFunction::ResponseAction
 WallpaperPrivateGetCollectionsInfoFunction::Run() {
   collection_info_fetcher_ =
-      std::make_unique<backdrop_wallpaper_handlers::CollectionInfoFetcher>();
+      std::make_unique<wallpaper_handlers::BackdropCollectionInfoFetcher>();
   collection_info_fetcher_->Start(base::BindOnce(
       &WallpaperPrivateGetCollectionsInfoFunction::OnCollectionsInfoFetched,
       this));
@@ -716,7 +716,7 @@ ExtensionFunction::ResponseAction WallpaperPrivateGetImagesInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   image_info_fetcher_ =
-      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
           params->collection_id);
   image_info_fetcher_->Start(base::BindOnce(
       &WallpaperPrivateGetImagesInfoFunction::OnImagesInfoFetched, this));
@@ -864,7 +864,7 @@ WallpaperPrivateGetSurpriseMeImageFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   surprise_me_image_fetcher_ =
-      std::make_unique<backdrop_wallpaper_handlers::SurpriseMeImageFetcher>(
+      std::make_unique<wallpaper_handlers::BackdropSurpriseMeImageFetcher>(
           params->collection_id,
           params->resume_token ? *params->resume_token : std::string());
   surprise_me_image_fetcher_->Start(base::BindOnce(

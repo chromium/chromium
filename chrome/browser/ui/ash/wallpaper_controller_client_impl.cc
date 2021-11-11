@@ -61,9 +61,9 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
-using backdrop_wallpaper_handlers::SurpriseMeImageFetcher;
 using chromeos::ProfileHelper;
 using extension_misc::kWallpaperManagerId;
+using wallpaper_handlers::BackdropSurpriseMeImageFetcher;
 
 namespace {
 
@@ -688,7 +688,7 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {
-  surprise_me_image_fetcher_ = std::make_unique<SurpriseMeImageFetcher>(
+  surprise_me_image_fetcher_ = std::make_unique<BackdropSurpriseMeImageFetcher>(
       collection_id, /*resume_token=*/std::string());
   surprise_me_image_fetcher_->Start(
       base::BindOnce(&WallpaperControllerClientImpl::OnDailyImageInfoFetched,

@@ -18,11 +18,11 @@ class Collection;
 class Image;
 }  // namespace backdrop
 
-namespace backdrop_wallpaper_handlers {
-class CollectionInfoFetcher;
-class ImageInfoFetcher;
-class SurpriseMeImageFetcher;
-}  // namespace backdrop_wallpaper_handlers
+namespace wallpaper_handlers {
+class BackdropCollectionInfoFetcher;
+class BackdropImageInfoFetcher;
+class BackdropSurpriseMeImageFetcher;
+}  // namespace wallpaper_handlers
 
 // Wallpaper manager strings.
 class WallpaperPrivateGetStringsFunction : public ExtensionFunction {
@@ -293,7 +293,7 @@ class WallpaperPrivateGetCollectionsInfoFunction : public ExtensionFunction {
 
  private:
   // The fetcher responsible for downloading and deserializing collections info.
-  std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropCollectionInfoFetcher>
       collection_info_fetcher_;
 
   // Callback upon completion of fetching the collections info.
@@ -322,7 +322,7 @@ class WallpaperPrivateGetImagesInfoFunction : public ExtensionFunction {
  private:
   // The fetcher responsible for downloading and deserializing the info of
   // images belonging to a specific collection.
-  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
       image_info_fetcher_;
 
   // Callback upon completion of fetching the images info.
@@ -461,7 +461,7 @@ class WallpaperPrivateGetSurpriseMeImageFunction : public ExtensionFunction {
                                 const std::string& next_resume_token);
 
   // Fetcher for the surprise me image info.
-  std::unique_ptr<backdrop_wallpaper_handlers::SurpriseMeImageFetcher>
+  std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
 };
 

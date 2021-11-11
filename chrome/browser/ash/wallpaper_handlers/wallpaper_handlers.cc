@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -63,7 +63,7 @@ std::string MaybeConvertToTestUrl(std::string url) {
 
 }  // namespace
 
-namespace backdrop_wallpaper_handlers {
+namespace wallpaper_handlers {
 
 // Helper class for handling Backdrop service POST requests.
 class BackdropFetcher {
@@ -144,13 +144,13 @@ class BackdropFetcher {
   OnFetchComplete callback_;
 };
 
-CollectionInfoFetcher::CollectionInfoFetcher() {
+BackdropCollectionInfoFetcher::BackdropCollectionInfoFetcher() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-CollectionInfoFetcher::~CollectionInfoFetcher() = default;
+BackdropCollectionInfoFetcher::~BackdropCollectionInfoFetcher() = default;
 
-void CollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
+void BackdropCollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
   DCHECK(!backdrop_fetcher_ && callback_.is_null());
   callback_ = std::move(callback);
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
@@ -194,11 +194,12 @@ void CollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
   backdrop_fetcher_->Start(
       GURL(MaybeConvertToTestUrl(kBackdropCollectionsUrl)), serialized_proto,
       traffic_annotation,
-      base::BindOnce(&CollectionInfoFetcher::OnResponseFetched,
+      base::BindOnce(&BackdropCollectionInfoFetcher::OnResponseFetched,
                      base::Unretained(this)));
 }
 
-void CollectionInfoFetcher::OnResponseFetched(const std::string& response) {
+void BackdropCollectionInfoFetcher::OnResponseFetched(
+    const std::string& response) {
   std::vector<backdrop::Collection> collections;
   backdrop::GetCollectionsResponse collections_response;
   bool success = false;
@@ -215,14 +216,15 @@ void CollectionInfoFetcher::OnResponseFetched(const std::string& response) {
   std::move(callback_).Run(success, collections);
 }
 
-ImageInfoFetcher::ImageInfoFetcher(const std::string& collection_id)
+BackdropImageInfoFetcher::BackdropImageInfoFetcher(
+    const std::string& collection_id)
     : collection_id_(collection_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ImageInfoFetcher::~ImageInfoFetcher() = default;
+BackdropImageInfoFetcher::~BackdropImageInfoFetcher() = default;
 
-void ImageInfoFetcher::Start(OnImagesInfoFetched callback) {
+void BackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
   DCHECK(!backdrop_fetcher_ && callback_.is_null());
   callback_ = std::move(callback);
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
@@ -264,13 +266,14 @@ void ImageInfoFetcher::Start(OnImagesInfoFetched callback) {
 
   // |base::Unretained| is safe because this instance outlives
   // |backdrop_fetcher_|.
-  backdrop_fetcher_->Start(GURL(MaybeConvertToTestUrl(kBackdropImagesUrl)),
-                           serialized_proto, traffic_annotation,
-                           base::BindOnce(&ImageInfoFetcher::OnResponseFetched,
-                                          base::Unretained(this)));
+  backdrop_fetcher_->Start(
+      GURL(MaybeConvertToTestUrl(kBackdropImagesUrl)), serialized_proto,
+      traffic_annotation,
+      base::BindOnce(&BackdropImageInfoFetcher::OnResponseFetched,
+                     base::Unretained(this)));
 }
 
-void ImageInfoFetcher::OnResponseFetched(const std::string& response) {
+void BackdropImageInfoFetcher::OnResponseFetched(const std::string& response) {
   std::vector<backdrop::Image> images;
   backdrop::GetImagesInCollectionResponse images_response;
   bool success = false;
@@ -287,15 +290,16 @@ void ImageInfoFetcher::OnResponseFetched(const std::string& response) {
   std::move(callback_).Run(success, collection_id_, images);
 }
 
-SurpriseMeImageFetcher::SurpriseMeImageFetcher(const std::string& collection_id,
-                                               const std::string& resume_token)
+BackdropSurpriseMeImageFetcher::BackdropSurpriseMeImageFetcher(
+    const std::string& collection_id,
+    const std::string& resume_token)
     : collection_id_(collection_id), resume_token_(resume_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-SurpriseMeImageFetcher::~SurpriseMeImageFetcher() = default;
+BackdropSurpriseMeImageFetcher::~BackdropSurpriseMeImageFetcher() = default;
 
-void SurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
+void BackdropSurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
   DCHECK(!backdrop_fetcher_ && callback_.is_null());
   callback_ = std::move(callback);
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
@@ -344,11 +348,12 @@ void SurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
   backdrop_fetcher_->Start(
       GURL(MaybeConvertToTestUrl(kBackdropSurpriseMeImageUrl)),
       serialized_proto, traffic_annotation,
-      base::BindOnce(&SurpriseMeImageFetcher::OnResponseFetched,
+      base::BindOnce(&BackdropSurpriseMeImageFetcher::OnResponseFetched,
                      base::Unretained(this)));
 }
 
-void SurpriseMeImageFetcher::OnResponseFetched(const std::string& response) {
+void BackdropSurpriseMeImageFetcher::OnResponseFetched(
+    const std::string& response) {
   backdrop::GetImageFromCollectionResponse surprise_me_image_response;
   if (response.empty() ||
       !surprise_me_image_response.ParseFromString(response)) {
@@ -365,4 +370,4 @@ void SurpriseMeImageFetcher::OnResponseFetched(const std::string& response) {
                            surprise_me_image_response.resume_token());
 }
 
-}  // namespace backdrop_wallpaper_handlers
+}  // namespace wallpaper_handlers
