@@ -6605,14 +6605,13 @@ void WebGLRenderingContextBase::uniform1f(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
-                                           const FlexibleFloat32Array& v) {
+                                           NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform1fv", location, v, 1, 0, v.length()))
+      !ValidateUniformParameters("uniform1fv", location, v, 1, 0, v.Size()))
     return;
 
   ContextGL()->Uniform1fv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()),
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()), v.Data());
 }
 
 void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
@@ -6640,14 +6639,13 @@ void WebGLRenderingContextBase::uniform1i(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
-                                           const FlexibleInt32Array& v) {
+                                           NADCTypedArrayView<GLint> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform1iv", location, v, 1, 0, v.length()))
+      !ValidateUniformParameters("uniform1iv", location, v, 1, 0, v.Size()))
     return;
 
   ContextGL()->Uniform1iv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()),
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()), v.Data());
 }
 
 void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
@@ -6676,14 +6674,13 @@ void WebGLRenderingContextBase::uniform2f(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
-                                           const FlexibleFloat32Array& v) {
+                                           NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform2fv", location, v, 2, 0, v.length()))
+      !ValidateUniformParameters("uniform2fv", location, v, 2, 0, v.Size()))
     return;
 
   ContextGL()->Uniform2fv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) >> 1,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) >> 1, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
@@ -6712,14 +6709,13 @@ void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
-                                           const FlexibleInt32Array& v) {
+                                           NADCTypedArrayView<GLint> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform2iv", location, v, 2, 0, v.length()))
+      !ValidateUniformParameters("uniform2iv", location, v, 2, 0, v.Size()))
     return;
 
   ContextGL()->Uniform2iv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) >> 1,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) >> 1, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
@@ -6749,14 +6745,13 @@ void WebGLRenderingContextBase::uniform3f(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
-                                           const FlexibleFloat32Array& v) {
+                                           NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform3fv", location, v, 3, 0, v.length()))
+      !ValidateUniformParameters("uniform3fv", location, v, 3, 0, v.Size()))
     return;
 
   ContextGL()->Uniform3fv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) / 3,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) / 3, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
@@ -6786,14 +6781,13 @@ void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
-                                           const FlexibleInt32Array& v) {
+                                           NADCTypedArrayView<GLint> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform3iv", location, v, 3, 0, v.length()))
+      !ValidateUniformParameters("uniform3iv", location, v, 3, 0, v.Size()))
     return;
 
   ContextGL()->Uniform3iv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) / 3,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) / 3, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
@@ -6824,14 +6818,13 @@ void WebGLRenderingContextBase::uniform4f(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
-                                           const FlexibleFloat32Array& v) {
+                                           NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform4fv", location, v, 4, 0, v.length()))
+      !ValidateUniformParameters("uniform4fv", location, v, 4, 0, v.Size()))
     return;
 
   ContextGL()->Uniform4fv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) >> 2,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) >> 2, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
@@ -6862,14 +6855,13 @@ void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location,
 }
 
 void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
-                                           const FlexibleInt32Array& v) {
+                                           NADCTypedArrayView<GLint> v) {
   if (isContextLost() ||
-      !ValidateUniformParameters("uniform4iv", location, v, 4, 0, v.length()))
+      !ValidateUniformParameters("uniform4iv", location, v, 4, 0, v.Size()))
     return;
 
   ContextGL()->Uniform4iv(location->Location(),
-                          base::checked_cast<GLuint>(v.length()) >> 2,
-                          v.DataMaybeOnStack());
+                          base::checked_cast<GLuint>(v.Size()) >> 2, v.Data());
 }
 
 void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
@@ -6885,14 +6877,14 @@ void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
 void WebGLRenderingContextBase::uniformMatrix2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    MaybeShared<DOMFloat32Array> v) {
+    NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix2fv", location, transpose,
-                                       v.Get(), 4, 0, v->length()))
+                                       v, 4, 0, v.Size()))
     return;
   ContextGL()->UniformMatrix2fv(location->Location(),
-                                base::checked_cast<GLuint>(v->length()) >> 2,
-                                transpose, v->DataMaybeShared());
+                                base::checked_cast<GLuint>(v.Size()) >> 2,
+                                transpose, v.Data());
 }
 
 void WebGLRenderingContextBase::uniformMatrix2fv(
@@ -6910,14 +6902,14 @@ void WebGLRenderingContextBase::uniformMatrix2fv(
 void WebGLRenderingContextBase::uniformMatrix3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    MaybeShared<DOMFloat32Array> v) {
+    NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix3fv", location, transpose,
-                                       v.Get(), 9, 0, v->length()))
+                                       v, 9, 0, v.Size()))
     return;
   ContextGL()->UniformMatrix3fv(location->Location(),
-                                base::checked_cast<GLuint>(v->length()) / 9,
-                                transpose, v->DataMaybeShared());
+                                base::checked_cast<GLuint>(v.Size()) / 9,
+                                transpose, v.Data());
 }
 
 void WebGLRenderingContextBase::uniformMatrix3fv(
@@ -6935,14 +6927,14 @@ void WebGLRenderingContextBase::uniformMatrix3fv(
 void WebGLRenderingContextBase::uniformMatrix4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    MaybeShared<DOMFloat32Array> v) {
+    NADCTypedArrayView<GLfloat> v) {
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix4fv", location, transpose,
-                                       v.Get(), 16, 0, v->length()))
+                                       v, 16, 0, v.Size()))
     return;
   ContextGL()->UniformMatrix4fv(location->Location(),
-                                base::checked_cast<GLuint>(v->length()) >> 4,
-                                transpose, v->DataMaybeShared());
+                                base::checked_cast<GLuint>(v.Size()) >> 4,
+                                transpose, v.Data());
 }
 
 void WebGLRenderingContextBase::uniformMatrix4fv(
@@ -6997,14 +6989,14 @@ void WebGLRenderingContextBase::vertexAttrib1f(GLuint index, GLfloat v0) {
 
 void WebGLRenderingContextBase::vertexAttrib1fv(
     GLuint index,
-    MaybeShared<const DOMFloat32Array> v) {
+    NADCTypedArrayView<const GLfloat> v) {
   if (isContextLost())
     return;
-  if (!v.Get() || v->length() < 1) {
+  if (v.IsEmpty() || v.Size() < 1) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib1fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib1fv(index, v->DataMaybeShared());
+  ContextGL()->VertexAttrib1fv(index, v.Data());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -7031,14 +7023,14 @@ void WebGLRenderingContextBase::vertexAttrib2f(GLuint index,
 
 void WebGLRenderingContextBase::vertexAttrib2fv(
     GLuint index,
-    MaybeShared<const DOMFloat32Array> v) {
+    NADCTypedArrayView<const GLfloat> v) {
   if (isContextLost())
     return;
-  if (!v.Get() || v->length() < 2) {
+  if (v.IsEmpty() || v.Size() < 2) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib2fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib2fv(index, v->DataMaybeShared());
+  ContextGL()->VertexAttrib2fv(index, v.Data());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -7066,14 +7058,14 @@ void WebGLRenderingContextBase::vertexAttrib3f(GLuint index,
 
 void WebGLRenderingContextBase::vertexAttrib3fv(
     GLuint index,
-    MaybeShared<const DOMFloat32Array> v) {
+    NADCTypedArrayView<const GLfloat> v) {
   if (isContextLost())
     return;
-  if (!v.Get() || v->length() < 3) {
+  if (v.IsEmpty() || v.Size() < 3) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib3fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib3fv(index, v->DataMaybeShared());
+  ContextGL()->VertexAttrib3fv(index, v.Data());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -7102,14 +7094,14 @@ void WebGLRenderingContextBase::vertexAttrib4f(GLuint index,
 
 void WebGLRenderingContextBase::vertexAttrib4fv(
     GLuint index,
-    MaybeShared<const DOMFloat32Array> v) {
+    NADCTypedArrayView<const GLfloat> v) {
   if (isContextLost())
     return;
-  if (!v.Get() || v->length() < 4) {
+  if (v.IsEmpty() || v.Size() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib4fv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttrib4fv(index, v->DataMaybeShared());
+  ContextGL()->VertexAttrib4fv(index, v.Data());
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
@@ -8326,11 +8318,11 @@ bool WebGLRenderingContextBase::ValidateUniformMatrixParameters(
     const char* function_name,
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    DOMFloat32Array* v,
+    const NADCTypedArrayView<GLfloat>& v,
     GLsizei required_min_size,
     GLuint src_offset,
     size_t src_length) {
-  if (!v) {
+  if (v.IsEmpty()) {
     SynthesizeGLError(GL_INVALID_VALUE, function_name, "no array");
     return false;
   }
@@ -8340,8 +8332,8 @@ bool WebGLRenderingContextBase::ValidateUniformMatrixParameters(
     return false;
   }
   return ValidateUniformMatrixParameters(
-      function_name, location, transpose, v->DataMaybeShared(), v->length(),
-      required_min_size, src_offset, static_cast<GLuint>(src_length));
+      function_name, location, transpose, v.Data(), v.Size(), required_min_size,
+      src_offset, static_cast<GLuint>(src_length));
 }
 
 bool WebGLRenderingContextBase::ValidateUniformMatrixParameters(

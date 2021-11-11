@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
@@ -488,52 +489,52 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                      ExceptionState&);
 
   void uniform1f(const WebGLUniformLocation*, GLfloat x);
-  void uniform1fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform1fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform1fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform1i(const WebGLUniformLocation*, GLint x);
-  void uniform1iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform1iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform1iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform2f(const WebGLUniformLocation*, GLfloat x, GLfloat y);
-  void uniform2fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform2fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform2fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform2i(const WebGLUniformLocation*, GLint x, GLint y);
-  void uniform2iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform2iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform2iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform3f(const WebGLUniformLocation*, GLfloat x, GLfloat y, GLfloat z);
-  void uniform3fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform3fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform3fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform3i(const WebGLUniformLocation*, GLint x, GLint y, GLint z);
-  void uniform3iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform3iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform3iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform4f(const WebGLUniformLocation*,
                  GLfloat x,
                  GLfloat y,
                  GLfloat z,
                  GLfloat w);
-  void uniform4fv(const WebGLUniformLocation*, const FlexibleFloat32Array&);
+  void uniform4fv(const WebGLUniformLocation*, NADCTypedArrayView<GLfloat>);
   void uniform4fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform4i(const WebGLUniformLocation*,
                  GLint x,
                  GLint y,
                  GLint z,
                  GLint w);
-  void uniform4iv(const WebGLUniformLocation*, const FlexibleInt32Array&);
+  void uniform4iv(const WebGLUniformLocation*, NADCTypedArrayView<GLint>);
   void uniform4iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniformMatrix2fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix2fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        MaybeShared<DOMFloat32Array> value);
+                        NADCTypedArrayView<GLfloat> value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         Vector<GLfloat>& value);
@@ -542,16 +543,16 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   void validateProgram(WebGLProgram*);
 
   void vertexAttrib1f(GLuint index, GLfloat x);
-  void vertexAttrib1fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib1fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib1fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib2f(GLuint index, GLfloat x, GLfloat y);
-  void vertexAttrib2fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib2fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib2fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z);
-  void vertexAttrib3fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib3fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib3fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-  void vertexAttrib4fv(GLuint index, MaybeShared<const DOMFloat32Array> values);
+  void vertexAttrib4fv(GLuint index, NADCTypedArrayView<const GLfloat> values);
   void vertexAttrib4fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttribPointer(GLuint index,
                            GLint size,
@@ -1506,7 +1507,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool ValidateUniformMatrixParameters(const char* function_name,
                                        const WebGLUniformLocation*,
                                        GLboolean transpose,
-                                       DOMFloat32Array*,
+                                       const NADCTypedArrayView<GLfloat>&,
                                        GLsizei mod,
                                        GLuint src_offset,
                                        size_t src_length);
@@ -1519,14 +1520,13 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                                        GLuint src_offset,
                                        GLuint src_length);
 
-  template <typename WTFTypedArray>
-  bool ValidateUniformParameters(
-      const char* function_name,
-      const WebGLUniformLocation* location,
-      const TypedFlexibleArrayBufferView<WTFTypedArray>& v,
-      GLsizei required_min_size,
-      GLuint src_offset,
-      size_t src_length) {
+  template <typename T>
+  bool ValidateUniformParameters(const char* function_name,
+                                 const WebGLUniformLocation* location,
+                                 const NADCTypedArrayView<T>& v,
+                                 GLsizei required_min_size,
+                                 GLuint src_offset,
+                                 size_t src_length) {
     GLuint length;
     if (!base::CheckedNumeric<GLuint>(src_length).AssignIfValid(&length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
@@ -1534,17 +1534,16 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return false;
     }
     GLuint array_length;
-    if (!base::CheckedNumeric<GLuint>(v.length())
-             .AssignIfValid(&array_length)) {
+    if (!base::CheckedNumeric<GLuint>(v.Size()).AssignIfValid(&array_length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "array is too big");
       return false;
     }
-    if (!v.DataMaybeOnStack()) {
+    if (v.IsEmpty()) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "no array");
       return false;
     }
     return ValidateUniformMatrixParameters(
-        function_name, location, false, v.DataMaybeOnStack(), array_length,
+        function_name, location, false, v.Data(), array_length,
         required_min_size, src_offset, length);
   }
 
