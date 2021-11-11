@@ -46,8 +46,6 @@ _CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'cts_archive')
 _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 
 SDK_PLATFORM_DICT = {
-    version_codes.LOLLIPOP: 'L',
-    version_codes.LOLLIPOP_MR1: 'L',
     version_codes.MARSHMALLOW: 'M',
     version_codes.NOUGAT: 'N',
     version_codes.NOUGAT_MR1: 'N',
@@ -270,9 +268,8 @@ def DetermineCtsRelease(device):
     # Otherwise, we must be below the supported version range.
     min_supported_sdk = min(SDK_PLATFORM_DICT.keys())
     raise Exception("We don't support running CTS tests on platforms less "
-                    "than {release} as the WebView is not updatable".format(
-                        release=SDK_PLATFORM_DICT.get(min_supported_sdk),
-                    ))
+                    "than {release}".format(
+                        release=SDK_PLATFORM_DICT.get(min_supported_sdk), ))
   logging.info(('Using test APKs from CTS release=%s because '
                 'build.version.sdk=%s'),
                cts_release, device.build_version_sdk)

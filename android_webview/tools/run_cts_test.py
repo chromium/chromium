@@ -66,11 +66,12 @@ class _RunCtsTest(unittest.TestCase):
     logging_mock.assert_called()
 
   def testDetermineCtsRelease_tooLow(self):
-    device = mock.Mock(build_version_sdk=version_codes.KITKAT)
+    device = mock.Mock(build_version_sdk=version_codes.LOLLIPOP_MR1)
     with self.assertRaises(Exception) as cm:
       run_cts.DetermineCtsRelease(device)
     message = str(cm.exception)
-    self.assertIn('not updatable', message)
+    self.assertIn("We don't support running CTS tests on platforms less than",
+                  message)
 
   def testDetermineCtsRelease_tooHigh(self):
     device = mock.Mock(build_version_sdk=version_codes.OREO)

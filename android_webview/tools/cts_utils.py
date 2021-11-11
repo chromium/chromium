@@ -45,7 +45,7 @@ TEST_SUITES_FILE = os.path.join('testing', 'buildbot', 'test_suites.pyl')
 # Android desserts that are no longer receiving CTS updates at
 # https://source.android.com/compatibility/cts/downloads
 # Please update this list as more versions reach end-of-service.
-END_OF_SERVICE_DESSERTS = ['L', 'M']
+END_OF_SERVICE_DESSERTS = ['M']
 
 CTS_DEP_NAME = 'src/android_webview/tools/cts_archive'
 CTS_DEP_PACKAGE = 'chromium/android_webview/tools/cts_archive'
