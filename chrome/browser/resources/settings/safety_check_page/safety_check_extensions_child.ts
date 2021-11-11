@@ -154,6 +154,13 @@ export class SettingsSafetyCheckExtensionsChildElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-extensions-child':
+        SettingsSafetyCheckExtensionsChildElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckExtensionsChildElement.is,
     SettingsSafetyCheckExtensionsChildElement);

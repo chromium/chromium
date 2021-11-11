@@ -82,7 +82,7 @@ non_preprocessed_files = [
   "recent_site_permissions_test.js",
   "reset_page_test.js",
   "reset_profile_banner_test.js",
-  "safety_check_page_test.js",
+  "safety_check_page_test.ts",
   "search_engines_page_test.ts",
   "search_page_test.ts",
   "search_settings_test.js",

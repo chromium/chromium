@@ -190,5 +190,11 @@ export class SettingsSafetyCheckChildElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-child': SettingsSafetyCheckChildElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckChildElement.is, SettingsSafetyCheckChildElement);

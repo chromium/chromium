@@ -157,6 +157,13 @@ export class SettingsSafetyCheckPasswordsChildElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-passwords-child':
+        SettingsSafetyCheckPasswordsChildElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckPasswordsChildElement.is,
     SettingsSafetyCheckPasswordsChildElement);

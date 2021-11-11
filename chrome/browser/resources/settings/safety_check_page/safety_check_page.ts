@@ -161,5 +161,11 @@ export class SettingsSafetyCheckPageElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-page': SettingsSafetyCheckPageElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckPageElement.is, SettingsSafetyCheckPageElement);

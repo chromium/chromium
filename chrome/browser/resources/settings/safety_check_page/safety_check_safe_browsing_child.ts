@@ -164,6 +164,13 @@ export class SettingsSafetyCheckSafeBrowsingChildElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-safety-check-safe-browsing-child':
+        SettingsSafetyCheckSafeBrowsingChildElement;
+  }
+}
+
 customElements.define(
     SettingsSafetyCheckSafeBrowsingChildElement.is,
     SettingsSafetyCheckSafeBrowsingChildElement);
