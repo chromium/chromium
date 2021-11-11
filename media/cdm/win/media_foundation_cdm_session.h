@@ -23,6 +23,7 @@ namespace media {
 class MEDIA_EXPORT MediaFoundationCdmSession {
  public:
   MediaFoundationCdmSession(
+      const std::string& uma_prefix,
       const SessionMessageCB& session_message_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb);
@@ -62,6 +63,10 @@ class MEDIA_EXPORT MediaFoundationCdmSession {
   HRESULT Remove();
 
  private:
+  // A wrapper function to report UMA for the HRESULT `hr` of the `api` call.
+  // Returns the `hr` as is for chained calls.
+  HRESULT WithUmaReported(HRESULT hr, const std::string& api);
+
   // Callbacks for forwarding session events.
   void OnSessionMessage(CdmMessageType message_type,
                         const std::vector<uint8_t>& message);
@@ -72,6 +77,8 @@ class MEDIA_EXPORT MediaFoundationCdmSession {
   bool SetSessionId();
 
   HRESULT UpdateExpirationIfNeeded();
+
+  const std::string uma_prefix_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;

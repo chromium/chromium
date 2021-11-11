@@ -37,6 +37,7 @@ namespace {
 const char kSessionId[] = "session_id";
 const double kExpirationMs = 123456789.0;
 const auto kExpirationTime = base::Time::FromJsTime(kExpirationMs);
+const char kTestUmaPrefix[] = "Media.EME.TestUmaPrefix.";
 
 std::vector<uint8_t> StringToVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -61,6 +62,7 @@ class MediaFoundationCdmTest : public testing::Test {
       : mf_cdm_(MakeComPtr<MockMFCdm>()),
         mf_cdm_session_(MakeComPtr<MockMFCdmSession>()),
         cdm_(base::MakeRefCounted<MediaFoundationCdm>(
+            kTestUmaPrefix,
             base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
                                 base::Unretained(this)),
             is_type_supported_cb_.Get(),

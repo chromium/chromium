@@ -19,6 +19,7 @@
 #include "base/win/scoped_propvariant.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
+#include "media/base/key_systems.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/cdm_paths.h"
 #include "media/cdm/win/media_foundation_cdm.h"
@@ -29,6 +30,8 @@ namespace media {
 namespace {
 
 using Microsoft::WRL::ComPtr;
+
+const char kMediaFoundationCdmUmaPrefix[] = "Media.EME.MediaFoundationCdm.";
 
 // Key to the CDM Origin ID to be passed to the CDM for privacy purposes. The
 // same value is also used in MediaFoundation CDMs. Do NOT change this value!
@@ -238,7 +241,14 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
     return;
   }
 
+  // This will construct a UMA prefix to be something like (with trailing dot):
+  // "Media.EME.MediaFoundationCdm.FooKeySystem.HardwareSecure.".
+  auto uma_prefix =
+      kMediaFoundationCdmUmaPrefix +
+      GetKeySystemNameForUMA(key_system, cdm_config.use_hw_secure_codecs) + ".";
+
   auto cdm = base::MakeRefCounted<MediaFoundationCdm>(
+      uma_prefix,
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), key_system, cdm_config,
                           media_foundation_cdm_data->origin_id,

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_co_mem.h"
@@ -142,10 +143,12 @@ class SessionCallbacks final
 }  // namespace
 
 MediaFoundationCdmSession::MediaFoundationCdmSession(
+    const std::string& uma_prefix,
     const SessionMessageCB& session_message_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb)
-    : session_message_cb_(session_message_cb),
+    : uma_prefix_(uma_prefix),
+      session_message_cb_(session_message_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb) {
   DVLOG_FUNC(1);
@@ -188,38 +191,49 @@ HRESULT MediaFoundationCdmSession::GenerateRequest(
   DCHECK(session_id_.empty() && !session_id_cb_);
 
   session_id_cb_ = std::move(session_id_cb);
-  RETURN_IF_FAILED(mf_cdm_session_->GenerateRequest(
-      InitDataTypeToString(init_data_type), init_data.data(),
-      base::checked_cast<DWORD>(init_data.size())));
+
+  RETURN_IF_FAILED(WithUmaReported(
+      mf_cdm_session_->GenerateRequest(
+          InitDataTypeToString(init_data_type), init_data.data(),
+          base::checked_cast<DWORD>(init_data.size())),
+      "GenerateRequest"));
   return S_OK;
 }
 
 HRESULT MediaFoundationCdmSession::Load(const std::string& session_id) {
   DVLOG_FUNC(1);
-  return E_NOTIMPL;
+  RETURN_IF_FAILED(WithUmaReported(E_NOTIMPL, "LoadSession"));
+  return S_OK;
 }
 
 HRESULT
 MediaFoundationCdmSession::Update(const std::vector<uint8_t>& response) {
   DVLOG_FUNC(1);
-  RETURN_IF_FAILED(
+  RETURN_IF_FAILED(WithUmaReported(
       mf_cdm_session_->Update(reinterpret_cast<const BYTE*>(response.data()),
-                              base::checked_cast<DWORD>(response.size())));
+                              base::checked_cast<DWORD>(response.size())),
+      "UpdateSession"));
   RETURN_IF_FAILED(UpdateExpirationIfNeeded());
   return S_OK;
 }
 
 HRESULT MediaFoundationCdmSession::Close() {
   DVLOG_FUNC(1);
-  RETURN_IF_FAILED(mf_cdm_session_->Close());
+  RETURN_IF_FAILED(WithUmaReported(mf_cdm_session_->Close(), "CloseSession"));
   return S_OK;
 }
 
 HRESULT MediaFoundationCdmSession::Remove() {
   DVLOG_FUNC(1);
-  RETURN_IF_FAILED(mf_cdm_session_->Remove());
+  RETURN_IF_FAILED(WithUmaReported(mf_cdm_session_->Remove(), "RemoveSession"));
   RETURN_IF_FAILED(UpdateExpirationIfNeeded());
   return S_OK;
+}
+
+HRESULT MediaFoundationCdmSession::WithUmaReported(HRESULT hr,
+                                                   const std::string& api) {
+  base::UmaHistogramSparse(uma_prefix_ + api, hr);
+  return hr;
 }
 
 void MediaFoundationCdmSession::OnSessionMessage(

@@ -53,12 +53,12 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   using CreateMFCdmCB = base::RepeatingCallback<
       void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
 
-  // Callback to MediaFoundationCDM to resolve the promise.
+  // Callback for `IsTypeSupportedCB` below.
   using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
 
   // Callback to IMFMediaFoundataionCdmFactory's IsTypeSupported.
   using IsTypeSupportedCB =
-      base::RepeatingCallback<void(const std::string&,
+      base::RepeatingCallback<void(const std::string& content_type,
                                    IsTypeSupportedResultCB)>;
 
   // Callback to MediaFoundationCdmFactory::StoreClientToken
@@ -68,6 +68,7 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
   // before calling any other methods.
   MediaFoundationCdm(
+      const std::string& uma_prefix,
       const CreateMFCdmCB& create_mf_cdm_cb,
       const IsTypeSupportedCB& is_type_supported_cb,
       const StoreClientTokenCB& store_client_token_cb,
@@ -132,6 +133,9 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
                                bool is_supported);
 
   void StoreClientTokenIfNeeded();
+
+  // Prefix for UMA reported in `this` and the `sessions_`.
+  const std::string uma_prefix_;
 
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;
