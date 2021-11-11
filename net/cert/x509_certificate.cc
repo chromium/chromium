@@ -41,7 +41,6 @@
 #include "net/der/parser.h"
 #include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 #include "url/url_canon.h"
@@ -112,30 +111,6 @@ bool GetNormalizedCertIssuer(CRYPTO_BUFFER* cert,
 
   CertErrors errors;
   return NormalizeName(issuer_value, out_normalized_issuer, &errors);
-}
-
-// Parses certificates from a PKCS#7 SignedData structure, appending them to
-// |handles|.
-void CreateCertBuffersFromPKCS7Bytes(
-    base::span<const uint8_t> data,
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles) {
-  crypto::EnsureOpenSSLInit();
-  crypto::OpenSSLErrStackTracer err_cleaner(FROM_HERE);
-
-  CBS der_data;
-  CBS_init(&der_data, data.data(), data.size());
-  STACK_OF(CRYPTO_BUFFER)* certs = sk_CRYPTO_BUFFER_new_null();
-
-  if (PKCS7_get_raw_certificates(certs, &der_data,
-                                 x509_util::GetBufferPool())) {
-    for (size_t i = 0; i < sk_CRYPTO_BUFFER_num(certs); ++i) {
-      handles->push_back(
-          bssl::UniquePtr<CRYPTO_BUFFER>(sk_CRYPTO_BUFFER_value(certs, i)));
-    }
-  }
-  // |handles| took ownership of the individual buffers, so only free the list
-  // itself.
-  sk_CRYPTO_BUFFER_free(certs);
 }
 
 }  // namespace
@@ -697,7 +672,7 @@ X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
       break;
     }
     case FORMAT_PKCS7: {
-      CreateCertBuffersFromPKCS7Bytes(data, &results);
+      x509_util::CreateCertBuffersFromPKCS7Bytes(data, &results);
       break;
     }
     default: {

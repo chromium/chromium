@@ -70,6 +70,9 @@ class NET_EXPORT ParsedCertificate
   // Returns the DER-encoded certificate data for this cert.
   const der::Input& der_cert() const { return cert_; }
 
+  // Returns the CRYPTO_BUFFER backing this object.
+  CRYPTO_BUFFER* cert_buffer() const { return cert_data_.get(); }
+
   // Accessors for raw fields of the Certificate.
   const der::Input& tbs_certificate_tlv() const { return tbs_certificate_tlv_; }
 

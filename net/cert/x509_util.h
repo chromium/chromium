@@ -132,6 +132,14 @@ NET_EXPORT base::span<const uint8_t> CryptoBufferAsSpan(
 NET_EXPORT scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
     const STACK_OF(CRYPTO_BUFFER) * buffers);
 
+// Parses certificates from a PKCS#7 SignedData structure, appending them to
+// |handles|. Returns true on success (in which case zero or more elements were
+// added to |handles|) and false on error (in which case |handles| is
+// unmodified).
+NET_EXPORT bool CreateCertBuffersFromPKCS7Bytes(
+    base::span<const uint8_t> data,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles);
+
 // Returns the default ParseCertificateOptions for the net stack.
 NET_EXPORT ParseCertificateOptions DefaultParseCertificateOptions();
 
