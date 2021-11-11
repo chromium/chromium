@@ -21,7 +21,6 @@ import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
-import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -29,7 +28,6 @@ import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
-import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
@@ -265,23 +263,6 @@ public class ChromePaymentRequestService
             return true;
         }
         return false;
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void modifyQueryForQuotaCreatedIfNeeded(
-            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {
-        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
-            return;
-        }
-        if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
-                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            PaymentMethodData paymentMethodData = new PaymentMethodData();
-            paymentMethodData.stringifiedData =
-                    PaymentOptionsUtils.stringifyRequestedInformation(paymentOptions);
-            queryForQuota.put("basic-card-payment-options", paymentMethodData);
-        }
     }
 
     // Implements BrowserPaymentRequest:

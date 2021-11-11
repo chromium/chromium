@@ -80,7 +80,6 @@ public class PaymentRequestPaymentMethodIdentifierTest implements MainActivitySt
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testCannotMakeActivePaymentWithBasicMasterCard() throws TimeoutException {
         mPaymentRequestTestRule.openPageAndClickNodeAndWait(
                 "checkBasicMasterCard", mPaymentRequestTestRule.getCanMakePaymentQueryResponded());

@@ -28,7 +28,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAppStoreBillingDebug,
     &features::kEnforceFullDelegation,
     &features::kGPayAppDynamicUpdate,
-    &features::kStrictHasEnrolledAutofillInstrument,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsMethodSectionOrderV2,
     &features::kWebPaymentsModifiers,

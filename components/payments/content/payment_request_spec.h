@@ -125,14 +125,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   const mojom::PaymentOptionsPtr& payment_options() const { return options_; }
 
   // Returns the query to be used for the quota on hasEnrolledInstrument()
-  // calls. Generally this returns the payment method identifiers and their
-  // corresponding data. However, in the case of basic-card with
-  // kStrictHasEnrolledAutofillInstrument feature enabled, this method also
-  // returns the following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // calls: the payment method identifiers and their corresponding data.
   const std::map<std::string, std::set<std::string>>& query_for_quota() const {
     return query_for_quota_;
   }
@@ -276,13 +269,7 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   std::map<std::string, std::set<std::string>> stringified_method_data_;
 
   // A mapping of the payment method names to the corresponding JSON-stringified
-  // payment method specific data. If kStrictHasEnrolledAutofillInstrument is
-  // enabled, then the key "basic-card-payment-options" also maps to the
-  // following payment options:
-  // - requestPayerEmail
-  // - requestPayerName
-  // - requestPayerPhone
-  // - requestShipping
+  // payment method specific data.
   std::map<std::string, std::set<std::string>> query_for_quota_;
 
   // The reason why this payment request is waiting for updateWith.

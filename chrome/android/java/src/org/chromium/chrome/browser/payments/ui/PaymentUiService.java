@@ -138,7 +138,6 @@ public class PaymentUiService
     private AutofillPaymentAppCreator mAutofillPaymentAppCreator;
     private boolean mHaveRequestedAutofillData = true;
     private List<AutofillProfile> mAutofillProfiles;
-    private boolean mCanUserAddCreditCard;
     private TabModelSelector mObservedTabModelSelector;
     private TabModel mObservedTabModel;
     private LayoutStateProvider mLayoutStateProvider;
@@ -416,7 +415,7 @@ public class PaymentUiService
      */
     public boolean canUserAddCreditCard() {
         assert mHasInitialized;
-        return mCanUserAddCreditCard;
+        return mMerchantSupportsAutofillCards;
     }
 
     /**
@@ -556,12 +555,6 @@ public class PaymentUiService
         mMerchantSupportsAutofillCards =
                 PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
                 && BasicCardUtils.merchantSupportsBasicCard(mParams.getMethodData());
-
-        // If in strict mode, don't give user an option to add an autofill card during the checkout
-        // to avoid the "unhappy" basic-card flow.
-        mCanUserAddCreditCard = mMerchantSupportsAutofillCards
-                && !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT);
 
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles = Collections.unmodifiableList(

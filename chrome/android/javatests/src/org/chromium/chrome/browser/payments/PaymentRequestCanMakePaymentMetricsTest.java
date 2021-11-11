@@ -82,11 +82,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard",
-            "enable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testCannotMakePayment_UserAbort_WithBasicCardEnabled() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testCannotMakePayment_UserAbort_WithBasicCardEnabled() throws TimeoutException {
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShow", mPaymentRequestTestRule.getReadyForInput());
@@ -120,11 +117,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "disable-features=PaymentRequestBasicCard",
-            "disable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testCannotMakePayment_UserAbort() throws TimeoutException {
+    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
+    public void testCannotMakePayment_UserAbort() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -165,11 +159,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard",
-            "enable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testCannotMakePayment_Complete_WithBasicCardEnabled() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testCannotMakePayment_Complete_WithBasicCardEnabled() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShow", mPaymentRequestTestRule.getReadyForInput());
 
@@ -213,11 +204,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "disable-features=PaymentRequestBasicCard",
-            "disable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testCannotMakePayment_Complete() throws TimeoutException {
+    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
+    public void testCannotMakePayment_Complete() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -498,11 +486,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @Feature({"Payments"})
     @FlakyTest(message = "https://crbug.com/1222944")
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard",
-            "enable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testNoQuery_UserAbort_WithBasicCardEnabled() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testNoQuery_UserAbort_WithBasicCardEnabled() throws TimeoutException {
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "noQueryShow", mPaymentRequestTestRule.getReadyForInput());
@@ -534,11 +519,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @MediumTest
     @Feature({"Payments"})
     @FlakyTest(message = "https://crbug.com/1222944")
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "disable-features=PaymentRequestBasicCard",
-            "disable-blink-features=PaymentRequestBasicCard"})
-    public void
-    testNoQuery_UserAbort() throws TimeoutException {
+    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
+    public void testNoQuery_UserAbort() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);

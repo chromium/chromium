@@ -477,7 +477,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_UnsupportedCard()
             throws TimeoutException {
         // Add an unsupported card (mastercard) and an complete address.
@@ -513,7 +512,6 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @MediumTest
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_OnlyPaymentApp()
             throws TimeoutException {
         // Add a complete address and a working payment app.
@@ -547,10 +545,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard"})
-    public void
-    testUserDidNotHaveCompleteSuggestions_PaymentApp_NoApps() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testUserDidNotHaveCompleteSuggestions_PaymentApp_NoApps() throws TimeoutException {
         // Add an address and a factory without apps.
         AutofillTestHelper mHelper = new AutofillTestHelper();
         mHelper.setProfile(new AutofillProfile("", "https://example.com", true,
@@ -806,10 +802,8 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard"})
-    public void
-    testUserDidNotHaveCompleteSuggestions_AcceptsCardsAndApps_NoCardOrPaymentApp()
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testUserDidNotHaveCompleteSuggestions_AcceptsCardsAndApps_NoCardOrPaymentApp()
             throws TimeoutException {
         // Add an address on file.
         new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.com", true,

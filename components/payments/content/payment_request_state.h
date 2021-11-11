@@ -366,10 +366,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // |get_all_apps_finished_| is true.
   bool has_enrolled_instrument_ = false;
 
-  // Whether there's at least one app that is not an autofill credit card. Can
-  // be used only after |get_all_apps_finished_| is true.
-  bool has_non_autofill_app_ = false;
-
   // Whether the data is currently being validated by the merchant.
   bool is_waiting_for_merchant_validation_ = false;
 

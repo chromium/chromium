@@ -518,19 +518,6 @@ void PaymentRequestDialogView::OnDialogOpened() {
   if (!request_->spec())
     return;
 
-  if (request_->spec()->request_shipping() &&
-      !request_->state()->selected_shipping_profile() &&
-      PaymentsExperimentalFeatures::IsEnabled(
-          features::kStrictHasEnrolledAutofillInstrument)) {
-    view_stack_->Push(
-        CreateViewAndInstallController(
-            ProfileListViewController::GetShippingProfileViewController(
-                request_->spec(), request_->state(),
-                weak_ptr_factory_.GetWeakPtr()),
-            &controller_map_),
-        /* animate = */ false);
-  }
-
   if (observer_for_testing_)
     observer_for_testing_->OnDialogOpened();
 }

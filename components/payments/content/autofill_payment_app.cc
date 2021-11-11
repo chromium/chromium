@@ -105,12 +105,6 @@ std::u16string AutofillPaymentApp::GetMissingInfoLabel() const {
 bool AutofillPaymentApp::HasEnrolledInstrument() const {
   CreditCardCompletionStatus status =
       GetCompletionStatusForCard(credit_card_, app_locale_, billing_profiles_);
-  if (PaymentsExperimentalFeatures::IsEnabled(
-          features::kStrictHasEnrolledAutofillInstrument)) {
-    return status == CREDIT_CARD_COMPLETE &&
-           is_requested_autofill_data_available_;
-  }
-
   // Card has to have a cardholder name and number for the purposes of
   // CanMakePayment. An expired card is still valid at this stage.
   return !(status & CREDIT_CARD_NO_CARDHOLDER ||

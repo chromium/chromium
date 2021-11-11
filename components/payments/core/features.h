@@ -47,10 +47,6 @@ extern const base::Feature kWebPaymentsJustInTimePaymentApp;
 // ShippingAddressChangeEvent is redacted of fine-grained details.
 extern const base::Feature kWebPaymentsRedactShippingAddress;
 
-// Used to make autofill instrument more restrictive when responding to
-// hasEnrolledInstrument() queries.
-extern const base::Feature kStrictHasEnrolledAutofillInstrument;
-
 // If enabled, just-in-time installable payment handlers are ranked lower than
 // complete autofill instruments in payment sheet's method selection section.
 extern const base::Feature kDownRankJustInTimePaymentApp;

@@ -134,16 +134,9 @@ public class PaymentRequestService
     @Nullable
     private SecurePaymentConfirmationNoMatchingCredController mNoMatchingController;
 
-    /**
-     * A mapping of the payment method names to the corresponding payment method specific data. If
-     * STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT is enabled, then the key "basic-card-payment-options"
-     * also maps to the following payment options:
-     *  - requestPayerEmail
-     *  - requestPayerName
-     *  - requestPayerPhone
-     *  - requestShipping
-     */
+    /** A mapping of the payment method names to the corresponding payment method specific data. */
     private HashMap<String, PaymentMethodData> mQueryForQuota;
+
     /**
      * True after at least one usable payment app has been found and the setting allows querying
      * this value. This value can be used to respond to hasEnrolledInstrument(). Should be read only
@@ -546,7 +539,6 @@ public class PaymentRequestService
         methodData = Collections.unmodifiableMap(methodData);
 
         mQueryForQuota = new HashMap<>(methodData);
-        mBrowserPaymentRequest.modifyQueryForQuotaCreatedIfNeeded(mQueryForQuota, mPaymentOptions);
 
         if (details.id == null || details.total == null
                 || !mDelegate.validatePaymentDetails(details)) {
@@ -1030,30 +1022,7 @@ public class PaymentRequestService
             }
             return new PaymentNotShownError(notShowReason, debugMessage, paymentErrorReason);
         }
-        return ensureHasSupportedPaymentMethodsForStrictShow(mIsUserGestureShow);
-    }
-
-    /**
-     * Ensures the available payment apps can make payment under the strict show() conditions.
-     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
-     * @return The error if the payment cannot be made; null otherwise.
-     */
-    @Nullable
-    private PaymentNotShownError ensureHasSupportedPaymentMethodsForStrictShow(
-            boolean isUserGestureShow) {
-        if (!isUserGestureShow || !mSpec.getMethodData().containsKey(MethodStrings.BASIC_CARD)
-                || mHasEnrolledInstrument || mHasNonAutofillApp
-                || !PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            return null;
-        }
-
-        mRejectShowErrorMessage = ErrorStrings.STRICT_BASIC_CARD_SHOW_REJECT;
-        String debugMessage =
-                ErrorMessageUtil.getNotSupportedErrorMessage(mSpec.getMethodData().keySet()) + " "
-                + mRejectShowErrorMessage;
-        return new PaymentNotShownError(
-                NotShownReason.OTHER, debugMessage, PaymentErrorReason.NOT_SUPPORTED);
+        return null;
     }
 
     private boolean isInTwa() {

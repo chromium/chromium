@@ -68,14 +68,6 @@ public interface BrowserPaymentRequest {
     default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
 
     /**
-     * Modifies queryForQuota if needed, called when queryForQuota is created.
-     * @param queryForQuota The created queryForQuota, which could be modified in place.
-     * @param paymentOptions The payment options specified by the merchant.
-     */
-    default void modifyQueryForQuotaCreatedIfNeeded(
-            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {}
-
-    /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
      * @param webContents The WebContents that represents the merchant page.
      * @param methodData A map of the method data specified for the request.
