@@ -37,6 +37,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -274,45 +275,57 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   const SkColor text_color = theme_provider->GetColor(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
 
+  // Layout structure:
+  //
+  // [***ooo      x]  <--- progress container
+  // [@ TITLE     x]  <--- top text container
+  //    body text
+  // [    cancel ok]  <--- button container
+  //
+  // Notes:
+  // - The close button's placement depends on the presence of a progress
+  //   indicator.
+  // - The body text takes the place of TITLE if there is no title.
+  // - If there is both a title and icon, the body text is manually indented to
+  //   align with the title; this avoids having to nest an additional vertical
+  //   container.
+  // - Unused containers are set to not be visible.
+  views::View* const progress_container =
+      AddChildView(std::make_unique<views::View>());
+  views::View* const top_text_container =
+      AddChildView(std::make_unique<views::View>());
+  views::View* const button_container =
+      AddChildView(std::make_unique<views::View>());
+
   // Add progress indicator (optional) and its container.
-  views::View* top_row_container = nullptr;
   if (params.tutorial_progress_current) {
     DCHECK(params.tutorial_progress_max);
-    top_row_container = AddChildView(std::make_unique<views::View>());
     // TODO(crbug.com/1197208): surface progress information in a11y tree
     for (int i = 0; i < params.tutorial_progress_max; ++i) {
       SkColor fill_color = i < params.tutorial_progress_current
                                ? SK_ColorWHITE
                                : SK_ColorTRANSPARENT;
       // TODO(crbug.com/1197208): formalize dot size
-      top_row_container->AddChildView(std::make_unique<DotView>(
+      progress_container->AddChildView(std::make_unique<DotView>(
           gfx::Size(8, 8), fill_color, SK_ColorWHITE));
     }
-  }
-
-  // Add body container views. If there is only text in the body, we won't
-  // bother adding these at all.
-
-  // The bubble body container is horizontal and contains the icon, the text,
-  // and the close button.
-  views::View* bubble_body_container = nullptr;
-  // The text container is vertical and sits inside the bubble body container.
-  // It contains the title and body text of the bubble.
-  views::View* text_container = nullptr;
-  if (params.body_icon || (params.has_close_button && !top_row_container)) {
-    bubble_body_container = AddChildView(std::make_unique<views::View>());
-    text_container =
-        bubble_body_container->AddChildView(std::make_unique<views::View>());
+  } else {
+    progress_container->SetVisible(false);
   }
 
   // Add the body icon (optional).
   views::ImageView* icon_view = nullptr;
-  constexpr int kBodyIconSize = 24;
+  constexpr int kBodyIconSize = 20;
+  constexpr int kBodyIconBackgroundSize = 24;
   if (params.body_icon) {
-    icon_view = bubble_body_container->AddChildViewAt(
+    icon_view = top_text_container->AddChildViewAt(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, text_color, kBodyIconSize)),
+            *params.body_icon, background_color, kBodyIconSize)),
         0);
+    icon_view->SetPreferredSize(
+        gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
+    icon_view->SetBackground(views::CreateRoundedRectBackground(
+        text_color, kBodyIconBackgroundSize / 2));
     icon_view->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
   }
 
@@ -324,31 +337,21 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     callback.Run();
   };
 
-  // Add close button (optional).
-  ClosePromoButton* close_button = nullptr;
-  if (params.has_close_button) {
-    int close_string_id =
-        params.tutorial_progress_current ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
-    close_button =
-        (top_row_container ? top_row_container : bubble_body_container)
-            ->AddChildView(std::make_unique<ClosePromoButton>(
-                close_string_id,
-                base::BindRepeating(close_bubble_and_run_callback,
-                                    base::Unretained(this),
-                                    std::move(params.dismiss_callback))));
-  }
-
-  views::View* const label_parent = text_container ? text_container : this;
   std::vector<views::Label*> labels;
-  // Add title label.
+  // Add title (optional) and body label.
   if (!params.title_text.empty()) {
-    labels.push_back(label_parent->AddChildView(std::make_unique<views::Label>(
-        params.title_text, ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE)));
+    labels.push_back(
+        top_text_container->AddChildView(std::make_unique<views::Label>(
+            params.title_text, ChromeTextContext::CONTEXT_IPH_BUBBLE_TITLE)));
+    labels.push_back(
+        AddChildViewAt(std::make_unique<views::Label>(params.body_text,
+                                                      CONTEXT_IPH_BUBBLE_BODY),
+                       GetIndexOf(button_container)));
+  } else {
+    labels.push_back(
+        top_text_container->AddChildView(std::make_unique<views::Label>(
+            params.body_text, CONTEXT_IPH_BUBBLE_BODY)));
   }
-
-  // Add body label.
-  labels.push_back(label_parent->AddChildView(std::make_unique<views::Label>(
-      params.body_text, CONTEXT_IPH_BUBBLE_BODY)));
 
   // Set common label properties.
   for (views::Label* label : labels) {
@@ -359,22 +362,34 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
-  // Add other buttons.
-  views::View* button_container = nullptr;
-  if (!params.buttons.empty()) {
-    button_container = AddChildView(std::make_unique<views::View>());
-    for (ButtonParams& button_params : params.buttons) {
-      MdIPHBubbleButton* const button =
-          button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
-              base::BindRepeating(close_bubble_and_run_callback,
-                                  base::Unretained(this),
-                                  std::move(button_params.callback)),
-              button_params.text, button_params.has_border));
-      buttons_.push_back(button);
-      button->SetMinSize(gfx::Size(0, 0));
-      button->SetCustomPadding(kBubbleButtonPadding);
-    }
+  // Add close button (optional).
+  ClosePromoButton* close_button = nullptr;
+  if (params.has_close_button) {
+    int close_string_id =
+        params.tutorial_progress_current ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
+    close_button =
+        (params.tutorial_progress_max ? progress_container : top_text_container)
+            ->AddChildView(std::make_unique<ClosePromoButton>(
+                close_string_id,
+                base::BindRepeating(close_bubble_and_run_callback,
+                                    base::Unretained(this),
+                                    std::move(params.dismiss_callback))));
   }
+
+  // Add other buttons.
+  for (ButtonParams& button_params : params.buttons) {
+    MdIPHBubbleButton* const button =
+        button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
+            base::BindRepeating(close_bubble_and_run_callback,
+                                base::Unretained(this),
+                                std::move(button_params.callback)),
+            button_params.text, button_params.has_border));
+    buttons_.push_back(button);
+    button->SetMinSize(gfx::Size(0, 0));
+    button->SetCustomPadding(kBubbleButtonPadding);
+  }
+  if (params.buttons.empty())
+    button_container->SetVisible(false);
 
   // Set up layouts. This is the default vertical spacing that is also used to
   // separate progress indicators for symmetry.
@@ -394,20 +409,17 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // Set up top row container layout.
   const int kCloseButtonHeight = 24;
-  if (top_row_container) {
-    auto& top_layout =
-        top_row_container
-            ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-            ->SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-            .SetMinimumCrossAxisSize(kCloseButtonHeight)
-            .SetDefault(views::kMarginsKey,
-                        gfx::Insets(0, default_spacing, 0, 0))
-            .SetIgnoreDefaultMainAxisMargins(true);
-    top_row_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(top_layout.GetDefaultFlexRule()));
-  }
+  auto& progress_layout =
+      progress_container
+          ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+          ->SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetMinimumCrossAxisSize(kCloseButtonHeight)
+          .SetDefault(views::kMarginsKey, gfx::Insets(0, default_spacing, 0, 0))
+          .SetIgnoreDefaultMainAxisMargins(true);
+  progress_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(progress_layout.GetDefaultFlexRule()));
 
   // Close button should float right in whatever container it's in.
   if (close_button) {
@@ -440,55 +452,49 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   for (views::Label* label : labels)
     label->SetProperty(views::kFlexBehaviorKey, text_flex);
 
-  if (bubble_body_container) {
-    auto& outer_layout =
-        bubble_body_container
-            ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-            ->SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-            .SetIgnoreDefaultMainAxisMargins(true);
-    bubble_body_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(outer_layout.GetDefaultFlexRule()));
+  auto& top_text_layout =
+      top_text_container
+          ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+          ->SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetIgnoreDefaultMainAxisMargins(true);
+  top_text_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(top_text_layout.GetDefaultFlexRule()));
 
-    auto& inner_layout =
-        text_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-            ->SetOrientation(views::LayoutOrientation::kVertical)
-            .SetCollapseMargins(true)
-            .SetDefault(views::kMarginsKey,
-                        gfx::Insets(0, 0, default_spacing, 0))
-            .SetIgnoreDefaultMainAxisMargins(true);
-    text_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(inner_layout.GetDefaultFlexRule()));
+  // If the body icon is present, labels after the first are not parented to
+  // the top text container, but still need to be inset to align with the
+  // title.
+  if (icon_view) {
+    const int indent = kBubbleContentsInsets.left() + kBodyIconBackgroundSize +
+                       default_spacing;
+    for (size_t i = 1; i < labels.size(); ++i)
+      labels[i]->SetProperty(views::kMarginsKey, gfx::Insets(0, indent, 0, 0));
   }
 
   // Set up button container layout.
-  if (button_container) {
-    // Add in the default spacing between bubble content and bottom/buttons.
-    button_container->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets(layout_provider->GetDistanceMetric(
-                        views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                    0, 0, 0));
+  // Add in the default spacing between bubble content and bottom/buttons.
+  button_container->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(layout_provider->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+                  0, 0, 0));
 
-    // Create button container internal layout.
-    auto& button_layout =
-        button_container
-            ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-            ->SetOrientation(views::LayoutOrientation::kHorizontal)
-            .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-            .SetDefault(
-                views::kMarginsKey,
-                gfx::Insets(0,
-                            layout_provider->GetDistanceMetric(
-                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
-                            0, 0))
-            .SetIgnoreDefaultMainAxisMargins(true);
-    button_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(button_layout.GetDefaultFlexRule()));
-  }
+  // Create button container internal layout.
+  auto& button_layout =
+      button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+          ->SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .SetDefault(
+              views::kMarginsKey,
+              gfx::Insets(0,
+                          layout_provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                          0, 0))
+          .SetIgnoreDefaultMainAxisMargins(true);
+  button_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(button_layout.GetDefaultFlexRule()));
 
   // Set up the bubble itself.
 
@@ -497,7 +503,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   // Want a consistent initial focused view if one is available.
   if (close_button)
     SetInitiallyFocusedView(close_button);
-  else if (button_container)
+  else if (!button_container->children().empty())
     SetInitiallyFocusedView(button_container->children()[0]);
 
   set_margins(gfx::Insets());
