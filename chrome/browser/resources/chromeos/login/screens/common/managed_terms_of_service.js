@@ -2,100 +2,118 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+/**
+ * @fileoverview Polymer element for displaying material design Terms Of Service
+ * screen.
+ */
 
-(function() {
+/* #js_imports_placeholder */
 
 // Enum that describes the current state of the Terms Of Service screen
-const UIState = {
+const ManagedTermsState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
 };
 
 /**
- * @fileoverview Polymer element for displaying material design Terms Of Service
- * screen.
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
  */
-Polymer({
-  is: 'managed-terms-of-service-element',
+ const ManagedTermsOfServiceBase = Polymer.mixinBehaviors([OobeI18nBehavior,
+  OobeDialogHostBehavior, LoginScreenBehavior, MultiStepBehavior],
+  Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   termsOfServiceDialog:  OobeAdaptiveDialogElement,
+ *   termsOfServiceFrame:  WebView,
+ * }}
+ */
+ ManagedTermsOfServiceBase.$;
 
-  properties: {
+/**
+ * @polymer
+ */
+class ManagedTermsOfService extends ManagedTermsOfServiceBase {
 
-    // Whether the back button is disabled.
-    backButtonDisabled_: {type: Boolean, value: false},
+  static get is() {
+    return 'managed-terms-of-service-element';
+  }
 
-    // Whether the retry button is disabled.
-    retryButtonDisabled_: {type: Boolean, value: true},
+  /* #html_template_placeholder */
 
-    // Whether the accept button is disabled.
-    acceptButtonDisabled_: {type: Boolean, value: true},
+  static get properties() {
+    return {
+      // Whether the back button is disabled.
+      backButtonDisabled_: {type: Boolean, value: false},
 
-    // The manager that the terms of service belongs to.
-    tosManager_: {type: String, value: ''},
-  },
+      // Whether the retry button is disabled.
+      retryButtonDisabled_: {type: Boolean, value: true},
+
+      // Whether the accept button is disabled.
+      acceptButtonDisabled_: {type: Boolean, value: true},
+
+      // The manager that the terms of service belongs to.
+      tosManager_: {type: String, value: ''},
+    };
+  }
+
+  constructor() {
+    super();
+  }
 
   defaultUIStep() {
-    return UIState.LOADING;
-  },
+    return ManagedTermsState.LOADING;
+  }
 
-  UI_STEPS: UIState,
+  get UI_STEPS() {
+    return ManagedTermsState;
+  }
 
   // Whether the screen is still loading.
   isLoading_() {
-    return this.uiStep == UIState.LOADING;
-  },
+    return this.uiStep == ManagedTermsState.LOADING;
+  }
 
   // Whether the screen has finished loading.
   isLoaded_() {
-    return this.uiStep == UIState.LOADED;
-  },
+    return this.uiStep == ManagedTermsState.LOADED;
+  }
 
   // Whether the screen is in an error state.
   hasError_() {
-    return this.uiStep == UIState.ERROR;
-  },
+    return this.uiStep == ManagedTermsState.ERROR;
+  }
 
-  EXTERNAL_API: [
-    'setTermsOfServiceLoadError',
-    'setTermsOfService',
-  ],
+  get EXTERNAL_API() {
+    return ['setTermsOfServiceLoadError',
+            'setTermsOfService'];
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data contains manager string whose Terms of Service are
-   * being shown.
-   * @suppress {missingProperties} manager property is not defined for data.
+   * @param {{manager: string}} data contains manager string whose
+   * Terms of Service are being shown.
    */
   onBeforeShow(data) {
     this.tosManager_ = data.manager;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('TermsOfServiceScreen', {
       resetAllowed: true,
     });
-  },
-
+  }
 
   focus() {
     this.$.termsOfServiceDialog.show();
-  },
-
-  /**
-   * This is called when strings are updated.
-   */
-  updateLocalizedContent() {
-    this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * The 'on-tap' event handler for the 'Accept' button.
@@ -111,7 +129,7 @@ Polymer({
     this.backButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
     this.userActed('accept');
-  },
+  }
 
   /**
    * The 'on-tap' event handler for the 'Back' button.
@@ -128,7 +146,7 @@ Polymer({
     this.retryButtonDisabled_ = true;
     this.acceptButtonDisabled_ = true;
     this.userActed('back');
-  },
+  }
 
   /**
    * The 'on-tap' event handler for the 'Back' button.
@@ -143,7 +161,7 @@ Polymer({
 
     this.retryButtonDisabled_ = true;
     this.userActed('retry');
-  },
+  }
 
   /**
    * Displays an error message on the Terms of Service screen. Called when the
@@ -152,12 +170,12 @@ Polymer({
   setTermsOfServiceLoadError() {
     // Disable the accept button, hide the iframe, show warning icon and retry
     // button.
-    this.setUIStep(UIState.ERROR);
+    this.setUIStep(ManagedTermsState.ERROR);
 
     this.acceptButtonDisabled_ = true;
     this.backButtonDisabled_ = false;
     this.retryButtonDisabled_ = false;
-  },
+  }
 
   /**
    * Displays the given |termsOfService| and enables the accept button.
@@ -190,7 +208,8 @@ Polymer({
 
     // Mark the loading as complete.
     this.acceptButtonDisabled_ = false;
-    this.setUIStep(UIState.LOADED);
-  },
-});
-})();
+    this.setUIStep(ManagedTermsState.LOADED);
+  }
+}
+
+customElements.define(ManagedTermsOfService.is, ManagedTermsOfService);

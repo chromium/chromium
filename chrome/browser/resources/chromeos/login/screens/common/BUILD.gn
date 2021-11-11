@@ -20,6 +20,7 @@ group("polymer3_elements") {
     ":family_link_notice_module",
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
+    ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
     ":oobe_reset_module",
     ":parental_handoff_module",
@@ -55,6 +56,7 @@ js_type_check("closure_compile_module") {
     ":family_link_notice.m",
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
+    ":managed_terms_of_service.m",
     ":marketing_opt_in.m",
     ":oobe_reset.m",
     ":parental_handoff.m",
@@ -184,6 +186,27 @@ js_library("gesture_navigation.m") {
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":gesture_navigation_module" ]
+}
+
+js_library("managed_terms_of_service.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/managed_terms_of_service.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+
+  extra_deps = [ ":managed_terms_of_service_module" ]
 }
 
 js_library("marketing_opt_in.m") {
@@ -356,6 +379,14 @@ polymer_modulizer("fingerprint_setup") {
 polymer_modulizer("gesture_navigation") {
   js_file = "gesture_navigation.js"
   html_file = "gesture_navigation.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("managed_terms_of_service") {
+  js_file = "managed_terms_of_service.js"
+  html_file = "managed_terms_of_service.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
