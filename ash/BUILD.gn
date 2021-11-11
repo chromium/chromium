@@ -903,6 +903,8 @@ component("ash") {
     "style/default_colors.h",
     "style/element_style.cc",
     "style/element_style.h",
+    "style/highlight_border.cc",
+    "style/highlight_border.h",
     "style/scoped_light_mode_as_default.cc",
     "style/style_util.cc",
     "style/style_util.h",

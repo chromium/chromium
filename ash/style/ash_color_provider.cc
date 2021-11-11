@@ -329,11 +329,17 @@ SkColor AshColorProvider::GetControlsLayerColorImpl(ControlsLayerType type,
                             : SkColorSetA(gfx::kGoogleBlue600, 0x3D);
     case ControlsLayerType::kFocusRingColor:
       return use_dark_color ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
-    case ControlsLayerType::kHighlightBorderHighlightColor:
+    case ControlsLayerType::kHighlightColor1:
       return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x14)
                             : SkColorSetA(SK_ColorWHITE, 0x4C);
-    case ControlsLayerType::kHighlightBorderBorderColor:
+    case ControlsLayerType::kBorderColor1:
       return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent80)
+                            : SkColorSetA(SK_ColorBLACK, 0x0F);
+    case ControlsLayerType::kHighlightColor2:
+      return use_dark_color ? SkColorSetA(SK_ColorWHITE, 0x0F)
+                            : SkColorSetA(SK_ColorWHITE, 0x33);
+    case ControlsLayerType::kBorderColor2:
+      return use_dark_color ? GetBaseLayerColor(BaseLayerType::kTransparent60)
                             : SkColorSetA(SK_ColorBLACK, 0x0F);
   }
 }

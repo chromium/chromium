@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/highlight_border.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,8 +62,6 @@ constexpr int kMaximizeCueVerticalInsets = 8;
 constexpr int kPhantomWindowCornerRadius = 4;
 constexpr gfx::Insets kPhantomWindowInsets(8);
 
-constexpr int kHighlightBorderThickness = 1;
-
 // The move up factor of starting y-position from the target position for
 // entrance animation of maximize cue.
 constexpr float kMaximizeCueEntraceAnimationYPositionMoveUpFactor = 0.5f;
@@ -76,63 +75,6 @@ constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
 // The delay of the maximize cue entrance and exit animation.
 constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
     base::Milliseconds(100);
-
-// A rounded rectangle border that has inner (highlight) and outer color.
-class HighlightBorder : public views::Border {
- public:
-  explicit HighlightBorder(int corner_radius);
-
-  HighlightBorder(const HighlightBorder&) = delete;
-  HighlightBorder& operator=(const HighlightBorder&) = delete;
-
-  // views::Border:
-  void Paint(const views::View& view, gfx::Canvas* canvas) override;
-  gfx::Insets GetInsets() const override;
-  gfx::Size GetMinimumSize() const override;
-
- private:
-  const int corner_radius_;
-  const SkColor inner_color_;
-  const SkColor outer_color_;
-};
-
-// TODO(crbug/1224694): Remove |inner_color_| and |outer_color| and call
-// `GetControlsLayerColor()` for colors directly in `Paint()` once we
-// officially launch Dark/Light mode and no longer use default mode.
-HighlightBorder::HighlightBorder(int corner_radius)
-    : corner_radius_(corner_radius),
-      inner_color_(AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightBorderHighlightColor)),
-      outer_color_(AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightBorderBorderColor)) {}
-
-void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  flags.setStrokeWidth(kHighlightBorderThickness);
-  flags.setColor(outer_color_);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setAntiAlias(true);
-
-  const float half_thickness = kHighlightBorderThickness / 2.0f;
-  gfx::RectF outer_border_bounds(view.GetLocalBounds());
-  outer_border_bounds.Inset(half_thickness, half_thickness);
-  canvas->DrawRoundRect(outer_border_bounds, corner_radius_, flags);
-
-  gfx::RectF inner_border_bounds(view.GetLocalBounds());
-  inner_border_bounds.Inset(gfx::Insets(kHighlightBorderThickness));
-  inner_border_bounds.Inset(half_thickness, half_thickness);
-  flags.setColor(inner_color_);
-  canvas->DrawRoundRect(inner_border_bounds, corner_radius_, flags);
-}
-
-gfx::Insets HighlightBorder::GetInsets() const {
-  return gfx::Insets(2 * kHighlightBorderThickness);
-}
-
-gfx::Size HighlightBorder::GetMinimumSize() const {
-  return gfx::Size(kHighlightBorderThickness * 4,
-                   kHighlightBorderThickness * 4);
-}
 
 }  // namespace
 
@@ -282,12 +224,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
           AshColorProvider::ShieldLayerType::kShield20,
           kSplitviewPhantomWindowColor),
       kPhantomWindowCornerRadius));
-
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  phantom_view->SetBorder(
-      std::make_unique<HighlightBorder>(kPhantomWindowCornerRadius));
-  // TODO(crbug/1258983): Add border highlight that supports dark/light mode
-  // once we support border highlight for split view highlight view.
+  phantom_view->SetBorder(std::make_unique<HighlightBorder>(
+      kPhantomWindowCornerRadius, HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/true));
 
   return phantom_widget;
 }
@@ -326,8 +265,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   maximize_cue->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   const gfx::RoundedCornersF radii(kMaximizeCueHeight / 2);
   maximize_cue->layer()->SetRoundedCornerRadius(radii);
-  maximize_cue->SetBorder(
-      std::make_unique<HighlightBorder>(kMaximizeCueHeight / 2));
+  maximize_cue->SetBorder(std::make_unique<HighlightBorder>(
+      kMaximizeCueHeight / 2, HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 
   // Set layout of cue view and add a label to the view.
   maximize_cue->SetLayoutManager(std::make_unique<views::BoxLayout>(

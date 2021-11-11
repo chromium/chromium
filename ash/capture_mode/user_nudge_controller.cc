@@ -302,11 +302,10 @@ void UserNudgeController::BuildToastWidget() {
       AshColorProvider::BaseLayerType::kTransparent80);
   toast_label_view_->SetBackground(
       views::CreateSolidBackground(background_color));
-  toast_label_view_->SetBorder(
-      views::CreateRoundedRectBorder(kToastBorderThickness, kToastCornerRadius,
-                                     color_provider->GetControlsLayerColor(
-                                         AshColorProvider::ControlsLayerType::
-                                             kHighlightBorderHighlightColor)));
+  toast_label_view_->SetBorder(views::CreateRoundedRectBorder(
+      kToastBorderThickness, kToastCornerRadius,
+      color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kHighlightColor1)));
   toast_label_view_->SetAutoColorReadabilityEnabled(false);
   const SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
