@@ -238,6 +238,19 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return rare_data_->tallest_unbreakable_block_size;
   }
 
+  // Return the block-size that this fragment will take up inside a
+  // fragmentation context. This will include overflow from descendants (if it
+  // is visible and supposed to affect block fragmentation), and also
+  // out-of-flow positioned descendants (in the initial balancing pass), but not
+  // relative offsets. kIndefiniteSize will be returned if block fragmentation
+  // wasn't performed on the node (e.g. monolithic content such as line boxes,
+  // or if the node isn't inside a fragmentation context at all).
+  LayoutUnit BlockSizeForFragmentation() const {
+    if (!HasRareData())
+      return kIndefiniteSize;
+    return rare_data_->block_size_for_fragmentation;
+  }
+
   // Return the (lowest) appeal among any unforced breaks inside the resulting
   // fragment (or kBreakAppealPerfect if there are no such breaks).
   //
@@ -516,6 +529,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
       // increased by this amount.
       LayoutUnit minimal_space_shortage = kIndefiniteSize;
     };
+    LayoutUnit block_size_for_fragmentation = kIndefiniteSize;
     NGExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 

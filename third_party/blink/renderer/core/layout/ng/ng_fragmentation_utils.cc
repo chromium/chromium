@@ -57,25 +57,6 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
   }
 }
 
-// Return layout overflow block-size that's not clipped (or simply the
-// block-size if it *is* clipped).
-LayoutUnit BlockAxisLayoutOverflow(const NGLayoutResult& result,
-                                   WritingDirectionMode writing_direction) {
-  const NGPhysicalFragment& fragment = result.PhysicalFragment();
-  LayoutUnit block_size = NGFragment(writing_direction, fragment).BlockSize();
-  if (!result.PhysicalFragment().IsLineBox())
-    return block_size;
-
-  // Ruby annotations do not take up space in the line box, so we need this to
-  // make sure that we don't let them cross the fragmentation line without
-  // noticing.
-  LayoutUnit annotation_overflow = result.AnnotationOverflow();
-  if (annotation_overflow > LayoutUnit())
-    block_size += annotation_overflow;
-  block_size += result.AnnotationBlockOffsetAdjustment();
-  return block_size;
-}
-
 // Return true if the container is being resumed after a fragmentainer break,
 // and the child is at the first fragment of a node, and we are allowed to break
 // before it. Normally, this isn't allowed, as that would take us nowhere,
@@ -791,7 +772,7 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
          appeal_inside >= builder->EarlyBreak().BreakAppeal()))
       return true;
   } else if (refuse_break_before ||
-             BlockAxisLayoutOverflow(
+             BlockSizeForFragmentation(
                  layout_result, space.GetWritingDirection()) <= space_left) {
     // The child either fits, or we are not allowed to break. So we can move
     // past this breakpoint.
@@ -1074,6 +1055,31 @@ PhysicalOffset OffsetInStitchedFragments(
   WritingModeConverter converter(writing_direction,
                                  stitched_fragments_physical_size);
   return converter.ToPhysical(offset_in_stitched_box, fragment.Size());
+}
+
+LayoutUnit BlockSizeForFragmentation(
+    const NGLayoutResult& result,
+    WritingDirectionMode container_writing_direction) {
+  LayoutUnit block_size = result.BlockSizeForFragmentation();
+  if (block_size == kIndefiniteSize) {
+    // Just use the border-box size of the fragment if block-size for
+    // fragmentation hasn't been calculated. This happens for line boxes and any
+    // other kind of monolithic content.
+    WritingMode writing_mode = container_writing_direction.GetWritingMode();
+    LogicalSize logical_size =
+        result.PhysicalFragment().Size().ConvertToLogical(writing_mode);
+    block_size = logical_size.block_size;
+  }
+
+  // Ruby annotations do not take up space in the line box, so we need this to
+  // make sure that we don't let them cross the fragmentation line without
+  // noticing.
+  block_size += result.AnnotationBlockOffsetAdjustment();
+  LayoutUnit annotation_overflow = result.AnnotationOverflow();
+  if (annotation_overflow > LayoutUnit())
+    block_size += annotation_overflow;
+
+  return block_size;
 }
 
 }  // namespace blink

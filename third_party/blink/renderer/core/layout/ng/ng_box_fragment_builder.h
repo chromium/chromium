@@ -595,7 +595,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column
   // balancing hints.
-  void PropagateBreakInfo(const NGLayoutResult&);
+  void PropagateBreakInfo(const NGLayoutResult&, LogicalOffset);
 
   void SetHasForcedBreak() {
     has_forced_break_ = true;
@@ -636,6 +636,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   LayoutUnit minimal_space_shortage_ = LayoutUnit::Max();
   LayoutUnit tallest_unbreakable_block_size_ = LayoutUnit::Min();
+  LayoutUnit block_size_for_fragmentation_;
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.

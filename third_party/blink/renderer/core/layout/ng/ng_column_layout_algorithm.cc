@@ -23,36 +23,6 @@ namespace blink {
 
 namespace {
 
-LayoutUnit CalculateColumnContentBlockSize(
-    const NGPhysicalFragment& fragment,
-    WritingDirectionMode writing_direction) {
-  WritingModeConverter converter(writing_direction, fragment.Size());
-  // Note that what we're doing here is almost the same as what we do when
-  // calculating overflow, with at least one important difference: If the
-  // inline-size of a fragment is 0, the overflow rectangle becomes empty, even
-  // if the fragment's block-size is non-zero. This is correct for overflow
-  // handling, but it would be wrong for column balancing.
-  LayoutUnit total_size;
-  for (const auto& child : fragment.Children()) {
-    LayoutUnit size = converter.ToLogical(child->Size()).block_size;
-    LayoutUnit offset =
-        converter.ToLogical(child.offset, child->Size()).block_offset;
-    // TODO(mstensho): Need to detect whether we're actually clipping in the
-    // block direction. The combination of overflow-x:clip and
-    // overflow-y:visible should enter children here.
-    if (child->IsContainer() && !child->HasNonVisibleOverflow()) {
-      LayoutUnit children_size =
-          CalculateColumnContentBlockSize(*child, writing_direction);
-      if (size < children_size)
-        size = children_size;
-    }
-    LayoutUnit block_end = offset + size;
-    if (total_size < block_end)
-      total_size = block_end;
-  }
-  return total_size;
-}
-
 // An itinerary of multicol container parts to walk separately for layout. A
 // part is either a chunk of regular column content, or a column spanner.
 class MulticolPartWalker {
@@ -1171,8 +1141,8 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     // content that's doomed to end up in overflowing columns (because of too
     // many forced breaks).
     if (forced_break_count < used_column_count_) {
-      LayoutUnit column_block_size = CalculateColumnContentBlockSize(
-          fragment, space.GetWritingDirection());
+      LayoutUnit column_block_size = BlockSizeForFragmentation(
+          *result, ConstraintSpace().GetWritingDirection());
 
       // Encompass the block-size of the (single-strip column) fragment, to
       // account for any trailing margins. We let them affect the column

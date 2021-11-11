@@ -381,6 +381,14 @@ PhysicalOffset OffsetInStitchedFragments(
     const NGPhysicalBoxFragment&,
     PhysicalSize* out_stitched_fragments_size = nullptr);
 
+// Return the block-size that this fragment will take up inside a fragmentation
+// context. This will include overflow from descendants (if it is visible and
+// supposed to affect block fragmentation), and also out-of-flow positioned
+// descendants (in the initial balancing pass), but not relative offsets.
+LayoutUnit BlockSizeForFragmentation(
+    const NGLayoutResult&,
+    WritingDirectionMode container_writing_direction);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENTATION_UTILS_H_
