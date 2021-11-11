@@ -72,6 +72,16 @@
   .more-actions span {
     margin-inline-end: 16px;
   }
+
+  :host([enable-branding-update]) cr-toolbar {
+    --cr-toolbar-center-basis: 680px;
+    --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
+    --cr-toolbar-field-width: 100%;
+  }
+
+  :host([enable-branding-update]) .more-actions {
+    white-space: nowrap;
+  }
 </style>
 <cr-toolbar page-name="$i18n{toolbarTitle}" search-prompt="$i18n{search}"
     clear-label="$i18n{clearSearch}" menu-label="$i18n{mainMenu}" show-menu
