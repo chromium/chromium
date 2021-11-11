@@ -58,8 +58,8 @@ class APIBindingsSystemTest : public APIBindingTest {
       v8::Local<v8::Object>* secondary_parent);
 
   // Simulates logging an error to the console.
-  virtual void AddConsoleError(v8::Local<v8::Context> context,
-                               const std::string& error) {}
+  void AddConsoleError(v8::Local<v8::Context> context,
+                       const std::string& error);
 
   // Returns the DictionaryValue representing the schema with the given API
   // name.
@@ -94,6 +94,9 @@ class APIBindingsSystemTest : public APIBindingTest {
   }
   void reset_last_request() { last_request_.reset(); }
   APIBindingsSystem* bindings_system() { return bindings_system_.get(); }
+  const std::vector<std::string>& console_errors() const {
+    return console_errors_;
+  }
 
  private:
   // The API schemas for the fake APIs.
@@ -106,6 +109,9 @@ class APIBindingsSystemTest : public APIBindingTest {
   // The last request to be received from the APIBindingsSystem, or null if
   // there is none.
   std::unique_ptr<APIRequestHandler::Request> last_request_;
+
+  // A list for keeping track of simulated console errors.
+  std::vector<std::string> console_errors_;
 };
 
 }  // namespace extensions

@@ -22,6 +22,7 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/try_catch.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
 
@@ -93,12 +94,34 @@ const char kGammaAPISpec[] = R"(
       }]
     })";
 
+// JS strings used for registering custom callbacks for testing.
+const char kCustomCallbackHook[] = R"(
+    (function(hooks) {
+      hooks.setCustomCallback(
+          'functionWithCallback', (name, request, originalCallback,
+                                   firstResult, secondResult) => {
+        this.methodName = name;
+        // TODO(devlin): Currently, we don't actually pass anything useful in
+        // for the |request| object. If/when we do, we should test it.
+        this.results = [firstResult, secondResult];
+        originalCallback(secondResult);
+      });
+    }))";
+const char kCustomCallbackThrowHook[] = R"(
+    (function(hooks) {
+      hooks.setCustomCallback(
+          'functionWithCallback', (name, request, originalCallback,
+                                   firstResult, secondResult) => {
+        throw new Error('Custom callback threw');
+      });
+    }))";
+
 bool AllowAllAPIs(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
 
-bool DisallowPromises(v8::Local<v8::Context> context) {
-  return false;
+bool AllowPromises(v8::Local<v8::Context> context) {
+  return true;
 }
 
 }  // namespace
@@ -125,8 +148,7 @@ void APIBindingsSystemTest::SetUp() {
   bindings_system_ = std::make_unique<APIBindingsSystem>(
       base::BindRepeating(&APIBindingsSystemTest::GetAPISchema,
                           base::Unretained(this)),
-      base::BindRepeating(&AllowAllAPIs),
-      base::BindRepeating(&DisallowPromises),
+      base::BindRepeating(&AllowAllAPIs), base::BindRepeating(&AllowPromises),
       base::BindRepeating(&APIBindingsSystemTest::OnAPIRequest,
                           base::Unretained(this)),
       std::make_unique<TestInteractionProvider>(),
@@ -164,6 +186,11 @@ v8::Local<v8::Object> APIBindingsSystemTest::GetLastErrorParent(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object>* secondary_parent) {
   return v8::Local<v8::Object>();
+}
+
+void APIBindingsSystemTest::AddConsoleError(v8::Local<v8::Context> context,
+                                            const std::string& error) {
+  console_errors_.push_back(error);
 }
 
 const base::DictionaryValue& APIBindingsSystemTest::GetAPISchema(
@@ -375,23 +402,11 @@ TEST_F(APIBindingsSystemTest, TestCustomHooks) {
   }
 }
 
-// Tests the setCustomCallback hook.
-TEST_F(APIBindingsSystemTest, TestSetCustomCallback) {
+// Tests a call with a callback into an API using a setCustomCallback hook
+// works as expected.
+TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
-
-  const char kHook[] = R"(
-      (function(hooks) {
-        hooks.setCustomCallback(
-            'functionWithCallback', (name, request, originalCallback,
-                                     firstResult, secondResult) => {
-          this.methodName = name;
-          // TODO(devlin): Currently, we don't actually pass anything useful in
-          // for the |request| object. If/when we do, we should test it.
-          this.results = [firstResult, secondResult];
-          originalCallback(secondResult);
-        });
-      }))";
 
   APIBindingHooks* hooks = nullptr;
   v8::Local<v8::Object> alpha_api =
@@ -399,43 +414,166 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback) {
   ASSERT_FALSE(alpha_api.IsEmpty());
   ASSERT_TRUE(hooks);
   v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
-  v8::Local<v8::Function> function = FunctionFromString(context, kHook);
+  v8::Local<v8::Function> function =
+      FunctionFromString(context, kCustomCallbackHook);
   v8::Local<v8::Value> args[] = {js_hooks};
   RunFunctionOnGlobal(function, context, base::size(args), args);
 
-  {
-    const char kTestCall[] = R"(
-        obj.functionWithCallback('foo', function() {
-          this.callbackArguments = Array.from(arguments);
-        });)";
-    CallFunctionOnObject(context, alpha_api, kTestCall);
+  const char kTestCall[] = R"(
+      obj.functionWithCallback('foo', function() {
+        this.callbackArguments = Array.from(arguments);
+      });)";
+  CallFunctionOnObject(context, alpha_api, kTestCall);
 
-    ValidateLastRequest("alpha.functionWithCallback", "['foo']");
+  ValidateLastRequest("alpha.functionWithCallback", "['foo']");
 
-    // Although this response would violate the return on the spec, since this
-    // method has a custom callback defined it skips response validation. We
-    // expect the custom callback will transform the return to the correct form
-    // when calling the original callback, but this is not currently enforced or
-    // validated.
-    // TODO(tjudkins): Now that we use the CustomCallbackAdaptor, we could
-    // potentially send the response validator to the custom callback adaptor
-    // and validate the result returned from the custom callback before sending
-    // it on to the original callback.
-    std::unique_ptr<base::ListValue> response =
-        ListValueFromString(R"(["alpha","beta"])");
-    bindings_system()->CompleteRequest(last_request()->request_id, *response,
-                                       std::string());
+  // Although this response would violate the return on the spec, since this
+  // method has a custom callback defined it skips response validation. We
+  // expect the custom callback will transform the return to the correct form
+  // when calling the original callback, but this is not currently enforced or
+  // validated.
+  // TODO(tjudkins): Now that we use the CustomCallbackAdaptor, we could
+  // potentially send the response validator to the custom callback adaptor
+  // and validate the result returned from the custom callback before sending
+  // it on to the original callback.
+  std::unique_ptr<base::ListValue> response =
+      ListValueFromString(R"(["alpha","beta"])");
+  bindings_system()->CompleteRequest(last_request()->request_id, *response,
+                                     std::string());
 
-    EXPECT_EQ(
-        R"("alpha.functionWithCallback")",
-        GetStringPropertyFromObject(context->Global(), context, "methodName"));
-    EXPECT_EQ(
-        R"(["alpha","beta"])",
-        GetStringPropertyFromObject(context->Global(), context, "results"));
-    EXPECT_EQ(R"(["beta"])",
-              GetStringPropertyFromObject(context->Global(), context,
-                                          "callbackArguments"));
-  }
+  EXPECT_EQ(
+      R"("alpha.functionWithCallback")",
+      GetStringPropertyFromObject(context->Global(), context, "methodName"));
+  EXPECT_EQ(R"(["alpha","beta"])",
+            GetStringPropertyFromObject(context->Global(), context, "results"));
+  EXPECT_EQ(R"(["beta"])",
+            GetStringPropertyFromObject(context->Global(), context,
+                                        "callbackArguments"));
+}
+
+// Tests a call with a promise into an API using a setCustomCallback hook works
+// as expected.
+TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithPromise) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  APIBindingHooks* hooks = nullptr;
+  v8::Local<v8::Object> alpha_api =
+      bindings_system()->CreateAPIInstance(kAlphaAPIName, context, &hooks);
+  ASSERT_FALSE(alpha_api.IsEmpty());
+  ASSERT_TRUE(hooks);
+  v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
+  v8::Local<v8::Function> function =
+      FunctionFromString(context, kCustomCallbackHook);
+  v8::Local<v8::Value> args[] = {js_hooks};
+  RunFunctionOnGlobal(function, context, base::size(args), args);
+
+  const char kTestCall[] = R"(return obj.functionWithCallback('bar');)";
+  v8::Local<v8::Value> result =
+      CallFunctionOnObject(context, alpha_api, kTestCall);
+
+  ValidateLastRequest("alpha.functionWithCallback", "['bar']");
+  v8::Local<v8::Promise> promise;
+  ASSERT_TRUE(GetValueAs(result, &promise));
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+  std::unique_ptr<base::ListValue> response =
+      ListValueFromString(R"(["gamma","delta"])");
+  bindings_system()->CompleteRequest(last_request()->request_id, *response,
+                                     std::string());
+
+  EXPECT_EQ(
+      R"("alpha.functionWithCallback")",
+      GetStringPropertyFromObject(context->Global(), context, "methodName"));
+  EXPECT_EQ(R"(["gamma","delta"])",
+            GetStringPropertyFromObject(context->Global(), context, "results"));
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ(R"("delta")", V8ToString(promise->Result(), context));
+}
+
+// Tests that an error thrown in a setCustomCallback hook while using a callback
+// based call works as expected.
+TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithCallback) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  APIBindingHooks* hooks = nullptr;
+  v8::Local<v8::Object> alpha_api =
+      bindings_system()->CreateAPIInstance(kAlphaAPIName, context, &hooks);
+  ASSERT_FALSE(alpha_api.IsEmpty());
+  ASSERT_TRUE(hooks);
+  v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
+  v8::Local<v8::Function> function =
+      FunctionFromString(context, kCustomCallbackThrowHook);
+  v8::Local<v8::Value> args[] = {js_hooks};
+  RunFunctionOnGlobal(function, context, base::size(args), args);
+
+  const char kTestCall[] = R"(
+      obj.functionWithCallback('baz', function() {
+        this.callbackCalled = true;
+      });)";
+  CallFunctionOnObject(context, alpha_api, kTestCall);
+
+  ValidateLastRequest("alpha.functionWithCallback", "['baz']");
+  ASSERT_TRUE(console_errors().empty());
+
+  std::unique_ptr<base::ListValue> response =
+      ListValueFromString(R"(["alpha", "beta"])");
+  TestJSRunner::AllowErrors allow_errors;
+  bindings_system()->CompleteRequest(last_request()->request_id, *response,
+                                     std::string());
+
+  // The callback should have never been called and there should now be a
+  // console error logged.
+  EXPECT_EQ("undefined", GetStringPropertyFromObject(context->Global(), context,
+                                                     "callbackCalled"));
+  ASSERT_EQ(1u, console_errors().size());
+  EXPECT_THAT(console_errors()[0],
+              testing::StartsWith(
+                  "Error handling response: Error: Custom callback threw"));
+}
+
+// Tests that an error thrown in a setCustomCallback hook while using a promise
+// based call works as expected.
+TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithPromise) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  APIBindingHooks* hooks = nullptr;
+  v8::Local<v8::Object> alpha_api =
+      bindings_system()->CreateAPIInstance(kAlphaAPIName, context, &hooks);
+  ASSERT_FALSE(alpha_api.IsEmpty());
+  ASSERT_TRUE(hooks);
+  v8::Local<v8::Object> js_hooks = hooks->GetJSHookInterface(context);
+  v8::Local<v8::Function> function =
+      FunctionFromString(context, kCustomCallbackThrowHook);
+  v8::Local<v8::Value> args[] = {js_hooks};
+  RunFunctionOnGlobal(function, context, base::size(args), args);
+
+  const char kTestCall[] = R"(return obj.functionWithCallback('boz');)";
+  v8::Local<v8::Value> result =
+      CallFunctionOnObject(context, alpha_api, kTestCall);
+
+  ValidateLastRequest("alpha.functionWithCallback", "['boz']");
+  v8::Local<v8::Promise> promise;
+  ASSERT_TRUE(GetValueAs(result, &promise));
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+  ASSERT_TRUE(console_errors().empty());
+
+  std::unique_ptr<base::ListValue> response =
+      ListValueFromString(R"(["gamma", "delta"])");
+  TestJSRunner::AllowErrors allow_errors;
+  bindings_system()->CompleteRequest(last_request()->request_id, *response,
+                                     std::string());
+
+  // The promise will remain pending and there should now be a console error
+  // logged.
+  // TODO(tjudkins): Ideally we should be rejecting the promise here instead.
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+  ASSERT_EQ(1u, console_errors().size());
+  EXPECT_THAT(console_errors()[0],
+              testing::StartsWith(
+                  "Error handling response: Error: Custom callback threw"));
 }
 
 // Test that references to other API's types works.
