@@ -2164,6 +2164,10 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER" translateable="false" desc="Placeholder text for empty RSU code input box.">
         Enter RSU Code
       </message>
+      <!-- Check calibration page -->
+      <message name="IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when confirming components to calibrate.">
+        Calibrate device components
+      </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair completed
