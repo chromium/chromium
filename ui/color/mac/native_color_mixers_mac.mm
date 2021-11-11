@@ -51,11 +51,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
                 }});
 }
 
-void AddNativeUiColorMixer(ColorProvider* provider,
-                           bool dark_window,
-                           bool high_contrast) {
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
-  ColorMixer& mixer = provider->AddMixer();
+void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
   mixer.AddSet(
       {kColorSetNative,
        {
@@ -65,6 +61,21 @@ void AddNativeUiColorMixer(ColorProvider* provider,
            {kColorMenuItemForeground,
             skia::NSSystemColorToSkColor([NSColor controlTextColor])},
        }});
+}
+
+void AddNativeUiColorMixer(ColorProvider* provider,
+                           bool dark_window,
+                           bool high_contrast) {
+  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
+  ColorMixer& mixer = provider->AddMixer();
+
+  // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
+  // windows on macOS versions running < 10.14.
+  if (@available(macOS 10.14, *)) {
+    AddNativeColorSetInColorMixer(mixer);
+  } else if (!dark_window) {
+    AddNativeColorSetInColorMixer(mixer);
+  }
 
   if (@available(macOS 10.14, *)) {
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
