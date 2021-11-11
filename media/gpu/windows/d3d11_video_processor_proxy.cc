@@ -120,8 +120,8 @@ void VideoProcessorProxy::SetStreamHDRMetadata(
     return;
 
   // TODO: we shouldn't do this unless we also set the display metadata.
-  video_context2->VideoProcessorSetOutputHDRMetaData(
-      video_processor_.Get(), DXGI_HDR_METADATA_TYPE_HDR10,
+  video_context2->VideoProcessorSetStreamHDRMetaData(
+      video_processor_.Get(), 0, DXGI_HDR_METADATA_TYPE_HDR10,
       sizeof(stream_metadata), &stream_metadata);
 }
 

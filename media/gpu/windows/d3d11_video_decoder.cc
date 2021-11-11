@@ -199,13 +199,15 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
 
 D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
-  // HDR color spaces (or VP9.2). We'll get a config change once we know the
-  // real bit depth if this turns out to be wrong.
+  // HDR color spaces (or VP9.2) with HBD capable codecs (the decoder doesn't
+  // support H264PROFILE_HIGH10PROFILE). We'll get a config change once we know
+  // the real bit depth if this turns out to be wrong.
   bit_depth_ =
       accelerated_video_decoder_
           ? accelerated_video_decoder_->GetBitDepth()
           : (config_.profile() == VP9PROFILE_PROFILE2 ||
-                     config_.color_space_info().ToGfxColorSpace().IsHDR()
+                     (config_.color_space_info().ToGfxColorSpace().IsHDR() &&
+                      config_.codec() != VideoCodec::kH264)
                  ? 10
                  : 8);
 
@@ -892,7 +894,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().power_efficient = true;
   frame->set_color_space(output_color_space);
-  frame->set_hdr_metadata(config_.hdr_metadata());
+  if (is_hdr_supported_)
+    frame->set_hdr_metadata(config_.hdr_metadata());
   output_cb_.Run(frame);
   return true;
 }
