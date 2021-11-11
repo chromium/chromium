@@ -576,7 +576,14 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test that hrefTranslate with an unsupported language doesn't trigger.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
+// Flaky on Mac: crbug.com/1269389
+#if defined(OS_MAC)
+#define MAYBE_HrefTranslateUnsupported DISABLED_HrefTranslateUnsupported
+#else
+#define MAYBE_HrefTranslateUnsupported HrefTranslateUnsupported
+#endif
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       MAYBE_HrefTranslateUnsupported) {
   base::HistogramTester histograms;
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   chrome_translate_client->GetTranslateManager()->SetIgnoreMissingKeyForTesting(
