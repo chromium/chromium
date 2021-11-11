@@ -145,6 +145,15 @@ class BLINK_COMMON_EXPORT StorageKey {
   const net::SiteForCookies ToNetSiteForCookies() const;
 
  private:
+  // This enum represents the different type of encodable partitioning
+  // attributes.
+  enum class EncodedAttribute : uint8_t {
+    kTopLevelSite = 0,
+    kNonceHigh = 1,
+    kNonceLow = 2,
+    kMax
+  };
+
   StorageKey(const url::Origin& origin,
              const net::SchemefulSite& top_level_site,
              const base::UnguessableToken* nonce)
@@ -153,6 +162,16 @@ class BLINK_COMMON_EXPORT StorageKey {
                             ? top_level_site
                             : net::SchemefulSite(origin)),
         nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {}
+
+  // Converts the attribute type into the separator + uint8_t byte
+  // serialization. E.x.: kTopLevelSite becomes "^0"
+  static std::string SerializeAttributeSeparator(const EncodedAttribute type);
+
+  // Converts the serialized separator into an EncodedAttribute enum.
+  // E.x.: "^0" becomes kTopLevelSite.
+  // Expects `in` to have a length of 2.
+  static EncodedAttribute DeserializeAttributeSeparator(
+      const base::StringPiece& in);
 
   BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);

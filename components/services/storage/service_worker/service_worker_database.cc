@@ -51,6 +51,9 @@
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + [ "^0" +
 //   <StorageKey `key`.top_level_site> ]
+//   - or -
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + "^1" +
+//   <StorageKey 'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
 //   value: <empty>
 //
 //   key: "PRES:" + <int64_t 'purgeable_resource_id'>
@@ -61,7 +64,11 @@
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REG:" + <StorageKey 'key'.origin> + [ "^0" + <StorageKey
 //   `key`.top_level_site> ] + '\x00' + <int64_t 'registration_id'>
-//     (ex. "REG:http://example.com\x00123456")
+//   - or -
+//   key: "REG:" + <StorageKey 'key'.origin> + "^1" + <StorageKey
+//   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits> + '\x00' +
+//   <int64_t 'registration_id'>
+//    (ex. "REG:http://example.com\x00123456")
 //   value: <ServiceWorkerRegistrationData (except for the StorageKey)
 //   serialized as a string>
 //
@@ -89,6 +96,9 @@
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
 //   value: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
 //   `key`.top_level_site> ]
+//   - or -
+//   value: <StorageKey 'key'.origin> + "^1" + <StorageKey 'nonce'.High64Bits> +
+//   "^2" + <StorageKey 'nonce'.Low64Bits>
 //
 //   OBSOLETE: https://crbug.com/539713
 //   key: "INITDATA_DISKCACHE_MIGRATION_NOT_NEEDED"
@@ -107,20 +117,40 @@
 //   value: <empty>
 namespace {
 
-// Returns true if the registration key string is partitioned but storage
-// partitioning is currently disabled.
+// Returns true if the registration key string is partitioned by top-level site
+// but storage partitioning is currently disabled. Returns false if the key
+// string contains a serialized nonce.
 bool ShouldSkipKeyDueToPartitioning(const std::string& reg_key_string) {
   // Don't skip anything if storage partitioning is enabled.
   if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled())
     return false;
 
-  // If partitioning is disabled then skip partitioned 3p keys. Partitioned keys
-  // have a '^' (caret) as a delimter.
-  if (reg_key_string.find_first_of('^') != std::string::npos)
-    return true;
+  // TODO(crbug.com/1246549) : This currently counts carets to tell the
+  // difference between nonce and top-level site schemes. When the ancestor bit
+  // is implemented this will need to be modified to handle that case (since it
+  // will also use 2 carets).
+  int number_of_carets =
+      std::count(reg_key_string.begin(), reg_key_string.end(), '^');
 
-  // Otherwise this is a 1p context key, don't skip it.
-  return false;
+  switch (number_of_carets) {
+    case 2: {
+      // Don't skip if a nonce serialization scheme is found.
+      return false;
+    }
+    case 1: {
+      // Do skip if partitioning is disabled and we detect a top-level site
+      // serialization scheme.
+      return true;
+    }
+    case 0: {
+      // Don't skip for a 1p context key.
+      return false;
+    }
+    default: {
+      NOTREACHED();
+      return true;
+    }
+  }
 }
 
 }  // namespace

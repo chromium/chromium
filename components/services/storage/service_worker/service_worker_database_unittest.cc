@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -472,13 +473,31 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   // Because kThirdPartyStoragePartitioning is disabled now we shouldn't get the
   // partitioned keys in the following checks.
 
+  // Keys with nonces should always be gettable.
+  GURL origin7 = GURL("https://example.org");
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  blink::StorageKey key7 =
+      blink::StorageKey::CreateWithNonce(url::Origin::Create(origin7), token);
+  RegistrationData data7;
+  data7.registration_id = 789;
+  data7.scope = URL(origin7, "/hoge");
+  data7.key = key7;
+  data7.script = URL(origin7, "/script7.js");
+  data7.version_id = 91011;
+  data7.resources_total_size_bytes = 700;
+  std::vector<ResourceRecordPtr> resources7;
+  resources7.push_back(CreateResource(7, data7.script, 700));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data7, resources7, &deleted_version));
+
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
-  EXPECT_EQ(3U, keys.size());
+  EXPECT_EQ(4U, keys.size());
   EXPECT_TRUE(base::Contains(keys, key1));
   EXPECT_TRUE(base::Contains(keys, key2));
   EXPECT_TRUE(base::Contains(keys, key3));
+  EXPECT_TRUE(base::Contains(keys, key7));
 
   // |key3| has another registration, so should not remove it from the
   // unique origin list.
@@ -490,10 +509,11 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
-  EXPECT_EQ(3U, keys.size());
+  EXPECT_EQ(4U, keys.size());
   EXPECT_TRUE(base::Contains(keys, key1));
   EXPECT_TRUE(base::Contains(keys, key2));
   EXPECT_TRUE(base::Contains(keys, key3));
+  EXPECT_TRUE(base::Contains(keys, key7));
 
   // |key3| should be removed from the unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -504,9 +524,10 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
-  EXPECT_EQ(2U, keys.size());
+  EXPECT_EQ(3U, keys.size());
   EXPECT_TRUE(base::Contains(keys, key1));
   EXPECT_TRUE(base::Contains(keys, key2));
+  EXPECT_TRUE(base::Contains(keys, key7));
 
   // Now re-enable kThirdPartyStoragePartitioning and check for the partitioned
   // keys.
@@ -516,11 +537,12 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   keys.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetStorageKeysWithRegistrations(&keys));
-  EXPECT_EQ(4U, keys.size());
+  EXPECT_EQ(5U, keys.size());
   EXPECT_TRUE(base::Contains(keys, key1));
   EXPECT_TRUE(base::Contains(keys, key2));
   EXPECT_TRUE(base::Contains(keys, key5));
   EXPECT_TRUE(base::Contains(keys, key6));
+  EXPECT_TRUE(base::Contains(keys, key7));
 }
 
 TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
@@ -755,15 +777,34 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   // Disable partitioning to ensure the partitioned keys are not found.
   scoped_feature_list.Reset();
 
+  // Keys with nonces should always be gettable.
+  GURL origin7 = GURL("https://www7.example.com");
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  RegistrationData data7;
+  data7.registration_id = 700;
+  data7.scope = URL(origin7, "/hoge");
+  data7.key = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(data7.scope), token);
+  data7.script = URL(origin7, "/script7.js");
+  data7.version_id = 7000;
+  data7.resources_total_size_bytes = 700;
+  data7.cross_origin_embedder_policy =
+      CrossOriginEmbedderPolicyCredentialless();
+  std::vector<ResourceRecordPtr> resources7;
+  resources7.push_back(CreateResource(7, data7.script, 700));
+  ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data7, resources7, &deleted_version));
+
   registrations.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetAllRegistrations(&registrations));
-  EXPECT_EQ(4U, registrations.size());
+  EXPECT_EQ(5U, registrations.size());
 
   VerifyRegistrationData(data1, *registrations[0]);
   VerifyRegistrationData(data2, *registrations[1]);
   VerifyRegistrationData(data3, *registrations[2]);
   VerifyRegistrationData(data4, *registrations[3]);
+  VerifyRegistrationData(data7, *registrations[4]);
 
   // Re-enable partitioning and check for the partitioned keys.
   scoped_feature_list.InitAndEnableFeature(
@@ -772,7 +813,7 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   registrations.clear();
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetAllRegistrations(&registrations));
-  EXPECT_EQ(6U, registrations.size());
+  EXPECT_EQ(7U, registrations.size());
 
   VerifyRegistrationData(data5, *registrations[4]);
   VerifyRegistrationData(data6, *registrations[5]);

@@ -217,6 +217,35 @@ TEST(StorageKeyTest, SerializeForServiceWorkerPartitioned) {
   }
 }
 
+TEST(StorageKeyTest, SerializeNonce) {
+  struct {
+    const std::pair<const char*, const base::UnguessableToken> origin_and_nonce;
+    const char* expected_serialization;
+  } kTestCases[] = {
+      {{"https://example.com/",
+        base::UnguessableToken::Deserialize(12345ULL, 67890ULL)},
+       "https://example.com/^112345^267890"},
+      {{"https://test.example",
+        base::UnguessableToken::Deserialize(22222ULL, 99999ULL)},
+       "https://test.example/^122222^299999"},
+      {{"https://sub.test.example/",
+        base::UnguessableToken::Deserialize(9876ULL, 54321ULL)},
+       "https://sub.test.example/^19876^254321"},
+      {{"https://other.example/",
+        base::UnguessableToken::Deserialize(3735928559ULL, 110521ULL)},
+       "https://other.example/^13735928559^2110521"},
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.origin_and_nonce.first);
+    const url::Origin origin =
+        url::Origin::Create(GURL(test.origin_and_nonce.first));
+    const base::UnguessableToken& nonce = test.origin_and_nonce.second;
+    StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
+    EXPECT_EQ(test.expected_serialization, key.SerializeForServiceWorker());
+  }
+}
+
 TEST(StorageKeyTest, SerializeForLocalStorage) {
   struct {
     const char* origin_str;
@@ -283,12 +312,16 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   EXPECT_FALSE(key4.has_value());
 
   std::string example_with_test = "https://example.com/^0https://test.example";
+  std::string example_with_wrong_seperator_site =
+      "https://example.com/^1https://test.example";
   std::string test_with_example = "https://test.example/^0https://example.com";
   std::string example_with_wrong = "https://example.com/^0I'm not a valid URL.";
   std::string wrong_with_example = "I'm not a valid URL.^0https://example.com";
 
   absl::optional<StorageKey> key5 =
       StorageKey::DeserializeForServiceWorker(example_with_test);
+  absl::optional<StorageKey> key5b = StorageKey::DeserializeForServiceWorker(
+      example_with_wrong_seperator_site);
   absl::optional<StorageKey> key6 =
       StorageKey::DeserializeForServiceWorker(test_with_example);
   absl::optional<StorageKey> key7 =
@@ -298,10 +331,52 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
 
   ASSERT_TRUE(key5.has_value());
   EXPECT_FALSE(IsOpaque(*key5));
+  EXPECT_FALSE(key5b.has_value());
   ASSERT_TRUE(key6.has_value());
   EXPECT_FALSE(IsOpaque(*key6));
   EXPECT_FALSE(key7.has_value());
   EXPECT_FALSE(key8.has_value());
+
+  std::string example_with_nonce = "https://example.com/^112345^267890";
+  std::string example_with_wrong_seperator_nonce_1 =
+      "https://example.com/^112345^167890";
+  std::string example_with_wrong_seperator_nonce_2 =
+      "https://example.com/^112345^967890";
+  std::string example_with_wrong_nonce = "https://example.com/^1nota^2nonce";
+  std::string wrong_with_nonce = "I'm not a valid URL.^112345^267890";
+
+  absl::optional<StorageKey> key9 =
+      StorageKey::DeserializeForServiceWorker(example_with_nonce);
+  absl::optional<StorageKey> key9b = StorageKey::DeserializeForServiceWorker(
+      example_with_wrong_seperator_nonce_1);
+  absl::optional<StorageKey> key9c = StorageKey::DeserializeForServiceWorker(
+      example_with_wrong_seperator_nonce_2);
+  absl::optional<StorageKey> key10 =
+      StorageKey::DeserializeForServiceWorker(example_with_wrong_nonce);
+  absl::optional<StorageKey> key11 =
+      StorageKey::DeserializeForServiceWorker(wrong_with_nonce);
+
+  ASSERT_TRUE(key9.has_value());
+  EXPECT_FALSE(IsOpaque(*key9));
+  EXPECT_FALSE(key9b.has_value());
+  EXPECT_FALSE(key9c.has_value());
+  EXPECT_FALSE(key10.has_value());
+  EXPECT_FALSE(key11.has_value());
+
+  std::string nonce_low_first = "https://example.com/^212345^167890";
+  std::string malformed_3_carets = "https://example.com/^112345^267890^";
+  std::string malformed_seperators_too_close = "https://example.com/^1^267890";
+
+  absl::optional<StorageKey> key12 =
+      StorageKey::DeserializeForServiceWorker(nonce_low_first);
+  absl::optional<StorageKey> key13 =
+      StorageKey::DeserializeForServiceWorker(malformed_3_carets);
+  absl::optional<StorageKey> key14 =
+      StorageKey::DeserializeForServiceWorker(malformed_seperators_too_close);
+
+  EXPECT_FALSE(key12.has_value());
+  EXPECT_FALSE(key13.has_value());
+  EXPECT_FALSE(key14.has_value());
 }
 
 // Test that string -> StorageKey test function performs as expected.
@@ -421,6 +496,36 @@ TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersPartitioned) {
                            net::SchemefulSite(GURL("file://"))),
                 *key_deserialized);
     }
+  }
+}
+
+TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersNonce) {
+  struct {
+    const char* origin;
+    const base::UnguessableToken nonce;
+  } kTestCases[] = {
+      {"https://example.com/",
+       base::UnguessableToken::Deserialize(12345ULL, 67890ULL)},
+      {"https://test.example",
+       base::UnguessableToken::Deserialize(22222ULL, 99999ULL)},
+      {"https://sub.test.example/",
+       base::UnguessableToken::Deserialize(9876ULL, 54321ULL)},
+      {"https://other.example/",
+       base::UnguessableToken::Deserialize(3735928559ULL, 110521ULL)},
+      {"https://other2.example/", base::UnguessableToken::Create()},
+  };
+
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.origin);
+    url::Origin origin = url::Origin::Create(GURL(test.origin));
+    const base::UnguessableToken& nonce = test.nonce;
+
+    StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
+    std::string key_string = key.SerializeForServiceWorker();
+    absl::optional<StorageKey> key_deserialized =
+        StorageKey::DeserializeForServiceWorker(key_string);
+    ASSERT_TRUE(key_deserialized.has_value());
+    EXPECT_EQ(key, *key_deserialized);
   }
 }
 

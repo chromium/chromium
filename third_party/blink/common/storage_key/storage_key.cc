@@ -4,18 +4,38 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+#include <algorithm>
 #include <cctype>
+#include <memory>
 #include <ostream>
+#include <string>
 #include <tuple>
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Returns true if there are at least 2 chars after the '^' in `in` and the
+// second char is not '^'. Meaning that the substring is syntactically valid.
+// This is to indicate that there is a valid separator with both a '^' and a
+// uint8_t and some amount of encoded data. I.e.: "^09" has both a "^0" as the
+// separator and '9' as the encoded data.
+bool ValidSeparatorWithData(base::StringPiece in, size_t pos_of_caret) {
+  if (in.length() > pos_of_caret + 2 && in[pos_of_caret + 2] != '^')
+    return true;
+
+  return false;
+}
+
+}  // namespace
 
 namespace blink {
 
@@ -29,40 +49,118 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 // static
 absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
     base::StringPiece in) {
-  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
-  // serialization.
-
+  using EncodedAttribute = StorageKey::EncodedAttribute;
   // As per the SerializeForServiceWorker() call, we have to expect the
   // following structure: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
   // `key`.top_level_site> ] The brackets indicate an optional component.
+  // - or -
+  // <StorageKey 'key'.origin> + "^1" + <StorageKey 'nonce'.High64Bits> + "^2" +
+  // <StorageKey 'nonce'.Low64Bits>
+
+  // Let's check for a delimiting caret. The presence of a caret means this key
+  // is partitioned.
+
+  // More than 2 carets indicates a malformed input.
+  if (std::count(in.begin(), in.end(), '^') > 2)
+    return absl::nullopt;
+
+  size_t pos = in.find_first_of('^');
 
   url::Origin key_origin;
   net::SchemefulSite key_top_level_site;
+  std::unique_ptr<base::UnguessableToken> nonce;
 
-  // Let's check for the delimiting caret, if it's there then a top_level_site
-  // is included.
-  size_t pos = in.find_first_of('^');
-  if (pos != std::string::npos) {
-    // The origin is the portion up to, but not including, the caret.
-    key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
-    // The top_level_site is the portion beyond the caret and the '0'.
-    // If there is no '0' then this input is malformed.
-    if (in[pos + 1] != '0')
-      return absl::nullopt;
+  if (pos == std::string::npos) {
+    // Only the origin is serialized.
 
-    key_top_level_site =
-        net::SchemefulSite(GURL(in.substr(pos + 2, std::string::npos)));
-  } else {
+    key_origin = url::Origin::Create(GURL(in));
+
     // In this case the top_level_site is implicitly the same site as the
     // origin.
-    key_origin = url::Origin::Create(GURL(in));
     key_top_level_site = net::SchemefulSite(key_origin);
+
+    // There is no nonce.
+
+    if (key_origin.opaque())
+      return absl::nullopt;
+
+    return StorageKey(key_origin, key_top_level_site);
   }
 
-  if (key_origin.opaque() || key_top_level_site.opaque())
+  if (!ValidSeparatorWithData(in, pos))
     return absl::nullopt;
 
-  return StorageKey(key_origin, key_top_level_site);
+  // Otherwise the key is partitioned, let's see what it's partitioned by.
+  EncodedAttribute encoded_attribute =
+      DeserializeAttributeSeparator(in.substr(pos, 2));
+
+  switch (encoded_attribute) {
+    case EncodedAttribute::kTopLevelSite: {
+      // A top-level site is serialized.
+
+      // The origin is the portion up to, but not including, the caret
+      // separator.
+      key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
+
+      // The top_level_site is the portion beyond the separator.
+      key_top_level_site =
+          net::SchemefulSite(GURL(in.substr(pos + 2, std::string::npos)));
+
+      // There is no nonce.
+
+      if (key_origin.opaque() || key_top_level_site.opaque())
+        return absl::nullopt;
+
+      return StorageKey(key_origin, key_top_level_site);
+    }
+    case EncodedAttribute::kNonceHigh: {
+      // A nonce is serialized.
+      // There should be two carets separators, let's grab the second.
+      size_t pos_2 = in.find_first_of('^', pos + 2);
+
+      // Make sure we found the next separator, it's valid, that it's the
+      // correct attribute.
+      if (pos_2 == std::string::npos || !ValidSeparatorWithData(in, pos_2) ||
+          DeserializeAttributeSeparator(in.substr(pos_2, 2)) !=
+              EncodedAttribute::kNonceLow)
+        return absl::nullopt;
+
+      // The origin is the portion up to, but not including, the first
+      // separator.
+      key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
+
+      // The first high 64 bits of the nonce are next, between the two
+      // separators.
+      int length_of_high = pos_2 - (pos + 2);
+      std::string high_digits =
+          static_cast<std::string>(in.substr(pos + 2, length_of_high));
+      // The low 64 bits are last, after the second separator.
+      std::string low_digits =
+          static_cast<std::string>(in.substr(pos_2 + 2, std::string::npos));
+
+      uint64_t nonce_high = 0;
+      uint64_t nonce_low = 0;
+
+      if (!base::StringToUint64(high_digits, &nonce_high))
+        return absl::nullopt;
+
+      if (!base::StringToUint64(low_digits, &nonce_low))
+        return absl::nullopt;
+
+      nonce = std::make_unique<base::UnguessableToken>(
+          base::UnguessableToken::Deserialize(nonce_high, nonce_low));
+
+      if (key_origin.opaque() || !nonce || nonce->is_empty())
+        return absl::nullopt;
+
+      return StorageKey::CreateWithNonce(key_origin, *nonce);
+    }
+    default: {
+      // Malformed input case. We saw a separator that we don't understand
+      // or one in the wrong order.
+      return absl::nullopt;
+    }
+  }
 }
 
 // static
@@ -108,23 +206,38 @@ std::string StorageKey::SerializeForLocalStorage() const {
 }
 
 std::string StorageKey::SerializeForServiceWorker() const {
-  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
-  // serialization.
+  using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());
   DCHECK(!top_level_site_.opaque());
 
-  // If storage partitioning is enabled we need to serialize the key to fit the
-  // following structure: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
-  // `key`.top_level_site> ]
+  // If the storage key has a nonce then we need to serialize the key to fit the
+  // following scheme:
   //
-  // The top_level_site is optional if it's the same site as the origin in order
-  // to enable backwards compatibility for 1p contexts.
-  // In the case of a 1p context the serialization structure is therefore the
-  // same as if features::kThirdPartyStoragePartitioning was disabled.
+  // <StorageKey 'key'.origin> + "^1" + <StorageKey 'nonce'.High64Bits> + "^2" +
+  // <StorageKey 'nonce'.Low64Bits>
+  if (nonce_.has_value()) {
+    return origin_.GetURL().spec() +
+           SerializeAttributeSeparator(EncodedAttribute::kNonceHigh) +
+           base::NumberToString(nonce_->GetHighForSerialization()) +
+           SerializeAttributeSeparator(EncodedAttribute::kNonceLow) +
+           base::NumberToString(nonce_->GetLowForSerialization());
+  }
 
+  // Else if storage partitioning is enabled we need to serialize the key to fit
+  // the following scheme:
+  //
+  // <StorageKey 'key'.origin> + [ "^0" + <StorageKey `key`.top_level_site> ]
+  //
+  // The top_level_site is optional (indicated by the square brackets) if it's
+  // the same site as the origin in order to enable backwards compatibility for
+  // 1p contexts. Meaning that in the case of a 1p context the serialization
+  // structure is the same as if features::kThirdPartyStoragePartitioning was
+  // disabled.
   if (IsThirdPartyStoragePartitioningEnabled() &&
       top_level_site_ != net::SchemefulSite(origin_)) {
-    return origin_.GetURL().spec() + "^0" + top_level_site_.Serialize();
+    return origin_.GetURL().spec() +
+           SerializeAttributeSeparator(EncodedAttribute::kTopLevelSite) +
+           top_level_site_.Serialize();
   }
 
   return origin_.GetURL().spec();
@@ -164,6 +277,30 @@ const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
     return net::SiteForCookies::FromUrl(top_level_site_.GetURL());
   }
   return net::SiteForCookies();
+}
+
+// static
+std::string StorageKey::SerializeAttributeSeparator(
+    const StorageKey::EncodedAttribute type) {
+  // Create a size 2 string, we'll overwrite the second char later.
+  std::string ret(2, '^');
+  char digit = static_cast<uint8_t>(type) + '0';
+  ret[1] = digit;
+  return ret;
+}
+
+// static
+StorageKey::EncodedAttribute StorageKey::DeserializeAttributeSeparator(
+    const base::StringPiece& in) {
+  DCHECK_EQ(in.size(), 2U);
+  uint8_t number = in[1] - '0';
+
+  if (number >= static_cast<uint8_t>(StorageKey::EncodedAttribute::kMax)) {
+    // Bad input, return kMax to indicate an issue.
+    return StorageKey::EncodedAttribute::kMax;
+  }
+
+  return static_cast<StorageKey::EncodedAttribute>(number);
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
