@@ -93,8 +93,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.CanonicalURLResult" enum="CanonicalURLResult"
-    expires_after="M87">
+    expires_after="M102">
   <owner>pkl@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
     The result of the operation to retrieve the page's canonical URL.
