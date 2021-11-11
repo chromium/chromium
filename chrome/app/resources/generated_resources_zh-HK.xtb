@@ -2403,7 +2403,7 @@
 <translation id="3449393517661170867">新分頁視窗</translation>
 <translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
-<translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新。</translation>
 <translation id="3451753556629288767">已允許開啟的檔案類型</translation>
 <translation id="3452999110156026232">家長存取權</translation>
 <translation id="3453612417627951340">需要授權</translation>
@@ -4272,7 +4272,7 @@
 <translation id="5472627187093107397">儲存此網站的密碼</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 必須包含至少 1 個字元}other{PIN 必須包含至少 # 個字元}}</translation>
-<translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
@@ -4695,7 +4695,7 @@
 <translation id="592880897588170157">下載 PDF 檔案，而不是在 Chrome 中自動開啟</translation>
 <translation id="592919310198008711">當我點擊擴充程式時</translation>
 <translation id="5932124097031739492">已成功升級 Linux。</translation>
-<translation id="5932209916647644605"><ph name="MANAGER" /> 要求你立即更新 <ph name="DEVICE_TYPE" />。</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> 的 USB 裝置</translation>
 <translation id="5932441198730183141">您的可用授權不足，無法註冊此 Google Meet 硬件裝置。如要購買更多授權，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>

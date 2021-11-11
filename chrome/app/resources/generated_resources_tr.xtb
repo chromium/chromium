@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Sitelerin MIDI cihazlara bağlanmasına izin verme</translation>
 <translation id="1088654056000736875">Chrome, bilgisayarınızdan zararlı yazılımı kaldırıyor...</translation>
 <translation id="1088659085457112967">Okuyucu Moduna Geç</translation>
+<translation id="1089606299949659462">İnceleme tamamlandı.</translation>
 <translation id="1090126737595388931">Çalışan Hiç Arka Plan Uygulama Yok</translation>
 <translation id="1090541560108055381">Eşleme işleminden önce bu kodun iki cihazda da aynı olduğundan emin olun</translation>
 <translation id="1091767800771861448">Atlamak için ESCAPE tuşuna basın (Yalnızca resmi olmayan sürümler).</translation>
@@ -1429,6 +1430,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2453860139492968684">Tamamlandı</translation>
 <translation id="2454247629720664989">Anahtar kelime</translation>
 <translation id="2454264884354864965">Kamera kapalı</translation>
+<translation id="2454524890947537054">Web isteği onaylansın mı?</translation>
 <translation id="245650153866130664">Bir bileti otomatik olarak yenilemek için "Şifreyi hatırla"yı işaretleyin. Şifreniz yalnızca cihazınızda saklanır.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> birimindeki dosyaları kopyalamak istiyor.</translation>
 <translation id="2457842160081795172">Şu anda <ph name="CHANNEL_NAME" /> kanalında</translation>
@@ -1830,6 +1832,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2861301611394761800">Sistem güncellemesi tamamlandı. Lütfen sistemi yeniden başlatın.</translation>
 <translation id="2861941300086904918">Yerel İstemci güvenlik yöneticisi</translation>
 <translation id="2862815659905780618">Linux geliştirme ortamını kaldırın</translation>
+<translation id="2864272167277395865">Cihaz seçin:</translation>
 <translation id="2864601841139725659">Profil resminizi ayarlama</translation>
 <translation id="2865919525181940183">Şu anda ekrandaki programların ekran görüntüsü</translation>
 <translation id="286674810810214575">Güç kaynakları kontrol ediliyor...</translation>
@@ -3239,6 +3242,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4364830672918311045">Bildirimleri görüntüleme</translation>
 <translation id="4366138410738374926">Yazdırma başladı</translation>
 <translation id="4369121877634339065">Arama yapmak için herhangi bir görselin üzerine sürükleyin</translation>
+<translation id="4369215744064167350">Web sitesi isteği onaylandı</translation>
 <translation id="4370975561335139969">Girdiğiniz e-posta ve şifre eşleşmiyor</translation>
 <translation id="4373966964907728675">Masaüstü yayınlanıyor</translation>
 <translation id="4374831787438678295">Linux yükleyici</translation>
@@ -3930,6 +3934,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5117139026559873716">Telefonunuzun <ph name="DEVICE_TYPE" /> cihazınızla olan bağlantısını kesin. Bundan böyle otomatik olarak bağlanmazlar.</translation>
 <translation id="5117930984404104619">Ziyaret edilen URL'ler de dahil olmak üzere diğer uzantıların davranışını izleme</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" /> adresini ziyaret etmek için burayı tıklayın</translation>
 <translation id="5121052518313988218">Linux kapsayıcınızın işletim sistemi artık desteklenmiyor. Artık güvenlik güncellemeleri ve hata düzeltmeleri almayacak. Ayrıca şu anda çalışan özellikler beklenmedik bir şekilde bozulabilir. Linux'u kullanmaya devam etmek için lütfen en son sürüme geçin.</translation>
 <translation id="5121130586824819730">Sabit diskiniz dolu. Lütfen başka bir yere kaydedin veya sabit diskinizde yer açın.</translation>
 <translation id="5123433949759960244">Basketbol</translation>
@@ -4038,6 +4043,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5235750401727657667">Yeni bir sekme açarken gördüğünüz sayfayı değiştirme</translation>
 <translation id="5236374273162681467">Tüm cihazlarınızda kolayca kullanabilmek için şifrelerinizi Google hesabınıza taşıyabilirsiniz</translation>
+<translation id="523862956770478816">Site izinleri</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" etkinleştirilsin mi?</translation>
 <translation id="5243522832766285132">Lütfen kısa bir süre sonra tekrar deneyin</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> hesabıyla senkronize ediliyor</translation>
@@ -5327,6 +5333,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6635674640674343739">Ağ bağlantısı kurulamıyor. Ağ bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="6635944431854494329">Sahip, Ayarlar &gt; Gelişmiş &gt; Teşhis ve kullanım verilerini Google'a otomatik olarak gönder adımlarını izleyerek bu özelliği kontrol edebilir.</translation>
 <translation id="6635956300022133031">Metin okuma seslerini seçer ve özelleştirir</translation>
+<translation id="6636623428211296678">Aşağıda diğer ayarlara bakın veya şimdi tamamlayın</translation>
 <translation id="6639554308659482635">SQLite belleği</translation>
 <translation id="6640268266988685324">Açık Olan Sekme</translation>
 <translation id="6642720633335369752">Tüm açık pencereleri görmek için düğmeden yukarı kaydırıp basılı tutun.</translation>
@@ -6604,6 +6611,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7946586320617670168">Kaynak güvenli olmalıdır</translation>
 <translation id="794676567536738329">İzinleri Onayla</translation>
 <translation id="7947962633355574091">Video Adresini K&amp;opyala</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> alanının tüm sayfaları</translation>
 <translation id="7951265006188088697">Google Pay ödeme yöntemi eklemek veya yönetmek için <ph name="BEGIN_LINK" />Google Hesabınıza<ph name="END_LINK" /> gidin</translation>
 <translation id="7952708427581814389">Siteler panonuzdaki metin ve görselleri görmek isteyebilir</translation>
 <translation id="795282463722894016">Geri yükleme tamamlandı</translation>
@@ -7669,6 +7677,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9053893665344928494">Seçimimi hatırla</translation>
 <translation id="9055636786322918818">RC4 şifrelemesini uygula. RC4 şifreleri güvenli olmadığından bu seçeneğin kullanılması, riskinizi artırır.</translation>
 <translation id="9056810968620647706">Eşleştirme bulunamadı.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdaki içeriğe erişmek istiyor:</translation>
 <translation id="9057354806206861646">Programı güncelle</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />. ila <ph name="ERROR_LINE_END" />. satır arasında hata</translation>

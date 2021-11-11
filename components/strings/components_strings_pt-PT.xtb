@@ -82,6 +82,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="124116460088058876">Mais idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome OS</translation>
 <translation id="1250759482327835220">Para pagar mais rapidamente da próxima vez, guarde o cartão, o nome e o endereço de faturação na sua Conta Google.</translation>
 <translation id="1252799212227771492">Botão Criar página, prima Enter para criar rapidamente uma nova Folha de cálculo do Google Sheets</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
@@ -322,6 +323,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
 <translation id="1923390796829649802">Botão Gerir definições de acessibilidade, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome OS</translation>
 <translation id="1924727005275031552">Novo</translation>
+<translation id="1927439593081478069">Botão Executar verificação de segurança do Chrome, prima Enter para executar a verificação de segurança nas definições do Chrome</translation>
 <translation id="1939175642807587452">Pode solicitar o envio de notificações</translation>
 <translation id="1945968466830820669">Pode perder o acesso à conta da sua entidade ou ser vítima de roubo de identidade. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="1947454675006758438">Agrafo na parte superior direita</translation>
@@ -341,6 +343,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2003709556000175978">Repor a palavra-passe agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="201174227998721785">Faça a gestão das autorizações e dos dados armazenados em sites nas Definições do Chrome.</translation>
+<translation id="2019607688127825327">Botão Gerir definições de acessibilidade, prima Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome OS</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2025186561304664664">O proxy está definido para configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo inseguro</translation>
@@ -506,6 +509,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2556876185419854533">&amp;Anular edição</translation>
 <translation id="2570734079541893434">Faça a gestão das definições</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2576880857912732701">Botão Gerir definições de segurança, prima Enter para gerir a Navegação segura e muito mais nas definições do Chrome</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Leia esta e mais <ph name="OTHER_ARTICLE_COUNT" /> notícias.</translation>
 <translation id="2587841377698384444">ID da API de diretório:</translation>
@@ -550,6 +554,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para as suas informações de cartões de crédito e pagamentos nas Definições do Chrome.</translation>
 <translation id="2721148159707890343">Pedido com êxito</translation>
+<translation id="2723669454293168317">Execute uma verificação de segurança nas definições do Chrome</translation>
 <translation id="2726001110728089263">Tabuleiro lateral</translation>
 <translation id="2728127805433021124">O certificado do servidor foi assinado utilizando um algoritmo de assinatura fraco.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar o Diagnóstico de conetividade<ph name="END_LINK" /></translation>
@@ -580,6 +585,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2859806420264540918">Este site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="287596039013813457">Amigável</translation>
 <translation id="2876489322757410363">Está a sair do Modo de navegação anónima para pagar através de uma aplicação externa. Pretende continuar?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir a Navegação segura e muito mais nas Definições do Chrome</translation>
 <translation id="2878197950673342043">Dobra cruzada</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Posicionamento de janelas</translation>
@@ -685,6 +691,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3229041911291329567">Informações da versão do dispositivo e do navegador.</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para personalizar o aspeto do seu navegador</translation>
 <translation id="3240791268468473923">A página de credenciais de pagamento seguro sem correspondência com as credenciais está aberta</translation>
 <translation id="3249845759089040423">Descontraído</translation>
 <translation id="3252266817569339921">Francês</translation>
@@ -728,6 +735,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
       • Criar um mapa 3D do ambiente à sua volta e monitorizar a posição da câmara.
       • Utilizar a sua câmara.</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
+<translation id="3375754925484257129">Executar verificação de segurança do Chrome</translation>
 <translation id="3377144306166885718">O servidor utilizou uma versão obsoleta do TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
 <translation id="3377736046129930310">Utilizar o bloqueio de ecrã para confirmar os cartões mais rapidamente</translation>
@@ -768,6 +776,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3462200631372590220">Ocultar avançadas</translation>
 <translation id="3467763166455606212">Nome do titular do cartão obrigatório</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, atualmente aberto, prima Tab e, em seguida, Enter para mudar para o separador aberto.</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3484560055331845446">Pode perder o acesso à sua Conta Google. O Chrome recomenda que altere a palavra-passe agora. Ser-lhe-á pedido para iniciar sessão.</translation>
 <translation id="3487845404393360112">Tabuleiro 4</translation>
@@ -806,6 +815,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3611395257124510155">Cartão virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamanho 2</translation>
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma desconhecido ou não suportado.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para executar a verificação de segurança nas definições do Chrome</translation>
 <translation id="3615877443314183785">Introduza uma data de expiração válida</translation>
 <translation id="36224234498066874">Limpar dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
@@ -1601,6 +1611,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6218753634732582820">Remover o endereço do Chromium?</translation>
 <translation id="622039917539443112">Dobra paralela</translation>
 <translation id="6221345481584921695">A Navegação Segura do Google <ph name="BEGIN_LINK" />detetou software malicioso<ph name="END_LINK" /> recentemente em <ph name="SITE" />. Os Sites que normalmente são seguros por vezes são infetados com software malicioso. O conteúdo malicioso provém de <ph name="SUBRESOURCE_HOST" />, um distribuidor de software malicioso conhecido.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome</translation>
 <translation id="6234122620015464377">Cortar no fim de cada documento</translation>
 <translation id="6240447795304464094">Logótipo do Google Pay</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
@@ -1619,6 +1630,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6279098320682980337">O número do cartão virtual não foi preenchido? Clique nos detalhes do cartão para copiar</translation>
 <translation id="6280223929691119688">Não é possível entregar neste endereço. Selecione um diferente.</translation>
 <translation id="6282194474023008486">Código postal</translation>
+<translation id="6285507000506177184">Botão Gerir transferências no Chrome, prima Enter para gerir os ficheiros que transferiu no Chrome</translation>
 <translation id="6289939620939689042">Cor da página</translation>
 <translation id="6290238015253830360">Os seus artigos sugeridos são apresentados aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1734,6 +1746,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6689249931105087298">Relativa com compressão do ponto preto</translation>
 <translation id="6689271823431384964">O Chrome está a disponibilizar a opção de guardar os seus cartões na sua Conta Google porque tem sessão iniciada. Pode alterar este comportamento nas definições. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para encontrar o seu dispositivo na Conta Google</translation>
+<translation id="6696588630955820014">Botão Partilhar este separador, prima Enter para partilhar este separador ao partilhar o link, criar um código QR, transmitir e muito mais</translation>
 <translation id="6698381487523150993">Criado:</translation>
 <translation id="6702919718839027939">Apresentar</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1939,6 +1952,7 @@ Detalhes adicionais:
 <translation id="7392089738299859607">Atualize o endereço</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Partilhe este separador ao partilhar o link, criar um código QR, transmitir e muito mais</translation>
 <translation id="7403591733719184120">O seu <ph name="DEVICE_NAME" /> é gerido</translation>
 <translation id="7407424307057130981">&lt;p&gt;Este erro é apresentado se tiver software Superfish no seu computador com Windows.&lt;/p&gt;
       &lt;p&gt;Siga estes passos para desativar temporariamente o software para que possa aceder à Web. Vai precisar de privilégios de administrador.&lt;/p&gt;
@@ -2167,6 +2181,7 @@ Detalhes adicionais:
 <translation id="810875025413331850">Não foram encontrados dispositivos nas proximidades.</translation>
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
+<translation id="8124639700796374294">Botão Personalizar o Chrome, prima Enter para personalizar o aspeto do navegador</translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
@@ -2349,6 +2364,7 @@ Detalhes adicionais:
 <translation id="87601671197631245">Este site utiliza uma configuração de segurança desatualizada, que pode expor as suas informações (por exemplo, palavras-passe, mensagens ou cartões de crédito) quando são enviadas para este site.</translation>
 <translation id="8761567432415473239">A Navegação Segura do Google <ph name="BEGIN_LINK" />encontrou programas prejudiciais<ph name="END_LINK" /> recentemente em <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8763986294015493060">Feche todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="8766943070169463815">A página de autenticação das credenciais de pagamento seguro está aberta</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refazer eliminação</translation>
@@ -2362,6 +2378,7 @@ Detalhes adicionais:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Ranhura manual</translation>
+<translation id="8834380158646307944">Botão Fechar janelas de navegação anónima, prima Enter para fechar todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="883848425547221593">Outros marcadores</translation>
 <translation id="884264119367021077">Endereço para envio</translation>
 <translation id="884923133447025588">Não foi encontrado qualquer mecanismo de revogação.</translation>
@@ -2415,6 +2432,7 @@ Detalhes adicionais:
 <translation id="9020200922353704812">Endereço de faturação do cartão necessário</translation>
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para partilhar este separador ao partilhar o link, criar um código QR, transmitir e muito mais</translation>
 <translation id="9025348182339809926">(Inválido)</translation>
 <translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>

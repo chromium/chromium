@@ -82,6 +82,7 @@
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Полужирный</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome OS.</translation>
 <translation id="1250759482327835220">Чтобы ускорить процесс оплаты в будущем, сохраните карту, свое имя и платежный адрес в аккаунте Google.</translation>
 <translation id="1252799212227771492">Кнопка "Создать таблицу". Чтобы быстро создать таблицу Google, нажмите Ввод.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (данные синхронизируются)</translation>
@@ -318,6 +319,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Нет}=1{1 сайт}one{# сайт}few{# сайта}many{# сайтов}other{# сайта}}</translation>
 <translation id="1923390796829649802">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы открыть настройки специальных возможностей в Chrome OS.</translation>
 <translation id="1924727005275031552">Новый</translation>
+<translation id="1927439593081478069">Кнопка запуска проверки безопасности. Нажмите Ввод, чтобы запустить проверку безопасности в настройках Chrome</translation>
 <translation id="1939175642807587452">Разрешено отправлять запрос на показ уведомлений</translation>
 <translation id="1945968466830820669">Возможно, кто-то пытается получить доступ к вашим личным данным или корпоративному аккаунту. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="1947454675006758438">Скоба в правом верхнем углу</translation>
@@ -337,6 +339,7 @@
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
 <translation id="201174227998721785">Задать разрешения для сайтов и указать, какие данные они могут хранить, в настройках Chrome</translation>
+<translation id="2019607688127825327">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы открыть настройки специальных возможностей в Chrome.</translation>
 <translation id="2025115093177348061">Дополненная реальность</translation>
 <translation id="2025186561304664664">Прокси-сервер настраивается автоматически.</translation>
 <translation id="2025891858974379949">Небезопасный контент</translation>
@@ -502,6 +505,7 @@
 <translation id="2556876185419854533">&amp;Отменить изменения</translation>
 <translation id="2570734079541893434">Настройки</translation>
 <translation id="257674075312929031">Группа</translation>
+<translation id="2576880857912732701">Кнопка "Открыть настройки безопасности". Нажмите Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2587730715158995865">Источник: <ph name="ARTICLE_PUBLISHER" />. Доступно ещё несколько статей (<ph name="OTHER_ARTICLE_COUNT" />).</translation>
 <translation id="2587841377698384444">Идентификатор Directory API:</translation>
@@ -546,6 +550,7 @@
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="2721148159707890343">Запрос выполнен успешно</translation>
+<translation id="2723669454293168317">Запустите проверку безопасности в настройках Chrome</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
 <translation id="2728127805433021124">Сертификат сервера подписан с использованием ненадежного алгоритма.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Выполните диагностику подключения<ph name="END_LINK" /></translation>
@@ -576,6 +581,7 @@
 <translation id="2859806420264540918">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу.</translation>
 <translation id="287596039013813457">Дружелюбный</translation>
 <translation id="2876489322757410363">Вы выйдете из режима инкогнито, чтобы выполнить оплату во внешнем приложении. Продолжить?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="2878197950673342043">Двойная перпендикулярная фальцовка</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Размещение окон</translation>
@@ -680,6 +686,7 @@
 <translation id="3229041911291329567">Версия вашего устройства и браузера</translation>
 <translation id="323107829343500871">Введите CVC-код карты <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Всегда находить важный контент на этом сайте</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="3240791268468473923">Экран несоответствия учетных данных для защищенных платежей открыт</translation>
 <translation id="3249845759089040423">Яркий</translation>
 <translation id="3252266817569339921">Французский</translation>
@@ -723,6 +730,7 @@
       • Создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.
       • Использование камеры.</translation>
 <translation id="337363190475750230">Отключен</translation>
+<translation id="3375754925484257129">Запустить проверку безопасности</translation>
 <translation id="3377144306166885718">Этот сервер использует устаревшую версию протокола TLS.</translation>
 <translation id="3377188786107721145">Не удалось выполнить анализ политики</translation>
 <translation id="3377736046129930310">Использовать блокировку экрана для быстрого подтверждения карт</translation>
@@ -763,6 +771,7 @@
 <translation id="3462200631372590220">Скрыть подробности</translation>
 <translation id="3467763166455606212">Укажите имя владельца карты.</translation>
 <translation id="3468054117417088249">Открыта вкладка <ph name="TAB_SWITCH_SUFFIX" />. Чтобы переключиться на нее, нажмите Tab, а затем Ввод.</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3484560055331845446">Вы можете потерять доступ к аккаунту Google. Рекомендуем немедленно сменить пароль. После этого потребуется снова войти в аккаунт.</translation>
 <translation id="3487845404393360112">Лоток 4</translation>
@@ -801,6 +810,7 @@
 <translation id="3611395257124510155">Виртуальная карта (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Размер: 2</translation>
 <translation id="361438452008624280">Элемент списка "<ph name="LANGUAGE_ID" />": язык не поддерживается или неизвестен.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы запустить проверку безопасности в настройках Chrome.</translation>
 <translation id="3615877443314183785">Укажите правильный срок действия.</translation>
 <translation id="36224234498066874">Очистить историю...</translation>
 <translation id="362276910939193118">Показать всю историю</translation>
@@ -1591,6 +1601,7 @@
 <translation id="6218753634732582820">Удалить адрес из Chromium?</translation>
 <translation id="622039917539443112">Двойная параллельная фальцовка</translation>
 <translation id="6221345481584921695">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />. Его источником является <ph name="SUBRESOURCE_HOST" />, не раз замеченным в распространении вирусов. Будьте внимательны, иногда даже на безопасных сайтах появляются вредоносные программы.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы персонализировать инструменты специальных возможностей в настройках Chrome.</translation>
 <translation id="6234122620015464377">Подрезать после каждого документа</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
 <translation id="6241121617266208201">Скрыть варианты заполнения</translation>
@@ -1609,6 +1620,7 @@
 <translation id="6279098320682980337">Номер виртуальной карты не указан? Нажмите на реквизиты, чтобы скопировать их.</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="6282194474023008486">Почтовый индекс</translation>
+<translation id="6285507000506177184">Кнопка "Управлять скачанными файлами в Chrome". Нажмите Ввод, чтобы управлять скачанными файлами в Chrome.</translation>
 <translation id="6289939620939689042">Цвет страницы</translation>
 <translation id="6290238015253830360">Здесь появятся рекомендуемые статьи.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1724,6 +1736,7 @@
 <translation id="6689249931105087298">Относительный со сжатием точки черного цвета</translation>
 <translation id="6689271823431384964">Chrome предлагает вам сохранить карты в аккаунте Google, поскольку вы вошли в систему. Этот параметр можно изменить в разделе настроек. Имя владельца карты взято из вашего аккаунта.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти в раздел аккаунта Google "Поиск телефона".</translation>
+<translation id="6696588630955820014">Кнопка "Поделиться вкладкой". Нажмите Ввод, чтобы поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
 <translation id="6698381487523150993">Создано:</translation>
 <translation id="6702919718839027939">Режим презентации</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1929,6 +1942,7 @@
 <translation id="7392089738299859607">Изменить адрес</translation>
 <translation id="7399802613464275309">Проверка безопасности</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
 <translation id="7403591733719184120">Это устройство <ph name="DEVICE_NAME" /> управляется администратором</translation>
 <translation id="7407424307057130981">&lt;p&gt;Эта проблема возникает, когда на компьютере с Windows установлено ПО Superfish.&lt;/p&gt;
     &lt;p&gt;Чтобы временно отключить ПО и установить соединение с Интернетом, следуйте инструкциям ниже. Вам потребуются права администратора.&lt;/p&gt;
@@ -2158,6 +2172,7 @@
 <translation id="810875025413331850">Устройства поблизости не найдены.</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
+<translation id="8124639700796374294">Кнопка "Настроить Chrome". Нажмите Ввод, чтобы настроить внешний вид браузера.</translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
@@ -2338,6 +2353,7 @@
 <translation id="87601671197631245">Настройки безопасности этого сайта устарели. Злоумышленники могут получить доступ к вашим данным (например, паролям, сообщениям и номерам банковских карт) при их отправке на этот сайт.</translation>
 <translation id="8761567432415473239">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB-устройство</translation>
+<translation id="8763986294015493060">Закрыть все окна, открытые в режиме инкогнито</translation>
 <translation id="8766943070169463815">Открыт экран проверки учетных данных для защищенных платежей</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Повторить удаление</translation>
@@ -2351,6 +2367,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="882338992931677877">Слот для ручной подачи</translation>
+<translation id="8834380158646307944">Кнопка "Закрыть окна в режиме инкогнито". Нажмите Ввод, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="883848425547221593">Другие закладки</translation>
 <translation id="884264119367021077">Адрес доставки</translation>
 <translation id="884923133447025588">Не обнаружен механизм отзыва.</translation>
@@ -2404,6 +2421,7 @@
 <translation id="9020200922353704812">Необходимо указать платежный адрес карты</translation>
 <translation id="9020542370529661692">Эта страница переведена на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
 <translation id="9025348182339809926">(недействительный)</translation>
 <translation id="9030265603405983977">Монохромный</translation>
 <translation id="9035022520814077154">Ошибка безопасности</translation>

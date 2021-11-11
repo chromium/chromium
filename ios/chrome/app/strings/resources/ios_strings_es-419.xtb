@@ -107,6 +107,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1894205589103145703">Hubo un problema durante el acceso.</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
+<translation id="1930989359703290198">Tu organización te permite acceder solo con determinadas cuentas. Las cuentas no habilitadas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Presiona dos veces para copiar.</translation>
 <translation id="1952172573699511566">Los sitios web mostrarán texto en tu idioma preferido, cuando sea posible.</translation>
 <translation id="1965935827552890526">Completa las tareas que tenías en curso en otra ventana abierta de Chrome.</translation>
@@ -387,6 +388,8 @@ Tus datos están encriptados con tu frase de contraseña para sincronización. D
 <translation id="4802417911091824046">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
 
 Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Administrado por tu organización.
+<ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">El número de la tarjeta no es válido</translation>
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4818522717893377262">Agregar idioma…</translation>

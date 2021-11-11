@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">ছাইটক MIDI ডিভাইচৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="1088654056000736875">Chromeএ আপোনাৰ কম্পিউটাৰৰ পৰা ক্ষতিকাৰক ছফ্টৱেৰ আঁতৰাই আছে…</translation>
 <translation id="1088659085457112967">ৰীডাৰ ম’ডলৈ যাওক</translation>
+<translation id="1089606299949659462">পৰ্যালোচনা সম্পূৰ্ণ হ’ল!</translation>
 <translation id="1090126737595388931">নেপথ্যত কোনো এপ্ চলি থকা নাই</translation>
 <translation id="1090541560108055381">পেয়াৰ কৰাৰ পূৰ্বে, দুয়োটা ডিভাইচতে এই ক’ডটো একেই হোৱাটো নিশ্চিত কৰক</translation>
 <translation id="1091767800771861448">এৰি যাবলৈ ESCAPE টিপক (কেৱল অনানুষ্ঠানিক বিল্ড)।</translation>
@@ -1443,6 +1444,7 @@
 <translation id="2453860139492968684">সম্পূর্ণ হ’ল</translation>
 <translation id="2454247629720664989">মূল শব্দ</translation>
 <translation id="2454264884354864965">কেমেৰা অফ আছে</translation>
+<translation id="2454524890947537054">ৱেবৰ অনুৰোধত অনুমোদন জনাবনে?</translation>
 <translation id="245650153866130664">এটা টিকেট স্বয়ংক্ৰিয়ভাৱে ৰিফ্ৰেশ্ব কৰিবলৈ “পাছৱৰ্ড মনত ৰাখক” বাছনি কৰক। আপোনাৰ পাছৱৰ্ডটো কেৱল আপোনাৰ ডিভাইচতহে ষ্ট’ৰ কৰা হ’ব।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />এ <ph name="VOLUME_NAME" />ৰ পৰা ফাইল প্ৰতিলিপি কৰিব খোজে।</translation>
 <translation id="2457842160081795172">বৰ্তমান <ph name="CHANNEL_NAME" /> চেনেলত</translation>
@@ -1844,6 +1846,7 @@
 <translation id="2861301611394761800">ছিষ্টেম আপডে’ট সম্পূৰ্ণ হ’ল। অনুগ্ৰহ কৰি ছিষ্টেমটো ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="2861941300086904918">স্থানীয় ক্লায়েণ্টৰ সুৰক্ষা পৰিচালক</translation>
 <translation id="2862815659905780618">Linux বিকাশৰ পৰিবেশ আঁতৰাওক</translation>
+<translation id="2864272167277395865">এটা ডিভাইচ বাছনি কৰক:</translation>
 <translation id="2864601841139725659">আপোনাৰ প্ৰ'ফাইলৰ চিত্ৰ ছেট কৰক</translation>
 <translation id="2865919525181940183">স্ক্রীনখনত বৰ্তমান থকা প্ৰ’গ্ৰামসমূহৰ স্ক্ৰীনশ্বট</translation>
 <translation id="286674810810214575">পাৱাৰ উৎসসমূহ নিৰীক্ষণ কৰি থকা হৈছে...</translation>
@@ -3253,6 +3256,7 @@
 <translation id="4364830672918311045">জাননী দেখুওৱা</translation>
 <translation id="4366138410738374926">প্ৰিণ্ট কৰা আৰম্ভ হৈছে</translation>
 <translation id="4369121877634339065">সন্ধান কৰিবলৈ যিকোনো প্ৰতিচ্ছবিৰ ওপৰেদি টানি আনি এৰক</translation>
+<translation id="4369215744064167350">ৱেবছাইটৰ অনুৰোধত অনুমোদন জনোৱা হৈছে</translation>
 <translation id="4370975561335139969">আপুনি দিয়া ইমেইল আৰু পাছৱৰ্ড মিলা নাই</translation>
 <translation id="4373966964907728675">ডেস্কটপ কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="4374831787438678295">Linux ইনষ্টলাৰ</translation>
@@ -3945,6 +3949,7 @@
 <translation id="5117139026559873716">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা নিজৰ ফ’নটোৰ সংযোগ বিচ্ছিন্ন কৰক। সেইকেইটা আৰু স্বয়ংক্ৰিয়ভাৱে সংযোগ নহ’ব।</translation>
 <translation id="5117930984404104619">অন্য এক্সটেনশ্বনসমূহৰ আচৰণ তদাৰক কৰে, য'ত চোৱা URLসমূহ অন্তর্ভুক্ত হয়</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" />লৈ যাবলৈ ইয়াত ক্লিক কৰক</translation>
 <translation id="5121052518313988218">আপোনাৰ Linux কণ্টেইনাৰত অপাৰেটিং ছিষ্টেম আৰু সমৰ্থিত নহয়। এইটোৱে সুৰক্ষা সম্পৰ্কীয় আপডে’ট আৰু বাগ সমাধান লাভ কৰা বন্ধ হ’ব আৰু বৰ্তমান কাম কৰি থকা সুবিধাসমূহে হয়তো অপ্ৰত্যাশিতভাৱে কাম নকৰা হ’ব। Linux ব্যৱহাৰ কৰি থাকিবলৈ অনুগ্ৰহ কৰি শেহতীয়া সংস্কৰণটোলৈ আপগ্ৰে’ড কৰক।</translation>
 <translation id="5121130586824819730">আপোনাৰ হাৰ্ড ডিস্ক ভৰি পৰিছে।  অনুগ্ৰহ কৰি অন্য অৱস্থানত ছেভ কৰক বা হাৰ্ড ডিস্কত ঠাই খালী কৰক।</translation>
 <translation id="5123433949759960244">বাস্কেটবল</translation>
@@ -4053,6 +4058,7 @@
 <translation id="523505283826916779">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="5235750401727657667">আপুনি এটা নতুন টেব খুলোঁতে দেখা পোৱা পৃষ্ঠাটো সলনি কৰক</translation>
 <translation id="5236374273162681467">আপোনাৰ আটাইবোৰ ডিভাইচত এইবোৰ সহজে ব্যৱহাৰ কৰিবলৈ, আপুনি সেইবোৰ নিজৰ Google একাউণ্টলৈ নিব পাৰে</translation>
+<translation id="523862956770478816">ছাইটৰ অনুমতি</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম কৰিবনে?</translation>
 <translation id="5243522832766285132">অলপ সময়ৰ পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />ত ছিংক কৰি থকা হৈছে</translation>
@@ -5343,6 +5349,7 @@
 <translation id="6635674640674343739">নেটৱৰ্ক সংযোগ স্থাপন কৰিব নোৱাৰি। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6635944431854494329">গৰাকীজনে ছেটিংসমূহ &gt; উন্নত &gt; Googleলৈ স্বয়ংক্রিয়ভাৱে ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াওকৰ পৰা এই সুবিধাটো নিয়ন্ত্ৰণ কৰিব পাৰে।</translation>
 <translation id="6635956300022133031">পাঠৰ পৰা কথন সুবিধাৰ বাবে কণ্ঠস্বৰ বাছনি আৰু কাষ্টমাইজ কৰক</translation>
+<translation id="6636623428211296678">তলত অধিক ছেটিং অন্বেষণ কৰক অথবা এতিয়া শেষ কৰক</translation>
 <translation id="6639554308659482635">SQLite মেম'ৰী</translation>
 <translation id="6640268266988685324">খোলা টেব</translation>
 <translation id="6642720633335369752">খোল খাই থকা এপৰ সকলো ৱিণ্ড’ চাবলৈ একেবাৰে তলিৰ পৰা ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক।</translation>
@@ -6621,6 +6628,7 @@
 <translation id="7946586320617670168">ছাইটৰ উৎসটো সুৰক্ষিত হ'বই লাগিব</translation>
 <translation id="794676567536738329">অনুমতি নিশ্চিত কৰক</translation>
 <translation id="7947962633355574091">ভিডিঅ’ৰ ঠিকনা ক&amp;পি কৰক</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" />ৰ আটাইবোৰ পৃষ্ঠা</translation>
 <translation id="7951265006188088697">Google Pay পৰিশোধ পদ্ধতি যোগ কৰিবলৈ বা পৰিচালনা কৰিবলৈ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />-লৈ যাওক</translation>
 <translation id="7952708427581814389">ছাইটসমূহে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে</translation>
 <translation id="795282463722894016">পুনঃস্থাপন সম্পূর্ণ হ’ল</translation>
@@ -7686,6 +7694,7 @@
 <translation id="9053893665344928494">মোৰ পচন্দ মনত ৰাখিব</translation>
 <translation id="9055636786322918818">RC4 এনক্ৰিপশ্বন প্ৰয়োগ কৰক৷ RC4 চিপাৰসমূহ অসুৰক্ষিত হোৱাৰ বাবে এই বিকল্পটো ব্যৱহাৰ কৰা কার্যয়ে আপোনাৰ বিপদৰ সম্ভাৱনা বৃদ্ধি কৰে।</translation>
 <translation id="9056810968620647706">মিল থকা একো বিচাৰি পোৱা নগ’ল।</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />এ তলত উল্লিখিত সমল এক্সেছ কৰিব বিচাৰে:</translation>
 <translation id="9057354806206861646">সময়সূচী আপডে’ট কৰক</translation>
 <translation id="9062468308252555888">১৪x</translation>
 <translation id="9063208415146866933">লাইন <ph name="ERROR_LINE_START" />ৰপৰা <ph name="ERROR_LINE_END" />লৈ কিবা আসোঁৱাহ আছে</translation>

@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">সাইটগুলিকে MID ডিভাইস কানেক্ট করার অনুমতি দেয় না</translation>
 <translation id="1088654056000736875">Chrome আপনার কম্পিউটার থেকে ক্ষতিকারক সফ্টওয়্যার সরিয়ে দিচ্ছে…</translation>
 <translation id="1088659085457112967">রিডার মোডে যান</translation>
+<translation id="1089606299949659462">রিভিউ সম্পূর্ণ হয়েছে!</translation>
 <translation id="1090126737595388931">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
 <translation id="1090541560108055381">পেয়ার করার আগে, এই কোডটি দুটি ডিভাইসে একই আছে কিনা ভাল করে দেখে নিন</translation>
 <translation id="1091767800771861448">ছেড়ে যেতে ESCAPE টিপুন (কেবল নন-অফিশিয়াল বিল্ড)৷</translation>
@@ -1446,6 +1447,7 @@
 <translation id="2453860139492968684">সমাপ্ত করুন</translation>
 <translation id="2454247629720664989">কীওয়ার্ড</translation>
 <translation id="2454264884354864965">ক্যামেরা বন্ধ রয়েছে</translation>
+<translation id="2454524890947537054">ওয়েবসাইট অ্যাক্সেস করার অনুরোধ অনুমোদন করতে হবে?</translation>
 <translation id="245650153866130664">টিকিট অটোমেটিক রিফ্রেশ করতে “পাসওয়ার্ড মনে রাখুন” বিকল্পটি বেছে নিন। আপনার ডিভাইসেই আপনার পাসওয়ার্ড স্টোর করা হবে।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> থেকে ফাইলগুলি কপি করতে চায়৷</translation>
 <translation id="2457842160081795172">বর্তমানে <ph name="CHANNEL_NAME" /> চ্যানেলে</translation>
@@ -1847,6 +1849,7 @@
 <translation id="2861301611394761800">সিস্টেম আপডেট সম্পূর্ণ৷ দয়া করে সিস্টেমটি পুনরায় শুরু করুন৷</translation>
 <translation id="2861941300086904918">নেটিভ ক্লায়েন্ট সুরক্ষা পরিচালক</translation>
 <translation id="2862815659905780618">Linux ডেভেলপ করার বিকল্প সরান</translation>
+<translation id="2864272167277395865">একটি ডিভাইস বেছে নিন:</translation>
 <translation id="2864601841139725659">আপনার প্রোফাইল ফটো সেট করুন</translation>
 <translation id="2865919525181940183">স্ক্রিনে এখন যেসকল প্রোগ্রাম দেখা যাচ্ছে সেগুলির স্ক্রিনশট</translation>
 <translation id="286674810810214575">পাওয়ার সোর্স পরীক্ষা করা হচ্ছে...</translation>
@@ -3256,6 +3259,7 @@
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4366138410738374926">প্রিন্ট করার প্রক্রিয়া শুরু করা হয়েছে</translation>
 <translation id="4369121877634339065">সার্চ করতে যেকোনও ছবির উপরে টেনে আনুন</translation>
+<translation id="4369215744064167350">ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="4373966964907728675">ডেস্কটপ কাস্ট করা হচ্ছে</translation>
 <translation id="4374831787438678295">Linux ইনস্টলার</translation>
@@ -3948,6 +3952,7 @@
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" /> থেকে আপনার ফোন ডিসকানেক্ট করুন। সেগুলি আর অটোমেটিক কানেক্ট হবে না।</translation>
 <translation id="5117930984404104619">পরিদর্শিত URL গুলি সহ অন্যান্য এক্সটেনশানগুলির আচরণ নিরীক্ষণ করুন</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" />-এ ভিজিট করতে এখানে ক্লিক করুন</translation>
 <translation id="5121052518313988218">আপনার Linux কন্টেনারের অপারেটিং সিস্টেম আর কাজ করবে না। সুরক্ষা সম্পর্কিত আপডেট আর পাওয়া যাবে না, সমস্যার সমাধান করা যাবে না। এছাড়াও বর্তমানে কাজ করছে এমন সব ফিচার অপ্রত্যাশিতভাবে বন্ধ হয়ে যাবে। Linux ব্যবহার করা চালিয়ে যেতে লেটেস্ট ভার্সনে আপগ্রেড করুন।</translation>
 <translation id="5121130586824819730">আপনার হার্ড ডিস্ক পূর্ণ৷ দয়া করে অন্য কোনো স্থানে সেভ করুন অথবা হার্ড ডিস্কে আরও জায়গা তৈরী করুন৷</translation>
 <translation id="5123433949759960244">বাস্কেটবল</translation>
@@ -4056,6 +4061,7 @@
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="5235750401727657667">নতুন ট্যাব খোলার সময় যে পৃষ্ঠাটি আপনি দেখেন সেটি বদলে দিন</translation>
 <translation id="5236374273162681467">আপনি সেগুলি সব ডিভাইসে সহজে ব্যবহার করতে আপনার Google অ্যাকাউন্টে সরাতে পারবেন</translation>
+<translation id="523862956770478816">সাইট সংক্রান্ত অনুমতি</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
 <translation id="5243522832766285132">কয়েক মুহূর্তের মধ্যে আবার চেষ্টা করুন</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> এ সিঙ্ক হচ্ছে</translation>
@@ -5347,6 +5353,7 @@
 <translation id="6635674640674343739">নেটওয়ার্ক কানেকশন সেট-আপ করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="6635944431854494329">সেটিংস &gt; অ্যাডভান্সড &gt; নিজে থেকে Google-এ ডায়গনস্টিক ও ব্যবহারের ডেটা পাঠান বিকল্পে গিয়ে মালিক এই ফিচারটি নিয়ন্ত্রণ করতে পারেন।</translation>
 <translation id="6635956300022133031">পাঠ্য থেকে ভাষ্য ভয়েস বেছে নিন এবং কাস্টমাইজ করুন</translation>
+<translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
 <translation id="6639554308659482635">SQLite স্মৃতি</translation>
 <translation id="6640268266988685324">ট্যাব খুলুন</translation>
 <translation id="6642720633335369752">সব খোলা অ্যাপের উইন্ডোগুলি দেখতে নিচের দিক থেকে উপরে সোয়াইপ করে ধরে রাখুন।</translation>
@@ -6625,6 +6632,7 @@
 <translation id="7946586320617670168">ওয়েবসাইটটি নিরাপদ হতে হবে</translation>
 <translation id="794676567536738329">অনুমতিগুলি নিশ্চিত করুন</translation>
 <translation id="7947962633355574091">ভি&amp;ডিও ঠিকানা কপি করুন</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" />-এর সব পৃষ্ঠা</translation>
 <translation id="7951265006188088697">Google Pay পেমেন্ট পদ্ধতি যোগ বা পরিচালনা করতে, আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্ট<ph name="END_LINK" />-এ যান</translation>
 <translation id="7952708427581814389">আপনার ক্লিপবোর্ডে টেক্সট ও ছবি দেখতে, সাইট অনুমতি চাইতে পারে</translation>
 <translation id="795282463722894016">ফিরিয়ে আনা হয়ে গেছে</translation>
@@ -7691,6 +7699,7 @@
 <translation id="9053893665344928494">আমার পছন্দ মনে রাখুন</translation>
 <translation id="9055636786322918818">RC4 এনক্রিপশন চালু করুন। এই বিকল্পটির ব্যবহার ঝুঁকি বাড়ায় কারণ RC4 সাইফারটি নিরাপদ নয়।</translation>
 <translation id="9056810968620647706">কোন মিল খুঁজে পাওয়া যায় নি৷</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> নিচের কন্টেন্ট অ্যাক্সেস করতে চাইছে:</translation>
 <translation id="9057354806206861646">সময়সূচি আপডেট করুন</translation>
 <translation id="9062468308252555888">১৪x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> থেকে <ph name="ERROR_LINE_END" /> নম্বর লাইনে কোনও ভুল আছে</translation>

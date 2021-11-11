@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Älä salli sivustojen yhdistää MIDI-laitteisiin</translation>
 <translation id="1088654056000736875">Chrome poistaa haittaohjelmia tietokoneeltasi…</translation>
 <translation id="1088659085457112967">Siirry lukijatilaan</translation>
+<translation id="1089606299949659462">Tarkastus valmis</translation>
 <translation id="1090126737595388931">Ei käynnissä olevia taustasovelluksia</translation>
 <translation id="1090541560108055381">Varmista ennen laiteparin muodostamista, että tämä koodi on sama molemmissa laitteissa</translation>
 <translation id="1091767800771861448">Ohita painamalla ESCAPE (vain epävirallisissa ohjelmistoversioissa).</translation>
@@ -1444,6 +1445,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2453860139492968684">Valmis</translation>
 <translation id="2454247629720664989">Avainsana</translation>
 <translation id="2454264884354864965">Kamera on poissa päältä</translation>
+<translation id="2454524890947537054">Hyväksytäänkö sivustopyyntö?</translation>
 <translation id="245650153866130664">Jos haluat päivittää tukipyynnön automaattisesti, valitse Muista salasana. Salasana tallennetaan vain laitteellesi.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> pyytää lupaa kopioida tiedostoja tallennusvälineeltä <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Nyt <ph name="CHANNEL_NAME" />-kanavalla</translation>
@@ -1846,6 +1848,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2861301611394761800">Järjestelmän päivitys valmis. Käynnistä järjestelmä uudelleen.</translation>
 <translation id="2861941300086904918">Asiakkaan tietosuojahallinnoija</translation>
 <translation id="2862815659905780618">Poista Linux-kehitysympäristö</translation>
+<translation id="2864272167277395865">Valitse laite:</translation>
 <translation id="2864601841139725659">Määritä profiilikuvasi</translation>
 <translation id="2865919525181940183">Kuvakaappaus ohjelmista, jotka ovat näytöllä tällä hetkellä</translation>
 <translation id="286674810810214575">Tarkistetaan virtalähteitä…</translation>
@@ -2400,6 +2403,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3449393517661170867">Uusi välilehdellinen ikkuna</translation>
 <translation id="3449839693241009168">Lähetä laajennukselle <ph name="EXTENSION_NAME" /> komentoja painamalla <ph name="SEARCH_KEY" /></translation>
 <translation id="3450157232394774192">Käyttämätön-tilan käyttöprosentti</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon nyt ja lataat päivityksen.</translation>
 <translation id="3451753556629288767">Saa avata tietyntyyppisiä tiedostoja</translation>
 <translation id="3452999110156026232">Vanhemman pääsy</translation>
 <translation id="3453612417627951340">Tarvitsee luvan</translation>
@@ -3252,6 +3256,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4364830672918311045">Näytä ilmoitukset</translation>
 <translation id="4366138410738374926">Tulostus aloitettu</translation>
 <translation id="4369121877634339065">Hae vetämällä minkä tahansa kuvan päälle</translation>
+<translation id="4369215744064167350">Sivustopyyntö hyväksytty</translation>
 <translation id="4370975561335139969">Antamasi sähköpostiosoite ja salasana eivät vastaa toisiaan.</translation>
 <translation id="4373966964907728675">Suoratoistetaan työpöytää</translation>
 <translation id="4374831787438678295">Linux-asennusohjelma</translation>
@@ -3944,6 +3949,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5117139026559873716">Irrota <ph name="DEVICE_TYPE" /> puhelimesta. Niitä ei enää yhdistetä automaattisesti.</translation>
 <translation id="5117930984404104619">Seuraa muiden laajennusten toimia, mukaan lukien käydyt URL-osoitteet</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Avaa <ph name="APPROVED_URL" /> klikkaamalla</translation>
 <translation id="5121052518313988218">Linux-säilössäsi olevaa käyttöjärjestelmää ei enää tueta. Tietoturvapäivitysten ja virheenkorjausten tarjoaminen sille lopetetaan, ja tällä hetkellä käytettävissä olevat ominaisuudet saattavat yllättäen lakata toimimasta. Päivitä uusimpaan versioon, jotta voit jatkaa Linuxin käyttöä.</translation>
 <translation id="5121130586824819730">Kiintolevy on täynnä. Tallenna muuhun sijaintiin tai vapauta levytilaa.</translation>
 <translation id="5123433949759960244">Koripallo</translation>
@@ -4052,6 +4058,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="523505283826916779">Esteettömyysasetukset</translation>
 <translation id="5235750401727657667">Korvaa sivu, joka näkyy uuden välilehden avaamisen yhteydessä</translation>
 <translation id="5236374273162681467">Voit siirtää ne Google-tilillesi, jolloin ne ovat käytettävissä kaikilla laitteillasi</translation>
+<translation id="523862956770478816">Sivustoluvat</translation>
 <translation id="5242724311594467048">Otetaanko <ph name="EXTENSION_NAME" /> käyttöön?</translation>
 <translation id="5243522832766285132">Yritä uudelleen hetken kuluttua</translation>
 <translation id="5244474230056479698">Synkronoidaan osoitteeseen <ph name="EMAIL" /></translation>
@@ -4260,6 +4267,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5472627187093107397">Tallenna tämän sivuston salasanat</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-koodissa on oltava ainakin yksi merkki}other{PIN-koodissa on oltava ainakin # merkkiä}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon nyt ja lataat päivityksen. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).</translation>
 <translation id="5481273127572794904">Useiden tiedostojen automaattinen lataaminen kielletty</translation>
 <translation id="5481941284378890518">Lisää lähellä olevia tulostimia</translation>
 <translation id="5483785310822538350">Peru tiedoston ja laitteen käyttöoikeudet</translation>
@@ -4682,6 +4690,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="592880897588170157">Lataa PDF-tiedostot automaattisen Chromessa avaamisen sijaan.</translation>
 <translation id="592919310198008711">Kun klikkaan laajennusta</translation>
 <translation id="5932124097031739492">Linuxin päivitys onnistui.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> edellyttää, että <ph name="DEVICE_TYPE" /> päivitetään välittömästi.</translation>
 <translation id="5932224571077948991">Sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="59324397759951282">USB-laite (<ph name="MANUFACTURER_NAME" />)</translation>
 <translation id="5932441198730183141">Sinulla ei ole tarpeeksi lisenssejä tämän Google Meet ‑laitteen rekisteröintiin. Osta lisää lisenssejä myyntitiimiltä. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
@@ -5339,6 +5348,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6635674640674343739">Verkkoyhteyttä ei voi muodostaa. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
 <translation id="6635944431854494329">Omistaja voi muuttaa tämän ominaisuuden asetuksia kohdasta Asetukset &gt; Lisäasetukset &gt; Lähetä automaattisesti diagnostiikka- ja käyttötietoja Googlelle.</translation>
 <translation id="6635956300022133031">Tekstistä puheeksi ‑äänten valinta ja yksilöinti</translation>
+<translation id="6636623428211296678">Katso muita asetuksia alla tai lopeta nyt</translation>
 <translation id="6639554308659482635">SQLiten käyttämä muisti</translation>
 <translation id="6640268266988685324">Avaa välilehti</translation>
 <translation id="6642720633335369752">Jos haluat nähdä kaikki avoimet sovellusikkunat, pyyhkäise alareunasta ylöspäin ja paina pitkään.</translation>
@@ -6615,6 +6625,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7946586320617670168">Lähteen on oltava turvallinen</translation>
 <translation id="794676567536738329">Vahvista luvat</translation>
 <translation id="7947962633355574091">K&amp;opioi videon osoite</translation>
+<translation id="7948407723851303488">Kaikki sivut, joiden verkkotunnus on <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Lisää tai muokkaa Google Payn maksutapoja avaamalla <ph name="BEGIN_LINK" />Google-tili<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Sivustot saavat pyytää leikepöydällä olevan tekstin ja kuvien näkemistä</translation>
 <translation id="795282463722894016">Palautus valmis</translation>
@@ -7680,6 +7691,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9053893665344928494">Muista valinta</translation>
 <translation id="9055636786322918818">Pakota RC4-salaus. Tämä valinta lisää riskejä, koska RC4-salaustekniikat ovat suojaamattomia.</translation>
 <translation id="9056810968620647706">Yhtään osumaa ei löytynyt.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> haluaa pääsyn seuraavaan sisältöön:</translation>
 <translation id="9057354806206861646">Päivitysaikataulu</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Virhe riveillä <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

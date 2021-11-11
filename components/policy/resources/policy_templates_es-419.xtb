@@ -273,6 +273,13 @@
 <translation id="1352799151662469739">El período sin intervención del usuario después del cual se bloquea la pantalla cuando el dispositivo está funcionando con CA (en milisegundos).</translation>
 <translation id="1353416417709895349">Inhabilita las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
 <translation id="1354424209129232709">Máximo:</translation>
+<translation id="1355050231181289439"> Esta política controla si se habilita la asignación mejorada de combinaciones de teclas internacionales.
+      Esta función garantiza que las combinaciones de teclas funcionen de forma consistente con los diseños de teclados internacionales y da de baja las combinaciones de teclas heredadas.
+
+      Si inhabilitas esta política, se desactivarán las combinaciones de teclas internacionales mejoradas.
+      Si habilitas esta política, se activarán las combinaciones de teclas internacionales mejoradas.
+      Si no la estableces, se habilitará esta política para los dispositivos administrados y se habilitará para los dispositivos que pertenezcan a los usuarios.
+      Ten en cuenta que esta es solo una política temporaria para permitir que los usuarios administrados sigan usando las combinaciones de teclas heredadas que se dieron de baja. Esta política se dará de baja después de que las combinaciones de teclas personalizadas estén disponibles.</translation>
 <translation id="1359553908012294236">Si esta política no se configura o se establece en true, <ph name="PRODUCT_NAME" /> permitirá acceder como invitado. Los accesos como invitado son perfiles de <ph name="PRODUCT_NAME" /> en los que todas las ventanas están en modo de navegación de incógnito.
 
       Si esta política se establece en false, <ph name="PRODUCT_NAME" /> no permitirá que se inicien perfiles de invitado.</translation>
@@ -777,6 +784,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
 <translation id="1972134432340252414">Bloquear los puntos de extensiones heredados del proceso del navegador</translation>
 <translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
+<translation id="1984423899110408165">Mostrar clústeres del historial en la página del historial de Chrome</translation>
 <translation id="1986003348976870087">No solicitar al usuario que seleccione un certificado de cliente en la pantalla de acceso</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
@@ -1506,6 +1514,14 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2725855586003209701">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la lista de usuarios.</translation>
+<translation id="2725944143509568512">Esta política controla la visibilidad de los clústeres del historial en la página del historial de Chrome.
+
+      Si habilitas la política, los clústeres del historial podrán verse en chrome://history/journeys.
+
+      Si la inhabilitas, los clústeres de historial no podrán verse en chrome://history/journeys.
+
+      Si no estableces la política, los clústeres del historial podrán verse en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de estos clústeres.
+      </translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> para apps de ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el vínculo de la parte inferior de la página Nueva pestaña y del Selector de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
@@ -2161,6 +2177,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si inhabilitas la política o no la estableces, se desactivará el DTC. Este no podrá recopilar, procesar ni informar los datos de telemetría y diagnóstico del dispositivo.</translation>
 <translation id="3450649825886735618">No usar ningún servicio web de Google para ayudar a solucionar errores de ortografía</translation>
+<translation id="3451422488938880786"> Permite habilitar o inhabilitar reasignaciones de combinaciones de teclas internacionales</translation>
 <translation id="3451901387456196887">Permitir que el usuario seleccione desde el menú de <ph name="PRODUCT_NAME" /> dispositivos de transmisión mediante un código QR o de acceso</translation>
 <translation id="3456292544936505775">Esta política controla los períodos durante los cuales el dispositivo con <ph name="PRODUCT_OS_NAME" /> no puede comprobar automáticamente si hay actualizaciones disponibles.
       Si estableces la política con una lista no vacía de intervalos de tiempo, los dispositivos no podrán comprobar de forma automática si hay actualizaciones disponibles durante los intervalos de tiempo especificados. Debido a posibles problemas de seguridad, esta política no afectará a los dispositivos que necesiten una reversión empresarial o tengan versiones anteriores a la mínima de <ph name="PRODUCT_OS_NAME" />. Además, esta política no bloqueará comprobaciones de actualizaciones que soliciten los usuarios o administradores.
@@ -2196,6 +2213,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
        Un valor de <ph name="ALL_EXTENSIONS" /> en una lista de elementos bloqueados significa que se incluyen todas las extensiones en esa lista, y los usuarios solo podrán instalar extensiones que figuren en la lista de elementos permitidos.
 
        De forma predeterminada, se permiten todas las extensiones. Sin embargo, si prohibiste extensiones mediante una política, usa la lista de extensiones permitidas para cambiar esa política.</translation>
+<translation id="3501606938635483637">Las combinaciones de teclas internacionales están asignadas al glifo de la tecla y no a la ubicación de las teclas en el teclado</translation>
 <translation id="3502555714327823858">Permitir todos los modos dobles</translation>
 <translation id="350443680860256679">Configurar ARC</translation>
 <translation id="350797926066071931">Habilitar Traductor de Google</translation>
@@ -3149,6 +3167,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4802905909524200151">Configurar el comportamiento de actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Reinicia siempre cuando el usuario sale de su cuenta.</translation>
 <translation id="4807950475297505572">Elimina los usuarios que más tiempo hace que no se utilizan hasta que se libere espacio suficiente.</translation>
+<translation id="4811210934875253713">Los clústeres del historial podrán verse en chrome://history/journeys</translation>
 <translation id="4812270373673968774">Si estableces la política como "siempre", se ocultará la biblioteca de <ph name="PRODUCT_OS_NAME" /> de forma automática. Si la estableces como "nunca", no se ocultará nunca la biblioteca de forma automática.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán decidir si se oculta la biblioteca de forma automática.</translation>
@@ -4426,6 +4445,44 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
 <translation id="6331943515692769234">Forzar el uso del algoritmo GREASE de usuario-agente anterior</translation>
+<translation id="6332192586629642626">Los clústeres del historial no podrán verse en chrome://history/journeys</translation>
+<translation id="6332489309596092806">Si estableces la política, se especificará una lista de aplicaciones web que se instalan de manera discreta, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
+
+      Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la aplicación web que se instalará),
+
+      y 5 miembros opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (establece la manera en la que se abrirá la aplicación web; la opción predeterminada es una nueva pestaña)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      te permite anular el nombre de la app si no es una
+      app web progresiva [AWP], o el nombre de la app instalada
+      temporalmente si es una AWP, pero se requiere autenticación para que la
+      instalación pueda completarse. Si se proporcionan
+      <ph name="CUSTOM_NAME_LABEL" /> y
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      se ignorará este último).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (A partir de la versión 96 de <ph name="PRODUCT_NAME" />,
+      te permite anular de forma permanente el nombre de la app para todas las aplicaciones
+      web y AWP. Actualmente, solo se admite en
+      <ph name="PRODUCT_OS_NAME" />).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (A partir de la versión 96 de <ph name="PRODUCT_NAME" />,
+      te permite anular el ícono de las apps instaladas. Los
+      íconos deben tener forma cuadrada, un tamaño máximo de 1 MB y uno de los siguientes
+      formatos: jpeg, png, gif, webp o ico. El valor de hash del archivo del ícono
+      debe ser SHA256. Actualmente, solo se admite en
+      <ph name="PRODUCT_OS_NAME" />).
+
+      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Impide el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="6334330017384340264">Esta política especifica qué apps y URL deben incluirse en la lista de elementos permitidos para las restricciones de uso por app.
         Se aplica la lista de elementos permitidos configurada a las apps instaladas en <ph name="PRODUCT_OS_NAME" /> para el usuario dado con límites de tiempo por app.
@@ -5856,6 +5913,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si habilitas esta política, el usuario podrá usar el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Rotar la pantalla 0 grados</translation>
+<translation id="8025620823136567878">Las combinaciones de teclas internacionales están asignadas a la ubicación de las teclas en el teclado y no al glifo de la tecla</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
@@ -6667,6 +6725,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>
+<translation id="8934618237639919190">De forma predeterminada, los clústeres del historial estarán disponibles en chrome://history/journeys, y los usuarios pueden cambiar la visibilidad de estos clústeres</translation>
 <translation id="8937282917198525844"> A partir de la versión M81, se actualizaron la apariencia y el estilo de los elementos estándar de los controles de formulario (p. ej., &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con mejoras en la accesibilidad y la uniformidad de la plataforma. Esta política restablece los elementos antiguos de los controles de formulario "heredados" hasta la versión M84.
 
       Si se establece esta política como verdadera, se utilizarán los elementos de los controles de formulario "heredados" para todos los sitios.

@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088654056000736875">Chrome 正在从您的计算机中移除有害软件…</translation>
 <translation id="1088659085457112967">进入阅读器模式</translation>
+<translation id="1089606299949659462">查看完毕！</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -1427,6 +1428,7 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454247629720664989">关键字</translation>
 <translation id="2454264884354864965">摄像头未开启</translation>
+<translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2457842160081795172">目前为<ph name="CHANNEL_NAME" />版本</translation>
@@ -1828,6 +1830,7 @@
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
 <translation id="2861941300086904918">Native Client 安全管理器</translation>
 <translation id="2862815659905780618">移除 Linux 开发环境</translation>
+<translation id="2864272167277395865">请选择一部设备：</translation>
 <translation id="2864601841139725659">设置您的个人资料照片</translation>
 <translation id="2865919525181940183">当前屏幕所含程序的屏幕截图</translation>
 <translation id="286674810810214575">正在检查电源…</translation>
@@ -2382,6 +2385,7 @@
 <translation id="3449393517661170867">打开新的标签页窗口</translation>
 <translation id="3449839693241009168">按 <ph name="SEARCH_KEY" /> 可向<ph name="EXTENSION_NAME" />发送命令</translation>
 <translation id="3450157232394774192">闲置状态占用率</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="3451753556629288767">可以打开各类文件</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453612417627951340">需要获得授权</translation>
@@ -3236,6 +3240,7 @@
 <translation id="4364830672918311045">显示通知</translation>
 <translation id="4366138410738374926">已开始打印</translation>
 <translation id="4369121877634339065">在任一图片上拖动光标即可搜索</translation>
+<translation id="4369215744064167350">网站请求已获批准</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
 <translation id="4373966964907728675">正在投射桌面</translation>
 <translation id="4374831787438678295">Linux 安装程序</translation>
@@ -3927,6 +3932,7 @@
 <translation id="5117139026559873716">断开手机与 <ph name="DEVICE_TYPE" /> 的连接。断开后，它们将无法再自动连接。</translation>
 <translation id="5117930984404104619">监控其他扩展程序的行为（包括访问过的网址）</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">点击此处即可访问 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">您的 Linux 容器中的操作系统不再受支持。它将停止接收安全更新和问题修复，而且目前正常运行的功能可能会意外中断。请升级至最新版本，以继续使用 Linux。</translation>
 <translation id="5121130586824819730">您的硬盘已满。请保存到其他位置或在硬盘上腾出更多空间。</translation>
 <translation id="5123433949759960244">篮球</translation>
@@ -4035,6 +4041,7 @@
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5235750401727657667">替换您在打开新标签页时看到的页面</translation>
 <translation id="5236374273162681467">若要在您的所有设备上轻松使用这些密码，您可将它们移至您的 Google 帐号中</translation>
+<translation id="523862956770478816">网站权限</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -4244,6 +4251,7 @@
 <translation id="5472627187093107397">为此网站保存密码</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
@@ -4666,6 +4674,7 @@
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="592919310198008711">当我点击此扩展程序时</translation>
 <translation id="5932124097031739492">已成功升级 Linux。</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
 <translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
@@ -5323,6 +5332,7 @@
 <translation id="6635674640674343739">无法建立网络连接。请检查您的网络连接状况，然后重试。</translation>
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
 <translation id="6635956300022133031">选择和自定义文字转语音的语音</translation>
+<translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
@@ -6601,6 +6611,7 @@
 <translation id="7946586320617670168">来源必须是安全的</translation>
 <translation id="794676567536738329">确认权限</translation>
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
 <translation id="7951265006188088697">要添加或管理 Google Pay 付款方式，请访问 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>
@@ -7666,6 +7677,7 @@
 <translation id="9053893665344928494">记住我的选择</translation>
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想访问以下内容：</translation>
 <translation id="9057354806206861646">更新时间表</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>

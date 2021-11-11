@@ -326,6 +326,7 @@
 <translation id="334252345105450327">Сделай скриншот</translation>
 <translation id="3351879221545518001">Вы транслируете изображение своего экрана.</translation>
 <translation id="3364721542077212959">Инструменты стилуса</translation>
+<translation id="3365977133351922112">Телефон слишком далеко. Поднесите его ближе.</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="3375634426936648815">Подключено</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
 <translation id="5199367439331364630">Чтобы войти в аккаунт на устройстве Chromebook, введите пароль.</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ещё 1 уведомление}one{ещё # уведомление}few{ещё # уведомления}many{ещё # уведомлений}other{ещё # уведомления}}</translation>
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
 <translation id="5208059991603368177">Включено</translation>
@@ -884,6 +886,7 @@
 <translation id="7398254312354928459">Установлено соединение с другой сетью</translation>
 <translation id="7405710164030118432">Чтобы разблокировать устройство, введите родительский код доступа Family Link.</translation>
 <translation id="7406608787870898861">Завершите настройку мобильной сети</translation>
+<translation id="740790383907119240">Ярлыки приложений</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
 <translation id="7413851974711031813">Чтобы закрыть, нажмите клавишу Escape</translation>
 <translation id="742594950370306541">Камера используется.</translation>
@@ -986,6 +989,7 @@
 <translation id="8061464966246066292">Высокая контрастность</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Вкл. для всех</translation>
+<translation id="8120151603115102514">На телефоне нет экрана блокировки. Чтобы разблокировать Chromebook, введите пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132487352815776550">Скрыть субтитры</translation>
@@ -1034,6 +1038,7 @@
 <translation id="8473301994082929012">Организация <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцию "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Для отмены нажмите ALT + SEARCH или SHIFT.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">На устройстве Chromebook отключен модуль Bluetooth. Чтобы разблокировать, введите пароль.</translation>
 <translation id="8513108775083588393">Автоповорот</translation>
 <translation id="851458219935658693">Показ окон текущего рабочего стола. Выбран переключатель.</translation>
 <translation id="8517041960877371778">Не удается зарядить устройство <ph name="DEVICE_TYPE" />, пока оно включено.</translation>

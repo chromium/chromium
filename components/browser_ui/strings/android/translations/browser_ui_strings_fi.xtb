@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mt</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}}</translation>
 <translation id="2434158240863470628">Lataus valmis <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Pyydä aina tietokonesivustoa</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2485422356828889247">Poista</translation>
 <translation id="2490684707762498678">Ylläpitäjä: <ph name="APP_NAME" /></translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Tietoja sivustosta</translation>
 <translation id="3333961966071413176">Kaikki yhteystiedot</translation>
 <translation id="3386292677130313581">Pyydä lupaa, kun sivustot yrittävät käyttää sijaintiasi (suositus).</translation>
+<translation id="3517437118288792304">Pyydä aina tietyn sivuston tietokonenäkymää.</translation>
 <translation id="3538390592868664640">Estä sivustoja luomasta 3D-karttaa ympäristöstäsi tai seuraamasta kameran asentoa</translation>
 <translation id="3551268116566418498">Poistutaanko incognito-tilasta?</translation>
 <translation id="3586500876634962664">Kameran ja mikrofonin käyttö</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">Sivusto toistaa mediaa</translation>
 <translation id="42981349822642051">Laajenna</translation>
 <translation id="4336434711095810371">Poista kaikki data</translation>
+<translation id="4353125860368453721">Pyydä aina tietyn sivuston mobiilinäkymää.</translation>
 <translation id="4402755511846832236">Estä sivustoja tietämästä, kun käytät tätä laitetta aktiivisesti</translation>
 <translation id="4434045419905280838">Ponn.ikkunat ja uudelleenohjaus</translation>
 <translation id="445467742685312942">Salli sivustojen toistaa suojattua sisältöä</translation>
@@ -300,6 +303,7 @@
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 eväste käytössä}other{# evästettä käytössä}}</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
+<translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>

@@ -2383,6 +2383,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3449393517661170867">Neues Tab-Fenster</translation>
 <translation id="3449839693241009168">Drücken Sie <ph name="SEARCH_KEY" />, um Befehle an <ph name="EXTENSION_NAME" /> zu senden.</translation>
 <translation id="3450157232394774192">Inaktiver Zustand – Auslastung in Prozent</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> erfordert, dass Sie Ihr Gerät jetzt mit dem WLAN verbinden und ein Update herunterladen.</translation>
 <translation id="3451753556629288767">Öffnen von Dateitypen erlauben</translation>
 <translation id="3452999110156026232">Elternfreigabe</translation>
 <translation id="3453612417627951340">Autorisierung erforderlich</translation>
@@ -4244,6 +4245,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5472627187093107397">Passwörter für diese Website speichern</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Die PIN muss aus mindestens 1 Zeichen bestehen}other{Die PIN muss aus mindestens # Zeichen bestehen}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> erfordert, dass Sie Ihr Gerät jetzt mit dem WLAN verbinden und ein Update herunterladen. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).</translation>
 <translation id="5481273127572794904">Dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
 <translation id="5483785310822538350">Datei- und Gerätezugriff aufheben</translation>
@@ -4666,6 +4668,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
 <translation id="592919310198008711">Wenn ich die Erweiterung anklicke</translation>
 <translation id="5932124097031739492">Linux wurde aktualisiert.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> erfordert, dass das Gerät (<ph name="DEVICE_TYPE" />) sofort aktualisiert wird.</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Sie haben nicht genügend Lizenzen zum Registrieren dieses Google Meet-Hardware-Geräts. Weitere Lizenzen können Sie beim Vertriebsteam erwerben. Wenn Sie glauben, dass Sie diese Meldung fälschlicherweise erhalten, kontaktieren Sie bitte den Support.</translation>

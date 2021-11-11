@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">复制</translation>
 <translation id="135978014023467274">您已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">点击路由键 <ph name="ROUTING_KEY_NUMBER" /> 下面的项</translation>
+<translation id="1376703628032300005">移到下一个字符</translation>
 <translation id="1377925789329510816">这是最后一个标题。按 Search+H 组合键可跳回至第一个标题，按 Search+Shift+H 组合键则可转到此页面上的第二个标题。</translation>
 <translation id="138218114945450791">浅蓝色</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">复选框</translation>
 <translation id="2461822463642141190">电流</translation>
 <translation id="2462626033734746142">单选按钮组</translation>
+<translation id="2467741090055146971">取消选择</translation>
 <translation id="2471138580042810658">6 级标题</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{1个星号}other{#个星号}}</translation>
 <translation id="2490721194269245365">玫瑰褐色</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">没有上一个媒体微件</translation>
 <translation id="4855927945655956315">基础键：Ctrl</translation>
 <translation id="4862744964787595316">非粗体</translation>
+<translation id="4865995900839719272">移到上一行</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">启用TTS日志记录</translation>
 <translation id="4886524826165775965">第<ph name="INDEX" />项，共<ph name="TOTAL" />项</translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">切换到名为“<ph name="TITLE" />”的标签页</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5310788376443009632">已移除：</translation>
+<translation id="5316825363044614340">移到下一行</translation>
 <translation id="5320727453979144100">已启用粘滞模式</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{1个英文逗号}other{#个英文逗号}}</translation>
 <translation id="532485153932049746">设置文本格式
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">没有上一个表单字段</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">帮助</translation>
 <translation id="7317017974771324508">部分选定</translation>
 <translation id="7322442671176251901">触摸浏览</translation>
 <translation id="7344012264516629579">其他跳转命令包括通过链接跳转、通过按钮跳转、通过复选框跳转，等等。跳转命令的完整列表位于 ChromeVox 菜单（可通过按搜索键 + 句点键打开）中。</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox 教程</translation>
 <translation id="9040132695316389094">1 级标题标记</translation>
 <translation id="9061884144798498064">请选择一个 8 点式盲文表：</translation>
+<translation id="9063946545000394379">移到上一个字符</translation>
 <translation id="9065283790526219006">含弹出项</translation>
 <translation id="9065912140022662363">没有下一个单选按钮</translation>
 <translation id="9067522039955793016">分页符</translation>

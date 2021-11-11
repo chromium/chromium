@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Nu permite site-urilor să se conecteze la dispozitive MIDI</translation>
 <translation id="1088654056000736875">Chrome elimină software-ul dăunător de pe computer...</translation>
 <translation id="1088659085457112967">Accesează modul Cititor</translation>
+<translation id="1089606299949659462">Examinare finalizată!</translation>
 <translation id="1090126737595388931">Nu rulează aplicații în fundal</translation>
 <translation id="1090541560108055381">Înainte de asociere, asigură-te că apare același cod pe ambele dispozitive</translation>
 <translation id="1091767800771861448">Apăsați pe ESCAPE pentru a ignora (numai versiunile neoficiale).</translation>
@@ -1431,6 +1432,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2453860139492968684">Terminați</translation>
 <translation id="2454247629720664989">Cuvânt cheie</translation>
 <translation id="2454264884354864965">Camera este dezactivată</translation>
+<translation id="2454524890947537054">Aprobi solicitarea paginii web?</translation>
 <translation id="245650153866130664">Pentru a actualiza automat un tichet, bifează „Reține parola”. Parola va fi stocată numai pe dispozitivul tău.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> dorește să copieze fișiere din <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Folosești canalul <ph name="CHANNEL_NAME" /></translation>
@@ -1833,6 +1835,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2861301611394761800">Sistemul a fost actualizat. Repornește-l.</translation>
 <translation id="2861941300086904918">Manager de securitate Client nativ</translation>
 <translation id="2862815659905780618">Elimină mediul de dezvoltare Linux</translation>
+<translation id="2864272167277395865">Selectează un dispozitiv:</translation>
 <translation id="2864601841139725659">Setează fotografia de profil</translation>
 <translation id="2865919525181940183">Captură de ecran a programelor afișate pe ecran</translation>
 <translation id="286674810810214575">Se verifică sursele de alimentare…</translation>
@@ -3243,6 +3246,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4364830672918311045">Afișează notificările</translation>
 <translation id="4366138410738374926">A început printarea</translation>
 <translation id="4369121877634339065">Trage aici orice imagine pentru a căuta</translation>
+<translation id="4369215744064167350">Solicitarea de site a fost aprobată</translation>
 <translation id="4370975561335139969">Adresa de e-mail și parola pe care le-ai introdus nu se potrivesc</translation>
 <translation id="4373966964907728675">Se proiectează desktopul</translation>
 <translation id="4374831787438678295">Programul de instalare Linux</translation>
@@ -3934,6 +3938,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5117139026559873716">Deconectează telefonul de la <ph name="DEVICE_TYPE" />. Nu se va mai conecta automat.</translation>
 <translation id="5117930984404104619">Monitorizarea comportamentului altor extensii, inclusiv al adreselor URL accesate</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Dă clic aici pentru a accesa <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Sistemul de operare al containerului Linux nu mai este acceptat. Acesta nu va mai primi actualizări de securitate și remedieri ale erorilor, iar funcțiile care rulează se pot întrerupe în mod neașteptat. Fă upgrade la cea mai recentă versiune pentru a folosi în continuare Linux.</translation>
 <translation id="5121130586824819730">Hard diskul este plin. Salvați în altă locație sau eliberați mai mult spațiu pe hard disk.</translation>
 <translation id="5123433949759960244">Baschet</translation>
@@ -4042,6 +4047,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5235750401727657667">Înlocuiește pagina pe care o vezi la deschiderea unei file noi</translation>
 <translation id="5236374273162681467">Ca să le folosești cu ușurință pe toate dispozitivele, le poți muta în Contul Google</translation>
+<translation id="523862956770478816">Permisiuni la nivel de site</translation>
 <translation id="5242724311594467048">Activați extensia „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5243522832766285132">Încearcă din nou în câteva momente</translation>
 <translation id="5244474230056479698">Se sincronizează cu <ph name="EMAIL" /></translation>
@@ -5331,6 +5337,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6635674640674343739">Conexiunea la rețea nu poate fi stabilită. Verifică starea conexiunii la rețea și încearcă din nou.</translation>
 <translation id="6635944431854494329">Proprietarul poate controla această funcție din Setări &gt; Avansate &gt; Trimite automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="6635956300022133031">Selectează și personalizează vocile pentru redarea vocală a textului</translation>
+<translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
 <translation id="6639554308659482635">Memorie SQLite</translation>
 <translation id="6640268266988685324">Filă deschisă</translation>
 <translation id="6642720633335369752">Pentru a vedea toate ferestrele aplicațiilor deschise, glisează în sus din partea de jos și menține.</translation>
@@ -6607,6 +6614,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7946586320617670168">Originea trebuie să fie securizată</translation>
 <translation id="794676567536738329">Confirmați permisiunile</translation>
 <translation id="7947962633355574091">C&amp;opiază adresa videoclipului</translation>
+<translation id="7948407723851303488">Toate paginile din <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Pentru a adăuga sau gestiona metodele de plată Google Pay, accesează <ph name="BEGIN_LINK" />Contul tău Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
 <translation id="795282463722894016">Restabilire finalizată</translation>
@@ -7673,6 +7681,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9053893665344928494">Reține alegerea mea</translation>
 <translation id="9055636786322918818">Aplică criptarea RC4. Folosirea acestei opțiuni îți mărește riscul, deoarece suitele de codificare RC4 sunt nesecurizate.</translation>
 <translation id="9056810968620647706">Nu s-a găsit nicio potrivire.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vrea să acceseze următorul conținut:</translation>
 <translation id="9057354806206861646">Actualizează programul</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Eroare de la linia <ph name="ERROR_LINE_START" /> la linia <ph name="ERROR_LINE_END" /></translation>
