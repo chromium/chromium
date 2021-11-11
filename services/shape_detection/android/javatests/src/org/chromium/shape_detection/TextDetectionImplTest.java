@@ -41,7 +41,7 @@ public class TextDetectionImplTest {
         TextDetection detector = new TextDetectionImpl();
 
         final ArrayBlockingQueue<TextDetectionResult[]> queue = new ArrayBlockingQueue<>(1);
-        detector.detect(mojoBitmap, new TextDetection.DetectResponse() {
+        detector.detect(mojoBitmap, new TextDetection.Detect_Response() {
             @Override
             public void call(TextDetectionResult[] results) {
                 queue.add(results);

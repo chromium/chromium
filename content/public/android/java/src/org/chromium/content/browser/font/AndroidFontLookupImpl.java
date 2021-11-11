@@ -137,7 +137,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      *         guaranteed) to be available. The list is sorted in ascending order.
      */
     @Override
-    public void getUniqueNameLookupTable(GetUniqueNameLookupTableResponse callback) {
+    public void getUniqueNameLookupTable(GetUniqueNameLookupTable_Response callback) {
         String[] results = mExpectedFonts.toArray(new String[mExpectedFonts.size()]);
         Arrays.sort(results);
         callback.call(results);
@@ -154,7 +154,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      */
     @Override
     public void matchLocalFontByUniqueName(
-            @NonNull String fontUniqueName, MatchLocalFontByUniqueNameResponse callback) {
+            @NonNull String fontUniqueName, MatchLocalFontByUniqueName_Response callback) {
         long startTimeMs = SystemClock.elapsedRealtime();
 
         logFetchFontName(fontUniqueName);

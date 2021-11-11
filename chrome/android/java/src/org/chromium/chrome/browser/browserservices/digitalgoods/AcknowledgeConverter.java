@@ -15,7 +15,7 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
 import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
+import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
 
 /**
  * A converter that deals with the parameters and result for Acknowledge calls.
@@ -37,7 +37,7 @@ class AcknowledgeConverter {
         return bundle;
     }
 
-    static TrustedWebActivityCallback convertCallback(AcknowledgeResponse callback) {
+    static TrustedWebActivityCallback convertCallback(Acknowledge_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
@@ -65,11 +65,11 @@ class AcknowledgeConverter {
         };
     }
 
-    public static void returnClientAppUnavailable(AcknowledgeResponse callback) {
+    public static void returnClientAppUnavailable(Acknowledge_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE);
     }
 
-    public static void returnClientAppError(AcknowledgeResponse callback) {
+    public static void returnClientAppError(Acknowledge_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_ERROR);
     }
 

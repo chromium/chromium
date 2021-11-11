@@ -95,7 +95,7 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
         }
 
         @Override
-        public void onSynchronouslyDestroyed(OnSynchronouslyDestroyedResponse response) {
+        public void onSynchronouslyDestroyed(OnSynchronouslyDestroyed_Response response) {
             mPending.add(new Event(SYNCHRONOUSLY_DESTROYED));
             response.call();
         }

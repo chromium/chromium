@@ -20,7 +20,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.CreateDigitalGoodsResponseCode;
 import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
-import org.chromium.payments.mojom.DigitalGoodsFactory.CreateDigitalGoodsResponse;
+import org.chromium.payments.mojom.DigitalGoodsFactory.CreateDigitalGoods_Response;
 
 /**
  * An implementation of the mojo {@link DigitalGoodsFactory} interface.
@@ -71,7 +71,7 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     }
 
     @Override
-    public void createDigitalGoods(String paymentMethod, CreateDigitalGoodsResponse callback) {
+    public void createDigitalGoods(String paymentMethod, CreateDigitalGoods_Response callback) {
         if (sImplForTesting != null) {
             callback.call(CreateDigitalGoodsResponseCode.OK, sImplForTesting);
             return;

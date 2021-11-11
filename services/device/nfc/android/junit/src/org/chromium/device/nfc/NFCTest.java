@@ -51,8 +51,8 @@ import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefRecordTypeCategory;
 import org.chromium.device.mojom.NdefWriteOptions;
-import org.chromium.device.mojom.Nfc.PushResponse;
-import org.chromium.device.mojom.Nfc.WatchResponse;
+import org.chromium.device.mojom.Nfc.Push_Response;
+import org.chromium.device.mojom.Nfc.Watch_Response;
 import org.chromium.device.mojom.NfcClient;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -174,7 +174,7 @@ public class NFCTest {
         doReturn(null).when(mNfcManager).getDefaultAdapter();
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        WatchResponse mockCallback = mock(WatchResponse.class);
+        Watch_Response mockCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockCallback);
         verify(mockCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_SUPPORTED, mErrorCaptor.getValue().errorType);
@@ -190,7 +190,7 @@ public class NFCTest {
                 .when(mContext)
                 .checkPermission(anyString(), anyInt(), anyInt());
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
-        WatchResponse mockCallback = mock(WatchResponse.class);
+        Watch_Response mockCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockCallback);
         verify(mockCallback).call(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_ALLOWED, mErrorCaptor.getValue().errorType);
@@ -204,7 +204,7 @@ public class NFCTest {
     public void testNFCIsSupported() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        WatchResponse mockCallback = mock(WatchResponse.class);
+        Watch_Response mockCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockCallback);
         verify(mockCallback).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
@@ -1080,7 +1080,7 @@ public class NFCTest {
     public void testInvalidNdefMessage() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
         nfc.push(new NdefMessage(), createNdefWriteOptions(), mockCallback);
         nfc.processPendingOperationsForTesting(mNfcTagHandler);
         verify(mockCallback).call(mErrorCaptor.capture());
@@ -1100,7 +1100,7 @@ public class NFCTest {
 
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
-        WatchResponse mockCallback = mock(WatchResponse.class);
+        Watch_Response mockCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockCallback);
         nfc.suspendNfcOperations();
         verify(mNfcAdapter, times(1)).disableReaderMode(mActivity);
@@ -1132,7 +1132,7 @@ public class NFCTest {
         nfc.suspendNfcOperations();
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
-        WatchResponse mockCallback = mock(WatchResponse.class);
+        Watch_Response mockCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockCallback);
 
         // Check that watch request was completed successfully even if NFC operations are suspended.
@@ -1166,7 +1166,7 @@ public class NFCTest {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         nfc.suspendNfcOperations();
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
 
         // Check that push request was cancelled with OPERATION_CANCELLED.
@@ -1183,7 +1183,7 @@ public class NFCTest {
     public void testSuspendNfcOperationsCancelPush() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockPushCallback = mock(PushResponse.class);
+        Push_Response mockPushCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockPushCallback);
         nfc.suspendNfcOperations();
 
@@ -1201,7 +1201,7 @@ public class NFCTest {
     public void testPush() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
         nfc.processPendingOperationsForTesting(mNfcTagHandler);
         verify(mockCallback).call(mErrorCaptor.capture());
@@ -1216,7 +1216,7 @@ public class NFCTest {
     public void testCancelPush() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockPushCallback = mock(PushResponse.class);
+        Push_Response mockPushCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockPushCallback);
         nfc.cancelPush();
 
@@ -1235,7 +1235,7 @@ public class NFCTest {
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
         int watchId1 = mNextWatchId++;
-        WatchResponse mockWatchCallback1 = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback1 = mock(Watch_Response.class);
         nfc.watch(watchId1, mockWatchCallback1);
 
         // Check that watch requests were completed successfully.
@@ -1243,7 +1243,7 @@ public class NFCTest {
         assertNull(mErrorCaptor.getValue());
 
         int watchId2 = mNextWatchId++;
-        WatchResponse mockWatchCallback2 = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback2 = mock(Watch_Response.class);
         nfc.watch(watchId2, mockWatchCallback2);
         verify(mockWatchCallback2).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
@@ -1269,7 +1269,7 @@ public class NFCTest {
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
         int watchId = mNextWatchId++;
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(watchId, mockWatchCallback);
         verify(mockWatchCallback).call(mErrorCaptor.capture());
         assertNull(mErrorCaptor.getValue());
@@ -1293,7 +1293,7 @@ public class NFCTest {
     public void testCancelWatch() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockWatchCallback);
 
         verify(mockWatchCallback).call(mErrorCaptor.capture());
@@ -1318,10 +1318,10 @@ public class NFCTest {
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
         // Prepare at least one watcher, otherwise the error won't be notified.
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockWatchCallback);
         // Start a push.
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
 
         // Pass null tag handler to simulate that the tag is not NDEF compatible.
@@ -1353,10 +1353,10 @@ public class NFCTest {
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
         // Prepare at least one watcher, otherwise the error won't be notified.
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockWatchCallback);
         // Start a push.
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
 
         // Mocks blocked 'NFC tag found' event.
@@ -1411,7 +1411,7 @@ public class NFCTest {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
         nfc.setClient(mNfcClient);
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockWatchCallback);
 
         // Force read operation to fail
@@ -1437,7 +1437,7 @@ public class NFCTest {
     public void testTagDisconnectedDuringWrite() throws IOException, FormatException {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
 
         // Force write operation to fail
         doThrow(IllegalStateException.class)
@@ -1461,8 +1461,8 @@ public class NFCTest {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
 
-        PushResponse mockCallback1 = mock(PushResponse.class);
-        PushResponse mockCallback2 = mock(PushResponse.class);
+        Push_Response mockCallback1 = mock(Push_Response.class);
+        Push_Response mockCallback2 = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback1);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback2);
 
@@ -1484,7 +1484,7 @@ public class NFCTest {
     public void testPushInvocationWithCancel() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
 
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback);
 
@@ -1513,8 +1513,8 @@ public class NFCTest {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
 
-        PushResponse mockCallback1 = mock(PushResponse.class);
-        PushResponse mockCallback2 = mock(PushResponse.class);
+        Push_Response mockCallback1 = mock(Push_Response.class);
+        Push_Response mockCallback2 = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback1);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockCallback2);
 
@@ -1548,10 +1548,10 @@ public class NFCTest {
     public void testCancelledPushDontDisableReaderMode() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        WatchResponse mockWatchCallback = mock(WatchResponse.class);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
         nfc.watch(mNextWatchId, mockWatchCallback);
 
-        PushResponse mockPushCallback = mock(PushResponse.class);
+        Push_Response mockPushCallback = mock(Push_Response.class);
         nfc.push(createMojoNdefMessage(), createNdefWriteOptions(), mockPushCallback);
 
         verify(mNfcAdapter, times(1))
@@ -1581,7 +1581,7 @@ public class NFCTest {
     public void testPushWithEmptyRecord() {
         TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
         mDelegate.invokeCallback();
-        PushResponse mockCallback = mock(PushResponse.class);
+        Push_Response mockCallback = mock(Push_Response.class);
 
         // Create message with empty record.
         NdefRecord emptyNdefRecord = new NdefRecord();

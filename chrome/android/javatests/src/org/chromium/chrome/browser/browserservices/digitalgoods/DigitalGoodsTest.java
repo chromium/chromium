@@ -43,7 +43,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
@@ -125,7 +125,7 @@ public class DigitalGoodsTest {
                                 "id1", "Item 1", "Desc 1", "GBP", "10")));
 
         CallbackHelper helper = new CallbackHelper();
-        impl.getDetails(new String[] { "id1" }, new GetDetailsResponse() {
+        impl.getDetails(new String[] {"id1"}, new GetDetails_Response() {
             @Override
             public void call(Integer responseCode, ItemDetails[] details) {
                 assertEquals(0, responseCode.intValue());

@@ -167,7 +167,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         mProducer.extractTextFragmentsMatches(
-                new TextFragmentReceiver.ExtractTextFragmentsMatchesResponse() {
+                new TextFragmentReceiver.ExtractTextFragmentsMatches_Response() {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
@@ -180,7 +180,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     // Request text fragment selectors for existing highlights
     public static void getExistingSelectors(
             TextFragmentReceiver producer, Callback<String[]> callback) {
-        producer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectorsResponse() {
+        producer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectors_Response() {
             @Override
             public void call(String[] text) {
                 callback.onResult(text);
@@ -233,7 +233,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
+        mProducer.requestSelector(new TextFragmentReceiver.RequestSelector_Response() {
             @Override
             public void call(String selector) {
                 if (ChromeFeatureList.isEnabled(
