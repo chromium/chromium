@@ -584,8 +584,17 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
-                       OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
+// TODO(crbug.com/1269277): Fix flakiness on Linux and Lacros then reenable.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
+  DISABLED_OpeningAndClosingTheSidePanelHandlesFocusCorrectly
+#else
+#define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
+  OpeningAndClosingTheSidePanelHandlesFocusCorrectly
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SideSearchBrowserControllerTest,
+    MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
   // Navigate to a Google SRP and then a non-Google page. The side panel will be
   // available but closed.
   NavigateToSRPAndNonGoogleUrl(browser());
