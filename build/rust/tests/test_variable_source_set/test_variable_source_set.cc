@@ -5,11 +5,11 @@
 #include "test_variable_source_set.h"
 #include <iostream>
 
-#ifdef RUST_ENABLED
+#if defined(RUST_ENABLED)
 #include "build/rust/tests/test_variable_source_set/src/lib.rs.h"
 #endif
 
-#ifndef RUST_ENABLED
+#if !defined(RUST_ENABLED)
 struct FooBars {
   size_t foos;
   size_t bars;
@@ -28,7 +28,7 @@ FooBars do_something_in_sandbox(const std::string& input) {
 #endif
 
 void do_something_in_sandbox_or_memory_safe_language(const std::string& input) {
-#ifdef RUST_ENABLED
+#if defined(RUST_ENABLED)
   FooBars foobars = do_something_in_memory_safe_language(input);
 #else
   FooBars foobars = do_something_in_sandbox(input);

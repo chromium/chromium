@@ -94,7 +94,15 @@ template("mixed_target") {
     "rs_visibility",
   ]
 
-  if (enable_rust) {
+  _rs_enable = enable_rust
+
+  # Conceivably, conditional statements in the template invocation
+  # might result in no rs_sources files. If so, don't build any Rust.
+  if (!defined(invoker.rs_sources) || invoker.rs_sources == []) {
+    _rs_enable = false
+  }
+
+  if (_rs_enable) {
     rust_source_set("${_target_name}_rs") {
       mutually_dependent_target = ":${_target_name}"
       if (defined(invoker.rs_epoch)) {
@@ -144,7 +152,7 @@ template("mixed_target") {
 
   target(invoker.target_type, _target_name) {
     forward_variables_from(invoker, "*", known_rs_variables + [ "target_type" ])
-    if (enable_rust) {
+    if (_rs_enable) {
       if (!defined(deps)) {
         deps = []
       }
@@ -197,7 +205,7 @@ template("mixed_target") {
     }
   }
 
-  if (enable_rust && defined(invoker.rs_cxx_bindings)) {
+  if (_rs_enable && defined(invoker.rs_cxx_bindings)) {
     rust_cxx("${_target_name}_rs_cxx") {
       inputs = invoker.rs_cxx_bindings
       generate_source_set = false

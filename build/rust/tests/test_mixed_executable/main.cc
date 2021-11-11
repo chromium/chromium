@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include <iostream>
-#ifdef RUST_ENABLED
+#if defined(RUST_ENABLED)
 #include "build/rust/tests/test_mixed_executable/src/lib.rs.h"
 #endif
 
 int main(int argc, const char* argv[]) {
-#ifdef RUST_ENABLED
+#if defined(RUST_ENABLED)
   print_message_from_rust();
 #else
   std::cout << "Here is a message from C++.\n";

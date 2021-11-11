@@ -27,7 +27,7 @@ So:
 * any experiments must be reversible (you may have to write a C++ equivalent
   in order to ship)
 * Rust code must not affect production Chrome binaries nor be shipped to Chrome
-  users (we provide `#ifdef` and other facilities to make this easy) - so if
+  users (we provide `#if defined(...)` and other facilities to make this easy) - so if
   you put Rust code in Chrome, the sole purpose is to help experiment and provide
   data for evaluation of future memory safe language options
 * Rust is not yet available on all Chromium platforms (just Linux and Android
@@ -53,7 +53,7 @@ Simply:
 * Replace `source_set` with `mixed_source_set`
 * Add `rs_sources = [ "src/lib.rs" ]` (and likely `rs_cxx_bindings`, see below)
 * Add your Rust code in `src/lib.rs`
-* In your C++ code, make Rust calls based on the `#define` `RUST_ENABLED`.
+* In your C++ code, make Rust calls based on the `#if defined(RUST_ENABLED)`.
 
 In toolchains with Rust disabled, your `source_set` will continue to be a plain
 C++ source set and absolutely nothing will change.
@@ -72,9 +72,10 @@ other teams, but if you don't like it, that's fine: feel free to store your
 
 ## I'm not using a `source_set`
 
-If your code isn't already a `source_set`, switching to a `mixed_source_set`
-obviously isn't possible. Instead, you'll create a new Rust language target
-- see `//build/rust/rust_source_set.gni`. C++ targets can simply depend on
+There are equivalent templates for `mixed_component` and
+`mixed_executable`. But if you need to do something more sophisticated,
+you can create a new pure-Rust language target - see
+`//build/rust/rust_source_set.gni`. C++ targets can simply depend on
 this Rust target but with the suffix `_cpp_bindings` appended to the target
 name:
 

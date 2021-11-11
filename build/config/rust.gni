@@ -16,9 +16,6 @@ declare_args() {
   # is false.
   enable_rust = false
 
-  # Whether to allow Rust code to contribute to the main Chromium binaries.
-  enable_rust_in_chromium = false
-
   # Use unverified, untrusted, Rust toolchains from the internet
   # (which support more platforms and options than those we trust for real
   # builds).
