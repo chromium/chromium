@@ -48,6 +48,7 @@ public class HistoryNavigationCoordinator
     private OverscrollGlowOverlay mOverscrollGlowOverlay;
 
     private Callback<TouchEventObserver> mInitCallback;
+    private Callback<TouchEventObserver> mDestroyCallback;
 
     /**
      * Creates the coordinator for gesture navigation and initializes internal objects.
@@ -60,6 +61,7 @@ public class HistoryNavigationCoordinator
      *        capabilities of the device.
      * @param backActionDelegate Delegate handling actions for back gesture.
      * @param initRunnable Runnable to run when Navigation Handler is initialized.
+     * @param destroyRunnable Runnable to run when Navigation Handler is destroyed.
      * @param layoutManager LayoutManager for handling overscroll glow effect as scene layer.
      * @return HistoryNavigationCoordinator object or null if not enabled via feature flag.
      */
@@ -67,10 +69,12 @@ public class HistoryNavigationCoordinator
             ActivityLifecycleDispatcher lifecycleDispatcher, ViewGroup parentView,
             Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
             InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            Callback<TouchEventObserver> initCallback, LayoutManager layoutManager) {
+            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
+            LayoutManager layoutManager) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(window, lifecycleDispatcher, parentView, requestRunnable, tabSupplier,
-                insetObserverView, backActionDelegate, initCallback, layoutManager);
+                insetObserverView, backActionDelegate, initCallback, destroyCallback,
+                layoutManager);
         return coordinator;
     }
 
@@ -85,7 +89,8 @@ public class HistoryNavigationCoordinator
     private void init(WindowAndroid window, ActivityLifecycleDispatcher lifecycleDispatcher,
             ViewGroup parentView, Runnable requestRunnable, ObservableSupplier<Tab> tabSupplier,
             InsetObserverView insetObserverView, BackActionDelegate backActionDelegate,
-            Callback<TouchEventObserver> initCallback, LayoutManager layoutManager) {
+            Callback<TouchEventObserver> initCallback, Callback<TouchEventObserver> destroyCallback,
+            LayoutManager layoutManager) {
         mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, parentView, requestRunnable);
         mNavigationLayout = new HistoryNavigationLayout(parentView.getContext(), this::isNativePage,
                 mOverscrollGlowOverlay, (direction) -> mNavigationHandler.navigate(direction));
@@ -117,6 +122,7 @@ public class HistoryNavigationCoordinator
                 });
 
         mInitCallback = initCallback;
+        mDestroyCallback = destroyCallback;
 
         // We wouldn't hear about the first tab until the content changed or we switched tabs
         // if tabProvider.get() != null. Do here what we do when tab switching happens.
@@ -289,6 +295,7 @@ public class HistoryNavigationCoordinator
         if (mNavigationHandler != null) {
             mNavigationHandler.setTab(null);
             mNavigationHandler.destroy();
+            mDestroyCallback.onResult(mNavigationHandler);
             mNavigationHandler = null;
         }
         if (mActivityLifecycleDispatcher != null) {

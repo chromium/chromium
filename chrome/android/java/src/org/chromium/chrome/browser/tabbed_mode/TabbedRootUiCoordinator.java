@@ -454,7 +454,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivityLifecycleDispatcher, mCompositorViewHolderSupplier.get(),
                 mCallbackController.makeCancelable(
                         () -> mLayoutManager.getActiveLayout().requestUpdate()),
-                mActivityTabProvider, mInsetObserverViewSupplier.get(), new BackActionDelegate() {
+                mActivityTabProvider, mInsetObserverViewSupplier.get(),
+                new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
                         if (isShowingStartSurfaceHomepage()) return ActionType.EXIT_APP;
@@ -479,7 +480,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     public boolean isNavigable() {
                         return isShowingStartSurfaceHomepage();
                     }
-                }, mCompositorViewHolderSupplier.get()::addTouchEventObserver, mLayoutManager);
+                },
+                mCompositorViewHolderSupplier.get()::addTouchEventObserver,
+                mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
         mGestureNavLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
             public void onStartedShowing(int layoutType, boolean showToolbar) {
