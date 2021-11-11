@@ -177,12 +177,16 @@ class HistoryClustersServiceTest : public testing::Test {
   }
 
   // Verifies that the hardcoded visits were passed to the clustering backend.
-  void AwaitAndVerifyTestClusteringBackendRequest() {
+  void AwaitAndVerifyTestClusteringBackendRequest(bool for_keywords = false) {
     test_clustering_backend_->WaitForGetClustersCall();
 
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->LastClusteredVisits();
-    ASSERT_EQ(visits.size(), 2u);
+
+    // Keyword requests should not fetch visits older than 30 days; cluster
+    // requests should fetch all visits.
+    ASSERT_EQ(visits.size(), for_keywords ? 2u : 3u);
+
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
     EXPECT_EQ(visit.visit_row.visit_time,
@@ -198,6 +202,11 @@ class HistoryClustersServiceTest : public testing::Test {
     EXPECT_EQ(visit.visit_row.visit_duration, base::Milliseconds(5600));
     EXPECT_EQ(visit.url_row.url(), "https://google.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
+
+    if (!for_keywords) {
+      visit = visits[2];
+      EXPECT_EQ(visit.visit_row.visit_id, 4);
+    }
 
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
@@ -234,7 +243,8 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time(), /* max_count=*/0,
+      /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time(),
+      /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting([&](QueryClustersResult result) {
@@ -289,7 +299,7 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
       "History.Clusters.Backend.NumClustersReturned",
       static_cast<int>(clusters.size()), 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
+      "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
   histogram_tester.ExpectTotalCount(
@@ -300,7 +310,8 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time(), /* max_count=*/0,
+      /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time(),
+      /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting([&](QueryClustersResult result) {
@@ -432,7 +443,8 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
+      /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
+      /* max_count=*/0,
       base::DoNothing(),  // Only need to verify the correct request is sent.
       &task_tracker_);
 
@@ -463,7 +475,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
                         // a non-visible page transition.
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*end_time=*/base::Time::Now(), /* max_count=*/0,
+      /*query=*/"", /*begin_time=*/base::Time(), /*end_time=*/base::Time::Now(),
+      /* max_count=*/0,
       base::DoNothing(),  // Only need to verify the correct request is sent.
       &task_tracker_);
 
@@ -523,7 +536,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     auto run_loop_quit = run_loop.QuitClosure();
 
     history_clusters_service_->QueryClusters(
-        test_data[i].query, /*end_time=*/base::Time(),
+        test_data[i].query, /*begin_time=*/base::Time(),
+        /*end_time=*/base::Time(),
         /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
@@ -617,7 +631,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumClustersReturned", 2, base::size(test_data));
   histogram_tester.ExpectBucketCount(
-      "History.Clusters.Backend.NumVisitsToCluster", 2, base::size(test_data));
+      "History.Clusters.Backend.NumVisitsToCluster", 3, base::size(test_data));
   histogram_tester.ExpectBucketCount(
       "History.Clusters.PercentClustersFilteredByQuery", 0, 1);
   histogram_tester.ExpectBucketCount(
@@ -760,7 +774,9 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
   // Providing the response and running the task loop should populate the cache.
-  AwaitAndVerifyTestClusteringBackendRequest();
+  // This will also verify that visits older than 30 days are not included for
+  // keyword requests.
+  AwaitAndVerifyTestClusteringBackendRequest(true);
 
   std::vector<history::Cluster> clusters;
   clusters.push_back(

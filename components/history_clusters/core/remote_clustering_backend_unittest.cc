@@ -133,7 +133,7 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
     ASSERT_TRUE(request.ParseFromString(decoded));
 
     EXPECT_EQ(request.experiment_name(), kFakeExperimentName);
-    ASSERT_EQ(request.visits_size(), 3);
+    ASSERT_EQ(request.visits_size(), 4);
 
     auto visit = request.visits().at(0);
     EXPECT_EQ(visit.visit_id(), 1);

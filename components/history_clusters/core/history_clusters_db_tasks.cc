@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -37,10 +39,13 @@ base::Time GetAnnotatedVisitsToCluster::GetBeginTimeOnDayBoundary(
 
 GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+    base::Time begin_time,
     base::Time end_time,
     size_t max_count,
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
+      begin_time_limit_(
+          std::max(begin_time, base::Time::Now() - base::Days(90))),
       original_end_time_(end_time),
       continuation_end_time_(end_time),
       visit_soft_cap_(max_count),
@@ -53,24 +58,27 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryDatabase* db) {
   history::QueryOptions options;
 
-  // Provide a parameter-controlled hard-cap of the max visits to fetch.
-  // Note in most cases we stop fetching visits far before reaching this
-  // number. This is to prevent OOM errors. See https://crbug.com/1262016.
-  options.max_count = kMaxVisitsToCluster.Get();
-
   // History Clusters wants a complete navigation graph and internally handles
   // de-duplication.
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
   // We stop once we meet `visit_soft_cap_`. Also hard cap at
-  // `options_.max_count` which is enforced at the database level to avoid any
+  // `options.max_count` which is enforced at the database level to avoid any
   // one day blasting past the hard cap, causing OOM errors.
   bool limited_by_max_count = false;
   while (!exhausted_history_ && !limited_by_max_count &&
          annotated_visits_.size() < visit_soft_cap_) {
+    // Provide a parameter-controlled hard-cap of the max visits to fetch.
+    // Note in most cases we stop fetching visits far before reaching this
+    // number. This is to prevent OOM errors. See https://crbug.com/1262016.
+    options.max_count = kMaxVisitsToCluster.Get() - annotated_visits_.size();
+
+    // Bound visits by `original_end_time_` and `begin_time_limit_`, fetching
+    // the more recent visits 1st.
     options.end_time = continuation_end_time_;
-    options.begin_time = GetBeginTimeOnDayBoundary(options.end_time);
+    options.begin_time = std::max(begin_time_limit_,
+                                  GetBeginTimeOnDayBoundary(options.end_time));
 
     auto newly_fetched_annotated_visits =
         backend->GetAnnotatedVisits(options, &limited_by_max_count);
@@ -86,9 +94,12 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
 
     // TODO(tommycli): Connect this to History's limit defined internally in
     //  components/history.
+    // `exhausted_history_` is true if we've reached `begin_time_limit_` (bound
+    // to be at most 90 days old). This does not necessarily mean we've added
+    // all visits; e.g. `begin_time_limit_` can be more recent than 90 days ago
+    // or `original_end_time_` can be older than now.
     exhausted_history_ =
-        !limited_by_max_count &&
-        (base::Time::Now() - continuation_end_time_) >= base::Days(90);
+        !limited_by_max_count && continuation_end_time_ <= begin_time_limit_;
 
     // Tack on all the newly fetched visits onto our accumulator vector.
     base::ranges::move(newly_fetched_annotated_visits,

@@ -241,7 +241,7 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   history_clusters_service->QueryClusters(
-      query, end_time, kMaxClustersCount,
+      query, /*begin_time=*/base::Time(), end_time, kMaxClustersCount,
       base::BindOnce(&QueryClustersResultToMojom, profile_, query,
                      query_params->end_time.has_value())
           .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
@@ -337,7 +337,8 @@ void HistoryClustersHandler::OnClustersQueryResult(
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
     history_clusters_service->QueryClusters(
-        query_result->query, continuation_end_time, kMaxClustersCount,
+        query_result->query, /*begin_time=*/base::Time(), continuation_end_time,
+        kMaxClustersCount,
         base::BindOnce(&QueryClustersResultToMojom, profile_,
                        query_result->query, query_result->is_continuation)
             .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
