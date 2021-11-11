@@ -593,6 +593,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
 // TODO(crbug.com/1249851): Test crashes on Windows
 #if defined(OS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
+#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1269076): Test is flaky for linux tsan builds
+#define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #else
 #define MAYBE_BrowserActionPopup BrowserActionPopup
 #endif
