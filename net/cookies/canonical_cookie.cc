@@ -1077,11 +1077,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     }
   }
 
-  if (status.ShouldRecordDowngradeMetrics()) {
-    UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteContextDowngradeRequest",
-                              status.GetBreakingDowngradeMetricsEnumValue(url));
-  }
-
   if (status.HasWarningReason(
           CookieInclusionStatus::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {

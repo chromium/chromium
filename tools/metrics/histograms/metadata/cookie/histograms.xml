@@ -796,6 +796,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.SameSiteContextDowngradeRequest"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
     expires_after="2021-11-07">
+  <obsolete>
+    Removed Nov 2021: no longer needed and expired.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -813,6 +816,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.SameSiteContextDowngradeResponse"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
     expires_after="2021-11-07">
+  <obsolete>
+    Removed Nov 2021: no longer needed and expired.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
