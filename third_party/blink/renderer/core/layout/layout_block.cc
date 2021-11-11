@@ -594,8 +594,10 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
     // the outline which may enclose continuations.
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
     if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation())
+        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
+        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
       child_block_flow->AddVisualOverflowFromInlineChildren();
+    }
     AddVisualOverflowFromChild(*child);
   }
 }
@@ -615,8 +617,10 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
     // the outline which may enclose continuations.
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
     if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation())
+        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
+        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
       child_block_flow->AddLayoutOverflowFromInlineChildren();
+    }
 
     AddLayoutOverflowFromChild(*child);
   }
