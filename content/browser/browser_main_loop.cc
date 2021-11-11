@@ -505,8 +505,18 @@ void BrowserMainLoop::Init() {
     parameters_.startup_data.reset();
   }
 
+  // As of https://crrev.com/c/3244976 + https://crrev.com/c/3187153, embedders
+  // no longer own running `ui_task`. Some still query its boolean value
+  // however, fake it here. TODO(gab): As a follow-up, update
+  // ContentBrowserClient::CreateBrowserMainParts to take a `bool
+  // is_integration_test` instead of the entire `MainFunctionParams` which none
+  // of the parts impl use beyond ui_task's boolean value:
+  // https://bit.ly/3Eq9v36
+  MainFunctionParams fake_params(parameters_.command_line);
+  if (parameters_.ui_task)
+    fake_params.ui_task = base::DoNothing();
   parts_ = GetContentClient()->browser()->CreateBrowserMainParts(
-      std::move(parameters_));
+      std::move(fake_params));
 }
 
 // BrowserMainLoop stages ==================================================
@@ -853,6 +863,22 @@ void BrowserMainLoop::CreateStartupTasks() {
       &BrowserMainLoop::PreMainMessageLoopRun, base::Unretained(this));
   startup_task_runner_->AddTask(std::move(pre_main_message_loop_run));
 
+// On Android, the native message loop is already running when the app is
+// entered and startup tasks are run asynchrously from it.
+// InterceptMainMessageLoopRun() thus needs to be forced instead of happening
+// from MainMessageLoopRun().
+#if defined(OS_ANDROID)
+  StartupTask intercept_main_message_loop_run = base::BindOnce(
+      [](BrowserMainLoop* self) {
+        // Lambda to ignore the return value and always keep a clean exit code
+        // for this StartupTask.
+        self->InterceptMainMessageLoopRun();
+        return self->result_code_;
+      },
+      base::Unretained(this));
+  startup_task_runner_->AddTask(std::move(intercept_main_message_loop_run));
+#endif
+
 #if defined(OS_ANDROID)
   startup_task_runner_->StartRunningTasksAsync();
 #else
@@ -970,16 +996,33 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   return result_code_;
 }
 
+BrowserMainLoop::ProceedWithMainMessageLoopRun
+BrowserMainLoop::InterceptMainMessageLoopRun() {
+  // Embedders can request not to run the loop (also voids |ui_task|).
+  if (parts_ && !parts_->ShouldInterceptMainMessageLoopRun())
+    return ProceedWithMainMessageLoopRun(false);
+
+  // The |ui_task| can be injected by tests to replace the main message loop.
+  if (parameters_.ui_task) {
+    std::move(parameters_.ui_task).Run();
+    return ProceedWithMainMessageLoopRun(false);
+  }
+
+  return ProceedWithMainMessageLoopRun(true);
+}
+
 void BrowserMainLoop::RunMainMessageLoop() {
 #if defined(OS_ANDROID)
   // Android's main message loop is the Java message loop.
   NOTREACHED();
 #else   // defined(OS_ANDROID)
+  if (InterceptMainMessageLoopRun() != ProceedWithMainMessageLoopRun(true))
+    return;
+
   auto main_run_loop = std::make_unique<base::RunLoop>();
   if (parts_)
     parts_->WillRunMainMessageLoop(main_run_loop);
-  if (!main_run_loop)
-    return;
+  DCHECK(main_run_loop);
 
   main_run_loop->RunUntilIdle();
   // |parts_| may have captured a quit closure in WillRunMainMessageLoop(). If

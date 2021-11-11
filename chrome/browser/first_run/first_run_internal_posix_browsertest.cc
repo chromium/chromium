@@ -105,8 +105,8 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
 // run dialog. Ensure browser startup safely handles a signal while the modal
 // RunLoop is running.
 IN_PROC_BROWSER_TEST_F(FirstRunInternalPosixTest, HandleSigint) {
-  // Never reached. PreMainMessageLoopRunImpl() should return before this task
-  // is run.
+  // Never reached. The above SIGINT should prevent the main message loop
+  // (and the browser test hooking it) from running.
   ADD_FAILURE() << "Should never be called";
 }
 

@@ -57,7 +57,6 @@ class BrowserMainPartsImpl : public content::BrowserMainParts {
 
   // For running weblayer_browsertests.
   content::MainFunctionParams main_function_params_;
-  bool run_message_loop_ = true;
 
   // Ownership of this moves to BrowserProcess. See
   // ContentBrowserClientImpl::local_state_ for details.
