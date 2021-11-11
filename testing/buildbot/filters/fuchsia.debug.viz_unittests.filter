@@ -1,5 +1,5 @@
 # https://crbug.com/1241502
--All/SkiaReadbackPixelTest.*
+-All/SkiaReadbackPixelTestRGBA.*
 -All/YUVReadbackPixelTest.*
 -ExternalStencilPixelTest.*
 -GLRendererPixelTestFastSolidColorDraw.*

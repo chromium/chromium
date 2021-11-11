@@ -176,16 +176,21 @@ class GLRendererCopierPixelTest
       public testing::WithParamInterface<
           std::tuple<GLenum, bool, CopyOutputResult::Destination, bool, bool>> {
  public:
-  // The size of the source texture or framebuffer.
-  static constexpr gfx::Size kSourceSize = gfx::Size(240, 120);
-
   // In order to test coordinate calculations and Y-flipping, the tests will
   // issue copy requests for a small region just to the right and below the
   // center of the entire source texture/framebuffer.
-  static constexpr gfx::Rect kRequestArea = gfx::Rect(kSourceSize.width() / 2,
-                                                      kSourceSize.height() / 2,
-                                                      kSourceSize.width() / 4,
-                                                      kSourceSize.height() / 4);
+  gfx::Rect GetRequestArea() const {
+    DCHECK(!source_size_.IsZero());
+
+    gfx::Rect result(source_size_.width() / 2, source_size_.height() / 2,
+                     source_size_.width() / 4, source_size_.height() / 4);
+
+    if (scale_by_half_) {
+      return gfx::ScaleToEnclosingRect(result, 0.5f);
+    }
+
+    return result;
+  }
 
   void SetUp() override {
     SetUpGLWithoutRenderer(gfx::SurfaceOrigin::kBottomLeft);
@@ -207,6 +212,8 @@ class GLRendererCopierPixelTest
         GetTestFilePath(FILE_PATH_LITERAL("16_color_rects.png")),
         &source_bitmap_));
     source_bitmap_.setImmutable();
+
+    source_size_ = gfx::Size(source_bitmap_.width(), source_bitmap_.height());
 
     source_bitmap_rgba_ =
         GLScalerTestUtil::CopyAndConvertToRGBA(source_bitmap_);
@@ -277,6 +284,9 @@ class GLRendererCopierPixelTest
   }
 
  protected:
+  // The size of the source texture or framebuffer.
+  gfx::Size source_size_;
+
   GLenum source_gl_format_;
   bool have_source_texture_;
   CopyOutputResult::Destination result_destination_;
@@ -293,9 +303,6 @@ class GLRendererCopierPixelTest
   GLuint source_texture_ = 0;
   GLuint source_framebuffer_ = 0;
 };
-
-constexpr gfx::Size GLRendererCopierPixelTest::kSourceSize;
-constexpr gfx::Rect GLRendererCopierPixelTest::kRequestArea;
 
 // On Android KitKat bots (but not newer ones), the left column of pixels in the
 // result is off-by-one in the red channel. Use the off-by-one camparator as a
@@ -322,38 +329,34 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestRGBA) {
             },
             &result, loop.QuitClosure()));
     if (scale_by_half_) {
-      request->set_result_selection(
-          gfx::ScaleToEnclosingRect(gfx::Rect(kRequestArea), 0.5f));
       request->SetUniformScaleRatio(2, 1);
-    } else {
-      request->set_result_selection(gfx::Rect(kRequestArea));
     }
+
+    request->set_result_selection(GetRequestArea());
+
     const GLuint source_texture = CreateSourceTexture(source_bitmap_);
     CreateAndBindSourceFramebuffer(source_texture);
 
     copy_output::RenderPassGeometry geometry;
     // geometry.result_bounds not used by GLRendererCopier
     geometry.sampling_bounds =
-        DrawToWindowSpace(kSourceSize, gfx::Rect(kSourceSize));
+        DrawToWindowSpace(source_size_, gfx::Rect(source_size_));
     geometry.result_selection = request->result_selection();
     geometry.readback_offset =
-        DrawToWindowSpace(kSourceSize, geometry.result_selection)
+        DrawToWindowSpace(source_size_, geometry.result_selection)
             .OffsetFromOrigin();
 
     copier()->CopyFromTextureOrFramebuffer(
         std::move(request), geometry, source_gl_format_,
-        have_source_texture_ ? source_texture : 0, kSourceSize, flipped_source_,
-        gfx::ColorSpace::CreateSRGB());
+        have_source_texture_ ? source_texture : 0, source_size_,
+        flipped_source_, gfx::ColorSpace::CreateSRGB());
     loop.Run();
   }
 
   // Check that a result was produced and is of the expected rect/size.
   ASSERT_TRUE(result);
   ASSERT_FALSE(result->IsEmpty());
-  if (scale_by_half_)
-    ASSERT_EQ(gfx::ScaleToEnclosingRect(kRequestArea, 0.5f), result->rect());
-  else
-    ASSERT_EQ(kRequestArea, result->rect());
+  ASSERT_EQ(GetRequestArea(), result->rect());
 
   // Examine the image in the |result|, and compare it to the baseline PNG file.
   absl::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
@@ -382,22 +385,26 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
   if (result_destination_ ==
       CopyOutputRequest::ResultDestination::kNativeTextures) {
     // TODO(https://crbug.com/1216287): Enable once textures are supported.
-    GTEST_SKIP() << "Enable once the NV12 format supports producing results to "
-                    "a texture.";
+    GTEST_SKIP()
+        << "Enable once the GLRenderer supports producing producing results to "
+           "a texture for NV12 format.";
   }
 
-  if (scale_by_half_) {
-    // Check if width/2 and height/2 are even.
-    if (kRequestArea.width() % 4 != 0 || kRequestArea.height() % 4 != 0) {
-      // TODO(https://crbug.com/1256483): Fail the test case after adjusting
-      // asset sizes, if we got odd dimensions it means that the assets have
-      // been accidentally changed to no longer be even, even after scaling by
-      // half.
-      GTEST_SKIP() << " The test case expects the result size to match the "
-                      "request size exactly, which is not possible with NV12 "
-                      "when the request size dimensions aren't even.";
-    }
-  }
+  const gfx::Rect request_area = GetRequestArea();
+
+  // Check if request's width and height are even (required for NV12 format).
+  // The test case expects the result size to match the request size exactly,
+  // which is not possible with NV12 when the request size dimensions aren't
+  // even.
+  ASSERT_TRUE(request_area.width() % 2 == 0 && request_area.height() % 2 == 0)
+      << " request size is not even, request_area.size()="
+      << request_area.size().ToString();
+
+  // Additionally, the test uses helpers that assume pixel data can be packed (4
+  // 8-bit values in 1 32-bit pixel).
+  ASSERT_TRUE(request_area.width() % 4 == 0)
+      << " request width is not divisible by 4, request_area.width()="
+      << request_area.width();
 
   // Create and execute a CopyOutputRequest via the GLRendererCopier.
   std::unique_ptr<CopyOutputResult> result;
@@ -414,12 +421,10 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
             },
             &result, loop.QuitClosure()));
     if (scale_by_half_) {
-      request->set_result_selection(
-          gfx::ScaleToEnclosingRect(gfx::Rect(kRequestArea), 0.5f));
       request->SetUniformScaleRatio(2, 1);
-    } else {
-      request->set_result_selection(gfx::Rect(kRequestArea));
     }
+
+    request->set_result_selection(request_area);
 
     // Upload source texture to GL - the texture will be converted to RGBA if
     // necessary.
@@ -429,27 +434,23 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
     copy_output::RenderPassGeometry geometry;
     // geometry.result_bounds not used by GLRendererCopier
     geometry.sampling_bounds =
-        DrawToWindowSpace(kSourceSize, gfx::Rect(kSourceSize));
+        DrawToWindowSpace(source_size_, gfx::Rect(source_size_));
     geometry.result_selection = request->result_selection();
     geometry.readback_offset =
-        DrawToWindowSpace(kSourceSize, geometry.result_selection)
+        DrawToWindowSpace(source_size_, geometry.result_selection)
             .OffsetFromOrigin();
 
     copier()->CopyFromTextureOrFramebuffer(
         std::move(request), geometry, source_gl_format_,
-        have_source_texture_ ? source_texture : 0, kSourceSize, flipped_source_,
-        gfx::ColorSpace::CreateSRGB());
+        have_source_texture_ ? source_texture : 0, source_size_,
+        flipped_source_, gfx::ColorSpace::CreateSRGB());
     loop.Run();
   }
 
   // Check that a result was produced and is of the expected rect/size.
   ASSERT_TRUE(result);
   ASSERT_FALSE(result->IsEmpty());
-  if (scale_by_half_) {
-    ASSERT_EQ(gfx::ScaleToEnclosingRect(kRequestArea, 0.5f), result->rect());
-  } else {
-    ASSERT_EQ(kRequestArea, result->rect());
-  }
+  ASSERT_EQ(request_area, result->rect());
 
   // Examine the image in the |result|, and compare it to the baseline PNG file.
   // Approach is the same as the one in GLNV12ConverterPixelTest.

@@ -299,7 +299,8 @@ void GLScalerTestUtil::UnpackPlanarBitmap(const SkBitmap& plane,
   CHECK_GT(plane.height(), 0);
   const int col_sampling_ratio = out->width() / plane.width();
   CHECK_EQ(out->width() % plane.width(), 0)
-      << "out->width()=" << out->width() << ", plane.width()=" << plane.width();
+      << " out->width()=" << out->width()
+      << ", plane.width()=" << plane.width();
   CHECK_GT(col_sampling_ratio, 0);
   const int row_sampling_ratio = out->height() / plane.height();
   CHECK_EQ(out->height() % plane.height(), 0);
