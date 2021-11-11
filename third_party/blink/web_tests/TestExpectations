@@ -7281,4 +7281,5 @@ crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-pick
 crbug.com/1268931 [ Win10.20h2 ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268963 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
 crbug.com/1268947 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
+crbug.com/1269011 [ Mac10.14 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1269011 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
