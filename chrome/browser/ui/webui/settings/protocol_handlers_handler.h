@@ -37,7 +37,7 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
                                 public ProtocolHandlerRegistry::Observer,
                                 public web_app::AppRegistrarObserver {
  public:
-  ProtocolHandlersHandler();
+  explicit ProtocolHandlersHandler(Profile* profile);
 
   ProtocolHandlersHandler(const ProtocolHandlersHandler&) = delete;
   ProtocolHandlersHandler& operator=(const ProtocolHandlersHandler&) = delete;
@@ -131,7 +131,8 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
   // |args| is a list of [protocol, url, app_id].
   void HandleRemoveDisallowedAppHandler(base::Value::ConstListView args);
 
-  web_app::WebAppProvider* GetWebAppProvider();
+  Profile* const profile_;
+  web_app::WebAppProvider* const web_app_provider_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

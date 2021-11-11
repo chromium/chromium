@@ -214,7 +214,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<OnStartupHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<PeopleHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ProfileInfoHandler>(profile));
-  AddSettingsPageUIHandler(std::make_unique<ProtocolHandlersHandler>());
+  AddSettingsPageUIHandler(std::make_unique<ProtocolHandlersHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<PrivacySandboxHandler>());
   AddSettingsPageUIHandler(std::make_unique<SearchEnginesHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SecureDnsHandler>());

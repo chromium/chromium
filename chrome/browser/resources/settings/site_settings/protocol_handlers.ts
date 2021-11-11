@@ -101,12 +101,22 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
       /**
        * Array of allowed app protocols and their handlers.
        */
-      appAllowedProtocols: Array,
+      appAllowedProtocols: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
       /**
        * Array of disallowed app protocols and their handlers.
        */
-      appDisallowedProtocols: Array,
+      appDisallowedProtocols: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
       /**
        * Used to determine if the apps title should be shown.

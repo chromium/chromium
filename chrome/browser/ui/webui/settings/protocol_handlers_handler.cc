@@ -48,12 +48,16 @@ void GetHandlersAsListValue(
 
 }  // namespace
 
-ProtocolHandlersHandler::ProtocolHandlersHandler() = default;
+ProtocolHandlersHandler::ProtocolHandlersHandler(Profile* profile)
+    : profile_(profile),
+      web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile)) {}
+
 ProtocolHandlersHandler::~ProtocolHandlersHandler() = default;
 
 void ProtocolHandlersHandler::OnJavascriptAllowed() {
   registry_observation_.Observe(GetProtocolHandlerRegistry());
-  app_observation_.Observe(&GetWebAppProvider()->registrar());
+  if (web_app_provider_)
+    app_observation_.Observe(&web_app_provider_->registrar());
 }
 
 void ProtocolHandlersHandler::OnJavascriptDisallowed() {
@@ -216,8 +220,7 @@ ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
 }
 
 ProtocolHandlerRegistry* ProtocolHandlersHandler::GetProtocolHandlerRegistry() {
-  return ProtocolHandlerRegistryFactory::GetForBrowserContext(
-      Profile::FromWebUI(web_ui()));
+  return ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);
 }
 
 // App Protocol Handler specific functions
@@ -242,10 +245,13 @@ ProtocolHandlersHandler::GetAppHandlersForProtocol(
 }
 
 void ProtocolHandlersHandler::UpdateAllAllowedLaunchProtocols() {
+  if (!web_app_provider_)
+    return;
+
   base::flat_set<std::string> protocols(
-      GetWebAppProvider()->registrar().GetAllAllowedLaunchProtocols());
+      web_app_provider_->registrar().GetAllAllowedLaunchProtocols());
   web_app::OsIntegrationManager& os_integration_manager =
-      GetWebAppProvider()->os_integration_manager();
+      web_app_provider_->os_integration_manager();
 
   base::Value handlers(base::Value::Type::LIST);
   for (auto& protocol : protocols) {
@@ -260,10 +266,13 @@ void ProtocolHandlersHandler::UpdateAllAllowedLaunchProtocols() {
 }
 
 void ProtocolHandlersHandler::UpdateAllDisallowedLaunchProtocols() {
+  if (!web_app_provider_)
+    return;
+
   base::flat_set<std::string> protocols(
-      GetWebAppProvider()->registrar().GetAllDisallowedLaunchProtocols());
+      web_app_provider_->registrar().GetAllDisallowedLaunchProtocols());
   web_app::OsIntegrationManager& os_integration_manager =
-      GetWebAppProvider()->os_integration_manager();
+      web_app_provider_->os_integration_manager();
 
   base::Value handlers(base::Value::Type::LIST);
   for (auto& protocol : protocols) {
@@ -287,8 +296,9 @@ void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
     base::Value::ConstListView args) {
   content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
+  DCHECK(web_app_provider_);
 
-  GetWebAppProvider()->sync_bridge().RemoveAllowedLaunchProtocol(
+  web_app_provider_->sync_bridge().RemoveAllowedLaunchProtocol(
       handler.web_app_id().value(), handler.protocol());
 
   // No need to call UpdateAllAllowedLaunchProtocols() - we should receive a
@@ -300,16 +310,17 @@ void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
     base::Value::ConstListView args) {
   content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
+  DCHECK(web_app_provider_);
 
-  GetWebAppProvider()->sync_bridge().RemoveDisallowedLaunchProtocol(
+  web_app_provider_->sync_bridge().RemoveDisallowedLaunchProtocol(
       handler.web_app_id().value(), handler.protocol());
 
   // Update registration with the OS.
-  GetWebAppProvider()->os_integration_manager().UpdateProtocolHandlers(
+  web_app_provider_->os_integration_manager().UpdateProtocolHandlers(
       handler.web_app_id().value(), /*force_shortcut_updates_if_needed=*/true,
       base::DoNothing());
 
-  // No need to call HandleRemoveDisallowedAppHandler() - we should receive a
+  // No need to call UpdateAllDisallowedLaunchProtocols() - we should receive a
   // notification that the Web App Protocol Settings has changed and we will
   // update the view then.
 }
@@ -323,10 +334,6 @@ content::ProtocolHandler ProtocolHandlersHandler::ParseAppHandlerFromArgs(
     return content::ProtocolHandler::EmptyProtocolHandler();
   return content::ProtocolHandler::CreateWebAppProtocolHandler(
       *protocol, GURL(*url), *app_id);
-}
-
-web_app::WebAppProvider* ProtocolHandlersHandler::GetWebAppProvider() {
-  return web_app::WebAppProvider::GetForWebApps(Profile::FromWebUI(web_ui()));
 }
 
 }  // namespace settings
