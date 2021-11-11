@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // The path where ChromeOS default input methods is installed, consisting of
@@ -33,13 +33,7 @@ extern const base::FilePath::CharType kLanguageDataDirName[];
 // The domain of Google Keyboard language dictionary download URL.
 COMPONENT_EXPORT(ASH_IME_CONSTANTS)
 extern const char kGoogleKeyboardDownloadDomain[];
-}  // namespace ime
-}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace ime {
-using ::chromeos::ime::kBundledInputMethodsDirPath;
 }  // namespace ime
 }  // namespace ash
 

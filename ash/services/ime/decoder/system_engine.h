@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
@@ -53,6 +53,6 @@ class SystemEngine : public InputEngine {
 };
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_

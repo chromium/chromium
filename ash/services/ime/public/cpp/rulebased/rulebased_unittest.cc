@@ -11,7 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -242,4 +242,4 @@ TEST_F(RulebasedImeTest, Transforms_deva_phone) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

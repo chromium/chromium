@@ -17,10 +17,10 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::chromeos::ime::TextCompletionCandidate;
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
+using ::ash::ime::TextCompletionCandidate;
+using ::ash::ime::TextSuggestion;
+using ::ash::ime::TextSuggestionMode;
+using ::ash::ime::TextSuggestionType;
 
 class FakeAssistiveSuggester : public SuggestionsSource {
  public:
@@ -87,8 +87,7 @@ class SuggestionsCollectorTest : public ::testing::Test {
     return personal_info_address_result_;
   }
 
-  void OnSuggestionsReturned(
-      chromeos::ime::mojom::SuggestionsResponsePtr response) {
+  void OnSuggestionsReturned(ime::mojom::SuggestionsResponsePtr response) {
     suggestions_returned_ = response->candidates;
   }
 
@@ -112,7 +111,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsResultsFromAssistiveSuggester) {
   SuggestionsCollector collector(&suggester, std::move(requestor));
 
   collector.GatherSuggestions(
-      chromeos::ime::mojom::SuggestionsRequest::New(),
+      ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -129,7 +128,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsResultsFromSuggestionsRequestor) {
   SuggestionsCollector collector(&suggester, std::move(requestor));
 
   collector.GatherSuggestions(
-      chromeos::ime::mojom::SuggestionsRequest::New(),
+      ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -154,7 +153,7 @@ TEST_F(SuggestionsCollectorTest, ReturnsCombinedResultsIfAvailable) {
   };
 
   collector.GatherSuggestions(
-      chromeos::ime::mojom::SuggestionsRequest::New(),
+      ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 
@@ -180,7 +179,7 @@ TEST_F(SuggestionsCollectorTest,
   };
 
   collector.GatherSuggestions(
-      chromeos::ime::mojom::SuggestionsRequest::New(),
+      ime::mojom::SuggestionsRequest::New(),
       base::BindOnce(&SuggestionsCollectorTest::OnSuggestionsReturned,
                      base::Unretained(this)));
 

@@ -62,7 +62,7 @@
 // copy of the MojoSystemThunks struct definition.
 struct MojoSystemThunks;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // Callback upon async completion of DownloadToFile(), passing the originally
@@ -272,6 +272,6 @@ typedef bool (*ConnectToInputMethodFn)(const char*,
 typedef bool (*IsInputMethodConnectedFn)();
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_PUBLIC_CPP_SHARED_LIB_INTERFACES_H_

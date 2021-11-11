@@ -11,14 +11,14 @@ namespace ui {
 
 void RecordUkmNonCompliantApi(
     ukm::SourceId source,
-    const chromeos::ime::mojom::InputMethodApiOperation operation) {
+    const ash::ime::mojom::InputMethodApiOperation operation) {
   if (source == ukm::kInvalidSourceId ||
-      operation == chromeos::ime::mojom::InputMethodApiOperation::kUnknown) {
+      operation == ash::ime::mojom::InputMethodApiOperation::kUnknown) {
     return;
   }
 
   // After this metric was added, a default value of zero was added to
-  // chromeos.ime.mojom.InputMethodApiOperation, which shifted all the values by
+  // ash.ime.mojom.InputMethodApiOperation, which shifted all the values by
   // one. So subtract one to ensure the metric is still correct.
   ukm::builders::InputMethod_NonCompliantApi(source)
       .SetNonCompliantOperation(static_cast<int>(operation) - 1)

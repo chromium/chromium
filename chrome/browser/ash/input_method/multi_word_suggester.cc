@@ -16,9 +16,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::chromeos::ime::TextSuggestion;
-using ::chromeos::ime::TextSuggestionMode;
-using ::chromeos::ime::TextSuggestionType;
+using ::ash::ime::TextSuggestion;
+using ::ash::ime::TextSuggestionMode;
+using ::ash::ime::TextSuggestionType;
 
 constexpr char16_t kSuggestionShownMessage[] =
     u"predictive writing candidate shown, press tab to accept";

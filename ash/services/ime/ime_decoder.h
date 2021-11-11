@@ -11,7 +11,7 @@
 #include "base/scoped_native_library.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 // A proxy class for the IME decoder.
@@ -76,6 +76,6 @@ void FakeDecoderEntryPointsForTesting(
     const ImeDecoder::EntryPoints& decoder_entry_points);
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_SERVICES_IME_IME_DECODER_H_

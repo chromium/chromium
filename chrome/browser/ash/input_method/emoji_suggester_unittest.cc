@@ -18,9 +18,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using TextSuggestion = ::chromeos::ime::TextSuggestion;
-using TextSuggestionMode = ::chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = ::chromeos::ime::TextSuggestionType;
+using TextSuggestion = ::ash::ime::TextSuggestion;
+using TextSuggestionMode = ::ash::ime::TextSuggestionMode;
+using TextSuggestionType = ::ash::ime::TextSuggestionType;
 
 }  // namespace
 
