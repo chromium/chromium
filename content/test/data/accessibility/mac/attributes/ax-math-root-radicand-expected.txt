@@ -6,6 +6,4 @@ sqrt1.AXMathRootRadicand[3].AXChildren[0].AXValue='4'
 sqrt2.AXMathRootRadicand.count=0
 root1.AXMathRootRadicand.count=1
 root1.AXMathRootRadicand[0].AXChildren[0].AXValue='1'
-root1.AXMathRootIndex.AXChildren[0].AXValue='2'
 root2.AXMathRootRadicand=NULL
-root3.AXMathRootIndex=NULL

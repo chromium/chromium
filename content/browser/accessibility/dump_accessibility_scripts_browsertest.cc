@@ -26,7 +26,6 @@ constexpr const char kMacAttributes[]{"mac/attributes"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
-constexpr const char kMacMathML[]{"mac/mathml"};
 
 #endif
 
@@ -186,6 +185,50 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
+  RunTypedTest<kMacAttributes>("ax-math-base.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionDenominator) {
+  RunTypedTest<kMacAttributes>("ax-math-fraction-denominator.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionNumerator) {
+  RunTypedTest<kMacAttributes>("ax-math-fraction-numerator.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathOver) {
+  RunTypedTest<kMacAttributes>("ax-math-over.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathPoscripts) {
+  RunTypedTest<kMacAttributes>("ax-math-postscripts.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathPrescripts) {
+  RunTypedTest<kMacAttributes>("ax-math-prescripts.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathRootIndex) {
+  RunTypedTest<kMacAttributes>("ax-math-root-index.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathRootRadicand) {
+  RunTypedTest<kMacAttributes>("ax-math-root-radicand.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathSubscript) {
+  RunTypedTest<kMacAttributes>("ax-math-subscript.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathSuperscript) {
+  RunTypedTest<kMacAttributes>("ax-math-superscript.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathUnder) {
+  RunTypedTest<kMacAttributes>("ax-math-under.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
   RunTypedTest<kMacSelection>("selectall-textarea.html");
 }
@@ -237,27 +280,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
   RunTypedTest<kMacMethods>("accessibility-title.html");
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLFractionAttributes) {
-  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("fraction-attributes.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLRadicalAttributes) {
-  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("radical-attributes.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLUnderOverAttributes) {
-  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("underover-attributes.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLSubSupAttributes) {
-  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("subsup-attributes.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
-                       MathMLMultiscriptsAttributes) {
-  RunTypedTest<kMacMathML>(FILE_PATH_LITERAL("multiscripts-attributes.html"));
 }
 
 #endif
