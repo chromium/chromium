@@ -765,30 +765,14 @@ try_.chromium_chromiumos_builder(
     ),
 )
 
-try_.chromium_chromiumos_builder(
+try_.chromium_chromiumos_orchestrator_pair(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
-    builderless = not settings.is_main,
     main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
-    tryjob = try_.job(),
-)
-
-try_.chromium_chromiumos_builder(
-    name = "chromeos-amd64-generic-rel-compilator",
-    branch_selector = branches.CROS_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    cores = 16,
-    executable = "recipe:chromium/compilator",
-    main_list_view = "try",
-    os = os.LINUX_BIONIC_REMOVE,
-    ssd = True,
-    properties = {
-        "orchestrator": {
-            "builder_name": "chromeos-amd64-generic-rel",
-            "builder_group": "tryserver.chromium.chromiumos",
-        },
-    },
+    orchestrator_cores = 2,
+    orchestrator_tryjob = try_.job(),
+    compilator_cores = 16,
+    compilator_name = "chromeos-amd64-generic-rel-compilator",
 )
 
 try_.chromium_chromiumos_builder(

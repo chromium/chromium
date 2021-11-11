@@ -566,9 +566,9 @@ def orchestrator_pair_builders(
         orchestrator_cores,
         orchestrator_tryjob,
         compilator_cores,
-        compilator_goma_jobs,
         compilator_name,
         compilator_os,
+        compilator_goma_jobs = None,
         compilator_builderless = not settings.is_main,
         orchestrator_builderless = not settings.is_main,
         **common_kwargs):
