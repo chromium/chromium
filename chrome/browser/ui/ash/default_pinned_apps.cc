@@ -8,32 +8,12 @@
 #include "base/cxx17_backports.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
 
 namespace {
 
 base::span<StaticAppId> GetDefaultPinnedApps() {
-  if (!base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2)) {
-    constexpr const char* kLegacyDefaultPinnedApps[] = {
-        extension_misc::kFilesManagerAppId,
-
-        extension_misc::kGmailAppId,
-        web_app::kGmailAppId,
-
-        extension_misc::kGoogleDocsAppId,
-        web_app::kGoogleDocsAppId,
-
-        extension_misc::kYoutubeAppId,
-        web_app::kYoutubeAppId,
-
-        arc::kPlayStoreAppId,
-    };
-    return base::span<StaticAppId>(kLegacyDefaultPinnedApps,
-                                   base::size(kLegacyDefaultPinnedApps));
-  }
-
   constexpr const char* kDefaultPinnedApps[] = {
       extension_misc::kGmailAppId,
       web_app::kGmailAppId,
@@ -58,23 +38,6 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
 }
 
 base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
-  if (!base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2)) {
-    constexpr const char* kLegacyTabletFormFactorDefaultPinnedApps[] = {
-        extension_misc::kFilesManagerAppId,
-
-        arc::kGmailAppId,
-
-        extension_misc::kGoogleDocsAppId,
-
-        arc::kYoutubeAppId,
-
-        arc::kPlayStoreAppId,
-    };
-    return base::span<StaticAppId>(
-        kLegacyTabletFormFactorDefaultPinnedApps,
-        base::size(kLegacyTabletFormFactorDefaultPinnedApps));
-  }
-
   constexpr const char* kTabletFormFactorDefaultPinnedApps[] = {
       arc::kGmailAppId,
 

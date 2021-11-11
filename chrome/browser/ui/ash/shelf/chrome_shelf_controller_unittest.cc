@@ -1459,30 +1459,19 @@ TEST_P(ChromeShelfControllerTest, PreinstalledApps) {
   StartPrefSyncService(syncer::SyncDataList());
   EXPECT_EQ("Chrome, Youtube, App1", GetPinnedAppStatus());
 
-  if (base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2)) {
-    AddWebApp(web_app::kMessagesAppId);
-    EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
+  AddWebApp(web_app::kMessagesAppId);
+  EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
 
-    AddExtension(extension_files_app_.get());
-    EXPECT_EQ("Chrome, Files, Messages, Youtube, App1", GetPinnedAppStatus());
+  AddExtension(extension_files_app_.get());
+  EXPECT_EQ("Chrome, Files, Messages, Youtube, App1", GetPinnedAppStatus());
 
-    AddWebApp(web_app::kGoogleCalendarAppId);
-    EXPECT_EQ("Chrome, Calendar, Files, Messages, Youtube, App1",
-              GetPinnedAppStatus());
+  AddWebApp(web_app::kGoogleCalendarAppId);
+  EXPECT_EQ("Chrome, Calendar, Files, Messages, Youtube, App1",
+            GetPinnedAppStatus());
 
-    AddWebApp(web_app::kGmailAppId);
-    EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
-              GetPinnedAppStatus());
-  } else {
-    AddWebApp(web_app::kGoogleDocsAppId);
-    EXPECT_EQ("Chrome, Doc, Youtube, App1", GetPinnedAppStatus());
-
-    AddWebApp(web_app::kGmailAppId);
-    EXPECT_EQ("Chrome, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
-
-    AddExtension(extension_files_app_.get());
-    EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
-  }
+  AddWebApp(web_app::kGmailAppId);
+  EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
+            GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerSyncConsentOptionalTest, PreinstalledApps) {
@@ -1502,10 +1491,7 @@ TEST_F(ChromeShelfControllerSyncConsentOptionalTest, PreinstalledApps) {
   AddWebApp(web_app::kGoogleDocsAppId);
 
   // Default apps are pinned.
-  if (base::FeatureList::IsEnabled(features::kDefaultPinnedAppsUpdate2021Q2))
-    EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
-  else
-    EXPECT_EQ("Chrome, Gmail, Doc, Youtube", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
