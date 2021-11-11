@@ -57,6 +57,8 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
+#include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace cc {
 class Layer;
@@ -457,6 +459,9 @@ class CORE_EXPORT HTMLMediaElement
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
   void ContextDestroyed() override;
 
+  // Gets the current context's metronome provider.
+  scoped_refptr<MetronomeProvider> GetExecutionContextMetronomeProvider() const;
+
   virtual void OnPlay() {}
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
@@ -545,8 +550,8 @@ class CORE_EXPORT HTMLMediaElement
   void SuspendForFrameClosed() override;
 
   void LoadTimerFired(TimerBase*);
-  void ProgressEventTimerFired(TimerBase*);
-  void PlaybackProgressTimerFired(TimerBase*);
+  void ProgressEventTimerFired();
+  void PlaybackProgressTimerFired();
   void ScheduleTimeupdateEvent(bool periodic_event);
   void StartPlaybackProgressTimer();
   void StartProgressEventTimer();
@@ -667,11 +672,17 @@ class CORE_EXPORT HTMLMediaElement
   mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayerObserver>
   AddMediaPlayerObserverAndPassReceiver();
 
+  // Timers used to schedule one-shot tasks with no delay.
   HeapTaskRunnerTimer<HTMLMediaElement> load_timer_;
-  HeapTaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
-  HeapTaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
+  // Timers used to schedule repeating tasks. For this a lower precision timer,
+  // WebRtcTimer, is used. This may reduce Idle Wake Ups when WebRTC is used.
+  // TODO(https://crbug.com/1267874): When there exists a low resolution timer
+  // in base/ that does not have a dependency on WebRTC, use such a timer
+  // instead.
+  WebRtcTimer progress_event_timer_;
+  WebRtcTimer playback_progress_timer_;
 
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
