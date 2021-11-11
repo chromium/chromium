@@ -77,8 +77,7 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
 void MessageStreamLookupImpl::DeviceRemoved(device::BluetoothAdapter* adapter,
                                             device::BluetoothDevice* device) {
   // Remove message stream if the device removed from the adapter has a
-  // message stream. The reason why this isn't a DCHECK like in
-  // |RemoveMessageStream| is because it isn't expected to already have one
+  // message stream. It isn't expected to already have a MessageStream
   // associated with it.
   message_streams_.erase(device->GetAddress());
 }
@@ -87,12 +86,9 @@ void MessageStreamLookupImpl::RemoveMessageStream(
     const std::string& device_address) {
   QP_LOG(VERBOSE) << __func__ << ": device address = " << device_address;
 
-  // Check if the device has a MessageStream in the map.
-  auto it = message_streams_.find(device_address);
-  DCHECK(it != message_streams_.end());
-
-  // Remove map entry.
-  message_streams_.erase(it);
+  // Remove map entry if it exists. It may not exist if it was failed to be
+  // created due to a |ConnectToService| error.
+  message_streams_.erase(message_streams_.find(device_address));
 }
 
 void MessageStreamLookupImpl::CreateMessageStream(
@@ -102,8 +98,7 @@ void MessageStreamLookupImpl::CreateMessageStream(
   // Only open message streams for new devices that don't already have a
   // message stream stored in the map.
   const std::string& device_address = device->GetAddress();
-  auto it = message_streams_.find(device_address);
-  DCHECK(it == message_streams_.end());
+  DCHECK(message_streams_.find(device_address) == message_streams_.end());
 
   device->ConnectToService(
       /*uuid=*/kMessageStreamUuid, /*callback=*/
@@ -117,6 +112,7 @@ void MessageStreamLookupImpl::CreateMessageStream(
 void MessageStreamLookupImpl::OnConnected(
     std::string device_address,
     scoped_refptr<device::BluetoothSocket> socket) {
+  QP_LOG(ERROR) << __func__;
   std::unique_ptr<MessageStream> message_stream =
       std::make_unique<MessageStream>(device_address, std::move(socket));
 
