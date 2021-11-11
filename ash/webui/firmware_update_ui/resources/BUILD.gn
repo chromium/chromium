@@ -75,7 +75,6 @@ js_library("firmware_update_app") {
     ":firmware_update_dialog",
     ":peripheral_updates_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -83,7 +82,6 @@ js_library("firmware_update_dialog") {
   deps = [
     ":firmware_update_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -113,7 +111,6 @@ js_library("update_card") {
   deps = [
     ":firmware_update_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
