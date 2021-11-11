@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
+
 namespace gfx {
 class Point;
 }
@@ -22,6 +24,7 @@ void SetHostDispatcher(WindowTreeHost* host,
                        std::unique_ptr<WindowEventDispatcher> dispatcher);
 void DisableIME(WindowTreeHost* host);
 void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
+const base::flat_set<WindowTreeHost*>& GetThrottledHosts();
 
 }  // namespace test
 }  // namespace aura

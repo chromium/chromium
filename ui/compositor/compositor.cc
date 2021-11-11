@@ -448,6 +448,7 @@ void Compositor::SetScaleAndSize(float scale,
   }
 #endif  // DECHECK_IS_ON()
 
+  // cc requires the size to be non-empty (meaning DCHECKs if size is empty).
   if (!size_in_pixel.IsEmpty()) {
     bool size_changed = size_ != size_in_pixel;
     size_ = size_in_pixel;
@@ -494,16 +495,6 @@ void Compositor::SetDisplayTransformHint(gfx::OverlayTransform hint) {
 void Compositor::SetBackgroundColor(SkColor color) {
   host_->set_background_color(color);
   ScheduleDraw();
-}
-
-void Compositor::EvictRootSurface(const viz::LocalSurfaceId& surface_id) {
-  DCHECK_NE(surface_id, host_->local_surface_id_from_parent());
-  DCHECK(host_->local_surface_id_from_parent().is_valid());
-  const viz::SurfaceId old_surface_id(frame_sink_id_,
-                                      host_->local_surface_id_from_parent());
-  host_->SetViewportRectAndScale(gfx::Rect(size_), device_scale_factor_,
-                                 surface_id);
-  context_factory_->GetHostFrameSinkManager()->EvictSurfaces({old_surface_id});
 }
 
 void Compositor::SetVisible(bool visible) {

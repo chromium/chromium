@@ -318,7 +318,7 @@ class AuraWindowVideoCaptureDeviceBrowserTestWin
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kApplyNativeOcclusionToCompositor,
         {{features::kApplyNativeOcclusionToCompositorType,
-          features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict}});
+          features::kApplyNativeOcclusionToCompositorTypeRelease}});
 
     AuraWindowVideoCaptureDeviceBrowserTest::SetUp();
   }

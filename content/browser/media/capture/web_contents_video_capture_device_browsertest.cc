@@ -288,7 +288,7 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kApplyNativeOcclusionToCompositor,
         {{features::kApplyNativeOcclusionToCompositorType,
-          features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict}});
+          features::kApplyNativeOcclusionToCompositorTypeRelease}});
 
     WebContentsVideoCaptureDeviceBrowserTest::SetUp();
   }

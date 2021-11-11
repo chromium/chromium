@@ -30,6 +30,10 @@ class WindowTreeHostTestApi {
 
   void disable_ime() { host_->dispatcher_->set_skip_ime(true); }
 
+  static const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+    return WindowTreeHost::GetThrottledHostsForTesting();
+  }
+
  private:
   WindowTreeHost* host_;
 };
@@ -51,6 +55,10 @@ void DisableIME(WindowTreeHost* host) {
 
 void DisableNativeWindowOcclusionTracking(WindowTreeHost* host) {
   NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
+}
+
+const base::flat_set<WindowTreeHost*>& GetThrottledHosts() {
+  return WindowTreeHostTestApi::GetThrottledHosts();
 }
 
 }  // namespace test

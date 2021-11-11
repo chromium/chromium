@@ -35,14 +35,12 @@ const base::Feature kApplyNativeOcclusionToCompositor{
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const char kApplyNativeOcclusionToCompositorType[] = "type";
-// Indicates occlusion should be applied to the compositor.
-const char kApplyNativeOcclusionToCompositorTypeApplyOnly[] = "apply";
-// Indicates occlusion should be applied to the compositor, and when occluded
-// the root surface should be evicted when hidden/occluded.
-const char kApplyNativeOcclusionToCompositorTypeApplyAndEvict[] =
-    "apply-and-evict";
-// Indicates the root surface should be evicted when hidden/occluded.
-const char kApplyNativeOcclusionToCompositorTypeEvictOnly[] = "evict";
+// When the WindowTreeHost is occluded or hidden, resources are released and
+// the compositor is hidden. See WindowTreeHost for specifics on what this
+// does.
+const char kApplyNativeOcclusionToCompositorTypeRelease[] = "release";
+// When the WindowTreeHost is occluded the frame rate is throttled.
+const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
 
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{
