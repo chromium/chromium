@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 
+#include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
@@ -31,6 +32,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
           std::make_unique<SystemPropertiesProviderImpl>(
               adapter_state_controller_.get(),
               device_cache_.get())),
+      bluetooth_device_status_notifier_(
+          initializer.CreateBluetoothDeviceStatusNotifier(device_cache_.get())),
       discovery_session_manager_(initializer.CreateDiscoverySessionManager(
           adapter_state_controller_.get(),
           bluetooth_adapter,
@@ -61,6 +64,12 @@ void CrosBluetoothConfig::BindPendingReceiver(
 void CrosBluetoothConfig::ObserveSystemProperties(
     mojo::PendingRemote<mojom::SystemPropertiesObserver> observer) {
   system_properties_provider_->Observe(std::move(observer));
+}
+
+void CrosBluetoothConfig::ObserveDeviceStatusChanges(
+    mojo::PendingRemote<mojom::BluetoothDeviceStatusObserver> observer) {
+  bluetooth_device_status_notifier_->ObserveDeviceStatusChanges(
+      std::move(observer));
 }
 
 void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {

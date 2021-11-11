@@ -68,7 +68,13 @@ export class FakeBluetoothConfig {
      * @private {!Array<
      *     !chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface>}
      */
-    this.observers_ = [];
+    this.system_properties_observers_ = [];
+
+    /**
+     * @private {!Array<
+     *     !chromeos.bluetoothConfig.mojom.BluetoothDeviceStatusObserverInterface>}
+     */
+    this.bluetooth_device_status_observers_ = [];
 
     /**
      * @private {?chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
@@ -108,8 +114,17 @@ export class FakeBluetoothConfig {
    *     observer
    */
   observeSystemProperties(observer) {
-    this.observers_.push(observer);
+    this.system_properties_observers_.push(observer);
     this.notifyObserversPropertiesUpdated_();
+  }
+
+  /**
+   * @override
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceStatusObserverInterface}
+   *     observer
+   */
+  observeDeviceStatusChanges(observer) {
+    this.bluetooth_device_status_observers_.push(observer);
   }
 
 
@@ -395,7 +410,8 @@ export class FakeBluetoothConfig {
    * Notifies the observer list that systemProperties_ has changed.
    */
   notifyObserversPropertiesUpdated_() {
-    this.observers_.forEach(o => o.onPropertiesUpdated(this.systemProperties_));
+    this.system_properties_observers_.forEach(
+        o => o.onPropertiesUpdated(this.systemProperties_));
   }
 
   /**

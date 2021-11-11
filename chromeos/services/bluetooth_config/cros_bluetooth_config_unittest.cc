@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
+#include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
@@ -118,6 +119,13 @@ TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
 TEST_F(CrosBluetoothConfigTest, CallNamingFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   remote->SetDeviceNickname("device_id", "nickname");
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrosBluetoothConfigTest, CallBluetoothDeviceStatusApiFunction) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  FakeBluetoothDeviceStatusObserver fake_observer;
+  remote->ObserveDeviceStatusChanges(fake_observer.GeneratePendingRemote());
   base::RunLoop().RunUntilIdle();
 }
 

@@ -17,6 +17,7 @@ namespace chromeos {
 namespace bluetooth_config {
 
 class AdapterStateController;
+class BluetoothDeviceStatusNotifier;
 class DeviceCache;
 class DeviceNameManager;
 class DeviceOperationHandler;
@@ -32,6 +33,8 @@ class Initializer {
 
   virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+  virtual std::unique_ptr<BluetoothDeviceStatusNotifier>
+  CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) = 0;
   virtual std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<DeviceCache> CreateDeviceCache(

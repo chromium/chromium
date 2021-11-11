@@ -244,6 +244,11 @@ interface CrosBluetoothConfig {
   // observing, disconnect |observer|.
   ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
 
+  // Invokes OnDevicePaired() when a device is newly paired. To stop
+  // observing, disconnect |observer|.
+  ObserveDeviceStatusChanges(
+    pending_remote<BluetoothDeviceStatusObserver> observer);
+
   // Turns Bluetooth on or off. If Bluetooth is unavailable or if it is
   // not currently modifiable, this function is a no-op.
   SetBluetoothEnabledState(bool enabled);
