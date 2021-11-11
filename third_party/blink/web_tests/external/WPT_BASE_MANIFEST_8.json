@@ -214628,6 +214628,19 @@
          {}
         ]
        ],
+       "embedded_style_cascade_priority_layer.html": [
+        "8d4598fe30daf4c8d2f946604fd22257c71fccfb",
+        [
+         null,
+         [
+          [
+           "/webvtt/rendering/cues-with-video/processing-model/embedded_style_cascade_priority-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "embedded_style_imports_blocked.html": [
         "1ffdf078d132e4f4f59e6cdafcb3e94dfedd4bb7",
         [
@@ -219635,7 +219648,7 @@
       []
      ],
      "echo-ua-client-hints-received.py": [
-      "eea62bf94039c291fac538b6a04ed2528301206c",
+      "91cc606f3ca8970eb4f4b8cb3b0224c95adc2ffb",
       []
      ],
      "expect-client-hints-headers-iframe.py": [
@@ -267200,7 +267213,23 @@
      []
     ],
     "traversal": {
+     "TreeWalker-acceptNode-filter-cross-realm-expected.txt": [
+      "7948b1bf20723649a696ddc36b6a885c1f3a62a7",
+      []
+     ],
+     "TreeWalker-acceptNode-filter-cross-realm-null-browsing-context-expected.txt": [
+      "e9ed6f07909cb4a9ba25de88d5426744236e701f",
+      []
+     ],
      "support": {
+      "TreeWalker-acceptNode-filter-cross-realm-null-browsing-context-subframe.html": [
+       "f5e393d0f081728aba806a7155fb8139796b089d",
+       []
+      ],
+      "TreeWalker-acceptNode-filter-cross-realm-subframe.html": [
+       "0c8bda14c0faf2b81fbb7556f9c12a0631bba7ec",
+       []
+      ],
       "assert-node.js": [
        "0d5d8ad74fce7dcd4d60a1a11525c5134407f8ba",
        []
@@ -310073,6 +310102,10 @@
          "9471b32be1577532e89c66f0177af55a39d86971",
          []
         ],
+        "embedded_style_cascade_priority_layer.vtt": [
+         "c0f6cd88211433ce7bfd4dd6d15eee694797a992",
+         []
+        ],
         "embedded_style_imports_blocked.vtt": [
          "11a84af0297d8781ebd277192c5638cd1ff23019",
          []
@@ -332186,7 +332219,7 @@
      ]
     ],
     "sec-ch-quotes.https.html": [
-     "f48c8c09e097dde80c8b91e11d2b0784698bd25d",
+     "d772ea8b5c3bb5ae852864fdc22b9a9e53c5bc9e",
      [
       null,
       {}
@@ -362492,6 +362525,13 @@
         {}
        ]
       ],
+      "color-transition-premultiplied.html": [
+       "745e6c0c735da728a948120fc9417ff67c639df0",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-shadow-composition.html": [
        "d7d29c416ac03d4f0c0fff1fdacbadb7dccec924",
        [
@@ -362501,6 +362541,13 @@
       ],
       "text-shadow-interpolation.html": [
        "d4a75654a9c8438403e8d4ae73139a5ce63d5b34",
+       [
+        null,
+        {}
+       ]
+      ],
+      "transition-end-event-shorthands.html": [
+       "381682197251c5aa4a08a4fb07e64404b3781c22",
        [
         null,
         {}
@@ -375377,6 +375424,20 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "TreeWalker-acceptNode-filter-cross-realm-null-browsing-context.html": [
+      "4d6bb53289f47257a0ae21d451e48ec59529512c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "TreeWalker-acceptNode-filter-cross-realm.html": [
+      "60a80d31190de6cf394be338bfeecaf3e9699338",
+      [
+       null,
+       {}
       ]
      ],
      "TreeWalker-acceptNode-filter.html": [
@@ -448519,7 +448580,7 @@
         ]
        ],
        "navigator_user_agent.https.html": [
-        "09992a9f0c49df6dcbe3613d630a3a2a16fbdbb6",
+        "bfb9276f3674b805788cfc79991f3d7f7cc0fec8",
         [
          null,
          {}

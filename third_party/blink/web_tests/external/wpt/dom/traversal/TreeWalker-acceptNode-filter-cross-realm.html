@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>TreeWalker: cross-realm NodeFilter throws TypeError of current realm</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://webidl.spec.whatwg.org/#call-a-user-objects-operation">
+
+<body id="treeWalkerRoot">
+<div></div>
+
+<script>
+const iframe = document.createElement("iframe");
+iframe.src = "support/TreeWalker-acceptNode-filter-cross-realm-subframe.html";
+iframe.onload = () => {
+    for (const testCase of iframe.contentWindow.testCases) {
+        test(t => {
+            assert_equals(testCase.actual.constructor, testCase.expected);
+        }, testCase.description);
+    }
+};
+document.body.append(iframe);
+</script>

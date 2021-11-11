@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL TreeWalker: NodeFilter from detached iframe works as expected Failed to execute 'acceptNode' on 'NodeFilter': The provided callback is no longer runnable.
+Harness: the test ran to completion.
+
