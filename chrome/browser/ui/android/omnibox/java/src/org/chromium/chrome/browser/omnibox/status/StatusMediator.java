@@ -674,8 +674,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     // MerchantTrustSignalsCoordinator.OmniboxIconController interface
     @Override
-    public void showStoreIcon(
-            WindowAndroid window, String url, Drawable drawable, @StringRes int stringId) {
+    public void showStoreIcon(WindowAndroid window, String url, Drawable drawable,
+            @StringRes int stringId, boolean canShowIph) {
         if ((window != mWindowAndroid) || (!url.equals(mLocationBarDataProvider.getCurrentUrl()))
                 || (mLocationBarDataProvider.isIncognito())) {
             return;
@@ -683,12 +683,15 @@ public class StatusMediator implements PermissionDialogController.Observer,
         resetCustomIconsStatus();
         StatusIconResource storeIconResource = new StatusIconResource(drawable);
         storeIconResource.setTransitionType(IconTransitionType.ROTATE);
-        storeIconResource.setAnimationFinishedCallback(
-                () -> mPageInfoIPHController.showStoreIconIPH(getIPHTimeout(), stringId));
+        storeIconResource.setAnimationFinishedCallback(() -> {
+            if (canShowIph) {
+                mPageInfoIPHController.showStoreIconIPH(getIPHTimeout(), stringId);
+            }
+        });
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, storeIconResource);
-        mStoreIconHandler.postDelayed(()
-                                              -> updateLocationBarIcon(IconTransitionType.ROTATE),
-                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        mStoreIconHandler.postDelayed(() -> {
+            updateLocationBarIcon(IconTransitionType.ROTATE);
+        }, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
         mIsStoreIconShowing = true;
         mDiscoverabilityMetrics.recordDiscoverabilityAction(DiscoverabilityAction.STORE_ICON_SHOWN);
     }

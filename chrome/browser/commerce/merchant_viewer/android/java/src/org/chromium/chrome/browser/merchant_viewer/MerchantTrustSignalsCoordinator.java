@@ -54,9 +54,12 @@ public class MerchantTrustSignalsCoordinator
          * @param url The url associated with the just showing {@link MerchantTrustMessageContext}.
          * @param drawable The store icon drawable.
          * @param stringId Resource id of the IPH string.
+         * @param canShowIph Whether it is eligible to show IPH when showing the store icon. For
+         *         example, when user swipes the message, we don't want to show the IPH which may be
+         *         annoying.
          */
-        void showStoreIcon(
-                WindowAndroid window, String url, Drawable drawable, @StringRes int stringId);
+        void showStoreIcon(WindowAndroid window, String url, Drawable drawable,
+                @StringRes int stringId, boolean canShowIph);
     }
 
     private final MerchantTrustSignalsMediator mMediator;
@@ -236,7 +239,7 @@ public class MerchantTrustSignalsCoordinator
     public void onMessageDismissed(@DismissReason int dismissReason, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageDismissed(dismissReason);
         if (dismissReason == DismissReason.TIMER || dismissReason == DismissReason.GESTURE) {
-            maybeShowStoreIcon(messageAssociatedUrl);
+            maybeShowStoreIcon(messageAssociatedUrl, dismissReason == DismissReason.TIMER);
         }
     }
 
@@ -269,8 +272,8 @@ public class MerchantTrustSignalsCoordinator
 
     private void onBottomSheetDismissed(
             @BottomSheetOpenedSource int openSource, @Nullable String messageAssociatedUrl) {
-        if (openSource == BottomSheetOpenedSource.FROM_MESSAGE && messageAssociatedUrl != null) {
-            maybeShowStoreIcon(messageAssociatedUrl);
+        if (openSource == BottomSheetOpenedSource.FROM_MESSAGE) {
+            maybeShowStoreIcon(messageAssociatedUrl, true);
         }
     }
 
@@ -335,11 +338,11 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    void maybeShowStoreIcon(String messageAssociatedUrl) {
+    void maybeShowStoreIcon(@Nullable String messageAssociatedUrl, boolean canShowIph) {
         if (isStoreInfoFeatureEnabled() && mOmniboxIconController != null
                 && messageAssociatedUrl != null) {
             mOmniboxIconController.showStoreIcon(mWindowAndroid, messageAssociatedUrl,
-                    getStoreIconDrawable(), R.string.merchant_viewer_omnibox_icon_iph);
+                    getStoreIconDrawable(), R.string.merchant_viewer_omnibox_icon_iph, canShowIph);
         }
     }
 
