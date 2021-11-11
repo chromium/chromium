@@ -1,21 +1,35 @@
 <style include="cr-shared-style shimless-rma-shared">
+  .input-row {
+    margin-bottom: 30px;
+  }
+
   .input-holder {
+    align-items: center;
     display: flex;
   }
 
   cr-button {
-    border-radius: 5px;
+    border-radius: 20px;
   }
 
   .sku-warning {
+    color: gray; /* TODO(joonbug): Update cros colors */
     display: flex;
     max-width: 400px;
-    color: gray; /* TODO(joonbug): Update cros colors */
   }
 
   iron-icon {
-    width: 50px;
     height: 10px;
+    width: 50px;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+    margin-inline-end: 20px;
+  }
+
+  select {
+    margin-inline-end: 20px;
   }
 </style>
 
@@ -26,50 +40,54 @@
     <p>Change device information as needed.</p>
   </div>
   <div slot="body">
-    <div class="input-holder">
-      <cr-input
-          label="Serial number:"
-          placeholder="Enter Serial Number"
-          id="serialNumber"
-          value="{{serialNumber_}}">
-      </cr-input>
-      <cr-button
-        id="resetSerialNumber" on-click="onResetSerialNumberButtonClicked_"
-        disabled="[[disableResetSerialNumber_]]">
-        Reset
-      </cr-button>
+    <div class="input-row">
+      <label id="serialNumberLabel" class="cr-form-field-label">
+        Serial number:
+      </label>
+      <div class="input-holder">
+        <cr-input id="serialNumber" placeholder="Enter Serial Number"
+            value="{{serialNumber_}}" aria-labelledby="serialNumberLabel">
+        </cr-input>
+        <cr-button id="resetSerialNumber"
+            on-click="onResetSerialNumberButtonClicked_"
+            disabled="[[disableResetSerialNumber_]]">
+          Reset
+        </cr-button>
+      </div>
     </div>
-    <div class="input-holder">
-      <label class="cr-form-field-label" for="region">Region:</label>
-      <select id="regionSelect" class="md-select" 
-        on-change="onSelectedRegionChange_">
+    <div class="input-row">
+      <label id="regionLabel" class="cr-form-field-label">Region:</label>
+      <div class="input-holder">
+        <select id="regionSelect" class="md-select"
+            on-change="onSelectedRegionChange_" aria-labelledby="regionLabel">
           <template is="dom-repeat" items="[[regions_]]" as="region">
             <option value="[[region]]">
               [[region]]
             </option>
           </template>
-      </select>
-      <cr-button
-        id="resetRegion" on-click="onResetRegionButtonClicked_"
-        disabled="[[disableResetRegion_]]">
-        Reset
-      </cr-button>
+        </select>
+        <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
+            disabled="[[disableResetRegion_]]">
+          Reset
+        </cr-button>
+      </div>
     </div>
-    <div class="input-holder">
-      <label class="cr-form-field-label" for="sku">SKU:</label>
-      <select id="skuSelect" class="md-select" 
-        on-change="onSelectedSkuChange_">
+    <div>
+      <label id="skuLabel" class="cr-form-field-label">SKU:</label>
+      <div class="input-holder">
+        <select id="skuSelect" class="md-select"
+            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel">
           <template is="dom-repeat" items="[[skus_]]" as="sku">
             <option value="[[sku]]">
               [[sku]]
             </option>
           </template>
-      </select>
-      <cr-button
-        id="resetSku" on-click="onResetSkuButtonClicked_"
-        disabled="[[disableResetSku_]]">
-        Reset
-      </cr-button>
+        </select>
+        <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
+            disabled="[[disableResetSku_]]">
+          Reset
+        </cr-button>
+      </div>
     </div>
     <div class="sku-warning">
       <iron-icon icon="shimless-icon:warning"></iron-icon>
