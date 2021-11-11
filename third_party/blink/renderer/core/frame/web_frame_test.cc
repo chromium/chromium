@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -14303,6 +14304,29 @@ TEST_F(WebFrameTest, VerticalRLScrollOffset) {
   EXPECT_EQ(gfx::Vector2dF(1200, 0), web_main_frame->GetScrollOffset());
   web_main_frame->SetScrollOffset(gfx::Vector2dF(-100, 100));
   EXPECT_EQ(gfx::Vector2dF(0, 100), web_main_frame->GetScrollOffset());
+}
+
+TEST_F(WebFrameTest, FrameOwnerColorScheme) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(
+      "data:text/html,<frameset><frame id=frame></frame></frameset>");
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+
+  Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
+  HTMLFrameOwnerElement* frame =
+      To<HTMLFrameOwnerElement>(document->getElementById("frame"));
+  EXPECT_EQ(frame->GetColorScheme(), mojom::blink::ColorScheme::kLight);
+  EXPECT_EQ(frame->contentDocument()->GetStyleEngine().GetOwnerColorScheme(),
+            mojom::blink::ColorScheme::kLight);
+
+  frame->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "dark");
+  EXPECT_EQ(frame->GetColorScheme(), mojom::blink::ColorScheme::kLight);
+
+  UpdateAllLifecyclePhases(web_view);
+  EXPECT_EQ(frame->GetColorScheme(), mojom::blink::ColorScheme::kDark);
+  EXPECT_EQ(frame->contentDocument()->GetStyleEngine().GetOwnerColorScheme(),
+            mojom::blink::ColorScheme::kDark);
 }
 
 }  // namespace blink

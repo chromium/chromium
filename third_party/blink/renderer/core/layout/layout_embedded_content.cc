@@ -254,20 +254,20 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
     }
   }
 
+  auto* frame_owner = GetFrameOwnerElement();
+  if (!frame_owner)
+    return;
+
+  if (old_style && StyleRef().UsedColorScheme() != old_style->UsedColorScheme())
+    frame_owner->SetColorScheme(StyleRef().UsedColorScheme());
+
   if (old_style &&
       StyleRef().VisibleToHitTesting() == old_style->VisibleToHitTesting()) {
     return;
   }
 
-  auto* frame_owner = GetFrameOwnerElement();
-  if (!frame_owner)
-    return;
-
-  auto* frame = frame_owner->ContentFrame();
-  if (!frame)
-    return;
-
-  frame->UpdateVisibleToHitTesting();
+  if (auto* frame = frame_owner->ContentFrame())
+    frame->UpdateVisibleToHitTesting();
 }
 
 void LayoutEmbeddedContent::UpdateLayout() {

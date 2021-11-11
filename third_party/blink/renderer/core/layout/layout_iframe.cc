@@ -63,12 +63,4 @@ void LayoutIFrame::UpdateLayout() {
   ClearNeedsLayout();
 }
 
-void LayoutIFrame::StyleWillChange(StyleDifference diff,
-                                   const ComputedStyle& new_style) {
-  NOT_DESTROYED();
-  if (Style() && StyleRef().UsedColorScheme() != new_style.UsedColorScheme())
-    GetFrameOwnerElement()->SetColorScheme(new_style.UsedColorScheme());
-  LayoutEmbeddedContent::StyleWillChange(diff, new_style);
-}
-
 }  // namespace blink
