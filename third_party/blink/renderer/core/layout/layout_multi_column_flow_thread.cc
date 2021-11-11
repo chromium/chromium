@@ -1087,7 +1087,7 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
   // and where such out-of-flow objects might be, just go through the whole
   // subtree.
   for (LayoutObject* descendant = layout_object->SlowFirstChild(); descendant;
-       descendant = descendant->NextInPreOrder()) {
+       descendant = descendant->NextInPreOrder(layout_object)) {
     if (descendant->IsBox() && descendant->IsOutOfFlowPositioned()) {
       descendant->ContainingBlock()->InsertPositionedObject(
           To<LayoutBox>(descendant));

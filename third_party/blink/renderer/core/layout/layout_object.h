@@ -511,8 +511,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     for (const LayoutObject* layout_object = this; layout_object;
          layout_object = layout_object->ChildLayoutBlockedByDisplayLock()
-                             ? layout_object->NextInPreOrderAfterChildren()
-                             : layout_object->NextInPreOrder()) {
+                             ? layout_object->NextInPreOrderAfterChildren(this)
+                             : layout_object->NextInPreOrder(this)) {
       layout_object->AssertLaidOut();
     }
   }
@@ -530,8 +530,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     for (const LayoutObject* layout_object = this; layout_object;
          layout_object = layout_object->ChildPrePaintBlockedByDisplayLock()
-                             ? layout_object->NextInPreOrderAfterChildren()
-                             : layout_object->NextInPreOrder()) {
+                             ? layout_object->NextInPreOrderAfterChildren(this)
+                             : layout_object->NextInPreOrder(this)) {
       layout_object->AssertClearedPaintInvalidationFlags();
     }
   }
