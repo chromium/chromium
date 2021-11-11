@@ -88,3 +88,14 @@ fuzzer_test("fast_pair_data_parser_fuzzer") {
     "//mojo/core/embedder",
   ]
 }
+
+fuzzer_test("fast_pair_decryption_fuzzer") {
+  sources = [ "fast_pair_decryption_fuzzer.cc" ]
+  deps = [
+    ":quick_pair",
+    "//ash:test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/pairing",
+    "//base/test:test_support",
+  ]
+}
