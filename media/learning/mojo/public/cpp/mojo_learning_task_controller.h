@@ -6,7 +6,6 @@
 #define MEDIA_LEARNING_MOJO_PUBLIC_CPP_MOJO_LEARNING_TASK_CONTROLLER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

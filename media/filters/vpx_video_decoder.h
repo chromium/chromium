@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_VPX_VIDEO_DECODER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/codec_picture.h"
 #include "media/video/video_encode_accelerator.h"

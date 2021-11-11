@@ -10,7 +10,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_export.h"

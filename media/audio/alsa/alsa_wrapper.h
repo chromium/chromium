@@ -11,7 +11,6 @@
 
 #include <alsa/asoundlib.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {

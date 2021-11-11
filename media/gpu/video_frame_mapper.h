@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_VIDEO_FRAME_MAPPER_H_
 #define MEDIA_GPU_VIDEO_FRAME_MAPPER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"

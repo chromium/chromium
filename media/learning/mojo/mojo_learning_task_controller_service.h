@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
 
 namespace media {

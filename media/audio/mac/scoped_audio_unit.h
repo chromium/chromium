@@ -8,8 +8,6 @@
 #include <AudioUnit/AudioUnit.h>
 #include <CoreAudio/CoreAudio.h>
 
-#include "base/macros.h"
-
 namespace media {
 
 // For whatever reason Apple doesn't have constants defined for these; per the

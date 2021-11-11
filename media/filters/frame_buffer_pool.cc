@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
 #include "base/strings/stringprintf.h"

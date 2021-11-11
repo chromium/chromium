@@ -6,7 +6,6 @@
 #define MEDIA_CAST_TEST_RECEIVER_AUDIO_DECODER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_bus.h"
 #include "media/cast/cast_environment.h"

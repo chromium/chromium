@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"

@@ -9,7 +9,6 @@
 #include <list>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"

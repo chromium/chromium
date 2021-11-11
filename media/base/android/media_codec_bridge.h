@@ -13,7 +13,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"

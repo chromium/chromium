@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace media {
 
 const char kIvfHeaderSignature[] = "DKIF";

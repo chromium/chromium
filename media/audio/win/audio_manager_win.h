@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/audio/audio_manager_base.h"
 
 namespace media {

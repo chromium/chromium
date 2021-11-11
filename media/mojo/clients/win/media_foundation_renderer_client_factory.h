@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/renderer_factory.h"
 #include "media/base/win/dcomp_texture_wrapper.h"

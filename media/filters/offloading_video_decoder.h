@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_OFFLOADING_VIDEO_DECODER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"

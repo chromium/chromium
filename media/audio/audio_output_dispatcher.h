@@ -18,7 +18,6 @@
 #ifndef MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 #define MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "media/audio/audio_io.h"
 
 namespace media {

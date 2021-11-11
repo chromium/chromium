@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/formats/mp4/box_definitions.h"
 
 namespace media {

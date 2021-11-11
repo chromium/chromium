@@ -6,7 +6,6 @@
 #define MEDIA_LEARNING_IMPL_LOOKUP_TABLE_TRAINER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/impl/training_algorithm.h"
 

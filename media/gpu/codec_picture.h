@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_color_space.h"

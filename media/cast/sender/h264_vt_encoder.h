@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/mac/videotoolbox_helpers.h"

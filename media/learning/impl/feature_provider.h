@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"

@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_COMMON_MOJO_DATA_PIPE_READ_WRITE_H_
 #define MEDIA_MOJO_COMMON_MOJO_DATA_PIPE_READ_WRITE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"

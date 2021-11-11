@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/cast/net/pacing/paced_sender.h"
 
 namespace media {

@@ -21,7 +21,6 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"

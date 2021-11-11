@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/formats/mp2t/ts_section.h"
 
 namespace media {

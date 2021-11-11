@@ -6,7 +6,6 @@
 #define MEDIA_BASE_ANDROID_OVERLAY_CONFIG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/rect.h"
 

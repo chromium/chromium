@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_drm_storage.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"

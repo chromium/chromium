@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/vp8_decoder.h"
 

@@ -5,7 +5,6 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_
 #define MEDIA_FORMATS_WEBM_WEBM_PROJECTION_PARSER_H_
 
-#include "base/macros.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_parser.h"
 

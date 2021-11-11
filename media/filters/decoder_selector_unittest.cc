@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/gmock_callback_support.h"

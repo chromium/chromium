@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"

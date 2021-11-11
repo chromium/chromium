@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_FAKE_TEXT_TRACK_STREAM_H_
 #define MEDIA_BASE_FAKE_TEXT_TRACK_STREAM_H_
 
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"

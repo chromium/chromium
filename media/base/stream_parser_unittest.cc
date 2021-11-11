@@ -9,7 +9,6 @@
 #include <map>
 #include <sstream>
 
-#include "base/macros.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"

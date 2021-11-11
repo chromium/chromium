@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/audio_renderer_sink.h"
 
 namespace base {

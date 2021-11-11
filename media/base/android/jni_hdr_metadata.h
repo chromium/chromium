@@ -6,7 +6,6 @@
 #define MEDIA_BASE_ANDROID_JNI_HDR_METADATA_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {

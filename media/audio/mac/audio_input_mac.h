@@ -14,7 +14,6 @@
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"

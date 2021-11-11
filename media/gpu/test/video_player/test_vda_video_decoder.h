@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/video_decoder.h"

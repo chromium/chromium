@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"

@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
 

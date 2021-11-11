@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/audio/simple_sources.h"
 
 namespace base {

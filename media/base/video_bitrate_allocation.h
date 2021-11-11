@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {

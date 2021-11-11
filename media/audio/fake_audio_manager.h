@@ -7,7 +7,6 @@
 
 #include <string>
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"

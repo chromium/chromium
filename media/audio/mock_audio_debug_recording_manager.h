@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_MOCK_AUDIO_DEBUG_RECORDING_MANAGER_H_
 #define MEDIA_AUDIO_MOCK_AUDIO_DEBUG_RECORDING_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

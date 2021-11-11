@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"

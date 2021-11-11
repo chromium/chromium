@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/bit_reader_core.h"
 #include "media/base/media_export.h"
 

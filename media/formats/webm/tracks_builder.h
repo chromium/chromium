@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace media {
 
 class TracksBuilder {

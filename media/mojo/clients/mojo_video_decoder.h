@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_VIDEO_DECODER_H_
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

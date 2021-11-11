@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"

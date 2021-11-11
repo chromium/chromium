@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 

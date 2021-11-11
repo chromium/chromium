@@ -9,7 +9,6 @@
 
 #include <cstdlib>
 
-#include "base/macros.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 

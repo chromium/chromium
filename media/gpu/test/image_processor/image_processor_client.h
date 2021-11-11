@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/sequence_bound.h"
 #include "media/base/media_export.h"
 #include "media/capabilities/video_decode_stats_db.h"

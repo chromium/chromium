@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAPTURE_CONTENT_SMOOTH_EVENT_SAMPLER_H_
 #define MEDIA_CAPTURE_CONTENT_SMOOTH_EVENT_SAMPLER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/capture/capture_export.h"
 

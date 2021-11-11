@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/audio_block_fifo.h"
 #include "testing/gtest/include/gtest/gtest.h"

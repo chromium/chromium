@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/container_names.h"

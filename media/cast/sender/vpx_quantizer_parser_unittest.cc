@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/sender/sender_encoded_frame.h"

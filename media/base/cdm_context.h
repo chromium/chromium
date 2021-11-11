@@ -6,7 +6,6 @@
 #define MEDIA_BASE_CDM_CONTEXT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

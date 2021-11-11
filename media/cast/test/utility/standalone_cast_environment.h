@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_TEST_UTILITY_STANDALONE_CAST_ENVIRONMENT_H_
 #define MEDIA_CAST_TEST_UTILITY_STANDALONE_CAST_ENVIRONMENT_H_
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/cast_environment.h"

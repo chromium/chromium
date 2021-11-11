@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {

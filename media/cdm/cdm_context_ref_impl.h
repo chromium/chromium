@@ -5,7 +5,6 @@
 #ifndef MEDIA_CDM_CDM_CONTEXT_REF_IMPL_H_
 #define MEDIA_CDM_CDM_CONTEXT_REF_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/cdm_context.h"

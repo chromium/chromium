@@ -20,7 +20,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/capture_export.h"

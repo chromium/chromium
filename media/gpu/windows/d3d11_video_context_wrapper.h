@@ -9,7 +9,6 @@
 #include <wrl/client.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 

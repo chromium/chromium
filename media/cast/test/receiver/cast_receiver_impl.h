@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"

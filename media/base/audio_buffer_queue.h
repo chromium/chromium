@@ -6,7 +6,6 @@
 #define MEDIA_BASE_AUDIO_BUFFER_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/media_export.h"
 

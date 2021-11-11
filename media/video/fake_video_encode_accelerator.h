@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"

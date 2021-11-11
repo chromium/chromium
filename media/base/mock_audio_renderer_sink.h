@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"

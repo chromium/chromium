@@ -10,7 +10,6 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "media/base/win/mf_initializer_export.h"
 
 struct ID3D11DeviceChild;

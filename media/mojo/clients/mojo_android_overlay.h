@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_ANDROID_OVERLAY_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/base/android/android_overlay.h"
 #include "media/mojo/mojom/android_overlay.mojom.h"

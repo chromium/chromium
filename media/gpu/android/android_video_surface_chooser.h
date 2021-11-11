@@ -6,7 +6,6 @@
 #define MEDIA_GPU_ANDROID_ANDROID_VIDEO_SURFACE_CHOOSER_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/android/android_overlay.h"
 #include "media/base/video_transformation.h"

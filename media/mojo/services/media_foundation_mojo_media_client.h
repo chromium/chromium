@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_MOJO_MEDIA_CLIENT_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/mojo/services/mojo_media_client.h"
 

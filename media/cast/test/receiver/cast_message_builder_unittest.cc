@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/net/rtp/rtp_defines.h"

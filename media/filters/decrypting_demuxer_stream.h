@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/midi/usb_midi_export.h"
 #include "media/midi/usb_midi_jack.h"
 

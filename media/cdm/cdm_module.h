@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_native_library.h"
 #include "media/base/media_export.h"
 #include "media/cdm/api/content_decryption_module.h"

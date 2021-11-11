@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/android/android_video_surface_chooser.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 

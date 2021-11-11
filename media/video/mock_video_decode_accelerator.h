@@ -11,7 +11,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/picture.h"

@@ -7,8 +7,6 @@
 
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
-#include "base/macros.h"
-
 namespace media {
 
 // A templated implementation of CdmHostProxy to forward Host calls to the

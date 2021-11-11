@@ -6,7 +6,6 @@
 #define MEDIA_BASE_REENTRANCY_CHECKER_H_
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/media_export.h"

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 

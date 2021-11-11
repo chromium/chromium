@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/base/media_export.h"
 

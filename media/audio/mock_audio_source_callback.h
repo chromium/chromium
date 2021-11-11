@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
 #include "testing/gmock/include/gmock/gmock.h"

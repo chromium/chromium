@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_device_description.h"

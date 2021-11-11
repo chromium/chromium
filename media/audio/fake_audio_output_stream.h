@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"

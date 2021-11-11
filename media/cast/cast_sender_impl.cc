@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "media/base/video_frame.h"
 #include "media/cast/sender/video_frame_factory.h"
 

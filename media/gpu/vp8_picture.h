@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_VP8_PICTURE_H_
 #define MEDIA_GPU_VP8_PICTURE_H_
 
-#include "base/macros.h"
 #include "media/gpu/codec_picture.h"
 #include "media/parsers/vp8_parser.h"
 

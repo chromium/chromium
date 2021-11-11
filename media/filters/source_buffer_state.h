@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/demuxer.h"

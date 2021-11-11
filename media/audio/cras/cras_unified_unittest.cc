@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"

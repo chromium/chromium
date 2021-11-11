@@ -5,7 +5,6 @@
 #ifndef MEDIA_FUCHSIA_CDM_CLIENT_MOJO_FUCHSIA_CDM_PROVIDER_H_
 #define MEDIA_FUCHSIA_CDM_CLIENT_MOJO_FUCHSIA_CDM_PROVIDER_H_
 
-#include "base/macros.h"
 #include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
 #include "media/fuchsia/mojom/fuchsia_cdm_provider.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

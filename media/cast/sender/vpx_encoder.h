@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/feedback_signal_accumulator.h"
 #include "media/cast/cast_config.h"

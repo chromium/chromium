@@ -8,7 +8,6 @@
 #include <atomic>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"

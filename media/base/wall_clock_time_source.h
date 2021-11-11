@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 #define MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"

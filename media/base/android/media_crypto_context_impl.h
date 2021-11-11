@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "media/base/android/media_crypto_context.h"
 #include "media/base/media_export.h"
 

@@ -6,7 +6,6 @@
 
 #include "media/gpu/ipc/service/picture_buffer_manager.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

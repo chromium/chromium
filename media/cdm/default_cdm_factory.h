@@ -5,7 +5,6 @@
 #ifndef MEDIA_CDM_DEFAULT_CDM_FACTORY_H_
 #define MEDIA_CDM_DEFAULT_CDM_FACTORY_H_
 
-#include "base/macros.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_export.h"
 

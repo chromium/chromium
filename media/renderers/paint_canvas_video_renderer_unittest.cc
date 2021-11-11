@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"

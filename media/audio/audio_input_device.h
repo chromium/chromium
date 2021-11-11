@@ -49,7 +49,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"

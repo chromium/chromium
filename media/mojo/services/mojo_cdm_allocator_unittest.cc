@@ -7,7 +7,6 @@
 
 #include <cstring>
 
-#include "base/macros.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"

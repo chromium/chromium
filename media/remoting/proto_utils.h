@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"

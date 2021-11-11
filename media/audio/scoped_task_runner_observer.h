@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_SCOPED_TASK_RUNNER_OBSERVER_H_
 #define MEDIA_AUDIO_SCOPED_TASK_RUNNER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
 

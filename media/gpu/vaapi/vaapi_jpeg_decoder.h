@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 
 namespace media {

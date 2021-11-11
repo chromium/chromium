@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/buildflags.h"

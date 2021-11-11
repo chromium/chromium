@@ -6,7 +6,6 @@
 #define MEDIA_BASE_AUDIO_RENDERER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_export.h"

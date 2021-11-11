@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "media/base/test_data_util.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h264_poc.h"

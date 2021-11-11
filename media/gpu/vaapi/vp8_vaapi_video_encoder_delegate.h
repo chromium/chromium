@@ -8,7 +8,6 @@
 #include <list>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 #include "media/gpu/vaapi/vpx_rate_control.h"

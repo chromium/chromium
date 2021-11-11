@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"

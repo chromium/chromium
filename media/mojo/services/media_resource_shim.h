@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"

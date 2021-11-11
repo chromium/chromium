@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_SIMPLE_SYNC_TOKEN_CLIENT_H_
 #define MEDIA_BASE_SIMPLE_SYNC_TOKEN_CLIENT_H_
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"

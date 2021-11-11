@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_export.h"
 

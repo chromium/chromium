@@ -6,7 +6,6 @@
 #define MEDIA_RENDERERS_WIN_MEDIA_FOUNDATION_RENDERER_EXTENSION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/media_export.h"
 #include "ui/gfx/geometry/rect.h"

@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/audio/audio_manager_base.h"

@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "media/cast/common/frame_id.h"
 

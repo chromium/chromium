@@ -47,7 +47,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "media/parsers/media_parsers_export.h"
 
 namespace media {

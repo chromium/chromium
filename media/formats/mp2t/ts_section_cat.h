@@ -6,7 +6,6 @@
 #define MEDIA_FORMATS_MP2T_TS_SECTION_CAT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/encryption_scheme.h"
 #include "media/formats/mp2t/ts_section_psi.h"
 

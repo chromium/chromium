@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

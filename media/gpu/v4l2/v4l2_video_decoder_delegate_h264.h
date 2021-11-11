@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"

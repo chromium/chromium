@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/audio_fifo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

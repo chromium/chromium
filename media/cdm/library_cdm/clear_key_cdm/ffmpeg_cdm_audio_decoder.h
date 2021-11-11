@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/cdm/api/content_decryption_module.h"

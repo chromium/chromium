@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_LOOPBACK_AUDIO_CONVERTER_H_
 #define MEDIA_BASE_LOOPBACK_AUDIO_CONVERTER_H_
 
-#include "base/macros.h"
 #include "media/base/audio_converter.h"
 
 namespace media {

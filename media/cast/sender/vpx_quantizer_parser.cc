@@ -4,7 +4,6 @@
 
 #include "media/cast/sender/vpx_quantizer_parser.h"
 #include "base/logging.h"
-#include "base/macros.h"
 
 namespace media {
 namespace cast {

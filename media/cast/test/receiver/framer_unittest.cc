@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtp/mock_rtp_payload_feedback.h"

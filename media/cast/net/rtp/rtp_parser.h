@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 

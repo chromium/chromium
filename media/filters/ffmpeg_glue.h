@@ -26,7 +26,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "media/base/container_names.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"

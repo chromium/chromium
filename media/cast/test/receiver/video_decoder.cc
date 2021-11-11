@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"

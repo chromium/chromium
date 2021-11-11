@@ -10,8 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace media {
 
 // From Opus RFC. See https://tools.ietf.org/html/rfc6716#page-14

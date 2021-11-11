@@ -5,7 +5,6 @@
 #ifndef MEDIA_REMOTING_METRICS_H_
 #define MEDIA_REMOTING_METRICS_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/pipeline_metadata.h"
 #include "media/remoting/triggers.h"

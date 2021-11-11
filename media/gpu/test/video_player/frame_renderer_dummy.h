@@ -9,7 +9,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

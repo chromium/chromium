@@ -7,7 +7,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"

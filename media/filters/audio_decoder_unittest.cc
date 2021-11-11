@@ -13,7 +13,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"

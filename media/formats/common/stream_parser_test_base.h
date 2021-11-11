@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser.h"

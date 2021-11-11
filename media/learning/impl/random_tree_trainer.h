@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/impl/random_number_generator.h"
 #include "media/learning/impl/training_algorithm.h"

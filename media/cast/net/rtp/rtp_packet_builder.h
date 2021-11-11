@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
 namespace media {

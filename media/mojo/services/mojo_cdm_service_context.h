@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/media_mojo_export.h"

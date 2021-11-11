@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_ANDROID_MOCK_CODEC_IMAGE_H_
 #define MEDIA_GPU_ANDROID_MOCK_CODEC_IMAGE_H_
 
-#include "base/macros.h"
 #include "media/gpu/android/codec_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

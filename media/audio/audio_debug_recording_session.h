@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_AUDIO_DEBUG_RECORDING_SESSION_H_
 #define MEDIA_AUDIO_AUDIO_DEBUG_RECORDING_SESSION_H_
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {

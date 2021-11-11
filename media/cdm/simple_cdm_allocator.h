@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "media/cdm/cdm_allocator.h"
 
 namespace media {

@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"

@@ -9,7 +9,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/fake_audio_render_callback.h"

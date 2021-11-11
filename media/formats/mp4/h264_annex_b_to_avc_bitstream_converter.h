@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/formats/mp4/box_definitions.h"

@@ -6,7 +6,6 @@
 #define MEDIA_CAST_TEST_SKEWED_SINGLE_THREAD_TASK_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_pending_task.h"

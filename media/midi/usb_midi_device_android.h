@@ -13,7 +13,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/midi/usb_midi_device.h"
 #include "media/midi/usb_midi_export.h"
 

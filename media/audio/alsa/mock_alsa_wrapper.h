@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_ALSA_MOCK_ALSA_WRAPPER_H_
 #define MEDIA_AUDIO_ALSA_MOCK_ALSA_WRAPPER_H_
 
-#include "base/macros.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

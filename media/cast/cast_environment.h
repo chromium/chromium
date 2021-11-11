@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_CAST_ENVIRONMENT_H_
 #define MEDIA_CAST_CAST_ENVIRONMENT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"

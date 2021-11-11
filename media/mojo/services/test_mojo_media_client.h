@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"

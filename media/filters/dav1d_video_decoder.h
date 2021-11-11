@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"

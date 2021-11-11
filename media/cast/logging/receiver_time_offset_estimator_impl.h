@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/cast/common/mod_util.h"

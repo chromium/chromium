@@ -6,7 +6,6 @@
 #define MEDIA_BASE_RENDERER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"

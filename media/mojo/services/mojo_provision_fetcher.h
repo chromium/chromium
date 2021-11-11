@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_MOJO_PROVISION_FETCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/provision_fetcher.h"
 #include "media/mojo/mojom/provision_fetcher.mojom.h"

@@ -6,7 +6,6 @@
 #define MEDIA_AUDIO_AUDIO_OUTPUT_RESAMPLER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_debug_recording_helper.h"

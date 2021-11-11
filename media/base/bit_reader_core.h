@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {

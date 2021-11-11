@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"

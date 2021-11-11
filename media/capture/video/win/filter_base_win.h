@@ -14,7 +14,6 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace media {

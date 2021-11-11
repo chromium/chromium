@@ -11,7 +11,6 @@
 #include <windows.h>
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/filter_base_win.h"

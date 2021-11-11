@@ -44,7 +44,6 @@
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

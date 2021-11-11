@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

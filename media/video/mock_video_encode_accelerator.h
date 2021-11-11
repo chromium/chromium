@@ -7,7 +7,6 @@
 
 #include "media/video/video_encode_accelerator.h"
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {

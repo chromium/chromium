@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 

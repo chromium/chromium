@@ -5,7 +5,6 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_COLOUR_PARSER_H_
 #define MEDIA_FORMATS_WEBM_WEBM_COLOUR_PARSER_H_
 
-#include "base/macros.h"
 #include "media/base/video_color_space.h"
 #include "media/formats/webm/webm_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

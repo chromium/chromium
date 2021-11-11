@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
 #include "ui/gl/gl_bindings.h"
 

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gfx/native_pixmap_handle.h"

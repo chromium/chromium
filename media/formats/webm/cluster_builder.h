@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace media {
 
 class Cluster {

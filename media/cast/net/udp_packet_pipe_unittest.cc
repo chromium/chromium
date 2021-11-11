@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

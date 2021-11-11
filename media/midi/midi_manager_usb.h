@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/midi/midi_manager.h"

@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser_buffer.h"

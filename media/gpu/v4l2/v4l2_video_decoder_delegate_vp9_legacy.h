@@ -6,7 +6,6 @@
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP9_LEGACY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vp9_decoder.h"
