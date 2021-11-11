@@ -494,6 +494,9 @@ ci.android_builder(
     # build.
     execution_timeout = 4 * time.hour,
     tree_closing = True,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.android_builder(
@@ -552,6 +555,9 @@ ci.android_builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
     execution_timeout = 4 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
@@ -566,7 +572,9 @@ ci.android_builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
@@ -582,6 +590,9 @@ ci.android_builder(
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.android_builder(
@@ -594,6 +605,9 @@ ci.android_builder(
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 6 * time.hour,
     main_console_view = main_console_if_on_branch(),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.android_builder(
@@ -1026,21 +1040,6 @@ ci.android_builder(
         category = "builder|weblayer",
         short_name = "x86",
     ),
-)
-
-ci.android_fyi_builder(
-    name = "Android arm64 Builder (dbg) (reclient)",
-    console_view_entry = consoles.console_view_entry(
-        category = "builder|arm",
-        short_name = "64",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    reclient_jobs = 150,
-    execution_timeout = 5 * time.hour,
-    main_console_view = main_console_if_on_branch(),
-    reclient_instance = rbe_instance.DEFAULT,
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.android_fyi_builder(

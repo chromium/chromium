@@ -1091,11 +1091,6 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      'Android arm64 Builder (dbg) (reclient)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'android-10-x86-fyi-rel-tests': {
         'mixins': [
           'has_native_resultdb_integration',

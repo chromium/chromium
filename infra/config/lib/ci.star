@@ -189,6 +189,7 @@ def ci_builder(
 def android_builder(
         *,
         name,
+        goma_backend = builders.goma.backend.RBE_PROD,
         # TODO(tandrii): migrate to this gradually (current value of
         # goma.jobs.MANY_JOBS_FOR_CI is 500).
         # goma_jobs=goma.jobs.MANY_JOBS_FOR_CI
@@ -198,7 +199,7 @@ def android_builder(
     return ci_builder(
         name = name,
         builder_group = "chromium.android",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         goma_jobs = goma_jobs,
         sheriff_rotations = builders.sheriff_rotations.ANDROID,
         **kwargs

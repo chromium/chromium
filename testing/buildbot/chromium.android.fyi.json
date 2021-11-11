@@ -64,11 +64,6 @@
       }
     ]
   },
-  "Android arm64 Builder (dbg) (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "android-10-x86-fyi-rel-tests": {
     "gtest_tests": [
       {

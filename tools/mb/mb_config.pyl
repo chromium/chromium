@@ -71,11 +71,11 @@
     },
 
     'chromium.android': {
-      'Android ASAN (dbg)': 'android_clang_asan_debug_bot',
-      'Android arm Builder (dbg)': 'android_webview_google_debug_static_bot',
-      'Android arm64 Builder (dbg)': 'android_webview_google_debug_static_bot_arm64',
-      'Android x64 Builder (dbg)': 'android_debug_static_bot_x64',
-      'Android x86 Builder (dbg)': 'android_debug_static_bot_x86',
+      'Android ASAN (dbg)': 'android_clang_asan_debug_bot_reclient',
+      'Android arm Builder (dbg)': 'android_webview_google_debug_static_bot_reclient',
+      'Android arm64 Builder (dbg)': 'android_webview_google_debug_static_bot_arm64_reclient',
+      'Android x64 Builder (dbg)': 'android_debug_static_bot_x64_reclient',
+      'Android x86 Builder (dbg)': 'android_debug_static_bot_x86_reclient',
       'Cast Android (dbg)': 'android_cast_debug_static_bot',
       'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols',
       'Deterministic Android (dbg)': 'android_debug_bot',
@@ -1278,10 +1278,6 @@
       'android', 'cfi_full', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'goma',
     ],
 
-    'android_clang_asan_debug_bot': [
-      'android', 'clang', 'asan', 'debug_bot', 'strip_debug_info',
-    ],
-
     'android_clang_asan_debug_bot_reclient': [
       'android', 'clang', 'asan', 'debug_bot_reclient', 'strip_debug_info',
     ],
@@ -1398,12 +1394,12 @@
       'android', 'debug_static_bot', 'arm64',
     ],
 
-    'android_debug_static_bot_x64': [
-      'android', 'debug_static_bot', 'x64',
+    'android_debug_static_bot_x64_reclient': [
+      'android', 'debug_static_bot_reclient', 'x64',
     ],
 
-    'android_debug_static_bot_x86': [
-      'android', 'debug_static_bot', 'x86',
+    'android_debug_static_bot_x86_reclient': [
+      'android', 'debug_static_bot_reclient', 'x86',
     ],
 
     'android_debug_trybot_arm64': [
@@ -1613,12 +1609,8 @@
       'android_fastbuild', 'webview_google', 'invert_fieldtrials'
     ],
 
-    'android_webview_google_debug_static_bot': [
-      'android', 'debug_static_bot', 'webview_google',
-    ],
-
-    'android_webview_google_debug_static_bot_arm64': [
-      'android', 'debug_static_bot', 'arm64', 'webview_google',
+    'android_webview_google_debug_static_bot_reclient': [
+      'android', 'debug_static_bot_reclient', 'webview_google',
     ],
 
     'android_webview_google_debug_static_bot_arm64_reclient': [
