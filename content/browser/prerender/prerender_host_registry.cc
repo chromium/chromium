@@ -72,10 +72,14 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     const PrerenderAttributes& attributes,
-    WebContents* web_contents) {
+    WebContents& web_contents) {
+  std::string recorded_url =
+      attributes.initiator_origin.has_value()
+          ? attributes.initiator_origin.value().GetURL().spec()
+          : "(empty_url)";
+
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
-               "attributes", attributes, "initiator_origin",
-               attributes.initiator_origin.GetURL().spec());
+               "attributes", attributes, "initiator_origin", recorded_url);
 
   int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
 
@@ -86,8 +90,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
                        base::Unretained(this), attributes.prerendering_url));
 
     // Don't prerender when the trigger is in the background.
-    DCHECK(web_contents);
-    if (web_contents->GetVisibility() == Visibility::HIDDEN) {
+    if (web_contents.GetVisibility() == Visibility::HIDDEN) {
       base::UmaHistogramEnumeration(
           "Prerender.Experimental.PrerenderHostFinalStatus",
           PrerenderHost::FinalStatus::kTriggerBackgrounded);
@@ -105,7 +108,11 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // TODO(crbug.com/1176054): Support cross-origin prerendering.
-    if (!attributes.initiator_origin.IsSameOriginWith(
+    // The initiator origin is nullopt when prerendering is initiated by the
+    // browser (not by a renderer using Speculation Rules API). In that case,
+    // skip the same-origin check.
+    if (!attributes.IsBrowserInitiated() &&
+        !attributes.initiator_origin.value().IsSameOriginWith(
             url::Origin::Create(attributes.prerendering_url))) {
       base::UmaHistogramEnumeration(
           "Prerender.Experimental.PrerenderHostFinalStatus",

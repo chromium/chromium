@@ -125,8 +125,17 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // redirection during prerendering, or cross-origin navigation from a
   // prerendered page.
   // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch.
+  // The initiator origin is nullopt when prerendering is initiated by the
+  // browser (not by a renderer using Speculation Rules API). In that case,
+  // skip the same-origin check.
+  //
+  // TODO(robertlin): Cancel an embedder triggered prerendering if redirection
+  // goes to a different origin URL. In the case of embedders triggered
+  // prerendering redirects a.com to b.com, even with initiator being nullopt,
+  // the prerendering page should be cancelled.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
-  if (prerendering_origin != prerender_host->initiator_origin()) {
+  if (!prerender_host->IsBrowserInitiated() &&
+      prerendering_origin != prerender_host->initiator_origin()) {
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
         is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect

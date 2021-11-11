@@ -303,11 +303,10 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 };
 
 PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
-                             WebContents* web_contents)
+                             WebContents& web_contents)
     : attributes_(attributes) {
   DCHECK(blink::features::IsPrerender2Enabled());
-  DCHECK(web_contents);
-  CreatePageHolder(*static_cast<WebContentsImpl*>(web_contents));
+  CreatePageHolder(*static_cast<WebContentsImpl*>(&web_contents));
 }
 
 PrerenderHost::~PrerenderHost() {
@@ -648,15 +647,20 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
 
   // The initial navigation value is set to 0 as this is the default for
   // LoadURLParams.
-  // TODO(crbug.com/1234291): update this check when omnibox prerendering is
-  // implemented
-  DCHECK(ui::PageTransitionCoreTypeIs(
-      ui::PageTransitionFromInt(common_params_->transition),
-      ui::PAGE_TRANSITION_FIRST));
-  if (!ui::PageTransitionCoreTypeIs(
-          ui::PageTransitionFromInt(potential_activation.transition),
-          ui::PageTransitionFromInt(common_params_->transition))) {
-    return false;
+  // TODO(crbug.com/1234291): update this check when omnibox
+  // prerendering is implemented. Currently, browser initiated prerendering
+  // will skip this check as short-termed workaround, since the implementation
+  // of updating transition is still absent. This workaround will be removed
+  // once the update mechanism is done.
+  if (!IsBrowserInitiated()) {
+    DCHECK(ui::PageTransitionCoreTypeIs(
+        ui::PageTransitionFromInt(common_params_->transition),
+        ui::PAGE_TRANSITION_FIRST));
+    if (!ui::PageTransitionCoreTypeIs(
+            ui::PageTransitionFromInt(potential_activation.transition),
+            ui::PageTransitionFromInt(common_params_->transition))) {
+      return false;
+    }
   }
 
   DCHECK_EQ(common_params_->navigation_type,

@@ -400,10 +400,8 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
 
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(
-          match.destination_url,
-          web_contents->GetController().GetDefaultSessionStorageNamespace(),
-          container_bounds.size());
+      ->StartPrerendering(match.destination_url, *web_contents,
+                          container_bounds.size());
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {

@@ -1582,9 +1582,8 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
     std::unique_ptr<TestPrerender> prerender =
         ExpectPrerender(expected_final_status);
     content::WebContents* web_contents = GetActiveWebContents();
-    GetAutocompleteActionPredictor()->StartPrerendering(
-        url, web_contents->GetController().GetDefaultSessionStorageNamespace(),
-        gfx::Size(50, 50));
+    GetAutocompleteActionPredictor()->StartPrerendering(url, *web_contents,
+                                                        gfx::Size(50, 50));
     prerender->WaitForStart();
     return prerender;
   }

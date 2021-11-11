@@ -21,6 +21,7 @@
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -28,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -186,21 +188,40 @@ void AutocompleteActionPredictor::CancelPrerender() {
 
 void AutocompleteActionPredictor::StartPrerendering(
     const GURL& url,
-    content::SessionStorageNamespace* session_storage_namespace,
+    content::WebContents& web_contents,
     const gfx::Size& size) {
-  // Only cancel the old prefetch after starting the new one, so if the URLs
-  // are the same, the underlying prefetcher will be reused.
-  std::unique_ptr<prerender::NoStatePrefetchHandle>
-      old_no_state_prefetch_handle = std::move(no_state_prefetch_handle_);
-  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
-  if (no_state_prefetch_manager) {
-    no_state_prefetch_handle_ =
-        no_state_prefetch_manager->StartPrefetchingFromOmnibox(
-            url, session_storage_namespace, size);
+  if (blink::features::IsPrerender2Enabled() &&
+      base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2)) {
+    // TODO(https://crbug.com/1166085): Cancel an ongoing prerender if exists
+    // and start a new one when its request URL is different from the URL of the
+    // ongoing prerender. Otherwise, the new request is ignored.
+    // TODO(https://crbug.com/1166085): Add tests covering the code path of
+    // StartPrerendering.
+    std::unique_ptr<content::PrerenderHandle> new_prerender_handle =
+        web_contents.StartPrerendering(url);
+    // This check is to avoid unintentional cancellation, due to the fact that
+    // StartPrerendering may return nullptr in cases such as requesting same
+    // prerendering url.
+    if (new_prerender_handle)
+      prerender_handle_ = std::move(new_prerender_handle);
+  } else {
+    content::SessionStorageNamespace* session_storage_namespace =
+        web_contents.GetController().GetDefaultSessionStorageNamespace();
+    // Only cancel the old prefetch after starting the new one, so if the URLs
+    // are the same, the underlying prefetcher will be reused.
+    std::unique_ptr<prerender::NoStatePrefetchHandle>
+        old_no_state_prefetch_handle = std::move(no_state_prefetch_handle_);
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile_);
+    if (no_state_prefetch_manager) {
+      no_state_prefetch_handle_ =
+          no_state_prefetch_manager->StartPrefetchingFromOmnibox(
+              url, session_storage_namespace, size);
+    }
+    if (old_no_state_prefetch_handle)
+      old_no_state_prefetch_handle->OnCancel();
   }
-  if (old_no_state_prefetch_handle)
-    old_no_state_prefetch_handle->OnCancel();
 }
 
 AutocompleteActionPredictor::Action

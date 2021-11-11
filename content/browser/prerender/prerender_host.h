@@ -87,7 +87,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   };
 
   PrerenderHost(const PrerenderAttributes& attributes,
-                WebContents* web_contents);
+                WebContents& web_contents);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -152,8 +152,14 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void SetInitialNavigation(NavigationRequest* navigation);
   absl::optional<int64_t> GetInitialNavigationId() const;
 
-  url::Origin initiator_origin() const { return attributes_.initiator_origin; }
+  // Returns absl::nullopt iff prerendering is initiated by the browser (not by
+  // a renderer using Speculation Rules API).
+  absl::optional<url::Origin> initiator_origin() const {
+    return attributes_.initiator_origin;
+  }
   const GURL& initiator_url() const { return attributes_.initiator_url; }
+
+  bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 

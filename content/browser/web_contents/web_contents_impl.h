@@ -29,6 +29,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
+#include "content/browser/prerender/prerender_handle_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
@@ -852,6 +853,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsGuest() override;
   void RecomputeWebPreferencesSlow() override;
   absl::optional<SkColor> GetBaseBackgroundColor() override;
+  std::unique_ptr<PrerenderHandle> StartPrerendering(
+      const GURL& prerendering_url) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 

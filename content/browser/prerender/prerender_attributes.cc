@@ -18,18 +18,18 @@ PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
     PrerenderTriggerType trigger_type,
     Referrer referrer,
-    const url::Origin& initiator_origin,
+    absl::optional<url::Origin> initiator_origin,
     const GURL& initiator_url,
     int initiator_process_id,
-    const blink::LocalFrameToken& initiator_frame_token,
+    absl::optional<blink::LocalFrameToken> initiator_frame_token,
     ukm::SourceId initiator_ukm_id)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       referrer(referrer),
-      initiator_origin(initiator_origin),
+      initiator_origin(std::move(initiator_origin)),
       initiator_url(initiator_url),
       initiator_process_id(initiator_process_id),
-      initiator_frame_token(initiator_frame_token),
+      initiator_frame_token(std::move(initiator_frame_token)),
       initiator_ukm_id(initiator_ukm_id) {}
 
 PrerenderAttributes::~PrerenderAttributes() = default;

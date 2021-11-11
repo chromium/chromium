@@ -22,6 +22,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
@@ -29,10 +30,6 @@ class AutocompleteResult;
 struct OmniboxLog;
 class PredictorsHandler;
 class Profile;
-
-namespace content {
-class SessionStorageNamespace;
-}
 
 namespace gfx {
 class Size;
@@ -105,14 +102,12 @@ class AutocompleteActionPredictor
   Action RecommendAction(const std::u16string& user_text,
                          const AutocompleteMatch& match) const;
 
-  // Begin prerendering |url| with |session_storage_namespace|. The |size| gives
-  // the initial size for the target prerender. The predictor will run at most
-  // one prerender at a time, so launching a prerender will cancel our previous
-  // prerenders (if any).
-  void StartPrerendering(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size);
+  // Begin prerendering |url|. The |size| gives the initial size for the target
+  // prerender. The predictor will run at most one prerender at a time, so
+  // launching a prerender will cancel our previous prerenders (if any).
+  void StartPrerendering(const GURL& url,
+                         content::WebContents& web_contents,
+                         const gfx::Size& size);
 
   // Cancels the current prerender, unless it has already been abandoned.
   void CancelPrerender();
@@ -258,6 +253,8 @@ class AutocompleteActionPredictor
   size_t transitional_matches_size_ = 0;
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
+
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
   // only copy of the data.

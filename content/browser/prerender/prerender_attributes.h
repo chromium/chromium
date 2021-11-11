@@ -19,27 +19,44 @@ enum class PrerenderTriggerType {
 
 // Records the basic attributes of a prerender request.
 struct CONTENT_EXPORT PrerenderAttributes {
-  PrerenderAttributes(const GURL& prerendering_url,
-                      PrerenderTriggerType trigger_type,
-                      Referrer referrer,
-                      const url::Origin& initiator_origin,
-                      const GURL& initiator_url,
-                      int initiator_process_id,
-                      const blink::LocalFrameToken& initiator_frame_token,
-                      ukm::SourceId initiator_ukm_id);
+  PrerenderAttributes(
+      const GURL& prerendering_url,
+      PrerenderTriggerType trigger_type,
+      Referrer referrer,
+      absl::optional<url::Origin> initiator_origin,
+      const GURL& initiator_url,
+      int initiator_process_id,
+      absl::optional<blink::LocalFrameToken> initiator_frame_token,
+      ukm::SourceId initiator_ukm_id);
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
   PrerenderAttributes& operator=(const PrerenderAttributes&) = delete;
   PrerenderAttributes(PrerenderAttributes&&);
   PrerenderAttributes& operator=(PrerenderAttributes&&) = delete;
 
+  bool IsBrowserInitiated() const { return !initiator_origin.has_value(); }
+
   GURL prerendering_url;
+
   PrerenderTriggerType trigger_type;
+
   Referrer referrer;
-  url::Origin initiator_origin;
+
+  // This is absl::nullopt when prerendering is initiated by the browser
+  // (not by a renderer using Speculation Rules API).
+  absl::optional<url::Origin> initiator_origin;
+
   GURL initiator_url;
+
+  // This is ChildProcessHost::kInvalidUniqueID when prerendering is initiated
+  // by the browser.
   int initiator_process_id;
-  blink::LocalFrameToken initiator_frame_token;
+
+  // This is absl::nullopt when prerendering is initiated by the browser.
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
+
+  // This is ukm::kInvalidSourceId when prerendering is initiated by the
+  // browser.
   ukm::SourceId initiator_ukm_id;
 
   // Serialises this struct into a trace.

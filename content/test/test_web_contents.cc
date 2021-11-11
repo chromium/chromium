@@ -418,7 +418,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
                           rfhi->GetLastCommittedURL(),
                           rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
                           rfhi->GetPageUkmSourceId()),
-      this);
+      *this);
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
