@@ -49,7 +49,7 @@
 <translation id="2141853158323869627">{DAYS,plural, =1{1 દિ}one{# દિ}other{# દિ}}</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2161656808144014275">ટેક્સ્ટ</translation>
-<translation id="2168039046890040389">પૃષ્ઠ ઉપર</translation>
+<translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(ખાલી)</translation>
 <translation id="2192232475740621500">ઓછી ઘનતાનો ઉપયોગ કરો</translation>
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
@@ -242,7 +242,7 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, ઑટોમેટિક રીતે પૂર્ણ</translation>
 <translation id="815598010540052116">નીચે સ્ક્રોલ કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8210608804940886430">પૃષ્ઠ નીચે</translation>
+<translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">ટૅબ</translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>

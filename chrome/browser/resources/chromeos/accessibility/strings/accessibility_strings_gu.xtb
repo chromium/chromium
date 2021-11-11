@@ -132,7 +132,7 @@
 <translation id="180203835522132923">Search + O, પછી W</translation>
 <translation id="1810107444790159527">સૂચિ બૉક્સ</translation>
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
-<translation id="1829244130665387512">આ પૃષ્ઠમાં શોધો</translation>
+<translation id="1829244130665387512">આ પેજમાં શોધો</translation>
 <translation id="1834891354138622109">કૉલમ</translation>
 <translation id="1845944666972354496">સક્રિય કરવા માટે બે વાર ટૅપ કરો</translation>
 <translation id="1846771122725914429">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન</translation>
@@ -163,7 +163,7 @@
 <translation id="2089387485033699258">gu</translation>
 <translation id="2091933974477985526">ફેરફાર કારી શકાય તેવો ટેક્સ્ટ એરિયા</translation>
 <translation id="2100350898815792233">તમામ વિરામચિહ્ન</translation>
-<translation id="2110480898214777136">કોઈ પૃષ્ઠ, સંવાદ અથવા અન્ય કન્ટેનરની અંદર શરૂઆતથી અંત સુધી અથવા અંતથી શરૂઆત સુધી પૂર્ણ કરો</translation>
+<translation id="2110480898214777136">કોઈ પેજ, સંવાદ અથવા અન્ય કન્ટેનરની અંદર શરૂઆતથી અંત સુધી અથવા અંતથી શરૂઆત સુધી પૂર્ણ કરો</translation>
 <translation id="2119965627982867824">spnbtn</translation>
 <translation id="2121067395472282800">ઍક્સેસ કી:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">આ આઇટમ માટે કોઈ ટેક્સ્ટ ઉપલબ્ધ નથી</translation>
@@ -262,7 +262,7 @@
 <translation id="2766299274563946262">ડાબી બાજુએ કોઈ સેલ નથી</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">પાછળની આઇટમ પર જવા માટે, તમે એક આંગળીથી ડાબેથી જમણે સ્વાઇપ પણ કરી શકો છો. હમણાં જ અજમાવી જુઓ.</translation>
-<translation id="280499067616661124">ChromeVox પૃષ્ઠમાં શોધો</translation>
+<translation id="280499067616661124">ChromeVox પેજમાં શોધો</translation>
 <translation id="2811019999044652585">ટુલબાર અથવા સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગ પર જવા માટે, Control+ફોરવર્ડ દબાવો. Chromebook પર, ફોરવર્ડ કી એ નંબર 2 કીની એકદમ ઉપરની કી છે.</translation>
 <translation id="2811204574343810641">પંક્તિ</translation>
 <translation id="2816868829355607410">અભ્યાસ ક્ષેત્ર: જમ્પ આદેશો</translation>
@@ -430,7 +430,7 @@
 <translation id="3816633764618089385">આગલું મીડિયા</translation>
 <translation id="3840823741487267909">સંક્ષેપ</translation>
 <translation id="3841319830220785495">ડિફૉલ્ટ તરીકે સેટ કરેલો નૈસર્ગિક અવાજ</translation>
-<translation id="385383972552776628">વિકલ્પોનું પૃષ્ઠ ખોલો</translation>
+<translation id="385383972552776628">વિકલ્પોનું પેજ ખોલો</translation>
 <translation id="3856075812838139784">ફક્ત વાંચવા માટે</translation>
 <translation id="3857141338659865495">મધ્યમ પીરોજી</translation>
 <translation id="3870295413168340326">કોઈ પાછલું 'લેવલ 3' મથાળું નથી</translation>
@@ -461,7 +461,7 @@
 <translation id="4047910800766704982">જ્યારે તમારું ડિવાઇસ ઑનલાઇન હોય ત્યારે તમે માણસ જેવા, નૈસર્ગિક અવાજનો ઉપયોગ કરી શકો છો. પ્રક્રિયા માટે ટેક્સ્ટ Googleને મોકલવામાં આવશે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="4053520724192563562">લીંબુ જેવો લીલો</translation>
 <translation id="4054936709456751127">sts</translation>
-<translation id="4058278702844053247">પૃષ્ઠ લોડ ચાલુ છે</translation>
+<translation id="4058278702844053247">પેજ લોડ થાય છે</translation>
 <translation id="4065205963140826639">આગલું બટન શોધવા માટે હમણાં શોધ + જમણા તીરનો ઉપયોગ કરવાનો પ્રયાસ કરો, પછી તેને ક્લિક કરવા માટે શોધ + Space દબાવો.</translation>
 <translation id="4081085052247739398">{COUNT,plural, =1{ટિલ્ડ}one{# ટિલ્ડ}other{# ટિલ્ડ}}</translation>
 <translation id="409334809956508737">પાછલો ઑબ્જેક્ટ</translation>
@@ -552,7 +552,7 @@
 <translation id="4787577491510559358">હાલની આઇટમ માટેનું ફોર્મેટ જણાવો</translation>
 <translation id="479989351350248267">શોધ</translation>
 <translation id="4804818685124855865">ડિસ્કનેક્ટ કરો</translation>
-<translation id="481165870889056555">ચાલુ પૃષ્ઠના શીર્ષકની ઘોષણા કરો</translation>
+<translation id="481165870889056555">ચાલુ પેજના શીર્ષકની ઘોષણા કરો</translation>
 <translation id="4815668758102003883">ઝાંખો પીરોજી</translation>
 <translation id="4826415162591436065">આગળ નૅવિગેટ કરો</translation>
 <translation id="4827410568042294688">પસંદ ન કરેલ</translation>
@@ -580,7 +580,7 @@
 <translation id="4974612477719259470">કોઈ પાછલું બટન નથી</translation>
 <translation id="4979404613699303341">પાછલું બટન</translation>
 <translation id="4982917827052020884">ચાલો, આપણે કેટલીક એવી કીથી શરૂઆત કરીએ, જેનો તમે નિયમિત રીતે ઉપયોગ કરશો. Control કીનો ઉપયોગ કોઈપણ વર્તમાન સ્પીચને રોકવા માટે કરી શકાય છે. તમારા કીબોર્ડમાં નીચેના ડાબા ખૂણામાં Control કી શોધો. આગળ વધવા માટે, Control કી દબાવો.</translation>
-<translation id="4983588134362688868">પૃષ્ઠની ટોચ પર જાઓ</translation>
+<translation id="4983588134362688868">પેજની ટોચ પર જાઓ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, વિંડો</translation>
 <translation id="4993152509206108683">દર <ph name="PERCENT" /> ટકા</translation>
 <translation id="4994420463726586413">બૅટરીનું હાલનું સ્ટેટસ જણાવો</translation>
@@ -936,7 +936,7 @@
 <translation id="7596131838331109045">આછો સૅમન</translation>
 <translation id="7604026522577407655">ચાલુ કૉલમની શરૂઆત પર જાઓ</translation>
 <translation id="7604451927827590395">hdng</translation>
-<translation id="7609342235116740824">ચાલુ પૃષ્ઠના URL ની ઘોષણા કરો</translation>
+<translation id="7609342235116740824">હાલના પેજના URLની ઘોષણા કરો</translation>
 <translation id="7609363189280667021">બ્રેઇલ કૅપ્શન્સને ટોગલ કરો</translation>
 <translation id="761303759119251275">ક્રેડિટ</translation>
 <translation id="762020119231868829">વર્તમાનમાં ચાલી રહેલા બધા મીડિયા વિજેટ્સને થોભાવે છે</translation>

@@ -61,7 +61,7 @@
 അല്ലാത്തപക്ഷം, നിങ്ങളുടെ സ്വകാര്യതാ ക്രമീകരണം ഇത് ബ്ലോക്ക് ചെയ്യും. നിങ്ങൾ സംവദിക്കുന്ന ഉള്ളടക്കം ശരിയായി പ്രവർത്തിക്കാൻ ഇത് സഹായിക്കും, എന്നാൽ <ph name="EMBEDDED_URL" /> എന്നതിനെ നിങ്ങളുടെ പ്രവർത്തനം ട്രാക്ക് ചെയ്യാനും ഇത് അനുവദിച്ചേക്കാം.</translation>
 <translation id="1175364870820465910">&amp;അച്ചടിക്കൂ...</translation>
 <translation id="1175875016430184367">വലതുവശത്ത് മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
-<translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
+<translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1186201132766001848">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
 <translation id="1195210374336998651">ആപ്പ് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -915,7 +915,7 @@
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="3973357910713125165">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Enter അമർത്തുക</translation>
-<translation id="3986705137476756801">തൽസമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
+<translation id="3986705137476756801">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
 <translation id="3987405730340719549">ഈ സൈറ്റ് വ്യാജമോ വഞ്ചനാപരമോ ആകാമെന്ന് Chrome നിർണ്ണയിച്ചു.
 
     ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
@@ -1869,7 +1869,7 @@
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}other{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}}</translation>
 <translation id="7179323680825933600">പേയ്‌മെന്റ് രീതികൾ സംരക്ഷിച്ച് പൂരിപ്പിക്കുക</translation>
-<translation id="7180611975245234373">പുതുക്കുക</translation>
+<translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7181261019481237103">അദൃശ്യ വിൻഡോ തുറക്കുക</translation>
 <translation id="7182878459783632708">നയങ്ങളൊന്നും സജ്ജമാക്കിയിട്ടില്ല</translation>
 <translation id="7186367841673660872">ഈ പേജ്<ph name="ORIGINAL_LANGUAGE" />ല്‍‌ നിന്നും<ph name="LANGUAGE_LANGUAGE" />ലേക്ക് വിവര്‍‌ത്തനം ചെയ്‌തു</translation>
