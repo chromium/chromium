@@ -492,8 +492,8 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest, DefaultSchemesCanBeRequested) {
 
   std::vector<std::string> requestable_schemes = {
       // WebSafe Schemes:
-      "feed", url::kHttpScheme, url::kHttpsScheme, url::kFtpScheme,
-      url::kDataScheme, url::kWsScheme, url::kWssScheme,
+      url::kHttpScheme, url::kHttpsScheme, url::kDataScheme, url::kWsScheme,
+      url::kWssScheme,
       // Default added as requestable schemes:
       url::kFileScheme, kChromeUIScheme};
 
@@ -532,10 +532,8 @@ IN_PROC_BROWSER_TEST_F(WebUIRequestSchemesTest,
   // not requestable.
   std::vector<std::string> requestable_schemes = {
       // WebSafe schemes:
-      "feed",
       url::kHttpScheme,
       url::kHttpsScheme,
-      url::kFtpScheme,
       url::kDataScheme,
       url::kWsScheme,
       url::kWssScheme,

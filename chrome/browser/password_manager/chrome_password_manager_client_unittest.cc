@@ -490,9 +490,7 @@ struct SchemeTestCase {
 const SchemeTestCase kSchemeTestCases[] = {
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
-    {url::kFtpScheme, true},
     {url::kDataScheme, true},
-    {"feed", true},
 
     {"invalid-scheme-i-just-made-up", false},
     {content::kChromeDevToolsScheme, false},
@@ -694,9 +692,7 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
   } kTestCases[] = {
     {url::kHttpScheme, true},
     {url::kHttpsScheme, true},
-    {url::kFtpScheme, true},
     {url::kDataScheme, true},
-    {"feed", true},
     {url::kBlobScheme, true},
     {url::kFileSystemScheme, true},
 

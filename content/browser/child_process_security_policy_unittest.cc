@@ -291,6 +291,7 @@ TEST_F(ChildProcessSecurityPolicyTest, ChildID) {
   p->AddForTesting(kRendererID, browser_context());
   auto handle = p->CreateHandle(kRendererID);
   EXPECT_EQ(handle.child_id(), kRendererID);
+  p->Remove(kRendererID);
 }
 
 TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
@@ -299,9 +300,7 @@ TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
 
   EXPECT_TRUE(p->IsWebSafeScheme(url::kHttpScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kHttpsScheme));
-  EXPECT_TRUE(p->IsWebSafeScheme(url::kFtpScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kDataScheme));
-  EXPECT_TRUE(p->IsWebSafeScheme("feed"));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kBlobScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kFileSystemScheme));
 
@@ -339,13 +338,11 @@ TEST_F(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   // Safe to request, redirect or commit.
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("https://www.paypal.com/")));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("ftp://ftp.gnu.org/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
   EXPECT_TRUE(p->CanRequestURL(
       kRendererID, GURL("filesystem:http://localhost/temporary/a.gif")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("https://www.paypal.com/")));
-  EXPECT_TRUE(p->CanRedirectToURL(GURL("ftp://ftp.gnu.org/")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("data:text/html,<b>Hi</b>")));
   EXPECT_TRUE(
       p->CanRedirectToURL(GURL("filesystem:http://localhost/temporary/a.gif")));
@@ -353,7 +350,6 @@ TEST_F(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   const std::vector<std::string> kCommitURLs({
       "http://www.google.com/",
       "https://www.paypal.com/",
-      "ftp://ftp.gnu.org/",
       "data:text/html,<b>Hi</b>",
       "filesystem:http://localhost/temporary/a.gif",
   });
