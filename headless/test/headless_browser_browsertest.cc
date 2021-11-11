@@ -613,7 +613,15 @@ class TraceHelper : public tracing::ExperimentalObserver {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, TraceUsingBrowserDevToolsTarget) {
+// Flaky, http://crbug.com/1269261.
+#if defined(OS_WIN)
+#define MAYBE_TraceUsingBrowserDevToolsTarget \
+  DISABLED_TraceUsingBrowserDevToolsTarget
+#else
+#define MAYBE_TraceUsingBrowserDevToolsTarget TraceUsingBrowserDevToolsTarget
+#endif  // defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
+                       MAYBE_TraceUsingBrowserDevToolsTarget) {
   HeadlessDevToolsTarget* target = browser()->GetDevToolsTarget();
   EXPECT_NE(nullptr, target);
 
