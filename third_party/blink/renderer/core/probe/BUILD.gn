@@ -36,6 +36,8 @@ source_set("generated") {
 
 # Compiles the sources generated above.
 blink_core_sources("probe") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "async_task_id.h",
     "core_probes.cc",

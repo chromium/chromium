@@ -62,7 +62,10 @@ source_set("common") {
     "//third_party/blink/public/common",
   ]
 
-  configs += [ ":blink_common_implementation" ]
+  configs += [
+    ":blink_common_implementation",
+    "//build/config/compiler:noshadowing",
+  ]
 
   sources = [
     # NOTE: Please do not add public headers that need to be referenced from

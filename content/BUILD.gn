@@ -9,7 +9,10 @@ import("//tools/grit/grit_rule.gni")
 # Applied by targets internal to content.
 config("content_implementation") {
   defines = [ "CONTENT_IMPLEMENTATION" ]
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
+  configs = [
+    "//build/config/compiler:noshadowing",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //content")

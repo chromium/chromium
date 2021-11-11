@@ -270,6 +270,7 @@ component("gfx") {
 
   configs += [
     "//build/config:precompiled_headers",
+    "//build/config/compiler:noshadowing",
     "//build/config/compiler:wexit_time_destructors",
   ]
 

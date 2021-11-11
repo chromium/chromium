@@ -173,6 +173,8 @@ component("aura") {
     public += [ "screen_ozone.h" ]
     sources += [ "screen_ozone.cc" ]
   }
+
+  configs += [ "//build/config/compiler:noshadowing" ]
 }
 
 static_library("test_support") {

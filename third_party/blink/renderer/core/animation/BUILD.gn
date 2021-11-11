@@ -19,6 +19,8 @@ buildflag_header("buildflags") {
 }
 
 blink_core_sources("animation") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "animatable.cc",
     "animatable.h",

@@ -50,6 +50,8 @@ config("inside_blink") {
       "-Wno-implicit-int-conversion",
     ]
   }
+
+  configs = [ "//build/config/compiler:noshadowing" ]
 }
 
 # blink_pch --------------------------------------------------------------------
@@ -134,4 +136,6 @@ config("non_test_config") {
   if (is_clang) {
     cflags += [ "-Wglobal-constructors" ]
   }
+
+  configs = [ "//build/config/compiler:noshadowing" ]
 }

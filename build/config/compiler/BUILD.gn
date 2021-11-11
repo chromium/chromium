@@ -1649,10 +1649,7 @@ config("chromium_code") {
     }
   }
 
-  configs = [
-    ":default_warnings",
-    ":noshadowing",
-  ]
+  configs = [ ":default_warnings" ]
 }
 
 config("no_chromium_code") {

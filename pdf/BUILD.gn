@@ -21,8 +21,15 @@ buildflag_header("buildflags") {
 }
 
 if (enable_pdf) {
+  config("common") {
+    configs = [ "//build/config/compiler:noshadowing" ]
+  }
+
   config("strict") {
-    configs = [ "//build/config/compiler:wexit_time_destructors" ]
+    configs = [
+      ":common",
+      "//build/config/compiler:wexit_time_destructors",
+    ]
   }
 
   config("pdfium_includes") {
@@ -218,6 +225,8 @@ if (enable_pdf) {
       "ppapi_migration/ppapi_assert_matching_enums.cc",
     ]
 
+    configs += [ ":common" ]
+
     deps = [
       ":accessibility",
       ":internal",
@@ -395,6 +404,8 @@ if (enable_pdf) {
       "test/test_pdfium_engine.h",
     ]
 
+    configs += [ ":common" ]
+
     deps = [
       ":internal",
       ":ppapi_migration",
@@ -456,6 +467,8 @@ if (enable_pdf) {
       "ui/file_name_unittest.cc",
       "ui/thumbnail_unittest.cc",
     ]
+
+    configs += [ ":common" ]
 
     data = [ "test/data/" ]
 

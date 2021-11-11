@@ -14,8 +14,6 @@ config("quiche_config") {
     "src/common/platform/default",
     "src",
   ]
-
-  cflags = [ "-Wno-shadow" ]
 }
 
 # Since //net and //net/third_party/quiche have a circular dependency on each

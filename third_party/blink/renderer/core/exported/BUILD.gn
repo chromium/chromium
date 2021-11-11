@@ -19,6 +19,8 @@ static_library("test_support") {
 }
 
 blink_core_sources("exported") {
+  configs += [ "//build/config/compiler:noshadowing" ]
+
   sources = [
     "web_array_buffer.cc",
     "web_array_buffer_converter.cc",

@@ -58,12 +58,6 @@ wayland_protocol_codegen("generated_client_event_receiver_version_tests") {
       "$target_gen_dir/all_generated_client_event_receiver_version_tests.cc"
 }
 
-config("generated_code_warnings") {
-  if (is_clang) {
-    cflags = [ "-Wno-shadow" ]
-  }
-}
-
 source_set("compatibility_test") {
   testonly = true
 
@@ -105,6 +99,4 @@ source_set("compatibility_test") {
     "//third_party/wayland-protocols:vsync_feedback_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
   ]
-
-  configs += [ ":generated_code_warnings" ]
 }
