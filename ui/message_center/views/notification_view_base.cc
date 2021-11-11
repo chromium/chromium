@@ -713,7 +713,12 @@ void NotificationViewBase::CreateOrUpdateIconView(
     right_content_->AddChildView(icon_view_);
   }
 
-  icon_view_->SetImage(icon, icon.size());
+  bool apply_rounded_corners = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apply_rounded_corners =
+      ash::features::IsNotificationsRefreshEnabled() && use_image_for_icon;
+#endif  // IS_CHROMEOS_ASH
+  icon_view_->SetImage(icon, icon.size(), apply_rounded_corners);
 
   // Hide the icon on the right side when the notification is expanded.
   hide_icon_on_expanded_ = use_image_for_icon;
