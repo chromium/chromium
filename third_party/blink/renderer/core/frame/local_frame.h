@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -153,9 +154,11 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 // needs to call a function that is exposed as a Mojo method, the function
 // implementation should be in LocalFrame, and LocalFrameMojoHandler should
 // delegate to LocalFrame's implementation.
-class CORE_EXPORT LocalFrame final : public Frame,
-                                     public FrameScheduler::Delegate,
-                                     public Supplementable<LocalFrame> {
+class CORE_EXPORT LocalFrame final
+    : public Frame,
+      public FrameScheduler::Delegate,
+      public BackForwardCacheLoaderHelperImpl::Delegate,
+      public Supplementable<LocalFrame> {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
@@ -212,18 +215,11 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void DidFocus() override;
   bool IsAdSubframe() const override;
 
-  // Triggers eviction of this frame by notifying the browser side.
-  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason);
-  // Called when a network request buffered an additional `num_bytes` while the
-  // frame is in back-forward cache. Updates the total amount of bytes buffered
-  // for back-forward cache in the frame and in the process. Note that
-  // `num_bytes` is the amount of additional bytes that are newly buffered, on
-  // top of any previously buffered bytes for this frame.
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
-  // Returns true if the total amount of bytes buffered while in back-forward
-  // cache in the whole renderer process is still under the per-process limit,
-  // false otherwise.
-  bool CanContinueBufferingWhileInBackForwardCache();
+  // BackForwardCacheLoaderHelperImpl::Delegate:
+  void EvictFromBackForwardCache(
+      mojom::blink::RendererEvictionReason reason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
