@@ -208,6 +208,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             }
             reactionLayout.setActive(true);
             mActiveReaction = reactionLayout;
+            mActiveReaction.bringToFront();
         } else if (mActiveReaction != null) {
             mActiveReaction.setActive(false);
             mActiveReaction = null;
