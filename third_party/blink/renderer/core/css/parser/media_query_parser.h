@@ -19,40 +19,6 @@ namespace blink {
 class MediaQuerySet;
 class CSSParserContext;
 
-class MediaQueryData {
-  STACK_ALLOCATED();
-
- private:
-  MediaQuery::RestrictorType restrictor_;
-  String media_type_;
-  ExpressionHeapVector expressions_;
-  String media_feature_;
-  bool media_type_set_;
-
-  // A fake CSSParserContext for use counter only.
-  // TODO(xiaochengh): Plumb the real CSSParserContext from the document.
-  const CSSParserContext& fake_context_;
-
- public:
-  MediaQueryData();
-  MediaQueryData(const MediaQueryData&) = delete;
-  MediaQueryData& operator=(const MediaQueryData&) = delete;
-  void Clear();
-  void AddExpression(CSSParserTokenRange&, const ExecutionContext*);
-  bool LastExpressionValid();
-  void RemoveLastExpression();
-  void SetMediaType(const String&);
-  std::unique_ptr<MediaQuery> TakeMediaQuery();
-
-  inline MediaQuery::RestrictorType Restrictor() { return restrictor_; }
-
-  inline void SetRestrictor(MediaQuery::RestrictorType restrictor) {
-    restrictor_ = restrictor;
-  }
-
-  inline void SetMediaFeature(const String& str) { media_feature_ = str; }
-};
-
 class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
 
@@ -91,19 +57,19 @@ class CORE_EXPORT MediaQueryParser {
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
-  bool ConsumeFeature(CSSParserTokenRange&);
+  std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&);
 
-  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-and
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
   //
-  // TODO(crbug.com/962417): This does currently not support the full grammar,
-  // and instead parses the following: [ and <media-feature> ]*
-  bool ConsumeAnd(CSSParserTokenRange&);
+  // TODO(crbug.com/962417): Only a limited form of the grammar is
+  // currently supported.
+  std::unique_ptr<MediaQueryExpNode> ConsumeCondition(CSSParserTokenRange&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
   //
   // TODO(crbug.com/962417): Only a limited form of the grammar is
   // currently supported.
-  bool ConsumeQuery(CSSParserTokenRange&);
+  std::unique_ptr<MediaQuery> ConsumeQuery(CSSParserTokenRange&);
 
   // Used for ParserType::kMediaConditionParser.
   //
@@ -117,10 +83,12 @@ class CORE_EXPORT MediaQueryParser {
   bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
 
   ParserType parser_type_;
-  MediaQueryData media_query_data_;
   scoped_refptr<MediaQuerySet> query_set_;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
+  // A fake CSSParserContext for use counter only.
+  // TODO(xiaochengh): Plumb the real CSSParserContext from the document.
+  const CSSParserContext& fake_context_;
 };
 
 }  // namespace blink
