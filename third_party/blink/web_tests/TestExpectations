@@ -7093,6 +7093,26 @@ crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-p
 crbug.com/959296 external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Failure ]
 crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Pass ]
 
+# Expected Wasm CSP failures due to revert of https://crrev.com/c/3179051.
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.worker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-wasm-unsafe-eval-allows-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-wasm-unsafe-eval-allows-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/default-src-wasm-unsafe-eval-allows-wasm.any.worker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-wasm-unsafe-eval-allows-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-wasm-unsafe-eval-allows-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-wasm-unsafe-eval-allows-wasm.any.worker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/default-src-blocks-wasm.any.worker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.worker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.serviceworker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.sharedworker.html [ Failure ]
+crbug.com/1268576 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/script-src-blocks-wasm.any.worker.html [ Failure ]
+
 # FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-rename-manual.https.html [ Failure ]
