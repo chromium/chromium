@@ -28432,7 +28432,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'owners': ['arichiv@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['android:96-101', 'chrome.*:96-101', 'chrome_os:96-101'],
+      'supported_on': ['android:96-100', 'chrome.*:96-100', 'chrome_os:96-100'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
