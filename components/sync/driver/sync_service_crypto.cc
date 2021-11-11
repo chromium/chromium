@@ -16,8 +16,8 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
-#include "components/sync/nigori/nigori.h"
 
 namespace syncer {
 
