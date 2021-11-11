@@ -16,3 +16,6 @@ over2.AXMathBase=NULL
 underover1.AXMathBase.AXChildren.count=1
 underover1.AXMathBase.AXChildren[0].AXValue='1'
 underover2.AXMathBase=NULL
+multiscripts1.AXMathBase.AXChildren.count=1
+multiscripts1.AXMathBase.AXChildren[0].AXValue='base'
+multiscripts2.AXMathBase=NULL

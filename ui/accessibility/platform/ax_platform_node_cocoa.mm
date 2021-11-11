@@ -742,6 +742,7 @@ bool IsAXSetter(SEL selector) {
       break;
     case ax::mojom::Role::kMathMLMultiscripts:
       [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute,
         NSAccessibilityMathPostscriptsAttribute,
         NSAccessibilityMathPrescriptsAttribute
       ]];
