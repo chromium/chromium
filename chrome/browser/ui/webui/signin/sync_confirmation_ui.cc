@@ -77,8 +77,7 @@ void SyncConfirmationUI::Initialize(
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISyncConfirmationHost);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
+  webui::SetJSModuleDefaults(source);
 
   static constexpr webui::ResourcePath kResources[] = {
       {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
@@ -102,8 +101,6 @@ void SyncConfirmationUI::Initialize(
     InitializeForSyncDisabled(source);
   }
 
-  source->DisableTrustedTypesCSP();
-
   base::DictionaryValue strings;
   webui::SetLoadTimeDataDefaults(
       g_browser_process->GetApplicationLocale(), &strings);
@@ -122,17 +119,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     absl::optional<SkColor> profile_creation_flow_color,
     DesignVersion design,
     bool is_modal_dialog) {
-  // Resources for testing.
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader_util.js",
-                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
-
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://webui-test "
-      "'self';");
-
   AddStringResource(source, "syncConfirmationTitle",
                     IDS_SYNC_CONFIRMATION_TITLE);
   AddStringResource(source, "syncConfirmationSyncInfoTitle",

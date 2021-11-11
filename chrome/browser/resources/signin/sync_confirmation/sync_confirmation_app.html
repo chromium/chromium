@@ -266,9 +266,11 @@
           $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
-      <cr-button id="cancelButton" on-click="onUndo_">
-        $i18n{syncConfirmationUndoLabel}
-      </cr-button>
+      <if expr="not lacros">
+        <cr-button id="cancelButton" on-click="onUndo_">
+          $i18n{syncConfirmationUndoLabel}
+        </cr-button>
+      </if>
       <if expr="not is_macosx and not is_linux">
         <cr-button id="settingsButton" on-click="onGoToSettings_"
             consent-confirmation>
@@ -313,9 +315,11 @@
         $i18n{syncConfirmationSettingsLabel}
       </cr-button>
     </if>
-    <cr-button id="notNowButton" on-click="onUndo_">
-      $i18n{syncConfirmationUndoLabel}
-    </cr-button>
+    <if expr="not lacros">
+      <cr-button id="notNowButton" on-click="onUndo_">
+        $i18n{syncConfirmationUndoLabel}
+      </cr-button>
+    </if>
     <if expr="not is_macosx and not is_linux">
       <cr-button id="settingsButton" on-click="onGoToSettings_"
           consent-confirmation>

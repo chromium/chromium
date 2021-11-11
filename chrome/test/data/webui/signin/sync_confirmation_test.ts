@@ -8,6 +8,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+// <if expr="lacros">
+import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+// </if>
+// <if expr="not lacros">
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+// </if>
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
@@ -35,6 +41,16 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
           'Turn on sync?',
           app.shadowRoot!.querySelector(
                              '#syncConfirmationHeading')!.textContent!.trim());
+
+      const cancelButton = app.shadowRoot!.querySelector(
+          isNewDesignEnabled ? '#notNowButton' : '#cancelButton');
+      // <if expr="lacros">
+      // Test that the Cancel button is hidden on lacros.
+      assertFalse(!!cancelButton);
+      // </if>
+      // <if expr="not lacros">
+      assertTrue(!!cancelButton);
+      // </if>
     });
   });
 
