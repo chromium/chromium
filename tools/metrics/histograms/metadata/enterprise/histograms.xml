@@ -166,8 +166,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
     units="ms" expires_after="2022-01-09">
-  <owner>amraboelkher@google.com</owner>
-  <owner>mpolzer@google.com</owner>
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
   <summary>
     Duration of the hash dance to determine enrollment state of the device. Only
     recorded if the hash dance finished successfully.
@@ -244,8 +244,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
     enum="EnterpriseDeviceManagementStatus" expires_after="2022-10-31">
-  <owner>amraboelkher@google.com</owner>
-  <owner>mpolzer@google.com</owner>
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
   <summary>
     Device management server request status for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
@@ -278,8 +278,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
     enum="NetErrorCodes" expires_after="2022-10-31">
-  <owner>amraboelkher@google.com</owner>
-  <owner>mpolzer@google.com</owner>
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
@@ -296,8 +296,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
     enum="PsmResult" expires_after="2022-10-31">
-  <owner>amraboelkher@google.com</owner>
-  <owner>mpolzer@google.com</owner>
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
   <summary>
     All possible PSM protocol results after it has executed succcessfully or
     terminated due to an error or timeout. This request is used to determine the
