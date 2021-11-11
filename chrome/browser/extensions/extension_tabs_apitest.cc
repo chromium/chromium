@@ -248,7 +248,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureVisibleDisabled) {
+// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
+#else
+#define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
                                                true);
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
