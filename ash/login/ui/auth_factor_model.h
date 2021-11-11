@@ -107,6 +107,10 @@ class ASH_EXPORT AuthFactorModel {
   // This will be called when the auth factor's icon is tapped or clicked.
   virtual void OnTapOrClickEvent() = 0;
 
+  // This will be called when the arrow button owned by `LoginAuthFactorsView`
+  // is tapped or clicked.
+  virtual void OnArrowButtonTapOrClickEvent();
+
  protected:
   // Should be called whenever the internal state of the auth model changes to
   // invoke the |on_state_changed_callback_| if set. Calls UpdateIcon().

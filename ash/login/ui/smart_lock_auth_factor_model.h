@@ -19,7 +19,8 @@ class AuthIconView;
 // lock screen.
 class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
  public:
-  SmartLockAuthFactorModel();
+  SmartLockAuthFactorModel(
+      base::RepeatingCallback<void()> arrow_button_tap_callback);
   SmartLockAuthFactorModel(SmartLockAuthFactorModel&) = delete;
   SmartLockAuthFactorModel& operator=(SmartLockAuthFactorModel&) = delete;
   ~SmartLockAuthFactorModel() override;
@@ -30,6 +31,7 @@ class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
 
   void SetSmartLockState(SmartLockState state);
   void NotifySmartLockAuthResult(bool result);
+  void OnArrowButtonTapOrClickEvent() override;
 
  private:
   // AuthFactorModel:
@@ -41,6 +43,7 @@ class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
   void UpdateIcon(AuthIconView* icon) override;
   void OnTapOrClickEvent() override;
 
+  base::RepeatingCallback<void()> arrow_button_tap_callback_;
   SmartLockState state_ = SmartLockState::kInactive;
   absl::optional<bool> auth_result_;
 };

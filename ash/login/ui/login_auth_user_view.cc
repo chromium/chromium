@@ -1128,20 +1128,19 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   std::unique_ptr<FingerprintView> fingerprint_view;
   std::unique_ptr<LoginAuthFactorsView> auth_factors_view;
   if (smart_lock_ui_revamp_enabled_) {
-    // TODO(https://crbug.com/1233614): Inject a more specialized "click to
-    // enter" callback directly into SmartLockAuthFactorModel and remove this
-    // behavior from OnUserViewTap().
-    auth_factors_view =
-        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
-            &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
-    auth_factors_view_ = auth_factors_view.get();
     auto fingerprint_auth_factor_model =
         std::make_unique<FingerprintAuthFactorModel>();
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
-    auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
     auto smart_lock_auth_factor_model =
-        std::make_unique<SmartLockAuthFactorModel>();
+        std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(
+            &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
     smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
+    auth_factors_view =
+        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+            &SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent,
+            base::Unretained(smart_lock_auth_factor_model_)));
+    auth_factors_view_ = auth_factors_view.get();
+    auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
     auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
   } else {
     fingerprint_view = std::make_unique<FingerprintView>();

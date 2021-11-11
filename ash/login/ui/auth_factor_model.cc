@@ -36,4 +36,6 @@ void AuthFactorModel::NotifyOnStateChanged() {
   UpdateIcon(icon_);
 }
 
+void AuthFactorModel::OnArrowButtonTapOrClickEvent() {}
+
 }  // namespace ash

@@ -20,7 +20,9 @@ constexpr int kSmartLockIconSizeDp = 32;
 
 }  // namespace
 
-SmartLockAuthFactorModel::SmartLockAuthFactorModel() = default;
+SmartLockAuthFactorModel::SmartLockAuthFactorModel(
+    base::RepeatingCallback<void()> arrow_button_tap_callback)
+    : arrow_button_tap_callback_(arrow_button_tap_callback) {}
 
 SmartLockAuthFactorModel::~SmartLockAuthFactorModel() = default;
 
@@ -186,6 +188,12 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
 void SmartLockAuthFactorModel::OnTapOrClickEvent() {
   // TODO(crbug.com/1233614): If Smart Lock is not available because of an error
   // and the icon is pressed, show the particular error message.
+}
+
+void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
+  if (state_ == SmartLockState::kPhoneAuthenticated) {
+    arrow_button_tap_callback_.Run();
+  }
 }
 
 }  // namespace ash
