@@ -261,7 +261,7 @@ class DeviceTarget(target.Target):
     return (self.GetFileAsString(_ON_DEVICE_PRODUCT_FILE).strip(),
             self.GetFileAsString(_ON_DEVICE_VERSION_FILE).strip())
 
-  def _GetSdkHash():
+  def _GetSdkHash(self):
     """Read version of hash in pre-installed package directory.
     Returns:
       Tuple of (product, version) of image to be installed.
