@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -168,6 +169,10 @@ class DedicatedWorkerHost final
       blink::mojom::RendererEvictionReason reason) override;
   void DidChangeBackForwardCacheDisablingFeatures(
       uint64_t features_mask) override;
+
+  // Returns the features set that disable back-forward cache.
+  blink::scheduler::WebSchedulerTrackedFeatures
+  GetBackForwardCacheDisablingFeatures() const;
 
   base::WeakPtr<DedicatedWorkerHost> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -341,6 +346,8 @@ class DedicatedWorkerHost final
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.
   CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
+
+  blink::scheduler::WebSchedulerTrackedFeatures bfcache_disabling_features_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 };

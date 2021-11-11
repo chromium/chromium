@@ -28,6 +28,15 @@ void DedicatedWorkerHostsForDocument::Remove(
   dedicated_workers_.erase(dedicated_worker_host);
 }
 
+blink::scheduler::WebSchedulerTrackedFeatures
+DedicatedWorkerHostsForDocument::GetBackForwardCacheDisablingFeatures() const {
+  blink::scheduler::WebSchedulerTrackedFeatures features;
+  for (auto worker : dedicated_workers_) {
+    features.PutAll(worker->GetBackForwardCacheDisablingFeatures());
+  }
+  return features;
+}
+
 DOCUMENT_USER_DATA_KEY_IMPL(DedicatedWorkerHostsForDocument);
 
 }  // namespace content

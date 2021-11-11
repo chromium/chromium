@@ -9,6 +9,7 @@
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/public/browser/idle_time_provider.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -199,6 +200,103 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   "a.test",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_and_webtransport.html")));
+
+  // Open a WebTransport in the dedicated worker.
+  EXPECT_EQ("opened",
+            EvalJs(current_frame_host(),
+                   JsReplace("window.testOpenWebTransport($1);", port())));
+  EXPECT_TRUE(
+      DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
+          current_frame_host())
+          ->GetBackForwardCacheDisablingFeatures()
+          .HasAll(
+              {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}));
+
+  // Use a broadcast channel in the frame.
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "window.foo = new BroadcastChannel('foo');"));
+  RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+  delete_observer_rfh.WaitUntilDeleted();
+
+  // Go back to the original page. The page was not cached due to WebTransport
+  // and a broadcast channel, which came from the dedicated worker and the frame
+  // respectively. Confirm both are recorded.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport,
+       blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel},
+      {}, {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   "a.test",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_and_webtransport.html")));
+
+  // Open and close a WebTransport in the dedicated worker.
+  EXPECT_EQ("opened",
+            EvalJs(current_frame_host(),
+                   JsReplace("window.testOpenWebTransport($1);", port())));
+  EXPECT_TRUE(
+      DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
+          current_frame_host())
+          ->GetBackForwardCacheDisablingFeatures()
+          .HasAll(
+              {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}));
+
+  EXPECT_EQ("closed",
+            EvalJs(current_frame_host(),
+                   JsReplace("window.testCloseWebTransport($1);", port())));
+  EXPECT_TRUE(DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
+                  current_frame_host())
+                  ->GetBackForwardCacheDisablingFeatures()
+                  .Empty());
+
+  // Use a broadcast channel in the frame.
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "window.foo = new BroadcastChannel('foo');"));
+  RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+  delete_observer_rfh.WaitUntilDeleted();
+
+  // Go back to the original page. The page was not cached due to a broadcast
+  // channel, which came from the frame. WebTransport was used once in the
+  // dedicated worker but was closed, then this doesn't affect the cache usage.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
+      {}, FROM_HERE);
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.

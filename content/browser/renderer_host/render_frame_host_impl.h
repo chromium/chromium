@@ -3836,10 +3836,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is used only for metrics.
   // See blink::SchedulingPolicy::Feature for the meaning.
   // These values should be cleared on document commit.
-  // Both are needed as some features are tracked in the renderer process and
-  // some in the browser process, depending on the design of each individual
-  // feature. They are tracked separately, because when the renderer updates the
-  // set of features, the browser ones should persist.
+  //
+  // Some features are tracked in these places:
+  //   * `renderer_reported_bfcache_disabling_features_` for features in the
+  //      document in the renderer.
+  //   * `browser_reported_bfcache_disabling_features_counts_` for the browser
+  //      features.
+  //   * `DedicatedWorkerHost` for features used in dedicated workers.
+  // They are tracked separately, because when the renderer updates the set of
+  // features, the browser ones should persist. Also, dedicated workers might be
+  // destroyed while their renderers persist.
   BackForwardCacheDisablingFeatures
       renderer_reported_bfcache_disabling_features_;
 

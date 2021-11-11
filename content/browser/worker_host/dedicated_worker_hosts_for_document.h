@@ -8,13 +8,15 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/safe_ref.h"
 #include "content/public/browser/document_user_data.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {
 
 class DedicatedWorkerHost;
 
-// Manages the set of dedicated workers whose ancestor is this document.
-class DedicatedWorkerHostsForDocument
+// Manages the set of dedicated workers whose ancestor is this document. This
+// class is exported for testing.
+class CONTENT_EXPORT DedicatedWorkerHostsForDocument
     : public DocumentUserData<DedicatedWorkerHostsForDocument> {
  public:
   ~DedicatedWorkerHostsForDocument() override;
@@ -26,6 +28,10 @@ class DedicatedWorkerHostsForDocument
   // `dedicated_worker_host` is not associated to this document, Remove is a no-
   // op.
   void Remove(base::SafeRef<DedicatedWorkerHost> dedicated_worker_host);
+
+  // Returns the union of the feature sets that disable back-forward cache.
+  blink::scheduler::WebSchedulerTrackedFeatures
+  GetBackForwardCacheDisablingFeatures() const;
 
  private:
   explicit DedicatedWorkerHostsForDocument(RenderFrameHost* rfh);
