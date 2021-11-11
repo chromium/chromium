@@ -553,15 +553,10 @@ class raw_ptr {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
   // Needed for cases like |derived_ptr == base_ptr|. Without these, a more
-  // costly |operator T*()| will get called, instead of |operator==|.
-  template <typename U>
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs,
-                                       const raw_ptr<U, Impl>& rhs) {
-    // Add |const volatile| when casting, in case |U| has any. Even if |T|
-    // doesn't, comparison between |T*| and |const volatile T*| is fine.
-    return lhs.GetForComparison() ==
-           static_cast<std::add_cv_t<T>*>(rhs.GetForComparison());
-  }
+  // costly |operator U*()| will get called, instead of |operator==|.
+  template <typename U, typename V, typename I>
+  friend ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
+                                       const raw_ptr<V, I>& rhs);
   template <typename U>
   friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
                                        const raw_ptr<U, Impl>& rhs) {
@@ -643,6 +638,15 @@ class raw_ptr {
   template <typename U, typename V>
   friend class raw_ptr;
 };
+
+template <typename U, typename V, typename I>
+ALWAYS_INLINE bool operator==(const raw_ptr<U, I>& lhs,
+                              const raw_ptr<V, I>& rhs) {
+  // Add |const volatile| when casting, in case |V| has any. Even if |U|
+  // doesn't, comparison between |U*| and |const volatile U*| is fine.
+  return lhs.GetForComparison() ==
+         static_cast<std::add_cv_t<U>*>(rhs.GetForComparison());
+}
 
 }  // namespace base
 
