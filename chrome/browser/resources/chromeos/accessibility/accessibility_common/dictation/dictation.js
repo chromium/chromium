@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command, CommandParser} from './commands.js';
 import {InputController} from './input_controller.js';
+import {InputTextViewMacro} from './macros/input_text_view_macro.js';
+import {ListCommandsMacro} from './macros/list_commands_macro.js';
+import {Macro} from './macros/macro.js';
+import {SpeechParser} from './speech_parser.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
 const ResultEvent =
@@ -23,8 +26,8 @@ export class Dictation {
     /** @private {InputController} */
     this.inputController_ = null;
 
-    /** @private {CommandParser} */
-    this.commandParser_ = null;
+    /** @private {SpeechParser} */
+    this.speechParser_ = null;
 
     /** @private {boolean} */
     this.commandsFeatureEnabled_ = false;
@@ -71,7 +74,7 @@ export class Dictation {
    */
   initialize_() {
     this.inputController_ = new InputController(() => this.stopDictation_());
-    this.commandParser_ = new CommandParser();
+    this.speechParser_ = new SpeechParser(this.inputController_);
 
     // Set default speech recognition properties. Locale will be updated when
     // `updateFromPrefs_` is called.
@@ -102,7 +105,7 @@ export class Dictation {
         (result) => {
           this.commandsFeatureEnabled_ = result;
           if (this.commandsFeatureEnabled_ && this.localePref_) {
-            this.commandParser_.setCommandsEnabled(this.localePref_);
+            this.speechParser_.setCommandsEnabled(this.localePref_);
           }
         });
   }
@@ -231,22 +234,7 @@ export class Dictation {
    * @private
    */
   processSpeechRecognitionResult_(transcript, isFinal) {
-    if (isFinal) {
-      const command = this.commandParser_.parse(transcript);
-      if (this.commandsFeatureEnabled_) {
-        if (command.execute()) {
-          if (command.endsDictation()) {
-            return;
-          }
-          this.showCommandExecuted_(command);
-        } else {
-          this.showCommandExecutionFailed_();
-        }
-      }
-      if (command.isTextInput()) {
-        this.inputController_.commitText(command.getText());
-      }
-    } else {
+    if (!isFinal) {
       if (this.commandsFeatureEnabled_) {
         this.setInterimText_(transcript);
       } else if (!this.chromeVoxEnabled_) {
@@ -254,7 +242,33 @@ export class Dictation {
         // composition results because it will increase the verbosity too much.
         this.inputController_.setCompositionText(transcript);
       }
+      return;
     }
+
+    const macro = this.speechParser_.parse(transcript);
+
+    // Check if the macro can execute.
+    // TODO(crbug.com/1264544): Deal with ambiguous results here.
+    const checkContextResult = macro.checkContext();
+    if (!checkContextResult.canTryAction) {
+      this.showMacroExecutionFailed_(transcript);
+      return;
+    }
+
+    // Try to run the macro.
+    const runMacroResult = macro.runMacro();
+    if (!runMacroResult.isSuccess) {
+      this.showMacroExecutionFailed_(transcript);
+      return;
+    }
+    if (macro instanceof ListCommandsMacro) {
+      // ListCommandsMacro opens a new tab, thereby changing the cursor focus
+      // and ending the Dictation session.
+      return;
+    }
+
+    // Provide feedback to the user that the macro executed successfully.
+    this.showMacroExecuted_(macro, transcript);
   }
 
   /**
@@ -316,7 +330,7 @@ export class Dictation {
                 /** @type {string} */ (pref.value);
             this.localePref_ = this.speechRecognitionOptions_.locale;
             if (this.commandsFeatureEnabled_) {
-              this.commandParser_.setCommandsEnabled(this.localePref_);
+              this.speechParser_.setCommandsEnabled(this.localePref_);
             }
           }
           break;
@@ -375,24 +389,25 @@ export class Dictation {
   }
 
   /**
-   * Shows that a command was executed in the UI.
+   * Shows that a macro was executed in the UI by putting a checkmark next to
+   * the transcript.
    * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
-   * @param {Command} command
+   * @param {Macro} macro
+   * @param {string} transcript
    * @private
    */
-  showCommandExecuted_(command) {
-    if (this.chromeVoxEnabled_) {
+  showMacroExecuted_(macro, transcript) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
-    if (command.isTextInput()) {
+    if (macro instanceof InputTextViewMacro) {
       // Return to the '....' UI.
       this.clearInterimText_();
       return;
     }
     this.interimText_ = '';
-    this.inputController_.showAnnotation(
-        '☑' + this.commandParser_.getCommandString(command));
+    this.inputController_.showAnnotation('☑' + transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
@@ -401,16 +416,21 @@ export class Dictation {
   /**
    * Shows a message in the UI that a command failed to execute.
    * TODO(crbug.com/1252037): Implement with final design instead of input.ime.
+   * TODO(crbug.com/1252037): Optionally use the MacroError to provide
+   * additional context.
+   * @param {string} transcript The user's spoken transcript, shown so they
+   *     understand the final speech recognized which might be helpful in
+   *     understanding why the command failed.
    * @private
    */
-  showCommandExecutionFailed_() {
-    if (this.chromeVoxEnabled_) {
+  showMacroExecutionFailed_(transcript) {
+    if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
-    this.inputController_.showAnnotation(`ⓘ We didn't recognize that`);
+    this.inputController_.showAnnotation(`ⓘ Failed to execute: ` + transcript);
     this.clearUITextTimeoutId_ = setTimeout(
         () => this.clearInterimText_(),
         Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);

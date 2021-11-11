@@ -27,12 +27,17 @@ run_jsbundler("accessibility_common_copied_files") {
     "accessibility_common_loader.js",
     "autoclick/autoclick.js",
     "background.html",
-    "dictation/commands.js",
     "dictation/dictation.js",
     "dictation/earcons/audio_end.wav",
     "dictation/earcons/audio_initiate.wav",
     "dictation/earcons/null_selection.wav",
     "dictation/input_controller.js",
+    "dictation/macros/input_text_view_macro.js",
+    "dictation/macros/list_commands_macro.js",
+    "dictation/macros/macro.js",
+    "dictation/macros/macro_names.js",
+    "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/speech_parser.js",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -155,11 +160,25 @@ js_library("dictation_input_controller") {
   ]
 }
 
-js_library("dictation_commands") {
-  sources = [ "dictation/commands.js" ]
+js_library("dictation_macros") {
+  sources = [
+    "dictation/macros/input_text_view_macro.js",
+    "dictation/macros/list_commands_macro.js",
+    "dictation/macros/macro.js",
+    "dictation/macros/macro_names.js",
+    "dictation/macros/repeatable_key_press_macro.js",
+  ]
   deps = [
+    ":dictation_input_controller",
     "../common:event_generator",
     "../common:key_code",
   ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
+}
+
+js_library("dictation_commands") {
+  sources = [ "dictation/speech_parser.js" ]
+  deps = [
+    ":dictation_input_controller",
+    ":dictation_macros",
+  ]
 }
