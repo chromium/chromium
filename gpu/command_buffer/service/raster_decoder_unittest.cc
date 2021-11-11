@@ -15,9 +15,12 @@
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/raster_decoder_unittest_base.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -169,13 +172,209 @@ TEST_P(RasterDecoderTest, QueryCounterEXTCommandsIssuedTimestampCHROMIUM) {
   EXPECT_FALSE(query->IsActive());
 }
 
-TEST_P(RasterDecoderTest, CopyTexSubImage2DSizeMismatch) {
-  shared_context_state_->set_need_context_state_reset(true);
-  // Create uninitialized source texture.
+TEST_P(RasterDecoderManualInitTest, GetCapabilitiesHalfFloatLinear) {
+  InitState init;
+  init.extensions.push_back("GL_OES_texture_half_float_linear");
+  InitDecoder(init);
+  AddExpectationsForGetCapabilities();
+  const auto& caps = decoder_->GetCapabilities();
+  EXPECT_TRUE(caps.texture_half_float_linear);
+}
+
+TEST_P(RasterDecoderManualInitTest, GetCapabilitiesNorm16) {
+  // R16 requires an ES3 context plus the extension to be available.
+  InitState init;
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+  init.gl_version = "3.0";
+  init.extensions.push_back("GL_EXT_texture_norm16");
+  InitDecoder(init);
+  AddExpectationsForGetCapabilities();
+  const auto& caps = decoder_->GetCapabilities();
+  EXPECT_TRUE(caps.texture_norm16);
+}
+
+class RasterDecoderOOPTest : public testing::Test, DecoderClient {
+ public:
+  void SetUp() override {
+    gl::GLSurfaceTestSupport::InitializeOneOff();
+    gpu::GpuDriverBugWorkarounds workarounds;
+
+    scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
+    scoped_refptr<gl::GLSurface> surface =
+        gl::init::CreateOffscreenGLSurface(gfx::Size());
+    scoped_refptr<gl::GLContext> context = gl::init::CreateGLContext(
+        share_group.get(), surface.get(), gl::GLContextAttribs());
+    ASSERT_TRUE(context->MakeCurrent(surface.get()));
+
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
+        kGpuFeatureStatusEnabled;
+    auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
+        workarounds, gpu_feature_info_);
+
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        std::move(share_group), std::move(surface), std::move(context),
+        false /* use_virtualized_gl_contexts */, base::DoNothing(),
+        GpuPreferences().gr_context_type);
+    context_state_->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    context_state_->InitializeGL(GpuPreferences(), feature_info);
+
+    decoder_ = CreateDecoder();
+
+    scoped_refptr<gpu::Buffer> buffer =
+        command_buffer_service_->CreateTransferBufferHelper(kSharedBufferSize,
+                                                            &shared_memory_id_);
+    shared_memory_offset_ = kSharedMemoryOffset;
+    shared_memory_address_ =
+        static_cast<int8_t*>(buffer->memory()) + shared_memory_offset_;
+
+    workarounds.max_texture_size = INT_MAX - 1;
+    shared_image_factory_ = std::make_unique<SharedImageFactory>(
+        GpuPreferences(), workarounds, GpuFeatureInfo(), context_state_.get(),
+        &mailbox_manager_, &shared_image_manager_, nullptr, nullptr,
+        /*enable_wrapped_sk_image=*/true,
+        /*is_for_display_compositor=*/false);
+
+    client_texture_mailbox_ =
+        CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
+                      /*height=*/2, /*cleared=*/false);
+  }
+  void TearDown() override {
+    context_state_->MakeCurrent(nullptr);
+    decoder_->EndDecoding();
+    decoder_->Destroy(!decoder_->WasContextLost());
+    decoder_.reset();
+
+    command_buffer_service_.reset();
+    shared_image_factory_->DestroyAllSharedImages(true);
+    shared_image_factory_.reset();
+
+    context_state_.reset();
+    context_state_ = nullptr;
+    gl::init::ShutdownGL(false);
+  }
+
+  RasterDecoderOOPTest() : memory_tracker_(nullptr) {
+    memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
+  }
+
+  // DecoderClient implementation.
+  void OnConsoleMessage(int32_t id, const std::string& message) override {}
+  void CacheShader(const std::string& key, const std::string& shader) override {
+  }
+  void OnFenceSyncRelease(uint64_t release) override {}
+  void OnDescheduleUntilFinished() override {}
+  void OnRescheduleAfterFinished() override {}
+  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
+  void ScheduleGrContextCleanup() override {}
+  void HandleReturnData(base::span<const uint8_t> data) override {}
+
+  std::unique_ptr<RasterDecoder> CreateDecoder() {
+    command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
+    auto decoder = base::WrapUnique(RasterDecoder::Create(
+        this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
+        GpuPreferences(), nullptr /* memory_tracker */, &shared_image_manager_,
+        context_state_, true /* is_privileged */));
+    ContextCreationAttribs attribs;
+    attribs.enable_oop_rasterization = true;
+    attribs.enable_raster_interface = true;
+    CHECK_EQ(decoder->Initialize(context_state_->surface(),
+                                 context_state_->context(), true,
+                                 gles2::DisallowedFeatures(), attribs),
+             ContextResult::kSuccess);
+    return decoder;
+  }
+
+  gpu::Mailbox CreateMailbox(viz::ResourceFormat resource_format,
+                             GLsizei width,
+                             GLsizei height,
+                             bool cleared) {
+    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    gfx::Size size(width, height);
+    auto color_space = gfx::ColorSpace::CreateSRGB();
+    shared_image_factory_->CreateSharedImage(
+        mailbox, resource_format, size, color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
+        SHARED_IMAGE_USAGE_RASTER);
+
+    if (cleared) {
+      SharedImageRepresentationFactory repr_factory(shared_image_manager(),
+                                                    nullptr);
+      auto representation = repr_factory.ProduceGLTexture(mailbox);
+      representation->SetCleared();
+    }
+
+    return mailbox;
+  }
+
+  template <typename T>
+  T* GetImmediateAs() {
+    return reinterpret_cast<T*>(immediate_buffer_);
+  }
+
+  template <typename T>
+  error::Error ExecuteCmd(RasterDecoder* decoder, const T& cmd) {
+    static_assert(T::kArgFlags == cmd::kFixed,
+                  "T::kArgFlags should equal cmd::kFixed");
+    int entries_processed = 0;
+    return decoder->DoCommands(1, reinterpret_cast<const void*>(&cmd),
+                               ComputeNumEntries(sizeof(cmd)),
+                               &entries_processed);
+  }
+
+  template <typename T>
+  error::Error ExecuteImmediateCmd(const T& cmd, size_t data_size) {
+    static_assert(T::kArgFlags == cmd::kAtLeastN,
+                  "T::kArgFlags should equal cmd::kAtLeastN");
+    int entries_processed = 0;
+    return decoder_->DoCommands(1, reinterpret_cast<const void*>(&cmd),
+                                ComputeNumEntries(sizeof(cmd) + data_size),
+                                &entries_processed);
+  }
+
+  template <typename T>
+  T GetSharedMemoryAs() {
+    return reinterpret_cast<T>(shared_memory_address_);
+  }
+
+  GLint GetGLError() {
+    cmds::GetError cmd;
+    cmd.Init(shared_memory_id_, shared_memory_offset_);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(decoder_.get(), cmd));
+    return static_cast<GLint>(*GetSharedMemoryAs<GLenum*>());
+  }
+
+  SharedImageManager* shared_image_manager() { return &shared_image_manager_; }
+
+ protected:
+  GpuFeatureInfo gpu_feature_info_;
+  gles2::TraceOutputter outputter_;
+  std::unique_ptr<FakeCommandBufferServiceBase> command_buffer_service_;
+  MemoryTypeTracker memory_tracker_;
+  scoped_refptr<SharedContextState> context_state_;
+  gpu::Mailbox client_texture_mailbox_;
+  std::unique_ptr<RasterDecoder> decoder_;
+
+  int32_t shared_memory_id_ = 0;
+  uint32_t shared_memory_offset_ = 0;
+  void* shared_memory_address_ = nullptr;
+
+  const size_t kSharedBufferSize = 2048;
+  const uint32_t kSharedMemoryOffset = 132;
+
+  uint32_t immediate_buffer_[64];
+
+  std::unique_ptr<SharedImageFactory> shared_image_factory_;
+  SharedImageManager shared_image_manager_;
+  gles2::MailboxManagerImpl mailbox_manager_;
+};
+
+TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DSizeMismatch) {
+  context_state_->set_need_context_state_reset(true);
+  // Create uninitialized source texture mailbox.
   gpu::Mailbox source_texture_mailbox =
-      CreateFakeTexture(kNewServiceId, viz::ResourceFormat::RGBA_8888,
-                        /*width=*/1, /*height=*/1,
-                        /*cleared=*/true);
+      CreateMailbox(viz::ResourceFormat::RGBA_8888,
+                    /*width=*/1, /*height=*/1,
+                    /*cleared=*/true);
   GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
   CopyMailboxes(mailboxes, source_texture_mailbox, client_texture_mailbox_);
 
@@ -186,7 +385,6 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DSizeMismatch) {
 
   {
     // This will initialize the bottom right corner of destination.
-    SetScopedTextureBinderExpectations(GL_TEXTURE_2D);
     auto& cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
     cmd.Init(1, 1, 0, 0, 1, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
@@ -216,13 +414,13 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DSizeMismatch) {
   }
 }
 
-TEST_P(RasterDecoderTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
-  shared_context_state_->set_need_context_state_reset(true);
-  // Create uninitialized source texture.
+TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
+  context_state_->set_need_context_state_reset(true);
+  // Create uninitialized source texture mailbox.
   gpu::Mailbox source_texture_mailbox =
-      CreateFakeTexture(kNewServiceId, viz::ResourceFormat::RGBA_8888,
-                        /*width=*/2, /*height=*/2,
-                        /*cleared=*/true);
+      CreateMailbox(viz::ResourceFormat::RGBA_8888,
+                    /*width=*/2, /*height=*/2,
+                    /*cleared=*/true);
   GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
   CopyMailboxes(mailboxes, source_texture_mailbox, client_texture_mailbox_);
 
@@ -233,7 +431,6 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
 
   // This will initialize the top half of destination.
   {
-    SetScopedTextureBinderExpectations(GL_TEXTURE_2D);
     auto& cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
     cmd.Init(0, 0, 0, 0, 2, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
@@ -243,7 +440,6 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
 
   // This will initialize bottom half of the destination.
   {
-    SetScopedTextureBinderExpectations(GL_TEXTURE_2D);
     auto& cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
     cmd.Init(0, 1, 0, 0, 2, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
@@ -254,13 +450,13 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DTwiceClearsUnclearedTexture) {
 // Unlike the GLES2 version, RasterInterface's CopySubTexture does not allow
 // initializing a texture in parts *unless* the rectangles being cleared
 // can be trivially combined into a larger rectangle.
-TEST_P(RasterDecoderTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
-  shared_context_state_->set_need_context_state_reset(true);
-  // Create uninitialized source texture.
+TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
+  context_state_->set_need_context_state_reset(true);
+  // Create uninitialized source texture mailbox.
   gpu::Mailbox source_texture_mailbox =
-      CreateFakeTexture(kNewServiceId, viz::ResourceFormat::RGBA_8888,
-                        /*width=*/2, /*height=*/2,
-                        /*cleared=*/true);
+      CreateMailbox(viz::ResourceFormat::RGBA_8888,
+                    /*width=*/2, /*height=*/2,
+                    /*cleared=*/true);
   GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
   CopyMailboxes(mailboxes, source_texture_mailbox, client_texture_mailbox_);
 
@@ -271,7 +467,6 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
 
   // This will initialize the top half of destination.
   {
-    SetScopedTextureBinderExpectations(GL_TEXTURE_2D);
     auto& cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
     cmd.Init(0, 0, 0, 0, 2, 1, false, mailboxes);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
@@ -292,42 +487,16 @@ TEST_P(RasterDecoderTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
   EXPECT_FALSE(representation->IsCleared());
 }
 
-TEST_P(RasterDecoderManualInitTest, GetCapabilitiesHalfFloatLinear) {
-  InitState init;
-  init.extensions.push_back("GL_OES_texture_half_float_linear");
-  InitDecoder(init);
-  AddExpectationsForGetCapabilities();
-  const auto& caps = decoder_->GetCapabilities();
-  EXPECT_TRUE(caps.texture_half_float_linear);
-}
-
-TEST_P(RasterDecoderManualInitTest, GetCapabilitiesNorm16) {
-  // R16 requires an ES3 context plus the extension to be available.
-  InitState init;
-  init.context_type = CONTEXT_TYPE_OPENGLES3;
-  init.gl_version = "3.0";
-  init.extensions.push_back("GL_EXT_texture_norm16");
-  InitDecoder(init);
-  AddExpectationsForGetCapabilities();
-  const auto& caps = decoder_->GetCapabilities();
-  EXPECT_TRUE(caps.texture_norm16);
-}
-
-TEST_P(RasterDecoderManualInitTest, CopyTexSubImage2DValidateColorFormat) {
-  InitState init;
-  init.gl_version = "3.0";
-  init.extensions.push_back("GL_EXT_texture_rg");
-  InitDecoder(init);
-
+TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DValidateColorFormat) {
   // Recreate |client_texture_mailbox_| as a cleared mailbox.
-  client_texture_mailbox_ = CreateFakeTexture(
-      kServiceTextureId, viz::ResourceFormat::RGBA_8888, /*width=*/2,
-      /*height=*/2, /*cleared=*/true);
+  client_texture_mailbox_ =
+      CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
+                    /*height=*/2, /*cleared=*/true);
 
   // Create dest texture.
   gpu::Mailbox dest_texture_mailbox =
-      CreateFakeTexture(kNewServiceId, viz::ResourceFormat::RED_8,
-                        /*width=*/2, /*height=*/2, /*cleared=*/true);
+      CreateMailbox(viz::ResourceFormat::RED_8,
+                    /*width=*/2, /*height=*/2, /*cleared=*/true);
 
   auto& copy_cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
   GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
@@ -336,82 +505,6 @@ TEST_P(RasterDecoderManualInitTest, CopyTexSubImage2DValidateColorFormat) {
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(copy_cmd, sizeof(mailboxes)));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
-
-class RasterDecoderOOPTest : public testing::Test, DecoderClient {
- public:
-  void SetUp() override {
-    gl::GLSurfaceTestSupport::InitializeOneOff();
-    gpu::GpuDriverBugWorkarounds workarounds;
-
-    scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
-    scoped_refptr<gl::GLSurface> surface =
-        gl::init::CreateOffscreenGLSurface(gfx::Size());
-    scoped_refptr<gl::GLContext> context = gl::init::CreateGLContext(
-        share_group.get(), surface.get(), gl::GLContextAttribs());
-    ASSERT_TRUE(context->MakeCurrent(surface.get()));
-
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-        kGpuFeatureStatusEnabled;
-    auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-        workarounds, gpu_feature_info_);
-
-    context_state_ = base::MakeRefCounted<SharedContextState>(
-        std::move(share_group), std::move(surface), std::move(context),
-        false /* use_virtualized_gl_contexts */, base::DoNothing(),
-        GpuPreferences().gr_context_type);
-    context_state_->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
-    context_state_->InitializeGL(GpuPreferences(), feature_info);
-  }
-  void TearDown() override {
-    context_state_->MakeCurrent(nullptr);
-    context_state_ = nullptr;
-    gl::init::ShutdownGL(false);
-  }
-
-  // DecoderClient implementation.
-  void OnConsoleMessage(int32_t id, const std::string& message) override {}
-  void CacheShader(const std::string& key, const std::string& shader) override {
-  }
-  void OnFenceSyncRelease(uint64_t release) override {}
-  void OnDescheduleUntilFinished() override {}
-  void OnRescheduleAfterFinished() override {}
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
-  void ScheduleGrContextCleanup() override {}
-  void HandleReturnData(base::span<const uint8_t> data) override {}
-
-  std::unique_ptr<RasterDecoder> CreateDecoder() {
-    auto decoder = base::WrapUnique(RasterDecoder::Create(
-        this, &command_buffer_service_, &outputter_, gpu_feature_info_,
-        GpuPreferences(), nullptr /* memory_tracker */, &shared_image_manager_,
-        context_state_, true /* is_privileged */));
-    ContextCreationAttribs attribs;
-    attribs.enable_oop_rasterization = true;
-    attribs.enable_raster_interface = true;
-    CHECK_EQ(decoder->Initialize(context_state_->surface(),
-                                 context_state_->context(), true,
-                                 gles2::DisallowedFeatures(), attribs),
-             ContextResult::kSuccess);
-    return decoder;
-  }
-
-  template <typename T>
-  error::Error ExecuteCmd(RasterDecoder* decoder, const T& cmd) {
-    static_assert(T::kArgFlags == cmd::kFixed,
-                  "T::kArgFlags should equal cmd::kFixed");
-    int entries_processed = 0;
-    return decoder->DoCommands(1, (const void*)&cmd,
-                               ComputeNumEntries(sizeof(cmd)),
-                               &entries_processed);
-  }
-
- protected:
-  GpuFeatureInfo gpu_feature_info_;
-  gles2::TraceOutputter outputter_;
-  FakeCommandBufferServiceBase command_buffer_service_;
-  scoped_refptr<SharedContextState> context_state_;
-
-  SharedImageManager shared_image_manager_;
-};
 
 TEST_F(RasterDecoderOOPTest, StateRestoreAcrossDecoders) {
   // First decoder receives a skia command requiring context state reset.

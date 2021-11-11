@@ -874,27 +874,13 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
                                     &remaining_gl_error_reports);
   }
 
-  // OOP-R needs GrContext for raster tiles.
-  bool need_gr_context =
-      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
-
-  // SkiaRenderer needs GrContext to composite output surface.
-  need_gr_context |= features::IsUsingSkiaRenderer();
-
-  // GpuMemoryAblationExperiment needs a context to use Skia for Gpu
-  // allocations.
-  need_gr_context |= GpuMemoryAblationExperiment::ExperimentSupported();
-
-  if (need_gr_context) {
-    if (!shared_context_state->InitializeGrContext(
-            gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
-            &activity_flags_, watchdog_)) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize"
-                    "GrContext for SharedContextState";
-      *result = ContextResult::kFatalFailure;
-      return nullptr;
-    }
+  if (!shared_context_state->InitializeGrContext(
+          gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
+          &activity_flags_, watchdog_)) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize"
+                  "GrContext for SharedContextState";
+    *result = ContextResult::kFatalFailure;
+    return nullptr;
   }
   shared_context_state_ = std::move(shared_context_state);
 
