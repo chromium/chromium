@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
+#include "chrome/browser/ui/views/hover_button.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -118,6 +120,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   views::View* no_sinks_view_for_test() { return no_sinks_view_; }
   views::Button* sources_button_for_test() { return sources_button_; }
+  HoverButton* access_code_cast_button_for_test() {
+    return access_code_cast_button_;
+  }
   ui::SimpleMenuModel* sources_menu_model_for_test() {
     return sources_menu_model_.get();
   }
@@ -154,6 +159,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   void Init() override;
   void WindowClosing() override;
+
+  void ShowAccessCodeCastDialog();
+  void MaybeShowAccessCodeCastButton();
 
   void ShowNoSinksView();
   void ShowScrollView();
@@ -225,6 +233,10 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // list is updated the scroll position gets reset, so we must manually restore
   // it to this value.
   int scroll_position_ = 0;
+
+  // The access code cast button allows the user to add a cast device through
+  // the chrome://enterprise-casting dialog.
+  CastDialogAccessCodeCastButton* access_code_cast_button_ = nullptr;
 
   // The sources menu allows the user to choose a source to cast.
   views::Button* sources_button_ = nullptr;

@@ -4175,6 +4175,8 @@ static_library("ui") {
       "views/login_view.h",
       "views/md_text_button_with_down_arrow.cc",
       "views/md_text_button_with_down_arrow.h",
+      "views/media_router/cast_dialog_access_code_cast_button.cc",
+      "views/media_router/cast_dialog_access_code_cast_button.h",
       "views/media_router/cast_dialog_helper.cc",
       "views/media_router/cast_dialog_helper.h",
       "views/media_router/cast_dialog_metrics.cc",

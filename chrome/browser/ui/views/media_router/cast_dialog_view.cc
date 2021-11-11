@@ -10,20 +10,24 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/md_text_button_with_down_arrow.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_access_code_cast_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_no_sinks_view.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_sink.h"
@@ -237,6 +241,7 @@ CastDialogView::CastDialogView(views::View* anchor_view,
               IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
   sources_button_->SetEnabled(false);
   ShowNoSinksView();
+  MaybeShowAccessCodeCastButton();
 }
 
 CastDialogView::~CastDialogView() {
@@ -253,7 +258,8 @@ void CastDialogView::Init() {
                   provider->GetDistanceMetric(
                       views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
                   0));
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   controller_->AddObserver(this);
   RecordSinkCountWithDelay();
 }
@@ -264,6 +270,39 @@ void CastDialogView::WindowClosing() {
   if (instance_ == this)
     instance_ = nullptr;
   metrics_.OnCloseDialog(base::Time::Now());
+}
+
+void CastDialogView::ShowAccessCodeCastDialog() {
+  MediaCastMode preferred_cast_mode;
+
+  // Select the preferred cast mode based on the current selected source.
+  switch (selected_source_) {
+    case SourceType::kTab:
+      preferred_cast_mode = MediaCastMode::PRESENTATION;
+      break;
+    case SourceType::kDesktop:
+      preferred_cast_mode = MediaCastMode::DESKTOP_MIRROR;
+      break;
+    case SourceType::kLocalFile:
+      preferred_cast_mode = MediaCastMode::LOCAL_FILE;
+      break;
+  }
+
+  EnterpriseCastingDialog::Show(preferred_cast_mode);
+}
+
+void CastDialogView::MaybeShowAccessCodeCastButton() {
+  if (!base::FeatureList::IsEnabled(features::kEnterpriseCastingUI))
+    return;
+  if (!GetAccessCodeCastEnabledPref(profile_->GetPrefs()))
+    return;
+
+  auto callback = base::BindRepeating(&CastDialogView::ShowAccessCodeCastDialog,
+                                      base::Unretained(this));
+
+  access_code_cast_button_ =
+      new CastDialogAccessCodeCastButton(callback, profile_->GetPrefs());
+  AddChildView(access_code_cast_button_);
 }
 
 void CastDialogView::ShowNoSinksView() {
