@@ -76,10 +76,9 @@ def main(argv):
   node = PreprocessIfExprNode.Construct(defines, args.target)
 
   for input_file in args.in_files:
+    in_path = os.path.join(in_folder, input_file)
     content = ""
-    with io.open(os.path.join(in_folder, input_file),
-                 encoding='utf-8',
-                 mode='r') as f:
+    with io.open(in_path, encoding='utf-8', mode='r') as f:
       content = f.read()
 
     preprocessed = node.PreprocessIfExpr(content)
@@ -94,6 +93,8 @@ def main(argv):
       # for overlapping directories hit the makedirs line at the same time.
       if e.errno != errno.EEXIST:
         raise
+    if os.path.exists(out_path) and os.path.samefile(out_path, in_path):
+      os.remove(out_path)
     with io.open(out_path, mode='wb') as f:
       f.write(preprocessed.encode('utf-8'))
 
