@@ -126,8 +126,12 @@ def disable_test(test_id: str, cond_strs: List[str]):
 
 
 def extract_name_and_suite(test_name: str) -> str:
-  # Test names always have a suite name and test name, separated by '.'s. They
-  # may also have extra slash-separated parts on the beginning and the end,
+  # Web tests just use the filename as the test name, so don't mess with it.
+  if test_name.endswith('.html'):
+    return test_name
+
+  # GTest Test names always have a suite name and test name, separated by '.'s.
+  # They may also have extra slash-separated parts on the beginning and the end,
   # for parameterised tests.
   for part in test_name.split('/'):
     if '.' in part:

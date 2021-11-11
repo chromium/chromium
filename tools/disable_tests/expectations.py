@@ -21,6 +21,14 @@ sys.path.pop()
 
 
 def search_for_expectations(filename: str, test_name: str) -> str:
+  # Web test have "virtual test suites", where the same set of tests is run with
+  # different parameters. These are specified by "VirtualTestSuites" files, but
+  # generally the way it works is that a test a/b/c.html will have a virtual
+  # test in virtual/foo/a/b/c.html. So we handle this by stripping parts of the
+  # path off until the filename and test name match.
+  while not filename.endswith(test_name) and '/' in test_name:
+    test_name = test_name[test_name.index('/') + 1:]
+
   # TODO: Is this ever not the case? If so we might need to just keep searching
   # upwards, directory by directory until we find a test expectations file
   # referencing this test.
