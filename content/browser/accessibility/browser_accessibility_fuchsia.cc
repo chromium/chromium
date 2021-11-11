@@ -64,8 +64,7 @@ void BrowserAccessibilityFuchsia::OnDataChanged() {
 }
 
 void BrowserAccessibilityFuchsia::OnLocationChanged() {
-  // TODO(fxb.dev/82822): Add code path for a node to notify fuchsia that
-  // its location has changed.
+  UpdateNode();
 }
 
 BrowserAccessibilityFuchsia* ToBrowserAccessibilityFuchsia(

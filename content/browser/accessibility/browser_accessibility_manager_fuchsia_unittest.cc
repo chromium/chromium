@@ -10,6 +10,7 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/common/render_accessibility.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
@@ -170,6 +171,52 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
     ASSERT_EQ(node_deletions.size(), 2u);
     EXPECT_EQ(node_deletions[0].node_id, 2);
     EXPECT_EQ(node_deletions[1].node_id, 1);
+  }
+}
+
+TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
+  ui::AXTreeUpdate initial_state;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.tree_id = tree_id;
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.loaded = true;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[1].id = 2;
+
+  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
+  registry->RegisterAccessibilityBridge(tree_id,
+                                        mock_accessibility_bridge_.get());
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_state, test_browser_accessibility_delegate_.get()));
+  ASSERT_TRUE(manager);
+
+  {
+    const auto& node_updates = mock_accessibility_bridge_->node_updates();
+    ASSERT_EQ(node_updates.size(), 2u);
+  }
+
+  // Send location update for node 2.
+  std::vector<mojom::LocationChangesPtr> changes;
+  ui::AXRelativeBounds relative_bounds;
+  relative_bounds.bounds =
+      gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
+  changes.push_back(mojom::LocationChanges::New(2, relative_bounds));
+  manager->OnLocationChanges(std::move(changes));
+
+  {
+    const auto& node_updates = mock_accessibility_bridge_->node_updates();
+    ASSERT_EQ(node_updates.size(), 3u);
+    EXPECT_EQ(node_updates.back().node_id.node_id, 2);
+    ASSERT_TRUE(node_updates.back().node_data.has_location());
+    const auto& location = node_updates.back().node_data.location();
+    EXPECT_EQ(location.min.x, 1);
+    EXPECT_EQ(location.min.y, 2);
+    EXPECT_EQ(location.max.x, 4);
+    EXPECT_EQ(location.max.y, 6);
   }
 }
 
