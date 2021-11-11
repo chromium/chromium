@@ -2017,6 +2017,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 // TODO(crbug.com/1265293): test is flaky on linux.
 #define MAYBE_AccessibilityIframeWithInvalidChildren \
   DISABLED_AccessibilityIframeWithInvalidChildren
+#elif defined(OS_CHROMEOS)
+// TODO(crbug.com/1269123): test is flaky on chromeos.
+#define MAYBE_AccessibilityIframeWithInvalidChildren \
+  DISABLED_AccessibilityIframeWithInvalidChildren
 #else
 #define MAYBE_AccessibilityIframeWithInvalidChildren \
   AccessibilityIframeWithInvalidChildren
