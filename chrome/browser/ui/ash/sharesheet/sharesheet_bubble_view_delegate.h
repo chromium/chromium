@@ -24,7 +24,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
   SharesheetBubbleViewDelegate(
       gfx::NativeWindow native_window,
       ::sharesheet::SharesheetServiceDelegator* sharesheet_service_delegator);
-  ~SharesheetBubbleViewDelegate() override;
+  ~SharesheetBubbleViewDelegate() override = default;
   SharesheetBubbleViewDelegate(const SharesheetBubbleViewDelegate&) = delete;
   SharesheetBubbleViewDelegate& operator=(const SharesheetBubbleViewDelegate&) =
       delete;
