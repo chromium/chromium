@@ -109,6 +109,8 @@ message EncryptedRecord {
 
   // Compression information (optional).
   optional CompressionInformation compression_information = 4;
+
+  optional SequenceInformation sequencing_information = 5 [deprecated = true];
 }
 
 // Tracking information for what compression is used.
