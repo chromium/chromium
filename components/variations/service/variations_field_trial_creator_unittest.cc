@@ -1020,8 +1020,15 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
+// For desktop and iOS, the Extended Variations Safe Mode experiment is enabled
+// on pre-stable channels; for Android Chrome, on canary and dev.
+#if defined(OS_ANDROID)
   std::vector<version_info::Channel> channels = {version_info::Channel::BETA,
                                                  version_info::Channel::STABLE};
+#else
+  std::vector<version_info::Channel> channels = {version_info::Channel::STABLE};
+#endif  // defined(OS_ANDROID)
+
   for (const version_info::Channel channel : channels) {
     NiceMock<MockVariationsServiceClient> variations_service_client;
     ON_CALL(variations_service_client, GetChannel())
