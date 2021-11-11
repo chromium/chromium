@@ -7,6 +7,7 @@
 
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/task_observer.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time_override.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -70,13 +71,14 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
 
   // TimeDomain implementation:
   base::TimeTicks GetNextDelayedTaskTime(
+      base::sequence_manager::DelayedWakeUp delayed_wakeup,
       base::sequence_manager::LazyNow* lazy_now) const override;
-  bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
+  bool MaybeFastForwardToWakeUp(
+      absl::optional<base::sequence_manager::DelayedWakeUp> wakeup,
+      bool quit_when_idle_requested) override;
 
  protected:
   const char* GetName() const override;
-  void SetNextDelayedDoWork(base::sequence_manager::LazyNow* lazy_now,
-                            base::TimeTicks run_time) override;
 
  private:
   // Can be called on any thread.

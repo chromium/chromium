@@ -92,8 +92,6 @@ blink_platform_sources("scheduler") {
     "main_thread/main_thread_web_scheduling_task_queue_impl.h",
     "main_thread/memory_purge_manager.cc",
     "main_thread/memory_purge_manager.h",
-    "main_thread/non_waking_time_domain.cc",
-    "main_thread/non_waking_time_domain.h",
     "main_thread/page_scheduler_impl.cc",
     "main_thread/page_scheduler_impl.h",
     "main_thread/page_visibility_state.cc",

@@ -277,20 +277,6 @@ void TaskQueue::RemoveTaskObserver(TaskObserver* task_observer) {
   impl_->RemoveTaskObserver(task_observer);
 }
 
-void TaskQueue::SetTimeDomain(TimeDomain* time_domain) {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!impl_)
-    return;
-  impl_->SetTimeDomain(time_domain);
-}
-
-TimeDomain* TaskQueue::GetTimeDomain() const {
-  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!impl_)
-    return nullptr;
-  return impl_->GetTimeDomain();
-}
-
 void TaskQueue::SetBlameContext(trace_event::BlameContext* blame_context) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!impl_)

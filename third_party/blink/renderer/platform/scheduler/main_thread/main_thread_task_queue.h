@@ -361,9 +361,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
-    QueueCreationParams SetTimeDomain(
-        base::sequence_manager::TimeDomain* domain) {
-      spec = spec.SetTimeDomain(domain);
+    QueueCreationParams SetNonWaking(bool non_waking) {
+      spec = spec.SetNonWaking(non_waking);
       return *this;
     }
 

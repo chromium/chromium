@@ -163,21 +163,18 @@ BrowserTaskQueues::QueueData::~QueueData() = default;
 
 BrowserTaskQueues::BrowserTaskQueues(
     BrowserThread::ID thread_id,
-    base::sequence_manager::SequenceManager* sequence_manager,
-    base::sequence_manager::TimeDomain* time_domain) {
+    base::sequence_manager::SequenceManager* sequence_manager) {
   for (size_t i = 0; i < queue_data_.size(); ++i) {
     queue_data_[i].task_queue = sequence_manager->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
-            GetTaskQueueName(thread_id, static_cast<QueueType>(i)))
-            .SetTimeDomain(time_domain));
+            GetTaskQueueName(thread_id, static_cast<QueueType>(i))));
     queue_data_[i].voter = queue_data_[i].task_queue->CreateQueueEnabledVoter();
     queue_data_[i].voter->SetVoteToEnable(false);
   }
 
   // Default task queue
   default_task_queue_ = sequence_manager->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(GetDefaultQueueName(thread_id))
-          .SetTimeDomain(time_domain));
+      base::sequence_manager::TaskQueue::Spec(GetDefaultQueueName(thread_id)));
 
   GetBrowserTaskQueue(QueueType::kUserVisible)
       ->SetQueuePriority(QueuePriority::kLowPriority);
@@ -196,15 +193,13 @@ BrowserTaskQueues::BrowserTaskQueues(
   // Control queue
   control_queue_ =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
-                                            GetControlTaskQueueName(thread_id))
-                                            .SetTimeDomain(time_domain));
+          GetControlTaskQueueName(thread_id)));
   control_queue_->SetQueuePriority(QueuePriority::kControlPriority);
 
   // Run all pending queue
-  run_all_pending_tasks_queue_ = sequence_manager->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(
-          GetRunAllPendingTaskQueueName(thread_id))
-          .SetTimeDomain(time_domain));
+  run_all_pending_tasks_queue_ =
+      sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
+          GetRunAllPendingTaskQueueName(thread_id)));
   run_all_pending_tasks_queue_->SetQueuePriority(
       QueuePriority::kBestEffortPriority);
 

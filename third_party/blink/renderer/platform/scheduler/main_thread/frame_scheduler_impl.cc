@@ -260,9 +260,9 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
   // On tests, the scheduler helper might already be shut down and tick is not
   // available.
   base::sequence_manager::LazyNow lazy_now =
-      main_thread_scheduler_->tick_clock()
+      main_thread_scheduler_->GetTickClock()
           ? base::sequence_manager::LazyNow(
-                main_thread_scheduler_->tick_clock())
+                main_thread_scheduler_->GetTickClock())
           : base::sequence_manager::LazyNow(base::TimeTicks::Now());
 
   if (cpu_time_budget_pool) {
@@ -275,7 +275,7 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
 
   // The WakeUpBudgetPool is selected based on origin state, frame visibility
   // and page background state.
@@ -1186,7 +1186,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
 
   if (task_queue->CanBeThrottled()) {
     base::sequence_manager::LazyNow lazy_now(
-        main_thread_scheduler_->tick_clock());
+        main_thread_scheduler_->GetTickClock());
 
     CPUTimeBudgetPool* cpu_time_budget_pool =
         parent_page_scheduler_->background_cpu_time_budget_pool();
@@ -1262,7 +1262,7 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
       static_cast<int32_t>(ipc_hash));
 
   base::TimeDelta duration =
-      main_thread_scheduler_->tick_clock()->NowTicks() -
+      main_thread_scheduler_->NowTicks() -
       parent_page_scheduler_->GetStoredInBackForwardCacheTimestamp();
   base::UmaHistogramCustomTimes(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."

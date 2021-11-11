@@ -51,7 +51,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
   bool RunsTasksInCurrentSequence() override;
-  const TickClock* GetClock() override;
+  void SetTickClock(const TickClock* clock) override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void RestoreDefaultTaskRunner() override;

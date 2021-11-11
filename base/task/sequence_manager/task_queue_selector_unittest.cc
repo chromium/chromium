@@ -108,10 +108,9 @@ class TaskQueueSelectorTest : public testing::Test {
 
  protected:
   void SetUp() final {
-    time_domain_ = std::make_unique<MockTimeDomain>(TimeTicks() + Seconds(1));
     for (size_t i = 0; i < kTaskQueueCount; i++) {
       std::unique_ptr<TaskQueueImpl> task_queue =
-          std::make_unique<TaskQueueImpl>(nullptr, time_domain_.get(),
+          std::make_unique<TaskQueueImpl>(nullptr, nullptr,
                                           TaskQueue::Spec("test"));
       selector_.AddQueue(task_queue.get());
       task_queues_.push_back(std::move(task_queue));
@@ -134,7 +133,7 @@ class TaskQueueSelectorTest : public testing::Test {
   }
 
   std::unique_ptr<TaskQueueImpl> NewTaskQueueWithBlockReporting() {
-    return std::make_unique<TaskQueueImpl>(nullptr, time_domain_.get(),
+    return std::make_unique<TaskQueueImpl>(nullptr, nullptr,
                                            TaskQueue::Spec("test"));
   }
 
@@ -143,7 +142,6 @@ class TaskQueueSelectorTest : public testing::Test {
   RepeatingClosure test_closure_;
   scoped_refptr<AssociatedThreadId> associated_thread_;
   TaskQueueSelectorForTest selector_;
-  std::unique_ptr<TimeDomain> time_domain_;
   std::vector<std::unique_ptr<TaskQueueImpl>> task_queues_;
   std::map<TaskQueueImpl*, size_t> queue_to_index_map_;
 };

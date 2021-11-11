@@ -355,8 +355,9 @@ class TaskEnvironment {
     return thread_pool_execution_mode_;
   }
 
-  // Returns the TimeDomain driving this TaskEnvironment.
-  sequence_manager::TimeDomain* GetTimeDomain() const;
+  // Returns the MockTimeDomain driving this TaskEnvironment if this instance is
+  // using TimeSource::MOCK_TIME, nullptr otherwise.
+  sequence_manager::TimeDomain* GetMockTimeDomain() const;
 
   sequence_manager::SequenceManager* sequence_manager() const;
 

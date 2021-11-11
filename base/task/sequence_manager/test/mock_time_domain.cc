@@ -23,16 +23,16 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
 }
 
 TimeTicks MockTimeDomain::GetNextDelayedTaskTime(
+    DelayedWakeUp next_wake_up,
     sequence_manager::LazyNow* lazy_now) const {
   return TimeTicks::Max();
 }
 
-bool MockTimeDomain::MaybeFastForwardToNextTask(bool quit_when_idle_requested) {
+bool MockTimeDomain::MaybeFastForwardToWakeUp(
+    absl::optional<DelayedWakeUp> next_wake_up,
+    bool quit_when_idle_requested) {
   return false;
 }
-
-void MockTimeDomain::SetNextDelayedDoWork(LazyNow* lazy_now,
-                                          TimeTicks run_time) {}
 
 const char* MockTimeDomain::GetName() const {
   return "MockTimeDomain";

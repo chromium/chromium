@@ -158,16 +158,26 @@ class BASE_EXPORT SequenceManager {
   virtual void AddTaskTimeObserver(TaskTimeObserver* task_time_observer) = 0;
   virtual void RemoveTaskTimeObserver(TaskTimeObserver* task_time_observer) = 0;
 
-  // Registers a TimeDomain with SequenceManager.
-  // TaskQueues must only be created with a registered TimeDomain.
-  // Conversely, any TimeDomain must remain registered until no
-  // TaskQueues (using that TimeDomain) remain.
-  virtual void RegisterTimeDomain(TimeDomain* time_domain) = 0;
-  virtual void UnregisterTimeDomain(TimeDomain* time_domain) = 0;
+  // Sets `time_domain` to be used by this scheduler and associated task queues.
+  // Only one time domain can be set at a time. `time_domain` must outlive this
+  // SequenceManager, even if ResetTimeDomain() is called. This has no effect on
+  // previously scheduled tasks and it is recommended that `time_domain` be set
+  // before posting any task to avoid inconsistencies in time. Otherwise,
+  // replacing `time_domain` is very subtle and should be reserved for developer
+  // only use cases (e.g. virtual time in devtools) where any flakiness caused
+  // by a racy time update isn't surprising.
+  virtual void SetTimeDomain(TimeDomain* time_domain) = 0;
+  // Disassociates the current `time_domain` and reverts to using
+  // RealTimeDomain.
+  virtual void ResetTimeDomain() = 0;
 
-  virtual TimeDomain* GetRealTimeDomain() const = 0;
   virtual const TickClock* GetTickClock() const = 0;
   virtual TimeTicks NowTicks() const = 0;
+
+  // Returns a wake-up for the next delayed task which is not ripe for
+  // execution. If there are no such tasks (immediate tasks don't count), it
+  // returns nullopt.
+  virtual absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
   // ThreadTaskRunnerHandle::Get on the main thread.
@@ -199,7 +209,7 @@ class BASE_EXPORT SequenceManager {
   // Returns the metric recording configuration for the current SequenceManager.
   virtual const MetricRecordingSettings& GetMetricRecordingSettings() const = 0;
 
-  // Creates a task queue with the given type, |spec| and args.
+  // Creates a task queue with the given type, `spec` and args.
   // Must be called on the main thread.
   // TODO(scheduler-dev): SequenceManager should not create TaskQueues.
   template <typename TaskQueueType, typename... Args>
@@ -231,7 +241,7 @@ class BASE_EXPORT SequenceManager {
   virtual std::string DescribeAllPendingTasks() const = 0;
 
   // Indicates that the underlying sequence (e.g., the message pump) has pending
-  // work at priority |priority|. If the priority of the work in this
+  // work at priority `priority`. If the priority of the work in this
   // SequenceManager is lower, it will yield to let the native work run. The
   // native work is assumed to remain pending while the returned handle is
   // valid.
@@ -241,17 +251,17 @@ class BASE_EXPORT SequenceManager {
   virtual std::unique_ptr<NativeWorkHandle> OnNativeWorkPending(
       TaskQueue::QueuePriority priority) = 0;
 
-  // While Now() is less than |prioritize_until| we will alternate between a
+  // While Now() is less than `prioritize_until` we will alternate between a
   // SequenceManager task and a yielding to the underlying sequence (e.g., the
   // message pump).
   virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
 
   // Adds an observer which reports task execution. Can only be called on the
-  // same thread that |this| is running on.
+  // same thread that `this` is running on.
   virtual void AddTaskObserver(TaskObserver* task_observer) = 0;
 
   // Removes an observer which reports task execution. Can only be called on the
-  // same thread that |this| is running on.
+  // same thread that `this` is running on.
   virtual void RemoveTaskObserver(TaskObserver* task_observer) = 0;
 
  protected:

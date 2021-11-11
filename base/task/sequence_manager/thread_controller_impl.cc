@@ -129,8 +129,8 @@ bool ThreadControllerImpl::RunsTasksInCurrentSequence() {
   return task_runner_->RunsTasksInCurrentSequence();
 }
 
-const TickClock* ThreadControllerImpl::GetClock() {
-  return time_source_;
+void ThreadControllerImpl::SetTickClock(const TickClock* clock) {
+  time_source_ = clock;
 }
 
 void ThreadControllerImpl::SetDefaultTaskRunner(

@@ -124,7 +124,7 @@ class ThreadController {
   // with MessageLoop.
 
   virtual bool RunsTasksInCurrentSequence() = 0;
-  virtual const TickClock* GetClock() = 0;
+  virtual void SetTickClock(const TickClock* clock) = 0;
   virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
   virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;

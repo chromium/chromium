@@ -14,10 +14,6 @@
 
 namespace base {
 class TickClock;
-
-namespace sequence_manager {
-class TimeDomain;
-}
 }  // namespace base
 
 namespace v8 {
@@ -45,13 +41,7 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
 
   virtual scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() = 0;
 
-  virtual void RegisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) = 0;
-  virtual void UnregisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) = 0;
-  virtual base::sequence_manager::TimeDomain* GetActiveTimeDomain() = 0;
-
-  virtual const base::TickClock* GetTickClock() = 0;
+  virtual const base::TickClock* GetTickClock() const = 0;
 
   // Allow places in the scheduler to do some work after the current task.
   // The primary use case here is batching – to allow updates to be processed

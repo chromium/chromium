@@ -174,8 +174,10 @@ void BrowserTaskEnvironment::Init() {
   CHECK(com_initializer_->Succeeded());
 #endif
 
-  auto browser_ui_thread_scheduler = BrowserUIThreadScheduler::CreateForTesting(
-      sequence_manager(), GetTimeDomain());
+  if (GetMockTimeDomain())
+    sequence_manager()->SetTimeDomain(GetMockTimeDomain());
+  auto browser_ui_thread_scheduler =
+      BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
   auto default_ui_task_runner =
       browser_ui_thread_scheduler->GetHandle()->GetDefaultTaskRunner();
   auto browser_io_thread_delegate =

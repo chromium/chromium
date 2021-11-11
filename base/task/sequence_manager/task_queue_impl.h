@@ -37,13 +37,13 @@ namespace base {
 namespace sequence_manager {
 
 class LazyNow;
-class TimeDomain;
 
 namespace internal {
 
 class SequenceManagerImpl;
 class WorkQueue;
 class WorkQueueSets;
+class WakeUpQueue;
 
 // TaskQueueImpl has four main queues:
 //
@@ -74,7 +74,7 @@ class WorkQueueSets;
 class BASE_EXPORT TaskQueueImpl {
  public:
   TaskQueueImpl(SequenceManagerImpl* sequence_manager,
-                TimeDomain* time_domain,
+                WakeUpQueue* wake_up_queue,
                 const TaskQueue::Spec& spec);
 
   TaskQueueImpl(const TaskQueueImpl&) = delete;
@@ -121,8 +121,6 @@ class BASE_EXPORT TaskQueueImpl {
   TaskQueue::QueuePriority GetQueuePriority() const;
   void AddTaskObserver(TaskObserver* task_observer);
   void RemoveTaskObserver(TaskObserver* task_observer);
-  void SetTimeDomain(TimeDomain* time_domain);
-  TimeDomain* GetTimeDomain() const;
   void SetBlameContext(trace_event::BlameContext* blame_context);
   void InsertFence(TaskQueue::InsertFencePosition position);
   void InsertFenceAt(TimeTicks time);
@@ -201,6 +199,10 @@ class BASE_EXPORT TaskQueueImpl {
   void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now);
 
   void OnWakeUp(LazyNow* lazy_now);
+
+  const WakeUpQueue* wake_up_queue() const {
+    return main_thread_only().wake_up_queue;
+  }
 
   HeapHandle heap_handle() const { return main_thread_only().heap_handle; }
 
@@ -368,12 +370,10 @@ class BASE_EXPORT TaskQueueImpl {
   };
 
   struct MainThreadOnly {
-    MainThreadOnly(TaskQueueImpl* task_queue, TimeDomain* time_domain);
+    MainThreadOnly(TaskQueueImpl* task_queue, WakeUpQueue* wake_up_queue);
     ~MainThreadOnly();
 
-    // Another copy of TimeDomain for lock-free access from the main thread.
-    // See description inside struct AnyThread for details.
-    TimeDomain* time_domain;
+    WakeUpQueue* wake_up_queue;
 
     TaskQueue::Throttler* throttler = nullptr;
 
@@ -509,13 +509,8 @@ class BASE_EXPORT TaskQueueImpl {
       bool should_report_posted_tasks_when_disabled = false;
     };
 
-    explicit AnyThread(const TickClock* tick_clock);
+    AnyThread();
     ~AnyThread();
-
-    // TickClock is maintained in two copies: inside AnyThread and inside
-    // MainThreadOnly. It can be changed only from main thread, so it should be
-    // locked before accessing from other threads.
-    const TickClock* tick_clock;
 
     TaskDeque immediate_incoming_queue;
 

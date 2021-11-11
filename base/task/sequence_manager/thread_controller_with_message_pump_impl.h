@@ -60,7 +60,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void ScheduleWork() override;
   void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
-  const TickClock* GetClock() override;
+  void SetTickClock(const TickClock* clock) override;
   bool RunsTasksInCurrentSequence() override;
   void SetDefaultTaskRunner(
       scoped_refptr<SingleThreadTaskRunner> task_runner) override;

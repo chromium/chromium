@@ -11,7 +11,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
-#include "base/task/sequence_manager/work_queue.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,72 +22,64 @@ using testing::Mock;
 
 namespace base {
 namespace sequence_manager {
+namespace internal {
 
 class TaskQueueImplForTest : public internal::TaskQueueImpl {
  public:
   TaskQueueImplForTest(internal::SequenceManagerImpl* sequence_manager,
-                       TimeDomain* time_domain,
+                       WakeUpQueue* wake_up_queue,
                        const TaskQueue::Spec& spec)
-      : TaskQueueImpl(sequence_manager, time_domain, spec) {}
-  ~TaskQueueImplForTest() {}
+      : TaskQueueImpl(sequence_manager, wake_up_queue, spec) {}
+  ~TaskQueueImplForTest() = default;
 
   using TaskQueueImpl::SetNextDelayedWakeUp;
 };
 
-class TestTimeDomain : public TimeDomain {
+class MockWakeUpQueue : public WakeUpQueue {
  public:
-  TestTimeDomain() : now_(TimeTicks() + Seconds(1)) {}
+  MockWakeUpQueue()
+      : WakeUpQueue(internal::AssociatedThreadId::CreateBound()) {}
 
-  TestTimeDomain(const TestTimeDomain&) = delete;
-  TestTimeDomain& operator=(const TestTimeDomain&) = delete;
-  ~TestTimeDomain() override = default;
+  MockWakeUpQueue(const MockWakeUpQueue&) = delete;
+  MockWakeUpQueue& operator=(const MockWakeUpQueue&) = delete;
+  ~MockWakeUpQueue() override = default;
 
-  using TimeDomain::MoveReadyDelayedTasksToWorkQueues;
-  using TimeDomain::SetNextWakeUpForQueue;
-  using TimeDomain::UnregisterQueue;
+  using WakeUpQueue::MoveReadyDelayedTasksToWorkQueues;
+  using WakeUpQueue::SetNextWakeUpForQueue;
+  using WakeUpQueue::UnregisterQueue;
 
-  // TickClock:
-  TimeTicks NowTicks() const override { return now_; }
-
-  // TimeDomain:
-  base::TimeTicks GetNextDelayedTaskTime(
-      sequence_manager::LazyNow* lazy_now) const override {
-    return TimeTicks();
+  void OnNextDelayedWakeUpChanged(
+      LazyNow* lazy_now,
+      absl::optional<DelayedWakeUp> wake_up) override {
+    TimeTicks time = wake_up ? wake_up->time : TimeTicks::Max();
+    OnNextDelayedWakeUpChanged_TimeTicks(time);
   }
-
-  bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override {
-    return false;
-  }
-
   const char* GetName() const override { return "Test"; }
+  void UnregisterQueue(internal::TaskQueueImpl* queue) override {
+    SetNextWakeUpForQueue(queue, nullptr, absl::nullopt);
+  }
 
   internal::TaskQueueImpl* NextScheduledTaskQueue() const {
-    if (delayed_wake_up_queue_.empty())
+    if (wake_up_queue_.empty())
       return nullptr;
-    return delayed_wake_up_queue_.top().queue;
+    return wake_up_queue_.top().queue;
   }
 
   TimeTicks NextScheduledRunTime() const {
-    if (delayed_wake_up_queue_.empty())
+    if (wake_up_queue_.empty())
       return TimeTicks::Max();
-    return delayed_wake_up_queue_.top().wake_up.time;
+    return wake_up_queue_.top().wake_up.time;
   }
 
-  MOCK_METHOD2(SetNextDelayedDoWork,
-               void(LazyNow* lazy_now, TimeTicks run_time));
-
-  void SetNow(TimeTicks now) { now_ = now; }
-
- private:
-  TimeTicks now_;
+  MOCK_METHOD1(OnNextDelayedWakeUpChanged_TimeTicks, void(TimeTicks run_time));
 };
 
-class TimeDomainTest : public testing::Test {
+class WakeUpQueueTest : public testing::Test {
  public:
   void SetUp() final {
-    time_domain_ = WrapUnique(CreateTestTimeDomain());
+    wake_up_queue_ = std::make_unique<MockWakeUpQueue>();
     task_queue_ = std::make_unique<TaskQueueImplForTest>(
-        nullptr, time_domain_.get(), TaskQueue::Spec("test"));
+        nullptr, wake_up_queue_.get(), TaskQueue::Spec("test"));
   }
 
   void TearDown() final {
@@ -96,70 +87,72 @@ class TimeDomainTest : public testing::Test {
       task_queue_->UnregisterTaskQueue();
   }
 
-  virtual TestTimeDomain* CreateTestTimeDomain() {
-    return new TestTimeDomain();
-  }
-
-  std::unique_ptr<TestTimeDomain> time_domain_;
+  std::unique_ptr<MockWakeUpQueue> wake_up_queue_;
   std::unique_ptr<TaskQueueImplForTest> task_queue_;
+  SimpleTestTickClock tick_clock_;
 };
 
-TEST_F(TimeDomainTest, ScheduleWakeUpForQueue) {
-  TimeTicks now = time_domain_->NowTicks();
+TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueue) {
+  TimeTicks now = tick_clock_.NowTicks();
   TimeDelta delay = Milliseconds(10);
   TimeTicks delayed_runtime = now + delay;
-  EXPECT_TRUE(time_domain_->empty());
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime));
+  EXPECT_TRUE(wake_up_queue_->empty());
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime));
   LazyNow lazy_now(now);
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay});
+  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime});
 
-  EXPECT_FALSE(time_domain_->empty());
-  EXPECT_EQ(delayed_runtime, time_domain_->NextScheduledRunTime());
+  EXPECT_FALSE(wake_up_queue_->empty());
+  EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
-  EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()))
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(AnyNumber());
 }
 
-TEST_F(TimeDomainTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
-  TimeTicks now = time_domain_->NowTicks();
+TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
+  TimeTicks now = tick_clock_.NowTicks();
   TimeDelta delay1 = Milliseconds(10);
   TimeDelta delay2 = Milliseconds(100);
   TimeTicks delayed_runtime1 = now + delay1;
   TimeTicks delayed_runtime2 = now + delay2;
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime1));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime1));
   LazyNow lazy_now(now);
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime1});
 
-  EXPECT_EQ(delayed_runtime1, time_domain_->NextScheduledRunTime());
+  EXPECT_EQ(delayed_runtime1, wake_up_queue_->NextScheduledRunTime());
 
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   // Now schedule a later wake_up, which should replace the previously
   // requested one.
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime2));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime2));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime2});
 
-  EXPECT_EQ(delayed_runtime2, time_domain_->NextScheduledRunTime());
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  EXPECT_EQ(delayed_runtime2, wake_up_queue_->NextScheduledRunTime());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()))
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(AnyNumber());
 }
 
-TEST_F(TimeDomainTest, SetNextDelayedDoWork_OnlyCalledForEarlierTasks) {
+TEST_F(WakeUpQueueTest, SetNextDelayedDoWork_OnlyCalledForEarlierTasks) {
   std::unique_ptr<TaskQueueImplForTest> task_queue2 =
-      std::make_unique<TaskQueueImplForTest>(nullptr, time_domain_.get(),
+      std::make_unique<TaskQueueImplForTest>(nullptr, wake_up_queue_.get(),
                                              TaskQueue::Spec("test"));
 
   std::unique_ptr<TaskQueueImplForTest> task_queue3 =
-      std::make_unique<TaskQueueImplForTest>(nullptr, time_domain_.get(),
+      std::make_unique<TaskQueueImplForTest>(nullptr, wake_up_queue_.get(),
                                              TaskQueue::Spec("test"));
 
   std::unique_ptr<TaskQueueImplForTest> task_queue4 =
-      std::make_unique<TaskQueueImplForTest>(nullptr, time_domain_.get(),
+      std::make_unique<TaskQueueImplForTest>(nullptr, wake_up_queue_.get(),
                                              TaskQueue::Spec("test"));
 
   TimeDelta delay1 = Milliseconds(10);
@@ -169,199 +162,216 @@ TEST_F(TimeDomainTest, SetNextDelayedDoWork_OnlyCalledForEarlierTasks) {
 
   // SetNextDelayedDoWork should always be called if there are no other
   // wake-ups.
-  TimeTicks now = time_domain_->NowTicks();
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, now + delay1));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(now + delay1));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay1});
 
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   // SetNextDelayedDoWork should not be called when scheduling later tasks.
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _)).Times(0);
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
+      .Times(0);
   task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay2});
   task_queue3->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay3});
 
   // SetNextDelayedDoWork should be called when scheduling earlier tasks.
-  Mock::VerifyAndClearExpectations(time_domain_.get());
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, now + delay4));
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(now + delay4));
   task_queue4->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay4});
 
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _)).Times(2);
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
+      .Times(2);
   task_queue2->UnregisterTaskQueue();
   task_queue3->UnregisterTaskQueue();
   task_queue4->UnregisterTaskQueue();
 }
 
-TEST_F(TimeDomainTest, UnregisterQueue) {
+TEST_F(WakeUpQueueTest, UnregisterQueue) {
   std::unique_ptr<TaskQueueImplForTest> task_queue2 =
-      std::make_unique<TaskQueueImplForTest>(nullptr, time_domain_.get(),
+      std::make_unique<TaskQueueImplForTest>(nullptr, wake_up_queue_.get(),
                                              TaskQueue::Spec("test"));
-  EXPECT_TRUE(time_domain_->empty());
+  EXPECT_TRUE(wake_up_queue_->empty());
 
-  TimeTicks now = time_domain_->NowTicks();
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   TimeTicks wake_up1 = now + Milliseconds(10);
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, wake_up1)).Times(1);
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(wake_up1))
+      .Times(1);
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up1});
   TimeTicks wake_up2 = now + Milliseconds(100);
   task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up2});
-  EXPECT_FALSE(time_domain_->empty());
+  EXPECT_FALSE(wake_up_queue_->empty());
 
-  EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
+  EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
-  testing::Mock::VerifyAndClearExpectations(time_domain_.get());
+  testing::Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, wake_up2)).Times(1);
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(wake_up2))
+      .Times(1);
 
-  time_domain_->UnregisterQueue(task_queue_.get());
-  EXPECT_EQ(task_queue2.get(), time_domain_->NextScheduledTaskQueue());
+  wake_up_queue_->UnregisterQueue(task_queue_.get());
+  EXPECT_EQ(task_queue2.get(), wake_up_queue_->NextScheduledTaskQueue());
 
   task_queue_->UnregisterTaskQueue();
   task_queue_ = nullptr;
 
-  EXPECT_FALSE(time_domain_->empty());
-  testing::Mock::VerifyAndClearExpectations(time_domain_.get());
+  EXPECT_FALSE(wake_up_queue_->empty());
+  testing::Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()))
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(1);
 
-  time_domain_->UnregisterQueue(task_queue2.get());
-  EXPECT_FALSE(time_domain_->NextScheduledTaskQueue());
+  wake_up_queue_->UnregisterQueue(task_queue2.get());
+  EXPECT_FALSE(wake_up_queue_->NextScheduledTaskQueue());
 
   task_queue2->UnregisterTaskQueue();
   task_queue2 = nullptr;
-  EXPECT_TRUE(time_domain_->empty());
+  EXPECT_TRUE(wake_up_queue_->empty());
 }
 
-TEST_F(TimeDomainTest, MoveReadyDelayedTasksToWorkQueues) {
+TEST_F(WakeUpQueueTest, MoveReadyDelayedTasksToWorkQueues) {
   TimeDelta delay = Milliseconds(50);
-  TimeTicks now = time_domain_->NowTicks();
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now_1(now);
   TimeTicks delayed_runtime = now + delay;
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, delayed_runtime));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime));
   task_queue_->SetNextDelayedWakeUp(&lazy_now_1,
                                     DelayedWakeUp{delayed_runtime});
 
-  EXPECT_EQ(delayed_runtime, time_domain_->NextScheduledRunTime());
+  EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
-  time_domain_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_1);
-  EXPECT_EQ(delayed_runtime, time_domain_->NextScheduledRunTime());
+  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_1);
+  EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()));
-  time_domain_->SetNow(delayed_runtime);
-  LazyNow lazy_now_2(time_domain_.get());
-  time_domain_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2);
-  ASSERT_TRUE(time_domain_->NextScheduledRunTime().is_max());
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()));
+  tick_clock_.SetNowTicks(delayed_runtime);
+  LazyNow lazy_now_2(&tick_clock_);
+  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2);
+  ASSERT_TRUE(wake_up_queue_->NextScheduledRunTime().is_max());
 }
 
-TEST_F(TimeDomainTest, CancelDelayedWork) {
-  TimeTicks now = time_domain_->NowTicks();
+TEST_F(WakeUpQueueTest, CancelDelayedWork) {
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   TimeTicks run_time = now + Milliseconds(20);
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(run_time));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time});
 
-  EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
+  EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, TimeTicks::Max()));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
-  EXPECT_FALSE(time_domain_->NextScheduledTaskQueue());
+  EXPECT_FALSE(wake_up_queue_->NextScheduledTaskQueue());
 }
 
-TEST_F(TimeDomainTest, CancelDelayedWork_TwoQueues) {
+TEST_F(WakeUpQueueTest, CancelDelayedWork_TwoQueues) {
   std::unique_ptr<TaskQueueImplForTest> task_queue2 =
-      std::make_unique<TaskQueueImplForTest>(nullptr, time_domain_.get(),
+      std::make_unique<TaskQueueImplForTest>(nullptr, wake_up_queue_.get(),
                                              TaskQueue::Spec("test"));
 
-  TimeTicks now = time_domain_->NowTicks();
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   TimeTicks run_time1 = now + Milliseconds(20);
   TimeTicks run_time2 = now + Milliseconds(40);
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time1));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(run_time1));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time1});
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _)).Times(0);
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
+      .Times(0);
   task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time2});
-  Mock::VerifyAndClearExpectations(time_domain_.get());
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_EQ(task_queue_.get(), time_domain_->NextScheduledTaskQueue());
+  EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
-  EXPECT_EQ(run_time1, time_domain_->NextScheduledRunTime());
+  EXPECT_EQ(run_time1, wake_up_queue_->NextScheduledRunTime());
 
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, run_time2));
+  EXPECT_CALL(*wake_up_queue_.get(),
+              OnNextDelayedWakeUpChanged_TimeTicks(run_time2));
   task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
-  EXPECT_EQ(task_queue2.get(), time_domain_->NextScheduledTaskQueue());
+  EXPECT_EQ(task_queue2.get(), wake_up_queue_->NextScheduledTaskQueue());
 
-  EXPECT_EQ(run_time2, time_domain_->NextScheduledRunTime());
+  EXPECT_EQ(run_time2, wake_up_queue_->NextScheduledRunTime());
 
-  Mock::VerifyAndClearExpectations(time_domain_.get());
-  EXPECT_CALL(*time_domain_.get(), SetNextDelayedDoWork(_, _))
+  Mock::VerifyAndClearExpectations(wake_up_queue_.get());
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
       .Times(AnyNumber());
 
   // Tidy up.
   task_queue2->UnregisterTaskQueue();
 }
 
-TEST_F(TimeDomainTest, HighResolutionWakeUps) {
-  TimeTicks now = time_domain_->NowTicks();
+TEST_F(WakeUpQueueTest, HighResolutionWakeUps) {
+  TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   TimeTicks run_time1 = now + Milliseconds(20);
   TimeTicks run_time2 = now + Milliseconds(40);
-  TaskQueueImplForTest q1(nullptr, time_domain_.get(), TaskQueue::Spec("test"));
-  TaskQueueImplForTest q2(nullptr, time_domain_.get(), TaskQueue::Spec("test"));
+  TaskQueueImplForTest q1(nullptr, wake_up_queue_.get(),
+                          TaskQueue::Spec("test"));
+  TaskQueueImplForTest q2(nullptr, wake_up_queue_.get(),
+                          TaskQueue::Spec("test"));
 
   // Add two high resolution wake-ups.
-  EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, DelayedWakeUp{run_time1, WakeUpResolution::kHigh}, &lazy_now);
-  EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
-  time_domain_->SetNextWakeUpForQueue(
-      &q2, DelayedWakeUp{run_time2, WakeUpResolution::kHigh}, &lazy_now);
-  EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
+  EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(
+      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kHigh});
+  EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(
+      &q2, &lazy_now, DelayedWakeUp{run_time2, WakeUpResolution::kHigh});
+  EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Remove one of the wake-ups.
-  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
-  EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(&q1, &lazy_now, absl::nullopt);
+  EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Remove the second one too.
-  time_domain_->SetNextWakeUpForQueue(&q2, absl::nullopt, &lazy_now);
-  EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(&q2, &lazy_now, absl::nullopt);
+  EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Change a low resolution wake-up to a high resolution one.
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, DelayedWakeUp{run_time1, WakeUpResolution::kLow}, &lazy_now);
-  EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, DelayedWakeUp{run_time1, WakeUpResolution::kHigh}, &lazy_now);
-  EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(
+      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kLow});
+  EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(
+      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kHigh});
+  EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Move a high resolution wake-up in time.
-  time_domain_->SetNextWakeUpForQueue(
-      &q1, DelayedWakeUp{run_time2, WakeUpResolution::kHigh}, &lazy_now);
-  EXPECT_TRUE(time_domain_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(
+      &q1, &lazy_now, DelayedWakeUp{run_time2, WakeUpResolution::kHigh});
+  EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Cancel the wake-up twice.
-  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
-  time_domain_->SetNextWakeUpForQueue(&q1, absl::nullopt, &lazy_now);
-  EXPECT_FALSE(time_domain_->has_pending_high_resolution_tasks());
+  wake_up_queue_->SetNextWakeUpForQueue(&q1, &lazy_now, absl::nullopt);
+  wake_up_queue_->SetNextWakeUpForQueue(&q1, &lazy_now, absl::nullopt);
+  EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Tidy up.
   q1.UnregisterTaskQueue();
   q2.UnregisterTaskQueue();
 }
 
-TEST_F(TimeDomainTest, SetNextWakeUpForQueueInThePast) {
+TEST_F(WakeUpQueueTest, SetNextWakeUpForQueueInThePast) {
   constexpr auto kType = MessagePumpType::DEFAULT;
   constexpr auto kDelay = Milliseconds(20);
-  SimpleTestTickClock clock;
   auto sequence_manager = sequence_manager::CreateUnboundSequenceManager(
       SequenceManager::Settings::Builder()
           .SetMessagePumpType(kType)
-          .SetTickClock(&clock)
+          .SetTickClock(&tick_clock_)
           .Build());
   sequence_manager->BindToMessagePump(MessagePump::Create(kType));
   auto high_prio_queue =
@@ -387,9 +397,10 @@ TEST_F(TimeDomainTest, SetNextWakeUpForQueueInThePast) {
   high_prio_runner->PostTask(
       FROM_HERE, BindOnce([](SimpleTestTickClock* clock,
                              TimeDelta delay) { clock->Advance(delay); },
-                          base::Unretained(&clock), kDelay * 2));
+                          base::Unretained(&tick_clock_), kDelay * 2));
   RunLoop().RunUntilIdle();
 }
 
+}  // namespace internal
 }  // namespace sequence_manager
 }  // namespace base

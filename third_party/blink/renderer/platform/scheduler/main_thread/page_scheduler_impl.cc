@@ -176,8 +176,7 @@ PageSchedulerImpl::PageSchedulerImpl(
           &agent_group_scheduler.GetMainThreadScheduler())),
       agent_group_scheduler_(agent_group_scheduler),
       page_visibility_(kDefaultPageVisibility),
-      page_visibility_changed_time_(
-          main_thread_scheduler_->GetTickClock()->NowTicks()),
+      page_visibility_changed_time_(main_thread_scheduler_->NowTicks()),
       audio_state_(AudioState::kSilent),
       is_frozen_(false),
       opted_out_from_aggressive_throttling_(false),
@@ -236,8 +235,7 @@ void PageSchedulerImpl::SetPageVisible(bool page_visible) {
   if (page_visibility_ == page_visibility)
     return;
   page_visibility_ = page_visibility;
-  page_visibility_changed_time_ =
-      main_thread_scheduler_->GetTickClock()->NowTicks();
+  page_visibility_changed_time_ = main_thread_scheduler_->NowTicks();
 
   switch (page_visibility_) {
     case PageVisibilityState::kVisible:
@@ -338,7 +336,7 @@ void PageSchedulerImpl::SetPageBackForwardCached(
     TRACE_EVENT_INSTANT("navigation",
                         "PageSchedulerImpl::SetPageBackForwardCached_Store");
     stored_in_back_forward_cache_timestamp_ =
-        main_thread_scheduler_->tick_clock()->NowTicks();
+        main_thread_scheduler_->NowTicks();
 
     // Incorporate a delay of 15 seconds to allow for caching operations to
     // complete before tasks are logged.
@@ -381,7 +379,7 @@ void PageSchedulerImpl::SetIsMainFrameLocal(bool is_local) {
 void PageSchedulerImpl::RegisterFrameSchedulerImpl(
     FrameSchedulerImpl* frame_scheduler) {
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
 
   MaybeInitializeWakeUpBudgetPools(&lazy_now);
   MaybeInitializeBackgroundCPUTimeBudgetPool(&lazy_now);
@@ -437,7 +435,7 @@ void PageSchedulerImpl::GrantVirtualTimeBudget(
   // This can shift time forwards if there's a pending MaybeAdvanceVirtualTime,
   // so it's important this is called second.
   main_thread_scheduler_->GetVirtualTimeDomain()->SetVirtualTimeFence(
-      main_thread_scheduler_->GetVirtualTimeDomain()->NowTicks() + budget);
+      main_thread_scheduler_->NowTicks() + budget);
 }
 
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
@@ -533,7 +531,7 @@ void PageSchedulerImpl::OnThrottlingStatusUpdated() {
     opted_out_from_aggressive_throttling_ =
         opted_out_from_aggressive_throttling;
     base::sequence_manager::LazyNow lazy_now(
-        main_thread_scheduler_->tick_clock());
+        main_thread_scheduler_->GetTickClock());
     UpdateCPUTimeBudgetPool(&lazy_now);
     UpdateWakeUpBudgetPools(&lazy_now);
   }
@@ -721,7 +719,7 @@ void PageSchedulerImpl::MaybeInitializeWakeUpBudgetPools(
 void PageSchedulerImpl::UpdatePolicyOnVisibilityChange(
     NotificationPolicy notification_policy) {
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
 
   if (IsPageVisible()) {
     is_cpu_time_throttled_ = false;
@@ -760,7 +758,7 @@ void PageSchedulerImpl::DoThrottleCPUTime() {
   is_cpu_time_throttled_ = true;
 
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
   UpdateCPUTimeBudgetPool(&lazy_now);
   NotifyFrames();
 }
@@ -770,7 +768,7 @@ void PageSchedulerImpl::DoIntensivelyThrottleWakeUps() {
   are_wake_ups_intensively_throttled_ = true;
 
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
   UpdateWakeUpBudgetPools(&lazy_now);
   NotifyFrames();
 }
@@ -798,7 +796,7 @@ void PageSchedulerImpl::OnTitleOrFaviconUpdated() {
     // shouldn't be able to observe that the page title or favicon was updated.
     had_recent_title_or_favicon_update_ = true;
     base::sequence_manager::LazyNow lazy_now(
-        main_thread_scheduler_->tick_clock());
+        main_thread_scheduler_->GetTickClock());
     UpdateWakeUpBudgetPools(&lazy_now);
     // Re-enable intensive throttling from a delayed task.
     reset_had_recent_title_or_favicon_update_.Cancel();
@@ -812,7 +810,7 @@ void PageSchedulerImpl::ResetHadRecentTitleOrFaviconUpdate() {
   had_recent_title_or_favicon_update_ = false;
 
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
   UpdateWakeUpBudgetPools(&lazy_now);
 
   NotifyFrames();
@@ -899,8 +897,8 @@ void PageSchedulerImpl::OnLocalMainFrameNetworkAlmostIdle() {
 
   // If delay_for_background_and_network_idle_tab_freezing_ passes after
   // the page is not visible, we should freeze the page.
-  base::TimeDelta passed = main_thread_scheduler_->GetTickClock()->NowTicks() -
-                           page_visibility_changed_time_;
+  base::TimeDelta passed =
+      main_thread_scheduler_->NowTicks() - page_visibility_changed_time_;
   if (passed < delay_for_background_and_network_idle_tab_freezing_)
     return;
 
@@ -913,8 +911,7 @@ void PageSchedulerImpl::DoFreezePage() {
   if (freeze_on_network_idle_enabled_) {
     DCHECK(delegate_);
     base::TimeDelta passed =
-        main_thread_scheduler_->GetTickClock()->NowTicks() -
-        page_visibility_changed_time_;
+        main_thread_scheduler_->NowTicks() - page_visibility_changed_time_;
     // The page will be frozen if:
     // (1) the main frame is remote, or,
     // (2) the local main frame's network is almost idle, or,
@@ -1055,7 +1052,7 @@ void PageSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate() {
   // Update the WakeUpBudgetPools' interval everytime task queues change their
   // attached WakeUpBudgetPools
   base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->tick_clock());
+      main_thread_scheduler_->GetTickClock());
   UpdateWakeUpBudgetPools(&lazy_now);
 }
 

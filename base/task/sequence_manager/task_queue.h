@@ -38,8 +38,6 @@ class SequenceManagerImpl;
 class TaskQueueImpl;
 }  // namespace internal
 
-class TimeDomain;
-
 // TODO(kraynov): Make TaskQueue to actually be an interface for TaskQueueImpl
 // and stop using ref-counting because we're no longer tied to task runner
 // lifecycle and there's no other need for ref-counting either.
@@ -150,16 +148,16 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
       return *this;
     }
 
-    Spec SetTimeDomain(TimeDomain* domain) {
-      time_domain = domain;
+    Spec SetNonWaking(bool non_waking_in) {
+      non_waking = non_waking_in;
       return *this;
     }
 
     const char* name;
     bool should_monitor_quiescence = false;
-    TimeDomain* time_domain = nullptr;
     bool should_notify_observers = true;
     bool delayed_fence_allowed = false;
+    bool non_waking = false;
   };
 
   // TODO(altimin): Make this private after TaskQueue/TaskQueueImpl refactoring.
@@ -306,13 +304,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // this task queue. |blame_context| must be null or outlive this task queue.
   // Must be called on the thread this TaskQueue was created by.
   void SetBlameContext(trace_event::BlameContext* blame_context);
-
-  // Removes the task queue from the previous TimeDomain and adds it to
-  // |domain|.  This is a moderately expensive operation.
-  void SetTimeDomain(TimeDomain* domain);
-
-  // Returns the queue's current TimeDomain.  Can be called from any thread.
-  TimeDomain* GetTimeDomain() const;
 
   enum class InsertFencePosition {
     kNow,  // Tasks posted on the queue up till this point further may run.

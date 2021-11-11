@@ -14,7 +14,6 @@
 namespace base {
 namespace sequence_manager {
 class SequenceManager;
-class TimeDomain;
 }  // namespace sequence_manager
 }  // namespace base
 
@@ -54,8 +53,7 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
 
   // Setting the DefaultTaskRunner is up to the caller.
   static std::unique_ptr<BrowserUIThreadScheduler> CreateForTesting(
-      base::sequence_manager::SequenceManager* sequence_manager,
-      base::sequence_manager::TimeDomain* time_domain);
+      base::sequence_manager::SequenceManager* sequence_manager);
 
   using QueueType = BrowserTaskQueues::QueueType;
 
@@ -64,9 +62,8 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
  private:
   friend class BrowserTaskExecutor;
 
-  BrowserUIThreadScheduler(
-      base::sequence_manager::SequenceManager* sequence_manager,
-      base::sequence_manager::TimeDomain* time_domain);
+  explicit BrowserUIThreadScheduler(
+      base::sequence_manager::SequenceManager* sequence_manager);
 
   void CommonSequenceManagerSetup(
       base::sequence_manager::SequenceManager* sequence_manager);

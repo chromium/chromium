@@ -3093,100 +3093,13 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTime) {
   EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
   scheduler_->EnableVirtualTime();
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
-  scoped_refptr<MainThreadTaskQueue> loading_tq =
-      scheduler_->NewLoadingTaskQueue(
-          MainThreadTaskQueue::QueueType::kFrameLoading, nullptr);
-  scoped_refptr<MainThreadTaskQueue> loading_control_tq =
-      scheduler_->NewLoadingTaskQueue(
-          MainThreadTaskQueue::QueueType::kFrameLoadingControl, nullptr);
-  scoped_refptr<MainThreadTaskQueue> throttleable_tq =
-      scheduler_->NewThrottleableTaskQueueForTest(nullptr);
-  scoped_refptr<MainThreadTaskQueue> unthrottled_tq = NewUnpausableTaskQueue();
-
-  EXPECT_EQ(scheduler_->DefaultTaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(compositor_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(loading_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(throttleable_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(scheduler_->VirtualTimeControlTaskQueue()
-                ->GetTaskQueue()
-                ->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(scheduler_->V8TaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-
-  // The main control task queue remains in the real time domain.
-  EXPECT_EQ(scheduler_->ControlTaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-
-  EXPECT_EQ(loading_tq->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(loading_control_tq->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(throttleable_tq->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(unthrottled_tq->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-
-  EXPECT_EQ(scheduler_
-                ->NewLoadingTaskQueue(
-                    MainThreadTaskQueue::QueueType::kFrameLoading, nullptr)
-                ->GetTaskQueue()
-                ->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(scheduler_->NewThrottleableTaskQueueForTest(nullptr)
-                ->GetTaskQueue()
-                ->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(NewUnpausableTaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_EQ(scheduler_
-                ->NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
-                    MainThreadTaskQueue::QueueType::kTest))
-                ->GetTaskQueue()
-                ->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-}
-
-TEST_F(MainThreadSchedulerImplTest, EnableVirtualTimeAfterThrottling) {
-  auto page_scheduler =
-      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-
-  std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
-                           FrameScheduler::FrameType::kSubframe);
-
-  scoped_refptr<MainThreadTaskQueue> throttleable_tq =
-      ThrottleableTaskQueue(frame_scheduler.get()).get();
-
-  frame_scheduler->SetCrossOriginToMainFrame(true);
-  frame_scheduler->SetFrameVisible(false);
-  EXPECT_TRUE(throttleable_tq->IsThrottled());
-
-  scheduler_->EnableVirtualTime();
-  EXPECT_EQ(throttleable_tq->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
-  EXPECT_TRUE(throttleable_tq->IsThrottled());
+  EXPECT_TRUE(scheduler_->GetVirtualTimeDomain());
 }
 
 TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
   scheduler_->EnableVirtualTime();
   scheduler_->DisableVirtualTimeForTesting();
-  EXPECT_EQ(scheduler_->DefaultTaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(compositor_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(loading_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(throttleable_task_queue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(scheduler_->ControlTaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(scheduler_->V8TaskQueue()->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
+  EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_FALSE(scheduler_->VirtualTimeControlTaskQueue());
 }
 
@@ -3199,14 +3112,14 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {
       scheduler_.get(),
       WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant, "test");
 
-  base::TimeTicks before = scheduler_->GetVirtualTimeDomain()->NowTicks();
+  base::TimeTicks before = scheduler_->NowTicks();
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
   pauser.PauseVirtualTime();
   EXPECT_FALSE(scheduler_->VirtualTimeAllowedToAdvance());
 
   pauser.UnpauseVirtualTime();
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
-  base::TimeTicks after = scheduler_->GetVirtualTimeDomain()->NowTicks();
+  base::TimeTicks after = scheduler_->NowTicks();
   EXPECT_EQ(after, before);
 }
 
@@ -3219,10 +3132,10 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimePauserNonInstantTask) {
       scheduler_.get(),
       WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant, "test");
 
-  base::TimeTicks before = scheduler_->GetVirtualTimeDomain()->NowTicks();
+  base::TimeTicks before = scheduler_->NowTicks();
   pauser.PauseVirtualTime();
   pauser.UnpauseVirtualTime();
-  base::TimeTicks after = scheduler_->GetVirtualTimeDomain()->NowTicks();
+  base::TimeTicks after = scheduler_->NowTicks();
   EXPECT_GT(after, before);
 }
 
@@ -3539,21 +3452,17 @@ TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
   scoped_refptr<MainThreadTaskQueue> queue2 =
       scheduler_->NewThrottleableTaskQueueForTest(nullptr);
 
-  EXPECT_EQ(queue1->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(queue2->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
+  EXPECT_TRUE(queue1->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_TRUE(queue2->GetTaskQueue()->IsQueueEnabled());
 
   scheduler_->OnShutdownTaskQueue(queue1);
 
-  scheduler_->EnableVirtualTime();
+  auto pause_handle = scheduler_->PauseRenderer();
 
-  // Virtual time should be enabled for queue2, as it is a regular queue and
-  // nothing should change for queue1 because it was shut down.
-  EXPECT_EQ(queue1->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->real_time_domain());
-  EXPECT_EQ(queue2->GetTaskQueue()->GetTimeDomain(),
-            scheduler_->GetVirtualTimeDomain());
+  // queue2 should be disabled, as it is a regular queue and nothing should
+  // change for queue1 because it was shut down.
+  EXPECT_TRUE(queue1->GetTaskQueue()->IsQueueEnabled());
+  EXPECT_FALSE(queue2->GetTaskQueue()->IsQueueEnabled());
 }
 
 TEST_F(MainThreadSchedulerImplTest, MicrotaskCheckpointTiming) {
@@ -3600,7 +3509,7 @@ TEST_F(MainThreadSchedulerImplTest, IsBeginMainFrameScheduled) {
 
 TEST_F(MainThreadSchedulerImplTest, NonWakingTaskQueue) {
   std::vector<std::pair<std::string, base::TimeTicks>> log;
-  base::TimeTicks start = scheduler_->GetTickClock()->NowTicks();
+  base::TimeTicks start = scheduler_->NowTicks();
 
   scheduler_->DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,

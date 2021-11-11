@@ -245,7 +245,6 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
                                          PrioritisationType::kBestEffort))),
       memory_purge_manager_(memory_purge_task_queue_->CreateTaskRunner(
           TaskType::kMainThreadTaskQueueMemoryPurge)),
-      non_waking_time_domain_(tick_clock()),
       delayed_update_policy_runner_(
           base::BindRepeating(&MainThreadSchedulerImpl::UpdatePolicy,
                               base::Unretained(this)),
@@ -269,14 +268,12 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       back_forward_cache_ipc_tracking_task_queue_->CreateTaskRunner(
           TaskType::kMainThreadTaskQueueIPCTracking);
 
-  RegisterTimeDomain(&non_waking_time_domain_);
-
   v8_task_queue_ = NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
       MainThreadTaskQueue::QueueType::kV8));
   non_waking_task_queue_ =
       NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                        MainThreadTaskQueue::QueueType::kNonWaking)
-                       .SetTimeDomain(&non_waking_time_domain_));
+                       .SetNonWaking(true));
 
   v8_task_runner_ =
       v8_task_queue_->CreateTaskRunner(TaskType::kMainThreadTaskQueueV8);
@@ -337,11 +334,6 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   for (const auto& pair : task_runners_) {
     pair.first->ShutdownTaskQueue();
   }
-
-  UnregisterTimeDomain(&non_waking_time_domain_);
-
-  if (virtual_time_domain_)
-    UnregisterTimeDomain(virtual_time_domain_.get());
 
   if (virtual_time_control_task_queue_)
     virtual_time_control_task_queue_->ShutdownTaskQueue();
@@ -654,7 +646,7 @@ void MainThreadSchedulerImpl::Shutdown() {
   if (was_shutdown_)
     return;
 
-  base::TimeTicks now = tick_clock()->NowTicks();
+  base::TimeTicks now = NowTicks();
   main_thread_only().metrics_helper.OnRendererShutdown(now);
 
   ShutdownAllQueues();
@@ -1072,11 +1064,11 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   main_thread_only().renderer_backgrounded = backgrounded;
   internal::ProcessState::Get()->is_process_backgrounded = backgrounded;
 
-  main_thread_only().background_status_changed_at = tick_clock()->NowTicks();
+  main_thread_only().background_status_changed_at = NowTicks();
 
   UpdatePolicy();
 
-  base::TimeTicks now = tick_clock()->NowTicks();
+  base::TimeTicks now = NowTicks();
   if (backgrounded) {
     main_thread_only().metrics_helper.OnRendererBackgrounded(now);
   } else {
@@ -1687,18 +1679,6 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
   // Make sure if there's no voter that the task queue is enabled.
   DCHECK(task_queue_enabled_voter || old_policy.IsQueueEnabled(task_queue));
 
-  TimeDomainType old_time_domain_type = old_policy.GetTimeDomainType();
-  TimeDomainType new_time_domain_type = new_policy.GetTimeDomainType();
-
-  if (old_time_domain_type != new_time_domain_type) {
-    if (new_time_domain_type == TimeDomainType::kVirtual) {
-      DCHECK(virtual_time_domain_);
-      task_queue->GetTaskQueue()->SetTimeDomain(virtual_time_domain_.get());
-    } else {
-      task_queue->GetTaskQueue()->SetTimeDomain(real_time_domain());
-    }
-  }
-
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
     task_queue_enabled_voter->SetVoteToEnable(
@@ -1821,11 +1801,11 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
   if (main_thread_only().initial_virtual_time.is_null())
     main_thread_only().initial_virtual_time = base::Time::Now();
   if (main_thread_only().initial_virtual_time_ticks.is_null())
-    main_thread_only().initial_virtual_time_ticks = tick_clock()->NowTicks();
+    main_thread_only().initial_virtual_time_ticks = NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       main_thread_only().initial_virtual_time,
       main_thread_only().initial_virtual_time_ticks, &helper_);
-  RegisterTimeDomain(virtual_time_domain_.get());
+  helper_.SetTimeDomain(virtual_time_domain_.get());
 
   DCHECK(!virtual_time_control_task_queue_);
   virtual_time_control_task_queue_ =
@@ -1833,8 +1813,6 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
           MainThreadTaskQueue::QueueType::kControl));
   virtual_time_control_task_queue_->SetQueuePriority(
       TaskQueue::kControlPriority);
-  virtual_time_control_task_queue_->GetTaskQueue()->SetTimeDomain(
-      virtual_time_domain_.get());
 
   ForceUpdatePolicy();
   for (auto* page_scheduler : main_thread_only().page_schedulers) {
@@ -1868,18 +1846,17 @@ void MainThreadSchedulerImpl::DisableVirtualTimeForTesting() {
   // This can only happen during test tear down, in which case there is no need
   // to notify the pages that virtual time was disabled.
 
+  helper_.ResetTimeDomain();
   virtual_time_control_task_queue_->ShutdownTaskQueue();
   virtual_time_control_task_queue_ = nullptr;
-  UnregisterTimeDomain(virtual_time_domain_.get());
   virtual_time_domain_.reset();
-  virtual_time_control_task_queue_ = nullptr;
   ApplyVirtualTimePolicy();
 
   main_thread_only().initial_virtual_time = base::Time();
   main_thread_only().initial_virtual_time_ticks = base::TimeTicks();
 
   // Reset the MetricsHelper because it gets confused by time going backwards.
-  base::TimeTicks now = tick_clock()->NowTicks();
+  base::TimeTicks now = NowTicks();
   main_thread_only().metrics_helper.ResetForTest(now);
 }
 
@@ -1928,9 +1905,7 @@ base::TimeTicks MainThreadSchedulerImpl::IncrementVirtualTimePauseCount() {
   main_thread_only().virtual_time_pause_count++;
   ApplyVirtualTimePolicy();
 
-  if (virtual_time_domain_)
-    return virtual_time_domain_->NowTicks();
-  return tick_clock()->NowTicks();
+  return NowTicks();
 }
 
 void MainThreadSchedulerImpl::DecrementVirtualTimePauseCount() {
@@ -1969,8 +1944,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
     case VirtualTimePolicy::kPause:
       if (virtual_time_domain_) {
         virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(0);
-        virtual_time_domain_->SetVirtualTimeFence(
-            virtual_time_domain_->NowTicks());
+        virtual_time_domain_->SetVirtualTimeFence(NowTicks());
       }
       SetVirtualTimeStopped(true);
       break;
@@ -2107,13 +2081,6 @@ bool MainThreadSchedulerImpl::Policy::IsQueueEnabled(
       task_queue->CanBePausedForAndroidWebview())
     return false;
   return true;
-}
-
-MainThreadSchedulerImpl::TimeDomainType
-MainThreadSchedulerImpl::Policy::GetTimeDomainType() const {
-  if (use_virtual_time())
-    return TimeDomainType::kVirtual;
-  return TimeDomainType::kReal;
 }
 
 void MainThreadSchedulerImpl::Policy::WriteIntoTrace(
@@ -2453,27 +2420,19 @@ MainThreadSchedulerImpl::PauseScheduler() {
 }
 
 base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
-  return GetActiveTimeDomain()->NowTicks();
+  return NowTicks();
 }
 
 WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {
   return this;
 }
 
-void MainThreadSchedulerImpl::RegisterTimeDomain(TimeDomain* time_domain) {
-  helper_.RegisterTimeDomain(time_domain);
-}
-
-void MainThreadSchedulerImpl::UnregisterTimeDomain(TimeDomain* time_domain) {
-  helper_.UnregisterTimeDomain(time_domain);
-}
-
-const base::TickClock* MainThreadSchedulerImpl::GetTickClock() {
-  return tick_clock();
-}
-
-const base::TickClock* MainThreadSchedulerImpl::tick_clock() const {
+const base::TickClock* MainThreadSchedulerImpl::GetTickClock() const {
   return helper_.GetClock();
+}
+
+base::TimeTicks MainThreadSchedulerImpl::NowTicks() const {
+  return GetTickClock()->NowTicks();
 }
 
 void MainThreadSchedulerImpl::AddAgentGroupScheduler(
@@ -2757,20 +2716,12 @@ void MainThreadSchedulerImpl::RemoveTaskTimeObserver(
 std::unique_ptr<CPUTimeBudgetPool>
 MainThreadSchedulerImpl::CreateCPUTimeBudgetPoolForTesting(const char* name) {
   return std::make_unique<CPUTimeBudgetPool>(name, &tracing_controller_,
-                                             tick_clock()->NowTicks());
+                                             NowTicks());
 }
 
 AutoAdvancingVirtualTimeDomain*
 MainThreadSchedulerImpl::GetVirtualTimeDomain() {
   return virtual_time_domain_.get();
-}
-
-TimeDomain* MainThreadSchedulerImpl::GetActiveTimeDomain() {
-  if (main_thread_only().use_virtual_time) {
-    return GetVirtualTimeDomain();
-  } else {
-    return real_time_domain();
-  }
 }
 
 void MainThreadSchedulerImpl::OnTraceLogEnabled() {

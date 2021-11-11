@@ -58,6 +58,7 @@ namespace internal {
 
 class RealTimeDomain;
 class TaskQueueImpl;
+class DefaultWakeUpQueue;
 class ThreadControllerImpl;
 
 // The task queue manager provides N task queues and a selector interface for
@@ -116,9 +117,8 @@ class BASE_EXPORT SequenceManagerImpl
   void SetObserver(Observer* observer) override;
   void AddTaskTimeObserver(TaskTimeObserver* task_time_observer) override;
   void RemoveTaskTimeObserver(TaskTimeObserver* task_time_observer) override;
-  void RegisterTimeDomain(TimeDomain* time_domain) override;
-  void UnregisterTimeDomain(TimeDomain* time_domain) override;
-  TimeDomain* GetRealTimeDomain() const override;
+  void SetTimeDomain(TimeDomain* time_domain) override;
+  void ResetTimeDomain() override;
   const TickClock* GetTickClock() const override;
   TimeTicks NowTicks() const override;
   void SetDefaultTaskRunner(
@@ -138,6 +138,7 @@ class BASE_EXPORT SequenceManagerImpl
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
+  absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const override;
 
   // SequencedTaskSource implementation:
   absl::optional<SelectedTask> SelectNextTask(
@@ -172,14 +173,11 @@ class BASE_EXPORT SequenceManagerImpl
   // Requests that a task to process work is scheduled.
   void ScheduleWork();
 
-  // Requests that a delayed task to process work is posted on the main task
-  // runner. These delayed tasks are de-duplicated. Must be called on the thread
-  // this class was created on.
-
-  // Schedules next wake-up at the given time, cancels any previous requests.
-  // Use TimeTicks::Max() to cancel a wake-up.
-  // Must be called from a TimeDomain only.
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time);
+  // Schedules next wake-up at the given time, canceling any previous requests.
+  // Use absl::nullopt to cancel a wake-up. Must be called on the thread this
+  // class was created on. Must be called from a TimeDomain only.
+  void SetNextDelayedWakeUp(LazyNow* lazy_now,
+                            absl::optional<DelayedWakeUp> wake_up);
 
   // Returns the currently executing TaskQueue if any. Must be called on the
   // thread this class was created on.
@@ -215,6 +213,7 @@ class BASE_EXPORT SequenceManagerImpl
                       SequenceManager::Settings settings = Settings());
 
   friend class internal::TaskQueueImpl;
+  friend class internal::DefaultWakeUpQueue;
   friend class ::base::sequence_manager::SequenceManagerForTest;
 
  private:
@@ -266,8 +265,10 @@ class BASE_EXPORT SequenceManagerImpl
 
   struct MainThreadOnly {
     explicit MainThreadOnly(
+        SequenceManagerImpl* sequence_manager,
         const scoped_refptr<AssociatedThreadId>& associated_thread,
-        const SequenceManager::Settings& settings);
+        const SequenceManager::Settings& settings,
+        const base::TickClock* clock);
     ~MainThreadOnly();
 
     int nesting_depth = 0;
@@ -285,8 +286,11 @@ class BASE_EXPORT SequenceManagerImpl
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-    std::set<TimeDomain*> time_domains;
-    std::unique_ptr<internal::RealTimeDomain> real_time_domain;
+    std::unique_ptr<RealTimeDomain> real_time_domain;
+    TimeDomain* time_domain = nullptr;
+
+    std::unique_ptr<WakeUpQueue> wake_up_queue;
+    std::unique_ptr<WakeUpQueue> non_waking_wake_up_queue;
 
     // If true MaybeReclaimMemory will attempt to reclaim memory.
     bool memory_reclaim_scheduled = false;
@@ -441,6 +445,23 @@ class BASE_EXPORT SequenceManagerImpl
   const MainThreadOnly& main_thread_only() const {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
+  }
+
+  // |clock_| refers to the TickClock representation of |time_domain| (same
+  // object). It is maintained as an atomic pointer here for multi-threaded
+  // usage.
+  std::atomic<const base::TickClock*> clock_;
+  const base::TickClock* main_thread_clock() const {
+    DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+    return clock_.load(std::memory_order_relaxed);
+  }
+  const base::TickClock* any_thread_clock() const {
+    // |memory_order_acquire| matched by |memory_order_release| in
+    // SetTimeDomain() to ensure all data used by |clock_| is visible when read
+    // from the current thread. A thread might try to access a stale |clock_|
+    // but that's not an issue since |time_domain| contractually outlives
+    // SequenceManagerImpl even if it's reset.
+    return clock_.load(std::memory_order_acquire);
   }
 
   WeakPtrFactory<SequenceManagerImpl> weak_factory_{this};

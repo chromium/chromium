@@ -60,32 +60,24 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  base::TimeTicks GetNextDelayedTaskTime(LazyNow* lazy_now) const override {
-    absl::optional<DelayedWakeUp> wake_up = GetNextDelayedWakeUp();
-    if (!wake_up)
-      return base::TimeTicks::Max();
+  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
+                                         LazyNow* lazy_now) const override {
     // Check if we have a task that should be running now.
-    if (wake_up->time <= NowTicks())
+    if (next_wake_up.time <= NowTicks())
       return base::TimeTicks();
 
-    // Rely on MaybeFastForwardToNextTask to be called to advance
+    // Rely on MaybeFastForwardToWakeUp to be called to advance
     // time.
     return base::TimeTicks::Max();
   }
 
-  bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override {
-    absl::optional<DelayedWakeUp> wake_up = GetNextDelayedWakeUp();
+  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+                                bool quit_when_idle_requested) override {
     if (wake_up) {
       SetNowTicks(wake_up->time);
       return true;
     }
     return false;
-  }
-
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override {
-    // De-dupe DoWorks.
-    if (NumberOfScheduledWakeUps() == 1u)
-      RequestDoWork();
   }
 };
 
@@ -133,7 +125,7 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
     scoped_refptr<TestTaskQueue> task_queue =
         manager_->CreateTaskQueueWithType<TestTaskQueue>(
-            TaskQueue::Spec("test").SetTimeDomain(time_domain_.get()));
+            TaskQueue::Spec("test"));
     owned_task_queues_.push_back(task_queue);
     return task_queue->task_runner();
   }
@@ -150,12 +142,12 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   void SetSequenceManager(std::unique_ptr<SequenceManager> manager) {
     manager_ = std::move(manager);
     time_domain_ = std::make_unique<PerfTestTimeDomain>();
-    manager_->RegisterTimeDomain(time_domain_.get());
+    manager_->SetTimeDomain(time_domain_.get());
   }
 
   void ShutDown() {
     owned_task_queues_.clear();
-    manager_->UnregisterTimeDomain(time_domain_.get());
+    manager_->ResetTimeDomain();
     manager_.reset();
   }
 

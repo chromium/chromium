@@ -158,8 +158,8 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
   }
 }
 
-const TickClock* ThreadControllerWithMessagePumpImpl::GetClock() {
-  return time_source_;
+void ThreadControllerWithMessagePumpImpl::SetTickClock(const TickClock* clock) {
+  time_source_ = clock;
 }
 
 bool ThreadControllerWithMessagePumpImpl::RunsTasksInCurrentSequence() {

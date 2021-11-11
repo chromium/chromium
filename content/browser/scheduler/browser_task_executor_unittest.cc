@@ -191,8 +191,7 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
               base::test::TaskEnvironment::MainThreadType::UI,
               base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
-          BrowserUIThreadScheduler::CreateForTesting(sequence_manager(),
-                                                     GetTimeDomain());
+          BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
       DeferredInitFromSubclass(
           browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
               QueueType::kDefault));

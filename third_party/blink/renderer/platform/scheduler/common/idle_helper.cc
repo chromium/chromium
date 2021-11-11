@@ -84,17 +84,14 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kNotInIdlePeriod;
   }
 
-  base::sequence_manager::LazyNow lazy_now(now);
-  base::TimeTicks next_task_time =
-      helper_->real_time_domain()->GetNextDelayedTaskTime(&lazy_now);
+  auto wake_up = helper_->GetNextDelayedWakeUp();
 
   base::TimeDelta long_idle_period_duration;
-  if (next_task_time.is_null()) {
-    long_idle_period_duration = base::TimeDelta();
-  } else if (!next_task_time.is_max()) {
+
+  if (wake_up) {
     // Limit the idle period duration to be before the next pending task.
     long_idle_period_duration =
-        std::min(next_task_time - now, kMaximumIdlePeriod);
+        std::min(wake_up->time - now, kMaximumIdlePeriod);
   } else {
     long_idle_period_duration = kMaximumIdlePeriod;
   }

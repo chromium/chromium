@@ -59,12 +59,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
 
   // ThreadSchedulerImpl:
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
-  void RegisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  void UnregisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  base::sequence_manager::TimeDomain* GetActiveTimeDomain() override;
-  const base::TickClock* GetTickClock() override;
+  const base::TickClock* GetTickClock() const override;
 
   // ThreadScheduler implementation.
   // TODO(yutak): Some functions are only meaningful in main thread. Move them

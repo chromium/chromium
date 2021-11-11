@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/memory_purge_manager.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/non_waking_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/render_widget_signals.h"
@@ -264,12 +263,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // ThreadSchedulerImpl implementation:
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;
-  void RegisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  void UnregisterTimeDomain(
-      base::sequence_manager::TimeDomain* time_domain) override;
-  base::sequence_manager::TimeDomain* GetActiveTimeDomain() override;
-  const base::TickClock* GetTickClock() override;
+  const base::TickClock* GetTickClock() const override;
+
+  base::TimeTicks NowTicks() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> VirtualTimeControlTaskRunner();
 
@@ -350,12 +346,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void EndIdlePeriodForTesting(base::OnceClosure callback,
                                base::TimeTicks time_remaining);
   bool PolicyNeedsUpdateForTesting();
-
-  const base::TickClock* tick_clock() const;
-
-  base::sequence_manager::TimeDomain* real_time_domain() const {
-    return helper_.real_time_domain();
-  }
 
   AutoAdvancingVirtualTimeDomain* GetVirtualTimeDomain();
 
@@ -563,8 +553,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     }
 
     bool IsQueueEnabled(MainThreadTaskQueue* task_queue) const;
-
-    TimeDomainType GetTimeDomainType() const;
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -815,7 +803,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Note |virtual_time_domain_| is lazily created.
   std::unique_ptr<AutoAdvancingVirtualTimeDomain> virtual_time_domain_;
-  NonWakingTimeDomain non_waking_time_domain_;
 
   base::RepeatingClosure update_policy_closure_;
   DeadlineTaskRunner delayed_update_policy_runner_;
