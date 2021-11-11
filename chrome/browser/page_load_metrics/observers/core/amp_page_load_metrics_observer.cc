@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/url_util.h"
@@ -298,6 +299,8 @@ void AMPPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   MaybeRecordAmpDocumentMetrics();
   current_main_frame_nav_info_ = nullptr;
+  page_load_metrics::RecordPageVisitFinalStatusForTiming(
+      timing, GetDelegate(), GetDelegate().GetPageUkmSourceId());
 }
 
 void AMPPageLoadMetricsObserver::ProcessMainFrameNavigation(

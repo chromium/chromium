@@ -18129,6 +18129,30 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="UserPerceivedPageVisit" singular="True">
+  <owner>djw@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Metrics related to a page visit as a user perceives it, regardless of how
+    the page was visited. More metrics may be associated with a particular page
+    visit, these can be found in specific UKM events with the same UKM source
+    ID. Currently the methods of visiting a page that will populate this event
+    are: 'normal' page load (more metrics in the PageLoad event), Back-Forward
+    Cache Restore (more metrics in the HistoryNavigation event), and AMP
+    documents (more metrics in the AmpPageLoad event)
+  </summary>
+  <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
+    <summary>
+      Determines the final status for this page visit. That is, records whether
+      the page was never foregrounded, was foregrounded but did not reach FCP,
+      or did reach FCP. The metric is recorded at the end of each page visit.
+      App backgrounding on Android to is considered to be the end of page visit
+      as well, as the app could be evicted by Android anytime after that
+      happens.
+    </summary>
+  </metric>
+</event>
+
 <event name="UserSettingsEvent">
   <owner>wrong@chromium.org</owner>
   <owner>jiameng@chromium.org</owner>

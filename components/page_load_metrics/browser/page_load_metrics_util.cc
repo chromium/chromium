@@ -7,6 +7,9 @@
 #include <algorithm>
 
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace page_load_metrics {
 
@@ -261,6 +264,25 @@ int32_t LayoutShiftUmaValue(float shift_score) {
 int32_t LayoutShiftUmaValue10000(float shift_score) {
   // Report (shift_score * 10000) as an int in the range [0, 1000].
   return static_cast<int>(roundf(std::min(shift_score, 10.0f) * 10000.0f));
+}
+
+PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const PageLoadMetricsObserverDelegate& delegate,
+    ukm::SourceId source_id) {
+  PageVisitFinalStatus page_visit_status =
+      PageVisitFinalStatus::kNeverForegrounded;
+  if (page_load_metrics::WasInForeground(delegate)) {
+    page_visit_status = timing.paint_timing->first_contentful_paint.has_value()
+                            ? PageVisitFinalStatus::kReachedFCP
+                            : PageVisitFinalStatus::kAborted;
+  }
+  UMA_HISTOGRAM_ENUMERATION("UserPerceivedPageVisit.PageVisitFinalStatus",
+                            page_visit_status);
+  ukm::builders::UserPerceivedPageVisit pageVisitBuilder(source_id);
+  pageVisitBuilder.SetPageVisitFinalStatus(static_cast<int>(page_visit_status));
+  pageVisitBuilder.Record(ukm::UkmRecorder::Get());
+  return page_visit_status;
 }
 
 }  // namespace page_load_metrics

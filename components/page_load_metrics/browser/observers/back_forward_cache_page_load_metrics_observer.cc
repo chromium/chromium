@@ -9,10 +9,13 @@
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
+
+using page_load_metrics::PageVisitFinalStatus;
 
 namespace internal {
 
@@ -302,6 +305,11 @@ void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
   MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
       base::DefaultTickClock::GetInstance(), app_entering_background);
   MaybeRecordNormalizedResponsivenessMetrics();
+
+  if (has_ever_entered_back_forward_cache_) {
+    page_load_metrics::RecordPageVisitFinalStatusForTiming(
+        timing, GetDelegate(), GetLastUkmSourceIdForBackForwardCacheRestore());
+  }
 }
 
 void BackForwardCachePageLoadMetricsObserver::

@@ -1035,12 +1035,8 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
     base::TimeTicks page_end_time,
     ukm::builders::PageLoad* builder) {
   PageVisitFinalStatus page_visit_status =
-      PageVisitFinalStatus::kNeverForegrounded;
-  if (page_load_metrics::WasInForeground(GetDelegate())) {
-    page_visit_status = timing.paint_timing->first_contentful_paint.has_value()
-                            ? PageVisitFinalStatus::kReachedFCP
-                            : PageVisitFinalStatus::kAborted;
-  }
+      page_load_metrics::RecordPageVisitFinalStatusForTiming(
+          timing, GetDelegate(), GetDelegate().GetPageUkmSourceId());
   if (currently_in_foreground_ && !last_time_shown_.is_null()) {
     total_foreground_duration_ += page_end_time - last_time_shown_;
   }
