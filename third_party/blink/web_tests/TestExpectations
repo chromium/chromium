@@ -2017,7 +2017,6 @@ crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Pa
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
 crbug.com/846656 external/wpt/css/selectors/focus-visible-002.html [ Pass Skip Timeout ]
 crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Skip Timeout ]
-crbug.com/1018064 [ Mac ] virtual/threaded/http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Pass Skip Timeout ]
 crbug.com/1034789 [ Mac ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1105957 [ Debug Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
@@ -5846,7 +5845,6 @@ crbug.com/1126709 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1126709 [ Win ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
 
 # Sheriff 2020-09-17
-crbug.com/1129347 [ Debug Mac10.13 ] http/tests/devtools/persistence/persistence-external-change-breakpoints.js [ Failure Pass ]
 ### virtual/scroll-unification/fast/scrolling/scrollbars/
 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar.html [ Failure ]
 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-occluded-by-div.html [ Failure ]
@@ -6148,7 +6146,6 @@ crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/ht
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
 # Sheriff 2021-02-25
-crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Skip Timeout ]
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
@@ -6159,7 +6156,6 @@ crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 crbug.com/1092462 [ Linux ] media/video-seek-past-end-paused.html [ Failure Pass ]
 crbug.com/1185675 [ Mac ] virtual/gpu-rasterization/images/color-profile-object.html [ Failure Pass ]
-crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Failure Pass Skip Timeout ]
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Failure Pass ]
 
@@ -6977,7 +6973,6 @@ crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ F
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-position/fixed-z-index-blend.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Pass Skip Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] images/color-profile-background-image-space.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/update-layer-tree.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-clip.html [ Failure Pass ]

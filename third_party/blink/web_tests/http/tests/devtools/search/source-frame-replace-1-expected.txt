@@ -1,7 +1,0 @@
-Tests different types of search-and-replace in SourceFrame
-
-Running replace test for /REPLACEME1/REPLACED/  (caseSensitive):
-  - // REPLACE#ME1#D#
-Running replace test for /REPLACEME2/REPLACED/  (caseSensitive, replaceAll):
-  - // REPLACE#ME2 REPLACEME2#D REPLACED#
-

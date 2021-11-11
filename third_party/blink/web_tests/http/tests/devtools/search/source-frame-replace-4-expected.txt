@@ -1,8 +1,0 @@
-Tests different types of search-and-replace in SourceFrame
-
-Running replace test for /(replac)eMe[38]/$1d/  (regex):
-  - // replac#eMe3#d#
-Running replace test for /(replace)Me[45]/$1d/  (regex, replaceAll):
-  - // replace#Me4 replaceMe4#d replaced#
-  - // REPLACE#ME4 REPLACEME4#d REPLACEd#
-
