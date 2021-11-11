@@ -486,11 +486,6 @@ const char kClosedTabCacheDescription[] =
     "NOTE: This feature is higly experimental and will lead to various "
     "breakages, enable at your own risk.";
 
-const char kCompositeAfterPaintName[] = "Composite after paint";
-const char kCompositeAfterPaintDescription[] =
-    "A new algorithm to create compositing layers. "
-    "See http://bit.ly/composite-after-paint.";
-
 const char kConsolidatedSiteStorageControlsName[] =
     "Consolidated Site Storage Controls";
 const char kConsolidatedSiteStorageControlsDescription[] =
