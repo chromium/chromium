@@ -20482,6 +20482,7 @@ Called by update_debug_scenarios.py.-->
   <int value="57" label="CorsIssue::NoCorsRedirectModeNotFollow"/>
   <int value="58" label="QuirksModeIssue::QuirksMode"/>
   <int value="59" label="QuirksModeIssue::LimitedQuirksMode"/>
+  <int value="60" label="DeprecationIssue"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">
