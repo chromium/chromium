@@ -11,7 +11,7 @@ preprocessed_files = [
   "about_page_tests.ts",
   "appearance_page_test.ts",
   "clear_browsing_data_test.ts",
-  "privacy_page_test.js",
+  "privacy_page_test.ts",
   "route_tests.js",
   "security_page_test.ts",
   "settings_toggle_button_tests.ts",

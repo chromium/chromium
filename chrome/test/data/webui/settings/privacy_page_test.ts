@@ -6,8 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CategorySettingExceptionsElement, ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookieControlsMode, CookiePrimarySetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookiePrimarySetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -20,8 +20,7 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 
 // clang-format on
 
-/** @type {!Array<!Route>} */
-const redesignedPages = [
+const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_ADS,
   routes.SITE_SETTINGS_AR,
   routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
@@ -62,19 +61,12 @@ const redesignedPages = [
 ];
 
 suite('PrivacyPage', function() {
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
+  let page: SettingsPrivacyPageElement;
+  let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
-  let testClearBrowsingDataBrowserProxy;
-
-  /** @type {!TestSiteSettingsPrefsBrowserProxy}*/
-  let siteSettingsBrowserProxy;
-
-  /** @type {!TestMetricsBrowserProxy} */
-  let metricsBrowserProxy;
-
-  /** @type {!Array<string>} */
-  const testLabels = ['test label 1', 'test label 2'];
+  const testLabels: string[] = ['test label 1', 'test label 2'];
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -90,13 +82,12 @@ suite('PrivacyPage', function() {
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
+    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
+    page = document.createElement('settings-privacy-page');
     page.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       signin: {
@@ -124,27 +115,23 @@ suite('PrivacyPage', function() {
   });
 
   test('showClearBrowsingDataDialog', function() {
-    assertFalse(
-        !!page.shadowRoot.querySelector('settings-clear-browsing-data-dialog'));
-    page.shadowRoot.querySelector('#clearBrowsingData').click();
+    assertFalse(!!page.shadowRoot!.querySelector(
+        'settings-clear-browsing-data-dialog'));
+    page.$.clearBrowsingData.click();
     flush();
 
     const dialog =
-        page.shadowRoot.querySelector('settings-clear-browsing-data-dialog');
+        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
   });
 
   test('CookiesLinkRowSublabel', async function() {
     await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
     flush();
-    assertEquals(
-        page.shadowRoot.querySelector('#cookiesLinkRow').subLabel,
-        testLabels[0]);
+    assertEquals(page.$.cookiesLinkRow.subLabel, testLabels[0]);
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
-    assertEquals(
-        page.shadowRoot.querySelector('#cookiesLinkRow').subLabel,
-        testLabels[1]);
+    assertEquals(page.$.cookiesLinkRow.subLabel, testLabels[1]);
   });
 
   test('privacyReviewRowNotVisible', function() {
@@ -161,13 +148,15 @@ suite('PrivacyPage', function() {
     // settings-category-default-radio-group.
     // <if expr="chromeos or is_win">
     assertEquals(
-        page.root.querySelectorAll('settings-category-default-radio-group')
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
             .length,
         redesignedPages.length - 3);
     // </if>
     // <if expr="not chromeos and not is_win">
     assertEquals(
-        page.root.querySelectorAll('settings-category-default-radio-group')
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
             .length,
         redesignedPages.length - 4);
     // </if>
@@ -179,8 +168,7 @@ suite('PrivacyPage', function() {
 
     assertTrue(isChildVisible(page, '#notificationRadioGroup'));
     const categorySettingExceptions =
-        /** @type {!CategorySettingExceptionsElement} */
-        (page.shadowRoot.querySelector('category-setting-exceptions'));
+        page.shadowRoot!.querySelector('category-setting-exceptions')!;
     assertTrue(isVisible(categorySettingExceptions));
     assertEquals(
         ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
@@ -192,17 +180,17 @@ suite('PrivacyPage', function() {
     await flushTasks();
     assertEquals(
         loadTimeData.getString('privacySandboxTrialsEnabled'),
-        page.shadowRoot.querySelector('#privacySandboxLinkRow').subLabel);
+        page.$.privacySandboxLinkRow.subLabel);
 
     page.set('prefs.privacy_sandbox.apis_enabled.value', false);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('privacySandboxTrialsDisabled'),
-        page.shadowRoot.querySelector('#privacySandboxLinkRow').subLabel);
+        page.$.privacySandboxLinkRow.subLabel);
   });
 
   test('clickPrivacySandboxRow', async function() {
-    page.shadowRoot.querySelector('#privacySandboxLinkRow').click();
+    page.$.privacySandboxLinkRow.click();
     // Ensure UMA is logged.
     assertEquals(
         'Settings.PrivacySandbox.OpenedFromSettingsParent',
@@ -211,13 +199,11 @@ suite('PrivacyPage', function() {
 });
 
 suite('PrivacyReviewEnabled', function() {
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
+  let page: SettingsPrivacyPageElement;
 
   setup(function() {
     document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
+    page = document.createElement('settings-privacy-page');
     page.prefs = {
       // Need privacy_sandbox pref for the page's setup.
       privacy_sandbox: {
@@ -247,23 +233,20 @@ suite('PrivacyReviewEnabled', function() {
   });
 
   test('privacyReviewRowClick', function() {
-    page.shadowRoot.querySelector('#privacyReviewLinkRow').click();
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#privacyReviewLinkRow')!.click();
     // Ensure the correct Settings page is shown.
     assertEquals(routes.PRIVACY_REVIEW, Router.getInstance().getCurrentRoute());
   });
 });
 
 suite('PrivacyPageSound', function() {
-  /** @type {!TestPrivacyPageBrowserProxy} */
-  let testBrowserProxy;
-
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let page: SettingsPrivacyPageElement;
 
   function getToggleElement() {
-    return page.shadowRoot.querySelector('settings-animated-pages')
-        .queryEffectiveChildren('settings-subpage')
-        .queryEffectiveChildren('#block-autoplay-setting');
+    return page.shadowRoot!.querySelector<HTMLElement>(
+        '#block-autoplay-setting')!;
   }
 
   setup(() => {
@@ -274,8 +257,7 @@ suite('PrivacyPageSound', function() {
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SOUND);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
+    page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -327,8 +309,7 @@ suite('PrivacyPageSound', function() {
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: false});
 
     page.remove();
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
+    page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
 
     return flushTasks().then(() => {
@@ -360,18 +341,14 @@ suite('PrivacyPageSound', function() {
 });
 
 suite('HappinessTrackingSurveys', function() {
-  /** @type {!TestHatsBrowserProxy} */
-  let testHatsBrowserProxy;
-
-  /** @type {!SettingsPrivacyPageElement} */
-  let page;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let page: SettingsPrivacyPageElement;
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsPrivacyPageElement} */
-        (document.createElement('settings-privacy-page'));
+    page = document.createElement('settings-privacy-page');
     // Initialize the privacy page pref. Security page manually expands
     // the initially selected safe browsing option so the pref object
     // needs to be defined.
@@ -400,28 +377,28 @@ suite('HappinessTrackingSurveys', function() {
   });
 
   test('ClearBrowsingDataTrigger', async function() {
-    page.shadowRoot.querySelector('#clearBrowsingData').click();
+    page.$.clearBrowsingData.click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
   test('CookiesTrigger', async function() {
-    page.shadowRoot.querySelector('#cookiesLinkRow').click();
+    page.$.cookiesLinkRow.click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
   test('SecurityTrigger', async function() {
-    page.shadowRoot.querySelector('#securityLinkRow').click();
+    page.$.securityLinkRow.click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 
   test('PermissionsTrigger', async function() {
-    page.shadowRoot.querySelector('#permissionsLinkRow').click();
+    page.$.permissionsLinkRow.click();
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);

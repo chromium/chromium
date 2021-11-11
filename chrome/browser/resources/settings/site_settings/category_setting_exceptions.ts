@@ -158,5 +158,11 @@ export class CategorySettingExceptionsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'category-setting-exceptions': CategorySettingExceptionsElement;
+  }
+}
+
 customElements.define(
     CategorySettingExceptionsElement.is, CategorySettingExceptionsElement);

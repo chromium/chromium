@@ -22,6 +22,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
 
 import {IPHBubbleElement} from 'chrome://resources/cr_components/iph_bubble/iph_bubble.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
@@ -50,7 +51,12 @@ type FocusConfig = Map<string, (string|(() => void))>;
 
 export interface SettingsPrivacyPageElement {
   $: {
+    clearBrowsingData: CrLinkRowElement,
+    cookiesLinkRow: CrLinkRowElement,
     iphBubble: IPHBubbleElement,
+    permissionsLinkRow: CrLinkRowElement,
+    privacySandboxLinkRow: CrLinkRowElement,
+    securityLinkRow: CrLinkRowElement,
   };
 }
 
@@ -369,6 +375,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     return this.getPref('privacy_sandbox.apis_enabled').value ?
         this.i18n('privacySandboxTrialsEnabled') :
         this.i18n('privacySandboxTrialsDisabled');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-privacy-page': SettingsPrivacyPageElement;
   }
 }
 
