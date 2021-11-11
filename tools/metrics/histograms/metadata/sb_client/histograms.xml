@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
     enum="HttpResponseCode" expires_after="2022-04-24">
-  <owner>vakh@chromium.org</owner>
+  <owner>anise@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
