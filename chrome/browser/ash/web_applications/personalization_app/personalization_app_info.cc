@@ -33,11 +33,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
 
 PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
-          web_app::SystemAppType::PERSONALIZATION,
-          "Personalization",
-          GURL(ash::kChromeUIPersonalizationAppURL),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PERSONALIZATION,
+                                    "Personalization",
+                                    GURL(ash::kChromeUIPersonalizationAppURL),
+                                    profile) {}
 
 std::unique_ptr<WebApplicationInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {

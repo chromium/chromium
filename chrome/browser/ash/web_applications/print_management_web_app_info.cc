@@ -33,11 +33,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
 
 PrintManagementSystemAppDelegate::PrintManagementSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
-          web_app::SystemAppType::PRINT_MANAGEMENT,
-          "PrintManagement",
-          GURL("chrome://print-management/pwa.html"),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PRINT_MANAGEMENT,
+                                    "PrintManagement",
+                                    GURL("chrome://print-management/pwa.html"),
+                                    profile) {}
 
 std::unique_ptr<WebApplicationInfo>
 PrintManagementSystemAppDelegate::GetWebAppInfo() const {

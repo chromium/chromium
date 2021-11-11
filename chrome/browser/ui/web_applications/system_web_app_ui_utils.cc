@@ -114,28 +114,6 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   return params;
 }
 
-namespace {
-base::FilePath GetLaunchDirectory(
-    const std::vector<base::FilePath>& launch_files) {
-  // |launch_dir| is the directory that contains all |launch_files|. If
-  // there are no launch files, launch_dir is empty.
-  base::FilePath launch_dir =
-      launch_files.size() ? launch_files[0].DirName() : base::FilePath();
-
-#if DCHECK_IS_ON()
-  // Check |launch_files| all come from the same directory.
-  if (!launch_dir.empty()) {
-    for (auto path : launch_files) {
-      DCHECK_EQ(launch_dir, path.DirName());
-    }
-  }
-#endif
-
-  return launch_dir;
-}
-
-}  // namespace
-
 SystemAppLaunchParams::SystemAppLaunchParams() = default;
 SystemAppLaunchParams::~SystemAppLaunchParams() = default;
 
@@ -198,24 +176,6 @@ void LaunchSystemWebAppAsync(Profile* profile,
 
   app_service->Launch(*app_id, event_flags, params.launch_source,
                       std::move(window_info));
-}
-
-void SetLaunchFiles(bool should_include_launch_directory,
-                    const apps::AppLaunchParams& params,
-                    content::WebContents* web_contents,
-                    WebAppProvider* provider) {
-  // Send launch files.
-  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
-          params.app_id)) {
-    if (should_include_launch_directory) {
-      web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-          web_contents, web_contents->GetURL(),
-          GetLaunchDirectory(params.launch_files), params.launch_files);
-    } else {
-      web_launch::WebLaunchFilesHelper::SetLaunchPaths(
-          web_contents, web_contents->GetURL(), params.launch_files);
-    }
-  }
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

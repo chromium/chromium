@@ -38,7 +38,7 @@ CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
 
 ConnectivityDiagnosticsSystemAppDelegate::
     ConnectivityDiagnosticsSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
+    : web_app::SystemWebAppDelegate(
           web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
           "ConnectivityDiagnostics",
           GURL(ash::kChromeUIConnectivityDiagnosticsUrl),

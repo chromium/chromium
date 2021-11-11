@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -15,7 +15,7 @@
 struct WebApplicationInfo;
 class Browser;
 
-class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegateBase {
+class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit TerminalSystemAppDelegate(Profile* profile);
 

@@ -47,19 +47,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool IsAppEnabled() const override;
-  bool HasCustomTabMenuModel() const override;
-  std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
-      ui::SimpleMenuModel::Delegate* delegate) const override;
-  bool ShouldShowTabContextMenuShortcut(Profile* profile,
-                                        int command_id) const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool HasTitlebarTerminalSelectNewTabButton() const override;
-#endif
-  Browser* LaunchAndNavigateSystemWebApp(
-      Profile* profile,
-      WebAppProvider* provider,
-      const GURL& url,
-      const apps::AppLaunchParams& params) const override;
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);

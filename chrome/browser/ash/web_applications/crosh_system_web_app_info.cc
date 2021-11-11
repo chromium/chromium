@@ -29,11 +29,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCroshSystemWebApp() {
 }
 
 CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
-          web_app::SystemAppType::CROSH,
-          "Crosh",
-          GURL(chrome::kChromeUIUntrustedCroshURL),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::CROSH,
+                                    "Crosh",
+                                    GURL(chrome::kChromeUIUntrustedCroshURL),
+                                    profile) {}
 
 std::unique_ptr<WebApplicationInfo> CroshSystemAppDelegate::GetWebAppInfo()
     const {

@@ -13,11 +13,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
-          web_app::SystemAppType::PROJECTOR,
-          "Projector",
-          GURL(ash::kChromeUITrustedProjectorAppUrl),
-          profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PROJECTOR,
+                                    "Projector",
+                                    GURL(ash::kChromeUITrustedProjectorAppUrl),
+                                    profile) {}
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 

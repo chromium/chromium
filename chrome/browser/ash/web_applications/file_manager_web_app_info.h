@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 struct WebApplicationInfo;
 
-class FileManagerSystemAppDelegate : public web_app::SystemWebAppDelegateBase {
+class FileManagerSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit FileManagerSystemAppDelegate(Profile* profile);
 

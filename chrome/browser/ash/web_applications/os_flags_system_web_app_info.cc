@@ -26,10 +26,10 @@ SkColor GetBgColor(bool use_dark_mode) {
 }  // namespace
 
 OsFlagsSystemWebAppDelegate::OsFlagsSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::OS_FLAGS,
-                                        "OsFlags",
-                                        GURL(chrome::kChromeUIFlagsURL),
-                                        profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::OS_FLAGS,
+                                    "OsFlags",
+                                    GURL(chrome::kChromeUIFlagsURL),
+                                    profile) {}
 
 OsFlagsSystemWebAppDelegate::~OsFlagsSystemWebAppDelegate() = default;
 

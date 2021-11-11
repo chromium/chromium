@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_FLAGS_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_FLAGS_SYSTEM_WEB_APP_INFO_H_
 
-#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 
 class Profile;
 
@@ -13,7 +13,7 @@ class Profile;
 // chrome:// URLs as web applications.
 // To allow users to call Ash's pages directly, they can use os://<url> which
 // will then be handled by this app.
-class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegateBase {
+class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit OsFlagsSystemWebAppDelegate(Profile* profile);
   OsFlagsSystemWebAppDelegate(const OsFlagsSystemWebAppDelegate&) = delete;

@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_DIAGNOSTICS_SYSTEM_WEB_APP_INFO_H_
 
 #include <memory>
-#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 #include "ui/gfx/geometry/rect.h"
 
 struct WebApplicationInfo;
 
-class DiagnosticsSystemAppDelegate : public web_app::SystemWebAppDelegateBase {
+class DiagnosticsSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit DiagnosticsSystemAppDelegate(Profile* profile);
 

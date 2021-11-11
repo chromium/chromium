@@ -106,7 +106,7 @@ std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
 }  // namespace
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(
+    : web_app::SystemWebAppDelegate(
           web_app::SystemAppType::MEDIA,
           "Media",
           GURL("chrome://media-app/pwa.html"),

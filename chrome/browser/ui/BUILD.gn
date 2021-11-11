@@ -4998,6 +4998,7 @@ static_library("ui") {
       "web_applications/share_target_utils.h",
       "web_applications/sub_apps_renderer_host.cc",
       "web_applications/sub_apps_renderer_host.h",
+      "web_applications/system_web_app_delegate_ui_impl.cc",
       "web_applications/system_web_app_ui_utils.cc",
       "web_applications/system_web_app_ui_utils.h",
       "web_applications/web_app_browser_controller.cc",

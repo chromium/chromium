@@ -31,10 +31,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTelemetryExtension() {
 }
 
 TelemetrySystemAppDelegate::TelemetrySystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::TELEMETRY,
-                                        "Telemetry",
-                                        GURL("chrome://telemetry-extension"),
-                                        profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TELEMETRY,
+                                    "Telemetry",
+                                    GURL("chrome://telemetry-extension"),
+                                    profile) {}
 
 std::unique_ptr<WebApplicationInfo> TelemetrySystemAppDelegate::GetWebAppInfo()
     const {

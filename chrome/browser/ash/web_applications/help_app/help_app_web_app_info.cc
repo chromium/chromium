@@ -54,10 +54,10 @@ gfx::Rect GetDefaultBoundsForHelpApp(Browser*) {
 }
 
 HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::HELP,
-                                        "Help",
-                                        GURL("chrome://help-app/pwa.html"),
-                                        profile) {}
+    : web_app::SystemWebAppDelegate(web_app::SystemAppType::HELP,
+                                    "Help",
+                                    GURL("chrome://help-app/pwa.html"),
+                                    profile) {}
 
 gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   return GetDefaultBoundsForHelpApp(browser);
