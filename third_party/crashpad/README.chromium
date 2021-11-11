@@ -44,3 +44,4 @@ Local Modifications:
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
+ - Cherry picked 8342e6bd613a5b2e44eca1d74288e3115ccef139 for M97.
