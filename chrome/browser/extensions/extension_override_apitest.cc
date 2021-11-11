@@ -262,8 +262,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
 // Check that when an overridden new tab page has focus, a subframe navigation
 // on that page does not steal the focus away by focusing the omnibox.
 // See https://crbug.com/700124.
-IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
-                       SubframeNavigationInOverridenNTPDoesNotAffectFocus) {
+// Flaky, http://crbug.com/1269169.
+#if defined(OS_LINUX)
+#define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
+  DISABLED_SubframeNavigationInOverridenNTPDoesNotAffectFocus
+#else
+#define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
+  SubframeNavigationInOverridenNTPDoesNotAffectFocus
+#endif  // defined(OS_LINUX)
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOverrideTest,
+    MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus) {
   // Load an extension that overrides the new tab page.
   const Extension* extension = LoadExtension(data_dir().AppendASCII("newtab"));
 

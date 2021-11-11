@@ -3796,8 +3796,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // This test checks that a MouseDown triggers mouse capture when it hits
 // a scrollbar thumb or a subframe, and does not trigger mouse
 // capture if it hits an element in the main frame.
+// Flaky, https://crbug.com/1269160
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_ANDROID)
+#define MAYBE_CrossProcessMouseCapture DISABLED_CrossProcessMouseCapture
+#else
+#define MAYBE_CrossProcessMouseCapture CrossProcessMouseCapture
+#endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
-                       CrossProcessMouseCapture) {
+                       MAYBE_CrossProcessMouseCapture) {
   GURL main_url(embedded_test_server()->GetURL(
       "/frame_tree/page_with_large_scrollable_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
