@@ -56,12 +56,16 @@ void UIBrokerImpl::ShowPairing(scoped_refptr<Device> device) {
 void UIBrokerImpl::ShowPairingFailed(scoped_refptr<Device> device) {
   switch (device->protocol) {
     case Protocol::kFastPairInitial:
-    case Protocol::kFastPairRetroactive:
     case Protocol::kFastPairSubsequent:
       fast_pair_presenter_->ShowPairingFailed(
           device,
           base::BindRepeating(&UIBrokerImpl::NotifyPairingFailedAction,
                               weak_pointer_factory_.GetWeakPtr(), device));
+      break;
+    case Protocol::kFastPairRetroactive:
+      // In this scenario, we don't show the error UI because it would be
+      // misleading, since a pair failure is a retroactive pair failure, and
+      // guiding the user back to settings doesn't make sense.
       break;
   }
 }
