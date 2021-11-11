@@ -15,7 +15,6 @@
 #include "v8-profiler.h"
 #include "v8/include/cppgc/common.h"
 #include "v8/include/cppgc/heap-consistency.h"
-#include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-cppgc.h"
 
@@ -33,9 +32,6 @@ class EmbedderRootsHandler;
 }  // namespace v8
 
 namespace blink {
-
-#define USING_PRE_FINALIZER(Class, PreFinalizer) \
-  CPPGC_USING_PRE_FINALIZER(Class, PreFinalizer)
 
 // ThreadAffinity indicates which threads objects can be used on. We
 // distinguish between objects that can be used on the main thread

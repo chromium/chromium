@@ -46,6 +46,7 @@ blink_platform_sources("heap") {
     "heap_traits.h",
     "member.h",
     "persistent.h",
+    "prefinalizer.h",
     "process_heap.h",
     "self_keep_alive.h",
     "thread_local.h",
