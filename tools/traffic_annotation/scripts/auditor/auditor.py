@@ -57,7 +57,7 @@ NO_ANNOTATION_ID = UniqueId("undefined")
 RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
-SUPPORTED_PLATFORMS = ["linux", "windows", "android"]
+SUPPORTED_PLATFORMS = ["linux", "windows", "android", "chromeos"]
 
 # These platforms populate the "os_list" field in annotations.xml for
 # newly-added annotations (i.e., assume they're present on these platforms).
@@ -98,9 +98,12 @@ def get_current_platform(build_path: Optional[Path] = None) -> str:
     # Look for a target_os="android" line in args.gn.
     try:
       gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
-      pattern = re.compile(r"^\s*target_os\s*=\s*\"android\"\s*$", re.MULTILINE)
-      if pattern.search(gn_args):
-        current_platform = "android"
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"(android|chromeos)\"\s*$",
+                           re.MULTILINE)
+      match = pattern.search(gn_args)
+      if match:
+        current_platform = match.group(1)
+
     except (ValueError, OSError) as e:
       logger.info(e)
       # Maybe the file's absent, or it can't be decoded as UTF-8, or something.
