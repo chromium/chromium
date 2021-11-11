@@ -6,199 +6,233 @@
  * @fileoverview Polymer element for displaying material design for ARC Terms Of
  * Service screen.
  */
-'use strict';
 
-(function() {
+
+/* #js_imports_placeholder */
 
 // Enum that describes the current state of the Arc Terms Of Service screen
-const UIState = {
+const ArcTosState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'arc-tos-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const ArcTermsOfserviceBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+  Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+/**
+ * @typedef {{
+ *   arcBackupRestoreChildPopup: OobeModalDialogElement,
+ *   arcBackupRestorePopup: OobeModalDialogElement,
+ *   arcLocationServicePopup: OobeModalDialogElement,
+ *   arcMetricsPopup: OobeModalDialogElement,
+ *   arcTosAcceptButton: OobeTextButtonElement,
+ *   arcTosDialog: OobeAdaptiveDialogElement,
+ *   arcTosNextButton: OobeTextButtonElement,
+ *   arcTosOverlayPrivacyPolicy: OobeModalDialogElement,
+ *   arcTosOverlayWebview: WebView,
+ *   arcTosRetryButton: OobeTextButtonElement,
+ *   arcTosView: WebView,
+ *   arcPaiPopup: OobeModalDialogElement,
+ * }}
+ */
+ ArcTermsOfserviceBase.$;
 
-  EXTERNAL_API: [
-    'setMetricsMode',
-    'setBackupAndRestoreMode',
-    'setLocationServicesMode',
-    'loadPlayStoreToS',
-    'setArcManaged',
-    'setupForDemoMode',
-    'clearDemoMode',
-    'setTosForTesting',
-  ],
+/**
+ * @polymer
+ */
+class ArcTermsOfService extends ArcTermsOfserviceBase {
+  
+  static get is() { return 'arc-tos-element'; }
 
-  properties: {
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Accept, Skip and Retry buttons are disabled until content is loaded.
+       */
+      arcTosButtonsDisabled: {
+        type: Boolean,
+        value: true,
+        observer: 'buttonsDisabledStateChanged_',
+      },
+
+      /**
+       * Indicates whether metrics text should be hidden.
+       */
+      isMetricsHidden: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * String id for metrics collection text.
+       */
+      metricsTextKey: {
+        type: String,
+        value: 'arcTextMetricsEnabled',
+      },
+
+      /**
+       * String id of Google service confirmation text.
+       */
+      googleServiceConfirmationTextKey: {
+        type: String,
+        value: 'arcTextGoogleServiceConfirmation',
+      },
+
+      /**
+       * String id of text for Accept button.
+       */
+      acceptTextKey: {
+        type: String,
+        value: 'arcTermsOfServiceAcceptButton',
+      },
+
+      /**
+       * Indicates whether backup and restore should be enabled.
+       */
+      backupRestore: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Indicates whether backup and restore is managed.
+       * If backup and restore is managed, the checkbox will be disabled.
+       */
+      backupRestoreManaged: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether current account is child account.
+       */
+      isChild: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether location service should be enabled.
+       */
+      locationService: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Indicates whether location service is managed.
+       * If location service is managed, the checkbox will be disabled.
+       */
+      locationServiceManaged: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether user will review Arc settings after login.
+       */
+      reviewSettings: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether user sees full content of terms of service.
+       */
+      showFullDialog: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether currently under demo mode.
+       */
+      demoMode: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Indicates whether popup overlay webview is loading.
+       */
+      overlayLoading_: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
     /**
-     * Accept, Skip and Retry buttons are disabled until content is loaded.
+     * Flag that ensures that OOBE configuration is applied only once.
+     * @private {boolean}
      */
-    arcTosButtonsDisabled: {
-      type: Boolean,
-      value: true,
-      observer: 'buttonsDisabledStateChanged_',
-    },
+    this.configuration_applied_ = false;
 
     /**
-     * Reference to OOBE screen object.
-     * @type {!{
-     *     onAccept: function(),
-     *     reloadPlayStoreToS: function(),
-     * }}
+     * Flag indicating if screen was shown.
+     * @private {boolean}
      */
-    screen: {
-      type: Object,
-    },
+     this.is_shown_ = false;
 
     /**
-     * Indicates whether metrics text should be hidden.
+     * Last focused element when overlay is shown. Used to resume focus when
+     * overlay is dismissed.
+     * @private {Object|null}
      */
-    isMetricsHidden: {
-      type: Boolean,
-      value: false,
-    },
+     this.lastFocusedElement_ = null;
+
+     this.countryCode_ = null;
+     this.language_ = null;
+     this.pageReady_ = false;
 
     /**
-     * String id for metrics collection text.
+     * The hostname of the url where the terms of service will be fetched.
+     * Overwritten by tests to load terms of service from local test server.
      */
-    metricsTextKey: {
-      type: String,
-      value: 'arcTextMetricsEnabled',
-    },
+     this.termsOfServiceHostName_ = 'https://play.google.com';
 
-    /**
-     * String id of Google service confirmation text.
-     */
-    googleServiceConfirmationTextKey: {
-      type: String,
-      value: 'arcTextGoogleServiceConfirmation',
-    },
+    this.termsError = false;
+    this.usingOfflineTerms_ = false;
+    this.tosContent_ = '';
+    this.reloadsLeftForTesting_ = undefined;
+  }
 
-    /**
-     * String id of text for Accept button.
-     */
-    acceptTextKey: {
-      type: String,
-      value: 'arcTermsOfServiceAcceptButton',
-    },
-
-    /**
-     * Indicates whether backup and restore should be enabled.
-     */
-    backupRestore: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Indicates whether backup and restore is managed.
-     * If backup and restore is managed, the checkbox will be disabled.
-     */
-    backupRestoreManaged: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether current account is child account.
-     */
-    isChild: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether location service should be enabled.
-     */
-    locationService: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Indicates whether location service is managed.
-     * If location service is managed, the checkbox will be disabled.
-     */
-    locationServiceManaged: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether user will review Arc settings after login.
-     */
-    reviewSettings: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether user sees full content of terms of service.
-     */
-    showFullDialog: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether currently under demo mode.
-     */
-    demoMode: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Indicates whether popup overlay webview is loading.
-     */
-    overlayLoading_: {
-      type: Boolean,
-      value: true,
-    },
-  },
-
-  /**
-   * Flag that ensures that OOBE configuration is applied only once.
-   * @private {boolean}
-   */
-  configuration_applied_: false,
-
-  /**
-   * Flag indicating if screen was shown.
-   * @private {boolean}
-   */
-  is_shown_: false,
-
-  /**
-   * Last focused element when overlay is shown. Used to resume focus when
-   * overlay is dismissed.
-   * @private {Object|null}
-   */
-  lastFocusedElement_: null,
-
-  countryCode_: null,
-  language_: null,
-  pageReady_: false,
-
-  /**
-   * The hostname of the url where the terms of service will be fetched.
-   * Overwritten by tests to load terms of service from local test server.
-   */
-  termsOfServiceHostName_: 'https://play.google.com',
-
+  get EXTERNAL_API() {
+    return ['setMetricsMode',
+            'setBackupAndRestoreMode',
+            'setLocationServicesMode',
+            'loadPlayStoreToS',
+            'setArcManaged',
+            'setupForDemoMode',
+            'clearDemoMode',
+            'setTosForTesting'];
+  }
 
   defaultUIStep() {
-    return UIState.LOADING;
-  },
+    return ArcTosState.LOADING;
+  }
 
-  UI_STEPS: UIState,
+  get UI_STEPS() {
+    return ArcTosState;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('ArcTermsOfServiceScreen', {
       resetAllowed: true,
     });
@@ -207,12 +241,12 @@ Polymer({
       this.setTosHostNameForTesting_(
           loadTimeData.getString('arcTosHostNameForTesting'));
     }
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is shown.
@@ -225,13 +259,13 @@ Polymer({
     if (isDemoModeSetup) {
       this.setMetricsMode('arcTextMetricsManagedEnabled', true);
     }
-    this.$.acceptTextKey = isDemoModeSetup ?
+    this.acceptTextKey = isDemoModeSetup ?
         'arcTermsOfServiceAcceptAndContinueButton' :
         'arcTermsOfServiceAcceptButton';
-    this.$.googleServiceConfirmationText = isDemoModeSetup ?
+    this.googleServiceConfirmationTextKey = isDemoModeSetup ?
         'arcAcceptAndContinueGoogleServiceConfirmation' :
         'arcTextGoogleServiceConfirmation';
-  },
+  }
 
   /**
    * Called when dialog is shown for the first time.
@@ -250,7 +284,7 @@ Polymer({
       this.onAccept_();
     }
     this.configuration_applied_ = true;
-  },
+  }
 
   /**
    * Called whenever buttons state is updated.
@@ -264,16 +298,14 @@ Polymer({
       return;
     if (!this.is_shown_)
       return;
-    if (this.is_configuration_applied_)
-      return;
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
-  },
+  }
 
   /** Called when dialog is hidden. */
   onBeforeHide() {
     this.reset_();
     this.is_shown_ = false;
-  },
+  }
 
   /**
    * Resets UI elements to their initial state.
@@ -282,7 +314,7 @@ Polymer({
   reset_() {
     this.showFullDialog = false;
     this.$.arcTosNextButton.focus();
-  },
+  }
 
   /**
    * Makes sure that UI is initialized.
@@ -325,7 +357,7 @@ Polymer({
       css: {files: ['overlay.css']},
       run_at: 'document_end'
     }]);
-  },
+  }
 
   /**
    * Opens external URL in popup overlay.
@@ -344,7 +376,7 @@ Polymer({
     this.lastFocusedElement_ = this.shadowRoot.activeElement;
     this.overlayLoading_ = true;
     this.$.arcTosOverlayPrivacyPolicy.showDialog();
-  },
+  }
 
   /**
    * Returns current language that can be updated in OOBE flow. If OOBE flow
@@ -365,7 +397,7 @@ Polymer({
       }
     }
     return navigator.language;
-  },
+  }
 
   /**
    * Sets current metrics mode.
@@ -376,7 +408,7 @@ Polymer({
   setMetricsMode(textKey, visible) {
     this.isMetricsHidden = !visible;
     this.metricsTextKey = textKey;
-  },
+  }
 
   /**
    * Sets current backup and restore mode.
@@ -387,7 +419,7 @@ Polymer({
   setBackupAndRestoreMode(enabled, managed) {
     this.backupRestore = enabled;
     this.backupRestoreManaged = managed;
-  },
+  }
 
   /**
    * Sets current usage of location service opt in mode.
@@ -397,7 +429,7 @@ Polymer({
   setLocationServicesMode(enabled, managed) {
     this.locationService = enabled;
     this.locationServiceManaged = managed;
-  },
+  }
 
   /**
    * Loads Play Store ToS in case country code has been changed or previous
@@ -414,7 +446,7 @@ Polymer({
     countryCode = countryCode.toLowerCase();
 
     if (this.language_ && this.language_ == language && this.countryCode_ &&
-        this.countryCode_ == countryCode && this.uiStep != UIState.ERROR &&
+        this.countryCode_ == countryCode && this.uiStep != ArcTosState.ERROR &&
         !this.usingOfflineTerms_ && this.tosContent_) {
       this.enableButtons_(true);
       return;
@@ -440,7 +472,7 @@ Polymer({
 
     // Try to use currently loaded document first.
     var self = this;
-    if (termsView.src != '' && this.uiStep == UIState.LOADED) {
+    if (termsView.src != '' && this.uiStep == ArcTosState.LOADED) {
       var navigateScript = 'processLangZoneTerms(true, \'' + language +
           '\', \'' + countryCode + '\');';
       termsView.executeScript({code: navigateScript}, function(results) {
@@ -452,7 +484,7 @@ Polymer({
     } else {
       this.reloadPlayStoreToS();
     }
-  },
+  }
 
   /**
    * Sets Play Store terms of service for testing.
@@ -462,7 +494,7 @@ Polymer({
     this.tosContent_ = terms;
     this.usingOfflineTerms_ = true;
     this.setTermsViewContentLoadedState_();
-  },
+  }
 
   /**
    * Sets Play Store hostname url used to fetch terms of service for testing.
@@ -484,7 +516,7 @@ Polymer({
       js: {files: ['playstore.js']},
       run_at: 'document_end'
     }]);
-  },
+  }
 
   /**
    * Sets if Arc is managed. ToS webview should not be visible if Arc is
@@ -495,7 +527,7 @@ Polymer({
   setArcManaged(managed, child) {
     this.$.arcTosView.hidden = managed;
     this.isChild = child;
-  },
+  }
 
   /**
    * On-tap event handler for Accept button.
@@ -510,7 +542,7 @@ Polymer({
       this.backupRestore, this.locationService, this.reviewSettings,
       this.tosContent_
     ]);
-  },
+  }
 
   /**
    * Enables/Disables set of buttons: Accept, Skip, Retry.
@@ -520,7 +552,7 @@ Polymer({
    */
   enableButtons_(enable) {
     this.arcTosButtonsDisabled = !enable;
-  },
+  }
 
   /**
    * Reloads Play Store ToS.
@@ -535,23 +567,23 @@ Polymer({
     this.usingOfflineTerms_ = false;
     var termsView = this.$.arcTosView;
     termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
-    this.setUIStep(UIState.LOADING);
+    this.setUIStep(ArcTosState.LOADING);
     this.enableButtons_(false);
-  },
+  }
 
   /**
    * Sets up the variant of the screen dedicated falsedemo mode.
    */
   setupForDemoMode() {
     this.demoMode = true;
-  },
+  }
 
   /**
    * Sets up the variant of the screen dedicated for demo mode.
    */
   clearDemoMode() {
     this.demoMode = false;
-  },
+  }
 
   /**
    * Returns a match pattern compatible version of termsOfServiceHostName_ by
@@ -562,7 +594,7 @@ Polymer({
    */
   getTermsOfServiceHostNameForMatchPattern_() {
     return this.termsOfServiceHostName_.replace(/:[0-9]+/, '');
-  },
+  }
 
   /**
    * Handles event when terms view is loaded.
@@ -588,12 +620,12 @@ Polymer({
       var getToSContent = {code: 'getToSContent();'};
       termsView.executeScript(getToSContent, this.onGetToSContent_.bind(this));
     }
-  },
+  }
 
   /** Setups overlay webview loading callback */
   onAcrTosOverlayContentLoad_() {
     this.overlayLoading_ = false;
-  },
+  }
 
   /**
    * Handles callback for getToSContent.
@@ -606,7 +638,7 @@ Polymer({
 
     this.tosContent_ = results[0];
     this.setTermsViewContentLoadedState_();
-  },
+  }
 
   /**
    * Sets the screen in the loaded state. Should be called after arc terms
@@ -614,15 +646,15 @@ Polymer({
    * @private
    */
   setTermsViewContentLoadedState_() {
-    if (this.uiStep == UIState.LOADED) {
+    if (this.uiStep == ArcTosState.LOADED) {
       return;
     }
-    this.setUIStep(UIState.LOADED);
+    this.setUIStep(ArcTosState.LOADED);
     this.enableButtons_(true);
     this.showFullDialog = false;
     if (this.is_shown_)
       this.$.arcTosNextButton.focus();
-  },
+  }
 
   /**
    * Handles event when terms view cannot be loaded.
@@ -638,7 +670,7 @@ Polymer({
       return;
     }
     this.showError_();
-  },
+  }
 
   /**
    * Shows error UI when terms view cannot be loaded or terms content cannot
@@ -646,11 +678,11 @@ Polymer({
    */
   showError_() {
     this.termsError = true;
-    this.setUIStep(UIState.ERROR);
+    this.setUIStep(ArcTosState.ERROR);
 
     this.enableButtons_(true);
     this.$.arcTosRetryButton.focus();
-  },
+  }
 
   /**
    * Updates localized content of the screen that is not updated via template.
@@ -662,7 +694,7 @@ Polymer({
     if (this.countryCode_) {
       this.loadPlayStoreToS(this.countryCode_);
     }
-  },
+  }
 
   /**
    * Returns whether arc terms are shown as a part of demo mode setup.
@@ -671,7 +703,7 @@ Polymer({
    */
   isDemoModeSetup_() {
     return this.demoMode;
-  },
+  }
 
   onPolicyLinkClick_() {
     this.userActed('policy-link');
@@ -688,7 +720,7 @@ Polymer({
             self.showUrlOverlay(defaultLink);
           }
         });
-  },
+  }
 
   /**
    * On-tap event handler for Next button.
@@ -701,7 +733,7 @@ Polymer({
     this.showFullDialog = true;
     this.$.arcTosDialog.scrollToBottom();
     this.$.arcTosAcceptButton.focus();
-  },
+  }
 
   /**
    * On-tap event handler for Retry button.
@@ -711,7 +743,7 @@ Polymer({
   onRetry_() {
     this.userActed('retry');
     this.reloadPlayStoreToS();
-  },
+  }
 
   /**
    * On-tap event handler for Back button.
@@ -720,7 +752,7 @@ Polymer({
    */
   onBack_() {
     this.userActed('go-back');
-  },
+  }
 
   /**
    * On-tap event handler for metrics learn more link
@@ -730,7 +762,7 @@ Polymer({
     this.userActed('metrics-learn-more');
     this.lastFocusedElement_ = this.shadowRoot.activeElement;
     this.$.arcMetricsPopup.showDialog();
-  },
+  }
 
   /**
    * On-tap event handler for backup and restore learn more link
@@ -744,7 +776,7 @@ Polymer({
     } else {
       this.$.arcBackupRestorePopup.showDialog();
     }
-  },
+  }
 
   /**
    * On-tap event handler for location service learn more link
@@ -754,7 +786,7 @@ Polymer({
     this.userActed('location-service-learn-more');
     this.lastFocusedElement_ = this.shadowRoot.activeElement;
     this.$.arcLocationServicePopup.showDialog();
-  },
+  }
 
   /**
    * On-tap event handler for Play auto install learn more link
@@ -764,7 +796,7 @@ Polymer({
     this.userActed('play-auto-install-learn-more');
     this.lastFocusedElement_ = this.shadowRoot.activeElement;
     this.$.arcPaiPopup.showDialog();
-  },
+  }
 
   /*
    * Callback when overlay is closed.
@@ -775,7 +807,7 @@ Polymer({
       this.lastFocusedElement_.focus();
       this.lastFocusedElement_ = null;
     }
-  },
+  }
 
   /**
    * Returns dialog title based on whether the active user is child.
@@ -784,5 +816,6 @@ Polymer({
     return isChild ? this.i18n('arcTermsOfServiceScreenHeadingForChild') :
                      this.i18n('arcTermsOfServiceScreenHeading');
   }
-});
-})();
+}
+
+customElements.define(ArcTermsOfService.is, ArcTermsOfService);

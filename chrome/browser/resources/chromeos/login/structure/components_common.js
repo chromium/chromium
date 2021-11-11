@@ -17,7 +17,6 @@ function loadCommonComponents() {
 // <include src="../screen_gaia_signin.js">
 // <include src="../saml_confirm_password.js">
 // <include src="../offline_ad_login.js">
-// <include src="../arc_terms_of_service.js">
 // <include src="../recommend_apps.js">
 // <include src="../pin_setup.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
