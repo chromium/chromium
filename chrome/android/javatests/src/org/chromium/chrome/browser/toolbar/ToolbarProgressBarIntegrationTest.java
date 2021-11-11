@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -62,6 +63,7 @@ public class ToolbarProgressBarIntegrationTest {
     @Test
     @Feature({"Android-Progress-Bar"})
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1269029")
     public void testProgressBarTraversesScreenOnce() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
