@@ -5,9 +5,14 @@
 
 from __future__ import print_function
 
+import datetime
 import logging
 import os
+import re
+import subprocess
 import sys
+
+import six
 
 from typ import expectations_parser
 from unexpected_passes_common import data_types
@@ -17,9 +22,11 @@ from unexpected_passes_common import result_output
 FINDER_DISABLE_COMMENT = 'finder:disable'
 FINDER_ENABLE_COMMENT = 'finder:enable'
 
+EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
+
 
 class Expectations(object):
-  def CreateTestExpectationMap(self, expectation_files, tests):
+  def CreateTestExpectationMap(self, expectation_files, tests, grace_period):
     """Creates an expectation map based off a file or list of tests.
 
     Args:
@@ -27,6 +34,9 @@ class Expectations(object):
           read from, or None. If a filepath is specified, |tests| must be None.
       tests: An iterable of strings containing test names to check. If
           specified, |expectation_file| must be None.
+      grace_period: An int specifying how many days old an expectation must
+          be in order to be parsed, i.e. how many days old an expectation must
+          be before it is a candidate for removal/modification.
 
     Returns:
       A data_types.TestExpectationMap, although all its BuilderStepMap contents
@@ -62,8 +72,8 @@ class Expectations(object):
         expectation_files = [expectation_files]
       for ef in expectation_files:
         expectation_file_name = os.path.normpath(ef)
-        with open(ef) as f:
-          content = f.read()
+        content = self._GetNonRecentExpectationContent(expectation_file_name,
+                                                       grace_period)
         AddContentToMap(content, expectation_map, expectation_file_name)
     else:
       expectation_file_name = ''
@@ -73,6 +83,59 @@ class Expectations(object):
       AddContentToMap(content, expectation_map, expectation_file_name)
 
     return expectation_map
+
+  def _GetNonRecentExpectationContent(self, expectation_file_path, num_days):
+    """Gets content from |expectation_file_path| older than |num_days| days.
+
+    Args:
+      expectation_file_path: A string containing a filepath pointing to an
+          expectation file.
+      num_days: An int containing how old an expectation in the given
+          expectation file must be to be included.
+
+    Returns:
+      The contents of the expectation file located at |expectation_file_path|
+      as a string with any recent expectations removed.
+    """
+    num_days = datetime.timedelta(days=num_days)
+    content = ''
+    # `git blame` output is normally in the format:
+    # revision (author date time timezone lineno) line_content
+    # The --porcelain option is meant to be more machine readable, but is much
+    # more difficult to parse for what we need to do here. In order to be able
+    # to split by whitespace easily, use -e to display author email instead of
+    # author name, which is guaranteed to not have spaces.
+    cmd = ['git', 'blame', '-e', expectation_file_path]
+    with open(os.devnull, 'w') as devnull:
+      blame_output = subprocess.check_output(cmd,
+                                             stderr=devnull).decode('utf-8')
+    for line in blame_output.splitlines(True):
+      if six.PY2:
+        split_line = line.split(None, 6)
+      else:
+        split_line = line.split(maxsplit=6)
+      # Handle blank lines.
+      if len(split_line) < 7:
+        content += '\n'
+        continue
+      _, _, date, _, _, _, line_content = split_line
+      if re.match(EXPECTATION_LINE_REGEX, line):
+        if six.PY2:
+          date_parts = date.split('-')
+          date = datetime.date(year=int(date_parts[0]),
+                               month=int(date_parts[1]),
+                               day=int(date_parts[2]))
+        else:
+          date = datetime.date.fromisoformat(date)
+        date_diff = datetime.date.today() - date
+        if date_diff > num_days:
+          content += line_content
+        else:
+          logging.debug('Omitting expectation %s because it is too new',
+                        line_content.rstrip())
+      else:
+        content += line_content
+    return content
 
   def RemoveExpectationsFromFile(self, expectations, expectation_file):
     """Removes lines corresponding to |expectations| from |expectation_file|.

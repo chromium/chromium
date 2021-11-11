@@ -56,6 +56,15 @@ def AddCommonArguments(parser):
                       'a significant performance hit, but allows the use of '
                       'larger sample sizes on large test suites by partially '
                       'working around a hard memory limit in BigQuery.')
+  parser.add_argument('--expectation-grace-period',
+                      type=int,
+                      default=7,
+                      help=('How many days old an expectation needs to be in '
+                            'order to be a candidate for being removed or '
+                            'modified. This prevents newly added expectations '
+                            'from being removed before a sufficient amount of '
+                            'data has been generated with the expectation '
+                            'active. Set to a negative value to disable.'))
 
 
 def SetLoggingVerbosity(args):

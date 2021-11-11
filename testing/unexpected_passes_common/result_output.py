@@ -156,7 +156,8 @@ SECTION_SEMI_STALE = ('Semi Stale Expectations (Passed 100% In Some Places, '
 SECTION_ACTIVE = ('Active Expectations (Failed At Least Once Everywhere, '
                   'Likely Should Be Left Alone)')
 SECTION_UNMATCHED = ('Unmatched Results (An Expectation Existed When The Test '
-                     'Ran, But No Matching One Currently Exists)')
+                     'Ran, But No Matching One Currently Exists OR The '
+                     'Expectation Is Too New)')
 SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
                   'Longer Being Tested Or Tags Changing)')
 

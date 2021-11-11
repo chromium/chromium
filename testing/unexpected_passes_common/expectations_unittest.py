@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import datetime
 import os
 import sys
 import tempfile
@@ -52,24 +53,33 @@ crbug.com/3456 [ linux ] some/bad/test [ Skip ]
 """
 
 
-class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
+class CreateTestExpectationMapUnittest(unittest.TestCase):
   def setUp(self):
-    self.setUpPyfakefs()
     self.instance = expectations.Expectations()
+
+    self._expectation_content = {}
+    self._content_patcher = mock.patch.object(
+        self.instance, '_GetNonRecentExpectationContent')
+    self._content_mock = self._content_patcher.start()
+    self.addCleanup(self._content_patcher.stop)
+
+    def SideEffect(filepath, _):
+      return self._expectation_content[filepath]
+
+    self._content_mock.side_effect = SideEffect
 
   def testExclusiveOr(self):
     """Tests that only one input can be specified."""
     with self.assertRaises(AssertionError):
-      self.instance.CreateTestExpectationMap(None, None)
+      self.instance.CreateTestExpectationMap(None, None, 0)
     with self.assertRaises(AssertionError):
-      self.instance.CreateTestExpectationMap('foo', ['bar'])
+      self.instance.CreateTestExpectationMap('foo', ['bar'], 0)
 
   def testExpectationFile(self):
     """Tests reading expectations from an expectation file."""
-    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
-      filename = f.name
-      f.write(FAKE_EXPECTATION_FILE_CONTENTS)
-    expectation_map = self.instance.CreateTestExpectationMap(filename, None)
+    filename = '/tmp/foo'
+    self._expectation_content[filename] = FAKE_EXPECTATION_FILE_CONTENTS
+    expectation_map = self.instance.CreateTestExpectationMap(filename, None, 0)
     # Skip expectations should be omitted, but everything else should be
     # present.
     # yapf: disable
@@ -88,18 +98,15 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
 
   def testMultipleExpectationFiles(self):
     """Tests reading expectations from multiple files."""
-    expectation_files = []
-    with tempfile.NamedTemporaryFile(delete=False, mode='w',
-                                     suffix='var1') as f:
-      expectation_files.append(f.name)
-      f.write(FAKE_EXPECTATION_FILE_CONTENTS)
-    with tempfile.NamedTemporaryFile(delete=False, mode='w',
-                                     suffix='var2') as f:
-      expectation_files.append(f.name)
-      f.write(SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS)
+    filename1 = '/tmp/foo'
+    filename2 = '/tmp/bar'
+    expectation_files = [filename1, filename2]
+    self._expectation_content[filename1] = FAKE_EXPECTATION_FILE_CONTENTS
+    self._expectation_content[
+        filename2] = SECONDARY_FAKE_EXPECTATION_FILE_CONTENTS
 
     expectation_map = self.instance.CreateTestExpectationMap(
-        expectation_files, None)
+        expectation_files, None, 0)
     # yapf: disable
     expected_expectation_map = {
       expectation_files[0]: {
@@ -121,7 +128,7 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
   def testIndividualTests(self):
     """Tests reading expectations from a list of tests."""
     expectation_map = self.instance.CreateTestExpectationMap(
-        None, ['foo/test', 'bar/*'])
+        None, ['foo/test', 'bar/*'], 0)
     expected_expectation_map = {
         '': {
             data_types.Expectation('foo/test', [], ['RetryOnFailure']): {},
@@ -130,6 +137,81 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
     }
     self.assertEqual(expectation_map, expected_expectation_map)
     self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
+
+
+class GetNonRecentExpectationContentUnittest(unittest.TestCase):
+  def setUp(self):
+    self.instance = uu.CreateGenericExpectations()
+    self._output_patcher = mock.patch(
+        'unexpected_passes_common.expectations.subprocess.check_output')
+    self._output_mock = self._output_patcher.start()
+    self.addCleanup(self._output_patcher.stop)
+
+  def testBasic(self):
+    """Tests that only expectations that are old enough are kept."""
+    today_date = datetime.date.today()
+    yesterday_date = today_date - datetime.timedelta(days=1)
+    older_date = today_date - datetime.timedelta(days=2)
+    today_str = today_date.isoformat()
+    yesterday_str = yesterday_date.isoformat()
+    older_str = older_date.isoformat()
+    # pylint: disable=line-too-long
+    blame_output = """\
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  1) # tags: [ tag1 ]
+98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  2) # tags: [ tag2 ]
+3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  3) # results: [ Failure ]
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  4) 
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  5) crbug.com/1234 [ tag1 ] testname [ Failure ]
+98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  6) [ tag2 ] testname [ Failure ] # Comment
+3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  7) [ tag1 ] othertest [ Failure ]"""
+    # pylint: enable=line-too-long
+    blame_output = blame_output.format(today_date=today_str,
+                                       yesterday_date=yesterday_str,
+                                       older_date=older_str)
+    self._output_mock.return_value = blame_output.encode('utf-8')
+
+    expected_content = """\
+# tags: [ tag1 ]
+# tags: [ tag2 ]
+# results: [ Failure ]
+
+[ tag1 ] othertest [ Failure ]"""
+    self.assertEqual(self.instance._GetNonRecentExpectationContent('', 1),
+                     expected_content)
+
+  def testNegativeGracePeriod(self):
+    """Tests that setting a negative grace period disables filtering."""
+    today_date = datetime.date.today()
+    yesterday_date = today_date - datetime.timedelta(days=1)
+    older_date = today_date - datetime.timedelta(days=2)
+    today_str = today_date.isoformat()
+    yesterday_str = yesterday_date.isoformat()
+    older_str = older_date.isoformat()
+    # pylint: disable=line-too-long
+    blame_output = """\
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  1) # tags: [ tag1 ]
+98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  2) # tags: [ tag2 ]
+3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  3) # results: [ Failure ]
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  4) 
+5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  5) crbug.com/1234 [ tag1 ] testname [ Failure ]
+98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  6) [ tag2 ] testname [ Failure ] # Comment
+3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  7) [ tag1 ] othertest [ Failure ]"""
+    # pylint: enable=line-too-long
+    blame_output = blame_output.format(today_date=today_str,
+                                       yesterday_date=yesterday_str,
+                                       older_date=older_str)
+    self._output_mock.return_value = blame_output.encode('utf-8')
+
+    expected_content = """\
+# tags: [ tag1 ]
+# tags: [ tag2 ]
+# results: [ Failure ]
+
+crbug.com/1234 [ tag1 ] testname [ Failure ]
+[ tag2 ] testname [ Failure ] # Comment
+[ tag1 ] othertest [ Failure ]"""
+    self.assertEqual(self.instance._GetNonRecentExpectationContent('', -1),
+                     expected_content)
 
 
 class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):

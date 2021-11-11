@@ -42,7 +42,8 @@ def main():
     expectations_instance = expectations.WebTestExpectations()
 
     test_expectation_map = expectations_instance.CreateTestExpectationMap(
-        expectations_instance.GetExpectationFilepaths(), None)
+        expectations_instance.GetExpectationFilepaths(), None,
+        args.expectation_grace_period)
     ci_builders = builders_instance.GetCiBuilders(None)
 
     querier = queries.WebTestBigQueryQuerier(None, args.project,
