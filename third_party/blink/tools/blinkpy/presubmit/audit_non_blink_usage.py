@@ -292,6 +292,7 @@ _CONFIG = [
             'cc::PaintImage',
             'cc::PaintImageBuilder',
             'cc::PaintRecord',
+            'cc::RecordPaintCanvas',
             'cc::PaintShader',
             'cc::PaintWorkletInput',
             'cc::NodeId',

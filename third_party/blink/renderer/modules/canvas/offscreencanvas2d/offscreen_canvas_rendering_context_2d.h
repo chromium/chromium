@@ -160,6 +160,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
+  void FlushCanvas() override;
+
  protected:
   // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {

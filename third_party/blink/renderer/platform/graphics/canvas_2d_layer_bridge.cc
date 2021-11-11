@@ -499,7 +499,8 @@ void Canvas2DLayerBridge::FlushRecording() {
   }
 
   if (!clear_frame_ || !resource_host_ || !resource_host_->IsPrinting()) {
-    last_recording_ = ResourceProvider()->FlushCanvas();
+    ResourceProvider()->FlushCanvas();
+    last_recording_ = nullptr;
     clear_frame_ = false;
   } else {
     last_recording_ = ResourceProvider()->FlushCanvasAndPreserveRecording();

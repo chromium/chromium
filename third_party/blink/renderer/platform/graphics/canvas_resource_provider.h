@@ -157,7 +157,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   cc::PaintCanvas* Canvas(bool needs_will_draw = false);
   void ReleaseLockedImages();
   // FlushCanvas and do not preserve recordings.
-  sk_sp<cc::PaintRecord> FlushCanvas();
+  void FlushCanvas();
   // FlushCanvas and preserve recordings.
   sk_sp<cc::PaintRecord> FlushCanvasAndPreserveRecording();
   const SkImageInfo& GetSkImageInfo() const { return info_; }

@@ -814,4 +814,10 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
     DispatchContextRestoredEvent(nullptr);
 }
 
+void OffscreenCanvasRenderingContext2D::FlushCanvas() {
+  if (GetCanvasResourceProvider()) {
+    GetCanvasResourceProvider()->FlushCanvas();
+  }
+}
+
 }  // namespace blink

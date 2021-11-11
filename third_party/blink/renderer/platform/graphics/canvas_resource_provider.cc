@@ -1346,8 +1346,8 @@ GrDirectContext* CanvasResourceProvider::GetGrContext() const {
   return context_provider_wrapper_->ContextProvider()->GetGrContext();
 }
 
-sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvas() {
-  return FlushCanvasInternal(false);
+void CanvasResourceProvider::FlushCanvas() {
+  FlushCanvasInternal(false);
 }
 
 sk_sp<cc::PaintRecord>

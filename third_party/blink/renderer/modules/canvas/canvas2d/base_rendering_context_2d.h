@@ -587,6 +587,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
+  virtual void FlushCanvas() = 0;
+
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.
   void IdentifiabilityUpdateForStyleUnion(
@@ -679,6 +681,12 @@ void BaseRenderingContext2D::DrawInternal(
       draw_func(GetPaintCanvasForDraw(dirty_rect, draw_type), flags);
     }
   }
+  if (UNLIKELY(GetPaintCanvas()->NeedsFlush())) {
+    // This happens if draw_func called flush() on the PaintCanvas. The flush
+    // cannot be performed inside the scope of draw_func because it would break
+    // the logic of CompositedDraw.
+    FlushCanvas();
+  }
 }
 
 template <BaseRenderingContext2D::OverdrawOp CurrentOverdrawOp,
@@ -719,6 +727,20 @@ void BaseRenderingContext2D::CompositedDraw(
     cc::PaintCanvas* c,
     CanvasRenderingContext2DState::PaintType paint_type,
     CanvasRenderingContext2DState::ImageType image_type) {
+  // Due to the complexity of composited draw operations, we need to grant an
+  // exception to allow multi-pass rendereing, and state finalization
+  // operations to proceed between the time when a flush is requested by
+  // draw_func and when the flush request is fulfilled in DrawInternal. We
+  // cannot fulfill flush request in the middle of a composited draw because
+  // it would break the rendering behavior.
+  // It is safe to cast 'c' to RecordPaintCanvas below because we know that
+  // CanvasResourceProvider always creates PaintCanvases of that type.
+  // TODO(junov): We could pass 'c' as a RecordingPaintCanvas in order to
+  // eliminate the static_cast.  This would require changing a lot of plumbing
+  // and fixing virtual methods that have non-virtual overloads.
+  cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
+      static_cast<cc::RecordPaintCanvas*>(c));
+
   sk_sp<PaintFilter> canvas_filter = StateGetFilter();
   const CanvasRenderingContext2DState& state = GetState();
   DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) || canvas_filter ||

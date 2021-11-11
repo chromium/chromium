@@ -57,6 +57,12 @@ void SkiaPaintCanvas::flush() {
   canvas_->flush();
 }
 
+bool SkiaPaintCanvas::NeedsFlush() const {
+  // Since flush() is always capable of flushing immediately with
+  // SkiaPaintCanvas, there is never any need for deferred flushing.
+  return false;
+}
+
 int SkiaPaintCanvas::save() {
   return canvas_->save();
 }

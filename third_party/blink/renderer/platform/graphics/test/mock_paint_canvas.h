@@ -120,6 +120,7 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     sk_sp<SkData> data));
   MOCK_METHOD0(GetPrintingMetafile, printing::MetafileSkia*());
   MOCK_METHOD1(SetPrintingMetafile, void(printing::MetafileSkia*));
+  MOCK_CONST_METHOD0(NeedsFlush, bool());
 };
 
 }  // namespace blink

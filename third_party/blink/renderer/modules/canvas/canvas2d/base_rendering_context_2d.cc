@@ -1513,6 +1513,8 @@ void BaseRenderingContext2D::DrawImageInternal(
     const FloatRect& dst_rect,
     const SkSamplingOptions& sampling,
     const PaintFlags* flags) {
+  cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
+      static_cast<cc::RecordPaintCanvas*>(c));
   int initial_save_count = c->getSaveCount();
   PaintFlags image_flags = *flags;
 

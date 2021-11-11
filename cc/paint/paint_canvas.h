@@ -209,6 +209,8 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual SkMatrix getTotalMatrix() const = 0;
   virtual SkM44 getLocalToDevice() const = 0;
 
+  virtual bool NeedsFlush() const = 0;
+
   // Used for printing
   enum class AnnotationType {
     URL,

@@ -120,6 +120,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void recordCustomData(uint32_t id) override;
   void setNodeId(int) override;
 
+  bool NeedsFlush() const override;
+
   // Don't shadow non-virtual helper functions.
   using PaintCanvas::clipRect;
   using PaintCanvas::clipRRect;
@@ -128,7 +130,46 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   using PaintCanvas::drawImage;
   using PaintCanvas::drawPicture;
 
+#if DCHECK_IS_ON()
+  void EnterDisableFlushCheckScope() { ++disable_flush_check_scope_; }
+  void LeaveDisableFlushCheckScope() { DCHECK(disable_flush_check_scope_--); }
+  bool IsInDisableFlushCheckScope() { return disable_flush_check_scope_; }
+#endif
+
+  class DisableFlushCheckScope {
+    // Create an object of this type to temporarily allow draw commands to be
+    // recorded while the recording is marked as needing to be flushed.  This is
+    // meant to be used to allow client code to issue the commands necessary to
+    // reach a state where the recording can be safely flushed before beginning
+    // to enforce a check that forbids recording additional draw commands after
+    // a flush was requested.
+   public:
+    explicit DisableFlushCheckScope(RecordPaintCanvas* canvas) {
+#if DCHECK_IS_ON()
+      // We require that NeedsFlush be false upon entering a top-level scope
+      // to prevent consecutive scopes from evading evading flush checks
+      // indefinitely.
+      DCHECK(!canvas->NeedsFlush() || canvas->IsInDisableFlushCheckScope());
+      canvas->EnterDisableFlushCheckScope();
+      canvas_ = canvas;
+#endif
+    }
+    ~DisableFlushCheckScope() {
+#if DCHECK_IS_ON()
+      canvas_->LeaveDisableFlushCheckScope();
+#endif
+    }
+
+   private:
+#if DCHECK_IS_ON()
+    RecordPaintCanvas* canvas_;
+#endif
+  };
+
  private:
+  template <typename T, typename... Args>
+  size_t push(Args&&... args);
+
   const SkNoDrawCanvas* GetCanvas() const;
   SkNoDrawCanvas* GetCanvas();
 
@@ -146,6 +187,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   // lazy initialize the canvas can still be const.
   mutable absl::optional<SkNoDrawCanvas> canvas_;
   SkRect recording_bounds_;
+  bool needs_flush_ = false;
+#if DCHECK_IS_ON()
+  unsigned disable_flush_check_scope_ = 0;
+#endif
 };
 
 }  // namespace cc

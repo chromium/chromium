@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
@@ -1524,6 +1525,37 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
           ->SupportsSingleBuffering());
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
+  V8TestingScope scope;
+
+  CreateContext(kNonOpaque);
+  // No need to set-up the layer bridge when testing low latency mode.
+  CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+
+  gfx::Size visible_size(10, 10);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::WrapVideoFrame(
+          media::VideoFrame::CreateBlackFrame(/*coded_size=*/gfx::Size(16, 16)),
+          media::PIXEL_FORMAT_I420,
+          /*visible_rect=*/gfx::Rect(visible_size),
+          /*natural_size=*/visible_size);
+  media_frame->set_timestamp(base::Microseconds(1000));
+  VideoFrame* frame = MakeGarbageCollected<VideoFrame>(std::move(media_frame),
+                                                       GetExecutionContext());
+  NonThrowableExceptionState exception_state;
+
+  Context2D()->fillRect(0, 0, 5, 5);
+  EXPECT_TRUE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
+
+  Context2D()->drawImage(GetScriptState(), frame, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  // The drawImage Operation is supposed to trigger a flush, which means that
+  // There should not be any Recorded ops at this point.
+  EXPECT_FALSE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
 }
 
 class CanvasRenderingContext2DTestImageChromium

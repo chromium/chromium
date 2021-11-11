@@ -138,6 +138,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   SkMatrix getTotalMatrix() const override;
   SkM44 getLocalToDevice() const override;
 
+  bool NeedsFlush() const override;
+
   void Annotate(AnnotationType type,
                 const SkRect& rect,
                 sk_sp<SkData> data) override;

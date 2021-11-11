@@ -444,6 +444,13 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvasForDraw(
   return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
 }
 
+void CanvasRenderingContext2D::FlushCanvas() {
+  if (canvas() && canvas()->GetCanvas2DLayerBridge() &&
+      canvas()->GetCanvas2DLayerBridge()->ResourceProvider()) {
+    canvas()->GetCanvas2DLayerBridge()->ResourceProvider()->FlushCanvas();
+  }
+}
+
 String CanvasRenderingContext2D::font() const {
   if (!GetState().HasRealizedFont())
     return kDefaultFont;
