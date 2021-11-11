@@ -32,6 +32,7 @@
 
 #include <memory>
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -485,6 +486,42 @@ void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(back_forward_cache_controller_host_);
   visitor->Trace(animation_frame_provider_);
   WorkerGlobalScope::Trace(visitor);
+}
+
+void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
+    mojom::blink::RendererEvictionReason reason) {
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCacheDedicatedWorker)) {
+    return;
+  }
+  if (!back_forward_cache_controller_host_.is_bound()) {
+    return;
+  }
+  UMA_HISTOGRAM_ENUMERATION("BackForwardCache.Eviction.Renderer", reason);
+  back_forward_cache_controller_host_->EvictFromBackForwardCache(reason);
+}
+
+void DedicatedWorkerGlobalScope::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCacheDedicatedWorker)) {
+    return;
+  }
+
+  // TODO(crbug.com/1146955): Accumulate the loaded buffer size as LocalFrame
+  // does. This number is used to determine the page can continue being
+  // BFcached.
+}
+
+bool DedicatedWorkerGlobalScope::CanContinueBufferingWhileInBackForwardCache() {
+  if (!base::FeatureList::IsEnabled(
+          features::kBackForwardCacheDedicatedWorker)) {
+    return false;
+  }
+
+  // TODO(crbug.com/1146955): Determine whether the page can continue being
+  // BFcached based on the loaded buffer size.
+  return true;
 }
 
 }  // namespace blink

@@ -124,6 +124,12 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Implements scheduler::WorkerScheduler::Delegate.
   void UpdateBackForwardCacheDisablingFeatures(uint64_t features_mask) override;
 
+  // Implements BackForwardCacheLoaderHelperImpl::Delegate.
+  void EvictFromBackForwardCache(
+      mojom::blink::RendererEvictionReason reason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
+
   // Called by the bindings (dedicated_worker_global_scope.idl).
   const String name() const;
   void postMessage(ScriptState*,

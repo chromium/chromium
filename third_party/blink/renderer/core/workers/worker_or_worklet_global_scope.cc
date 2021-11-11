@@ -329,7 +329,7 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateFetcherInternal(
         GetTaskRunner(TaskType::kNetworkingUnfreezable),
         MakeGarbageCollected<LoaderFactoryForWorker>(*this,
                                                      web_worker_fetch_context_),
-        this, nullptr /* back_forward_cache_loader_helper */);
+        this, MakeGarbageCollected<BackForwardCacheLoaderHelperImpl>(*this));
     init.use_counter = MakeGarbageCollected<DetachableUseCounter>(this);
     init.console_logger = MakeGarbageCollected<DetachableConsoleLogger>(this);
 
