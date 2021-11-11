@@ -25,8 +25,11 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -76,9 +79,8 @@ views::View* GetSearchBoxSeparator() {
   return GetBubblePresenter()->bubble_view_for_test()->separator_for_test();
 }
 
-// Simulates the Assistant being enabled.
-void SimulateAssistantEnabled() {
-  GetSearchModel()->search_box()->SetShowAssistantButton(true);
+AssistantVisibility GetAssistantVisibility() {
+  return AssistantUiController::Get()->GetModel()->visibility();
 }
 
 // Waits for a layer animation to complete.
@@ -108,6 +110,17 @@ class AppListBubbleViewTest : public AshTestBase {
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
+  }
+
+  // Simulates the Assistant being enabled.
+  void SimulateAssistantEnabled() {
+    assistant_test_api_ = AssistantTestApi::Create();
+    assistant_test_api_->SetAssistantEnabled(true);
+    assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(
+        chromeos::assistant::AssistantAllowedState::ALLOWED);
+    assistant_test_api_->GetAssistantState()->NotifyStatusChanged(
+        chromeos::assistant::AssistantStatus::READY);
+    assistant_test_api_->WaitUntilIdle();
   }
 
   // Shows the app list on the primary display.
@@ -177,6 +190,7 @@ class AppListBubbleViewTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
+  std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {
@@ -423,6 +437,7 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   SimulateAssistantEnabled();
   ShowAppList();
+  ASSERT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
 
   SearchBoxView* search_box = GetSearchBoxView();
   LeftClickOn(search_box->assistant_button());
@@ -432,6 +447,9 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   EXPECT_FALSE(GetAppsPage()->GetVisible());
   EXPECT_FALSE(GetSearchPage()->GetVisible());
   EXPECT_TRUE(GetAssistantPage()->GetVisible());
+
+  // Assistant was notified of visibility change.
+  EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
 }
 
 TEST_F(AppListBubbleViewTest, AssistantPageDoesNotHaveBackground) {

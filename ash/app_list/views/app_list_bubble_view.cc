@@ -383,7 +383,9 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
 }
 
 void AppListBubbleView::AssistantButtonPressed() {
-  ShowEmbeddedAssistantUI();
+  // Showing the assistant via the delegate triggers the assistant's visibility
+  // change notification and ensures its initial visual state is correct.
+  view_delegate_->StartAssistant();
 }
 
 void AppListBubbleView::CloseButtonPressed() {
