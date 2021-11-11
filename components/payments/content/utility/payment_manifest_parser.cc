@@ -251,15 +251,15 @@ void ParsePreferredRelatedApplicationIdentifiers(
   if (!dict.HasKey(kPreferRelatedApplications))
     return;
 
-  bool prefer_related_applications = false;
-  if (!dict.GetBoolean(kPreferRelatedApplications,
-                       &prefer_related_applications)) {
+  absl::optional<bool> prefer_related_applications =
+      dict.FindBoolKey(kPreferRelatedApplications);
+  if (!prefer_related_applications.has_value()) {
     log.Warn(base::StringPrintf("The \"%s\" field should be a boolean.",
                                 kPreferRelatedApplications));
     return;
   }
 
-  if (!prefer_related_applications)
+  if (!prefer_related_applications.value())
     return;
 
   const base::ListValue* related_applications = nullptr;
@@ -561,9 +561,10 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
     service_worker_dict->GetString(kServiceWorkerScope,
                                    &installation_info->sw_scope);
 
-    bool use_cache = false;
-    if (service_worker_dict->GetBoolean(kServiceWorkerUseCache, &use_cache)) {
-      installation_info->sw_use_cache = use_cache;
+    absl::optional<bool> use_cache =
+        service_worker_dict->FindBoolKey(kServiceWorkerUseCache);
+    if (use_cache.has_value()) {
+      installation_info->sw_use_cache = use_cache.value();
     }
   }
 

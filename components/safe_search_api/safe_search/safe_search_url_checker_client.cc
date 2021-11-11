@@ -63,7 +63,10 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
   }
   const base::DictionaryValue& classification_dict =
       base::Value::AsDictionaryValue(classification_value);
-  classification_dict.GetBoolean("pornography", is_porn);
+  absl::optional<bool> is_porn_opt =
+      classification_dict.FindBoolKey("pornography");
+  if (is_porn_opt.has_value())
+    *is_porn = is_porn_opt.value();
   return true;
 }
 

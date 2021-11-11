@@ -147,7 +147,9 @@ PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
         item.FindIntKey("default_icon_resource");
     if (default_icon_resource)
       sites.back().default_icon_resource = *default_icon_resource;
-    item.GetBoolean("baked_in", &sites.back().baked_in);
+    absl::optional<bool> baked_in = item.FindBoolKey("baked_in");
+    if (baked_in.has_value())
+      sites.back().baked_in = baked_in.value();
   }
   return sites;
 }

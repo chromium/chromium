@@ -605,11 +605,11 @@ void AccountTrackerService::LoadFromPrefs() {
               FindAccountCapabilityPath(dict, kAccountChildAttributePath);
         }
 
-        bool is_under_advanced_protection = false;
-        if (dict.GetBoolean(kAdvancedProtectionAccountStatusPath,
-                            &is_under_advanced_protection)) {
+        absl::optional<bool> is_under_advanced_protection =
+            dict.FindBoolKey(kAdvancedProtectionAccountStatusPath);
+        if (is_under_advanced_protection.has_value()) {
           account_info.is_under_advanced_protection =
-              is_under_advanced_protection;
+              is_under_advanced_protection.value();
         }
 
         switch (FindAccountCapabilityPath(

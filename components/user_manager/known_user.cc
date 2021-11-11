@@ -297,7 +297,12 @@ bool KnownUser::GetBooleanPref(const AccountId& account_id,
   if (!FindPrefs(account_id, &user_pref_dict))
     return false;
 
-  return user_pref_dict->GetBoolean(path, out_value);
+  absl::optional<bool> ret_value = user_pref_dict->FindBoolPath(path);
+  if (!ret_value.has_value())
+    return false;
+
+  *out_value = ret_value.value();
+  return true;
 }
 
 void KnownUser::SetBooleanPref(const AccountId& account_id,

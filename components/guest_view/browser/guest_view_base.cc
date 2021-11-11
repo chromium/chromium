@@ -809,8 +809,9 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
 
 void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   // Read the autosize parameters passed in from the embedder.
-  bool auto_size_enabled = auto_size_enabled_;
-  params.GetBoolean(kAttributeAutoSize, &auto_size_enabled);
+  absl::optional<bool> auto_size_enabled_opt =
+      params.FindBoolKey(kAttributeAutoSize);
+  bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
   int max_height = max_auto_size_.height();
   int max_width = max_auto_size_.width();
@@ -831,8 +832,9 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   int normal_width = normal_size_.width();
   // If the element size was provided in logical units (versus physical), then
   // it will be converted to physical units.
-  bool element_size_is_logical = false;
-  params.GetBoolean(kElementSizeIsLogical, &element_size_is_logical);
+  absl::optional<bool> element_size_is_logical_opt =
+      params.FindBoolKey(kElementSizeIsLogical);
+  bool element_size_is_logical = element_size_is_logical_opt.value_or(false);
   if (element_size_is_logical) {
     // Convert the element size from logical pixels to physical pixels.
     normal_height = LogicalPixelsToPhysicalPixels(element_height);

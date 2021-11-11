@@ -501,9 +501,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Check if the active suggest field trial (if any) has triggered either
     // for the default provider or keyword provider.
-    results->field_trial_triggered = false;
-    extras->GetBoolean("google:fieldtrialtriggered",
-                       &results->field_trial_triggered);
+    absl::optional<bool> field_trial_triggered =
+        extras->FindBoolKey("google:fieldtrialtriggered");
+    results->field_trial_triggered = field_trial_triggered.value_or(false);
 
     results->experiment_stats.clear();
     if (extras->GetList("google:experimentstats", &experiment_stats) &&

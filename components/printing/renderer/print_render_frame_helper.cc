@@ -2292,14 +2292,16 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   }
 
   // Validate expected print preview settings.
+  absl::optional<bool> is_first_request =
+      job_settings->FindBoolKey(kIsFirstRequest);
   if (!job_settings->GetInteger(kPreviewRequestID,
                                 &settings->params->preview_request_id) ||
-      !job_settings->GetBoolean(kIsFirstRequest,
-                                &settings->params->is_first_request)) {
+      !is_first_request.has_value()) {
     NOTREACHED();
     print_preview_context_.set_error(PREVIEW_ERROR_BAD_SETTING);
     return false;
   }
+  settings->params->is_first_request = is_first_request.value();
 
   settings->params->print_to_pdf = IsPrintToPdfRequested(*job_settings);
   UpdateFrameMarginsCssInfo(*job_settings);

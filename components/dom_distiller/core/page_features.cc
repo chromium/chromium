@@ -162,14 +162,13 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  bool isOGArticle = false;
   std::string url, innerText, textContent, innerHTML;
   absl::optional<double> numElements = dict->FindDoubleKey("numElements");
   absl::optional<double> numAnchors = dict->FindDoubleKey("numAnchors");
   absl::optional<double> numForms = dict->FindDoubleKey("numForms");
-
-  if (!(dict->GetBoolean("opengraph", &isOGArticle) &&
-        dict->GetString("url", &url) && numElements && numAnchors && numForms &&
+  absl::optional<bool> isOGArticle = dict->FindBoolKey("opengraph");
+  if (!(isOGArticle.has_value() && dict->GetString("url", &url) &&
+        numElements && numAnchors && numForms &&
         dict->GetString("innerText", &innerText) &&
         dict->GetString("textContent", &textContent) &&
         dict->GetString("innerHTML", &innerHTML))) {
@@ -181,7 +180,7 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  return CalculateDerivedFeatures(isOGArticle, parsed_url, *numElements,
+  return CalculateDerivedFeatures(isOGArticle.value(), parsed_url, *numElements,
                                   *numAnchors, *numForms, innerText,
                                   textContent, innerHTML);
 }
