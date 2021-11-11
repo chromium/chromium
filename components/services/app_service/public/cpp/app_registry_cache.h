@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -134,6 +135,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   //
   // f must be synchronous, and if it asynchronously calls ForEachApp again,
   // it's not guaranteed to see a consistent state.
+  //
+  // TODO(crbug.com/1253250): ForEachApp will be replaced by ForApp when all
+  // fields of the App struct are added.
   template <typename FunctionType>
   void ForEachApp(FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
@@ -161,6 +165,31 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     }
   }
 
+  template <typename FunctionType>
+  void ForAllApps(FunctionType f) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+    for (const auto& s_iter : states_) {
+      const App* state = s_iter.second.get();
+
+      auto d_iter = deltas_in_progress_.find(s_iter.first);
+      const App* delta =
+          (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+      f(AppUpdate(state, delta, account_id_));
+    }
+
+    for (const auto& d_iter : deltas_in_progress_) {
+      const App* delta = d_iter.second;
+
+      if (base::Contains(states_, d_iter.first)) {
+        continue;
+      }
+
+      f(AppUpdate(nullptr, delta, account_id_));
+    }
+  }
+
   // Calls f, a void-returning function whose arguments are (const
   // apps::AppUpdate&), on the app in the cache with the given app_id. It will
   // return true (and call f) if there is such an app, otherwise it will return
@@ -169,6 +198,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   //
   // f must be synchronous, and if it asynchronously calls ForOneApp again,
   // it's not guaranteed to see a consistent state.
+  //
+  // TODO(crbug.com/1253250): ForOneApp will be replaced by ForApp when all
+  // fields of the App struct are added.
   template <typename FunctionType>
   bool ForOneApp(const std::string& app_id, FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
@@ -183,6 +215,25 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
     if (state || delta) {
       f(apps::AppUpdate(state, delta, account_id_));
+      return true;
+    }
+    return false;
+  }
+
+  template <typename FunctionType>
+  bool ForApp(const std::string& app_id, FunctionType f) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+    auto s_iter = states_.find(app_id);
+    const App* state =
+        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+
+    auto d_iter = deltas_in_progress_.find(app_id);
+    const App* delta =
+        (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+    if (state || delta) {
+      f(AppUpdate(state, delta, account_id_));
       return true;
     }
     return false;

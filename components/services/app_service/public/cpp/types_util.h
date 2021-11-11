@@ -7,11 +7,13 @@
 
 // Utility functions for App Service types.
 
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps_util {
 
 bool IsInstalled(apps::mojom::Readiness readiness);
+bool IsInstalled(apps::Readiness readiness);
 bool IsHumanLaunch(apps::mojom::LaunchSource launch_source);
 
 // Checks if an app of |app_type| runs in Browser/WebContents (web apps, hosted

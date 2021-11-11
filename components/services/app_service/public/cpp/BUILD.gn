@@ -246,7 +246,10 @@ source_set("types") {
     "types_util.h",
   ]
 
-  deps = [ "//components/services/app_service/public/mojom" ]
+  deps = [
+    ":app_types",
+    "//components/services/app_service/public/mojom",
+  ]
 }
 
 source_set("crosapi_utils") {
@@ -290,6 +293,7 @@ source_set("unit_tests") {
     ":preferred_apps",
     ":publisher",
     ":test_support",
+    ":types",
     "//content/test:test_support",
     "//testing/gtest",
   ]
