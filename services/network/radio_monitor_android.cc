@@ -5,6 +5,7 @@
 #include "services/network/radio_monitor_android.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
@@ -24,6 +25,10 @@ void RadioMonitorAndroid::MaybeRecordURLLoaderAnnotationId(
   if (!ShouldRecordRadioWakeupTrigger())
     return;
 
+  TRACE_EVENT_INSTANT1("loading", "RadioMonitorAndroid::URLLoaderWakeupRadio",
+                       TRACE_EVENT_SCOPE_THREAD, "traffic_annotation",
+                       traffic_annotation.unique_id_hash_code);
+
   base::UmaHistogramSparse(kUmaNamePossibleWakeupTriggerURLLoader,
                            traffic_annotation.unique_id_hash_code);
 }
@@ -37,6 +42,11 @@ void RadioMonitorAndroid::MaybeRecordResolveHost(
   mojom::ResolveHostParameters::Purpose purpose =
       parameters ? parameters->purpose
                  : mojom::ResolveHostParameters::Purpose::kUnspecified;
+
+  TRACE_EVENT_INSTANT1("loading",
+                       "RadioMonitorAndroid::HostResolverWakeupRadio",
+                       TRACE_EVENT_SCOPE_THREAD, "purpose", purpose);
+
   base::UmaHistogramEnumeration(kUmaNamePossibleWakeupTriggerResolveHost,
                                 purpose);
 }
