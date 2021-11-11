@@ -91,6 +91,12 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
+  if (!mojo_ptr_.is_bound()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError));
+    return result;
+  }
+
   mojo_ptr_->GetFile(
       name, options->create(),
       WTF::Bind(
