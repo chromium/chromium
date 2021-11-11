@@ -19,6 +19,9 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION" desc="Label for the toggle that enables the Live Caption feature.">
    Live Caption
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_SHOW_LANGUAGE" desc="Label for the toggle that enables the Live Caption feature. This toggle shows the user which language they have selected for captioning.">
+   Live Caption - <ph name="LANGUAGE">$1<ex>English</ex></ph>
+  </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
    Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>

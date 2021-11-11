@@ -351,12 +351,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    // TODO(crbug.com/1182859): Update this test to enable the
-    // kUseSodaForLiveCaption feature.
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
-         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature},
-        {media::kUseSodaForLiveCaption});
+         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature,
+         media::kLiveCaptionMultiLanguage, media::kUseSodaForLiveCaption},
+        {});
 
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();
@@ -1036,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
-  EXPECT_EQ("Live Caption (English only)",
+  EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleNewBadgeLabel()->GetText()));
 
   ClickEnableLiveCaptionOnDialog();
@@ -1057,7 +1056,58 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   OnSodaInstalled();
-  EXPECT_EQ("Live Caption (English only)",
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+}
+
+#if defined(OS_MAC)
+// https://crbug.com/1222873
+#define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
+#else
+#define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
+#endif
+IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
+                       MAYBE_LiveCaptionShowLanguage) {
+  // Open a tab and play media.
+  OpenTestURL();
+  StartPlayback();
+  WaitForStart();
+
+  // Open the media dialog.
+  EXPECT_TRUE(WaitForToolbarIconShown());
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Live Caption is disabled, so the title should not show the language.
+  EXPECT_TRUE(GetLiveCaptionTitleNewBadgeLabel()->GetVisible());
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleNewBadgeLabel()->GetText()));
+
+  // When Live Caption is enabled, the title should show the language.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  // Close dialog and change live caption language. Reopen dialog.
+  ClickToolbarIcon();
+  EXPECT_FALSE(IsDialogVisible());
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "de-DE");
+  ClickToolbarIcon();
+  EXPECT_TRUE(WaitForDialogOpened());
+  EXPECT_TRUE(IsDialogVisible());
+
+  // Live Caption is enabled so the title should show the new language.
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ("Live Caption - German",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+
+  // When Live Caption is disabled, the title should not show the language.
+  ClickEnableLiveCaptionOnDialog();
+  EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
+  EXPECT_EQ("Live Caption",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 

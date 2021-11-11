@@ -172,4 +172,13 @@ LanguageCode GetLanguageCode(const std::string& language_name) {
   return LanguageCode::kNone;
 }
 
+int GetLanguageDisplayName(const std::string& language_name) {
+  absl::optional<SodaLanguagePackComponentConfig> language_config =
+      GetLanguageComponentConfig(language_name);
+  if (language_config.has_value()) {
+    return language_config.value().display_name;
+  }
+  return 0;
+}
+
 }  // namespace speech

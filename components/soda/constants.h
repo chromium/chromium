@@ -157,6 +157,8 @@ std::string GetLanguageName(LanguageCode language_code);
 
 LanguageCode GetLanguageCode(const std::string& language_name);
 
+int GetLanguageDisplayName(const std::string& language_name);
+
 }  // namespace speech
 
 #endif  // COMPONENTS_SODA_CONSTANTS_H_
