@@ -16,7 +16,8 @@ namespace autofill {
 
 SaveUPIBubbleControllerImpl::SaveUPIBubbleControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<SaveUPIBubbleControllerImpl>(*web_contents) {
+}
 
 SaveUPIBubbleControllerImpl::~SaveUPIBubbleControllerImpl() = default;
 
@@ -51,10 +52,10 @@ void SaveUPIBubbleControllerImpl::ShowBubble() {
 
   // TODO(crbug.com/986289) Show an icon on the omnibar when saving is proposed.
 
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   save_upi_bubble_ =
       browser->window()->GetAutofillBubbleHandler()->ShowSaveUPIBubble(
-          web_contents(), this);
+          &GetWebContents(), this);
   DCHECK(save_upi_bubble_);
 }
 

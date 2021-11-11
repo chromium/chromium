@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -19,7 +18,6 @@ class CardUnmaskAuthenticationSelectionDialogView;
 
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
     : public CardUnmaskAuthenticationSelectionDialogController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<
           CardUnmaskAuthenticationSelectionDialogControllerImpl> {
  public:

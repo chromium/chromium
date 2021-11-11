@@ -11,9 +11,6 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 
@@ -62,7 +59,7 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
   cancel_unmasking_closure_ = std::move(cancel_unmasking_closure);
 
   dialog_view_ = CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
-      this, web_contents());
+      this, &GetWebContents());
 
   DCHECK(dialog_view_);
   AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown();
@@ -186,7 +183,9 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetProgressLabel()
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
     CardUnmaskAuthenticationSelectionDialogControllerImpl(
         content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<
+          CardUnmaskAuthenticationSelectionDialogControllerImpl>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
     CardUnmaskAuthenticationSelectionDialogControllerImpl);

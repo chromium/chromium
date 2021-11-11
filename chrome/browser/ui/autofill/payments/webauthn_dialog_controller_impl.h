@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -20,7 +19,6 @@ enum class WebauthnDialogState;
 // WebauthnDialogView. Lazily initialized when used.
 class WebauthnDialogControllerImpl
     : public WebauthnDialogController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<WebauthnDialogControllerImpl> {
  public:
   WebauthnDialogControllerImpl(const WebauthnDialogControllerImpl&) = delete;
