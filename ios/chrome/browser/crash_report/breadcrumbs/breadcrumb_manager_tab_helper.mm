@@ -6,6 +6,7 @@
 
 #import "base/ios/ns_error_util.h"
 #include "base/strings/stringprintf.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -78,12 +79,11 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
         if (event == breadcrumbs::kBreadcrumbScroll) {
           sequentially_scrolled_++;
           if (ShouldLogRepeatedEvent(sequentially_scrolled_)) {
-            PlatformLogEvent(base::StringPrintf("%s %d",
-                                                breadcrumbs::kBreadcrumbScroll,
-                                                sequentially_scrolled_));
+            LogEvent(base::StringPrintf("%s %d", breadcrumbs::kBreadcrumbScroll,
+                                        sequentially_scrolled_));
           }
         } else {
-          PlatformLogEvent(event);
+          LogEvent(event);
         }
       }];
   [[web_state->GetWebViewProxy() scrollViewProxy] addObserver:scroll_observer_];
@@ -102,8 +102,9 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
     sequentially_scrolled_ = 0;
   }
 
-  LogEvent(event, BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-                      web_state_->GetBrowserState()));
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+      web_state_->GetBrowserState())
+      ->AddEvent(event);
 }
 
 void BreadcrumbManagerTabHelper::DidStartNavigation(

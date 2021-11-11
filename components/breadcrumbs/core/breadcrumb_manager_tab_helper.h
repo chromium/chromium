@@ -13,8 +13,6 @@
 
 namespace breadcrumbs {
 
-class BreadcrumbManagerKeyedService;
-
 // Name of DidStartNavigation event (see
 // WebStateObserver/WebContentsObserver::DidStartNavigation).
 extern const char kBreadcrumbDidStartNavigation[];
@@ -139,10 +137,8 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   // Logs the breadcrumb event for a renderer process being terminated.
   void LogRenderProcessGone();
 
-  // Logs the given |event| for the associated tab. |service| must be provided
-  // by the platform-specific implementation.
-  void LogEvent(const std::string& event,
-                BreadcrumbManagerKeyedService* service);
+  // Logs the given |event| for the associated tab.
+  void LogEvent(const std::string& event);
 
   // Returns true if event that was sequentially emitted |count| times should be
   // logged. Some events (e.g., infobars replacements or scrolling) are emitted
@@ -151,7 +147,9 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   bool ShouldLogRepeatedEvent(int count);
 
  private:
-  // Logs the given |event| for the associated tab.
+  // Logs the given |event| for the associated tab by retrieving the breadcrumb
+  // manager from WebState (iOS) or WebContents (desktop). This should not be
+  // used directly to log events; use LogEvent() instead.
   virtual void PlatformLogEvent(const std::string& event) = 0;
 
   // infobars::InfoBarManager::Observer:

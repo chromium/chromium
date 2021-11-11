@@ -36,8 +36,9 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
-  LogEvent(event, BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-                      web_contents_->GetBrowserContext()));
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+      web_contents_->GetBrowserContext())
+      ->AddEvent(event);
 }
 
 void BreadcrumbManagerTabHelper::DidStartNavigation(
