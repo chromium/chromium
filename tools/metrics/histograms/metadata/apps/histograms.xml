@@ -129,31 +129,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="LauncherUISurface">
-  <variant name=".AppsSearch" summary="App tiles search">
-    <obsolete>
-      Removed October 2021.
-    </obsolete>
-  </variant>
-  <variant name=".AppsZeroState" summary="App tiles zero-state">
-    <obsolete>
-      Removed October 2021.
-    </obsolete>
-  </variant>
-  <variant name=".Chip" summary="Suggestion chips">
-    <obsolete>
-      Removed October 2021.
-    </obsolete>
-  </variant>
-  <variant name=".ListSearch" summary="Results list search">
-    <obsolete>
-      Removed October 2021.
-    </obsolete>
-  </variant>
-  <variant name=".ListZeroState" summary="Results list zero-state">
-    <obsolete>
-      Removed October 2021.
-    </obsolete>
-  </variant>
+  <variant name=".AppsSearch" summary="App tiles search"/>
+  <variant name=".AppsZeroState" summary="App tiles zero-state"/>
+  <variant name=".Chip" summary="Suggestion chips"/>
+  <variant name=".ListSearch" summary="Results list search"/>
+  <variant name=".ListZeroState" summary="Results list zero-state"/>
 </variants>
 
 <variants name="LockScreenAppDataItemOperation">
