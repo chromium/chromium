@@ -56,8 +56,10 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void LaunchDeskTemplate(const std::string& template_uuid);
 
   // Calls the DeskModel to capture the active desk as a template entry, with a
-  // callback to `OnAddOrUpdateEntry`.
-  void SaveActiveDeskAsTemplate();
+  // callback to `OnAddOrUpdateEntry`. If there are unsupported apps on the
+  // active desk, a dialog will open up and we may or may not save the desk
+  // asynchronously based on the user's decision.
+  void MaybeSaveActiveDeskAsTemplate();
 
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
@@ -73,6 +75,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
  private:
   friend class DesksTemplatesPresenterTestApi;
+
+  // Saves the `desk_template` to the model.
+  void SaveDeskTemplate(std::unique_ptr<DeskTemplate> desk_template);
 
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.

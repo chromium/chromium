@@ -2246,7 +2246,7 @@ void OverviewGrid::UpdateFrameThrottling() {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
-  DesksTemplatesPresenter::Get()->SaveActiveDeskAsTemplate();
+  DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate();
 }
 
 }  // namespace ash

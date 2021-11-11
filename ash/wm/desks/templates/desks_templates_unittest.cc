@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
@@ -29,6 +30,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +40,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
@@ -376,10 +379,14 @@ class DesksTemplatesTest : public OverviewTestBase {
     WaitForUI();
   }
 
-  // Toggles overview mode and then shows the desks templates grid.
-  void ToggleOverviewAndShowTemplatesGrid() {
-    ToggleOverview();
-    WaitForUI();
+  // Open overview mode if we're not in overview mode yet, and then show the
+  // desks templates grid.
+  void OpenOverviewAndShowTemplatesGrid() {
+    if (!GetOverviewSession()) {
+      ToggleOverview();
+      WaitForUI();
+    }
+
     ShowDesksTemplatesGrids();
     WaitForUI();
   }
@@ -405,6 +412,22 @@ class DesksTemplatesTest : public OverviewTestBase {
     return OverviewHighlightController::TestApi(
                GetOverviewSession()->highlight_controller())
         .GetHighlightView();
+  }
+
+  // Opens overview mode and then clicks the save template button. This should
+  // save a new desk template and open the desks templates grid.
+  void OpenOverviewAndSaveTemplate(aura::Window* root) {
+    if (!GetOverviewSession()) {
+      ToggleOverview();
+      WaitForUI();
+    }
+
+    auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(save_template->IsVisible());
+    ClickOnView(save_template->GetContentsView());
+    WaitForUI();
+    for (auto& overview_grid : GetOverviewGridList())
+      ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
   }
 
   // OverviewTestBase:
@@ -667,7 +690,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
   base::Time time_2 = time_1 + base::Hours(13);
   AddEntry(uuid_2, name_2, time_2);
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Check that the grid is populated with the correct number of items, as
   // well as with the correct name and timestamp.
@@ -717,7 +740,7 @@ TEST_F(DesksTemplatesTest, DISABLED_DeleteTemplate) {
   // This window should be hidden whenever the desk templates grid is open.
   auto test_window = CreateTestWindow();
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // The window is hidden because the desk templates grid is open.
   EXPECT_EQ(0.0f, test_window->layer()->opacity());
@@ -756,13 +779,8 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabled) {
   auto test_window = CreateTestWindow();
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
-  // Open overview.
-  ToggleOverview();
-  WaitForUI();
-  ASSERT_TRUE(GetOverviewSession());
-  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
-  EXPECT_TRUE(save_template->IsVisible());
-  ClickOnView(save_template->GetContentsView());
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(root);
   // The desks templates grid is now visible and `save_template` is no longer
   // visible, so exit overview to be able to click on it again.
   ToggleOverview();
@@ -815,13 +833,9 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
 
   auto test_window = CreateTestWindow();
 
-  // Capture the current desk .
-  // TODO: Change this once the save desk button is implemented.
-  std::unique_ptr<DeskTemplate> desk_template =
-      desks_controller->CaptureActiveDeskAsTemplate();
-  AddEntry(std::move(desk_template));
-
-  ToggleOverviewAndShowTemplatesGrid();
+  // Capture the current desk and open the templates grid.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Click on the grid item to launch the template.
   {
@@ -841,7 +855,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
 
   // This section tests clicking on the "Use template" button to launch the
   // template.
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
   {
     DeskSwitchAnimationWaiter waiter;
     DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -864,7 +878,7 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(std::vector<int>(5, 1)));
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
   DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -899,7 +913,7 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
   DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -936,7 +950,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
   DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -989,7 +1003,7 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
            CreateRestoreData(std::vector<int>{10}));
 
   // Enter overview and show the Desks Templates Grid.
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
   DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -1020,7 +1034,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
   DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
@@ -1102,7 +1116,7 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   auto test_window_1 = CreateTestWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   ASSERT_TRUE(GetOverviewSession()
@@ -1125,7 +1139,7 @@ TEST_F(DesksTemplatesTest, OverviewTabbing) {
   AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
   AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
   DesksTemplatesItemView* first_item = GetItemViewFromOverviewGrid(0);
   DesksTemplatesItemView* second_item = GetItemViewFromOverviewGrid(1);
 
@@ -1146,7 +1160,7 @@ TEST_F(DesksTemplatesTest, DesksBarReturnsToZeroState) {
   const base::GUID uuid = base::GUID::GenerateRandomV4();
   AddEntry(uuid, "template", base::Time::Now());
 
-  ToggleOverviewAndShowTemplatesGrid();
+  OpenOverviewAndShowTemplatesGrid();
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_grid =
@@ -1176,6 +1190,61 @@ TEST_F(DesksTemplatesTest, DesksBarReturnsToZeroState) {
   auto* zero_new_desk_button = desks_bar_view->zero_state_new_desk_button();
   EXPECT_TRUE(zero_new_desk_button->GetVisible());
   EXPECT_TRUE(desks_bar_view->IsZeroState());
+}
+
+// Tests that the unsupported apps dialog is shown when a user attempts to save
+// an active desk with unsupported apps.
+TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
+  // `OpenOverviewAndSaveTemplate()` waits for the ui after it clicks on the
+  // save template button. This will hang if a dialog is shown so we use this
+  // helper function instead.
+  auto open_overview_and_save_template = [this]() {
+    auto* root = Shell::Get()->GetPrimaryRootWindow();
+    ToggleOverview();
+    WaitForUI();
+    auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
+    ASSERT_TRUE(save_template->IsVisible());
+    ClickOnView(save_template->GetContentsView());
+  };
+
+  // Create a crostini window.
+  auto crostini_window = CreateTestWindow();
+  crostini_window->SetProperty(aura::client::kAppType,
+                               static_cast<int>(AppType::CROSTINI_APP));
+
+  // Create a normal window.
+  auto test_window = CreateTestWindow();
+
+  // Open overview and click on the save template button. The unsupported apps
+  // dialog should show up.
+  open_overview_and_save_template();
+  EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
+
+  // Decline the dialog. We should be out of overview now and no template should
+  // have been saved.
+  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller->dialog_widget()
+      ->widget_delegate()
+      ->AsDialogDelegate()
+      ->CancelDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
+  EXPECT_FALSE(GetOverviewSession());
+
+  // Open overview again and click on the save template button. The unsupported
+  // apps dialog should show up.
+  open_overview_and_save_template();
+  EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
+
+  // Accept the dialog. The template should have been saved.
+  dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller->dialog_widget()
+      ->widget_delegate()
+      ->AsDialogDelegate()
+      ->AcceptDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetOverviewSession());
+  ASSERT_EQ(1ul, GetAllEntries().size());
 }
 
 }  // namespace ash

@@ -8,11 +8,13 @@
 
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "components/app_restore/app_launch_info.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -116,6 +118,15 @@ void TestShellDelegate::LaunchAppsFromTemplate(
 
 bool TestShellDelegate::IsWindowSupportedForDeskTemplate(
     aura::Window* window) const {
+  const ash::AppType app_type =
+      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+  switch (app_type) {
+    case AppType::CROSTINI_APP:
+    case AppType::LACROS:
+      return false;
+    default:
+      break;
+  }
   return true;
 }
 

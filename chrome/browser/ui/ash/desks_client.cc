@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -100,15 +101,9 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
     return;
   }
 
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      desks_controller_->CaptureActiveDeskAsTemplate();
-  RecordWindowAndTabCountHistogram(desk_template.get());
-  auto desk_template_clone = desk_template->Clone();
-  GetDeskModel()->AddOrUpdateEntry(
-      std::move(desk_template_clone),
-      base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(desk_template)));
+  desks_controller_->CaptureActiveDeskAsTemplate(
+      base::BindOnce(&DesksClient::OnCapturedDeskTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
@@ -378,4 +373,19 @@ void DesksClient::OnGetAllTemplates(
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
                       ? kStorageError
                       : ""));
+}
+
+void DesksClient::OnCapturedDeskTemplate(
+    CaptureActiveDeskAndSaveTemplateCallback callback,
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
+  if (!desk_template)
+    return;
+
+  RecordWindowAndTabCountHistogram(desk_template.get());
+  auto desk_template_clone = desk_template->Clone();
+  GetDeskModel()->AddOrUpdateEntry(
+      std::move(desk_template_clone),
+      base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(desk_template)));
 }

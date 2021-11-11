@@ -166,9 +166,17 @@ void DesksTemplatesPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
 }
 
-void DesksTemplatesPresenter::SaveActiveDeskAsTemplate() {
-  std::unique_ptr<DeskTemplate> desk_template =
-      DesksController::Get()->CaptureActiveDeskAsTemplate();
+void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate() {
+  DesksController::Get()->CaptureActiveDeskAsTemplate(
+      base::BindOnce(&DesksTemplatesPresenter::SaveDeskTemplate,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DesksTemplatesPresenter::SaveDeskTemplate(
+    std::unique_ptr<DeskTemplate> desk_template) {
+  if (!desk_template)
+    return;
+
   auto desk_template_clone = desk_template->Clone();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -236,10 +244,6 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
-  // TODO: Display dialog for unsupported apps using
-  // `overview_session_->desks_templates_dialog_controller()`, and update the UI
-  // to display the Templates grid after a template has been added.
-
   // Update the button here in case it has been disabled.
   const auto& grid_list = overview_session_->grid_list();
   DCHECK(!grid_list.empty());

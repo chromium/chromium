@@ -39,6 +39,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    public wm::ActivationChangeObserver,
                                    public SessionObserver {
  public:
+  using GetDeskTemplateCallback =
+      base::OnceCallback<void(std::unique_ptr<DeskTemplate>)>;
+
   class Observer {
    public:
     // Called when |desk| has been created and added to
@@ -251,8 +254,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 
   // Captures the active desk and returns it as a desk template containing
-  // necessary information that can be used to create a same desk.
-  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const;
+  // necessary information that can be used to create a same desk via provided
+  // `callback`.
+  void CaptureActiveDeskAsTemplate(GetDeskTemplateCallback callback) const;
 
   // Creates and activates a new desk for a template with name `template_name`
   // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`

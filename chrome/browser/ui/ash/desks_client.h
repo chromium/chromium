@@ -162,6 +162,12 @@ class DesksClient : public ash::SessionObserver {
                          desks_storage::DeskModel::GetAllEntriesStatus status,
                          std::vector<ash::DeskTemplate*> entries);
 
+  // Callback function that is called once the DesksController has captured the
+  // active desk as a template. Invokes |callback| with |desk_template| as an
+  // argument.
+  void OnCapturedDeskTemplate(CaptureActiveDeskAndSaveTemplateCallback callback,
+                              std::unique_ptr<ash::DeskTemplate> desk_template);
+
   // Convenience pointer to ash::DesksController.
   // Guaranteed to be not null for the duration of `this`.
   ash::DesksController* const desks_controller_;

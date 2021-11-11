@@ -61,6 +61,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -862,8 +863,8 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
                              DesksMoveWindowFromActiveDeskSource::kSendToDesk);
 }
 
-std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
-    const {
+void DesksController::CaptureActiveDeskAsTemplate(
+    GetDeskTemplateCallback callback) const {
   DCHECK(current_account_id_.is_valid());
 
   // Construct |restore_data| for |desk_template|.
@@ -874,7 +875,8 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
   auto* shell_delegate = shell->shell_delegate();
   std::vector<aura::Window*> unsupported_apps;
   for (auto* window : mru_windows) {
-    if (!shell_delegate->IsWindowSupportedForDeskTemplate(window)) {
+    if (!shell_delegate->IsWindowSupportedForDeskTemplate(window) &&
+        !wm::GetTransientParent(window)) {
       unsupported_apps.push_back(window);
       continue;
     }
@@ -898,16 +900,6 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
 
-  if (!unsupported_apps.empty() &&
-      shell->overview_controller()->InOverviewSession()) {
-    // There were some unsupported apps in the active desk so open up a dialog
-    // to let the user know.
-    DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
-        shell->GetPrimaryRootWindow(), unsupported_apps);
-    // TODO(chinsenj): If we reach here, we should hold off on capturing the
-    // desk until the user hits the accept button of the dialog.
-  }
-
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
       base::GUID::GenerateRandomV4().AsLowercaseString(),
       DeskTemplateSource::kUser, base::UTF16ToUTF8(active_desk_->name()),
@@ -915,7 +907,17 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
 
   desk_template->set_desk_restore_data(std::move(restore_data));
 
-  return desk_template;
+  if (!unsupported_apps.empty() &&
+      shell->overview_controller()->InOverviewSession()) {
+    // There were some unsupported apps in the active desk so open up a dialog
+    // to let the user know.
+    DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
+        shell->GetPrimaryRootWindow(), unsupported_apps, std::move(callback),
+        std::move(desk_template));
+    return;
+  }
+
+  std::move(callback).Run(std::move(desk_template));
 }
 
 void DesksController::CreateAndActivateNewDeskForTemplate(
