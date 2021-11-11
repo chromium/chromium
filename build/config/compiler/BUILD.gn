@@ -2310,8 +2310,14 @@ config("symbols") {
     # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
     # DWARF info may be corrupt; offsets in a range list entry are in different
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    if (!is_apple && !is_nacl && current_cpu != "x86" && current_os != "zos" &&
-        (use_gold || use_lld)) {
+    _enable_gdb_index =
+        symbol_level == 2 && !is_apple && !is_nacl && current_cpu != "x86" &&
+        current_os != "zos" && (use_gold || use_lld) &&
+        # Disable on non-fission 32-bit Android because it pushes
+        # libcomponents_unittests over the 4gb size limit.
+        !(is_android && !use_debug_fission && current_cpu != "x64" &&
+          current_cpu != "arm64")
+    if (_enable_gdb_index) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
         # which lld needs in order to generate a correct GDB index.
