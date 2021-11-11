@@ -445,6 +445,13 @@
         {}
        ]
       ],
+      "slot-content-visibility-18-crash.html": [
+       "0860c37e49dc3003c2a9ecf018c4a3d4e141154a",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-19-crash.html": [
        "33b9f39b5f9b59edc37b51cfaae1133e67798031",
        [
@@ -80970,6 +80977,45 @@
        {}
       ]
      ],
+     "revert-layer-009.html": [
+      "e5c8e62ae0a0464eb15bde96fa92a1e6f91b96ba",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-010.html": [
+      "278905c6cf324729edb0ad89607bf8563b686be8",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "revert-layer-011.html": [
+      "73a3772f80a3bab4980ae0ed1d65b3b1fe0c8727",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "revert-val-001.html": [
       "a346267c7bdb08b6b67ca68c6e821ea71ab1eefa",
       [
@@ -83424,6 +83470,19 @@
      }
     },
     "css-conditional": {
+     "at-media-dynamic-001.html": [
+      "8a1c93e4d2ba3546ac87bc2c6d29a69b6add8692",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "at-media-whitespace-optional-001.html": [
       "49fd608dd75d9cfc8f811b407a413f4bdba77541",
       [
@@ -84088,7 +84147,7 @@
       ]
      ],
      "css-supports-006.xht": [
-      "faf8f68f64332860b2a663d0e8682402f846b3b2",
+      "6e5a14cf0f79250d72bd712ae7f039d4b70e1f09",
       [
        null,
        [
@@ -84101,7 +84160,7 @@
       ]
      ],
      "css-supports-007.xht": [
-      "716b15232b98a0256eae81d988119a096295aeb8",
+      "8cce3c8b990879f86991381b7c2ee2f3cc47e825",
       [
        null,
        [
@@ -84127,7 +84186,7 @@
       ]
      ],
      "css-supports-009.xht": [
-      "31fffbe7146d7c84716a84aee299cd7dd9ffd47a",
+      "8d5b27166b90bc261a9ee9f7c8e4677ef019b0d4",
       [
        null,
        [
@@ -84140,7 +84199,7 @@
       ]
      ],
      "css-supports-010.xht": [
-      "17b8810f14099c302218a99a91670997b6dec226",
+      "298667b4733162d2b1049795af30a5ab85f78a3c",
       [
        null,
        [
@@ -84270,7 +84329,7 @@
       ]
      ],
      "css-supports-020.xht": [
-      "e6d5a1111d22cf74ddf4d7e0bb4014b5bd9facfd",
+      "ba02204bf5a7995ed2eb149bb1aaa0f314b755ed",
       [
        null,
        [
@@ -104030,6 +104089,19 @@
        [
         [
          "/css/css-fonts/first-available-font-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-colorization.html": [
+      "076910a791c0b25a06352218c241fc1818be90ac",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-colorization-ref.html",
          "=="
         ]
        ],
@@ -232880,6 +232952,10 @@
       ]
      },
      "support": {
+      "at-media-dynamic-001-inner.html": [
+       "a0cf87a9a504641886a10629eb829a742adfc49b",
+       []
+      ],
       "pass.xht": [
        "24dc3107e8b05ba65f7f418b5d078fee2db9ba86",
        []
@@ -237271,6 +237347,10 @@
       "9f27c19670c6ae55ecc58a2c667346d11b32f667",
       []
      ],
+     "font-colorization-ref.html": [
+      "55d3d341cb43f5c094fa1509ef7a0f1fba332cbc",
+      []
+     ],
      "font-default-01-ref.html": [
       "bbe0251f243f77dd24aab6cab4f96397279c3ce4",
       []
@@ -238184,6 +238264,10 @@
       ],
       "COLR-palettes-test-font.ttf": [
        "0f28caf21e6fde2660c251471f528e4ed21b82a3",
+       []
+      ],
+      "colorization_SVG_COLR.ttf": [
+       "7ff387b584c7d701126c66129c3977735a6bab38",
        []
       ],
       "markA.ttf": [
@@ -362220,6 +362304,13 @@
         {}
        ]
       ],
+      "transition-timing-function.html": [
+       "2200c73471774b6475fa7198f037daf79671c507",
+       [
+        null,
+        {}
+       ]
+      ],
       "vertical-align-composition.html": [
        "222a511679b999cc684d26fc3c5e73bfc1d0ee46",
        [
@@ -388969,7 +389060,7 @@
      ]
     ],
     "click-interactionid.html": [
-     "93ea0006193c149f6dda99207af4c608650c860d",
+     "3f1cd3725b597f6200b6d6e27356b748915d47e2",
      [
       null,
       {
