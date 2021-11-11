@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 

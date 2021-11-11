@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace dbus {
 class Bus;

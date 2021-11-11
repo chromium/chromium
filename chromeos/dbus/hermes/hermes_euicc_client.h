@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"

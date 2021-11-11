@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 #define CHROMEOS_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state_handler.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_
 #define CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_STUB_H_
 
-#include "base/macros.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 
 namespace chromeos {

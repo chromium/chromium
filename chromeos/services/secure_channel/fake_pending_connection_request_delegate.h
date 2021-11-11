@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

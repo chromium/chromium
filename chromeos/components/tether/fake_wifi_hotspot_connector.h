@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/wifi_hotspot_connector.h"
 
 namespace chromeos {

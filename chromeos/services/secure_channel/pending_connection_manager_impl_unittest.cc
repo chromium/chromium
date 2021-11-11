@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/services/secure_channel/ble_listener_connection_attempt.h"

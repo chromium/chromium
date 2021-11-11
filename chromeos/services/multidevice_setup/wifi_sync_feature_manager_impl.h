@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_WIFI_SYNC_FEATURE_MANAGER_IMPL_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_WIFI_SYNC_FEATURE_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"

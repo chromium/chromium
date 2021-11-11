@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "ui/views/window/frame_caption_button.h"

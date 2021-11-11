@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"

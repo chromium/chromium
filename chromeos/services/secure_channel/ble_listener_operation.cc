@@ -5,7 +5,6 @@
 #include "chromeos/services/secure_channel/ble_listener_operation.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/ble_connection_manager.h"

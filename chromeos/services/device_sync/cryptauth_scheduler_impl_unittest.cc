@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"

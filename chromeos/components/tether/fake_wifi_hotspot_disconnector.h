@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_WIFI_HOTSPOT_DISCONNECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/wifi_hotspot_disconnector.h"
 
 namespace chromeos {

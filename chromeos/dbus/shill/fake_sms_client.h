@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/dbus/shill/sms_client.h"
 
 namespace chromeos {

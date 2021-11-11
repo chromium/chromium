@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {

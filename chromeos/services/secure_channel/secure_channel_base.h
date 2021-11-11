@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_BASE_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_BASE_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"

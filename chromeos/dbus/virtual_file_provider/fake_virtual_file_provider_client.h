@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 
 namespace chromeos {

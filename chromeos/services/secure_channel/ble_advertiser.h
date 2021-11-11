@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 

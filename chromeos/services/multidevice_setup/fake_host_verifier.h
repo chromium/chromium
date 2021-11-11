@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_VERIFIER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_HOST_VERIFIER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/host_verifier.h"
 
 namespace chromeos {

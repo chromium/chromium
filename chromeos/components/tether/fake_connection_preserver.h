@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/connection_preserver.h"
 
 namespace chromeos {

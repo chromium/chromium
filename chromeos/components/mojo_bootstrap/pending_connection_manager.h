@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 

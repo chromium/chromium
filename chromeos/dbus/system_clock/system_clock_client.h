@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "dbus/object_proxy.h"
 
 namespace dbus {

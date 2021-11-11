@@ -9,8 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace chromeos {
 namespace string_matching {
 

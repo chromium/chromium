@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"

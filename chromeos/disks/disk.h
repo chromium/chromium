@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 
 namespace chromeos {

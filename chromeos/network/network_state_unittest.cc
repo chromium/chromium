@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/i18n/streaming_utf8_validator.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/components/proximity_auth/messenger.h"

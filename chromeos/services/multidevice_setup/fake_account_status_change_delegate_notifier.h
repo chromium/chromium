@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier.h"
 
 namespace chromeos {

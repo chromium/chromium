@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 

@@ -6,7 +6,6 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/services/secure_channel/device_to_device_initiator_helper.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"

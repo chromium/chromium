@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "chromeos/process_proxy/process_output_watcher.h"

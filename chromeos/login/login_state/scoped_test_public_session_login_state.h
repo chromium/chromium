@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_
 #define CHROMEOS_LOGIN_LOGIN_STATE_SCOPED_TEST_PUBLIC_SESSION_LOGIN_STATE_H_
 
-#include "base/macros.h"
 #include "chromeos/login/login_state/login_state.h"
 
 namespace chromeos {

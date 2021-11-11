@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "dbus/object_proxy.h"
 

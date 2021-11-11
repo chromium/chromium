@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"

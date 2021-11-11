@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "dbus/object_proxy.h"
 

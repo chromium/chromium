@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

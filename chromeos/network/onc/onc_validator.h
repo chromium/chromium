@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/onc/onc_mapper.h"
 #include "components/onc/onc_constants.h"
 

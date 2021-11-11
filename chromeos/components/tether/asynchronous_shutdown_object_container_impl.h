@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"

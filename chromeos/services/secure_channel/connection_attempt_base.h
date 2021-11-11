@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"

@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"

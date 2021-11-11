@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 
 namespace chromeos {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"

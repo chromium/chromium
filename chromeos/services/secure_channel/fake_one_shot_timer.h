@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 

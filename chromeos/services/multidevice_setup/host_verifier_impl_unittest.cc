@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/timer/mock_timer.h"

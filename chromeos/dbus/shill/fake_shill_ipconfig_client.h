@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 

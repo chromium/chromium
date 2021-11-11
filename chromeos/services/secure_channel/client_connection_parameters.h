@@ -8,7 +8,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"

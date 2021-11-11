@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 
 namespace chromeos {

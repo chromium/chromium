@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/power/native_timer.h"

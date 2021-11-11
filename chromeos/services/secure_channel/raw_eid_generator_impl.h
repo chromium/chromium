@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/raw_eid_generator.h"
 
 namespace chromeos {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/notification_presenter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

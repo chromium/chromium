@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"

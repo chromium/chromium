@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_DBUS_CLIENT_H_
 #define CHROMEOS_DBUS_DBUS_CLIENT_H_
 
-#include "base/macros.h"
-
 namespace dbus {
 class Bus;
 }  // namespace dbus

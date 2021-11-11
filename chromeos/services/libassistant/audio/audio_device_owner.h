@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"

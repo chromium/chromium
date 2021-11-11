@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"  // override
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/frame_header.h"
 

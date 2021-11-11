@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/image_burner/image_burner_client.h"
 
 namespace chromeos {

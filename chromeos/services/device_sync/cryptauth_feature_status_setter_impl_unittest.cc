@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"

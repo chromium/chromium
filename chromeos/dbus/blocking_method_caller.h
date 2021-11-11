@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "dbus/message.h"
 

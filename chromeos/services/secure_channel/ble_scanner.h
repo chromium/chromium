@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"

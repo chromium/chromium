@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/tether_session_completion_logger.h"
 
 namespace chromeos {

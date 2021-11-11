@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_state.h"
 #include "chromeos/network/network_util.h"

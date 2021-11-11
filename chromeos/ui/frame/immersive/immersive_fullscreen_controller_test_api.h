@@ -6,7 +6,6 @@
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_TEST_API_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace chromeos {
 

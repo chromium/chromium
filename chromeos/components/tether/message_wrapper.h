@@ -8,7 +8,6 @@
 #include <google/protobuf/message_lite.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/proto/tether.pb.h"
 
 namespace chromeos {

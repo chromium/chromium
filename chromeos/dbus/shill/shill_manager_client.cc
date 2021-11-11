@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"

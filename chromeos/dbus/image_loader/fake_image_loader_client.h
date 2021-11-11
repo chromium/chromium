@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 
 namespace base {

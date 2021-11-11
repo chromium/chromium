@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_ANDROID_SMS_APP_HELPER_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace chromeos {
 namespace multidevice_setup {

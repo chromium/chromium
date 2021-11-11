@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/connect_tethering_operation.h"
 #include "chromeos/components/tether/host_connection_metrics_logger.h"

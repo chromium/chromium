@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/device_sync_base.h"
 
 namespace chromeos {

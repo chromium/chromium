@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_MISSIVE_FAKE_MISSIVE_CLIENT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/missive/missive_client.h"

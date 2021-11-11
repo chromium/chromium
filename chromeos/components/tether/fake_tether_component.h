@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_COMPONENT_H_
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_COMPONENT_H_
 
-#include "base/macros.h"
 #include "chromeos/components/tether/tether_component.h"
 #include "chromeos/components/tether/tether_disconnector.h"
 

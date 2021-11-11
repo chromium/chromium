@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"

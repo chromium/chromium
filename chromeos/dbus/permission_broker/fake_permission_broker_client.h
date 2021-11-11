@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
 namespace chromeos {

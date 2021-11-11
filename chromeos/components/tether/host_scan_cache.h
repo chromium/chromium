@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/tether/host_scan_cache_entry.h"
 

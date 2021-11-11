@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/tether_host_response_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"

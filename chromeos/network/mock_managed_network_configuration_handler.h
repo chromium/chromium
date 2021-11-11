@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"

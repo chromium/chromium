@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_SYNC_SCHEDULER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_SYNC_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/sync_scheduler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

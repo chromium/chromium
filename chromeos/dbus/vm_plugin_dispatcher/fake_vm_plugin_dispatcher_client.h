@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 

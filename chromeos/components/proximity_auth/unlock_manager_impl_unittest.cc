@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"

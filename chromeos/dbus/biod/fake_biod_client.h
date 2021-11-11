@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"

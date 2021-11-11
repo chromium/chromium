@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_LOGIN_STATE_LOGIN_STATE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

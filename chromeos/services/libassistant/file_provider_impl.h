@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "libassistant/shared/public/platform_file.h"
 
 namespace chromeos {

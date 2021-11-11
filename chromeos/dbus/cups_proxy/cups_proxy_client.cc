@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cups_proxy/fake_cups_proxy_client.h"
 #include "dbus/bus.h"

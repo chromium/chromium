@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_PROFILE_PREF_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"

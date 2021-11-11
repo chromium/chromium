@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 

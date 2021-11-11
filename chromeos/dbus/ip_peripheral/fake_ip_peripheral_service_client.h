@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 
 namespace chromeos {

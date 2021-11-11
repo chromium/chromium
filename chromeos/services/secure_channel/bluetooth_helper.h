@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"

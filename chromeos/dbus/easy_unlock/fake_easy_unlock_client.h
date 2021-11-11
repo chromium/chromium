@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 
 namespace chromeos {

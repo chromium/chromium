@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

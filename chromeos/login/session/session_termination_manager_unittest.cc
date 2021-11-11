@@ -4,7 +4,6 @@
 
 #include "chromeos/login/session/session_termination_manager.h"
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"

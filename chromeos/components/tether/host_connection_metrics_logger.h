@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/active_host.h"
 
 namespace base {

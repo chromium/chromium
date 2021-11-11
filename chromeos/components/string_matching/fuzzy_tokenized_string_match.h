@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
 

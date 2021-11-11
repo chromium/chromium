@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/network/network_connection_handler.h"
 
 namespace chromeos {

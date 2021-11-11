@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/sync_scheduler.h"
 

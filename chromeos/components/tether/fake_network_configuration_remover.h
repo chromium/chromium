@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/network_configuration_remover.h"
 
 namespace chromeos {

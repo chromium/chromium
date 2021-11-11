@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"

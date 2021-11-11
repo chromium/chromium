@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_system.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

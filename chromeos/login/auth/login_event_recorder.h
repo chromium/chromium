@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_AUTH_LOGIN_EVENT_RECORDER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace chromeos {
 

@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"

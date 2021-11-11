@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

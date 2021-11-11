@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"

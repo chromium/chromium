@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 
 namespace chromeos {

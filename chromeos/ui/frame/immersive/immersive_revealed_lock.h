@@ -6,7 +6,6 @@
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_REVEALED_LOCK_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {

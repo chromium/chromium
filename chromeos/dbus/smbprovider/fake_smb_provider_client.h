@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
 
 namespace chromeos {

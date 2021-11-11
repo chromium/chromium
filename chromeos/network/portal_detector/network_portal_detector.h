@@ -6,7 +6,6 @@
 #define CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkState when moved to
 // chrome/browser/ash/.

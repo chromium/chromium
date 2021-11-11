@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"

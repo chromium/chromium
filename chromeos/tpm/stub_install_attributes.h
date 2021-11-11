@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/tpm/install_attributes.h"
 
 namespace chromeos {

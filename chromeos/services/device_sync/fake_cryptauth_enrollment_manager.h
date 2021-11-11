@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_STATUS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"

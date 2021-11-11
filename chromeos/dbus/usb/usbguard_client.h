@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_USB_USBGUARD_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/usb/usbguard_observer.h"
 
 namespace dbus {

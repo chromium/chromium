@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_update.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

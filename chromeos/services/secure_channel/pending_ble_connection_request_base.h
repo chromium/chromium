@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/pending_connection_request_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 

@@ -10,7 +10,6 @@
 #include "chromeos/attestation/attestation_flow.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class AccountId;

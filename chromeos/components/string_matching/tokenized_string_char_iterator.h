@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 
 namespace base {

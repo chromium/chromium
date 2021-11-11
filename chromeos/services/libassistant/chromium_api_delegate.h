@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "chromeos/assistant/internal/buildflags.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"

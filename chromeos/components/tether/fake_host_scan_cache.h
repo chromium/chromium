@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/host_scan_cache.h"
 
 namespace chromeos {

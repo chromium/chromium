@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"

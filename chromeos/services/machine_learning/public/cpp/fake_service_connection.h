@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"

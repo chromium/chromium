@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"

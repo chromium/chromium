@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "ui/aura/window_observer.h"

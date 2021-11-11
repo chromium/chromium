@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"

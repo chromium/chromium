@@ -5,7 +5,6 @@
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"

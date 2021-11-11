@@ -4,7 +4,6 @@
 
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"

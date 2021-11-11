@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {

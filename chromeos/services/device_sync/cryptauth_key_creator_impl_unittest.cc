@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"

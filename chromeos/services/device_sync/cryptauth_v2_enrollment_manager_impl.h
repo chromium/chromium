@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"

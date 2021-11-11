@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/stub_authenticator.h"

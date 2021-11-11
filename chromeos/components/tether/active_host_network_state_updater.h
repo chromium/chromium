@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_ACTIVE_HOST_NETWORK_STATE_UPDATER_H_
 #define CHROMEOS_COMPONENTS_TETHER_ACTIVE_HOST_NETWORK_STATE_UPDATER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/active_host.h"
 

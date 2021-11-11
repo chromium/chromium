@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry.h"
 

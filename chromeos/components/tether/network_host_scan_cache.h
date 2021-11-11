@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/host_scan_cache.h"
 #include "chromeos/components/tether/tether_host_response_recorder.h"

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_OOBE_COMPLETION_TRACKER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_OOBE_COMPLETION_TRACKER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 

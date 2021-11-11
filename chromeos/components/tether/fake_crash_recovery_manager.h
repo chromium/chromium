@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_CRASH_RECOVERY_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/crash_recovery_manager.h"
 
 namespace chromeos {

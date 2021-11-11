@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"

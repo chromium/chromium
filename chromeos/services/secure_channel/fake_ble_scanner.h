@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_scanner.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 

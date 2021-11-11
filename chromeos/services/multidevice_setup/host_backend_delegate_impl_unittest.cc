@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"

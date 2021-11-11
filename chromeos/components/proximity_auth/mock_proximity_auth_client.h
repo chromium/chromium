@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/proximity_auth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

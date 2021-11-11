@@ -8,7 +8,6 @@
 #include <queue>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"

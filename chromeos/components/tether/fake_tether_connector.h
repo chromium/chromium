@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_CONNECTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/tether_connector.h"
 #include "chromeos/network/network_connection_handler.h"
 

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/values.h"

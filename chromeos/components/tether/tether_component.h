@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_COMPONENT_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_COMPONENT_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {

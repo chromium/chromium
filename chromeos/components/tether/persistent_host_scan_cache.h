@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_PERSISTENT_HOST_SCAN_CACHE_H_
 #define CHROMEOS_COMPONENTS_TETHER_PERSISTENT_HOST_SCAN_CACHE_H_
 
-#include "base/macros.h"
 #include "chromeos/components/tether/host_scan_cache.h"
 
 namespace chromeos {

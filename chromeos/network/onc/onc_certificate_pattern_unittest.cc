@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"

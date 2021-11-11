@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/cellular_setup_base.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

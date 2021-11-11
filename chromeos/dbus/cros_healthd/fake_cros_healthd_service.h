@@ -10,7 +10,6 @@
 
 #include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "ash/services/network_health/public/mojom/network_health.mojom.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"

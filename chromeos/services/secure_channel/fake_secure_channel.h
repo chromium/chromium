@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_base.h"

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"

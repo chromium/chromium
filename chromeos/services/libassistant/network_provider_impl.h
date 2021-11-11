@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "libassistant/shared/public/platform_net.h"

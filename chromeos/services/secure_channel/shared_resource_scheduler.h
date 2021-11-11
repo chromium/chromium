@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

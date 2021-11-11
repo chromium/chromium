@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/cec_service/cec_service_client.h"
 
 namespace chromeos {

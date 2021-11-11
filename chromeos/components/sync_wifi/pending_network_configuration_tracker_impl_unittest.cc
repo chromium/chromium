@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 #define CHROMEOS_COMPONENTS_TETHER_SYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace tether {

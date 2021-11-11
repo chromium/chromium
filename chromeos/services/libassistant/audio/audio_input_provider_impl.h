@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "chromeos/services/libassistant/audio/audio_input_impl.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 

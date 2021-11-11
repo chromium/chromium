@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"

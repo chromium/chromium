@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/chromeos_export.h"
 
 namespace chromeos {

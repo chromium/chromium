@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_LOCK_HANDLER_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_LOCK_HANDLER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 
 namespace proximity_auth {

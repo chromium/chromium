@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_SYNCER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 
 namespace cryptauthv2 {

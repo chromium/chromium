@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_BASE_H_
 #define CHROMEOS_SERVICES_CELLULAR_SETUP_CELLULAR_SETUP_BASE_H_
 
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/components/tether/crash_recovery_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

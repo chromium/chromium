@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list_types.h"
 #include "base/task/task_runner.h"

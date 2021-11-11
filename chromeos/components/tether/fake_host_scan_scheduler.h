@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_FAKE_HOST_SCAN_SCHEDULER_H_
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_HOST_SCAN_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/tether/host_scan_scheduler.h"
 
 namespace chromeos {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/cellular_setup/cellular_setup_base.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

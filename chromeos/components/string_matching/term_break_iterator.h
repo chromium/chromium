@@ -10,8 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace base {
 namespace i18n {
 class UTF16CharIterator;

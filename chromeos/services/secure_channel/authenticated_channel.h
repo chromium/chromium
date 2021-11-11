@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"

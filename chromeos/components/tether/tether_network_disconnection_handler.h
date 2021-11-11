@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_NETWORK_DISCONNECTION_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/active_host.h"
 #include "chromeos/network/network_state_handler_observer.h"

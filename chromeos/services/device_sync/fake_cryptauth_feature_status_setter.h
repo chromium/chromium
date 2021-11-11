@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_setter.h"

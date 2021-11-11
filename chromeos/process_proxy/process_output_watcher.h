@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {

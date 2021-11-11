@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CLIENT_CHANNEL_OBSERVER_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CLIENT_CHANNEL_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 
 namespace chromeos {

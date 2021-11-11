@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "dbus/object_proxy.h"

@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/login_manager/arc.pb.h"

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace proximity_auth {
 
 // Interface for setting and getting persistent user preferences. There is an

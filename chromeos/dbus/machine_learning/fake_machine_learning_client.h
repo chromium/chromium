@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 
 namespace chromeos {

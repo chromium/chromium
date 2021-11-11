@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/system_clock/fake_system_clock_client.h"
 #include "dbus/bus.h"

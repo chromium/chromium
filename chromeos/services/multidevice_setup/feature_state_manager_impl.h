@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FEATURE_STATE_MANAGER_IMPL_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"

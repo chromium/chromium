@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/tether/message_wrapper.h"

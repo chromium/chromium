@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

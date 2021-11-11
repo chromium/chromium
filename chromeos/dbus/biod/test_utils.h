@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/dbus/biod/biod_client.h"
 
 namespace dbus {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/foreground_eid_generator.h"
 
 namespace chromeos {

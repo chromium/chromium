@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier_impl.h"

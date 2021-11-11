@@ -7,7 +7,6 @@
 
 #include <ostream>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 
 namespace chromeos {

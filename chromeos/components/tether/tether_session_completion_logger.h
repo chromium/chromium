@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 #define CHROMEOS_COMPONENTS_TETHER_TETHER_SESSION_COMPLETION_LOGGER_H_
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace tether {

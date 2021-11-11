@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
 namespace chromeos {

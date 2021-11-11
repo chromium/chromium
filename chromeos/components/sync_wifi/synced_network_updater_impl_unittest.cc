@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"

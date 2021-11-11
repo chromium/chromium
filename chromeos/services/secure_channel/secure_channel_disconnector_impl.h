@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 #include "chromeos/services/secure_channel/secure_channel_disconnector.h"
 

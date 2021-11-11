@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"

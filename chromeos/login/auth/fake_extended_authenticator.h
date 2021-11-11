@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_AUTH_FAKE_EXTENDED_AUTHENTICATOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 

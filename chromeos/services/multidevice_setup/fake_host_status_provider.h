@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 
 namespace chromeos {
