@@ -58,7 +58,6 @@ js_library("firmware_update_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
-    "//ash/webui/firmware_update_ui/resources:fake_update_controller",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_app",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
