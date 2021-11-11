@@ -109,6 +109,7 @@ if (enable_vulkan) {
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/gfx",
+      "//ui/gl",
     ]
 
     public_deps = [

@@ -23,6 +23,10 @@ specific_include_rules = {
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
   ],
+  "gl_angle_util_vulkan.cc": [
+    "+third_party/angle/include/EGL/egl.h",
+    "+third_party/angle/include/EGL/eglext.h",
+  ],
   "gl_angle_util_win.cc": [
     "+third_party/angle/include/EGL/egl.h",
     "+third_party/angle/include/EGL/eglext.h",

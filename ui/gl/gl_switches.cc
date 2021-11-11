@@ -245,6 +245,10 @@ const base::Feature kDefaultANGLEVulkan{"DefaultANGLEVulkan",
 const base::Feature kTrackCurrentShaders{"TrackCurrentShaders",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable sharing Vulkan device queue with ANGLE's Vulkan backend.
+const base::Feature kVulkanFromANGLE{"VulkanFromANGLE",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsDefaultANGLEVulkan() {
 #if defined(OS_ANDROID)
   // No support for devices before Q -- exit before checking feature flags
