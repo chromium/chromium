@@ -80,7 +80,8 @@ import java.util.List;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.BOOKMARKS_REFRESH})
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.BOOKMARKS_REFRESH,
+        ChromeFeatureList.CHROME_MANAGEMENT_PAGE})
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -616,6 +617,25 @@ public class AppMenuPropertiesDelegateUnitTest {
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
     }
 
+    @Test
+    public void managedByMenuItem_Enabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(false /*isNativePage*/, false /*showTranslate*/, false /*showUpdate*/,
+                false /*showMoveToOtherWindow*/, false /*showReaderModePrefs*/,
+                true /*showAddToHomeScreen*/, false /*showPaintPreview*/,
+                false /*isAutoDarkEnabled*/);
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowManagedByMenuItem(any(Tab.class));
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
+        Assert.assertNotNull(managedByMenuItem);
+        Assert.assertTrue(managedByMenuItem.isVisible());
+        Assert.assertTrue(managedByMenuItem.isEnabled());
+    }
+
     private void setUpMocksForPageMenu() {
         when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mOverviewModeBehavior.overviewVisible()).thenReturn(false);
@@ -735,4 +755,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .thenReturn(isAutoDarkEnabled ? ContentSettingValues.DEFAULT
                                               : ContentSettingValues.BLOCK);
     }
+
+    private void verifyManagedByMenuItem(boolean chromeManagementPageEnabled) {}
 }
