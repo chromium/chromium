@@ -7464,20 +7464,8 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledOmnibox",
+                    "name": "Enabled",
                     "enable_features": [
-                        "SharingHubDesktopOmnibox"
-                    ],
-                    "disable_features": [
-                        "SharingHubDesktopAppMenu"
-                    ]
-                },
-                {
-                    "name": "EnabledAppMenu",
-                    "enable_features": [
-                        "SharingHubDesktopAppMenu"
-                    ],
-                    "disable_features": [
                         "SharingHubDesktopOmnibox"
                     ]
                 }
