@@ -29,10 +29,26 @@ Status DomTracker::GetFrameIdForNode(
 
 Status DomTracker::OnConnected(DevToolsClient* client) {
   node_to_frame_map_.clear();
-  // Fetch the root document node so that Inspector will push DOM node
-  // information to the client.
+  // Fetch the root document and traverse it populating node_to_frame_map_.
+  // The map will be updated later whenever Inspector pushes DOM node information to the client.
   base::DictionaryValue params;
-  return client->SendCommand("DOM.getDocument", params);
+  params.SetInteger("depth", -1);
+  std::unique_ptr<base::DictionaryValue> result;
+  auto status =
+      client->SendCommandAndGetResult("DOM.getDocument", params, &result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const base::Value* root;
+  if (result->Get("root", &root)) {
+    ProcessNode(*root);
+  } else {
+    status =
+        Status(kUnknownError, "DOM.getDocument missing 'root' in the response");
+  }
+
+  return status;
 }
 
 Status DomTracker::OnEvent(DevToolsClient* client,
