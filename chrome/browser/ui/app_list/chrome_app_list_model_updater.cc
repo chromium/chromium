@@ -692,7 +692,8 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
 
 void ChromeAppListModelUpdater::RequestMoveItemToFolder(
     std::string id,
-    const std::string& folder_id) {
+    const std::string& folder_id,
+    ash::RequestMoveToFolderReason reason) {
   DCHECK(!folder_id.empty());
 
   // The target position relies on the items under the target folder. Therefore
@@ -711,6 +712,25 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
 
   SetItemFolderId(id, folder_id);
   SetItemPosition(id, target_position);
+
+  if (!is_under_temporary_sort())
+    return;
+
+  DCHECK(temporary_sort_manager_->is_active());
+
+  // When user moves a local item to a folder, the user is believed to accept
+  // the item layout after reordering. Therefore local positions are committed.
+  if (reason == ash::RequestMoveToFolderReason::kMergeSecondItem ||
+      reason == ash::RequestMoveToFolderReason::kMoveItem) {
+    // Clear the sort order. Note that the folder that is created by merging may
+    // not be placed following the temporary sort order. Therefore the sort
+    // order is cleared.
+    EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
+
+    // TODO(https://crbug.com/1267417): now `target_position` is incorrect when
+    // app list is under temporary sort. When this issue gets fixed, commit the
+    // sort order as well as local positions if `reason` is kMoveItem.
+  }
 }
 
 void ChromeAppListModelUpdater::RequestMoveItemToRoot(

@@ -120,7 +120,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                              const syncer::StringOrdinal& new_position,
                              ash::RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id) override;
+                               const std::string& folder_id,
+                               ash::RequestMoveToFolderReason reason) override;
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override;
 

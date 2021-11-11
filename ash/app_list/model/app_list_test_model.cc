@@ -84,8 +84,10 @@ void AppListTestModel::RequestPositionUpdate(
   SetItemMetadata(id, std::move(metadata));
 }
 
-void AppListTestModel::RequestMoveItemToFolder(std::string id,
-                                               const std::string& folder_id) {
+void AppListTestModel::RequestMoveItemToFolder(
+    std::string id,
+    const std::string& folder_id,
+    RequestMoveToFolderReason reason) {
   // Copy the logic of `ChromeAppListModelUpdater::HandleMoveItemToFolder()`.
 
   AppListFolderItem* dest_folder = FindOrCreateFolderItem(folder_id);

@@ -162,8 +162,8 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
       LOG(WARNING) << "MergeItems called with OEM folder as target";
       return "";
     }
-    app_list_model_delegate_->RequestMoveItemToFolder(source_item_id,
-                                                      target_item_id);
+    app_list_model_delegate_->RequestMoveItemToFolder(
+        source_item_id, target_item_id, RequestMoveToFolderReason::kMoveItem);
     return target_folder->id();
   }
 
@@ -179,10 +179,12 @@ const std::string AppListModel::MergeItems(const std::string& target_item_id,
           std::move(new_folder_ptr), ReparentItemReason::kAdd));
 
   // Add the items to the new folder.
-  app_list_model_delegate_->RequestMoveItemToFolder(target_item_id,
-                                                    new_folder_id);
-  app_list_model_delegate_->RequestMoveItemToFolder(source_item_id,
-                                                    new_folder_id);
+  app_list_model_delegate_->RequestMoveItemToFolder(
+      target_item_id, new_folder_id,
+      RequestMoveToFolderReason::kMergeFirstItem);
+  app_list_model_delegate_->RequestMoveItemToFolder(
+      source_item_id, new_folder_id,
+      RequestMoveToFolderReason::kMergeSecondItem);
 
   return new_folder->id();
 }

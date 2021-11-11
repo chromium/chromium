@@ -31,7 +31,8 @@ class AppListModelDelegate {
   // Requests the owner to move the item indexed by `id` into the specified
   // folder.
   virtual void RequestMoveItemToFolder(std::string id,
-                                       const std::string& folder_id) = 0;
+                                       const std::string& folder_id,
+                                       RequestMoveToFolderReason reason) = 0;
 
   // Requests the owner to move the item indexed by `id` out of its parent
   // folder. `target_position` is the item position after move.
