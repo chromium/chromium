@@ -370,6 +370,14 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                                      uintptr_t* buffers,
                                                      size_t buffer_size);
 
+  // Creates a self-releasing VASurface with specified usage hints. The
+  // ownership of the surface is transferred to the caller. |size| should be
+  // the desired surface dimensions.
+  scoped_refptr<VASurface> CreateVASurfaceWithUsageHints(
+      unsigned int va_rt_format,
+      const gfx::Size& size,
+      const std::vector<SurfaceUsageHint>& usage_hints);
+
   // Implementations of the pixmap exporter for both types of VASurface.
   // See ExportVASurfaceAsNativePixmapDmaBufUnwrapped() for further
   // documentation.

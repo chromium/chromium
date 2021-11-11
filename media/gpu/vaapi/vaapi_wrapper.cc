@@ -2245,6 +2245,19 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
                        base::BindOnce(&VaapiWrapper::DestroySurface, this));
 }
 
+scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
+    unsigned int va_rt_format,
+    const gfx::Size& size,
+    const std::vector<SurfaceUsageHint>& usage_hints) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  std::vector<VASurfaceID> surfaces;
+  if (!CreateSurfaces(va_rt_format, size, usage_hints, 1, &surfaces))
+    return nullptr;
+  return new VASurface(surfaces[0], size, va_rt_format,
+                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+}
+
 std::unique_ptr<NativePixmapAndSizeInfo>
 VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     VASurfaceID va_surface_id,
