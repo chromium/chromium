@@ -135,6 +135,7 @@ class ArcMetricsService : public KeyedService,
       mojom::ArcImageCopyPasteCompatAction action_type) override;
   void ReportArcNetworkEvent(mojom::ArcNetworkEvent event) override;
   void ReportArcNetworkError(mojom::ArcNetworkError error) override;
+  void ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.

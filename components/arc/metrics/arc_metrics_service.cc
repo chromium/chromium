@@ -390,6 +390,11 @@ void ArcMetricsService::NotifyOOMKillCount(unsigned long count) {
     obs.OnArcOOMKillCount(count);
 }
 
+void ArcMetricsService::ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.App.PrimaryAbi", abi);
+}
+
 void ArcMetricsService::ReportArcCorePriAbiMigEvent(
     mojom::ArcCorePriAbiMigEvent event_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

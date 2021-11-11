@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module arc.mojom;
 
@@ -203,6 +203,17 @@ struct AppKill {
   uint32 count;
 };
 
+// Describes the primary ABI for an app
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AppPrimaryAbi {
+  kNone = 0,
+  kArm = 1,
+  kArm64 = 2,
+  kX86 = 3,
+  kX86_64 = 4,
+};
+
 // Outlines the various states that can arise while performing Primary ABI
 // Migration on a ChromeOS device.
 [Extensible]
@@ -388,6 +399,9 @@ interface MetricsHost {
 
   // Reports occurrence of one error in the ARC networking stack.
   [MinVersion=16] ReportArcNetworkError@20(ArcNetworkError error);
+
+  // Reports primary ABI of an app during app launch.
+  [MinVersion=18] ReportAppPrimaryAbi@21(AppPrimaryAbi abi);
 };
 
 // Next method ID: 3

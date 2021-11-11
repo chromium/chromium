@@ -202,6 +202,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi" expires_after="M102">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Emitted for each app launched with ArcAppLauncher. Records the primary ABI
+    used for the app. This will let us know if 32-bit binaries are still being
+    used or if 32-bit support is not needed anymore.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AppCount" units="units" expires_after="2022-04-24">
   <owner>elijahtaylor@google.com</owner>
   <owner>shihuis@google.com</owner>
