@@ -58,10 +58,11 @@ bool ShouldButtonBeVisible() {
   // `kOverviewButton` from chrome://flags or from the command line. Even though
   // the user is not in the group of existing desks users. Note, can be removed
   // once the experiment is done.
-  if (base::FeatureList::IsEnabled(features::kOverviewButton) &&
-      (desks_restore_util::HasPrimaryUserUsedDesksRecently() ||
-       base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-           features::kOverviewButton.name))) {
+  if (base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kOverviewButton.name,
+          base::FeatureList::OVERRIDE_ENABLE_FEATURE) ||
+      (base::FeatureList::IsEnabled(features::kOverviewButton) &&
+       desks_restore_util::HasPrimaryUserUsedDesksRecently())) {
     return true;
   }
 

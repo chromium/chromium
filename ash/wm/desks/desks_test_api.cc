@@ -86,6 +86,11 @@ DesksTestApi::GetPersistentDesksBarDeskButtons() {
 }
 
 // static
+bool DesksTestApi::HasVerticalDotsButton() {
+  return GetDesksBarView()->vertical_dots_button_;
+}
+
+// static
 bool DesksTestApi::IsDesksBarLeftGradientVisible() {
   return !GetDesksBarView()
               ->gradient_layer_delegate_->start_fade_zone_bounds()
