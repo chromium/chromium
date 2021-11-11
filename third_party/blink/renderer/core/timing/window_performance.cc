@@ -157,6 +157,18 @@ AtomicString SameOriginAttribution(Frame* observer_frame,
   return SameOriginKeyword();
 }
 
+bool IsEventTypeForInteractionId(const AtomicString& type) {
+  return type == event_type_names::kPointercancel ||
+         type == event_type_names::kPointerdown ||
+         type == event_type_names::kPointerup ||
+         type == event_type_names::kClick ||
+         type == event_type_names::kKeydown ||
+         type == event_type_names::kKeyup ||
+         type == event_type_names::kCompositionstart ||
+         type == event_type_names::kCompositionend ||
+         type == event_type_names::kInput;
+}
+
 }  // namespace
 
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
@@ -546,6 +558,8 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     absl::optional<int> key_code,
     absl::optional<PointerId> pointer_id,
     ResponsivenessMetrics::EventTimestamps event_timestamps) {
+  if (!IsEventTypeForInteractionId(entry->name()))
+    return true;
   // We set the interactionId and record the metric in the
   // same logic, so we need to ignore the return value when InteractionId is
   // disabled.

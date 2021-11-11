@@ -170,6 +170,12 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
               WTF::UnsignedWithZeroKeyHashTraits<PointerId>>
       pointer_id_entry_map_;
   HeapTaskRunnerTimer<ResponsivenessMetrics> pointer_flush_timer_;
+  // The PointerId of the last pointerdown or pointerup event processed. Used to
+  // know which interactionId to use for click events. If pointecancel or
+  // keyboard events are seen, the value is reset. TODO(crbug.com/1264930):
+  // remove this attribute once PointerId for clicks correctly points to the
+  // same value as its corresponding pointerdown and pointerup.
+  absl::optional<PointerId> last_pointer_id_;
 
   uint32_t current_interaction_id_for_event_timing_;
 

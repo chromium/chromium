@@ -1377,4 +1377,20 @@ TEST_F(InteractionIdTest, MultiTouch) {
                   {30, 50, UserInteractionType::kTapOrClick}});
 }
 
+TEST_F(InteractionIdTest, ClickIncorrectPointerId) {
+  // On mobile, in cases where touchstart is skipped, click does not get the
+  // correct pointerId. See crbug.com/1264930 for more details.
+  std::vector<EventForInteraction> events = {
+      {event_type_names::kPointerup, absl::nullopt, 1, GetTimeStamp(100),
+       GetTimeStamp(130)},
+      {event_type_names::kClick, absl::nullopt, 0, GetTimeStamp(120),
+       GetTimeStamp(160)}};
+  std::vector<uint32_t> ids = SimulateInteractionIds(events);
+  EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
+  EXPECT_EQ(ids[0], ids[1]) << "Pointerup and click have same interaction id";
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+  CheckUKMValues({{40, 60, UserInteractionType::kTapOrClick}});
+}
+
 }  // namespace blink
