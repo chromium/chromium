@@ -444,7 +444,6 @@ void TracingUnitTest::SetUp() {
   test_handle_ = PerfettoTracedProcess::SetupForTesting(
       base::ThreadTaskRunnerHandle::Get());
   PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
-  PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
 
   // Wait for any posted construction tasks to execute.
   RunUntilIdle();
