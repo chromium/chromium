@@ -67,6 +67,7 @@ void CreateNewWindow(bool incognito, bool post_task) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(CreateNewWindow, incognito, /*post_task=*/false));
+    return;
   }
 
   ash::NewWindowDelegate::GetInstance()->NewWindow(
