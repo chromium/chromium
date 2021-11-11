@@ -33,7 +33,7 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
 
   ScopedLightModeAsDefault scoped_light_mode_as_default;
   label_ = AddChildView(CreateShareLabel(
-      std::u16string(), CONTEXT_SHARESHEET_BUBBLE_BODY,
+      std::u16string(), CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonLabelColorBlue),
       gfx::ALIGN_CENTER));
