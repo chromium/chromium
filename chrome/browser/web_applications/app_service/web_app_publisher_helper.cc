@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +21,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/app_service/link_capturing_migration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -37,7 +40,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -190,6 +192,26 @@ apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
 }
 
 }  // namespace
+
+void UninstallImpl(WebAppProvider* provider,
+                   const std::string& app_id,
+                   apps::mojom::UninstallSource uninstall_source,
+                   gfx::NativeWindow parent_window) {
+  WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(provider);
+  if (!web_app_ui_manager) {
+    return;
+  }
+
+  WebAppDialogManager& web_app_dialog_manager =
+      web_app_ui_manager->dialog_manager();
+  if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
+    webapps::WebappUninstallSource webapp_uninstall_source =
+        WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
+            uninstall_source);
+    web_app_dialog_manager.UninstallWebApp(app_id, webapp_uninstall_source,
+                                           parent_window, base::DoNothing());
+  }
+}
 
 WebAppPublisherHelper::Delegate::Delegate() = default;
 
@@ -355,6 +377,35 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
     target->push_back(std::move(permission));
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
+    const WebApp* web_app) {
+  apps::Readiness readiness =
+      web_app->is_locally_installed()
+          ? (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
+                                        : apps::Readiness::kReady)
+          : apps::Readiness::kDisabledByUser;
+#if defined(OS_CHROMEOS)
+  DCHECK(web_app->chromeos_data().has_value());
+  if (web_app->chromeos_data()->is_disabled)
+    readiness = apps::Readiness::kDisabledByPolicy;
+#endif
+
+  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id(),
+      readiness, web_app->name());
+
+  app->description = web_app->description();
+
+  // Web App's publisher_id the start url.
+  app->publisher_id = web_app->start_url().spec();
+
+  app->icon_key =
+      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  return app;
+}
+#endif
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
@@ -552,22 +603,14 @@ bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
 }
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
-                                     apps::mojom::IconKeyPtr icon_key,
-                                     apps::mojom::IconType icon_type,
+                                     const apps::IconKey& icon_key,
+                                     apps::IconType icon_type,
                                      int32_t size_hint_in_dip,
                                      LoadIconCallback callback) {
   DCHECK(provider_);
-
-  if (icon_key) {
-    LoadIconFromWebApp(
-        profile_, apps::ConvertMojomIconTypeToIconType(icon_type),
-        size_hint_in_dip, app_id,
-        static_cast<IconEffects>(icon_key->icon_effects),
-        apps::IconValueToMojomIconValueCallback(std::move(callback)));
-    return;
-  }
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
+                     static_cast<IconEffects>(icon_key.icon_effects),
+                     std::move(callback));
 }
 
 content::WebContents* WebAppPublisherHelper::Launch(

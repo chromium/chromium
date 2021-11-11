@@ -13,6 +13,10 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -92,6 +96,35 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
     service_->Init();
+    ConfigureWebAppProvider();
+  }
+
+  void ConfigureWebAppProvider() {
+    auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
+    url_loader_ = url_loader.get();
+
+    auto externally_managed_app_manager =
+        std::make_unique<web_app::ExternallyManagedAppManagerImpl>(profile());
+    externally_managed_app_manager->SetUrlLoaderForTesting(
+        std::move(url_loader));
+
+    auto* const provider = web_app::FakeWebAppProvider::Get(profile());
+    provider->SetExternallyManagedAppManager(
+        std::move(externally_managed_app_manager));
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::string CreateWebApp(const std::string& app_name) {
+    const GURL kAppUrl("https://example.com/");
+
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->title = base::UTF8ToUTF16(app_name);
+    web_app_info->start_url = kAppUrl;
+    web_app_info->scope = kAppUrl;
+    web_app_info->user_display_mode = web_app::DisplayMode::kStandalone;
+
+    return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -124,6 +157,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     EXPECT_EQ(apps::Readiness::kUninstalledByUser,
               cache.states_[app_id]->readiness);
   }
+
+ private:
+  web_app::TestWebAppUrlLoader* url_loader_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -274,6 +310,16 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   service_->AddExtension(store.get());
   VerifyApp(AppType::kExtension, store->id(), store->name(), Readiness::kReady);
 }
+
+TEST_F(PublisherTest, WebAppsOnApps) {
+  const std::string kAppName = "Web App";
+  auto app_id = CreateWebApp(kAppName);
+  AppServiceTest app_service_test_;
+  app_service_test_.SetUp(profile());
+
+  VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps

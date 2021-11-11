@@ -83,9 +83,8 @@ void PublisherHost::Shutdown() {
 #endif
 
 void PublisherHost::Initialize() {
-  auto* profile = proxy_->profile();
-  auto& app_service = proxy_->AppService();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* profile = proxy_->profile();
   if (!g_omit_built_in_apps_for_testing_) {
     built_in_chrome_os_apps_ = std::make_unique<BuiltInChromeOsApps>(proxy_);
   }
@@ -106,10 +105,9 @@ void PublisherHost::Initialize() {
       chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(proxy_);
   }
-  web_apps_ = std::make_unique<web_app::WebApps>(
-      app_service, &proxy_->InstanceRegistry(), profile);
+  web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
 #else
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service, profile);
+  web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
   extension_apps_ = std::make_unique<ExtensionApps>(proxy_);
 #endif
 }

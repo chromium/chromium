@@ -4,7 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
-#include "chrome/browser/web_applications/app_service/web_apps.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 
@@ -35,9 +35,8 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   // On non-ChromeOS, publishers run the remove dialog.
   apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kWeb) {
-    web_app::WebApps::UninstallImpl(
-        web_app::WebAppProvider::GetForWebApps(profile_), app_id,
-        uninstall_source, parent_window);
+    web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
+                           app_id, uninstall_source, parent_window);
   }
 }
 
