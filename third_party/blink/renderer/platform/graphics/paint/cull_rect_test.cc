@@ -112,8 +112,6 @@ TEST_F(CullRectTest, ApplyTransformInfinite) {
 }
 
 TEST_F(CullRectTest, ApplyScrollTranslationPartialScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(20, 10, 40, 50);
   scroll_state.contents_size = gfx::Size(8000, 8000);
@@ -142,8 +140,6 @@ TEST_F(CullRectTest, ApplyScrollTranslationPartialScrollingContents) {
 
 TEST_F(CullRectTest,
        ApplyNonCompositedScrollTranslationPartialScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(20, 10, 40, 50);
   scroll_state.contents_size = gfx::Size(8000, 8000);
@@ -169,8 +165,6 @@ TEST_F(CullRectTest,
 }
 
 TEST_F(CullRectTest, ApplyScrollTranslationNoIntersectionWithContainerRect) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(200, 100, 40, 50);
   scroll_state.contents_size = gfx::Size(2000, 2000);
@@ -187,8 +181,6 @@ TEST_F(CullRectTest, ApplyScrollTranslationNoIntersectionWithContainerRect) {
 
 TEST_F(CullRectTest,
        ApplyNonCompositedScrollTranslationNoIntersectionWithContainerRect) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(200, 100, 40, 50);
   scroll_state.contents_size = gfx::Size(2000, 2000);
@@ -203,8 +195,6 @@ TEST_F(CullRectTest,
 }
 
 TEST_F(CullRectTest, ApplyScrollTranslationWholeScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(20, 10, 40, 50);
   scroll_state.contents_size = gfx::Size(2000, 2000);
@@ -231,8 +221,6 @@ TEST_F(CullRectTest, ApplyScrollTranslationWholeScrollingContents) {
 
 TEST_F(CullRectTest,
        ApplyNonCompositedScrollTranslationWholeScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   ScrollPaintPropertyNode::State scroll_state;
   scroll_state.container_rect = gfx::Rect(20, 10, 40, 50);
   scroll_state.contents_size = gfx::Size(2000, 2000);
@@ -257,7 +245,6 @@ TEST_F(CullRectTest,
 }
 
 TEST_F(CullRectTest, ChangedEnoughEmpty) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   EXPECT_FALSE(ChangedEnough(gfx::Rect(), gfx::Rect()));
   EXPECT_FALSE(ChangedEnough(gfx::Rect(1, 1, 0, 0), gfx::Rect(2, 2, 0, 0)));
   EXPECT_TRUE(ChangedEnough(gfx::Rect(), gfx::Rect(0, 0, 1, 1)));
@@ -265,7 +252,6 @@ TEST_F(CullRectTest, ChangedEnoughEmpty) {
 }
 
 TEST_F(CullRectTest, ChangedNotEnough) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   gfx::Rect old_rect(100, 100, 100, 100);
   EXPECT_FALSE(ChangedEnough(old_rect, old_rect));
   EXPECT_FALSE(ChangedEnough(old_rect, gfx::Rect(100, 100, 90, 90)));
@@ -274,7 +260,6 @@ TEST_F(CullRectTest, ChangedNotEnough) {
 }
 
 TEST_F(CullRectTest, ChangedEnoughOnMovement) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   gfx::Rect old_rect(100, 100, 100, 100);
   gfx::Rect new_rect(old_rect);
   new_rect.Offset(500, 0);
@@ -288,7 +273,6 @@ TEST_F(CullRectTest, ChangedEnoughOnMovement) {
 }
 
 TEST_F(CullRectTest, ChangedEnoughNewRectTouchingEdge) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   gfx::Rect bounds(0, 0, 500, 500);
   gfx::Rect old_rect(100, 100, 100, 100);
   // Top edge.
@@ -322,7 +306,6 @@ TEST_F(CullRectTest, ChangedEnoughNewRectTouchingEdge) {
 }
 
 TEST_F(CullRectTest, ChangedEnoughOldRectTouchingEdge) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   gfx::Rect bounds(0, 0, 500, 500);
   gfx::Rect new_rect(100, 100, 300, 300);
   // Top edge.
@@ -348,7 +331,6 @@ TEST_F(CullRectTest, ChangedEnoughOldRectTouchingEdge) {
 }
 
 TEST_F(CullRectTest, ApplyPaintPropertiesSameState) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   auto transform =
       CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(1, 2, 3, 4));
@@ -378,7 +360,6 @@ TEST_F(CullRectTest, ApplyPaintPropertiesSameState) {
 }
 
 TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto t2 = CreateTransform(*t1, TransformationMatrix().Translate(10, 20));
   PropertyTreeState root = PropertyTreeState::Root();
@@ -406,8 +387,6 @@ TEST_F(CullRectTest, ApplyPaintPropertiesWithoutClipScroll) {
 }
 
 TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
   auto ref_scroll_translation_state = CreateCompositedScrollTranslationState(
@@ -436,7 +415,6 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
 }
 
 TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto t2 = CreateTransform(*t1, TransformationMatrix().Scale(0.5),
                             FloatPoint3D(50, 100, 0));
@@ -449,8 +427,6 @@ TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
 }
 
 TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = Create2DTranslation(t0(), 1, 2);
   PropertyTreeState state1(*t1, c0(), e0());
 
@@ -488,8 +464,6 @@ TEST_F(CullRectTest, SingleScrollPartialScrollingContents) {
 }
 
 TEST_F(CullRectTest, TransformUnderScrollTranslation) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = Create2DTranslation(t0(), 1, 2);
   PropertyTreeState state1(*t1, c0(), e0());
   auto scroll_translation_state = CreateCompositedScrollTranslationState(
@@ -526,8 +500,6 @@ TEST_F(CullRectTest, TransformUnderScrollTranslation) {
 }
 
 TEST_F(CullRectTest, TransformEscapingScroll) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   PropertyTreeState root = PropertyTreeState::Root();
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(111, 222, 333, 444));
@@ -561,8 +533,6 @@ TEST_F(CullRectTest, TransformEscapingScroll) {
 }
 
 TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
 
@@ -595,8 +565,6 @@ TEST_F(CullRectTest, SmallScrollContentsAfterBigScrollContents) {
 }
 
 TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   PropertyTreeState state1(*t1, c0(), e0());
 
@@ -642,8 +610,6 @@ TEST_F(CullRectTest, BigScrollContentsAfterSmallScrollContents) {
 }
 
 TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(10, 20));
@@ -670,8 +636,6 @@ TEST_F(CullRectTest, NonCompositedTransformUnderClip) {
 }
 
 TEST_F(CullRectTest, CompositedTranslationUnderClip) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   PropertyTreeState root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto t1 = CreateTransform(
@@ -708,8 +672,6 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
 }
 
 TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto root = PropertyTreeState::Root();
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(0, 10000, 100, 100));
   auto t1 = Create2DTranslation(t0(), 0, 10000);
@@ -768,8 +730,6 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
 // Test for multiple clips (e.g., overflow clip and inner border radius)
 // associated with the same scroll translation.
 TEST_F(CullRectTest, MultipleClips) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto t1 = Create2DTranslation(t0(), 0, 0);
   auto scroll_translation = CreateCompositedScrollTranslation(
       *t1, 0, 0, gfx::Rect(0, 0, 100, 100), gfx::Size(100, 2000));
@@ -787,8 +747,6 @@ TEST_F(CullRectTest, MultipleClips) {
 }
 
 TEST_F(CullRectTest, ClipWithNonIntegralOffsetAndZeroSize) {
-  ScopedCullRectUpdateForTest cull_rect_update(true);
-
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(0.4, 0.6, 0, 0));
   PropertyTreeState source = PropertyTreeState::Root();
   PropertyTreeState destination(t0(), *clip, e0());

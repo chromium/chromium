@@ -20,11 +20,7 @@ class PaintPropertyTreeUpdateTest : public PaintPropertyTreeBuilderTest {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeUpdateTest,
-                         ::testing::Values(0,
-                                           kCompositeAfterPaint,
-                                           kUnderInvalidationChecking,
-                                           kCompositeAfterPaint |
-                                               kUnderInvalidationChecking));
+                         ::testing::Values(0, kUnderInvalidationChecking));
 
 TEST_P(PaintPropertyTreeUpdateTest,
        ThreadedScrollingDisabledMainThreadScrollReason) {

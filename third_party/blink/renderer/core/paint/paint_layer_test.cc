@@ -454,20 +454,17 @@ LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) {
 enum OverlayType { kOverlayResizer, kOverlayScrollbars };
 
 class ReorderOverlayOverflowControlsTest
-    : public testing::WithParamInterface<std::tuple<unsigned, OverlayType>>,
-      private ScopedCompositeAfterPaintForTest,
+    : public testing::WithParamInterface<OverlayType>,
       public RenderingTest {
  public:
   ReorderOverlayOverflowControlsTest()
-      : ScopedCompositeAfterPaintForTest(std::get<0>(GetParam()) &
-                                         kCompositeAfterPaint),
-        RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
-  ~ReorderOverlayOverflowControlsTest() {
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+  ~ReorderOverlayOverflowControlsTest() override {
     // Must destruct all objects before toggling back feature flags.
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  OverlayType GetOverlayType() const { return std::get<1>(GetParam()); }
+  OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
     GetDocument().getElementById(id)->setAttribute(
@@ -489,11 +486,10 @@ class ReorderOverlayOverflowControlsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReorderOverlayOverflowControlsTest,
-    ::testing::Combine(::testing::Values(0, kCompositeAfterPaint),
-                       ::testing::Values(kOverlayScrollbars, kOverlayResizer)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReorderOverlayOverflowControlsTest,
+                         ::testing::Values(kOverlayScrollbars,
+                                           kOverlayResizer));
 
 TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
   SetBodyInnerHTML(R"HTML(

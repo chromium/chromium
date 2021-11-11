@@ -31,13 +31,9 @@ class PaintControllerTest : public PaintTestConfigurations,
               ElementsAre(IsPaintChunk(0, size, DefaultRootChunkId(), \
                                        DefaultPaintChunkProperties())))
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PaintControllerTest,
-    testing::Values(0,
-                    kCompositeAfterPaint,
-                    kUnderInvalidationChecking,
-                    kCompositeAfterPaint | kUnderInvalidationChecking));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintControllerTest,
+                         testing::Values(0, kUnderInvalidationChecking));
 TEST_P(PaintControllerTest, NestedRecorders) {
   GraphicsContext context(GetPaintController());
   FakeDisplayItemClient& client =

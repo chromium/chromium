@@ -729,7 +729,6 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
-  ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
@@ -779,7 +778,6 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
-  ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =
@@ -838,7 +836,6 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
-  ScopedCompositeAfterPaintForTest cap(true);
   Vector<PaintChunk> chunks;
   PaintChunker chunker(chunks);
   FakeDisplayItemClient& client1 =

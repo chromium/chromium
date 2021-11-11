@@ -88,6 +88,12 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   {% endfor %}
 
+  // TODO(crbug.com/471333): This is temporary during removal of
+  // pre-CompositeAfterPaint code after M97 branch, to reduce chance of conflict
+  // when merging into M97. This will be removed before M98 branch.
+  static bool CompositeAfterPaintEnabled() { return true; }
+  static bool CullRectUpdateEnabled() { return true; }
+
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.
   {% for feature_set in feature_sets %}

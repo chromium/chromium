@@ -1460,8 +1460,7 @@ class CompositedPlugin : public FakeWebPlugin {
 
 }  // namespace
 
-TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
-  ScopedCompositeAfterPaintForTest enable_cap(true);
+TEST_F(WebPluginContainerTest, CompositedPlugin) {
   RegisterMockedURL("plugin.html");
   // Must outlive |web_view_helper|
   CustomPluginWebFrameClient<CompositedPlugin> web_frame_client;

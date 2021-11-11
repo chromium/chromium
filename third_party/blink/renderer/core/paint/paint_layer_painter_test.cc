@@ -792,11 +792,7 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnBecomingNonSelfPainting) {
   EXPECT_TRUE(html_layer.NeedsPaintPhaseDescendantOutlines());
 }
 
-using PaintLayerPainterTestCAP = PaintLayerPainterTest;
-
-INSTANTIATE_CAP_TEST_SUITE_P(PaintLayerPainterTestCAP);
-
-TEST_P(PaintLayerPainterTestCAP, SimpleCullRect) {
+TEST_P(PaintLayerPainterTest, SimpleCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
          style='width: 200px; height: 200px; position: relative'>
@@ -807,7 +803,7 @@ TEST_P(PaintLayerPainterTestCAP, SimpleCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, TallLayerCullRect) {
+TEST_P(PaintLayerPainterTest, TallLayerCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
          style='width: 200px; height: 10000px; position: relative'>
@@ -820,7 +816,7 @@ TEST_P(PaintLayerPainterTestCAP, TallLayerCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, WideLayerCullRect) {
+TEST_P(PaintLayerPainterTest, WideLayerCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
          style='width: 10000px; height: 200px; position: relative'>
@@ -832,7 +828,7 @@ TEST_P(PaintLayerPainterTestCAP, WideLayerCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, TallScrolledLayerCullRect) {
+TEST_P(PaintLayerPainterTest, TallScrolledLayerCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 200px; height: 12000px; position: relative'>
     </div>
@@ -864,7 +860,7 @@ TEST_P(PaintLayerPainterTestCAP, TallScrolledLayerCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, WholeDocumentCullRect) {
+TEST_P(PaintLayerPainterTest, WholeDocumentCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   GetDocument().GetSettings()->SetMainFrameClipsContent(false);
   SetBodyInnerHTML(R"HTML(
@@ -915,7 +911,7 @@ TEST_P(PaintLayerPainterTestCAP, WholeDocumentCullRect) {
                    kBackgroundType)));
 }
 
-TEST_P(PaintLayerPainterTestCAP, VerticalRightLeftWritingModeDocument) {
+TEST_P(PaintLayerPainterTest, VerticalRightLeftWritingModeDocument) {
   SetBodyInnerHTML(R"HTML(
     <style>
       html { writing-mode: vertical-rl; }
@@ -942,7 +938,7 @@ TEST_P(PaintLayerPainterTestCAP, VerticalRightLeftWritingModeDocument) {
 // the tests are modified to use composited scrolling. Will change these back to
 // their original version when we support expansion for all composited layers.
 // Will be done in CullRectUpdate.
-TEST_P(PaintLayerPainterTestCAP, ScaledCullRect) {
+TEST_P(PaintLayerPainterTest, ScaledCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -957,7 +953,7 @@ TEST_P(PaintLayerPainterTestCAP, ScaledCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, ScaledAndRotatedCullRect) {
+TEST_P(PaintLayerPainterTest, ScaledAndRotatedCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -976,7 +972,7 @@ TEST_P(PaintLayerPainterTestCAP, ScaledAndRotatedCullRect) {
 
 // This is a testcase for https://crbug.com/1227907 where repeated cull rect
 // updates are expensive on the motionmark microbenchmark.
-TEST_P(PaintLayerPainterTestCAP, OptimizeNonCompositedTransformUpdate) {
+TEST_P(PaintLayerPainterTest, OptimizeNonCompositedTransformUpdate) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {
@@ -1001,7 +997,7 @@ TEST_P(PaintLayerPainterTestCAP, OptimizeNonCompositedTransformUpdate) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, 3DRotated90DegreesCullRect) {
+TEST_P(PaintLayerPainterTest, 3DRotated90DegreesCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -1017,7 +1013,7 @@ TEST_P(PaintLayerPainterTestCAP, 3DRotated90DegreesCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, 3DRotatedNear90DegreesCullRect) {
+TEST_P(PaintLayerPainterTest, 3DRotatedNear90DegreesCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -1035,7 +1031,7 @@ TEST_P(PaintLayerPainterTestCAP, 3DRotatedNear90DegreesCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, PerspectiveCullRect) {
+TEST_P(PaintLayerPainterTest, PerspectiveCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id=target style='transform: perspective(1000px) rotateX(-100deg);'>
       <div style='width: 2000px; height: 3000px></div>
@@ -1047,7 +1043,7 @@ TEST_P(PaintLayerPainterTestCAP, PerspectiveCullRect) {
                   .Contains(gfx::Rect(0, 0, 2000, 3000)));
 }
 
-TEST_P(PaintLayerPainterTestCAP, 3D45DegRotatedTallCullRect) {
+TEST_P(PaintLayerPainterTest, 3D45DegRotatedTallCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target'
          style='width: 200px; height: 10000px; transform: rotateY(45deg)'>
@@ -1061,7 +1057,7 @@ TEST_P(PaintLayerPainterTestCAP, 3D45DegRotatedTallCullRect) {
                   .Contains(gfx::Rect(0, 0, 200, 10000)));
 }
 
-TEST_P(PaintLayerPainterTestCAP, FixedPositionInNonScrollableViewCullRect) {
+TEST_P(PaintLayerPainterTest, FixedPositionInNonScrollableViewCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 1000px; height: 2000px;
                             position: fixed; top: 100px; left: 200px;'>
@@ -1074,7 +1070,7 @@ TEST_P(PaintLayerPainterTestCAP, FixedPositionInNonScrollableViewCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, FixedPositionInScrollableViewCullRect) {
+TEST_P(PaintLayerPainterTest, FixedPositionInScrollableViewCullRect) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='width: 1000px; height: 2000px;
                             position: fixed; top: 100px; left: 200px;'>
@@ -1086,7 +1082,7 @@ TEST_P(PaintLayerPainterTestCAP, FixedPositionInScrollableViewCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, LayerOffscreenNearCullRect) {
+TEST_P(PaintLayerPainterTest, LayerOffscreenNearCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -1100,7 +1096,7 @@ TEST_P(PaintLayerPainterTestCAP, LayerOffscreenNearCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, LayerOffscreenFarCullRect) {
+TEST_P(PaintLayerPainterTest, LayerOffscreenFarCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <div style='width: 200px; height: 300px; overflow: scroll;
@@ -1115,7 +1111,7 @@ TEST_P(PaintLayerPainterTestCAP, LayerOffscreenFarCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, ScrollingLayerCullRect) {
+TEST_P(PaintLayerPainterTest, ScrollingLayerCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1138,7 +1134,7 @@ TEST_P(PaintLayerPainterTestCAP, ScrollingLayerCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, NonCompositedScrollingLayerCullRect) {
+TEST_P(PaintLayerPainterTest, NonCompositedScrollingLayerCullRect) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1156,7 +1152,7 @@ TEST_P(PaintLayerPainterTestCAP, NonCompositedScrollingLayerCullRect) {
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
-TEST_P(PaintLayerPainterTestCAP, ClippedBigLayer) {
+TEST_P(PaintLayerPainterTest, ClippedBigLayer) {
   SetBodyInnerHTML(R"HTML(
     <div style='width: 1px; height: 1px; overflow: hidden'>
       <div id='target'

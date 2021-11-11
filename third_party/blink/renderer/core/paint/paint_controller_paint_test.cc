@@ -22,9 +22,6 @@ namespace blink {
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PaintControllerPaintTest);
 
-using PaintControllerPaintTestForCAP = PaintControllerPaintTest;
-INSTANTIATE_CAP_TEST_SUITE_P(PaintControllerPaintTestForCAP);
-
 TEST_P(PaintControllerPaintTest, InlineRelayout) {
   SetBodyInnerHTML(
       "<div id='div' style='width:100px; height: 200px'>AAAAAAAAAA "
@@ -114,7 +111,7 @@ TEST_P(PaintControllerPaintTest, CompositingNoFold) {
                           IsSameId(sub_div.Id(), kBackgroundType)));
 }
 
-TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
+TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none }
@@ -194,7 +191,7 @@ TEST_P(PaintControllerPaintTestForCAP, FrameScrollingContents) {
                                        contents_properties)));
 }
 
-TEST_P(PaintControllerPaintTestForCAP, BlockScrollingNonLayeredContents) {
+TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none }
@@ -279,7 +276,7 @@ TEST_P(PaintControllerPaintTestForCAP, BlockScrollingNonLayeredContents) {
                        container.FirstFragment().ContentsProperties())));
 }
 
-TEST_P(PaintControllerPaintTestForCAP, ScrollHitTestOrder) {
+TEST_P(PaintControllerPaintTest, ScrollHitTestOrder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none }
@@ -337,7 +334,7 @@ TEST_P(PaintControllerPaintTestForCAP, ScrollHitTestOrder) {
               container.FirstFragment().ContentsProperties())));
 }
 
-TEST_P(PaintControllerPaintTestForCAP, NonStackingScrollHitTestOrder) {
+TEST_P(PaintControllerPaintTest, NonStackingScrollHitTestOrder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none }
@@ -418,7 +415,7 @@ TEST_P(PaintControllerPaintTestForCAP, NonStackingScrollHitTestOrder) {
               pos_z_child.FirstFragment().LocalBorderBoxProperties())));
 }
 
-TEST_P(PaintControllerPaintTestForCAP, StackingScrollHitTestOrder) {
+TEST_P(PaintControllerPaintTest, StackingScrollHitTestOrder) {
   SetBodyInnerHTML(R"HTML(
     <style>
       ::-webkit-scrollbar { display: none }
@@ -495,7 +492,7 @@ TEST_P(PaintControllerPaintTestForCAP, StackingScrollHitTestOrder) {
               pos_z_child.FirstFragment().LocalBorderBoxProperties())));
 }
 
-TEST_P(PaintControllerPaintTestForCAP,
+TEST_P(PaintControllerPaintTest,
        NonStackingScrollHitTestOrderWithoutBackground) {
   SetBodyInnerHTML(R"HTML(
     <style>

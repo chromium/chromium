@@ -11,16 +11,14 @@
 
 namespace blink {
 
-enum { kCompositeAfterPaint = 1 << 0, kUnderInvalidationChecking = 1 << 1 };
+enum { kUnderInvalidationChecking = 1 << 0 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
-      private ScopedCompositeAfterPaintForTest,
       private ScopedPaintUnderInvalidationCheckingForTest {
  public:
   PaintTestConfigurations()
-      : ScopedCompositeAfterPaintForTest(GetParam() & kCompositeAfterPaint),
-        ScopedPaintUnderInvalidationCheckingForTest(
+      : ScopedPaintUnderInvalidationCheckingForTest(
             GetParam() & kUnderInvalidationChecking) {}
   ~PaintTestConfigurations() {
     // Must destruct all objects before toggling back feature flags.
@@ -28,16 +26,10 @@ class PaintTestConfigurations
   }
 };
 
+// For now this has only one configuration, but can be extended in the future
+// to include more configurations.
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(All, test_class,        \
-                           ::testing::Values(0, kCompositeAfterPaint))
-
-#define INSTANTIATE_PRE_CAP_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class, ::testing::Values(0))
-
-#define INSTANTIATE_CAP_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(All, test_class,      \
-                           ::testing::Values(kCompositeAfterPaint))
 
 }  // namespace blink
 

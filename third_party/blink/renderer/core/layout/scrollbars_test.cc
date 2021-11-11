@@ -1577,11 +1577,7 @@ class ScrollbarAppearanceTest : public ScrollbarsTest {
 // Test both overlay and non-overlay scrollbars.
 INSTANTIATE_TEST_SUITE_P(All,
                          ScrollbarAppearanceTest,
-                         ::testing::Values(0,
-                                           kUseOverlayScrollbars,
-                                           kCompositeAfterPaint,
-                                           kUseOverlayScrollbars |
-                                               kCompositeAfterPaint));
+                         ::testing::Values(0, kUseOverlayScrollbars));
 
 // Make sure native scrollbar can change by Emulator.
 // Disable on Android since Android always enable OverlayScrollbar.

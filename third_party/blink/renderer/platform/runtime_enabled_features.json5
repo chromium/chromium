@@ -414,10 +414,6 @@
       status: "experimental",
     },
     {
-      name: "CompositeAfterPaint",
-      status: "stable",
-    },
-    {
       name: "CompositeBGColorAnimation",
       status: "experimental",
     },
@@ -801,10 +797,6 @@
     {
       name: "CSSVariables2TransformValues",
       status: "test",
-    },
-    {
-      name: "CullRectUpdate",
-      implied_by: ["CompositeAfterPaint"],
     },
     {
       name: "CustomElementDefaultStyle",

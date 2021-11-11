@@ -2259,8 +2259,6 @@ TEST_F(WebFrameTest, DocumentElementClientHeightWorksWithWrapContentMode) {
 }
 
 TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
-  ScopedCompositeAfterPaintForTest cap(false);
-
   RegisterMockedHttpURLLoad("0-by-0.html");
 
   int viewport_width = 640;
@@ -2275,16 +2273,11 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
 
   LocalFrameView* frame_view =
       web_view_helper.GetWebView()->MainFrameImpl()->GetFrameView();
-  GraphicsLayer* scroll_container =
-      frame_view->GetLayoutView()->Compositor()->RootGraphicsLayer();
 
   EXPECT_EQ(IntSize(), frame_view->GetLayoutSize());
-  EXPECT_EQ(gfx::Size(), scroll_container->Size());
-
   web_view_helper.Resize(gfx::Size(viewport_width, 0));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   EXPECT_EQ(IntSize(viewport_width, 0), frame_view->GetLayoutSize());
-  EXPECT_EQ(gfx::Size(viewport_width, 0), scroll_container->Size());
 
   // The flag ForceZeroLayoutHeight will cause the following resize of viewport
   // height to be ignored by the outer viewport (the container layer of
@@ -2294,8 +2287,6 @@ TEST_F(WebFrameTest, SetForceZeroLayoutHeightWorksWithWrapContentMode) {
   EXPECT_FALSE(frame_view->NeedsLayout());
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
   EXPECT_EQ(IntSize(viewport_width, 0), frame_view->GetLayoutSize());
-  EXPECT_EQ(gfx::Size(viewport_width, viewport_height),
-            scroll_container->Size());
 
   LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
   VisualViewport& visual_viewport = frame->GetPage()->GetVisualViewport();
@@ -3442,7 +3433,6 @@ TEST_F(WebFrameTest, DISABLED_updateOverlayScrollbarLayers)
 TEST_F(WebFrameTest, updateOverlayScrollbarLayers)
 #endif
 {
-  ScopedCompositeAfterPaintForTest cap(false);
   RegisterMockedHttpURLLoad("large-div.html");
 
   int view_width = 500;
@@ -3456,14 +3446,15 @@ TEST_F(WebFrameTest, updateOverlayScrollbarLayers)
                                 base_url_ + "large-div.html");
 
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
-  LocalFrameView* view = web_view_helper.LocalMainFrame()->GetFrameView();
-  EXPECT_TRUE(view->LayoutViewport()->LayerForHorizontalScrollbar());
-  EXPECT_TRUE(view->LayoutViewport()->LayerForVerticalScrollbar());
+  const cc::Layer* root_layer =
+      web_view_helper.GetLayerTreeHost()->root_layer();
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "HorizontalScrollbar").size());
+  EXPECT_EQ(1u, CcLayersByName(root_layer, "VerticalScrollbar").size());
 
   web_view_helper.Resize(gfx::Size(view_width * 10, view_height * 10));
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
-  EXPECT_FALSE(view->LayoutViewport()->LayerForHorizontalScrollbar());
-  EXPECT_FALSE(view->LayoutViewport()->LayerForVerticalScrollbar());
+  EXPECT_EQ(0u, CcLayersByName(root_layer, "HorizontalScrollbar").size());
+  EXPECT_EQ(0u, CcLayersByName(root_layer, "VerticalScrollbar").size());
 }
 
 void SetScaleAndScrollAndLayout(WebViewImpl* web_view,
@@ -6418,13 +6409,10 @@ TEST_F(WebFrameTest, MoveCaretStaysHorizontallyAlignedWhenMoved) {
 
 class CompositedSelectionBoundsTest
     : public WebFrameTest,
-      public testing::WithParamInterface<bool>,
-      private ScopedCompositedSelectionUpdateForTest,
-      private ScopedCompositeAfterPaintForTest {
+      private ScopedCompositedSelectionUpdateForTest {
  protected:
   CompositedSelectionBoundsTest()
-      : ScopedCompositedSelectionUpdateForTest(true),
-        ScopedCompositeAfterPaintForTest(GetParam()) {
+      : ScopedCompositedSelectionUpdateForTest(true) {
     RegisterMockedHttpURLLoad("Ahem.ttf");
 
     web_view_helper_.Initialize(nullptr, nullptr);
@@ -6649,81 +6637,70 @@ class CompositedSelectionBoundsTest
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
-TEST_P(CompositedSelectionBoundsTest, None) {
+TEST_F(CompositedSelectionBoundsTest, None) {
   RunTestWithNoSelection("composited_selection_bounds_none.html");
 }
-TEST_P(CompositedSelectionBoundsTest, NoneReadonlyCaret) {
+TEST_F(CompositedSelectionBoundsTest, NoneReadonlyCaret) {
   RunTestWithNoSelection(
       "composited_selection_bounds_none_readonly_caret.html");
 }
-TEST_P(CompositedSelectionBoundsTest, DetachedFrame) {
+TEST_F(CompositedSelectionBoundsTest, DetachedFrame) {
   RunTestWithNoSelection("composited_selection_bounds_detached_frame.html");
 }
 
-TEST_P(CompositedSelectionBoundsTest, Basic) {
+TEST_F(CompositedSelectionBoundsTest, Basic) {
   RunTest("composited_selection_bounds_basic.html");
 }
-TEST_P(CompositedSelectionBoundsTest, Transformed) {
+TEST_F(CompositedSelectionBoundsTest, Transformed) {
   RunTest("composited_selection_bounds_transformed.html");
 }
-TEST_P(CompositedSelectionBoundsTest, VerticalRightToLeft) {
+TEST_F(CompositedSelectionBoundsTest, VerticalRightToLeft) {
   RunTest("composited_selection_bounds_vertical_rl.html");
 }
-TEST_P(CompositedSelectionBoundsTest, VerticalLeftToRight) {
+TEST_F(CompositedSelectionBoundsTest, VerticalLeftToRight) {
   RunTest("composited_selection_bounds_vertical_lr.html");
 }
-TEST_P(CompositedSelectionBoundsTest, BasicRTL) {
+TEST_F(CompositedSelectionBoundsTest, BasicRTL) {
   RunTest("composited_selection_bounds_basic_rtl.html");
 }
-TEST_P(CompositedSelectionBoundsTest, VerticalRightToLeftRTL) {
+TEST_F(CompositedSelectionBoundsTest, VerticalRightToLeftRTL) {
   RunTest("composited_selection_bounds_vertical_rl_rtl.html");
 }
-TEST_P(CompositedSelectionBoundsTest, VerticalLeftToRightRTL) {
+TEST_F(CompositedSelectionBoundsTest, VerticalLeftToRightRTL) {
   RunTest("composited_selection_bounds_vertical_lr_rtl.html");
 }
-TEST_P(CompositedSelectionBoundsTest, SplitLayer) {
+TEST_F(CompositedSelectionBoundsTest, SplitLayer) {
   RunTest("composited_selection_bounds_split_layer.html");
 }
-TEST_P(CompositedSelectionBoundsTest, Iframe) {
+TEST_F(CompositedSelectionBoundsTest, Iframe) {
   RunTestWithMultipleFiles("composited_selection_bounds_iframe.html",
                            {"composited_selection_bounds_basic.html"});
 }
-TEST_P(CompositedSelectionBoundsTest, Editable) {
+TEST_F(CompositedSelectionBoundsTest, Editable) {
   web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_editable.html");
 }
-TEST_P(CompositedSelectionBoundsTest, EditableDiv) {
+TEST_F(CompositedSelectionBoundsTest, EditableDiv) {
   RunTest("composited_selection_bounds_editable_div.html");
 }
-TEST_P(CompositedSelectionBoundsTest, SVGBasic) {
+TEST_F(CompositedSelectionBoundsTest, SVGBasic) {
   RunTest("composited_selection_bounds_svg_basic.html");
 }
-TEST_P(CompositedSelectionBoundsTest, SVGTextWithFragments) {
+TEST_F(CompositedSelectionBoundsTest, SVGTextWithFragments) {
   RunTest("composited_selection_bounds_svg_text_with_fragments.html");
 }
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #if !defined(OS_ANDROID)
-TEST_P(CompositedSelectionBoundsTest, Input) {
+TEST_F(CompositedSelectionBoundsTest, Input) {
   web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_input.html");
 }
-TEST_P(CompositedSelectionBoundsTest, InputScrolled) {
+TEST_F(CompositedSelectionBoundsTest, InputScrolled) {
   web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
   RunTest("composited_selection_bounds_input_scrolled.html");
 }
 #endif
 #endif
-
-struct CompositedSelectionBoundsTestPassToString {
-  std::string operator()(const testing::TestParamInfo<bool> b) const {
-    return b.param ? "CAP" : "NonCAP";
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CompositedSelectionBoundsTest,
-                         testing::Bool(),
-                         CompositedSelectionBoundsTestPassToString());
 
 class CompositedSelectionBoundsTestWithImage
     : public CompositedSelectionBoundsTest {
@@ -6733,22 +6710,17 @@ class CompositedSelectionBoundsTestWithImage
   }
 };
 
-TEST_P(CompositedSelectionBoundsTestWithImage, Replaced) {
+TEST_F(CompositedSelectionBoundsTestWithImage, Replaced) {
   RunTest("composited_selection_bounds_replaced.html");
 }
 
-TEST_P(CompositedSelectionBoundsTestWithImage, ReplacedRTL) {
+TEST_F(CompositedSelectionBoundsTestWithImage, ReplacedRTL) {
   RunTest("composited_selection_bounds_replaced_rtl.html");
 }
 
-TEST_P(CompositedSelectionBoundsTestWithImage, ReplacedVerticalLR) {
+TEST_F(CompositedSelectionBoundsTestWithImage, ReplacedVerticalLR) {
   RunTest("composited_selection_bounds_replaced_vertical_lr.html");
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CompositedSelectionBoundsTestWithImage,
-                         testing::Bool(),
-                         CompositedSelectionBoundsTestPassToString());
 
 class TestWillInsertBodyWebFrameClient final
     : public frame_test_helpers::TestWebFrameClient {

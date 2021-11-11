@@ -690,12 +690,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   // overlap testing.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
                                    mojom::blink::ScrollType::kProgrammatic);
-  if (GetParam() & kCompositeAfterPaint) {
-    // CAP doesn't request compositing inputs update on scroll offset changes.
-    EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
-  } else {
-    EXPECT_TRUE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(scrollable_area->Layer()->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(FloatSize(0, 1), scrollable_area->GetScrollOffset());
 }

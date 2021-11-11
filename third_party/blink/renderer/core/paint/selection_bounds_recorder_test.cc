@@ -14,12 +14,9 @@ namespace blink {
 
 class SelectionBoundsRecorderTest : public PaintControllerPaintTestBase,
                                     public testing::WithParamInterface<bool>,
-                                    public ScopedLayoutNGForTest,
-                                    public ScopedCompositeAfterPaintForTest {
+                                    public ScopedLayoutNGForTest {
  public:
-  SelectionBoundsRecorderTest()
-      : ScopedLayoutNGForTest(GetParam()),
-        ScopedCompositeAfterPaintForTest(true) {}
+  SelectionBoundsRecorderTest() : ScopedLayoutNGForTest(GetParam()) {}
 };
 
 struct SelectionBoundsRecorderTestPassToString {
