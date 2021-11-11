@@ -94,10 +94,9 @@ void RecordNetworkResultWithAndWithoutSuffix(const std::string& metric,
                                              const std::string& suffix,
                                              int net_error,
                                              int response_code) {
-  V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-      metric.c_str(), net_error, response_code);
-  V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-      (metric + suffix).c_str(), net_error, response_code);
+  RecordHttpResponseOrErrorCode(metric.c_str(), net_error, response_code);
+  RecordHttpResponseOrErrorCode((metric + suffix).c_str(), net_error,
+                                response_code);
 }
 
 RTLookupRequest::OSType GetRTLookupRequestOSType() {

@@ -297,18 +297,6 @@ base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
 }
 
 // static
-void V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-    const char* metric_name,
-    int net_error,
-    int response_code) {
-  base::UmaHistogramSparse(
-      metric_name,
-      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
-          ? response_code
-          : net_error);
-}
-
-// static
 void V4ProtocolManagerUtil::GetRequestUrlAndHeaders(
     const std::string& request_base64,
     const std::string& method_name,

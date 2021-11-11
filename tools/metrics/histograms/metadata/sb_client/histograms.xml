@@ -776,6 +776,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.NetworkRequestDuration" units="ms"
+    expires_after="2022-11-09">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the the duration of a network request due to a client side phishing
+    ping.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-11-09">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending a network request
+    due to a client side phishing ping.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.PageCapturedMatchesBrowserURL"
     enum="BooleanMatched" expires_after="2021-01-27">
   <obsolete>

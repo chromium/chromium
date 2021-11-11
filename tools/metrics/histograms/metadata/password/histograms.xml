@@ -3212,6 +3212,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Response or error codes for PasswordProtectionRequest. Logged after chrome
     receives response of PasswordProtectionRequest from Safe Browsing service.
+
+    Note: In M98 the error code HTTP_RESPONSE_CODE_FAILURE was changed to log
+    the actual HTTP response code.
   </summary>
 </histogram>
 

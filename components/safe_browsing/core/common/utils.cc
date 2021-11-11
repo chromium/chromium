@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -126,6 +127,16 @@ void SetAccessTokenAndClearCookieInResourceRequest(
   if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookiesInAuthRequests)) {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   }
+}
+
+void RecordHttpResponseOrErrorCode(const char* metric_name,
+                                   int net_error,
+                                   int response_code) {
+  base::UmaHistogramSparse(
+      metric_name,
+      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
+          ? response_code
+          : net_error);
 }
 
 }  // namespace safe_browsing
