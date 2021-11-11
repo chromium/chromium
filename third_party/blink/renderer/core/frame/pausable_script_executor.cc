@@ -141,28 +141,24 @@ void PromiseAggregator::OnAllSettled(v8::Isolate* isolate) {
 
 class WebScriptExecutor : public PausableScriptExecutor::Executor {
  public:
-  WebScriptExecutor(const HeapVector<ScriptSourceCode>& sources,
+  WebScriptExecutor(Vector<WebScriptSource>,
                     int32_t world_id,
                     bool user_gesture);
 
   Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(sources_);
-    PausableScriptExecutor::Executor::Trace(visitor);
-  }
-
  private:
-  HeapVector<ScriptSourceCode> sources_;
+  Vector<WebScriptSource> sources_;
   int32_t world_id_;
   bool user_gesture_;
 };
 
-WebScriptExecutor::WebScriptExecutor(
-    const HeapVector<ScriptSourceCode>& sources,
-    int32_t world_id,
-    bool user_gesture)
-    : sources_(sources), world_id_(world_id), user_gesture_(user_gesture) {}
+WebScriptExecutor::WebScriptExecutor(Vector<WebScriptSource> sources,
+                                     int32_t world_id,
+                                     bool user_gesture)
+    : sources_(std::move(sources)),
+      world_id_(world_id),
+      user_gesture_(user_gesture) {}
 
 Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
     LocalDOMWindow* window) {
@@ -286,14 +282,14 @@ void PausableScriptExecutor::ContextDestroyed() {
 PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
     scoped_refptr<DOMWrapperWorld> world,
-    const HeapVector<ScriptSourceCode>& sources,
+    Vector<WebScriptSource> sources,
     bool user_gesture,
     WebScriptExecutionCallback* callback)
     : PausableScriptExecutor(
           window,
           ToScriptState(window, *world),
           callback,
-          MakeGarbageCollected<WebScriptExecutor>(sources,
+          MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
                                                   world->GetWorldId(),
                                                   user_gesture)) {}
 

@@ -933,11 +933,10 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   scoped_refptr<DOMWrapperWorld> isolated_world =
       DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(frame_), world_id);
-  ScriptSourceCode source_code = ScriptSourceCode(javascript);
-  HeapVector<ScriptSourceCode> sources;
-  sources.Append(&source_code, 1);
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      DomWindow(), std::move(isolated_world), sources, false /* user_gesture */,
+      DomWindow(), std::move(isolated_world),
+      Vector<WebScriptSource>({WebScriptSource(javascript)}),
+      false /* user_gesture */,
       MakeGarbageCollected<JavaScriptIsolatedWorldRequest>(
           frame_, wants_result, std::move(callback)));
   executor->Run();

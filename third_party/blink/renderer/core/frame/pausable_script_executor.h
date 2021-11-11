@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PAUSABLE_SCRIPT_EXECUTOR_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
@@ -18,7 +19,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class ScriptSourceCode;
 class ScriptState;
 class WebScriptExecutionCallback;
 
@@ -47,7 +47,7 @@ class CORE_EXPORT PausableScriptExecutor final
 
   PausableScriptExecutor(LocalDOMWindow*,
                          scoped_refptr<DOMWrapperWorld>,
-                         const HeapVector<ScriptSourceCode>&,
+                         Vector<WebScriptSource>,
                          bool,
                          WebScriptExecutionCallback*);
   PausableScriptExecutor(LocalDOMWindow*,

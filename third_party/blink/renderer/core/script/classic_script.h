@@ -15,6 +15,8 @@
 
 namespace blink {
 
+struct WebScriptSource;
+
 class CORE_EXPORT ClassicScript final : public Script {
  public:
   // For scripts specified in the HTML spec.
@@ -34,6 +36,9 @@ class CORE_EXPORT ClassicScript final : public Script {
   // otherwise add comments why kDoNotSanitize should be used.
   static ClassicScript* CreateUnspecifiedScript(
       const ScriptSourceCode&,
+      SanitizeScriptErrors = SanitizeScriptErrors::kSanitize);
+  static ClassicScript* CreateUnspecifiedScript(
+      const WebScriptSource&,
       SanitizeScriptErrors = SanitizeScriptErrors::kSanitize);
 
   void Trace(Visitor*) const override;
