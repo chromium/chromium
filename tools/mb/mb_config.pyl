@@ -285,14 +285,9 @@
       'Libfuzzer Upload Linux UBSan': 'libfuzzer_ubsan_release_bot',
       'Libfuzzer Upload Mac ASan': 'libfuzzer_mac_asan_shared_release_bot',
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
-      'Linux ASan LSan Builder (reclient shadow)': 'asan_lsan_release_trybot_reclient',
-      'Linux Builder (dbg) (reclient shadow)': 'gpu_tests_debug_bot_reclient',
-      'Linux Builder (dbg)(32) (reclient shadow)': 'gpu_tests_debug_bot_x86_reclient',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
-      'Linux MSan Builder (reclient shadow)': 'msan_release_bot_reclient',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
-      'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
@@ -307,13 +302,8 @@
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
-      'Mojo Linux (reclient shadow)': 'release_trybot_minimal_symbols_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'VR Linux': 'vr_release_bot_reclient',
-      'VR Linux (reclient)': 'vr_release_bot_reclient',
-      'WebKit Linux ASAN (reclient shadow)': 'asan_lsan_release_bot_blink_reclient',
-      'WebKit Linux Leak (reclient shadow)': 'release_bot_blink_reclient',
-      'WebKit Linux MSAN (reclient shadow)': 'msan_release_bot_blink_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
@@ -1769,10 +1759,6 @@
 
     'asan_lsan_release_trybot': [
       'asan', 'lsan', 'release_trybot_minimal_symbols',
-    ],
-
-    'asan_lsan_release_trybot_reclient': [
-      'asan', 'lsan', 'release_trybot_reclient',
     ],
 
     'autofill_assistant_release_trybot': [

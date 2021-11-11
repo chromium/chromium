@@ -179,42 +179,6 @@
       "use_libfuzzer": true
     }
   },
-  "Linux ASan LSan Builder (reclient shadow)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_lsan": true,
-      "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "Linux Builder (dbg) (reclient shadow)": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "Linux Builder (dbg)(32) (reclient shadow)": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "Linux Builder (j-500) (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -238,28 +202,6 @@
       "use_rbe": true,
       "use_remoteexec": true,
       "use_thin_lto": true
-    }
-  },
-  "Linux MSan Builder (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_msan": true,
-      "msan_track_origins": 2,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "Linux TSan Builder (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_tsan": true,
-      "use_rbe": true,
-      "use_remoteexec": true
     }
   },
   "Linux Viz": {
@@ -325,17 +267,6 @@
       "use_goma": true
     }
   },
-  "Mojo Linux (reclient shadow)": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
   "Site Isolation Android": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -357,54 +288,6 @@
       "is_component_build": false,
       "is_debug": false,
       "use_ozone": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "VR Linux (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_vr": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_ozone": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "WebKit Linux ASAN (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_asan": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_lsan": true,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "WebKit Linux Leak (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_rbe": true,
-      "use_remoteexec": true
-    }
-  },
-  "WebKit Linux MSAN (reclient shadow)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "is_msan": true,
-      "msan_track_origins": 2,
-      "proprietary_codecs": true,
       "use_rbe": true,
       "use_remoteexec": true
     }

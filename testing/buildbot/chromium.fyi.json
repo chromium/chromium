@@ -6,17 +6,6 @@
       "all"
     ]
   },
-  "Linux Builder (dbg) (reclient shadow)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "Linux Builder (dbg)(32) (reclient shadow)": {
-    "additional_compile_targets": [
-      "google_apis_unittests",
-      "sync_integration_tests"
-    ]
-  },
   "Linux Builder (j-500) (reclient)": {
     "additional_compile_targets": [
       "all"
@@ -3482,9 +3471,6 @@
       }
     ]
   },
-  "Mojo Linux (reclient shadow)": {
-    "gtest_tests": []
-  },
   "Site Isolation Android": {
     "additional_compile_targets": [
       "content_browsertests",
@@ -3779,172 +3765,6 @@
         },
         "test": "vr_common_unittests",
         "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
-      }
-    ]
-  },
-  "VR Linux (reclient)": {
-    "additional_compile_targets": [
-      "vr_common_perftests"
-    ],
-    "gtest_tests": [
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vr_common_unittests",
-        "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "vr_pixeltests",
-        "test_id_prefix": "ninja://chrome/browser/vr:vr_pixeltests/"
-      }
-    ]
-  },
-  "WebKit Linux ASAN (reclient shadow)": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "--num-retries=3",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/ASANExpectations",
-          "--time-out-ms",
-          "48000",
-          "--enable-sanitizer"
-        ],
-        "isolate_name": "blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
-        },
-        "test_id_prefix": "ninja://:blink_web_tests/"
-      }
-    ]
-  },
-  "WebKit Linux Leak (reclient shadow)": {
-    "additional_compile_targets": [
-      "blink_tests"
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--num-retries=3",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/LeakExpectations",
-          "--time-out-ms",
-          "48000",
-          "--enable-leak-detection"
-        ],
-        "isolate_name": "blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
-        },
-        "test_id_prefix": "ninja://:blink_web_tests/"
-      }
-    ]
-  },
-  "WebKit Linux MSAN (reclient shadow)": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "--num-retries=3",
-          "--additional-expectations",
-          "../../third_party/blink/web_tests/MSANExpectations",
-          "--time-out-ms",
-          "66000",
-          "--enable-sanitizer"
-        ],
-        "isolate_name": "blink_web_tests",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "blink_web_tests",
-        "resultdb": {
-          "enable": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "expiration": 36000,
-          "hard_timeout": 10800,
-          "io_timeout": 3600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
-        },
-        "test_id_prefix": "ninja://:blink_web_tests/"
       }
     ]
   },
