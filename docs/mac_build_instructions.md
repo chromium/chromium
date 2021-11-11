@@ -42,7 +42,7 @@ Are you a Google employee? See
 Clone the `depot_tools` repository:
 
 ```shell
-$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+$ git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 ```
 
 Add `depot_tools` to the end of your PATH (you will probably want to put this in
@@ -59,7 +59,7 @@ $ export PATH="$PATH:/path/to/depot_tools"
 Ensure that unicode filenames aren't mangled by HFS:
 
 ```shell
-$ git config --global core.precomposeUnicode true
+$ git config --global core.precomposeunicode true
 ```
 
 In System Preferences, check that "Energy Saver" -> "Power Adapter" ->
