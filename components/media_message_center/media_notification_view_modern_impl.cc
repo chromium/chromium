@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "components/media_message_center/media_artwork_view.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
@@ -636,6 +637,19 @@ void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {
 
     if (should_invalidate)
       action_button->InvalidateLayout();
+  }
+
+  if (picture_in_picture_button_) {
+    const bool should_show_pip =
+        base::ranges::any_of(enabled_actions_, [](MediaSessionAction action) {
+          return action == MediaSessionAction::kEnterPictureInPicture ||
+                 action == MediaSessionAction::kExitPictureInPicture;
+        });
+
+    if (picture_in_picture_button_->GetVisible() != should_show_pip) {
+      picture_in_picture_button_->SetVisible(should_show_pip);
+      picture_in_picture_button_->InvalidateLayout();
+    }
   }
 
   container_->OnVisibleActionsChanged(enabled_actions_);
