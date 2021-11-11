@@ -111,6 +111,7 @@ struct FrameVisualProperties;
 
 namespace content {
 
+class BoundingBoxUpdateWaiterImpl;
 class BrowserContext;
 class FileSystemAccessPermissionContext;
 class FrameTreeNode;
@@ -346,6 +347,19 @@ void SimulateTouchEventAt(WebContents* web_contents,
                           const gfx::Point& point);
 
 void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point);
+
+class BoundingBoxUpdateWaiter {
+ public:
+  explicit BoundingBoxUpdateWaiter(WebContents* web_contents);
+  BoundingBoxUpdateWaiter(const BoundingBoxUpdateWaiter&) = delete;
+  BoundingBoxUpdateWaiter& operator=(const BoundingBoxUpdateWaiter&) = delete;
+  ~BoundingBoxUpdateWaiter();
+
+  void Wait();
+
+ private:
+  std::unique_ptr<BoundingBoxUpdateWaiterImpl> impl_;
+};
 
 // Waits for the update in the bounding box (i.e. the rectangle enclosing the
 // selection region) associated with `web_contents`.

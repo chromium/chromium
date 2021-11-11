@@ -607,43 +607,6 @@ class ResizeObserver : public RenderWidgetHostObserver {
   base::RepeatingCallback<bool()> is_complete_callback_;
 };
 
-#if defined(USE_AURA)
-
-class BoundingBoxUpdateWaiter : public TextInputManager::Observer {
- public:
-  explicit BoundingBoxUpdateWaiter(RenderWidgetHostViewAura* rwhva)
-      : text_input_manager_(rwhva->GetTextInputManager()),
-        original_bounding_box_(rwhva->GetSelectionBoundingBox()),
-        rwhva_(rwhva) {
-    text_input_manager_->AddObserver(this);
-  }
-  BoundingBoxUpdateWaiter(const BoundingBoxUpdateWaiter&) = delete;
-  BoundingBoxUpdateWaiter& operator=(const BoundingBoxUpdateWaiter&) = delete;
-  ~BoundingBoxUpdateWaiter() { text_input_manager_->RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // TextInputManager::Observer:
-  void OnSelectionBoundsChanged(
-      TextInputManager* text_input_manager,
-      RenderWidgetHostViewBase* updated_view) override {
-    if (rwhva_->GetSelectionBoundingBox() == original_bounding_box_) {
-      return;
-    }
-
-    run_loop_.Quit();
-  }
-
-  TextInputManager* const text_input_manager_;
-  const gfx::Rect original_bounding_box_;
-  RenderWidgetHostViewAura* const rwhva_;
-
-  base::RunLoop run_loop_;
-};
-
-#endif
-
 // Observer for RenderFrameProxyHost by setting itself through
 // RenderFrameProxyHost::SetObserverForTesting.
 class ProxyHostObserver : public RenderFrameProxyHost::TestObserver {
@@ -1282,10 +1245,58 @@ void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point) {
   rwhva->OnGestureEvent(&long_tap);
 }
 
+class BoundingBoxUpdateWaiterImpl : public TextInputManager::Observer {
+ public:
+  explicit BoundingBoxUpdateWaiterImpl(RenderWidgetHostViewAura* rwhva)
+      : text_input_manager_(rwhva->GetTextInputManager()),
+        original_bounding_box_(rwhva->GetSelectionBoundingBox()),
+        rwhva_(rwhva) {
+    text_input_manager_->AddObserver(this);
+  }
+  BoundingBoxUpdateWaiterImpl(const BoundingBoxUpdateWaiterImpl&) = delete;
+  BoundingBoxUpdateWaiterImpl& operator=(const BoundingBoxUpdateWaiterImpl&) =
+      delete;
+  virtual ~BoundingBoxUpdateWaiterImpl() {
+    text_input_manager_->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // TextInputManager::Observer:
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override {
+    if (rwhva_->GetSelectionBoundingBox() == original_bounding_box_) {
+      return;
+    }
+
+    run_loop_.Quit();
+  }
+
+  TextInputManager* const text_input_manager_;
+  const gfx::Rect original_bounding_box_;
+  RenderWidgetHostViewAura* const rwhva_;
+
+  base::RunLoop run_loop_;
+};
+
+BoundingBoxUpdateWaiter::BoundingBoxUpdateWaiter(WebContents* web_contents) {
+  impl_ = std::make_unique<BoundingBoxUpdateWaiterImpl>(
+      static_cast<content::RenderWidgetHostViewAura*>(
+          web_contents->GetRenderWidgetHostView()));
+}
+
+BoundingBoxUpdateWaiter::~BoundingBoxUpdateWaiter() = default;
+
+void BoundingBoxUpdateWaiter::Wait() {
+  impl_->Wait();
+}
+
 void WaitForSelectionBoundingBoxUpdate(WebContents* web_contents) {
   RenderWidgetHostViewAura* rwhva = static_cast<RenderWidgetHostViewAura*>(
       web_contents->GetRenderWidgetHostView());
-  BoundingBoxUpdateWaiter waiter(rwhva);
+  BoundingBoxUpdateWaiterImpl waiter(rwhva);
   waiter.Wait();
 }
 #endif
