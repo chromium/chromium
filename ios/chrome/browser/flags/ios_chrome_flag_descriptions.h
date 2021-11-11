@@ -72,14 +72,25 @@ extern const char kSyntheticCrashReportsForUteDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Enables the user to track prices of the Shopping URLs they are visiting.
+// The first variation is to display price drops in the Tab Switching UI when
+// they are identified.
+extern const char kCommercePriceTrackingName[];
+extern const char kCommercePriceTrackingDescription[];
+
+// Title and description for the flag to enable context menu actions refresh.
+extern const char kContextMenuActionsRefreshName[];
+extern const char kContextMenuActionsRefreshDescription[];
+
 // Title and description for the flag to control which crash generation tool
 // is used.
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
-// Title and description for the flag to enable context menu actions refresh.
-extern const char kContextMenuActionsRefreshName[];
-extern const char kContextMenuActionsRefreshDescription[];
+// Title and description for the flag to trigger credentials provider extension
+// promo.
+extern const char kCredentialProviderExtensionPromoName[];
+extern const char kCredentialProviderExtensionPromoDescription[];
 
 #if defined(DCHECK_IS_CONFIGURABLE)
 // Title and description for the flag to enable configurable DCHECKs.
@@ -197,6 +208,16 @@ extern const char kEnableOptimizationGuideMetadataValidationDescription[];
 extern const char kEnableOptimizationHintsFetchingMSBBName[];
 extern const char kEnableOptimizationHintsFetchingMSBBDescription[];
 
+// Title and description for the flag to enable shorted password auto-fill
+// instructions and button.
+extern const char kEnableShortenedPasswordAutoFillInstructionName[];
+extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
+
+// Title and description for the flag to introduce following web channels on
+// Chrome iOS.
+extern const char kEnableWebChannelsName[];
+extern const char kEnableWebChannelsDescription[];
+
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];
@@ -206,11 +227,6 @@ extern const char kExpandedTabStripDescription[];
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 
-// Title and description for the flag to introduce following web channels on
-// Chrome iOS.
-extern const char kEnableWebChannelsName[];
-extern const char kEnableWebChannelsDescription[];
-
 // Title and description for the flag to disable all extended sync promos.
 extern const char kForceDisableExtendedSyncPromosName[];
 extern const char kForceDisableExtendedSyncPromosDescription[];
@@ -218,17 +234,6 @@ extern const char kForceDisableExtendedSyncPromosDescription[];
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
-
-// Title and description for the flag to trigger credentials provider extension
-// promo.
-extern const char kCredentialProviderExtensionPromoName[];
-extern const char kCredentialProviderExtensionPromoDescription[];
-
-// Enables the user to track prices of the Shopping URLs they are visiting.
-// The first variation is to display price drops in the Tab Switching UI when
-// they are identified.
-extern const char kCommercePriceTrackingName[];
-extern const char kCommercePriceTrackingDescription[];
 
 // Title and description for the flag to set the major version the UA string to
 // 100.

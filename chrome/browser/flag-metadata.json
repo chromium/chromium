@@ -2557,6 +2557,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "enable-shortened-password-auto-fill-instruction",
+    "owners": ["ginnyhuang","bling-flags@google.com"],
+    "expiry_milestone": 101
+  },
+  {
     "name": "enable-show-autofill-signatures",
     "owners": [ "kolos" ],
     // Used for debugging and QA by the autofill team for the indefinite future.

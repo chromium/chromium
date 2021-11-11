@@ -807,6 +807,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"reading-list-time-to-read", flag_descriptions::kReadingListTimeToReadName,
      flag_descriptions::kReadingListTimeToReadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kReadingListTimeToRead)},
+    {"enable-shortened-password-auto-fill-instruction",
+     flag_descriptions::kEnableShortenedPasswordAutoFillInstructionName,
+     flag_descriptions::kEnableShortenedPasswordAutoFillInstructionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableShortenedPasswordAutoFillInstruction)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

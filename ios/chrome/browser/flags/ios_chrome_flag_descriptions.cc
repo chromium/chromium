@@ -96,6 +96,13 @@ const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "
     "When disabled use Breakpad. This flag takes two restarts to take effect";
 
+const char kCredentialProviderExtensionPromoName[] =
+    "Enable the credential provider extension promo";
+const char kCredentialProviderExtensionPromoDescription[] =
+    "When enabled, a new item 'Passwords In Other Apps' item will be available "
+    "Chrome passwords settings, containing promotional instructions to enable"
+    "password autofill using Chrome.";
+
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
 const char kDcheckIsFatalDescription[] =
@@ -227,6 +234,17 @@ const char kEnableOptimizationHintsFetchingMSBBDescription[] =
     "Enable optimization hints fetching for users who have enabled the 'Make "
     "Searches and Browsing Better' setting.";
 
+const char kEnableShortenedPasswordAutoFillInstructionName[] =
+    "Enable shortened instructions to turn on Password AutoFill for Chrome";
+const char kEnableShortenedPasswordAutoFillInstructionDescription[] =
+    "When enabled, the instructions to turn on Password AutoFill will have "
+    "shorter steps and come with a button that links the user to iOS Settings.";
+
+const char kEnableWebChannelsName[] = "Enable Web Channels";
+const char kEnableWebChannelsDescription[] =
+    "Enable folowing content from web and display Following feed on NTP based "
+    "on websites that users followed.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
@@ -237,11 +255,6 @@ const char kFillingAcrossAffiliatedWebsitesName[] =
 const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
-
-const char kEnableWebChannelsName[] = "Enable Web Channels";
-const char kEnableWebChannelsDescription[] =
-    "Enable folowing content from web and display Following feed on NTP based "
-    "on websites that users followed.";
 
 const char kForceDisableExtendedSyncPromosName[] =
     "Disable all extended sync promos";
@@ -259,13 +272,6 @@ const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
-
-const char kCredentialProviderExtensionPromoName[] =
-    "Enable the credential provider extension promo";
-const char kCredentialProviderExtensionPromoDescription[] =
-    "When enabled, a new item 'Passwords In Other Apps' item will be available "
-    "Chrome passwords settings, containing promotional instructions to enable"
-    "password autofill using Chrome.";
 
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =

@@ -79,6 +79,10 @@ extern const base::Feature kCredentialProviderExtensionPromo;
 // Feature flag to enable duplicate NTP cleanup.
 extern const base::Feature kRemoveExcessNTPs;
 
+// Feature flag to enable shortened instruction to turn on Password AutoFill for
+// Chrome.
+extern const base::Feature kEnableShortenedPasswordAutoFillInstruction;
+
 // Whether the ContextMenuActionsRefresh flag is enabled.
 bool IsContextMenuActionsRefreshEnabled();
 
