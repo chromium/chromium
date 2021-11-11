@@ -942,6 +942,11 @@ void CaptureModeSession::OnDisplayMetricsChanged(
 
 void CaptureModeSession::OnFolderSelected(const base::FilePath& path) {
   CaptureModeController::Get()->SetCustomCaptureFolder(path);
+  if (controller_->GetCurrentCaptureFolder().is_default_downloads_folder) {
+    RecordSwitchToDefaultFolderReason(
+        CaptureModeSwitchToDefaultReason::
+            kUserSelectedFromFolderSelectionDialog);
+  }
 }
 
 void CaptureModeSession::OnSelectionWindowClosed() {

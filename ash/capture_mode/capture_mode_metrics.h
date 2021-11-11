@@ -98,10 +98,21 @@ enum class CaptureModeSaveToLocation {
   kMaxValue = kCustomizedFolder,
 };
 
+// Enumeration of reasons for which the capture folder is switched to default
+// downloads folder. Note that these values are persisted to histograms so
+// existing values should remain unchanged and new values should be added to the
+// end.
+enum class CaptureModeSwitchToDefaultReason {
+  kFolderUnavailable,
+  kUserSelectedFromFolderSelectionDialog,
+  kUserSelectedFromSettingsMenu,
+  kMaxValue = kUserSelectedFromSettingsMenu,
+};
+
 // Records the `reason` for which screen recording was ended.
 void RecordEndRecordingReason(EndRecordingReason reason);
 
-// Records capture mode bar button presses given by |button_type|.
+// Records capture mode bar button presses given by `button_type`.
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 
 // Records a user's configuration when they perform a capture.
@@ -142,6 +153,10 @@ void RecordScreenshotNotificationQuickAction(CaptureQuickAction action);
 
 // Records the location where screen capture is saved.
 void RecordSaveToLocation(CaptureModeSaveToLocation save_location);
+
+// Records the `reason` for which the capture folder is switched to default
+// downloads folder.
+void RecordSwitchToDefaultFolderReason(CaptureModeSwitchToDefaultReason reason);
 
 }  // namespace ash
 

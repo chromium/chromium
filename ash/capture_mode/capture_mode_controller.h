@@ -315,7 +315,7 @@ class ASH_EXPORT CaptureModeController
                         const base::FilePath& file_saved_path);
 
   // Called back when the check for custom folder's availability is done in
-  // `CheckCustomAvailability`, with `available` indicating whether the custom
+  // `CheckFolderAvailability`, with `available` indicating whether the custom
   // folder is available or not.
   void OnCustomFolderAvailabilityChecked(bool available);
 

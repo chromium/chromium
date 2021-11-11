@@ -11262,6 +11262,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Local customized folder"/>
 </enum>
 
+<enum name="CaptureModeSwitchToDefaultReason">
+  <int value="0" label="Folder becomes unavailable"/>
+  <int value="1"
+      label="User selects the default downloads folder from the folder
+             selection dialog"/>
+  <int value="2"
+      label="User selects the default downloads folder from settings menu"/>
+</enum>
+
 <enum name="CapturePixelFormat">
   <obsolete>
     Deprecated as of 08/2015.

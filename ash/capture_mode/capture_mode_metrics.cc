@@ -36,8 +36,10 @@ constexpr char kScreenshotsPerWeekHistogramName[] =
     "Ash.CaptureModeController.ScreenshotsPerWeek";
 constexpr char kSwitchesFromInitialModeHistogramName[] =
     "Ash.CaptureModeController.SwitchesFromInitialCaptureMode";
+constexpr char kSwitchToDefaultFolderReasonHistogramName[] =
+    "Ash.CaptureModeController.SwitchToDefaultReason";
 
-// Appends the proper suffix to |prefix| based on whether the user is in tablet
+// Appends the proper suffix to `prefix` based on whether the user is in tablet
 // mode or not.
 std::string GetCaptureModeHistogramName(std::string prefix) {
   prefix.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
@@ -141,6 +143,13 @@ void RecordScreenshotNotificationQuickAction(CaptureQuickAction action) {
 void RecordSaveToLocation(CaptureModeSaveToLocation save_location) {
   base::UmaHistogramEnumeration(
       GetCaptureModeHistogramName(kSaveToLocationHistogramName), save_location);
+}
+
+void RecordSwitchToDefaultFolderReason(
+    CaptureModeSwitchToDefaultReason reason) {
+  base::UmaHistogramEnumeration(
+      GetCaptureModeHistogramName(kSwitchToDefaultFolderReasonHistogramName),
+      reason);
 }
 
 }  // namespace ash

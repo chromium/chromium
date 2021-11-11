@@ -594,6 +594,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshell}"
+    enum="CaptureModeSwitchToDefaultReason" expires_after="2022-09-09">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever the capture folder is switched to default downloads folder
+    in {TabletOrClamshell}. The recorded enum value indicates the reason that
+    leads to the switching.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.Clipboard.ConsecutiveCopies" units="times"
     expires_after="2021-09-01">
   <owner>newcomer@chromium.org</owner>

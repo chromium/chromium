@@ -135,6 +135,17 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+void TouchOnView(const views::View* view,
+                 ui::test::EventGenerator* event_generator) {
+  DCHECK(view);
+  DCHECK(event_generator);
+
+  const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+  event_generator->MoveTouch(view_center);
+  event_generator->PressTouch();
+  event_generator->ReleaseTouch();
+}
+
 // Sends a press release key combo |count| times.
 void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
@@ -5851,23 +5862,21 @@ TEST_F(CaptureModeAdvancedSettingsTest,
 }
 
 // -----------------------------------------------------------------------------
-// CaptureModeAudioSettingHistogramTest:
+// CaptureModeHistogramTest:
 
-// Test fixture to verify screen recording audio histogram depending on the test
+// Test fixture to verify screen capture histograms depending on the test
 // param (true for tablet mode, false for clamshell mode).
-class CaptureModeAudioSettingHistogramTest
-    : public CaptureModeTest,
-      public ::testing::WithParamInterface<bool> {
+class CaptureModeHistogramTest : public CaptureModeAdvancedSettingsTest,
+                                 public ::testing::WithParamInterface<bool> {
  public:
-  CaptureModeAudioSettingHistogramTest() = default;
-  ~CaptureModeAudioSettingHistogramTest() override = default;
+  CaptureModeHistogramTest() = default;
+  ~CaptureModeHistogramTest() override = default;
 
-  // CaptureModeTest:
+  // CaptureModeAdvancedSettingsTest:
   void SetUp() override {
-    CaptureModeTest::SetUp();
-    if (GetParam()) {
+    CaptureModeAdvancedSettingsTest::SetUp();
+    if (GetParam())
       SwitchToTabletMode();
-    }
   }
 
   void StartSessionForVideo() {
@@ -5878,9 +5887,17 @@ class CaptureModeAudioSettingHistogramTest
   void StartRecording() { CaptureModeTestApi().PerformCapture(); }
 
   void StopRecording() { CaptureModeTestApi().StopVideoRecording(); }
+
+  void OpenView(const views::View* view,
+                ui::test::EventGenerator* event_generator) {
+    if (GetParam())
+      TouchOnView(view, event_generator);
+    else
+      ClickOnView(view, event_generator);
+  }
 };
 
-TEST_P(CaptureModeAudioSettingHistogramTest, VideoRecordingAudioMetric) {
+TEST_P(CaptureModeHistogramTest, VideoRecordingAudioMetric) {
   constexpr char kHistogramNameBase[] =
       "Ash.CaptureModeController.CaptureAudioOnMetric";
   base::HistogramTester histogram_tester;
@@ -5909,8 +5926,74 @@ TEST_P(CaptureModeAudioSettingHistogramTest, VideoRecordingAudioMetric) {
   StopRecording();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CaptureModeAudioSettingHistogramTest,
-                         testing::Values(false, true));
+TEST_P(CaptureModeHistogramTest, CaptureModeSwitchToDefaultReasonMetric) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.SwitchToDefaultReason";
+  base::HistogramTester histogram_tester;
+  auto* controller = CaptureModeController::Get();
+  const auto downloads_folder =
+      controller->delegate_for_testing()->GetUserDefaultDownloadsFolder();
+  const base::FilePath non_available_custom_folder(
+      FILE_PATH_LITERAL("/home/test"));
+  const base::FilePath available_custom_folder = CreateCustomFolder("test");
+
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kFolderUnavailable, 0);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kUserSelectedFromFolderSelectionDialog,
+      0);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 0);
+
+  StartImageRegionCapture();
+
+  // Set the custom folder to an unavailable folder the switch to default
+  // reason should be recorded as kFolderUnavailable.
+  controller->SetCustomCaptureFolder(non_available_custom_folder);
+  EXPECT_EQ(controller->GetCurrentCaptureFolder().path,
+            non_available_custom_folder);
+  auto* event_generator = GetEventGenerator();
+  OpenView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+  CaptureModeAdvancedSettingsTestApi test_api;
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kFolderUnavailable, 1);
+
+  // Select the save-to location to default downloads folder from folder
+  // selection dialog and the switch to default reason should be recorded as
+  // kUserSelectedFromSettingsMenu.
+  controller->SetCustomCaptureFolder(available_custom_folder);
+  EXPECT_EQ(controller->GetCurrentCaptureFolder().path,
+            available_custom_folder);
+  OpenView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  dialog_factory->AcceptPath(downloads_folder);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kUserSelectedFromFolderSelectionDialog,
+      1);
+
+  // Select the save-to location to default downloads folder from settings
+  // menu and the switch to default reason should be recorded as
+  // kUserSelectedFromFolderSelectionDialog.
+  controller->SetCustomCaptureFolder(available_custom_folder);
+  EXPECT_EQ(controller->GetCurrentCaptureFolder().path,
+            available_custom_folder);
+  OpenView(test_api.GetDefaultDownloadsOption(), event_generator);
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase),
+      CaptureModeSwitchToDefaultReason::kUserSelectedFromSettingsMenu, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, CaptureModeHistogramTest, ::testing::Bool());
 
 }  // namespace ash
