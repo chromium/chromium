@@ -19,7 +19,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
-#include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -65,9 +64,9 @@ bool HasValidFilter(
 // This class is instantiated on-demand via Mojo's ConnectToRemoteService
 // from the renderer when the first Web Bluetooth API request is handled.
 // RenderFrameHostImpl will create an instance of this class and keep
-// ownership of it through content::DocumentService.
+// ownership of it.
 class CONTENT_EXPORT WebBluetoothServiceImpl
-    : public content::DocumentService<blink::mojom::WebBluetoothService>,
+    : public blink::mojom::WebBluetoothService,
       public WebContentsObserver,
       public device::BluetoothAdapter::Observer,
       public BluetoothDelegate::FramePermissionObserver,
@@ -76,18 +75,21 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   static blink::mojom::WebBluetoothResult TranslateConnectErrorAndRecord(
       device::BluetoothDevice::ConnectErrorCode error_code);
 
-  // Tries to attach |receiver| to an implementation of the
-  // WebBluetoothService for |render_frame_host|. The object returned is
-  // bound to the lifetime of |render_frame_host| and the Mojo connection.
-  // See DocumentService for details.
-  static WebBluetoothServiceImpl* Create(
+  // |render_frame_host|: The RFH that owns this instance.
+  // |receiver|: The instance will be bound to this receiver's pipe.
+  WebBluetoothServiceImpl(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
   WebBluetoothServiceImpl(const WebBluetoothServiceImpl&) = delete;
   WebBluetoothServiceImpl& operator=(const WebBluetoothServiceImpl&) = delete;
 
+  ~WebBluetoothServiceImpl() override;
+
   void CrashRendererAndClosePipe(bad_message::BadMessageReason reason);
+
+  // Sets the connection error handler for WebBluetoothServiceImpl's Binding.
+  void SetClientConnectionErrorHandler(base::OnceClosure closure);
 
   // Checks the current requesting and embedding origins as well as the policy
   // or global Web Bluetooth block to determine if Web Bluetooth is allowed.
@@ -114,18 +116,10 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
  private:
-  // |render_frame_host|: The RFH that owns this instance.
-  // |receiver|: The instance will be bound to this receiver's pipe.
-  WebBluetoothServiceImpl(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
-
-  ~WebBluetoothServiceImpl() override;
-
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
-                           DestroyedDuringRequestDevice);
+                           ClearStateDuringRequestDevice);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
-                           DestroyedDuringRequestScanningStart);
+                           ClearStateDuringRequestScanningStart);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest, PermissionAllowed);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            PermissionPromptCanceled);
@@ -161,7 +155,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   // WebContentsObserver:
   // These functions should always check that the affected RenderFrameHost
-  // is this->render_frame_host() and not some other frame in the same tab.
+  // is this->render_frame_host_ and not some other frame in the same tab.
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(Visibility visibility) override;
   void OnWebContentsLostFocus(RenderWidgetHost* render_widget_host) override;
 
@@ -412,11 +407,15 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   RenderProcessHost* GetRenderProcessHost();
   device::BluetoothAdapter* GetAdapter();
+  url::Origin GetOrigin();
   BluetoothAllowedDevices& allowed_devices();
 
   void StoreAllowedScanOptions(
       const blink::mojom::WebBluetoothRequestLEScanOptions& options);
   bool AreScanFiltersAllowed(const absl::optional<ScanFilters>& filters) const;
+
+  // Clears all state (maps, sets, etc).
+  void ClearState();
 
   // Clears state associated with Bluetooth LE Scanning.
   void ClearAdvertisementClients();
@@ -481,6 +480,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       base::queue<std::unique_ptr<DeferredStartNotificationData>>>
       characteristic_id_to_deferred_start_;
 
+  // The RFH that owns this instance.
+  RenderFrameHost* render_frame_host_;
+
   // Keeps track of our BLE scanning session.
   std::unique_ptr<device::BluetoothDiscoverySession>
       ble_scan_discovery_session_;
@@ -517,6 +519,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 #if PAIR_BLUETOOTH_ON_DEMAND()
   std::unique_ptr<WebBluetoothPairingManager> pairing_manager_;
 #endif
+
+  // The lifetime of this instance is exclusively managed by the RFH that owns
+  // it so we use a "Receiver" as opposed to a "SelfOwnedReceiver" which deletes
+  // the service on pipe connection errors.
+  mojo::Receiver<blink::mojom::WebBluetoothService> receiver_;
 
   base::ScopedObservation<BluetoothDelegate,
                           BluetoothDelegate::FramePermissionObserver,

@@ -108,14 +108,12 @@ class FrameConnectedBluetoothDevicesTest
   }
 
   void ResetService0() {
-    delete service0_;
-    service0_ = nullptr;
+    service0_->ClearState();
     map0_ = nullptr;
   }
 
   void ResetService1() {
-    delete service1_;
-    service1_ = nullptr;
+    service1_->ClearState();
     map1_ = nullptr;
   }
 
