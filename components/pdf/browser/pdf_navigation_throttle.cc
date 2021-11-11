@@ -19,52 +19,12 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "pdf/pdf_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace pdf {
-
-namespace {
-
-// Used to scope the posted navigation task to the lifetime of `web_contents_`.
-//
-// Could use `WebContents::FromFrameTreeNodeId()` instead, but this doesn't work
-// with a `MockNavigationHandle`.
-class WebContentsLifetimeHelper
-    : public content::WebContentsUserData<WebContentsLifetimeHelper> {
- public:
-  base::WeakPtr<WebContentsLifetimeHelper> GetWeakPtr() const {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void OpenUrl(const content::OpenURLParams& params) {
-    // `MimeHandlerViewGuest` navigates its embedder for calls to
-    // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly instead.
-    web_contents_->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(params));
-
-    // Note that we don't need to register the stream's URL loader as a
-    // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()` will
-    // handle this as soon as we navigate to a non-`kPdfExtensionId` URL.
-  }
-
- private:
-  friend class content::WebContentsUserData<WebContentsLifetimeHelper>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  explicit WebContentsLifetimeHelper(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  content::WebContents* web_contents_;
-  base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper);
-
-}  // namespace
 
 // static
 std::unique_ptr<content::NavigationThrottle>
@@ -118,12 +78,25 @@ PdfNavigationThrottle::WillStartRequest() {
   params.is_renderer_initiated = false;
   params.is_pdf = true;
 
-  WebContentsLifetimeHelper::CreateForWebContents(contents);
-  WebContentsLifetimeHelper* helper =
-      WebContentsLifetimeHelper::FromWebContents(contents);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebContentsLifetimeHelper::OpenUrl,
-                                helper->GetWeakPtr(), std::move(params)));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             const content::OpenURLParams& params) {
+            if (!web_contents)
+              return;
+            // `MimeHandlerViewGuest` navigates its embedder for calls to
+            // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly
+            // instead.
+            web_contents->GetController().LoadURLWithParams(
+                content::NavigationController::LoadURLParams(params));
+
+            // Note that we don't need to register the stream's URL loader as a
+            // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()`
+            // will handle this as soon as we navigate to a
+            // non-`kPdfExtensionId` URL.
+          },
+          contents->GetWeakPtr(), std::move(params)));
   return CANCEL_AND_IGNORE;
 }
 
