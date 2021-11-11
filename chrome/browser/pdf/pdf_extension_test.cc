@@ -2759,7 +2759,13 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, Save) {
+// Flaky, http://crbug.com/1269103
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Save DISABLED_Save
+#else
+#define MAYBE_Save Save
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, MAYBE_Save) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("edited.pdf");
