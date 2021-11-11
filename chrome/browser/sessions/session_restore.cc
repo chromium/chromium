@@ -993,6 +993,12 @@ Browser* SessionRestore::RestoreSession(
   DCHECK(profile);
   DCHECK(SessionServiceFactory::GetForProfile(profile));
   profile->set_restored_last_session(true);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile())
+    behavior &= ~RESTORE_APPS;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // SessionRestoreImpl takes care of deleting itself when done.
   SessionRestoreImpl* restorer = new SessionRestoreImpl(
       profile, browser, (behavior & SYNCHRONOUS) != 0,

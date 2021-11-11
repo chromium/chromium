@@ -7,10 +7,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,6 +59,10 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     WebAppProvider::GetForLocalAppsUnchecked(profile())->Start();
   }
 

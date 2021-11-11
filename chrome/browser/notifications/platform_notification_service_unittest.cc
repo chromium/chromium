@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -411,6 +412,13 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
     : public PlatformNotificationServiceTest {
+  void SetUp() override {
+    PlatformNotificationServiceTest::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_->SetIsMainProfile(true);
+#endif
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsNotificationIconAndTitle};

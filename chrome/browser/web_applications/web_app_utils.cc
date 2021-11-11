@@ -66,6 +66,9 @@ bool AreWebAppsEnabled(const Profile* profile) {
   if (user_manager && user_manager->IsLoggedInAsAnyKioskApp()) {
     return false;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
+    return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return true;
@@ -75,9 +78,6 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
   if (IsWebAppsCrosapiEnabled())
-    return false;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&

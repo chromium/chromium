@@ -39,6 +39,10 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
 class SyncServiceFactoryTest : public testing::Test {
  public:
   void SetUp() override {
@@ -55,6 +59,11 @@ class SyncServiceFactoryTest : public testing::Test {
     profile_ = builder.Build();
     // Some services will only be created if there is a WebDataService.
     profile_->CreateWebDataService();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // In Lacros, web apps are usually only enabled on the main profile.
+    web_app::SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {

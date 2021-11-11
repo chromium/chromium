@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
@@ -63,6 +64,10 @@ class BadgeManagerUnittest : public ::testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_->SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     fake_registry_controller_ =
         std::make_unique<web_app::FakeWebAppRegistryController>();
@@ -192,6 +197,7 @@ TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
   EXPECT_EQ(kAppId, delegate()->cleared_badges().front());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::unique_ptr<Profile> other_profile = std::make_unique<TestingProfile>();
   auto fake_registry_controller =
@@ -249,6 +255,7 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   EXPECT_FALSE(other_updated_apps.empty());
   EXPECT_EQ(kAppId, other_updated_apps[0]);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests methods which call into the badge manager delegate do not crash when
 // the delegate is unset.

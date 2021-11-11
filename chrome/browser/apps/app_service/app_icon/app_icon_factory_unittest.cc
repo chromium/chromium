@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -502,6 +503,10 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile()->SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile());
     ASSERT_TRUE(web_app_provider_);

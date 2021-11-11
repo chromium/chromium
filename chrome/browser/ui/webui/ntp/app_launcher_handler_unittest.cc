@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -84,6 +85,10 @@ class AppLauncherHandlerTest : public testing::Test {
     testing::Test::SetUp();
 
     testing_profile_ = TestingProfile::Builder().Build();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    testing_profile_->SetIsMainProfile(true);
+#endif
+
     os_hooks_suppress_ =
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     extension_service_ = CreateTestExtensionService();

@@ -144,17 +144,23 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   }
 
   // Helper that creates simple test profile.
-  std::unique_ptr<TestingProfile> CreateProfile() {
+  std::unique_ptr<TestingProfile> CreateProfile(bool is_guest = false) {
     TestingProfile::Builder profile_builder;
-    return profile_builder.Build();
+    if (is_guest) {
+      profile_builder.SetGuestSession();
+    }
+
+    std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile->SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    return profile;
   }
 
 #if defined(OS_CHROMEOS)
   // Helper that creates simple test guest profile.
   std::unique_ptr<TestingProfile> CreateGuestProfile() {
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetGuestSession();
-    return profile_builder.Build();
+    return CreateProfile(/*is_guest=*/true);
   }
 
   // Helper that creates simple test profile and logs it into user manager.
@@ -222,7 +228,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 TEST_F(PreinstalledWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   using PolicyUpdater = extensions::ExtensionManagementPrefUpdater<
       sync_preferences::TestingPrefServiceSyncable>;
-  auto test_profile = std::make_unique<TestingProfile>();
+  auto test_profile = CreateProfile();
   sync_preferences::TestingPrefServiceSyncable* prefs =
       test_profile->GetTestingPrefService();
 
