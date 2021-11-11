@@ -367,7 +367,7 @@ bool VulkanDeviceQueue::InitializeFromANGLE() {
     return false;
   }
 
-  auto* enabled_device_features_2_from_angle_ =
+  enabled_device_features_2_from_angle_ =
       gl::QueryVkEnabledDeviceFeaturesFromANGLE();
   if (!enabled_device_features_2_from_angle_)
     return false;

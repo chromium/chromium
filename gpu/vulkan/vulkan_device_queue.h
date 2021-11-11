@@ -148,7 +148,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   std::unique_ptr<VulkanFenceHelper> cleanup_helper_;
   VkPhysicalDeviceFeatures2 enabled_device_features_2_{
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
-  VkPhysicalDeviceFeatures2* enabled_device_features_2_from_angle_ = nullptr;
+  const VkPhysicalDeviceFeatures2* enabled_device_features_2_from_angle_ =
+      nullptr;
 
   bool allow_protected_memory_ = false;
 
