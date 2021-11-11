@@ -63,21 +63,8 @@ LayoutUnit BlockAxisLayoutOverflow(const NGLayoutResult& result,
                                    WritingDirectionMode writing_direction) {
   const NGPhysicalFragment& fragment = result.PhysicalFragment();
   LayoutUnit block_size = NGFragment(writing_direction, fragment).BlockSize();
-  if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
-    if (box->HasNonVisibleOverflow()) {
-      OverflowClipAxes block_axis =
-          writing_direction.IsHorizontal() ? kOverflowClipY : kOverflowClipX;
-      if (box->GetOverflowClipAxes() & block_axis)
-        box = nullptr;
-    }
-    if (box) {
-      WritingModeConverter converter(writing_direction, fragment.Size());
-      block_size =
-          std::max(block_size,
-                   converter.ToLogical(box->LayoutOverflow()).BlockEndOffset());
-    }
+  if (!result.PhysicalFragment().IsLineBox())
     return block_size;
-  }
 
   // Ruby annotations do not take up space in the line box, so we need this to
   // make sure that we don't let them cross the fragmentation line without
