@@ -370,24 +370,13 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                                      uintptr_t* buffers,
                                                      size_t buffer_size);
 
-  // Syncs and exports |va_surface| as a gfx::NativePixmapDmaBuf. Currently, the
-  // only VAAPI surface pixel formats supported are VA_FOURCC_IMC3 and
-  // VA_FOURCC_NV12.
-  //
-  // Notes:
-  //
-  // - For VA_FOURCC_IMC3, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YVU_420 because we don't have a YUV_420 format. The
-  //   planes are flipped accordingly, i.e.,
-  //   gfx::NativePixmapDmaBuf::GetDmaBufOffset(1) refers to the V plane.
-  //   TODO(andrescj): revisit once crrev.com/c/1573718 lands.
-  //
-  // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
-  //   gfx::BufferFormat::YUV_420_BIPLANAR.
-  //
-  // Returns nullptr on failure.
+  // Implementations of the pixmap exporter for both types of VASurface.
+  // See ExportVASurfaceAsNativePixmapDmaBufUnwrapped() for further
+  // documentation.
   std::unique_ptr<NativePixmapAndSizeInfo> ExportVASurfaceAsNativePixmapDmaBuf(
-      const ScopedVASurface& va_surface);
+      const VASurface& va_surface);
+  std::unique_ptr<NativePixmapAndSizeInfo> ExportVASurfaceAsNativePixmapDmaBuf(
+      const ScopedVASurface& scoped_va_surface);
 
   // Synchronize the VASurface explicitly. This is useful when sharing a surface
   // between contexts.
@@ -562,6 +551,28 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                       const std::vector<SurfaceUsageHint>& usage_hints,
                       size_t num_surfaces,
                       std::vector<VASurfaceID>* va_surfaces) WARN_UNUSED_RESULT;
+
+  // Syncs and exports |va_surface_id| as a gfx::NativePixmapDmaBuf. Currently,
+  // the only VAAPI surface pixel formats supported are VA_FOURCC_IMC3 and
+  // VA_FOURCC_NV12.
+  //
+  // Notes:
+  //
+  // - For VA_FOURCC_IMC3, the format of the returned NativePixmapDmaBuf is
+  //   gfx::BufferFormat::YVU_420 because we don't have a YUV_420 format. The
+  //   planes are flipped accordingly, i.e.,
+  //   gfx::NativePixmapDmaBuf::GetDmaBufOffset(1) refers to the V plane.
+  //   TODO(andrescj): revisit once crrev.com/c/1573718 lands.
+  //
+  // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
+  //   gfx::BufferFormat::YUV_420_BIPLANAR.
+  //
+  // Returns nullptr on failure, or if the exported surface can't contain
+  // |va_surface_size|.
+  std::unique_ptr<NativePixmapAndSizeInfo>
+  ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
+      VASurfaceID va_surface_id,
+      const gfx::Size& va_surface_size);
 
   // Carries out the vaBeginPicture()-vaRenderPicture()-vaEndPicture() on target
   // |va_surface_id|. Returns false if any of these calls fails.
