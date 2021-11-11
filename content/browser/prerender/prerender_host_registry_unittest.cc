@@ -309,6 +309,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   const int frame_tree_node_id1 = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, render_frame_host),
       *web_contents);
+  EXPECT_NE(frame_tree_node_id1, RenderFrameHost::kNoFrameTreeNodeId);
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
@@ -317,7 +318,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   const int frame_tree_node_id2 = registry->CreateAndStartHost(
       GeneratePrerenderAttributes(kPrerenderingUrl, render_frame_host),
       *web_contents);
-  EXPECT_EQ(frame_tree_node_id1, frame_tree_node_id2);
+  EXPECT_EQ(frame_tree_node_id2, RenderFrameHost::kNoFrameTreeNodeId);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
   CommitPrerenderNavigation(*prerender_host1);

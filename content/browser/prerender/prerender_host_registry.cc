@@ -123,7 +123,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
       if (iter.second->GetInitialUrl() == attributes.prerendering_url)
-        return iter.first;
+        return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // TODO(crbug.com/1197133): Cancel the started prerender and start a new
