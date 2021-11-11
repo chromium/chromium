@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
@@ -54,8 +55,16 @@ class ExtensionsTabbedMenuViewInteractiveUITest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1268996): Fix flakiness on Windows and Linux and reenable.
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_ExtensionsButtonOpensInstalledExtensionsTab \
+  DISABLED_ExtensionsButtonOpensInstalledExtensionsTab
+#else
+#define MAYBE_ExtensionsButtonOpensInstalledExtensionsTab \
+  ExtensionsButtonOpensInstalledExtensionsTab
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsTabbedMenuViewInteractiveUITest,
-                       ExtensionsButtonOpensInstalledExtensionsTab) {
+                       MAYBE_ExtensionsButtonOpensInstalledExtensionsTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
