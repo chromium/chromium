@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 

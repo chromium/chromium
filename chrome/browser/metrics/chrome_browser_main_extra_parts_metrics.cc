@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/rand_util.h"

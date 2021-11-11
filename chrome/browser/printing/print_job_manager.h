@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/notification_observer.h"

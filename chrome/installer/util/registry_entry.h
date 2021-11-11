@@ -11,8 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class WorkItemList;
 
 // This class represents a single registry entry (a key and its value). A

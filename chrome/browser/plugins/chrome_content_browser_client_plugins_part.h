@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_CHROME_CONTENT_BROWSER_CLIENT_PLUGINS_PART_H_
 #define CHROME_BROWSER_PLUGINS_CHROME_CONTENT_BROWSER_CLIENT_PLUGINS_PART_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "content/public/common/socket_permission_request.h"

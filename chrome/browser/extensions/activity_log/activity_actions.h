@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"

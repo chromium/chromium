@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "testing/gtest/include/gtest/gtest.h"

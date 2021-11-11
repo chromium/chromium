@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"

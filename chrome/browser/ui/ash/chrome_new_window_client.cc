@@ -17,7 +17,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"

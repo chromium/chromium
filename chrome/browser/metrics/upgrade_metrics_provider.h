@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_UPGRADE_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 // UpgradeMetricsProvider reports the state of detected pending updates in UMA

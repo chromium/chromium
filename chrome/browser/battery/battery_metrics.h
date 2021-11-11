@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BATTERY_BATTERY_METRICS_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"

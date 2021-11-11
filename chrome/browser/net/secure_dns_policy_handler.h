@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 

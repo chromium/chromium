@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_DATA_REDUCTION_PROMO_INFOBAR_H_
 
-#include "base/macros.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_promo_infobar_delegate_android.h"
 #include "components/infobars/android/confirm_infobar.h"
 

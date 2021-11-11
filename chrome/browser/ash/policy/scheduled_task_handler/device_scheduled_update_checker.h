@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/components/settings/timezone_settings.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/os_and_policies_update_checker.h"

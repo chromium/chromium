@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"

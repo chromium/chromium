@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"

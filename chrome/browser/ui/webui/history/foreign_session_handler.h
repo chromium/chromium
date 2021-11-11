@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/sessions/session_service.h"

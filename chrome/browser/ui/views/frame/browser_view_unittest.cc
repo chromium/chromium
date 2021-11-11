@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"

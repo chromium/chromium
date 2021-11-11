@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 

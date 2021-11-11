@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

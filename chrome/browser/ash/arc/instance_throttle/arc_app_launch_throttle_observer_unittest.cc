@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"

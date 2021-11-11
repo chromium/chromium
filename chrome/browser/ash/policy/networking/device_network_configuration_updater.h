@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/networking/network_configuration_updater.h"
 #include "components/onc/onc_constants.h"

@@ -17,7 +17,6 @@
 
 #include "base/file_version_info.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"

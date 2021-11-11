@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/testing_profile.h"

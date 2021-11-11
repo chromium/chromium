@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_NOTIFIER_IMPL_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_NOTIFIER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"

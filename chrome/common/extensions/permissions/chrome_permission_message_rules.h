@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"

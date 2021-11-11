@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
 namespace ash {

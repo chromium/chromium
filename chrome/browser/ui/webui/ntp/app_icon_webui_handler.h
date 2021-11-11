@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"

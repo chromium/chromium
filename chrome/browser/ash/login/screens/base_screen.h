@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"

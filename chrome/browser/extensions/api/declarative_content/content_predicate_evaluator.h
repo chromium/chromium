@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 
 namespace content {

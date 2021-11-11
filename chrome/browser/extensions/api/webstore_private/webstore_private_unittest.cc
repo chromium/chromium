@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"

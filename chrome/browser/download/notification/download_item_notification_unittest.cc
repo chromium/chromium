@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

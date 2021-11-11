@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"

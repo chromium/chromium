@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"  // for FileAccessProvider
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

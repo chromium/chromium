@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

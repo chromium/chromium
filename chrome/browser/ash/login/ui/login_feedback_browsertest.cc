@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "apps/test/app_window_waiter.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"

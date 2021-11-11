@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_ACCOUNT_AVATAR_FETCHER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_ACCOUNT_AVATAR_FETCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "url/gurl.h"

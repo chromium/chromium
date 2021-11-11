@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/input_method/ui/candidate_view.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"

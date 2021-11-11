@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
-
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"

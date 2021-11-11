@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 
 namespace offline_pages {
 namespace android {

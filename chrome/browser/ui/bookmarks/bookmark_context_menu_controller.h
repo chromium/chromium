@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"

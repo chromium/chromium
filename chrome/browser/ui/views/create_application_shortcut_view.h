@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "ui/base/metadata/metadata_header_macros.h"

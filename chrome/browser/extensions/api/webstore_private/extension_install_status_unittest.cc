@@ -8,7 +8,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/common/extensions/extension_constants.h"

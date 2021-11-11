@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_MOCK_LOCAL_CHANGE_PROCESSOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

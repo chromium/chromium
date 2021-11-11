@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

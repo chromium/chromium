@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_CONSENT_PROVIDER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"

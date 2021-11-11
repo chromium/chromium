@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_OS_SCOPED_DISABLE_WOW64_REDIRECTION_H_
 #define CHROME_CHROME_CLEANER_OS_SCOPED_DISABLE_WOW64_REDIRECTION_H_
 
-#include "base/macros.h"
-
 namespace chrome_cleaner {
 
 // Scoper that switches off Wow64 File System Redirection during its lifetime.

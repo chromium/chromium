@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"

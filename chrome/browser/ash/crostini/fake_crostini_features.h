@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

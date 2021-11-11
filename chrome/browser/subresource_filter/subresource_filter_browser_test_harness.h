@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"

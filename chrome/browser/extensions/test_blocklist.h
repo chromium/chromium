@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 

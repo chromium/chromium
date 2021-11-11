@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/history/core/browser/history_service.h"

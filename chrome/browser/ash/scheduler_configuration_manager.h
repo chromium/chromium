@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"

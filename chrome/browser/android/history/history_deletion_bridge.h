@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_HISTORY_HISTORY_DELETION_BRIDGE_H_
 #define CHROME_BROWSER_ANDROID_HISTORY_HISTORY_DELETION_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"

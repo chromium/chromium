@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"

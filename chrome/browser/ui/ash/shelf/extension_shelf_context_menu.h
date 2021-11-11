@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "extensions/common/constants.h"
 

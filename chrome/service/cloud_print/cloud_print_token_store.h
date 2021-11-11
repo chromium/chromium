@@ -7,7 +7,6 @@
 
 #include <string>
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 
 // This class serves as the single repository for cloud print auth tokens. This

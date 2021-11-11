@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"

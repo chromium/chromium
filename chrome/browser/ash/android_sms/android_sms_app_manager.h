@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"

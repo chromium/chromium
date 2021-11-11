@@ -8,7 +8,6 @@
 #include <map>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
 class Profile;

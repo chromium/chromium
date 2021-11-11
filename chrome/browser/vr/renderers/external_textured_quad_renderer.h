@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_RENDERERS_EXTERNAL_TEXTURED_QUAD_RENDERER_H_
 #define CHROME_BROWSER_VR_RENDERERS_EXTERNAL_TEXTURED_QUAD_RENDERER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 
 namespace vr {

@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/test/base/testing_profile.h"

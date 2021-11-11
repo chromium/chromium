@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"

@@ -8,7 +8,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/system_tray_observer.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"

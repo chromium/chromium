@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTERNAL_REGISTRY_LOADER_WIN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/win/registry.h"
 #include "chrome/browser/extensions/external_loader.h"
 

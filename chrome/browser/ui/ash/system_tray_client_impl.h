@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"

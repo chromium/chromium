@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"

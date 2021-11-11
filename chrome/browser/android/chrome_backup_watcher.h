@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;

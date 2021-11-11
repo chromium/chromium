@@ -7,7 +7,6 @@
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 

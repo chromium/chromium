@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
 
 namespace content {

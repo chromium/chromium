@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

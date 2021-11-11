@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 #define CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/resources/ui_resource_bitmap.h"

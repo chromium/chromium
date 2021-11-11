@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

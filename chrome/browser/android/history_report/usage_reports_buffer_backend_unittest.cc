@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/android/history_report/usage_report_util.h"
 #include "chrome/browser/android/proto/delta_file.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

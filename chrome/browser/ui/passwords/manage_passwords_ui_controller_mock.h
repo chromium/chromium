@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_UI_CONTROLLER_MOCK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

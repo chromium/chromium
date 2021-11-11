@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"

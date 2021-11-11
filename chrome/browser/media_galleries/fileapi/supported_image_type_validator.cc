@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"

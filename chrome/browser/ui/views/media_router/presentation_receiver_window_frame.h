@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {

@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICE_NET_IN_PROCESS_NETWORK_CONNECTION_TRACKER_H_
 #define CHROME_SERVICE_NET_IN_PROCESS_NETWORK_CONNECTION_TRACKER_H_
 
-#include "base/macros.h"
 #include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 

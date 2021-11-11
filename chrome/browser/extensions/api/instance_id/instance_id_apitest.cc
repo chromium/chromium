@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/instance_id/instance_id_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"

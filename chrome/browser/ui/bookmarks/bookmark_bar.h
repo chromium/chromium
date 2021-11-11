@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BAR_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_BAR_H_
 
-#include "base/macros.h"
-
 class BookmarkBar {
  public:
   // These values are persisted to logs. Entries should not be renumbered and

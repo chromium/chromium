@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "ui/base/models/simple_menu_model.h"

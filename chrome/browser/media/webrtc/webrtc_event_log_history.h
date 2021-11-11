@@ -10,7 +10,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace webrtc_event_logging {

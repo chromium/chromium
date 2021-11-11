@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/infolist_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"

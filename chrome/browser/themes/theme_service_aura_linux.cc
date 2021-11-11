@@ -5,7 +5,6 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/common/pref_names.h"

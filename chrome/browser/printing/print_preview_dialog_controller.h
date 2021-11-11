@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 

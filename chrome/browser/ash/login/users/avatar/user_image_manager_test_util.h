@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "ui/gfx/image/image_skia.h"

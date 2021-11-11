@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_EMPTY_ANNOUNCEMENT_NOTIFICATION_SERVICE_H_
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_EMPTY_ANNOUNCEMENT_NOTIFICATION_SERVICE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 
 // Dummy AnnouncementNotificationService that does nothing.

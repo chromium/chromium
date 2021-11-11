@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefs/session_startup_pref.h"

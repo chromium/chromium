@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"

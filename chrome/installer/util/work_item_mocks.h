@@ -5,7 +5,6 @@
 #ifndef CHROME_INSTALLER_UTIL_WORK_ITEM_MOCKS_H_
 #define CHROME_INSTALLER_UTIL_WORK_ITEM_MOCKS_H_
 
-#include "base/macros.h"
 #include "chrome/installer/util/conditional_work_item_list.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"

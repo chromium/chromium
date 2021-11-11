@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "components/arc/mojom/oemcrypto.mojom.h"
 #include "components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

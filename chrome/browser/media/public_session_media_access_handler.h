@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_PUBLIC_SESSION_MEDIA_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_PUBLIC_SESSION_MEDIA_ACCESS_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/media/extension_media_access_handler.h"
 #include "chrome/browser/media/media_access_handler.h"

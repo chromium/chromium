@@ -7,8 +7,6 @@
 
 #include "content/public/browser/web_contents_user_data.h"
 
-#include "base/macros.h"
-
 namespace arc {
 
 // Having an object of this kind attached to a WebContents mean that the tab was

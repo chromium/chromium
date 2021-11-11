@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_RENDERERS_TEXTURED_QUAD_RENDERER_H_
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
 
 #include "ui/gfx/geometry/rect_f.h"

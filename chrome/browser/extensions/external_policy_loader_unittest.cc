@@ -6,7 +6,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_management.h"

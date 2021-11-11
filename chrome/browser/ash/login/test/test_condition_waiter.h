@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_TEST_CONDITION_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_TEST_CONDITION_WAITER_H_
 
-#include "base/macros.h"
-
 namespace ash {
 namespace test {
 

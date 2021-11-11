@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"

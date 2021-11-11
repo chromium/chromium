@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_challenge_wrapper.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"

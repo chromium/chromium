@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"

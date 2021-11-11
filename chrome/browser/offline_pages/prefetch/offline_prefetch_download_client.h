@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 
 class SimpleFactoryKey;

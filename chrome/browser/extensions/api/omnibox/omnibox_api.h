@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"

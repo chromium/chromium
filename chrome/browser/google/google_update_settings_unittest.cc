@@ -5,7 +5,6 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"

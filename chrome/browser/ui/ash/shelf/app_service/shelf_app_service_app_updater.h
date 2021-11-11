@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 

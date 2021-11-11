@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 

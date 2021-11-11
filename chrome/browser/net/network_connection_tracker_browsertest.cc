@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"

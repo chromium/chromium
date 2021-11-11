@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

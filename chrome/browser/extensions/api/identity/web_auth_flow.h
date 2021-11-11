@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"

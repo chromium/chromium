@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_PREVIEWS_RESOURCE_LOADING_HINTS_AGENT_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "chrome/renderer/lite_video/lite_video_hint_agent.h"
 #include "content/public/renderer/render_frame_observer.h"

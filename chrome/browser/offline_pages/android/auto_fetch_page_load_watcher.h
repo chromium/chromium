@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/auto_fetch.h"
 #include "components/offline_pages/core/background/request_coordinator.h"

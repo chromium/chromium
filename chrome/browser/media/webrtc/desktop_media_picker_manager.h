@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 

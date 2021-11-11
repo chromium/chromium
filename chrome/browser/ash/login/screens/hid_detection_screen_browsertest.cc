@@ -5,7 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/login/login_wizard.h"

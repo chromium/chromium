@@ -14,7 +14,6 @@
 #include "ash/components/security_token_pin/constants.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"

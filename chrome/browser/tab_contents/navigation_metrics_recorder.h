@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TAB_CONTENTS_NAVIGATION_METRICS_RECORDER_H_
 #define CHROME_BROWSER_TAB_CONTENTS_NAVIGATION_METRICS_RECORDER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"

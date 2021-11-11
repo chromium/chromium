@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "ui/views/controls/button/button.h"

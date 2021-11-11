@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"

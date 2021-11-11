@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 // An interface used for launching the entry editor and editing a credential
 // record.
 class PasswordEditDelegate {

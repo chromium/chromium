@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
 // other words, the dialogs use another native html rendering engine. In the

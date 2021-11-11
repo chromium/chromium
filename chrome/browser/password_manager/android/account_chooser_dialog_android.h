@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

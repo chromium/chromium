@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_PUBLIC_SESSION_TAB_CAPTURE_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_MEDIA_PUBLIC_SESSION_TAB_CAPTURE_ACCESS_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/webrtc/tab_capture_access_handler.h"

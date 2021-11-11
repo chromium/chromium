@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;

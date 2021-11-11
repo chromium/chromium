@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"

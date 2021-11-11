@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom-forward.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"

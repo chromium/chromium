@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"

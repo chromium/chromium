@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/login/auth/key.h"
 
 class PrefRegistrySimple;

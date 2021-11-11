@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_INPUT_METHODS_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_INPUT_METHODS_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "ui/base/ime/ash/input_method_manager.h"

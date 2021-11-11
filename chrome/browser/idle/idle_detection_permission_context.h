@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_IDLE_IDLE_DETECTION_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_IDLE_IDLE_DETECTION_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_context_base.h"
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CLIENT_HINTS_CLIENT_HINTS_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 

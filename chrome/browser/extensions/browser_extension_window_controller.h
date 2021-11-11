@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_BROWSER_EXTENSION_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_EXTENSIONS_BROWSER_EXTENSION_WINDOW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/window_controller.h"
 
 class Browser;

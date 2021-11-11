@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"

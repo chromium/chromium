@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/layer.h"
 #include "third_party/skia/include/core/SkColor.h"

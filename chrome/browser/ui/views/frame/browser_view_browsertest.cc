@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

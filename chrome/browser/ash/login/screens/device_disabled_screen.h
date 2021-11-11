@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

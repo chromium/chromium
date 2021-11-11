@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"

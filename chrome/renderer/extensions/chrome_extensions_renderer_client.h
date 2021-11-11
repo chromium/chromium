@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/base/page_transition_types.h"

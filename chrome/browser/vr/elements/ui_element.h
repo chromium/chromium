@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/elements/corner_radii.h"

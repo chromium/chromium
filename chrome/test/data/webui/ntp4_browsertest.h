@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_DATA_WEBUI_NTP4_BROWSERTEST_H_
 #define CHROME_TEST_DATA_WEBUI_NTP4_BROWSERTEST_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 
 class NTP4LoggedInWebUITest : public WebUIBrowserTest {

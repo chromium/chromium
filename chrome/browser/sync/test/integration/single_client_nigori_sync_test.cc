@@ -7,7 +7,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

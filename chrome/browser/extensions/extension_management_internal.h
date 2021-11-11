@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"

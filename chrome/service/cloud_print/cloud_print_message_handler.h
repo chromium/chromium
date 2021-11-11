@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/cloud_print.mojom.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

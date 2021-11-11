@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
 

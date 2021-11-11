@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/sessions/content/navigation_task_id.h"
 #include "content/public/browser/navigation_details.h"

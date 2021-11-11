@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"

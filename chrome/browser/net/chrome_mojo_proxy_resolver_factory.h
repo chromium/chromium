@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"

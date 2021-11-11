@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/android/java_bitmap.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/app_window/app_window_registry.h"

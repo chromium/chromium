@@ -5,7 +5,6 @@
 #include <atk/atk.h>
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"

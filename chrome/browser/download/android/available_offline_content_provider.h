@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/available_offline_content.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

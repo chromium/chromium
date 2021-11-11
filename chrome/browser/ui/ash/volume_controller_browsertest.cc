@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"

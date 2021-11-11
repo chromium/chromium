@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"

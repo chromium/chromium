@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_HOST_PEPPER_CHROME_BROWSER_PEPPER_HOST_FACTORY_H_
 #define CHROME_BROWSER_RENDERER_HOST_PEPPER_CHROME_BROWSER_PEPPER_HOST_FACTORY_H_
 
-#include "base/macros.h"
 #include "ppapi/host/host_factory.h"
 
 namespace content {

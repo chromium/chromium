@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_NATIVE_APP_WINDOW_FRAME_VIEW_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_NATIVE_APP_WINDOW_FRAME_VIEW_MAC_H_
 
-#include "base/macros.h"
 #include "ui/views/window/native_frame_view.h"
 
 namespace extensions {

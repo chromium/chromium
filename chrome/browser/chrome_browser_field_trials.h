@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_FIELD_TRIALS_H_
 #define CHROME_BROWSER_CHROME_BROWSER_FIELD_TRIALS_H_
 
-#include "base/macros.h"
 #include "components/variations/platform_field_trials.h"
 
 class PrefService;

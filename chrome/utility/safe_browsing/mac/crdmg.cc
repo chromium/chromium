@@ -17,7 +17,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

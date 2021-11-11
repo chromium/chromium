@@ -8,7 +8,6 @@
 #include "ash/public/cpp/media_client.h"
 #include "ash/public/cpp/media_controller.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"

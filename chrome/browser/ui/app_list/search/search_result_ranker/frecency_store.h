@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

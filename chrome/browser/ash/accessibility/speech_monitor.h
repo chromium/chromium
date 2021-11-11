@@ -8,7 +8,6 @@
 #include <chrono>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/test/test_utils.h"

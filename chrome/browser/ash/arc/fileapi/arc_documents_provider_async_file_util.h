@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/async_file_util.h"
 
 namespace arc {

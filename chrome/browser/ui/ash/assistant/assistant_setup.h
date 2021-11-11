@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"

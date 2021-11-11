@@ -4,7 +4,6 @@
 
 #include "chrome/browser/download/download_danger_prompt.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"

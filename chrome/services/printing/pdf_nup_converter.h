@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 

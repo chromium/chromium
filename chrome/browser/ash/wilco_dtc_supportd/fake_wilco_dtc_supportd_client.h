@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

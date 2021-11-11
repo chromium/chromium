@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "chrome/common/extensions/api/mdns.h"

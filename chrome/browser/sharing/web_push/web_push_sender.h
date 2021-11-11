@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
 #define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

@@ -9,7 +9,6 @@
 // injecting the bookmarks to the bookmark submenu. This is done to support
 // advanced interactions with the menu contents, like right click context menus.
 
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;

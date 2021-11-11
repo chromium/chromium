@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_CONTENT_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_CONTENT_ELEMENT_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/platform_ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 

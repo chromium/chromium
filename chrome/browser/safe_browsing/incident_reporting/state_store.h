@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 class Profile;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 
-#include "base/macros.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when fixed.
 #include "chrome/browser/ash/login/user_flow.h"
 #include "components/user_manager/user.h"

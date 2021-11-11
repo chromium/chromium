@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_PROVIDER_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/views/style/typography_provider.h"
 

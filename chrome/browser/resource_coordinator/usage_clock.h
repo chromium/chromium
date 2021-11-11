@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_USAGE_CLOCK_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_USAGE_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 

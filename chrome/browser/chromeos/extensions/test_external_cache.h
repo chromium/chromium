@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 

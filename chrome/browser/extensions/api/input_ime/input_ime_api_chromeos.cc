@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/input_host_helper.h"

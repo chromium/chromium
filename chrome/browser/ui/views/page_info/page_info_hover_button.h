@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
 namespace test {

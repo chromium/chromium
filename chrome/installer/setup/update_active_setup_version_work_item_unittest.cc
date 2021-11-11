@@ -8,7 +8,6 @@
 
 #include <ostream>
 
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"

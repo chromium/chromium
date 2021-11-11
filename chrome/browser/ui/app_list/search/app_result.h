@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"

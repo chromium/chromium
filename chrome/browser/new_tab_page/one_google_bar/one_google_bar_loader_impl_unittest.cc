@@ -4,7 +4,6 @@
 
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

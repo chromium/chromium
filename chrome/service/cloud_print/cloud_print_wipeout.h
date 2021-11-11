@@ -8,7 +8,6 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"

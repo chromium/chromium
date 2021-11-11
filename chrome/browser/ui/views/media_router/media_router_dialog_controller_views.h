@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"

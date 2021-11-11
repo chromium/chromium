@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"

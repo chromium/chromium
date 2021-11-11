@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 
 namespace base {

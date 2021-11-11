@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"

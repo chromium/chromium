@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"

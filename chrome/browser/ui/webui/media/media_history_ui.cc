@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 
-#include "base/macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"

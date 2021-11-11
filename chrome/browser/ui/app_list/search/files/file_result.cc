@@ -17,7 +17,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"

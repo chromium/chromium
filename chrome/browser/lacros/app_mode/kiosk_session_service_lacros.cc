@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/lacros/lacros_service.h"

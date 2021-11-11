@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"

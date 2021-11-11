@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/common/buildflags.h"
 

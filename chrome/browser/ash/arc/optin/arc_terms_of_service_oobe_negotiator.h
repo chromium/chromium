@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_OOBE_NEGOTIATOR_H_
 #define CHROME_BROWSER_ASH_ARC_OPTIN_ARC_TERMS_OF_SERVICE_OOBE_NEGOTIATOR_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_negotiator.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"

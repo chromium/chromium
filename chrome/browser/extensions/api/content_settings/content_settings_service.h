@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CONTENT_SETTINGS_CONTENT_SETTINGS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_store.h"

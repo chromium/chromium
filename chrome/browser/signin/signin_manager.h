@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"

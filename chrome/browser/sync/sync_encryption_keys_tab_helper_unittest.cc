@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"

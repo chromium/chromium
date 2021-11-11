@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"

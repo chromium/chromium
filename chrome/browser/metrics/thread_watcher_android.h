@@ -12,8 +12,6 @@
 #ifndef CHROME_BROWSER_METRICS_THREAD_WATCHER_ANDROID_H_
 #define CHROME_BROWSER_METRICS_THREAD_WATCHER_ANDROID_H_
 
-#include "base/macros.h"
-
 class ThreadWatcherAndroid {
  public:
   ThreadWatcherAndroid() = delete;

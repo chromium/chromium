@@ -12,7 +12,6 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"

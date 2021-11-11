@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 class ChromeExtensionChooserDialog;

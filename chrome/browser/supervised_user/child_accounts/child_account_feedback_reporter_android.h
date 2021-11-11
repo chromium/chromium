@@ -8,8 +8,6 @@
 #include <jni.h>
 #include <string>
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }

@@ -9,7 +9,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"

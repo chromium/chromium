@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_STARTUP_UTILS_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_STARTUP_UTILS_H_
 
-#include "base/macros.h"
-
 class ProfileKey;
 
 // Native side of DownloadStartupUtils.java.

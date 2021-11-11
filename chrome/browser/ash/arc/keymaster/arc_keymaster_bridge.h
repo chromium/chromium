@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"

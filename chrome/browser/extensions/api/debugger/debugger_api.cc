@@ -18,7 +18,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"

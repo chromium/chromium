@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/password_manager/android/password_manager_infobar_delegate_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

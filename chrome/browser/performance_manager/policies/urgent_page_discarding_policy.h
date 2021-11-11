@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_URGENT_PAGE_DISCARDING_POLICY_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"

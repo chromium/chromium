@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"

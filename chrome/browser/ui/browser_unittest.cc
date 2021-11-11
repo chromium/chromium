@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/browser.h"
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_TEST_MOCK_KEYBOARD_DELEGATE_H_
 #define CHROME_BROWSER_VR_TEST_MOCK_KEYBOARD_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/model/camera_model.h"
 #include "testing/gmock/include/gmock/gmock.h"

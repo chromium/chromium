@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NET_BENCHMARKING_H_
 #define CHROME_BROWSER_NET_BENCHMARKING_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/net_benchmarking.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

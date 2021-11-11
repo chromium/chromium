@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 
 class Profile;

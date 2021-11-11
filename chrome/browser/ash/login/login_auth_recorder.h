@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_LOGIN_AUTH_RECORDER_H_
 #define CHROME_BROWSER_ASH_LOGIN_LOGIN_AUTH_RECORDER_H_
 
-#include "base/macros.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace ash {

@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"

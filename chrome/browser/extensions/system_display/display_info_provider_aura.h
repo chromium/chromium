@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_AURA_H_
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_AURA_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 
 namespace extensions {

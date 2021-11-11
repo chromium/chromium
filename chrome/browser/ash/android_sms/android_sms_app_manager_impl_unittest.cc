@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"

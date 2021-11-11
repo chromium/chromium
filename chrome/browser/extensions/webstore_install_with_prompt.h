@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/webstore_standalone_installer.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "ui/gfx/native_widget_types.h"

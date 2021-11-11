@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/arc/mojom/app.mojom-forward.h"

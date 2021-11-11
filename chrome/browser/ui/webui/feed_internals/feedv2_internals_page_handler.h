@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "components/feed/core/v2/public/common_enums.h"

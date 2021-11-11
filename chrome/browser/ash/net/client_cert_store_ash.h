@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to ash.
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"

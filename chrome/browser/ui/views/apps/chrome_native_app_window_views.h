@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 

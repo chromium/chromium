@@ -12,7 +12,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/base_graphics_delegate.h"
 #include "chrome/browser/vr/render_info.h"

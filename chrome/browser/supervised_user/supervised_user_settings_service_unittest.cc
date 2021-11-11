@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"

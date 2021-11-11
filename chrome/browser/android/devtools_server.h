@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 // This class controls Developer Tools remote debugging server.
 class DevToolsServer {
  public:

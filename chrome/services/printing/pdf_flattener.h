@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PDF_FLATTENER_H_
 #define CHROME_SERVICES_PRINTING_PDF_FLATTENER_H_
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 

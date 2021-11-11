@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREFS_CHROME_COMMAND_LINE_PREF_STORE_H_
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "components/prefs/command_line_pref_store.h"
 
 // This PrefStore keeps track of preferences set by command-line switches,

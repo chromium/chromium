@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class InstallerCrashReporterClient

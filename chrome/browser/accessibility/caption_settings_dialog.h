@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_CAPTION_SETTINGS_DIALOG_H_
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_SETTINGS_DIALOG_H_
 
-#include "base/macros.h"
-
 namespace captions {
 
 // An abstraction of a caption settings dialog. This is used for the captions

@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"

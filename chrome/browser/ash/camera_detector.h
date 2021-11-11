@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_CAMERA_DETECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace ash {
 

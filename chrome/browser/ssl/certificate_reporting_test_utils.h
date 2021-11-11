@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"

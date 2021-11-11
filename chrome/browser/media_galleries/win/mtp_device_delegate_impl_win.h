@@ -15,7 +15,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "storage/browser/file_system/async_file_util.h"

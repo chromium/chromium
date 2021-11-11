@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/print_spooler.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

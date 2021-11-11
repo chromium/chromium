@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 #include "chrome/chrome_elf/sha1/sha1.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PRINTING_SERVICE_H_
 #define CHROME_SERVICES_PRINTING_PRINTING_SERVICE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"

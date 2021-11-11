@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

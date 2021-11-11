@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"

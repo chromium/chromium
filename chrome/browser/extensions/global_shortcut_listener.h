@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {

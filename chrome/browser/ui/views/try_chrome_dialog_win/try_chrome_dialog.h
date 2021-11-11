@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/installer/util/experiment_metrics.h"
 #include "ui/events/event_handler.h"

@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

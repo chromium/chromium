@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"

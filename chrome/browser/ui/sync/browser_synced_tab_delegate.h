@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_
 #define CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_user_data.h"

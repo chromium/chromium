@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/image/image_skia.h"
 

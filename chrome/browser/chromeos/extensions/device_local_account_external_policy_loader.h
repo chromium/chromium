@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"

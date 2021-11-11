@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"

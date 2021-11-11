@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "components/arc/mojom/process.mojom-forward.h"
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"

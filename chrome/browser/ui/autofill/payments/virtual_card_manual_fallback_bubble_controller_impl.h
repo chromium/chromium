@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_user_data.h"

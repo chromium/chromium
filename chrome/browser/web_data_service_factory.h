@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_WEB_DATA_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/service_access_type.h"

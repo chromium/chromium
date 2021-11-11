@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_INSTANT_APPS_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/instantapps/instant_apps_infobar_delegate.h"
 #include "components/infobars/android/confirm_infobar.h"
 

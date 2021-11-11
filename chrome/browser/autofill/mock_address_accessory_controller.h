@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_MOCK_ADDRESS_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_MOCK_ADDRESS_ACCESSORY_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"

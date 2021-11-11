@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/common/media_galleries/metadata_types.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 

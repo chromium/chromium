@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"

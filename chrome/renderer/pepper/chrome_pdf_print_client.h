@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_PEPPER_CHROME_PDF_PRINT_CLIENT_H_
 #define CHROME_RENDERER_PEPPER_CHROME_PDF_PRINT_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/pdf/renderer/pepper_pdf_host.h"
 
 class ChromePDFPrintClient : public pdf::PepperPDFHost::PrintClient {

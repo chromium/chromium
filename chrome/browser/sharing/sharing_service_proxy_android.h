@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SHARING_SHARING_SERVICE_PROXY_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 
 class SharingService;
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 namespace ash {

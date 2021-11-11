@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 

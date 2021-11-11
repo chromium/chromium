@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/extensions/component_loader.h"

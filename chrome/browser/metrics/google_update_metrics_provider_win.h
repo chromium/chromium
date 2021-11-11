@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_GOOGLE_UPDATE_METRICS_PROVIDER_WIN_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/metrics_provider.h"

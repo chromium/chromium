@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"

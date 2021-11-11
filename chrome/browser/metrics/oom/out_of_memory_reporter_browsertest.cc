@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"

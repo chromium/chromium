@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/controller.h"
 #include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"

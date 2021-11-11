@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 #define CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_client.h"
 
 class GURL;

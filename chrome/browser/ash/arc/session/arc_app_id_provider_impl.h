@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_APP_ID_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/arc_app_id_provider.h"
-#include "base/macros.h"
 
 namespace arc {
 

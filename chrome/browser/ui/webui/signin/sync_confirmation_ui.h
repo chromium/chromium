@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 
 class Browser;

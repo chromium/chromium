@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 #include "components/query_tiles/tile_service.h"
 

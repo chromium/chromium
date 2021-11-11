@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/invalidation/public/identity_provider.h"
 
 class DeviceOAuth2TokenService;

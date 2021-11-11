@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"

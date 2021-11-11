@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 

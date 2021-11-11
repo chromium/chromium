@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_WINDOW_TESTING_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "ui/gfx/geometry/rect.h"
 

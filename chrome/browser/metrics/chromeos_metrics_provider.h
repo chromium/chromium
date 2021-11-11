@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 #include "components/metrics/metrics_log_uploader.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/browser_process.h"

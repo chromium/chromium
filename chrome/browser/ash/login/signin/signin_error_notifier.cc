@@ -11,7 +11,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"

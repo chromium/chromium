@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_CCT_ORIGIN_OBSERVER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_CCT_ORIGIN_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/offline_pages/core/offline_page_model.h"
 

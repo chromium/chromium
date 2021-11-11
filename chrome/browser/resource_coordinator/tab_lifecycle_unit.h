@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LIFECYCLE_UNIT_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"

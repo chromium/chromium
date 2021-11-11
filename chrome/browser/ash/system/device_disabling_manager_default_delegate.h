@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_DEVICE_DISABLING_MANAGER_DEFAULT_DELEGATE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_DEVICE_DISABLING_MANAGER_DEFAULT_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
 namespace ash {

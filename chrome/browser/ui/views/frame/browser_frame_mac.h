@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 class BrowserFrame;

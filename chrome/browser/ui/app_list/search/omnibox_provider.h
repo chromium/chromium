@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/omnibox/browser/autocomplete_controller.h"

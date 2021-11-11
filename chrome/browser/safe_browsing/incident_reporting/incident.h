@@ -10,8 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 
 class ClientIncidentReport_IncidentData;

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"

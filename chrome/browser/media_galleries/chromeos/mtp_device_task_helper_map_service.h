@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 
 class MTPDeviceTaskHelper;
 

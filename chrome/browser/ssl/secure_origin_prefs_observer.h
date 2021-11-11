@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_SECURE_ORIGIN_PREFS_OBSERVER_H_
 #define CHROME_BROWSER_SSL_SECURE_ORIGIN_PREFS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

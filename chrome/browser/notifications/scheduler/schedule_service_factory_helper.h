@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace leveldb_proto {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_TEXTINPUT_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_TEXTINPUT_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"

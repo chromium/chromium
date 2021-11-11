@@ -5,8 +5,6 @@
 #ifndef CHROME_RENDERER_PLUGINS_NON_LOADABLE_PLUGIN_PLACEHOLDER_H_
 #define CHROME_RENDERER_PLUGINS_NON_LOADABLE_PLUGIN_PLACEHOLDER_H_
 
-#include "base/macros.h"
-
 namespace base {
 class FilePath;
 }

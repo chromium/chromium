@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"

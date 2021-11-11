@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_NETWORK_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_NETWORK_SCREEN_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/android/webapk/webapk_info.h"
 
 // Delegate for retrieving installed WebAPKs for display in WebUI.

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

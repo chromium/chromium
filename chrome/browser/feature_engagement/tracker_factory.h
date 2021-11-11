@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 

@@ -4,7 +4,6 @@
 
 #include "chrome/services/file_util/safe_document_analyzer.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/document_analyzer.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"

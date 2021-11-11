@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/graphics_delegate.h"

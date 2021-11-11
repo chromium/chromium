@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace base {

@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"

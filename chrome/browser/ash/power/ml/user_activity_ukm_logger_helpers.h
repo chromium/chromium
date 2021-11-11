@@ -10,7 +10,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/power/ml/user_activity_event.pb.h"
 
 namespace ash {

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 

@@ -11,7 +11,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "cc/resources/ui_resource_client.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"

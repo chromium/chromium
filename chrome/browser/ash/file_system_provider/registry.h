@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 

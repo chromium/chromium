@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 
 using base::android::JavaParamRef;

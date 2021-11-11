@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_util.h"

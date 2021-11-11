@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_icon_loader.h"

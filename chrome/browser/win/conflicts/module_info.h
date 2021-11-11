@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "content/public/common/process_type.h"

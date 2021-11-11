@@ -14,7 +14,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

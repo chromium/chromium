@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_ANDROID_H_
 
-#include "base/macros.h"
 #include "chrome/browser/android/chrome_backup_watcher.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile_manager_android.h"

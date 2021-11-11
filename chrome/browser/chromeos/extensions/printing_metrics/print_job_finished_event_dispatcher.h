@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_FINISHED_EVENT_DISPATCHER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINT_JOB_FINISHED_EVENT_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"

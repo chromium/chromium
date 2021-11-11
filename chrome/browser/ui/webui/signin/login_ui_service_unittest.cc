@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_assets_manager.h"
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

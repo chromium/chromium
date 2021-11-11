@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

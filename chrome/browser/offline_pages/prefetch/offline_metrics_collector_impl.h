@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_OFFLINE_METRICS_COLLECTOR_IMPL_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_OFFLINE_METRICS_COLLECTOR_IMPL_H_
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "components/offline_pages/core/prefetch/offline_metrics_collector.h"
 #include "components/prefs/pref_registry_simple.h"

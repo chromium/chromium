@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"

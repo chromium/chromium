@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/model/color_scheme.h"

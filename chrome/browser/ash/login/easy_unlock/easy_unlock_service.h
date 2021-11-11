@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"

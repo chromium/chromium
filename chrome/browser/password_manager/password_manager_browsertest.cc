@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"

@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/build_time.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"

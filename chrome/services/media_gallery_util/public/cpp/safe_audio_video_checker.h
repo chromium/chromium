@@ -6,7 +6,6 @@
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_SAFE_AUDIO_VIDEO_CHECKER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 
 // Uses a utility process to validate a media file.  If the callback returns

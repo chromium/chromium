@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration

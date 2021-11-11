@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui.h"

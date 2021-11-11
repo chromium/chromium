@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/wm/public/activation_client.h"
 

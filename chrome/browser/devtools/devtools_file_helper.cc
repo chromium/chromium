@@ -13,7 +13,6 @@
 #include "base/hash/md5.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

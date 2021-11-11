@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"

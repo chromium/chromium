@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/prefs/json_pref_store.h"
 
 namespace base {

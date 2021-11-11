@@ -7,7 +7,6 @@
 
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"

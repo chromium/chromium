@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"

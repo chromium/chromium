@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "components/proxy_config/proxy_prefs.h"

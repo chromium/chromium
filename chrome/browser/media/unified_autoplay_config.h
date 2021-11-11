@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_UNIFIED_AUTOPLAY_CONFIG_H_
 #define CHROME_BROWSER_MEDIA_UNIFIED_AUTOPLAY_CONFIG_H_
 
-#include "base/macros.h"
-
 class Profile;
 
 namespace user_prefs {

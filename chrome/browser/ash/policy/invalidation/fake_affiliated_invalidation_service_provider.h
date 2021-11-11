@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_POLICY_INVALIDATION_FAKE_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 
 namespace policy {

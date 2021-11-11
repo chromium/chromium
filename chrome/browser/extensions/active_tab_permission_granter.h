@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"

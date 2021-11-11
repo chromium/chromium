@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/events/keycodes/keyboard_codes.h"

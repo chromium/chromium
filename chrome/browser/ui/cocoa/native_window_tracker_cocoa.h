@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 
 @class BridgedNativeWindowTracker;

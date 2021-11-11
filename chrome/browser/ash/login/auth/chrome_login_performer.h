@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chromeos/login/auth/auth_status_consumer.h"

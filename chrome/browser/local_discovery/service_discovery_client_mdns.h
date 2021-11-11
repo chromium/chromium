@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"

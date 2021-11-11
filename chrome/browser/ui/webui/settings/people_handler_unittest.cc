@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"

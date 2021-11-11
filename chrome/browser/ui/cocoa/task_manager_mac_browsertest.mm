@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"

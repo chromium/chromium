@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image.h"
 

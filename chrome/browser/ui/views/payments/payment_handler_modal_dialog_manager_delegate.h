@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_MODAL_DIALOG_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 

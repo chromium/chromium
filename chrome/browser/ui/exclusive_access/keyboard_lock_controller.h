@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"

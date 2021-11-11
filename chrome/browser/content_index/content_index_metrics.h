@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_METRICS_H_
 #define CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_METRICS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 
 namespace content {

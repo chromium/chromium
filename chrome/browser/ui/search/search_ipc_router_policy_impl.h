@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_SEARCH_IPC_ROUTER_POLICY_IMPL_H_
 #define CHROME_BROWSER_UI_SEARCH_SEARCH_IPC_ROUTER_POLICY_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 

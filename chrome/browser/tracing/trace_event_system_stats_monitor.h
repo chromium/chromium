@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TRACING_TRACE_EVENT_SYSTEM_STATS_MONITOR_H_
 #define CHROME_BROWSER_TRACING_TRACE_EVENT_SYSTEM_STATS_MONITOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/trace_event/trace_log.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GCM_GCM_PROFILE_SERVICE_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/gcm_driver/system_encryptor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

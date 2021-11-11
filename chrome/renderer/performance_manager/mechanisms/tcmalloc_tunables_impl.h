@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_PERFORMANCE_MANAGER_MECHANISMS_TCMALLOC_TUNABLES_IMPL_H_
 #define CHROME_RENDERER_PERFORMANCE_MANAGER_MECHANISMS_TCMALLOC_TUNABLES_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

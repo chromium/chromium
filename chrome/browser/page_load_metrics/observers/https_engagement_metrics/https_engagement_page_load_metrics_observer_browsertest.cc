@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

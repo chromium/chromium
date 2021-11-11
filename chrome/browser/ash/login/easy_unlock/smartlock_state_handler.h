@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 

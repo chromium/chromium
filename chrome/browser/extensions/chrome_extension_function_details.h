@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;

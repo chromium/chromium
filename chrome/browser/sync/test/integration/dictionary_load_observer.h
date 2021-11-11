@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_DICTIONARY_LOAD_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 
 // DictionaryLoadObserver is used when blocking until the

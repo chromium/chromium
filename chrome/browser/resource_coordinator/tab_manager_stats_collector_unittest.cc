@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"

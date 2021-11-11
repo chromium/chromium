@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/databinding/vector_element_binding.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

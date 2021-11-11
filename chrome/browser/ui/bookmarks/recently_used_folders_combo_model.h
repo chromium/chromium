@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/models/combobox_model.h"

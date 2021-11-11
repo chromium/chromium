@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
 #include "chrome/browser/chromeos/fileapi/mtp_watcher_manager.h"
 

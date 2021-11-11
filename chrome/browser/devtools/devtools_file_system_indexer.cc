@@ -15,7 +15,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"

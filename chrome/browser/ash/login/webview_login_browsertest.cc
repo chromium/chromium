@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

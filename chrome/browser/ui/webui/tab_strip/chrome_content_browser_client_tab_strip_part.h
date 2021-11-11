@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_CHROME_CONTENT_BROWSER_CLIENT_TAB_STRIP_PART_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"

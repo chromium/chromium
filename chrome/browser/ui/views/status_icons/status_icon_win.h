@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/status_icons/status_icon.h"
 

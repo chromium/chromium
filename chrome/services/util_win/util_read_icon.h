@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_
 #define CHROME_SERVICES_UTIL_WIN_UTIL_READ_ICON_H_
 
-#include "base/macros.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

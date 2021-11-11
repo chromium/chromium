@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"

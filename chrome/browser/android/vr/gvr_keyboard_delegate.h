@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/keyboard_ui_interface.h"
 #include "third_party/gvr-android-keyboard/src/libraries/headers/vr/gvr/capi/include/gvr_keyboard.h"

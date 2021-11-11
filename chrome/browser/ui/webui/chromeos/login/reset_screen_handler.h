@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RESET_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 

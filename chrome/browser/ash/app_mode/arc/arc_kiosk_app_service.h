@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_SERVICE_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"

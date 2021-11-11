@@ -4,7 +4,6 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 
-#include "base/macros.h"
 #include "chrome/browser/memory_details.h"
 #include "components/feedback/feedback_report.h"
 #include "content/public/browser/browser_thread.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_MEDIA_GALLERIES_CUSTOM_BINDINGS_H_
 #define CHROME_RENDERER_EXTENSIONS_MEDIA_GALLERIES_CUSTOM_BINDINGS_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {

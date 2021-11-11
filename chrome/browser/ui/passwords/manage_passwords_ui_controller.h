@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"

@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"

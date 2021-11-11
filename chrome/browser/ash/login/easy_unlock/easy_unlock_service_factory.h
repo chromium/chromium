@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_FACTORY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {

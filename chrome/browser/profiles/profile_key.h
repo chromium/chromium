@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_KEY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"

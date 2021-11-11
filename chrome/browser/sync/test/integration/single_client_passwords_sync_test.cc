@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

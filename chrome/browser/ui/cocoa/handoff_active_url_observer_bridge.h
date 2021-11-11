@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/cocoa/handoff_active_url_observer_delegate.h"
 
 namespace content {

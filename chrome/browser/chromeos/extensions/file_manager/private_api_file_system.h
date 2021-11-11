@@ -17,7 +17,6 @@
 
 #include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"

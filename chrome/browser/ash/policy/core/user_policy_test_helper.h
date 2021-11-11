@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 
 class Profile;
 

@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_command_line.h"

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 #include "chrome/browser/devtools/devtools_embedder_message_dispatcher.h"

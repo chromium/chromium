@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

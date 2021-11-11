@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/manifest_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"

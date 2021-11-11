@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace base {

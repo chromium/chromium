@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"

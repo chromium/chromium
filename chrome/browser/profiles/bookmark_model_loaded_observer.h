@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROFILES_BOOKMARK_MODEL_LOADED_OBSERVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class Profile;

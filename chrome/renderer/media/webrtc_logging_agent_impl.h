@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_MEDIA_WEBRTC_LOGGING_AGENT_IMPL_H_
 #define CHROME_RENDERER_MEDIA_WEBRTC_LOGGING_AGENT_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

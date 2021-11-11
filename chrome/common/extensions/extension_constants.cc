@@ -4,7 +4,6 @@
 
 #include "chrome/common/extensions/extension_constants.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/constants.h"

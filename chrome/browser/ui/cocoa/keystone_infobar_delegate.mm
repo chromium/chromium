@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"

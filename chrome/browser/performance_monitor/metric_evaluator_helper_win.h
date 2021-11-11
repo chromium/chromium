@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 #define CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

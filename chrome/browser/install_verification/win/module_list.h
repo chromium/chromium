@@ -12,8 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
-
 struct ModuleInfo;
 
 // Manages a list of HMODULEs, releasing them upon destruction.

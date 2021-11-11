@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
 

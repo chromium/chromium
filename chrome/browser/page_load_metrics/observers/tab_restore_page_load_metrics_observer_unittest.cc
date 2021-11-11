@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"

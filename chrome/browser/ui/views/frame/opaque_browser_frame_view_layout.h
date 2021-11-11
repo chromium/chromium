@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"

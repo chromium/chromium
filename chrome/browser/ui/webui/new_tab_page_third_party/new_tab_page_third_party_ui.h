@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom.h"
 #include "content/public/browser/web_contents_observer.h"

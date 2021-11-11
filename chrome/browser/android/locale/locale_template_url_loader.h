@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url.h"
 
 using base::android::JavaParamRef;

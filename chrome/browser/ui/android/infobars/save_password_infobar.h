@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_SAVE_PASSWORD_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/infobars/android/confirm_infobar.h"
 #include "components/signin/public/identity_manager/account_info.h"

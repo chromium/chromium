@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 
 namespace web_app {

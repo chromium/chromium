@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/system_monitor.h"
 #include "chrome/common/extensions/api/webrtc_audio_private.h"

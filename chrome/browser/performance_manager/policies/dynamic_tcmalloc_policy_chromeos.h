@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DYNAMIC_TCMALLOC_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DYNAMIC_TCMALLOC_POLICY_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom-forward.h"
 #include "components/performance_manager/public/graph/graph.h"

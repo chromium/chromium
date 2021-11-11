@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_preview_test.h"

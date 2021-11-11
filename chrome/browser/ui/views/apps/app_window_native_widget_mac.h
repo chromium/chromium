@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_NATIVE_WIDGET_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_NATIVE_WIDGET_MAC_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 namespace extensions {

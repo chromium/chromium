@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
-
 // Class that implements obtaining the X coordinate of the native minimize
 // button for the native frame on Windows.
 // This is a separate class because obtaining it is somewhat tricky and this

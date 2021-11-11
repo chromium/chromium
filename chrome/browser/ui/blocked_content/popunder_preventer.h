@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_POPUNDER_PREVENTER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {

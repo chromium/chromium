@@ -4,7 +4,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"

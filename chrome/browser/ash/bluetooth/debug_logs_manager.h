@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_H_
 #define CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"

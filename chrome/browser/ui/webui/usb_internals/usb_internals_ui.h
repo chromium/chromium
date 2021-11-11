@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_USB_INTERNALS_USB_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_USB_INTERNALS_USB_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"

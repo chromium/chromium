@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ITEM_SUGGEST_CACHE_H_
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"

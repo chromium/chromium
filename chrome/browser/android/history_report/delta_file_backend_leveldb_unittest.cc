@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

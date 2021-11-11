@@ -19,7 +19,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"

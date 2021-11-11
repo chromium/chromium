@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_TAB_HELPER_H_
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "content/public/browser/web_contents_user_data.h"

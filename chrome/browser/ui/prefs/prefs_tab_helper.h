@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/font_pref_change_notifier.h"

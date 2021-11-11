@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 

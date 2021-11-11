@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/install_verifier.h"
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

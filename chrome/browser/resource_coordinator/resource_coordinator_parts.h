@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_RESOURCE_COORDINATOR_PARTS_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_RESOURCE_COORDINATOR_PARTS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_OMNIBOX_SUGGESTION_USED_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/page_transition_types.h"

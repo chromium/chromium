@@ -12,7 +12,6 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"

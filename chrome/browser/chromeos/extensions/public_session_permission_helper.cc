@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/profiles/profiles_state.h"

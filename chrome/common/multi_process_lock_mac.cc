@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 
 #include <servers/bootstrap.h>

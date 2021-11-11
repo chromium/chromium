@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

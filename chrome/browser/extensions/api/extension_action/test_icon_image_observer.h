@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXTENSION_ACTION_TEST_ICON_IMAGE_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXTENSION_ACTION_TEST_ICON_IMAGE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"

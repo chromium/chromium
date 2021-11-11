@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon_base/favicon_types.h"
 

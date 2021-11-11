@@ -13,7 +13,6 @@
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"

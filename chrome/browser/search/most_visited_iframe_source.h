@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_
 #define CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/url_data_source.h"
 

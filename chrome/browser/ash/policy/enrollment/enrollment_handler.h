@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"

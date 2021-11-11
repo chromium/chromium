@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 

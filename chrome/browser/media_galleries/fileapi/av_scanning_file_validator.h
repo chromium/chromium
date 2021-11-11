@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_
 #define CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_
 
-#include "base/macros.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

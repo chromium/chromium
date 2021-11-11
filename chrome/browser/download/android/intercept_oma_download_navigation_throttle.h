@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_INTERCEPT_OMA_DOWNLOAD_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_INTERCEPT_OMA_DOWNLOAD_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 // Used to intercept the OMA DRM download from navigation and pass it to Android

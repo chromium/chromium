@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/providers/test/test_media_route_provider.h"

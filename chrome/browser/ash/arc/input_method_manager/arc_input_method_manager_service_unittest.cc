@@ -14,7 +14,6 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

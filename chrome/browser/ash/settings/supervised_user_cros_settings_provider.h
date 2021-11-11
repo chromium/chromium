@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_provider.h"
-#include "base/macros.h"
 
 namespace base {
 class Value;

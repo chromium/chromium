@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_PROCESS_MANAGER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"

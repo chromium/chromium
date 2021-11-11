@@ -9,7 +9,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"

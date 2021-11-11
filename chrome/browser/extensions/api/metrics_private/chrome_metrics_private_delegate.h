@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_METRICS_PRIVATE_CHROME_METRICS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_METRICS_PRIVATE_CHROME_METRICS_PRIVATE_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/metrics_private/metrics_private_delegate.h"
 
 namespace extensions {

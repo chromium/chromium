@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_PING_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_SHARING_PING_MESSAGE_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class PingMessageHandler : public SharingMessageHandler {

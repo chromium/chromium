@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_PREDICTOR_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"

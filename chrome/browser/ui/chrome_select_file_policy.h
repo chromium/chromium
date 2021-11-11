@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_CHROME_SELECT_FILE_POLICY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace content {

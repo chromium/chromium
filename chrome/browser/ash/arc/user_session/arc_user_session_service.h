@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

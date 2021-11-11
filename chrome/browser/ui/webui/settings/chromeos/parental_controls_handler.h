@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PARENTAL_CONTROLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PARENTAL_CONTROLS_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 class Profile;

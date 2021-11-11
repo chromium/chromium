@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/vr_export.h"
 

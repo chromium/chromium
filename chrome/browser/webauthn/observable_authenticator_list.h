@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 

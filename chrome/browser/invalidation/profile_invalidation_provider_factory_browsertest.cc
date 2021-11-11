@@ -5,7 +5,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"

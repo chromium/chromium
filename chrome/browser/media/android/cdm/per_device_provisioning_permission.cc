@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"

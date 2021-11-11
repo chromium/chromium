@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 class PrefChangeRegistrar;
 class PrefService;

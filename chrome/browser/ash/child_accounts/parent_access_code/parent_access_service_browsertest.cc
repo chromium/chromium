@@ -10,7 +10,6 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

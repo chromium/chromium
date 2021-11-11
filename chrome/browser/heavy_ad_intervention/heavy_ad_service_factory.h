@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {

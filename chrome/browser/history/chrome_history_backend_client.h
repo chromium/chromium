@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_HISTORY_CHROME_HISTORY_BACKEND_CLIENT_H_
 #define CHROME_BROWSER_HISTORY_CHROME_HISTORY_BACKEND_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_backend_client.h"
 

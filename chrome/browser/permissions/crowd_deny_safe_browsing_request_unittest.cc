@@ -4,7 +4,6 @@
 
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"

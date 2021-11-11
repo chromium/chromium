@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_CONFIGURATION_WAITER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 
 namespace ash {

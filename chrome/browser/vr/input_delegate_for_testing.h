@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/gesture_detector.h"
 #include "chrome/browser/vr/input_delegate.h"
 #include "chrome/browser/vr/model/controller_model.h"

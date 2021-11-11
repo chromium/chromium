@@ -14,7 +14,6 @@
 #include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/user_manager/user_type.h"

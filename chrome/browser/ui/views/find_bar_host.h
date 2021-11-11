@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FIND_BAR_HOST_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 #include "chrome/browser/ui/views/find_bar_view.h"

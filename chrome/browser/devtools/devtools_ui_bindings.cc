@@ -16,7 +16,6 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

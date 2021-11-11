@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHROME_CONTENT_BROWSER_CLIENT_ASH_PART_H_
 #define CHROME_BROWSER_ASH_CHROME_CONTENT_BROWSER_CLIENT_ASH_PART_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 
 class GURL;

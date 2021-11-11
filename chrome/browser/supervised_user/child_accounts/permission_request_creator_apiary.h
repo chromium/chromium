@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "google_apis/gaia/google_service_auth_error.h"

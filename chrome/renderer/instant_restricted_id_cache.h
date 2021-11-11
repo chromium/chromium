@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/common/search/instant_types.h"
 
 // In InstantExtended, iframes are used to display objects which can only be

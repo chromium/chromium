@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/webapk/webapk_handler_delegate.h"
 #include "chrome/browser/android/webapk/webapk_info.h"

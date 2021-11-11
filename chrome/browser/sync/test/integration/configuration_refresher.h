@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_CONFIGURATION_REFRESHER_H_
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"

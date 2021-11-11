@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"

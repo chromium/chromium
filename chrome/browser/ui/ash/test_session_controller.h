@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

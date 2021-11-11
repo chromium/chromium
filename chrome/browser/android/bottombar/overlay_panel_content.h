@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 

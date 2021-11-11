@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"

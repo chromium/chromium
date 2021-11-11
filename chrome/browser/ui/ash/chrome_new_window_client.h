@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/macros.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "url/gurl.h"

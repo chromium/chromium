@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_APP_PERFORMANCE_TRACING_CUSTOM_SESSION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
 namespace arc {

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_LAYOUT_MANAGER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "ui/views/layout/layout_manager.h"
 

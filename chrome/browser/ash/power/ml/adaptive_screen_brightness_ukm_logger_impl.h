@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_ADAPTIVE_SCREEN_BRIGHTNESS_UKM_LOGGER_IMPL_H_
 #define CHROME_BROWSER_ASH_POWER_ML_ADAPTIVE_SCREEN_BRIGHTNESS_UKM_LOGGER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

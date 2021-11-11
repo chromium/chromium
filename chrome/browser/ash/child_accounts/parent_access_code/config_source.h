@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/authenticator.h"
 
 class AccountId;

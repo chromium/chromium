@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_GUEST_VIEW_CHROME_GUEST_VIEW_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_GUEST_VIEW_CHROME_GUEST_VIEW_MANAGER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 
 namespace extensions {

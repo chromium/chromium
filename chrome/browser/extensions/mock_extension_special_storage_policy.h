@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "url/gurl.h"

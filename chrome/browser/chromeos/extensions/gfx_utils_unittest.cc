@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"

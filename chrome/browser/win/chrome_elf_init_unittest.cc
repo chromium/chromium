@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"

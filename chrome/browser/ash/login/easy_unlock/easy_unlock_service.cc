@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"

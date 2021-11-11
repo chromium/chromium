@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/driver/sync_service_impl.h"

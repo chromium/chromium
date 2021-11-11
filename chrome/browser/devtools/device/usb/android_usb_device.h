@@ -15,7 +15,6 @@
 
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"

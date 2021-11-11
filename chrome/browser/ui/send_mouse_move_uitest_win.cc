@@ -4,7 +4,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"

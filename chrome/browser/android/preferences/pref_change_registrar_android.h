@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_PREFERENCES_PREF_CHANGE_REGISTRAR_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 using base::android::JavaParamRef;

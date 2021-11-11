@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/plugins/plugin_installer_observer.h"
 #include "chrome/common/buildflags.h"

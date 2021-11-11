@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_PRINTERS_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"

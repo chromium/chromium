@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"

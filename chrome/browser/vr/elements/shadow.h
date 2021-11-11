@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_SHADOW_H_
 #define CHROME_BROWSER_VR_ELEMENTS_SHADOW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "chrome/browser/vr/vr_ui_export.h"

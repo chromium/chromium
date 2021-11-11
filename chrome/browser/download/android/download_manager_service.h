@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/download/download_manager_utils.h"

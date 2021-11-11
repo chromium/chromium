@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 // Base class for some of the password manager infobar delegates, e.g.

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 #define CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 
-#include "base/macros.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"

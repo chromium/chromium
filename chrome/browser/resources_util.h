@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class ResourcesUtil {
  public:
   ResourcesUtil(const ResourcesUtil&) = delete;

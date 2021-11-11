@@ -7,7 +7,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 
 class TestToolbarActionsBarBubbleDelegate::DelegateImpl

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/token.h"
 #include "base/values.h"

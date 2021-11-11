@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"

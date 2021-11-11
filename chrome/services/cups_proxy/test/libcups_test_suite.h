@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_CUPS_PROXY_TEST_LIBCUPS_TEST_SUITE_H_
 #define CHROME_SERVICES_CUPS_PROXY_TEST_LIBCUPS_TEST_SUITE_H_
 
-#include "base/macros.h"
 #include "base/test/test_suite.h"
 
 namespace cups_proxy {

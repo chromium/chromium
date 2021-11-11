@@ -11,7 +11,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"

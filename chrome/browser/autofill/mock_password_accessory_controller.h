@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"

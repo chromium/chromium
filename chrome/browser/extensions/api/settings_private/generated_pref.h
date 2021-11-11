@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "components/content_settings/core/common/content_settings.h"

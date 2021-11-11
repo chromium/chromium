@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_FACTORY_H_
 
-#include "base/macros.h"
-
 class BrowserFrame;
 class BrowserView;
 class NativeBrowserFrame;

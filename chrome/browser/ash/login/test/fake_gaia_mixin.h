@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"

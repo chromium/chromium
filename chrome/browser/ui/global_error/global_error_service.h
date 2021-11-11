@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

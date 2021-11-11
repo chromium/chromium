@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 
 namespace diagnostics {

@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"

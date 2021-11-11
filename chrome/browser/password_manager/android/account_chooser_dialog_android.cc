@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/android/chrome_jni_headers/AccountChooserDialog_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/password_manager/android/credential_android.h"

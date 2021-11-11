@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"

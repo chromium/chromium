@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"

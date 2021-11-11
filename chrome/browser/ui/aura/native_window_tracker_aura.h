@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AURA_NATIVE_WINDOW_TRACKER_AURA_H_
 #define CHROME_BROWSER_UI_AURA_NATIVE_WINDOW_TRACKER_AURA_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "ui/aura/window_observer.h"
 

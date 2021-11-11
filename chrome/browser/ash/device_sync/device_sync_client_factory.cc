@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service_factory.h"

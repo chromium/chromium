@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

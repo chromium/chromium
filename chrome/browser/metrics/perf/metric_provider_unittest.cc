@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

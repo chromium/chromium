@@ -9,7 +9,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -5,7 +5,6 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"

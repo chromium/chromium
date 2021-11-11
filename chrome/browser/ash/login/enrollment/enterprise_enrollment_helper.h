@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;

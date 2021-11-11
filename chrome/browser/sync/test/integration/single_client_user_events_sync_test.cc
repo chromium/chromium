@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

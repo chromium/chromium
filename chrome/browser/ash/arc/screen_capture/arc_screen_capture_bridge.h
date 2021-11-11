@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

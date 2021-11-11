@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"

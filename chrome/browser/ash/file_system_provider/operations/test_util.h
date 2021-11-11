@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 
 namespace extensions {
 struct Event;

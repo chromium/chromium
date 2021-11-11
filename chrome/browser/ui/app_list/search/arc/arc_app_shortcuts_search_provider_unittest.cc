@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"

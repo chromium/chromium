@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"

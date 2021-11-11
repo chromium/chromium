@@ -14,7 +14,6 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

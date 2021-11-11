@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"

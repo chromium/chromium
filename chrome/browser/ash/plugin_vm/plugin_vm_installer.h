@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

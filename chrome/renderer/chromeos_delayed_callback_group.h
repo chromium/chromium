@@ -10,7 +10,6 @@
 #include <queue>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"

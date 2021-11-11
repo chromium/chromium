@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/android/explore_sites/explore_sites_fetcher.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"

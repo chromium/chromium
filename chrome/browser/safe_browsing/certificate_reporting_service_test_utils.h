@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/metrics/histogram_tester.h"

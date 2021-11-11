@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/domain_reliability/service_factory.h"

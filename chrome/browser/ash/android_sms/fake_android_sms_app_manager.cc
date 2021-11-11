@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 
-#include "base/macros.h"
-
 namespace ash {
 namespace android_sms {
 

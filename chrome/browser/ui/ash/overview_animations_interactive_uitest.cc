@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"

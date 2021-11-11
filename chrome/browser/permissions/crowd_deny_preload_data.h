@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chrome/browser/permissions/crowd_deny.pb.h"

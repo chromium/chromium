@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"

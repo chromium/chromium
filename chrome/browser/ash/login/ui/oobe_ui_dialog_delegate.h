@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"

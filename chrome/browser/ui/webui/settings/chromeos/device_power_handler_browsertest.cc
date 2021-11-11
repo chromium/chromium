@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"

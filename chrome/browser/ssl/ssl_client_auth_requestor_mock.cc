@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"

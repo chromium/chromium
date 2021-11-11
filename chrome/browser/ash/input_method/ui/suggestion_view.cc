@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"

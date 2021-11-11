@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/components/settings/timezone_settings.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"

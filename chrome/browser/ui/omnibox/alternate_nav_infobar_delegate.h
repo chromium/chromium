@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"

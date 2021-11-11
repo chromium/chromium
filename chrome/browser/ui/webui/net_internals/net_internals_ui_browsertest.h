@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 
 class NetInternalsTest : public WebUIBrowserTest {

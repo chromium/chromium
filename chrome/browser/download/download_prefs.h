@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"

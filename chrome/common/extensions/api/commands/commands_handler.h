@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/command.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"

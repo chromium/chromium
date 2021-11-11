@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/version.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "url/gurl.h"

@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"

@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 

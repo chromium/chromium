@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // A handler which provides pluralized strings.

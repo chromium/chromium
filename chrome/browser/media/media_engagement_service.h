@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler.h"
 
 class Profile;

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace app_list {

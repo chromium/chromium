@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/extensions/api/declarative_content/declarative_content_condition_tracker_test.h"

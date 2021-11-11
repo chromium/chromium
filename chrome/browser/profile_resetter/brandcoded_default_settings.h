@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 // BrandcodedDefaultSettings provides a set of default settings

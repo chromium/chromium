@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"

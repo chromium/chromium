@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"

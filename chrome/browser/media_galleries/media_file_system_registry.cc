@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"

@@ -12,7 +12,6 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"

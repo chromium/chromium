@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
 class Profile;

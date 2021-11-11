@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace backdrop {

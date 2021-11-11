@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ANDROID_SERVICES_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 

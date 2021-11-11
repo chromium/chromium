@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/model/text_input_info.h"
 #include "chrome/browser/vr/ui_test_input.h"

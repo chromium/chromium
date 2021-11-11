@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"

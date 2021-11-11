@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 
 class UsbChooserController;

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/content_index/content_index_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"

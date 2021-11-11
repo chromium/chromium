@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 
 // Used to represent snapshot file request params.

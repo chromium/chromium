@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "url/gurl.h"
 

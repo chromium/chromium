@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_
 #define CHROME_RENDERER_NET_NET_ERROR_PAGE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/renderer/net/net_error_helper_core.h"
 #include "gin/arguments.h"

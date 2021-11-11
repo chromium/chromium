@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"

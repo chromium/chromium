@@ -7,7 +7,6 @@
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

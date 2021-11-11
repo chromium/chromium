@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "extensions/common/extension_set.h"
 

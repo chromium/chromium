@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "ui/gfx/image/image_skia.h"
 

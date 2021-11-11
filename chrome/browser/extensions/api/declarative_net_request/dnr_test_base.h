@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_FRAME_WINDOW_FRAME_UTIL_H_
 #define CHROME_BROWSER_UI_FRAME_WINDOW_FRAME_UTIL_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {

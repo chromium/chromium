@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_RECENTLY_AUDIBLE_HELPER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"

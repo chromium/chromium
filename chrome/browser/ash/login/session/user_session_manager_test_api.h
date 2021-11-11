@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 namespace ash {

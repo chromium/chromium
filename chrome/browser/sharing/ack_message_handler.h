@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SHARING_ACK_MESSAGE_HANDLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingMessageSender;

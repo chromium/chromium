@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_UI_FACTORY_H_
 
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
-#include "base/macros.h"
 
 namespace keyboard {
 class KeyboardUI;

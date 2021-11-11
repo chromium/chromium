@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"

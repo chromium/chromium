@@ -21,7 +21,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "build/build_config.h"

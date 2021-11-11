@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/logging/safe_browsing_reporter.h"

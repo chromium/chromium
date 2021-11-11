@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_OMNIBOX_OMNIBOX_PRERENDER_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 
 class Profile;
 struct AutocompleteMatch;

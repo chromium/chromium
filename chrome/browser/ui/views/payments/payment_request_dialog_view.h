@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "components/payments/content/initialization_task.h"

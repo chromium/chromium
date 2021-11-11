@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 
 class RecentTabsPagePrefs {

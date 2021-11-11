@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/process_singleton.h"
 

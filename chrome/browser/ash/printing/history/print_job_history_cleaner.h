@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_CLEANER_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_CLEANER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"

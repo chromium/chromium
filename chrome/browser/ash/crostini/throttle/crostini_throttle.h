@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 

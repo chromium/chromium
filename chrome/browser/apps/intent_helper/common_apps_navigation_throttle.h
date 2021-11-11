@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"

@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/av_scanning_file_validator.h"
 #include "components/download/public/common/quarantine_connection.h"

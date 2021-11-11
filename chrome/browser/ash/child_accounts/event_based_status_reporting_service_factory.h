@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 

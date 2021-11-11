@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 #define CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"

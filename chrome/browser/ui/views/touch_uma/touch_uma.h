@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOUCH_UMA_TOUCH_UMA_H_
 #define CHROME_BROWSER_UI_VIEWS_TOUCH_UMA_TOUCH_UMA_H_
 
-#include "base/macros.h"
-
 class TouchUMA {
  public:
   enum GestureActionType {

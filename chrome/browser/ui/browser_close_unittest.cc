@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

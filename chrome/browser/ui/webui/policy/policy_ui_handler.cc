@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"

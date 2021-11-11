@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_REQUEST_COORDINATOR_FACTORY_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_REQUEST_COORDINATOR_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_EXTERNAL_DATA_USER_CLOUD_EXTERNAL_DATA_MANAGER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "components/policy/core/common/policy_details.h"

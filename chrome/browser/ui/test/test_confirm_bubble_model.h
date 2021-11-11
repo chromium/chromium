@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TEST_TEST_CONFIRM_BUBBLE_MODEL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 // A test version of the model for confirmation bubbles.

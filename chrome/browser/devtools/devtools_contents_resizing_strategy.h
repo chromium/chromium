@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"

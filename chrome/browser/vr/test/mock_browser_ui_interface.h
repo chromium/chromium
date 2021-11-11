@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_TEST_MOCK_BROWSER_UI_INTERFACE_H_
 #define CHROME_BROWSER_VR_TEST_MOCK_BROWSER_UI_INTERFACE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/model/location_bar_state.h"

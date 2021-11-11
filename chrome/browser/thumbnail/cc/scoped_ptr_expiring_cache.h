@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 
 template <class Key, class Value>

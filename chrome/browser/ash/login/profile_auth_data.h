@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace content {
 class StoragePartition;

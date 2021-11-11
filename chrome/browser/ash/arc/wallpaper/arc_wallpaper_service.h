@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"

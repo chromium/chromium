@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_EXTENSIONS_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace extensions {

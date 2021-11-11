@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"

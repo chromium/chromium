@@ -5,7 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/history/history_service_factory.h"

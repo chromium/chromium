@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"

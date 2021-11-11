@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 #define CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"

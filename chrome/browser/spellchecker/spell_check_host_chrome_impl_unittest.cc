@@ -4,7 +4,6 @@
 
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"

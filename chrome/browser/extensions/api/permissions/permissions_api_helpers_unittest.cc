@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/common/extensions/api/permissions.h"

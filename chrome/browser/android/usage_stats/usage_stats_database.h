@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"

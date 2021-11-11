@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 
 namespace base {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_POINTER_DEVICE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_POINTER_DEVICE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/devices/input_device_event_observer.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 

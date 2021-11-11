@@ -36,7 +36,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"

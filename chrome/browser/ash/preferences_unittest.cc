@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

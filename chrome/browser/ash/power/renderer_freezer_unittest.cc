@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"

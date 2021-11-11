@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 #define CHROME_BROWSER_EXTENSIONS_PREINSTALLED_APPS_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"

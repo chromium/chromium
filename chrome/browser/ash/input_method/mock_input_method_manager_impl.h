@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"

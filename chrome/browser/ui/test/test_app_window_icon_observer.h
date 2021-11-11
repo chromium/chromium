@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"

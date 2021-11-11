@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"

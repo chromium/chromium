@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 class WebContentsCloseHandlerDelegate;

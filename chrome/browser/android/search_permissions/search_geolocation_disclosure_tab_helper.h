@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_
 #define CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/ppd_resolution_state.h"
 
-#include "base/macros.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

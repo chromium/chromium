@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_IDLE_DETECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

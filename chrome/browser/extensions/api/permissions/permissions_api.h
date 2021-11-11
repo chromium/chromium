@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/permissions/permission_set.h"

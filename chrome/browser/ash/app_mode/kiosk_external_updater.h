@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"

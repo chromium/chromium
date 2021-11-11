@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"

@@ -10,7 +10,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/android/view_android.h"
 

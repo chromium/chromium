@@ -10,7 +10,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/messaging/native_message_host.h"

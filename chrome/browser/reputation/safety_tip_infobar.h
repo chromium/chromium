@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 class SafetyTipInfoBarDelegate;

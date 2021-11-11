@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/os/registry.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"

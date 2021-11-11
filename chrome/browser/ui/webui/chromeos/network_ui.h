@@ -7,7 +7,6 @@
 
 #include "ash/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
 #include "ash/services/network_health/public/mojom/network_health.mojom-forward.h"
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

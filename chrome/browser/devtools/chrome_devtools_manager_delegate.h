@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 #include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/protocol.h"

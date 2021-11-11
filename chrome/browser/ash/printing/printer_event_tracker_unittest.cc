@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"

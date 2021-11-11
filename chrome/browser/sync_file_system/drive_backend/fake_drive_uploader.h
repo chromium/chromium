@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"

@@ -16,7 +16,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"

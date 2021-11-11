@@ -4,7 +4,6 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"

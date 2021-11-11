@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_PLATFORM_CONTROLLER_FOR_TESTING_H_
 #define CHROME_BROWSER_VR_PLATFORM_CONTROLLER_FOR_TESTING_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/platform_controller.h"

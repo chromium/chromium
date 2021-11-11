@@ -9,8 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
-
 class AccountId;
 class MultiProfileSupport;
 

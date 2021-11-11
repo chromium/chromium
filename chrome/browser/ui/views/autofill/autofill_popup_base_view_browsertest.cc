@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"

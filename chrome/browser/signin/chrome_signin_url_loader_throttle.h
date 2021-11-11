@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_URL_LOADER_THROTTLE_H_
 #define CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_URL_LOADER_THROTTLE_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"

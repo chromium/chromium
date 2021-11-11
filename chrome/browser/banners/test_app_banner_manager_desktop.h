@@ -7,7 +7,6 @@
 
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {

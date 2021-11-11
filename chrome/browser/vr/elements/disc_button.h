@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_DISC_BUTTON_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/vector_icon_button.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/vector_icon_types.h"

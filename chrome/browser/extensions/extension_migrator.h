@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 class Profile;

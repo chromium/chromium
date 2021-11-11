@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"

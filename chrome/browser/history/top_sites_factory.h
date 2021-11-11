@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
 

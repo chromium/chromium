@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DOCK_TILE_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_DOCK_TILE_H_
 
-#include "base/macros.h"
 #include "ui/gfx/image/image.h"
 
 class DevToolsDockTile {

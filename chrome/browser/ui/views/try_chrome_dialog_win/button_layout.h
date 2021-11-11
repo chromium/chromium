@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_BUTTON_LAYOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_BUTTON_LAYOUT_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 

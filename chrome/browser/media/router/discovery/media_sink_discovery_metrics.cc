@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 

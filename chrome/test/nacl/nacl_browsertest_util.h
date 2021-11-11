@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/javascript_test_observer.h"

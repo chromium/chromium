@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

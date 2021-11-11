@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"

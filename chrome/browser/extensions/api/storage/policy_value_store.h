@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"

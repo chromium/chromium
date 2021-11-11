@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEWS_UKM_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEWS_UKM_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"

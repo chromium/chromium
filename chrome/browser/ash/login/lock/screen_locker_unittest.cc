@@ -11,7 +11,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"

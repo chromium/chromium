@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_MOUNTER_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_FILE_SYSTEM_MOUNTER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

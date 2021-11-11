@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "url/gurl.h"

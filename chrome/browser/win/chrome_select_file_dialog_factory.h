@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 
 // Implements a file Open / Save dialog in a utility process. The utility

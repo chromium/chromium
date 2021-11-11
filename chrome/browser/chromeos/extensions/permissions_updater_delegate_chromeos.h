@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 
 namespace extensions {

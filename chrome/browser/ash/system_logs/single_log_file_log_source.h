@@ -9,7 +9,6 @@
 #include <sys/types.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 

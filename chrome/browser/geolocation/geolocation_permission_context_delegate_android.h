@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "content/public/browser/browser_context.h"
 

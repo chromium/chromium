@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/macros.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"

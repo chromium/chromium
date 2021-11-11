@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/sync/model/string_ordinal.h"
 

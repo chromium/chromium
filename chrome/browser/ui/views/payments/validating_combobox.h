@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/controls/combobox/combobox.h"

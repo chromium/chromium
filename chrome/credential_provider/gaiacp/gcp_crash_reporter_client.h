@@ -5,7 +5,6 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTER_CLIENT_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_CRASH_REPORTER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 namespace base {

@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"

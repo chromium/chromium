@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_H_
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace content {

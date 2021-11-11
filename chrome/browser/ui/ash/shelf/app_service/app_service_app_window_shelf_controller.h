@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"

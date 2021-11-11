@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "url/gurl.h"

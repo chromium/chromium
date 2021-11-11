@@ -7,8 +7,6 @@
 
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
 
-#include "base/macros.h"
-
 namespace extensions {
 
 class ExtensionOptionsGuest;

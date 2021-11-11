@@ -9,7 +9,6 @@
 #include <numeric>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/strong_alias.h"
 #include "build/branding_buildflags.h"

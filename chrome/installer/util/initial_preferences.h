@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace base {

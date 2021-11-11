@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class Browser;

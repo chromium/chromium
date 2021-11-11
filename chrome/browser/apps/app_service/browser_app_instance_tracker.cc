@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"

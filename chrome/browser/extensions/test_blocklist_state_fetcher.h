@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"
 

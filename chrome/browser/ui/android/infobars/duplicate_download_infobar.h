@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_DUPLICATE_DOWNLOAD_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 namespace android {

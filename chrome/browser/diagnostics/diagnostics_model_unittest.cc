@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace diagnostics {

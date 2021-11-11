@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {

@@ -6,7 +6,6 @@
 #define CHROME_CHROME_CLEANER_IPC_MOJO_SANDBOX_HOOKS_H_
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"

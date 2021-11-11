@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SSL_SSL_ERROR_CONTROLLER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "net/ssl/ssl_info.h"
 

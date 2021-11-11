@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

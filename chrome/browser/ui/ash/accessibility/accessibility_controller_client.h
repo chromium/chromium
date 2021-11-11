@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
 #include "ash/public/cpp/accessibility_controller_client.h"
-#include "base/macros.h"
 
 // Handles method calls from ash to do accessibility-related work in chrome.
 class AccessibilityControllerClient

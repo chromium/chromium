@@ -9,8 +9,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
-
 // Manages mapping from a Crostini app ID to a display ID.
 class CrostiniAppDisplay {
  public:

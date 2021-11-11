@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_request_state.h"

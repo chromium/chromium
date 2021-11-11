@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEB_VIEW_CHROME_WEB_VIEW_INTERNAL_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_VIEW_CHROME_WEB_VIEW_INTERNAL_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"

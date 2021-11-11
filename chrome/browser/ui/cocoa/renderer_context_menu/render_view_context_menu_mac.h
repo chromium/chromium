@@ -7,7 +7,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/macros.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "ui/base/cocoa/text_services_context_menu.h"
 

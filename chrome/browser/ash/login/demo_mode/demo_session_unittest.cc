@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"

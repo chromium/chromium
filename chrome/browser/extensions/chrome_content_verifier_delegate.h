@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/content_verifier_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 

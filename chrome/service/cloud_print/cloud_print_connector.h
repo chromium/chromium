@@ -9,7 +9,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/connector_settings.h"

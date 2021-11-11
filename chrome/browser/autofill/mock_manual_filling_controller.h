@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

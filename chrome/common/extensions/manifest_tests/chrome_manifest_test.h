@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_EXTENSIONS_MANIFEST_TESTS_CHROME_MANIFEST_TEST_H_
 #define CHROME_COMMON_EXTENSIONS_MANIFEST_TESTS_CHROME_MANIFEST_TEST_H_
 
-#include "base/macros.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_test.h"
 

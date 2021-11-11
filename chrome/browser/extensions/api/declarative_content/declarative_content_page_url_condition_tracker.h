@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/web_contents_observer.h"

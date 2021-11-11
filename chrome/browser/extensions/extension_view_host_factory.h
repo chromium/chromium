@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 class Browser;
 class GURL;
 class Profile;

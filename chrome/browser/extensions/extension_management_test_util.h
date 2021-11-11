@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "extensions/browser/pref_names.h"

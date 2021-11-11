@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"

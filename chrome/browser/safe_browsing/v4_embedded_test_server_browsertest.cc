@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"

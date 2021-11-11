@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/utility/safe_browsing/mac/udif.h"
 
 namespace safe_browsing {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 #define CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"

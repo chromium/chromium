@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 // RandomSelector can be used to pick vectors of strings according to certain
 // probabilities. The probabilities are set using SetOdds(). A randomly picked
 // vector can be obtained by calling Select().

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_RENDERERS_RADIAL_GRADIENT_QUAD_RENDERER_H_
 #define CHROME_BROWSER_VR_RENDERERS_RADIAL_GRADIENT_QUAD_RENDERER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"

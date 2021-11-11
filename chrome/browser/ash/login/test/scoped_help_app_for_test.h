@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_HELP_APP_FOR_TEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_HELP_APP_FOR_TEST_H_
 
-#include "base/macros.h"
-
 namespace ash {
 
 // An object that loads a test version of the HelpApp extension for use in

@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"

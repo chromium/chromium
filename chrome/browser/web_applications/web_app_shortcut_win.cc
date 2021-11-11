@@ -21,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"

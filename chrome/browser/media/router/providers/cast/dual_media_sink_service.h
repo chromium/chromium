@@ -13,7 +13,6 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_sinks_observer.h"

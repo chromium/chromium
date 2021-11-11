@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 class PrefService;

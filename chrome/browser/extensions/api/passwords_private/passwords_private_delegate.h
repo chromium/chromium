@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"

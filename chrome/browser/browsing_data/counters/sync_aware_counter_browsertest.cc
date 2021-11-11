@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/history/history_service_factory.h"

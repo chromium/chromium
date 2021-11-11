@@ -14,7 +14,6 @@
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"

@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"

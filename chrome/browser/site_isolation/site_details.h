@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/site_instance.h"
 

@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 

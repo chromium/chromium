@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FIRST_RUN_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 

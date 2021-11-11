@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace gfx {
 class ImageSkia;
 }

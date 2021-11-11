@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/log.h"

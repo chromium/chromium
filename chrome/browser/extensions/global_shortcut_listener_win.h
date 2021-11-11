@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 

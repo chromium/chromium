@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {

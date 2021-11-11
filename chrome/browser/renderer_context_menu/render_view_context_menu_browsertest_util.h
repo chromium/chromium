@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "content/public/browser/context_menu_params.h"

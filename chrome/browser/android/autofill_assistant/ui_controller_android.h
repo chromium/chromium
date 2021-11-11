@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/autofill_assistant/assistant_bottom_bar_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_collect_user_data_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_form_delegate.h"

@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 
 namespace local_discovery {

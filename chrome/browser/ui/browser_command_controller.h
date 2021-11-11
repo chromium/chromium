@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_BROWSER_COMMAND_CONTROLLER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"

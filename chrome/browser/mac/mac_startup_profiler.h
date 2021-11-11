@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 

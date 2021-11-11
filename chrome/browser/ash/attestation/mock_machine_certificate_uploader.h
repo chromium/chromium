@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ATTESTATION_MOCK_MACHINE_CERTIFICATE_UPLOADER_H_
 #define CHROME_BROWSER_ASH_ATTESTATION_MOCK_MACHINE_CERTIFICATE_UPLOADER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

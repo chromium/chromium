@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"

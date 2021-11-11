@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "ui/views/controls/menu/menu_controller.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"

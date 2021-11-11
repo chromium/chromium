@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_BROWSER_CONTENT_SETTING_BUBBLE_MODEL_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 
 class Browser;

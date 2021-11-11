@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/scheme_host_port_matcher.h"
 
 class GURL;

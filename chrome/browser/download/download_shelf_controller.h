@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/offline_item_model.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_INSTALL_BOUNCE_METRIC_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_INSTALL_BOUNCE_METRIC_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

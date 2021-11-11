@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "content/public/test/download_test_observer.h"
 
 // DownloadTestObserver subclass that observes a download until it transitions

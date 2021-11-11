@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/developer_private.h"
 
 class Profile;

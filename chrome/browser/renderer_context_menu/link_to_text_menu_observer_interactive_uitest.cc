@@ -4,8 +4,6 @@
 
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 
-#include "base/macros.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"

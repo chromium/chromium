@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

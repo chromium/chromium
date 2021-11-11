@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/permissions/chooser_controller.h"
 #include "extensions/browser/api/device_permissions_prompt.h"

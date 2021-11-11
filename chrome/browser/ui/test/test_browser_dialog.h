@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"

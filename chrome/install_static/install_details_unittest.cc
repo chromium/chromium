@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/install_static/buildflags.h"
 #include "components/version_info/version_info_values.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -13,7 +13,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"

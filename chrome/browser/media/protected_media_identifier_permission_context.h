@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 

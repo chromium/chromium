@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_
 
-#include "base/macros.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
 class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_
 #define CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

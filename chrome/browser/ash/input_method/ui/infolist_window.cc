@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

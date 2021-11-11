@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"

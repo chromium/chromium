@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 
 namespace net {

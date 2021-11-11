@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 class Profile;

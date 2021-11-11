@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"

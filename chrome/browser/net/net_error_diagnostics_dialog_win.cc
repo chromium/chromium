@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"

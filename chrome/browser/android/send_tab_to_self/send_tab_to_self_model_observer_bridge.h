@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
 namespace send_tab_to_self {

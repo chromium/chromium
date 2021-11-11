@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "components/safe_search_api/url_checker_client.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "google_apis/common/api_error_codes.h"

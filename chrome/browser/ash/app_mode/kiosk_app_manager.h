@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/settings/cros_settings.h"

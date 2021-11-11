@@ -9,7 +9,6 @@
 #include <queue>
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 

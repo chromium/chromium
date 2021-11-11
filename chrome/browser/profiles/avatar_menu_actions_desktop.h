@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/avatar_menu_actions.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 

@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

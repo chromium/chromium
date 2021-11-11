@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"

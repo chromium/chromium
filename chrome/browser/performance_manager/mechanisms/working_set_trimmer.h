@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 namespace performance_manager {

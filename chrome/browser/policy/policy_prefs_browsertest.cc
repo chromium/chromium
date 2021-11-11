@@ -16,7 +16,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

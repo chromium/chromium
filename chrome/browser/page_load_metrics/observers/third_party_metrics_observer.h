@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "url/gurl.h"
 #include "url/origin.h"

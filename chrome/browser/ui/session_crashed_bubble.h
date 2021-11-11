@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_
 #define CHROME_BROWSER_UI_SESSION_CRASHED_BUBBLE_H_
 
-#include "base/macros.h"
-
 class Browser;
 
 // Base class for a session restore request bubble, to be displayed when the

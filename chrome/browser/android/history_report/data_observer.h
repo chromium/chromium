@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_DATA_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 
 class Profile;

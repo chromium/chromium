@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_FULL_SCREEN_RECT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_FULL_SCREEN_RECT_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/rect.h"
 
 namespace vr {

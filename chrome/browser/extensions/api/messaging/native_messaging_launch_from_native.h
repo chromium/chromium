@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_MESSAGING_LAUNCH_FROM_NATIVE_H_
 
 #include <string>
-#include "base/macros.h"
 #include "base/time/time.h"
 
 class Profile;

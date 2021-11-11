@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/search_engine_base_url_tracker.h"
 #include "chrome/browser/ui/search/instant_controller.h"

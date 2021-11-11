@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 // TODO(https://crbug.com/1164001): move to forward declaration

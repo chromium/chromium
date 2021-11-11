@@ -6,7 +6,6 @@
 
 #include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "content/public/test/browser_task_environment.h"

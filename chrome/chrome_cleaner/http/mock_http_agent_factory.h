@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <string>
-#include "base/macros.h"
 #include "chrome/chrome_cleaner/http/http_agent_factory.h"
 #include "chrome/chrome_cleaner/http/http_status_codes.h"
 

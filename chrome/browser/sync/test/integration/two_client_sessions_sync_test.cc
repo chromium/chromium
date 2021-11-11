@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"

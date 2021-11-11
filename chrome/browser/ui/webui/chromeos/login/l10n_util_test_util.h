@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "chrome/common/conflicts/module_event_sink_win.mojom.h"
 #include "content/public/common/process_type.h"

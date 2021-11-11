@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/mojom/tts.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 

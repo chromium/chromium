@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_SETTINGS_H_
 
 #include <string>
-#include "base/macros.h"
 
 namespace content {
 class WebContents;

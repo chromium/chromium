@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_URL_TEXT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/omnibox_formatting.h"
 #include "chrome/browser/vr/elements/text.h"
 #include "chrome/browser/vr/ui_unsupported_mode.h"

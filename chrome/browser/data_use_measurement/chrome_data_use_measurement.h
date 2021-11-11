@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/data_use_measurement/core/data_use_measurement.h"
 

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_PARTNER_BROWSER_CUSTOMIZATIONS_H_
 #define CHROME_BROWSER_ANDROID_PARTNER_BROWSER_CUSTOMIZATIONS_H_
 
-#include "base/macros.h"
-
 namespace chrome {
 namespace android {
 

@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 class AccountId;
 class PrefRegistrySimple;
 

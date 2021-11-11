@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"

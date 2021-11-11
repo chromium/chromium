@@ -13,7 +13,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

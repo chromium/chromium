@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "ui/message_center/public/cpp/notification.h"
 

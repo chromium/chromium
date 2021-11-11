@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"

@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 class FindBarController;
 
 // Handles all platform specific operations on behalf of the FindBarController.

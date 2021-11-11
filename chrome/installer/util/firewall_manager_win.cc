@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/util/advanced_firewall_manager_win.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installer_util_strings.h"

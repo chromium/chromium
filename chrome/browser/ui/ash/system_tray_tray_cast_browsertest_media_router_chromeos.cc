@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/system_tray_test_api.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/test/base/in_process_browser_test.h"

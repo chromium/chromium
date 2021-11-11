@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/color_palette.h"
 
 namespace blink {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_STATE_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_STATE_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/user_manager/user_manager.h"

@@ -10,7 +10,6 @@
 
 #include "ash/components/security_token_pin/constants.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"

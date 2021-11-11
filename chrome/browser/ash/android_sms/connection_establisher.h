@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_CONNECTION_ESTABLISHER_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_CONNECTION_ESTABLISHER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/service_worker_context.h"
 #include "url/gurl.h"
 

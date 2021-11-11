@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
-#include "base/macros.h"
 
 class ChromeSearchResult;
 

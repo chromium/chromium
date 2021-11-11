@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"

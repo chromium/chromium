@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/values.h"

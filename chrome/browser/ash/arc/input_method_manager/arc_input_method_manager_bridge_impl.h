@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "components/arc/session/connection_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

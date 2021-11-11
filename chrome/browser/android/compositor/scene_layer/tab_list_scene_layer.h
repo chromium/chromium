@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"

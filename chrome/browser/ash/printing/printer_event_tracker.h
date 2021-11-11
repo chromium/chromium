@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/chromeos/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"

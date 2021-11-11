@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NET_CHROME_NETWORK_DELEGATE_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 // TODO(jam): rename this class.
 class ChromeNetworkDelegate {

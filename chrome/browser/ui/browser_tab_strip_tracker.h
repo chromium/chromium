@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 #define CHROME_BROWSER_UI_BROWSER_TAB_STRIP_TRACKER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 class BrowserTabStripTrackerDelegate;

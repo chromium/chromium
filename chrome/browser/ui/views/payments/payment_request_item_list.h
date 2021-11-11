@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 
 namespace views {

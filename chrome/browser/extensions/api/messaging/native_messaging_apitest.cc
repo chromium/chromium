@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

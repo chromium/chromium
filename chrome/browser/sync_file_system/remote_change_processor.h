@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_REMOTE_CHANGE_PROCESSOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 

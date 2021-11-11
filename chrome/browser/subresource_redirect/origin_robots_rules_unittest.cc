@@ -4,7 +4,6 @@
 
 #include "chrome/browser/subresource_redirect/origin_robots_rules.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

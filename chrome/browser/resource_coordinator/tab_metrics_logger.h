@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_METRICS_LOGGER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

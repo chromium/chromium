@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"

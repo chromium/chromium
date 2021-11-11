@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 
 namespace chromeos {

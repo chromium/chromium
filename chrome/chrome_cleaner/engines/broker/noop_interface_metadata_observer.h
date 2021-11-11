@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 
 namespace chrome_cleaner {

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
 class SearchGeolocationDisclosureInfoBarDelegate;

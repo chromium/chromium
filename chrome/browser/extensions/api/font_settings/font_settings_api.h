@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

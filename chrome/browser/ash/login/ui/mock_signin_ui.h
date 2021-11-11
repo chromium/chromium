@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_MOCK_SIGNIN_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

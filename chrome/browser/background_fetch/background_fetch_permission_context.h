@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
 

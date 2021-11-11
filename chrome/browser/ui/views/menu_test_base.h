@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"

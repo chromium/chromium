@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LOCATION_BAR_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_TOOLBAR_CHROME_LOCATION_BAR_MODEL_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 
 class Profile;

@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"

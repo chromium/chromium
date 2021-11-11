@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"

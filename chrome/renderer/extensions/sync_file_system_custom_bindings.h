@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_H_
 #define CHROME_RENDERER_EXTENSIONS_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8.h"
 

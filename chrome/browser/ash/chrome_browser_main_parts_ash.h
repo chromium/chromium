@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.

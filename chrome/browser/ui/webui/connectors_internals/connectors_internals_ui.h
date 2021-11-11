@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

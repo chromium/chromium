@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_BLOCKLIST_CHECK_H_
 #define CHROME_BROWSER_EXTENSIONS_BLOCKLIST_CHECK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/preload_check.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "components/autofill_assistant/browser/client.h"

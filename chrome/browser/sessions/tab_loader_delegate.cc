@@ -5,7 +5,6 @@
 #include "chrome/browser/sessions/tab_loader_delegate.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"

@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 
 // PortableDeviceMapService keeps track of initialized portable device

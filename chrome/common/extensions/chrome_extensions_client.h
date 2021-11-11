@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"

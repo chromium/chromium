@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
 #include "components/sync/model/model_type_change_processor.h"

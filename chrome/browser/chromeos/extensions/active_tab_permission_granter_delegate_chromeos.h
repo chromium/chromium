@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_DELEGATE_CHROMEOS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_ACTIVE_TAB_PERMISSION_GRANTER_DELEGATE_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/extensions/public_session_permission_helper.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 

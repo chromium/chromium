@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

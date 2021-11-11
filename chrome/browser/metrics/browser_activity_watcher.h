@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_BROWSER_ACTIVITY_WATCHER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 

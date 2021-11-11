@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

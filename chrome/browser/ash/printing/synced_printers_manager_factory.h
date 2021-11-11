@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_PRINTING_SYNCED_PRINTERS_MANAGER_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 

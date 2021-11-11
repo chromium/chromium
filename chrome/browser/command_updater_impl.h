@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "chrome/browser/command_updater.h"
-#include "base/macros.h"
 #include "ui/base/window_open_disposition.h"
 
 class CommandObserver;

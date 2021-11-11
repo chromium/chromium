@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_USER_ADDING_SCREEN_H_
 
-#include "base/macros.h"
-
 namespace ash {
 
 // An interface that defines screen for adding users into multi-profile session.

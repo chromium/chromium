@@ -14,7 +14,6 @@
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"

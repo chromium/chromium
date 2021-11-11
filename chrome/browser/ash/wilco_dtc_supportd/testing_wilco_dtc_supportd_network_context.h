@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 #define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 

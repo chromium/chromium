@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 
 class AccountChooserPrompt;

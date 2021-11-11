@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/content/session_tab_helper.h"

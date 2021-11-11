@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_GALLERIES_MEDIA_GALLERIES_DIALOG_CONTROLLER_TEST_UTIL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 
 class MockMediaGalleriesDialog : public MediaGalleriesDialog {

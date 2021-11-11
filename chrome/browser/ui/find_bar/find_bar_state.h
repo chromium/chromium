@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 

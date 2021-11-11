@@ -11,8 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 namespace dmg {
 

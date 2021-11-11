@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_IMPL_H_
 #define CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_UKM_LOGGER_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 

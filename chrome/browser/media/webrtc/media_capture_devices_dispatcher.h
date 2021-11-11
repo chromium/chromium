@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/webrtc/media_stream_device_enumerator_impl.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/gfx/image/image_skia.h"

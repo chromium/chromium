@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_PUBLIC_CPP_MEDIA_PARSER_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

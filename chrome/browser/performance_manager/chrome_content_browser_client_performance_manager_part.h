@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_CONTENT_BROWSER_CLIENT_PERFORMANCE_MANAGER_PART_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 
 // Allows tracking RenderProcessHost lifetime and proffering the Performance

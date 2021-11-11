@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USER_BOARD_VIEW_MOJO_H_
 #define CHROME_BROWSER_ASH_LOGIN_USER_BOARD_VIEW_MOJO_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/views/user_board_view.h"
 

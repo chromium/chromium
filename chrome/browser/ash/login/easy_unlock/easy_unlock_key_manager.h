@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_get_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_refresh_keys_operation.h"

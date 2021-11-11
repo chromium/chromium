@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

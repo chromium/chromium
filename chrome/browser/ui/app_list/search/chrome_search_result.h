@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

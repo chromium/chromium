@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_COCOA_SCOPED_MENU_BAR_LOCK_H_
 #define CHROME_BROWSER_UI_COCOA_SCOPED_MENU_BAR_LOCK_H_
 
-#include "base/macros.h"
-
 // ScopedMenuBarLock uses an AppKit API to lock the menu bar in its current
 // state (visible/hidden). Useful to temporarily keep the menu bar visible
 // after appearing when the user moved the mouse to the top of the screen, or

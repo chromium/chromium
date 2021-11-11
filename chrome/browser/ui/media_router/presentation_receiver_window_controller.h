@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "chrome/browser/profiles/profile.h"

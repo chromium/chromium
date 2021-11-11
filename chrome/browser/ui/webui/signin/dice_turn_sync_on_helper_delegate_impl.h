@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"

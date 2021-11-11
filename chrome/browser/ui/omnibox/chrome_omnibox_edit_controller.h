@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
 #define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_EDIT_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 
 class Browser;

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "components/permissions/permission_request.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 

@@ -13,7 +13,6 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"

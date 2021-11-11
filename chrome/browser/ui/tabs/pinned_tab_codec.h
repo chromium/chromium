@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "url/gurl.h"
 

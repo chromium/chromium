@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/subtree_set.h"
 
 namespace sync_file_system {

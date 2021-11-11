@@ -18,7 +18,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "chrome/android/chrome_jni_headers/TabContentManager_jni.h"

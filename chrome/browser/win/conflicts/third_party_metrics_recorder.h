@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
 

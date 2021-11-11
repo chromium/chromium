@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_NETWORKING_USER_NETWORK_CONFIGURATION_UPDATER_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {

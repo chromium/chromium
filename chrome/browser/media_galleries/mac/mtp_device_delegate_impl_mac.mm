@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
 #include "components/storage_monitor/image_capture_device_manager.h"

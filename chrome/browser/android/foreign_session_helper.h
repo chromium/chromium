@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 
 using base::android::ScopedJavaLocalRef;

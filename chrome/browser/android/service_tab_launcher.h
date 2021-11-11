@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 
 namespace content {

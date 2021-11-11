@@ -11,7 +11,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
 namespace content {

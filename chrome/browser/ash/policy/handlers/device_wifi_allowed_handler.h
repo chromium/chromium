@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_WIFI_ALLOWED_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_WIFI_ALLOWED_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 

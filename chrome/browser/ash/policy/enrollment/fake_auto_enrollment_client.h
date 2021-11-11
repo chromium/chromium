@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 
 class PrefService;

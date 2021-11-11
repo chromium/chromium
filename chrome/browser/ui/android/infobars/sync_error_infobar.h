@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ANDROID_INFOBARS_SYNC_ERROR_INFOBAR_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "chrome/browser/sync/sync_error_infobar_delegate_android.h"
 #include "components/infobars/android/confirm_infobar.h"
 

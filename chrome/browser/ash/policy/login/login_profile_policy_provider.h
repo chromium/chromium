@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_LOGIN_LOGIN_PROFILE_POLICY_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"

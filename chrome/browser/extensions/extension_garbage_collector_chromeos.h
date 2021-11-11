@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_GARBAGE_COLLECTOR_CHROMEOS_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_GARBAGE_COLLECTOR_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_garbage_collector.h"
 
 namespace extensions {

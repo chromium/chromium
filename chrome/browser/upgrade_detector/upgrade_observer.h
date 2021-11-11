@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_OBSERVER_H_
 #define CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_OBSERVER_H_
 
-#include "base/macros.h"
-
 class UpgradeObserver {
  public:
   // Triggered when a software update is available, but downloading requires

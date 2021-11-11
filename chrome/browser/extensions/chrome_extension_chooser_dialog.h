@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }

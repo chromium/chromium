@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/android/vr/vr_controller.h"
 #include "chrome/browser/vr/input_delegate.h"
 

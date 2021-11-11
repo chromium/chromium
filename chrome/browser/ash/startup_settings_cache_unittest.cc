@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/startup_settings_cache.h"
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"

@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile_list.h"
 
 class ProfileAttributesStorage;

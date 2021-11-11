@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
 class TabAndroid;

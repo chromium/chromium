@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"

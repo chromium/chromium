@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/network/network_connect.h"
 
 namespace ash {

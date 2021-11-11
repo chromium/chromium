@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_H_
 #define CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 

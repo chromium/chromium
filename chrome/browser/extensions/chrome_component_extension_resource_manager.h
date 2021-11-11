@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 
 namespace extensions {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"

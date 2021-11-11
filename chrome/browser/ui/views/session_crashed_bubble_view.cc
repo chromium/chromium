@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "build/branding_buildflags.h"

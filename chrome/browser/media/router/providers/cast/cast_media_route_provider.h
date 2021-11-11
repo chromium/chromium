@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/media_router/common/mojom/logger.mojom.h"

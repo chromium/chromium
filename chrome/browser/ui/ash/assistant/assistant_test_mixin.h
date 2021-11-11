@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/assistant/test_support/fake_s3_server.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

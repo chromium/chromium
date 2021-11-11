@@ -10,7 +10,6 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 
 class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {

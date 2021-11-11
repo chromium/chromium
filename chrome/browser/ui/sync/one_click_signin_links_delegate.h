@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SYNC_ONE_CLICK_SIGNIN_LINKS_DELEGATE_H_
 #define CHROME_BROWSER_UI_SYNC_ONE_CLICK_SIGNIN_LINKS_DELEGATE_H_
 
-#include "base/macros.h"
-
 // Handles link clicks in the OneClickSigninDialogView.
 class OneClickSigninLinksDelegate {
  public:

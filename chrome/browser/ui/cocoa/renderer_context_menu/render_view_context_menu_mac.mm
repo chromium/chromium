@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"

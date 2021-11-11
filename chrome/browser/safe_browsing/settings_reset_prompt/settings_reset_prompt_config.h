@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 class GURL;

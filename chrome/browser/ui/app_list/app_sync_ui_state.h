@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_APP_LIST_APP_SYNC_UI_STATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"

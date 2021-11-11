@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/find_in_page/find_result_observer.h"

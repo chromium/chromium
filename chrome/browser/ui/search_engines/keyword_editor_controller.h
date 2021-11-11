@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 class Profile;
 class TemplateURL;
 class TemplateURLService;

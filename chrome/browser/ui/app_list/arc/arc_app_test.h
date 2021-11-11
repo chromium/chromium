@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 
 namespace arc {

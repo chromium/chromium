@@ -4,7 +4,6 @@
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"

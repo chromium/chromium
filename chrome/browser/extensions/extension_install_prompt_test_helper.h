@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 // A helper class to be used with ExtensionInstallPrompt that keeps track of the

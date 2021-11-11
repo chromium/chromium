@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_BASIC_H_
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_BASIC_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "content/public/browser/web_contents_user_data.h"

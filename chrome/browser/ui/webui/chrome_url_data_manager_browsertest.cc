@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

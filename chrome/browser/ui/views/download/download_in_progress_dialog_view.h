@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_IN_PROGRESS_DIALOG_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/window/dialog_delegate.h"
 

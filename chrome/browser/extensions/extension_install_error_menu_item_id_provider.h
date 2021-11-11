@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_ERROR_MENU_ITEM_ID_PROVIDER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_ERROR_MENU_ITEM_ID_PROVIDER_H_
 
-#include "base/macros.h"
-
 namespace extensions {
 
 // Helper class to generate not-in-use and unique menu item id for GlobalErrors

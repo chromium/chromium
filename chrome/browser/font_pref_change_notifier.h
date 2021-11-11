@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FONT_PREF_CHANGE_NOTIFIER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_observer.h"

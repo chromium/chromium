@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "ui/base/models/table_model.h"

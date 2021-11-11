@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/sync/driver/sync_service_observer.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"

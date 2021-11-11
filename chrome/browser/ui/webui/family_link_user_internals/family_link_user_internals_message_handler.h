@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_MESSAGE_HANDLER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"

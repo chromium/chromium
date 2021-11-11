@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_SOURCE_H_
 #define CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_SOURCE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;

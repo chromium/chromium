@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 
 class FramebustBlockMessageDelegate;

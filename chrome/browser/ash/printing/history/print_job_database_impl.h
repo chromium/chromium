@@ -8,7 +8,6 @@
 #include <queue>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "components/leveldb_proto/public/proto_database.h"

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"

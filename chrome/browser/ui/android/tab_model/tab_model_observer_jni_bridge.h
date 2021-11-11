@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 

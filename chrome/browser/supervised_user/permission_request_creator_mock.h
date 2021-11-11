@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "url/gurl.h"
 

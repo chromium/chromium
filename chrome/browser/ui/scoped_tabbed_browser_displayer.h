@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 #define CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 
-#include "base/macros.h"
-
 class Browser;
 class Profile;
 

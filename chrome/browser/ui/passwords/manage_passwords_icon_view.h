@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_ICON_VIEW_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 
 // An interface for updating the passwords icon in the location bar.

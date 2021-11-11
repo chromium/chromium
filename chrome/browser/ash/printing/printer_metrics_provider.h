@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINTER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINTER_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {

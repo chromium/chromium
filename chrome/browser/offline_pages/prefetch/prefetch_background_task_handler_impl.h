@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/offline_pages/core/prefetch/prefetch_background_task_handler.h"
 
 class PrefService;

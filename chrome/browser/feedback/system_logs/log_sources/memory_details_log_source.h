@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_MEMORY_DETAILS_LOG_SOURCE_H_
 #define CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_MEMORY_DETAILS_LOG_SOURCE_H_
 
-#include "base/macros.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace system_logs {

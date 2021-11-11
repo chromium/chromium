@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

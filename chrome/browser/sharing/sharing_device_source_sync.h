@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_SYNC_H_
 #define CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_SYNC_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "components/sync_device_info/device_info_tracker.h"

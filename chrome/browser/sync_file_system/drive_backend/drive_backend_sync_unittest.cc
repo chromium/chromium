@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

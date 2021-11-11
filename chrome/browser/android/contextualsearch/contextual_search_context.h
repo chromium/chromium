@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 
 class GURL;

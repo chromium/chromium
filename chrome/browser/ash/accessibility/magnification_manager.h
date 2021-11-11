@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 #include "content/public/browser/web_contents.h"

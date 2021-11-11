@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 
 namespace ash {

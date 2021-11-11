@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {

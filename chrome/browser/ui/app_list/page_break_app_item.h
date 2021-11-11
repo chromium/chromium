@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_PAGE_BREAK_APP_ITEM_H_
 #define CHROME_BROWSER_UI_APP_LIST_PAGE_BREAK_APP_ITEM_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
 // Represents a page break item in the app list.

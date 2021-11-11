@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"

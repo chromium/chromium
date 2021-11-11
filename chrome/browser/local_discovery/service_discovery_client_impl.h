@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "net/dns/mdns_client.h"

@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chrome/installer/util/app_command.h"
 
 namespace base {

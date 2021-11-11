@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class GURL;
 
 // The ProfileIOData is slated for deletion. It currently only contains two

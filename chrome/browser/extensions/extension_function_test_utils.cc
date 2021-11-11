@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"

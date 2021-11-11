@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

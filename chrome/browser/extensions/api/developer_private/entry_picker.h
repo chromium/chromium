@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_ENTRY_PICKER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_ENTRY_PICKER_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 

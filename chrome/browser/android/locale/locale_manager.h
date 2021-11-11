@@ -8,8 +8,6 @@
 #include <jni.h>
 #include <string>
 
-#include "base/macros.h"
-
 // Provides access to the locale specific customizations on Android.
 class LocaleManager {
  public:

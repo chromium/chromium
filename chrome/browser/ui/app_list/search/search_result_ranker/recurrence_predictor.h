@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_config.pb.h"

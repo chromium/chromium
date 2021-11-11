@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_UPDATER_EXTENSION_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 #define CHROME_BROWSER_EXTENSIONS_UPDATER_EXTENSION_UPDATE_CLIENT_COMMAND_LINE_CONFIG_POLICY_H_
 
-#include "base/macros.h"
 #include "components/update_client/command_line_config_policy.h"
 
 namespace base {

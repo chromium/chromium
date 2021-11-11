@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_VPN_LIST_FORWARDER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
 #include "content/public/browser/web_ui_message_handler.h"
 

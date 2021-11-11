@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/notification_registrar.h"

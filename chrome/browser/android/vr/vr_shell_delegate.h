@@ -10,7 +10,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "device/vr/android/gvr/gvr_delegate_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"

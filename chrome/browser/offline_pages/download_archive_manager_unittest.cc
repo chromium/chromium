@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"

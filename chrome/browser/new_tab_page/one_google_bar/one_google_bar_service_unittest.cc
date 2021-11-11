@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"

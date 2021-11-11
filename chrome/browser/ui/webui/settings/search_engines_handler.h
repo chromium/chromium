@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/search_engines/edit_search_engine_controller.h"
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"

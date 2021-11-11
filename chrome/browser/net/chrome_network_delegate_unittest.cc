@@ -5,7 +5,6 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 
 #include "base/base_paths.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

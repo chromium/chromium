@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSION_TAB_UTIL_DELEGATE_CHROMEOS_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_EXTENSION_TAB_UTIL_DELEGATE_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 
 namespace extensions {

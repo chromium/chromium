@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;

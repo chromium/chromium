@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

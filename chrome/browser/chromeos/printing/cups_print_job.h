@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"

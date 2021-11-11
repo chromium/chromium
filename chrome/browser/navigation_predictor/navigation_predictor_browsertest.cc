@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"

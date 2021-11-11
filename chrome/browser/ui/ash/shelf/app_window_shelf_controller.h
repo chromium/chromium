@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "base/macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 class AppWindowShelfItemController;

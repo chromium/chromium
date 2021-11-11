@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"

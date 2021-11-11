@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_SHIPPING_OPTION_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_SHIPPING_OPTION_VIEW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_item_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"

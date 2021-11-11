@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_RLZ_CHROME_RLZ_TRACKER_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/rlz/rlz_tracker_delegate.h"
 #include "content/public/browser/notification_observer.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/public/browser/url_data_source.h"
 #include "url/gurl.h"
 

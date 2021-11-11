@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/work_item.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"

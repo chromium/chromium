@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"

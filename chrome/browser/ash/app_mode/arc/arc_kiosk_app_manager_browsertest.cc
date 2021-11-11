@@ -9,7 +9,6 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"

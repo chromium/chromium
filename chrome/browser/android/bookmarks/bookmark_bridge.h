@@ -13,7 +13,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"

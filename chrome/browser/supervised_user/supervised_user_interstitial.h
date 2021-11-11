@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "url/gurl.h"
 

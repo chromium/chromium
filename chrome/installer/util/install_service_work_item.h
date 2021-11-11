@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/installer/util/work_item.h"
 
 namespace base {

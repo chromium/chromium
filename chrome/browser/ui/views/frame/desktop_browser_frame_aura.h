@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"

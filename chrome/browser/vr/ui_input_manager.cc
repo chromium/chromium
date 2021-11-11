@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/adapters.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/input_event.h"

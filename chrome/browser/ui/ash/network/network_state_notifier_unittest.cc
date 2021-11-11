@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"

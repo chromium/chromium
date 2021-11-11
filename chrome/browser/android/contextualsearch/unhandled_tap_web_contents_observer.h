@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace contextual_search {

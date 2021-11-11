@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"

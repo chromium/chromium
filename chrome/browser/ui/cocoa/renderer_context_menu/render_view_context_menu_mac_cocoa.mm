@@ -10,7 +10,6 @@
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #import "base/mac/scoped_sending_event.h"
-#include "base/macros.h"
 #import "base/message_loop/message_pump_mac.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"

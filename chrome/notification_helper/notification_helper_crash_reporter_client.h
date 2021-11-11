@@ -6,7 +6,6 @@
 #define CHROME_NOTIFICATION_HELPER_NOTIFICATION_HELPER_CRASH_REPORTER_CLIENT_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class NotificationHelperCrashReporterClient

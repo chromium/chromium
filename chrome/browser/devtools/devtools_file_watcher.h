@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace base {
 class FilePath;

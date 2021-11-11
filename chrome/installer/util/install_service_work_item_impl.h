@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"

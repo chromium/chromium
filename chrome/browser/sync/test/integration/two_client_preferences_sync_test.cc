@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"

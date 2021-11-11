@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 
 namespace device {

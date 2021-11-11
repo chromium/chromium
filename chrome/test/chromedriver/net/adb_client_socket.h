@@ -6,7 +6,6 @@
 #define CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"

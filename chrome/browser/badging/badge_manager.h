@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"

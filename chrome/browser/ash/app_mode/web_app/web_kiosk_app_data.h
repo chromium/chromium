@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"

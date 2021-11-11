@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_KIOSK_APP_MENU_CONTROLLER_H_
 
 #include "ash/public/cpp/kiosk_app_menu.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"

@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_member.h"

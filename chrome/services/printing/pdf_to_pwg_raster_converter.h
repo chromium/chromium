@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PDF_TO_PWG_RASTER_CONVERTER_H_
 #define CHROME_SERVICES_PRINTING_PDF_TO_PWG_RASTER_CONVERTER_H_
 
-#include "base/macros.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
 
 namespace printing {

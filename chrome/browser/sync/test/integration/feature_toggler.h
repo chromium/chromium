@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_FEATURE_TOGGLER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FEATURE_TOGGLER_H_
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"

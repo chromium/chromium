@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gesture_detector.h"

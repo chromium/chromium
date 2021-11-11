@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "base/macros.h"
 #include "chrome/browser/ui/views/reader_mode/reader_mode_icon_view.h"
 
 #include "base/test/scoped_feature_list.h"

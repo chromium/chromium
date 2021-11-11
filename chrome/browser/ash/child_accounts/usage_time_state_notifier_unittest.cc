@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

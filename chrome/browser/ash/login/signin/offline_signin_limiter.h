@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"

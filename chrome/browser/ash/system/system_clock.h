@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"

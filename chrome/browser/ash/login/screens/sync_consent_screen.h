@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

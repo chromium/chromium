@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 
 class Profile;

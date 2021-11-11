@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 class GURL;
 

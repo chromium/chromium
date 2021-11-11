@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/mojom/cros_display_config.mojom.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;

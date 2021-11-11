@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"

@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"

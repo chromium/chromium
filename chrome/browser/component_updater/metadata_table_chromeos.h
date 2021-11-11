@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;

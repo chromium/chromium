@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_RESPONSE_INTERCEPTOR_URL_LOADER_THROTTLE_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_RESPONSE_INTERCEPTOR_URL_LOADER_THROTTLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"

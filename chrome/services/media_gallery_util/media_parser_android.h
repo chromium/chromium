@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/services/media_gallery_util/media_parser.h"
 
 // The media parser on Android that provides video thumbnail generation utility.

@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

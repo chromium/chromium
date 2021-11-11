@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/extensions/api/cookies.h"

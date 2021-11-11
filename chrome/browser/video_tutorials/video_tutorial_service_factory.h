@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/video_tutorials/video_tutorial_service.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media/webrtc/test_stats_dictionary.h"
 #include "chrome/test/base/in_process_browser_test.h"

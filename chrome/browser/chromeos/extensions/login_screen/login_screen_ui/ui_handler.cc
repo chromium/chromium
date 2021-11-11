@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

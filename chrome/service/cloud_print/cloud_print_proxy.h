@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_proxy_backend.h"

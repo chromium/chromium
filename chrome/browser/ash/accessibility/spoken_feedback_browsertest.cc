@@ -27,7 +27,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"

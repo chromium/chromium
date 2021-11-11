@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_ACCESSIBILITY_FAKE_ACCESSIBILITY_CONTROLLER_H_
 
 #include "ash/public/cpp/accessibility_controller.h"
-#include "base/macros.h"
 
 // Fake implementation of ash's mojo AccessibilityController interface.
 class FakeAccessibilityController : ash::AccessibilityController {

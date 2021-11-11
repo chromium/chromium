@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace extensions {

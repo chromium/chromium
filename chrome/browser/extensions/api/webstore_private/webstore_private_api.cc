@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

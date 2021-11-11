@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

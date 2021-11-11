@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/elements/text.h"
 

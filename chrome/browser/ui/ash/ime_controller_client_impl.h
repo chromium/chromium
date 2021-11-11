@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_info.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"

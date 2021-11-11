@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 
 namespace base {

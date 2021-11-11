@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_UNINSTALLER_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_UNINSTALLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 

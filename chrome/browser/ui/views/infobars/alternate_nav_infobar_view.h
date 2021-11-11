@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 
 class AlternateNavInfoBarDelegate;

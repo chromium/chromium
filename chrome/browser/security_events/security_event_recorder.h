@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_H_
 #define CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/model_type_controller_delegate.h"

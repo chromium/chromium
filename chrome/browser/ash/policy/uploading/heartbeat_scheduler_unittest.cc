@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_tab_util.h"
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "extensions/common/extension.h"

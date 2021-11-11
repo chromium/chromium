@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_
 
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/backend_migrator.h"
 

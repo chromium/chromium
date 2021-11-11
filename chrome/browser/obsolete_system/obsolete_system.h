@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class ObsoleteSystem {
  public:
   ObsoleteSystem() = delete;

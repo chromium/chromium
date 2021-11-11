@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/pref_member.h"
 

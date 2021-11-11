@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_NAVIGATION_FRAME_NAVIGATION_STATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/document_user_data.h"
 #include "url/gurl.h"
 

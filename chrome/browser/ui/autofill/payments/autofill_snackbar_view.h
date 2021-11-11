@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_VIEW_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_VIEW_H_
 
-#include "base/macros.h"
-
 namespace autofill {
 
 // The UI interface which shows a snackbar after a form is autofilled on

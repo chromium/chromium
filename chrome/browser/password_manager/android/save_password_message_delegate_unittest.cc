@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/android/save_password_message_delegate.h"
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"

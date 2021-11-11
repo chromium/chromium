@@ -7,7 +7,6 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"

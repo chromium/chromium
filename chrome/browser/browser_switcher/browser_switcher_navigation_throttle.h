@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace browser_switcher {

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/welcome/bookmark_item.h"
 #include "content/public/browser/web_ui_message_handler.h"

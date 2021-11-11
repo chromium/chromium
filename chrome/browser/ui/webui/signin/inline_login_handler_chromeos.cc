@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"

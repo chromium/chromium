@@ -12,7 +12,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

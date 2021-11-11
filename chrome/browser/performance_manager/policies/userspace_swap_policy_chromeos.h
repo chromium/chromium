@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

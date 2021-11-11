@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_VR_CARDBOARD_INPUT_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_VR_CARDBOARD_INPUT_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/input_delegate.h"
 
 namespace gvr {

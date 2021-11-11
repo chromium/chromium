@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
 class Profile;

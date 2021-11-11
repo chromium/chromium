@@ -6,7 +6,6 @@
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"

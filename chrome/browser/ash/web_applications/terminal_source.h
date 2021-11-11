@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/url_data_source.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"

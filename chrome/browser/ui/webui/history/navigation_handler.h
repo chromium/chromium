@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HISTORY_NAVIGATION_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {

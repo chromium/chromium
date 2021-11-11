@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_BASE_GRAPHICS_DELEGATE_H_
 #define CHROME_BROWSER_VR_BASE_GRAPHICS_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 

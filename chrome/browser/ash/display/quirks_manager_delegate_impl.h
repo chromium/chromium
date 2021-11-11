@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DISPLAY_QUIRKS_MANAGER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_DISPLAY_QUIRKS_MANAGER_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "components/quirks/quirks_manager.h"
 
 namespace quirks {

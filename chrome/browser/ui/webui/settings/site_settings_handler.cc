@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"

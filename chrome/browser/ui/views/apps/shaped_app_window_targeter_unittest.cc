@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"

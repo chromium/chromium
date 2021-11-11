@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace sync_file_system {

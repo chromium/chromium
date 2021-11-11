@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_
 
 #include "ash/public/cpp/login_screen_model.h"
-#include "base/macros.h"
 
 class TestLoginScreenModel : public ash::LoginScreenModel {
  public:

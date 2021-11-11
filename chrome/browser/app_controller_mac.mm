@@ -19,7 +19,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"

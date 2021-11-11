@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/mock_callback.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_NORMALIZER_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 
 namespace autofill {

@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"

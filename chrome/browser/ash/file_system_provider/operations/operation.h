@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"

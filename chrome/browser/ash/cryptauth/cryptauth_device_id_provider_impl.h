@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromeos/services/device_sync/public/cpp/cryptauth_device_id_provider.h"
 

@@ -8,7 +8,6 @@
 
 #include "base/environment.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/rand_util.h"
 #include "base/scoped_environment_variable_override.h"

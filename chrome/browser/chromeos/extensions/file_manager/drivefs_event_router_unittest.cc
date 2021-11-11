@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/common/extensions/api/file_manager_private.h"

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/system_tray_observer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

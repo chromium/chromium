@@ -4,7 +4,6 @@
 
 #include "chrome/browser/image_decoder/image_decoder.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

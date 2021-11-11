@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 
 // This class handles the task of observing a single DownloadManager for

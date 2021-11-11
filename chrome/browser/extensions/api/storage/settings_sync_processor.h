@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/value_store/value_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

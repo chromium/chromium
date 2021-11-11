@@ -8,8 +8,6 @@
 #include <NotificationActivationCallback.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-
 namespace notification_helper {
 
 // This class is used to create a COM component that exposes the

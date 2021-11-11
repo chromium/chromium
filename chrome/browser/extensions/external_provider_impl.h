@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"

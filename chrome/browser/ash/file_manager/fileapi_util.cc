@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

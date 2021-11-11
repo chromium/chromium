@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "chrome/browser/media/test_license_server_config.h"
 
 namespace base {

@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"

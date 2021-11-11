@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "components/sessions/core/session_id.h"

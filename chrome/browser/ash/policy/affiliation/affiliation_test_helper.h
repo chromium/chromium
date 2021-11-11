@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 class AccountId;

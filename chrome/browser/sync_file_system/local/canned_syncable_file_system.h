@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"

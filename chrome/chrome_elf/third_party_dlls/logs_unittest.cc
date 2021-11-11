@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/chrome_elf/sha1/sha1.h"

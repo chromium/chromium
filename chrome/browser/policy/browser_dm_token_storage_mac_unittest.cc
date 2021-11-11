@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

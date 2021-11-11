@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORIC_VISITS_MIGRATION_TASK_H_
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORIC_VISITS_MIGRATION_TASK_H_
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_WIN_H_
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {

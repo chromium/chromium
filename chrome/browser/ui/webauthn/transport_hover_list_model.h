@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 

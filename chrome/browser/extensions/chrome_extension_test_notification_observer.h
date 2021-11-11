@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "extensions/test/extension_test_notification_observer.h"
 

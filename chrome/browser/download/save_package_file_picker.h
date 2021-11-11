@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/save_page_type.h"

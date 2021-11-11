@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"

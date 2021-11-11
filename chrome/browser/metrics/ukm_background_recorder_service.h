@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_UKM_BACKGROUND_RECORDER_SERVICE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"

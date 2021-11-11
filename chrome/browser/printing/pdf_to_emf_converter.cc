@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_GLUE_EXTENSION_SETTING_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/sync/driver/non_ui_syncable_service_based_model_type_controller.h"
 
 class Profile;

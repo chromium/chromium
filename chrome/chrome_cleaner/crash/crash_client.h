@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 

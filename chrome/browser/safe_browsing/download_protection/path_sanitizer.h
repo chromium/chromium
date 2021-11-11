@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_PATH_SANITIZER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace safe_browsing {
 

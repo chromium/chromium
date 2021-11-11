@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/notifications/notification_display_service.h"

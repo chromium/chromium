@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_STUB_H_
 
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "base/macros.h"
 
 // Stub implementation of ash::MultiUserWindowManager. This is used for single
 // user mode.

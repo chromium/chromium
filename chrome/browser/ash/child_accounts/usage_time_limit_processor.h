@@ -14,7 +14,6 @@
 #include <unordered_map>
 
 #include "ash/components/settings/timezone_settings.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

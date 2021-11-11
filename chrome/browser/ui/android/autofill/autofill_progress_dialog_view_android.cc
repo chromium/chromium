@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/android/autofill/autofill_progress_dialog_view_android.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
 #include "components/grit/components_scaled_resources.h"

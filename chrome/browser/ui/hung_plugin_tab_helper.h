@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/infobar_manager.h"

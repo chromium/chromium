@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_cloud_external_data_policy_handler.h"
 
 namespace policy {

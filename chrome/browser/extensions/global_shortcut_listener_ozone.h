@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"

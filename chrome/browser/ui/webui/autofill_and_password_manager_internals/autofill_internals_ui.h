@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_AUTOFILL_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {

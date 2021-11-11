@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 

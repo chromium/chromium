@@ -4,7 +4,6 @@
 
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/rar_analyzer.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/sessions.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"

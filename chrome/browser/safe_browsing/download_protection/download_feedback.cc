@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"

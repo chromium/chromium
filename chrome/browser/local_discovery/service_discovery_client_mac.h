@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

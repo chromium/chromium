@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"

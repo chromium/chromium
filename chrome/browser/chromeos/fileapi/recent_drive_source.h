@@ -10,7 +10,6 @@
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"

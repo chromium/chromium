@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/profiles/profile.h"

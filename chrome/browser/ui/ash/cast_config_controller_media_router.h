@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/cast_config_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"

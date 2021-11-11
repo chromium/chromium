@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
 namespace leveldb {

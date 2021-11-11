@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_STATES_H_
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_STATES_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "content/public/browser/web_contents_user_data.h"
 

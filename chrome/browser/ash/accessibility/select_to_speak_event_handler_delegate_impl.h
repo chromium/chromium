@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 

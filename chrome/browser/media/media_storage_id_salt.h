@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 class PrefRegistrySimple;
 class PrefService;
 

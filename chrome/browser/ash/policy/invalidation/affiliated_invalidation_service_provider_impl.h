@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"

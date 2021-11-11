@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"

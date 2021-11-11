@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_
 #define CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_
 
-#include "base/macros.h"
 #include "components/upload_list/text_log_upload_list.h"
 
 namespace base {

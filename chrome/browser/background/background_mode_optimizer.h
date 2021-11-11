@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"

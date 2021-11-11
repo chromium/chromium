@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"

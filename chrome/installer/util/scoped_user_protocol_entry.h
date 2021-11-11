@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 class RegistryEntry;
 
 // Windows 8 shows the "No apps are installed to open this type of link"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 class GURL;

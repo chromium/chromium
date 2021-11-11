@@ -17,7 +17,6 @@
 #include "base/environment.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"

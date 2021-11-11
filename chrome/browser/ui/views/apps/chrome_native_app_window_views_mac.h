@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 @class ResizeNotificationObserver;

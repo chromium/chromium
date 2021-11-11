@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_NETWORK_QUALITY_ESTIMATOR_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_METRICS_NETWORK_QUALITY_ESTIMATOR_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "services/network/public/cpp/network_quality_tracker.h"

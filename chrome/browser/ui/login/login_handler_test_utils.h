@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_observer.h"

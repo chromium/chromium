@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"

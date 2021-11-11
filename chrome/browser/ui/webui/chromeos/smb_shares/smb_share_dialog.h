@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_SHARE_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_SHARE_DIALOG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 

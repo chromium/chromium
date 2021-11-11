@@ -21,8 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
-#include "base/macros.h"
-
 // Provides the native support needed for the Java class by the same name,
 // which encapsulates a server response for Contextual Search.
 

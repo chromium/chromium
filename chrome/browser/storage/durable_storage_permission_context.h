@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/permissions/permission_context_base.h"
 

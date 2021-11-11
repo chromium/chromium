@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"

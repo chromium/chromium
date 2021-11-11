@@ -5,7 +5,6 @@
 #include "chrome/common/multi_process_lock.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 

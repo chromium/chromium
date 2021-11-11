@@ -7,7 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/common/mac/service_management.h"
 

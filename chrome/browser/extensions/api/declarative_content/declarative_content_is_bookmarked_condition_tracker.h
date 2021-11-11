@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"

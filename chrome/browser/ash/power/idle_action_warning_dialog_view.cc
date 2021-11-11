@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FIRST_RUN_SCOPED_RELAUNCH_CHROME_BROWSER_OVERRIDE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 
 namespace upgrade_util {

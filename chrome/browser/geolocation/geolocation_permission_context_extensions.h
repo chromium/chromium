@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_EXTENSIONS_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "extensions/buildflags/buildflags.h"
 

@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 
 namespace storage {

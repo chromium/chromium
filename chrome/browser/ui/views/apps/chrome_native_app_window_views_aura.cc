@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/app_window_easy_resize_window_targeter.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_CANDIDATE_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_MOCK_CANDIDATE_WINDOW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 

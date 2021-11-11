@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/ui_resource_client.h"

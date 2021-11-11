@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync_device_info/device_info.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

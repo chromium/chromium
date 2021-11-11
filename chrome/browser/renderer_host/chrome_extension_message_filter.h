@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "chrome/browser/profiles/profile.h"

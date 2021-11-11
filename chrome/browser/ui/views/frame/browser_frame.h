@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/keyboard_event_processing_result.h"

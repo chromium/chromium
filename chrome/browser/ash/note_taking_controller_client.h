@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_NOTE_TAKING_CONTROLLER_CLIENT_H_
 
 #include "ash/public/cpp/note_taking_client.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/note_taking_helper.h"

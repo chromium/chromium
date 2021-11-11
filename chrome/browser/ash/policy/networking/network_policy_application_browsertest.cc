@@ -7,7 +7,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"

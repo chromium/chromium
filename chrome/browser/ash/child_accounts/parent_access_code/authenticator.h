@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "crypto/hmac.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "crypto/nss_crypto_module_delegate.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_RESTORE_ON_STARTUP_POLICY_HANDLER_H_
 #define CHROME_BROWSER_SESSIONS_RESTORE_ON_STARTUP_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;

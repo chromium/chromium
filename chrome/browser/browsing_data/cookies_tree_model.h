@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/browsing_data/local_data_container.h"

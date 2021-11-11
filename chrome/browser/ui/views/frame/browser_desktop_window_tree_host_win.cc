@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"

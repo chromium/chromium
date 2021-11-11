@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 #define CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "chrome/common/lite_video_service.mojom.h"

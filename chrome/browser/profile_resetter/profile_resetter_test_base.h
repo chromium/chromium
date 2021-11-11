@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/test_utils.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

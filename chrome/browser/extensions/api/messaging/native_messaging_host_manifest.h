@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace base {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "url/gurl.h"

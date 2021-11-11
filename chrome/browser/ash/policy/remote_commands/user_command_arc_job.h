@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 class Profile;

@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"

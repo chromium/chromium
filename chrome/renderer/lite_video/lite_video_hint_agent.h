@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_LITE_VIDEO_LITE_VIDEO_HINT_AGENT_H_
 #define CHROME_RENDERER_LITE_VIDEO_LITE_VIDEO_HINT_AGENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/common/lite_video_service.mojom.h"
 #include "chrome/common/previews_resource_loading_hints.mojom.h"

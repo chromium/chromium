@@ -5,7 +5,6 @@
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"

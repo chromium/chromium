@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 // Parses INI files in a string. Users should in inherit from this class.

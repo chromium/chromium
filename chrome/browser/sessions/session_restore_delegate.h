@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"

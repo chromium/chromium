@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 
 class AppManagementPageHandler;

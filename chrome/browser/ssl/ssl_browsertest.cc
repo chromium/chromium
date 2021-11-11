@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"

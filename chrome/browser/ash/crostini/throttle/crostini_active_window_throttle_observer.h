@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_THROTTLE_CROSTINI_ACTIVE_WINDOW_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_THROTTLE_CROSTINI_ACTIVE_WINDOW_THROTTLE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/window_throttle_observer_base.h"
 
 namespace crostini {

@@ -4,7 +4,6 @@
 
 #include "components/zoom/zoom_controller.h"
 
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

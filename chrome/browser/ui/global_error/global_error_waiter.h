@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_WAITER_H_
 #define CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_WAITER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"

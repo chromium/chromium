@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/webui/help_app_ui/search/search.mojom.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"

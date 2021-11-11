@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 
 namespace autofill {
 

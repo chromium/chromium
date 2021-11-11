@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 
 // This entire file is written in terms of the launch_data_t API, which is

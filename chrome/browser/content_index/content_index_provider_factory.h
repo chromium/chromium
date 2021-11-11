@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_PROVIDER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 

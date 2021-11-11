@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/installed_loader.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

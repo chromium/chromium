@@ -15,7 +15,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"

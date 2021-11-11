@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOCOMPLETE_SHORTCUTS_EXTENSIONS_MANAGER_H_
 #define CHROME_BROWSER_AUTOCOMPLETE_SHORTCUTS_EXTENSIONS_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "extensions/browser/extension_registry.h"

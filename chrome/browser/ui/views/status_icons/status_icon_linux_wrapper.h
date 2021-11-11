@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"

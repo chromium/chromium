@@ -13,7 +13,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"

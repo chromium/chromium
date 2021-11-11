@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
 // List model that controls which item is added to WebAuthN UI views.

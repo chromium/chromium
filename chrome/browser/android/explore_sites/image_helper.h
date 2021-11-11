@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_HID_HID_CHOOSER_H_
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "content/public/browser/hid_chooser.h"
 
 // Owns a HID device chooser dialog and closes it when destroyed.

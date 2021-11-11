@@ -10,7 +10,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

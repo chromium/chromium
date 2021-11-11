@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_SSL_MOCK_CERT_VERIFIER_RULE_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 
 // Enables tests to force certificate verification results.

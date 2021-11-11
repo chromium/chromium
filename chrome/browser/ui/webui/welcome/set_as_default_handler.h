@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WELCOME_SET_AS_DEFAULT_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_SET_AS_DEFAULT_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_default_browser_handler.h"
 
 namespace welcome {

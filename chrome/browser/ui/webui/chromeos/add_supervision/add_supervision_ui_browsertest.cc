@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"

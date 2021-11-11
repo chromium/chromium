@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registry.h"

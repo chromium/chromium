@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_UI_SCENE_CREATOR_H_
 #define CHROME_BROWSER_VR_UI_SCENE_CREATOR_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/content_element.h"
 #include "chrome/browser/vr/elements/text_input.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REMOTE_POWERWASH_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REMOTE_POWERWASH_JOB_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {

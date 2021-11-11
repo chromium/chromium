@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/printing/printers_map.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

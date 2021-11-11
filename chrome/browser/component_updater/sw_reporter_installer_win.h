@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"

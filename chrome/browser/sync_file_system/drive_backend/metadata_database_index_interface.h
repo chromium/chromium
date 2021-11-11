@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace sync_file_system {
 namespace drive_backend {
 

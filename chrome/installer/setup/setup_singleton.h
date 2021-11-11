@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_handle.h"
 

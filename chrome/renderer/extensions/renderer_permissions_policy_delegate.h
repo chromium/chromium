@@ -5,7 +5,6 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_RENDERER_PERMISSIONS_POLICY_DELEGATE_H_
 #define CHROME_RENDERER_EXTENSIONS_RENDERER_PERMISSIONS_POLICY_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions {

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"

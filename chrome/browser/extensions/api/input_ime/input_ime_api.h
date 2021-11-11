@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"

@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"

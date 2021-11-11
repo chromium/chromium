@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"

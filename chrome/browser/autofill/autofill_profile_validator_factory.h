@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_PROFILE_VALIDATOR_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 
 namespace autofill {

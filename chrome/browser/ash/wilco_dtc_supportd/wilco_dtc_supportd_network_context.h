@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 #define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/net/proxy_config_monitor.h"

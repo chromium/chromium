@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/android/vr/android_vsync_helper.h"
 #include "chrome/browser/android/vr/gvr_graphics_delegate.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_INTERVENTIONS_FRAMEBUST_BLOCK_MESSAGE_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "url/gurl.h"
 
 #include "chrome/browser/ui/interventions/intervention_delegate.h"

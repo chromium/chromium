@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"

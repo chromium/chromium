@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 

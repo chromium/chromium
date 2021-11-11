@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-
 // The WebUI handler for the experimental WebUI omnibox popup.
 class OmniboxPopupHandler {
  public:

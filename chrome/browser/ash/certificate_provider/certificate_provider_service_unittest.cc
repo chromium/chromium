@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"

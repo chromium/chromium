@@ -12,7 +12,6 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

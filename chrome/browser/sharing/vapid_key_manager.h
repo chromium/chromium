@@ -9,8 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace crypto {
 class ECPrivateKey;
 }  // namespace crypto

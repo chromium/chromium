@@ -5,7 +5,6 @@
 #include "chrome/browser/themes/theme_service.h"
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"

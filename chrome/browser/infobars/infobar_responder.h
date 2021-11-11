@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_RESPONDER_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/infobar_manager.h"
 
 namespace infobars {

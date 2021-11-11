@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"

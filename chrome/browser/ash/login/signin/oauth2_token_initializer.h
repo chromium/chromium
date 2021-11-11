@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/signin/oauth2_token_fetcher.h"
 #include "chromeos/login/auth/user_context.h"
 

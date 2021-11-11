@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"

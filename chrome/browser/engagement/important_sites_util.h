@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

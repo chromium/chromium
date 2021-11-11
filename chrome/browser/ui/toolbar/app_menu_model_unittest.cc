@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"

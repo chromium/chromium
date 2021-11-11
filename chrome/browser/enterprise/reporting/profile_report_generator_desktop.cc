@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/json/values_util.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"

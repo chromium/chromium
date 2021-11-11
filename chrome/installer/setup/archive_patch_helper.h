@@ -6,7 +6,6 @@
 #define CHROME_INSTALLER_SETUP_ARCHIVE_PATCH_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/lzma_util.h"
 

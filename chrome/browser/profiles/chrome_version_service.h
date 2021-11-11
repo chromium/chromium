@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class PrefService;
 
 namespace user_prefs {

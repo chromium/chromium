@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

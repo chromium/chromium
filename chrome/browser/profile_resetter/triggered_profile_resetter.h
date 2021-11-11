@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 

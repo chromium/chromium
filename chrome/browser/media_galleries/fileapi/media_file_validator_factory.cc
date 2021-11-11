@@ -5,7 +5,6 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_validator_factory.h"
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/media_galleries/fileapi/supported_audio_video_checker.h"
 #include "chrome/browser/media_galleries/fileapi/supported_image_type_validator.h"
 #include "components/download/public/common/quarantine_connection.h"

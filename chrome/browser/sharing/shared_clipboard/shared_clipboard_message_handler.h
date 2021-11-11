@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingDeviceSource;

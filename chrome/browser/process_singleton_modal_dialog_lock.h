@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PROCESS_SINGLETON_MODAL_DIALOG_LOCK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/process_singleton.h"
 
 namespace base {

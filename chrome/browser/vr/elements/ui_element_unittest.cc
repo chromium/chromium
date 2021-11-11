@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/test/animation_utils.h"

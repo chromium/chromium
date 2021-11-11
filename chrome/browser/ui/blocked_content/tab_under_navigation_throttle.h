@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

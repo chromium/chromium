@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 
 namespace safe_browsing {

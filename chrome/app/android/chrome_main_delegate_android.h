@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"

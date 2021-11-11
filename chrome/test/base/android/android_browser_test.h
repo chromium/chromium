@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 
-#include "base/macros.h"
 #include "base/files/scoped_temp_dir.h"
 #include "content/public/test/browser_test_base.h"
 

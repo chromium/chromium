@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"

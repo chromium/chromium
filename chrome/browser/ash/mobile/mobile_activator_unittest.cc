@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/network/network_connection_handler.h"

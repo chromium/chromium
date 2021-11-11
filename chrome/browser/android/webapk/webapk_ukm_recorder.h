@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 class GURL;
 
 // WebApkUkmRecorder is the C++ counterpart of

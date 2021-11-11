@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"

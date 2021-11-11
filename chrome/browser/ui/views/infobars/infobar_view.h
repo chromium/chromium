@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"

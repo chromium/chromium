@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 

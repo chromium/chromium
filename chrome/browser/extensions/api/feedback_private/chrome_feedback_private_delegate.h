@@ -8,7 +8,6 @@
 #include "components/feedback/feedback_data.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 
 namespace extensions {

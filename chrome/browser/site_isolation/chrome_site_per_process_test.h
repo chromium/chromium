@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SITE_ISOLATION_CHROME_SITE_PER_PROCESS_TEST_H_
 #define CHROME_BROWSER_SITE_ISOLATION_CHROME_SITE_PER_PROCESS_TEST_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace base {

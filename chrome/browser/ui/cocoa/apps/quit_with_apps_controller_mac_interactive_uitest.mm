@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #import "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SPEECH_TTS_CONTROLLER_DELEGATE_IMPL_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/tts_controller_delegate.h"
 

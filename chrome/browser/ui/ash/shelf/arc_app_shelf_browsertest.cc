@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

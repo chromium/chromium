@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 

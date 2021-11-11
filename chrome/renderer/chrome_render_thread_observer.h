@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"

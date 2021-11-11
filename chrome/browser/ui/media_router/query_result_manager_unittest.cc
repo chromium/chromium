@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route_provider_helper.h"

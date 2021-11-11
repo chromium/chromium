@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_SYSTEM_FAKE_INPUT_DEVICE_SETTINGS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 
 namespace ash {

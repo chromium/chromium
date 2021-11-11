@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORD_DIALOG_PROMPTS_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_DIALOG_PROMPTS_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
 namespace ash {

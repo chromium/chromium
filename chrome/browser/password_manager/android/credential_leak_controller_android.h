@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"

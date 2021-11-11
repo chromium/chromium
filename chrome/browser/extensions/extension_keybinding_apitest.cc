@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"

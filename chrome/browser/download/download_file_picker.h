@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_FILE_PICKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/download/download_confirmation_result.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 

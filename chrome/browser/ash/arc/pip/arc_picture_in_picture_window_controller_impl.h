@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "ui/gfx/geometry/size.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_NEARBY_SHARE_OVERLAY_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_UI_NEARBY_SHARE_OVERLAY_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace aura {

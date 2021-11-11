@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "chromeos/network/network_ui_data.h"

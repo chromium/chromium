@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"

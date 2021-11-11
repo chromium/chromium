@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chromeos/login/auth/challenge_response_key.h"

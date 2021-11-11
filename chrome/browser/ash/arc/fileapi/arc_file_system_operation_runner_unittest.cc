@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/file_system.mojom.h"

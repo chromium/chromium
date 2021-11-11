@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/android/webapk/webapk_info.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"

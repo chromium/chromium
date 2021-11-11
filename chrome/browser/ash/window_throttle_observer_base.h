@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_
 #define CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 

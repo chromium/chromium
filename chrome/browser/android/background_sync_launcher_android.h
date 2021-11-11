@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 

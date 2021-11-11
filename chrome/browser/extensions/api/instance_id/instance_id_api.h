@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_INSTANCE_ID_INSTANCE_ID_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_INSTANCE_ID_INSTANCE_ID_API_H_
 
-#include "base/macros.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "extensions/browser/extension_function.h"
 

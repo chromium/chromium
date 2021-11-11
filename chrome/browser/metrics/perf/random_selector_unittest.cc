@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // A small floating point number used to verify that the expected odds are equal

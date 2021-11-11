@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"

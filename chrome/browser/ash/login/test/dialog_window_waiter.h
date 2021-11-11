@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/env_observer.h"

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/components/tether/fake_gms_core_notifications_state_tracker.h"
 #include "content/public/test/test_web_ui.h"

@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/profiler.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"

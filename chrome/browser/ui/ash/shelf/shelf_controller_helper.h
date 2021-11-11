@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

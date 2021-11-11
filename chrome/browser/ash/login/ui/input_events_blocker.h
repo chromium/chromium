@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_INPUT_EVENTS_BLOCKER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

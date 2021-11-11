@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "services/device/public/mojom/mtp_file_entry.mojom.h"
 

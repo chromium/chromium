@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/gfx/geometry/rect.h"

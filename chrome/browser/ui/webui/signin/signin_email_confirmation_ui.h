@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 
 class SigninEmailConfirmationUI : public ConstrainedWebDialogUI {

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
 #define CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
 
-#include "base/macros.h"
-
 class Profile;
 class PrefRegistrySimple;
 

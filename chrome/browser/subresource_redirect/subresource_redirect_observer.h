@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/document_user_data.h"

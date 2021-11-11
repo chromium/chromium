@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_MINIMUM_CHROME_VERSION_CHECKER_H_
 #define CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_MINIMUM_CHROME_VERSION_CHECKER_H_
 
-#include "base/macros.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {

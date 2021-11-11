@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_
 
-#include "base/macros.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace base {

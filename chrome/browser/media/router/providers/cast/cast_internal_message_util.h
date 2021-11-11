@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_INTERNAL_MESSAGE_UTIL_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"

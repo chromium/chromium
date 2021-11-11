@@ -7,7 +7,6 @@
 
 #include <deque>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

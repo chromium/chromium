@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace ukm {
 namespace builders {
 class TabManager_LifecycleStateChange;

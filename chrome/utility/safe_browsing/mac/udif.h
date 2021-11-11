@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 
 namespace safe_browsing {
 namespace dmg {
