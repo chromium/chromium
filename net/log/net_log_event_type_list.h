@@ -2097,6 +2097,9 @@ EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_SENT)
 //   }
 EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_RESUMED)
 
+// A WebTransport client is alive.
+EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE)
+
 // A WebTransport client state has changed.
 //   {
 //     "last_state": <The last client state>

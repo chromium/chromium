@@ -259,9 +259,22 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       // handshake error" even when more detailed message is available).  This
       // requires implementing ProofHandler::OnProofVerifyDetailsAvailable.
       crypto_config_(CreateProofVerifier(isolation_key_, context, parameters),
-                     /* session_cache */ nullptr) {}
+                     /* session_cache */ nullptr) {
+  net_log_.BeginEvent(NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE,
+                      [&] {
+                        base::Value dict(base::Value::Type::DICTIONARY);
+                        dict.SetStringKey("url", url.possibly_invalid_spec());
+                        dict.SetStringKey("network_isolation_key",
+                                          isolation_key.ToDebugString());
+                        return dict;
+                      });
+}
 
-DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() = default;
+DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() {
+  net_log_.EndEventWithNetErrorCode(
+      NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE,
+      error_ ? error_->net_error : OK);
+}
 
 void DedicatedWebTransportHttp3Client::Connect() {
   if (state_ != WebTransportState::NEW ||
