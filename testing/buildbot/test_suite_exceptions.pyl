@@ -918,13 +918,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
-            },
-          ],
-        },
+      },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          '--timeout-scale=2.0',
+        ],
       },
       'android-arm64-proguard-rel': {
         'swarming': {
@@ -944,11 +942,6 @@
           # TODO(crbug.com/1127110): Revisit shards and machine_type if there
           # are n2 machines available in the test pool.
           'shards': 25,
-          'dimension_sets': [
-            {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
-            },
-          ],
         },
       },
       'android-pie-arm64-rel': {
@@ -963,11 +956,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
-            },
-          ],
           # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
           'shards': 30,
         },
@@ -989,7 +977,7 @@
           'optional_dimensions': {
             '60': [
               {
-                'caches': 'avd_generic_playstore_android28',
+                'caches': 'avd_generic_playstore_android30',
               }
             ],
           },
@@ -1000,6 +988,31 @@
             },
             {
               'name': 'system_images_android_30_google_apis_playstore_x86',
+              'path': '.emulator_sdk',
+            },
+          ],
+        },
+      },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          '--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb',
+        ],
+        'swarming': {
+          # soft affinity so that bots with caches will be picked first
+          'optional_dimensions': {
+            '60': [
+              {
+                'caches': 'avd_generic_playstore_android31',
+              }
+            ],
+          },
+          'named_caches': [
+            {
+              'name': 'avd_generic_playstore_android31',
+              'path': '.android',
+            },
+            {
+              'name': 'system_images_android_31_google_apis_playstore_x64',
               'path': '.emulator_sdk',
             },
           ],

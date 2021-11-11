@@ -11995,7 +11995,7 @@
           "optional_dimensions": {
             "60": [
               {
-                "caches": "avd_generic_playstore_android28"
+                "caches": "avd_generic_playstore_android30"
               }
             ]
           },

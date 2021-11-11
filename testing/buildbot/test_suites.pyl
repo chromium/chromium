@@ -89,6 +89,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'emulator-8-cores',  # Use 8-core to shorten test runtime.
         ],
       },
       'chrome_public_test_apk_with_playstore': {
