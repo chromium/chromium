@@ -2807,7 +2807,8 @@ void CrostiniManager::OnCreateLxdContainer(
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
     default:
-      LOG(ERROR) << "Failed to start container: " << response->failure_reason();
+      LOG(ERROR) << "Failed to create container: "
+                 << response->failure_reason();
       std::move(callback).Run(CrostiniResult::CONTAINER_CREATE_FAILED);
   }
 }
