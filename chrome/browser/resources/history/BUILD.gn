@@ -45,7 +45,6 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
     "history.html",
-    "images/journeys_off.svg",
     "images/journeys.svg",
     "images/list.svg",
     "images/sign_in_promo_dark.svg",
@@ -101,6 +100,7 @@ preprocess_if_expr("preprocess_generated") {
     "history_list.ts",
     "history_toolbar.ts",
     "router.ts",
+    "shared_icons.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "side_bar.ts",
@@ -133,6 +133,7 @@ html_to_js("web_components_local") {
     "history_list.ts",
     "history_toolbar.ts",
     "router.ts",
+    "shared_icons.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "side_bar.ts",
@@ -177,6 +178,7 @@ ts_library("build_ts") {
     "query_manager.ts",
     "router.ts",
     "searched_label.ts",
+    "shared_icons.ts",
     "shared_style.ts",
     "shared_vars.ts",
     "side_bar.ts",
