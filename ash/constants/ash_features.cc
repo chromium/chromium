@@ -699,7 +699,7 @@ const base::Feature kImeStylusHandwriting{"StylusHandwriting",
 
 // Enable or disable the improved screen capture settings.
 const base::Feature kImprovedScreenCaptureSettings{
-    "ImprovedScreenCaptureSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ImprovedScreenCaptureSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
