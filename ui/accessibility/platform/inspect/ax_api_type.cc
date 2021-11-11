@@ -19,7 +19,7 @@ AXApiType::Type::operator std::string() const {
     case kLinux:
       return "linux";
     case kWinIA2:
-      return "win";
+      return "ia2";
     case kWinUIA:
       return "uia";
     default:

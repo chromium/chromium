@@ -113,7 +113,7 @@ const TypeInfo kTypeInfos[] = {
         },
     },
     {
-        "win",
+        "ia2",
         {
             "@WIN-",
             FILE_PATH_LITERAL("-win"),
