@@ -94,6 +94,8 @@ class VoiceSearchAvailability;
 @property(nonatomic, weak) id<NTPHomeConsumer> consumer;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
+// The web state associated with this NTP.
+@property(nonatomic, assign) web::WebState* webState;
 
 // Inits the mediator.
 - (void)setUp;

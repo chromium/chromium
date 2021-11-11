@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
@@ -109,8 +110,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 @property(nonatomic, strong) id<LogoVendor> logoVendor;
 // The voice search availability.
 @property(nonatomic, assign) VoiceSearchAvailability* voiceSearchAvailability;
-// The web state associated with this NTP.
-@property(nonatomic, assign) web::WebState* webState;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
 
@@ -177,7 +176,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)shutdown {
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
-    [self saveContentOffsetForWebState:_webState];
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
   }
@@ -202,10 +200,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
+    [self saveContentOffsetForWebState:_webState];
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
   if (_webState && _webStateObserver) {
+    [self setContentOffsetForWebState:webState];
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -552,12 +552,11 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Save the NTP scroll offset into the last committed navigation item for the
 // before we navigate away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
-  if (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-      kChromeUINewTabURL)
-    return;
-
   web::NavigationManager* manager = webState->GetNavigationManager();
-  web::NavigationItem* item = manager->GetLastCommittedItem();
+  web::NavigationItem* item =
+      webState->GetLastCommittedURL() == kChromeUINewTabURL
+          ? manager->GetLastCommittedItem()
+          : manager->GetVisibleItem();
   web::PageDisplayState displayState;
 
   // TODO(crbug.com/1114792): Create a protocol to stop having references to
@@ -603,6 +602,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   // both of these ViewControllers directly.
   if (offset > minimumOffset) {
     [self.ntpViewController setSavedContentOffset:offset];
+    if (IsSingleNtpEnabled()) {
+      return;
+    }
+  } else if (IsSingleNtpEnabled()) {
+    // Remove this if NTPs are ever scoped back to the WebState.
+    [self.ntpViewController setContentOffsetToTop];
   }
 }
 

@@ -22,4 +22,7 @@ extern const char kDiscoverFeedIsNativeUIEnabled[];
 // Whether the Discover feed is enabled instead of the Zine feed.
 bool IsDiscoverFeedEnabled();
 
+// Whether the single ntp feature is enabled.
+bool IsSingleNtpEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

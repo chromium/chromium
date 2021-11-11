@@ -408,6 +408,11 @@
 
 #pragma mark - Public Methods
 
+- (void)setWebState:(web::WebState*)webState {
+  self.ntpMediator.webState = webState;
+  _webState = webState;
+}
+
 - (void)dismissModals {
   [self.contentSuggestionsCoordinator dismissModals];
 }

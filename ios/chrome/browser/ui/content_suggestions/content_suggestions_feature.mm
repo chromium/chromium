@@ -23,3 +23,6 @@ bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
 }
 
+bool IsSingleNtpEnabled() {
+  return base::FeatureList::IsEnabled(kSingleNtp);
+}
