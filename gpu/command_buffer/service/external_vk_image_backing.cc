@@ -181,7 +181,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   if (usage & kUsageNeedsColorAttachment) {
-    vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format == viz::ETC1) {
       DLOG(ERROR) << "ETC1 format cannot be used as color attachment.";
       return nullptr;
