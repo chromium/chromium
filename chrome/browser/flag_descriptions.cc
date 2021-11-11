@@ -2036,7 +2036,7 @@ const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "
     "to true, pointer movements wil not be affected by the underlying platform "
-    "modications such as mouse accelaration.";
+    "modications such as mouse acceleration.";
 
 const char kBookmarksImprovedSaveFlowName[] = "Improved bookmarks save flow";
 const char kBookmarksImprovedSaveFlowDescription[] =
