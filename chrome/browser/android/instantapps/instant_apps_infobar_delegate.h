@@ -12,6 +12,10 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace content {
+class Page;
+}
+
 class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
                                    public content::WebContentsObserver {
  public:
@@ -32,8 +36,7 @@ class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
   bool ShouldExpire(const NavigationDetails& details) const override;
 
   // WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
