@@ -54,8 +54,6 @@ def SymbolizerFilter(input_file, build_ids_files):
   symbolizer_proc = RunSymbolizer(input_file, subprocess.PIPE, build_ids_files)
 
   while True:
-    # TODO(chonggu): Switch to encoding='utf-8' once we drop Python 2
-    # support.
     line = symbolizer_proc.stdout.readline().decode('utf-8')
     if not line:
       break
