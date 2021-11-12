@@ -25,7 +25,6 @@ function loadCommonComponents() {
 // <include src="../security_token_pin.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../screen_error_message.js">
-// <include src="../consolidated_consent.js">
 // <include src="../guest_tos.js">
 
 // <include src="components_[OOBE].js">

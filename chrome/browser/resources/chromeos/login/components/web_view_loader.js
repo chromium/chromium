@@ -33,7 +33,7 @@ const WEB_VIEW_FONTS_CSS = {
 // WebViewLoader assists on the process of loading an URL into a webview.
 // It listens for events from the webRequest API for the given URL and
 // calls load_failure_callback case of failure.
-class WebViewLoader {
+/* #export */ class WebViewLoader {
   /**
    * @suppress {missingProperties} as WebView type has no addContentScripts
    */

@@ -46,6 +46,7 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html|OobeA11yOption",
   "chrome/browser/resources/chromeos/login/components/web_view_helper.html|WebViewHelper",
   "chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.html|OobeWelcomeDialog",
+  "chrome/browser/resources/chromeos/login/components/web_view_loader.html|WebViewLoader",
   "chrome/browser/resources/chromeos/login/cr_ui.html|Oobe",
   "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",

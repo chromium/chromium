@@ -5,12 +5,11 @@
 /**
  * @fileoverview consolidated consent screen implementation.
  */
-'use strict';
 
-(function() {
+/* #js_imports_placeholder */
 
-// Enum that describes the current state of the Consolidated Consent screen
-const UIState = {
+// Enum that describes the current state of the consolidated consent screen
+const ConsolidatedConsentScreenState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
@@ -28,129 +27,153 @@ const GOOGLE_EULA_TERMS_URL = 'chrome://terms';
 const ARC_TERMS_URL = 'chrome://terms/arc/terms';
 const PRIVACY_POLICY_URL = 'chrome://terms/arc/privacy_policy';
 
-Polymer({
-  is: 'consolidated-consent-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const ConsolidatedConsentScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+/**
+ * @polymer
+ */
+class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
+  static get is() {
+    return 'consolidated-consent-element';
+  }
 
-  EXTERNAL_API: [
-    'SetUsageMode',
-    'setBackupMode',
-    'setLocationMode',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
-    isArcEnabled_: {
-      type: Boolean,
-      value: true,
-    },
+  static get properties() {
+    return {
+      isArcEnabled_: {
+        type: Boolean,
+        value: true,
+      },
 
-    isDemo_: {
-      type: Boolean,
-      value: false,
-    },
+      isDemo_: {
+        type: Boolean,
+        value: false,
+      },
 
-    isChildAccount_: {
-      type: Boolean,
-      value: false,
-    },
+      isChildAccount_: {
+        type: Boolean,
+        value: false,
+      },
 
-    usageManaged_: {
-      type: Boolean,
-      value: false,
-    },
+      usageManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    backupManaged_: {
-      type: Boolean,
-      value: false,
-    },
+      backupManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    locationManaged_: {
-      type: Boolean,
-      value: false,
-    },
+      locationManaged_: {
+        type: Boolean,
+        value: false,
+      },
 
-    usageChecked: {
-      type: Boolean,
-      value: true,
-    },
+      usageChecked: {
+        type: Boolean,
+        value: true,
+      },
 
-    backupChecked: {
-      type: Boolean,
-      value: true,
-    },
+      backupChecked: {
+        type: Boolean,
+        value: true,
+      },
 
-    locationChecked: {
-      type: Boolean,
-      value: true,
-    },
+      locationChecked: {
+        type: Boolean,
+        value: true,
+      },
 
-    googleEulaLoading_: {
-      type: Boolean,
-      value: true,
-    },
+      googleEulaLoading_: {
+        type: Boolean,
+        value: true,
+      },
 
-    crosEulaLoading_: {
-      type: Boolean,
-      value: true,
-    },
+      crosEulaLoading_: {
+        type: Boolean,
+        value: true,
+      },
 
-    arcTosLoading_: {
-      type: Boolean,
-      value: true,
-    },
+      arcTosLoading_: {
+        type: Boolean,
+        value: true,
+      },
 
-    privacyPolicyLoading_: {
-      type: Boolean,
-      value: true,
-    },
-  },
+      privacyPolicyLoading_: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
 
-  /**
-   * Text displayed in the Arc Terms of Service webview.
-   */
-  arcTosContent_: '',
+  constructor() {
+    super();
 
-  /**
-   * If online ARC ToS failed to load in the demo mode, the offline version
-   * is loaded and `isArcTosUsingOfflineTerms_` is set to true.
-   * @private {boolean}
-   */
-  isArcTosUsingOfflineTerms_: false,
+    this.isArcTosInitialized_ = false;
 
-  isArcTosInitialized_: false,
+    // Text displayed in the Arc Terms of Service webview.
+    this.arcTosContent_ = '';
 
-  /**
-   * Flag that ensures that OOBE configuration is applied only once.
-   * @private {boolean}
-   */
-  configuration_applied_: false,
+    /**
+     * If online ARC ToS failed to load in the demo mode, the offline version
+     * is loaded and `isArcTosUsingOfflineTerms_` is set to true.
+     */
+    this.isArcTosUsingOfflineTerms_ = false;
 
-  /**
-   * The hostname of the url where the terms of service will be fetched.
-   * Overwritten by tests to load terms of service from local test server.
-   */
-  termsOfServiceHostName_: 'https://play.google.com',
+    // Flag that ensures that OOBE configuration is applied only once.
+    this.configuration_applied_ = false;
 
-  /**
-   * Online URLs
-   */
-  googleEulaUrl_: '',
-  crosEulaUrl_: '',
-  arcTosUrl_: '',
+    /**
+     * The hostname of the url where the terms of service will be fetched.
+     * Overwritten by tests to load terms of service from local test server.
+     */
+    this.termsOfServiceHostName_ = 'https://play.google.com';
 
+    // Online URLs
+    this.googleEulaUrl_ = '';
+    this.crosEulaUrl_ = '';
+    this.arcTosUrl_ = '';
+  }
+
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return ['SetUsageMode',
+            'setBackupMode',
+            'setLocationMode',
+    ];
+  }
+
+  /** @override */
   defaultUIStep() {
-    return UIState.LOADING;
-  },
+    return ConsolidatedConsentScreenState.LOADING;
+  }
 
-  UI_STEPS: UIState,
+  get UI_STEPS() {
+    return ConsolidatedConsentScreenState;
+  }
 
+  // clang-format on
+
+  /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('ConsolidatedConsentScreen', {
       resetAllowed: true,
     });
     this.updateLocalizedContent();
-  },
+  }
 
   onBeforeShow(data) {
     window.setTimeout(this.applyOobeConfiguration_);
@@ -172,18 +195,15 @@ Polymer({
     this.loadWebviews_();
 
     if (this.isArcOptInsHidden_(this.isArcEnabled_, this.isDemo_)) {
-      this.$.loadedContent.classList = 'landscape-header-aligned';
+      this.$.loadedContent.classList.remove('landscape-vertical-centered');
+      this.$.loadedContent.classList.add('landscape-header-aligned');
     } else {
-      this.$.loadedContent.classList = 'landscape-vertical-centered';
+      this.$.loadedContent.classList.remove('landscape-header-aligned');
+      this.$.loadedContent.classList.add('landscape-vertical-centered');
     }
-  },
+  }
 
-  /** Initial UI State for screen */
-  getOobeUIInitialState() {
-    return OOBE_UI_STATE.ONBOARDING;
-  },
-
-  applyOobeConfiguration_: () => {
+  applyOobeConfiguration_() {
     if (this.configuration_applied_)
       return;
 
@@ -196,7 +216,7 @@ Polymer({
 
     if (configuration.eulaAutoAccept && configuration.arcTosAutoAccept)
       this.onAcceptClick_();
-  },
+  }
 
   initializeArcTos_(countryCode) {
     if (this.isArcTosInitialized_)
@@ -231,7 +251,7 @@ Polymer({
       event.preventDefault();
       this.showArcTosOverlay(event.targetUrl);
     });
-  },
+  }
 
   loadWebviews_() {
     this.loadEulaWebview_(
@@ -240,18 +260,18 @@ Polymer({
     this.loadEulaWebview_(
         this.$.crosEulaWebview, this.crosEulaUrl_, true /* clear_anchors */);
     this.loadArcTosWebview_(this.arcTosUrl_);
-  },
+  }
 
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
     const loadFailureCallback = () => {
       WebViewHelper.loadUrlContentToWebView(
-          webview, EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
+          webview, GOOGLE_EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
     };
 
     const tosLoader = new WebViewLoader(
         webview, loadFailureCallback, clear_anchors, true /* inject_css */);
     tosLoader.setUrl(online_tos_url);
-  },
+  }
 
   loadArcTosWebview_(online_tos_url) {
     const webview = this.$.arcTosWebview;
@@ -263,14 +283,14 @@ Polymer({
             webview, ARC_TERMS_URL, WebViewHelper.ContentType.HTML);
         return;
       }
-      this.setUIStep(UIState.ERROR);
+      this.setUIStep(ConsolidatedConsentScreenState.ERROR);
     };
 
     var tosLoader = new WebViewLoader(
         webview, loadFailureCallback, false /* clear_anchors */,
         false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
-  },
+  }
 
   /**
    * Returns a match pattern compatible version of termsOfServiceHostName_ by
@@ -281,12 +301,11 @@ Polymer({
    */
   getTermsOfServiceHostNameForMatchPattern_() {
     return this.termsOfServiceHostName_.replace(/:[0-9]+/, '');
-  },
+  }
 
   /**
    * Returns current language that can be updated in OOBE flow. If OOBE flow
    * does not exist then use navigator.language.
-   *
    * @private
    */
   getCurrentLanguage_() {
@@ -302,7 +321,7 @@ Polymer({
       }
     }
     return navigator.language;
-  },
+  }
 
   loadPrivacyPolicyWebview_(online_tos_url) {
     const webview = this.$.privacyPolicyWebview;
@@ -318,24 +337,24 @@ Polymer({
         webview, loadFailureCallback, false /* clear_anchors */,
         false /* inject_css */);
     tosLoader.setUrl(online_tos_url);
-  },
+  }
 
   onGoogleEulaContentLoad_() {
     this.googleEulaLoading_ = false;
     this.maybeSetLoadedStep_();
-  },
+  }
 
   onCrosEulaContentLoad_() {
     this.crosEulaLoading_ = false;
-  },
+  }
 
   maybeSetLoadedStep_() {
     if (!this.googleEulaLoading_ && !this.arcTosLoading_ &&
-        this.uiStep == UIState.LOADING) {
-      this.setUIStep(UIState.LOADED);
+        this.uiStep == ConsolidatedConsentScreenState.LOADING) {
+      this.setUIStep(ConsolidatedConsentScreenState.LOADED);
       this.$.acceptButton.focus();
     }
-  },
+  }
 
   onArcTosContentLoad_() {
     const webview = this.$.arcTosWebview;
@@ -377,26 +396,26 @@ Polymer({
 
     this.arcTosLoading_ = false;
     this.maybeSetLoadedStep_();
-  },
+  }
 
   onPrivacyPolicyContentLoad_() {
     this.privacyPolicyLoading_ = false;
-  },
+  }
 
   updateLocalizedContent() {
-    this.$$('#privacyPolicyLink')
+    this.shadowRoot.querySelector('#privacyPolicyLink')
         .addEventListener('click', () => this.onPrivacyPolicyLinkClick_());
-    this.$$('#googleEulaLink')
+    this.shadowRoot.querySelector('#googleEulaLink')
         .addEventListener('click', () => this.onGoogleEulaLinkClick_());
-    this.$$('#googleEulaLinkArcDisabled')
+    this.shadowRoot.querySelector('#googleEulaLinkArcDisabled')
         .addEventListener('click', () => this.onGoogleEulaLinkClick_());
-    this.$$('#crosEulaLink')
+    this.shadowRoot.querySelector('#crosEulaLink')
         .addEventListener('click', () => this.onCrosEulaLinkClick_());
-    this.$$('#crosEulaLinkArcDisabled')
+    this.shadowRoot.querySelector('#crosEulaLinkArcDisabled')
         .addEventListener('click', () => this.onCrosEulaLinkClick_());
-    this.$$('#arcTosLink')
+    this.shadowRoot.querySelector('#arcTosLink')
         .addEventListener('click', () => this.onArcTosLinkClick_());
-  },
+  }
 
   getSubtitle_(locale) {
     const subtitle = document.createElement('div');
@@ -407,7 +426,7 @@ Polymer({
     privacyPolicyLink.setAttribute('is', 'action-link');
     privacyPolicyLink.classList.add('oobe-local-link');
     return subtitle.innerHTML;
-  },
+  }
 
   getTermsDescription_(locale) {
     const description = document.createElement('div');
@@ -427,7 +446,7 @@ Polymer({
     arcTosLink.classList.add('oobe-local-link');
 
     return description.innerHTML;
-  },
+  }
 
   getTermsDescriptionArcDisabled_(locale) {
     const description = document.createElement('div');
@@ -444,7 +463,7 @@ Polymer({
     crosEulaLink.classList.add('oobe-local-link');
 
     return description.innerHTML;
-  },
+  }
 
   getUsageText_(locale, isChildAccount, isArcEnabled, isDemo) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
@@ -454,7 +473,7 @@ Polymer({
     if (isChildAccount)
       return this.i18n('consolidatedConsentUsageOptInChild');
     return this.i18n('consolidatedConsentUsageOptIn');
-  },
+  }
 
   getUsageLearnMoreText_(locale, isChildAccount, isArcEnabled, isDemo) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
@@ -468,13 +487,13 @@ Polymer({
     if (isChildAccount)
       return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMoreChild');
     return this.i18nAdvanced('consolidatedConsentUsageOptInLearnMore');
-  },
+  }
 
   getBackupLearnMoreText_(locale, isChildAccount) {
     if (isChildAccount)
       return this.i18nAdvanced('consolidatedConsentBackupOptInLearnMoreChild');
     return this.i18nAdvanced('consolidatedConsentBackupOptInLearnMore');
-  },
+  }
 
   getLocationLearnMoreText_(locale, isChildAccount) {
     if (isChildAccount) {
@@ -482,11 +501,11 @@ Polymer({
           'consolidatedConsentLocationOptInLearnMoreChild');
     }
     return this.i18nAdvanced('consolidatedConsentLocationOptInLearnMore');
-  },
+  }
 
   isArcOptInsHidden_(isArcEnabled, isDemo) {
     return !isArcEnabled || isDemo;
-  },
+  }
 
   /**
    * Sets current usage mode.
@@ -496,7 +515,7 @@ Polymer({
   SetUsageMode(enabled, managed) {
     this.usageChecked = enabled;
     this.usageManaged_ = managed;
-  },
+  }
 
   /**
    * Sets current backup and restore mode.
@@ -506,7 +525,7 @@ Polymer({
   setBackupMode(enabled, managed) {
     this.backupChecked = enabled;
     this.backupManaged_ = managed;
-  },
+  }
 
   /**
    * Sets current usage of location service opt in mode.
@@ -516,7 +535,7 @@ Polymer({
   setLocationMode(enabled, managed) {
     this.locationChecked = enabled;
     this.locationManaged_ = managed;
-  },
+  }
 
   /**
    * Opens external URL in popup overlay.
@@ -525,55 +544,55 @@ Polymer({
   showArcTosOverlay(targetUrl) {
     this.$.arcTosOverlayWebview.src = targetUrl;
     this.$.arcTosOverlay.showDialog();
-  },
+  }
 
   onGoogleEulaLinkClick_() {
-    this.setUIStep(UIState.GOOGLE_EULA);
+    this.setUIStep(ConsolidatedConsentScreenState.GOOGLE_EULA);
     this.$.googleEulaOkButton.focus();
-  },
+  }
 
   onCrosEulaLinkClick_() {
-    this.setUIStep(UIState.CROS_EULA);
+    this.setUIStep(ConsolidatedConsentScreenState.CROS_EULA);
     this.$.crosEulaOkButton.focus();
-  },
+  }
 
   onArcTosLinkClick_() {
-    this.setUIStep(UIState.ARC);
+    this.setUIStep(ConsolidatedConsentScreenState.ARC);
     this.$.ArcTosOkButton.focus();
-  },
+  }
 
   onPrivacyPolicyLinkClick_() {
-    this.setUIStep(UIState.PRIVACY);
+    this.setUIStep(ConsolidatedConsentScreenState.PRIVACY);
     this.$.privacyOkButton.focus();
-  },
+  }
 
   onTermsStepOkClick_() {
-    this.setUIStep(UIState.LOADED);
+    this.setUIStep(ConsolidatedConsentScreenState.LOADED);
     this.$.acceptButton.focus();
-  },
+  }
 
   onUsageLearnMoreClick_() {
     this.$.usageLearnMorePopUp.showDialog();
-  },
+  }
 
   onBackupLearnMoreClick_() {
     this.$.backupLearnMorePopUp.showDialog();
-  },
+  }
 
   onLocationLearnMoreClick_() {
     this.$.locationLearnMorePopUp.showDialog();
-  },
+  }
 
   onFooterLearnMoreClick_() {
     this.$.footerLearnMorePopUp.showDialog();
-  },
+  }
 
   onAcceptClick_() {
     chrome.send('ToSAccept', [
       this.usageChecked, this.backupChecked, this.locationChecked,
       this.arcTosContent_
     ]);
-  },
+  }
 
   /**
    * On-tap event handler for Retry button.
@@ -581,10 +600,10 @@ Polymer({
    * @private
    */
   onRetryClick_() {
-    this.setUIStep(UIState.LOADING);
+    this.setUIStep(ConsolidatedConsentScreenState.LOADING);
     this.$.retryButton.focus();
     this.loadWebviews_();
-  },
+  }
 
   /**
    * On-tap event handler for Back button.
@@ -593,6 +612,7 @@ Polymer({
    */
   onBack_() {
     this.userActed('back');
-  },
-});
-})();
+  }
+}
+
+customElements.define(ConsolidatedConsent.is, ConsolidatedConsent);

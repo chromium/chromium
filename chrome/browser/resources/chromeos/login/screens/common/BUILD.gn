@@ -16,6 +16,7 @@ group("polymer3_elements") {
     ":app_downloading_module",
     ":arc_terms_of_service_module",
     ":autolaunch_module",
+    ":consolidated_consent_module",
     ":device_disabled_module",
     ":enable_kiosk_module",
     ":family_link_notice_module",
@@ -53,6 +54,7 @@ js_type_check("closure_compile_module") {
     ":app_downloading.m",
     ":arc_terms_of_service.m",
     ":autolaunch.m",
+    ":consolidated_consent.m",
     ":device_disabled.m",
     ":enable_kiosk.m",
     ":family_link_notice.m",
@@ -141,6 +143,33 @@ js_library("autolaunch.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
   ]
   extra_deps = [ ":autolaunch_module" ]
+}
+
+js_library("consolidated_consent.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/consolidated_consent.m.js" ]
+  deps = [
+    "../..:display_manager.m",
+    "../../components:oobe_select.m",
+    "../../components:oobe_types.m",
+    "../../components:web_view_helper.m",
+    "../../components:web_view_loader.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+  ]
+  extra_deps = [ ":consolidated_consent_module" ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
 }
 
 js_library("device_disabled.m") {
@@ -371,6 +400,14 @@ polymer_modulizer("arc_terms_of_service") {
 polymer_modulizer("autolaunch") {
   js_file = "autolaunch.js"
   html_file = "autolaunch.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("consolidated_consent") {
+  js_file = "consolidated_consent.js"
+  html_file = "consolidated_consent.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
