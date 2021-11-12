@@ -108,6 +108,7 @@ chromium-metrics-reviews@google.com.
     per survey type.
   </summary>
   <token key="Survey">
+    <variant name=".ArcGames"/>
     <variant name=".General"/>
     <variant name=".OnboardingExperience"/>
     <variant name=".SmartLock"/>

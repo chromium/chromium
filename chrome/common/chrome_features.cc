@@ -589,6 +589,9 @@ const base::Feature kHappinessTrackingSystemUnlock{
 // Enables or disables the Happiness Tracking System for Smart Lock.
 const base::Feature kHappinessTrackingSystemSmartLock{
     "HappinessTrackingSmartLock", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for ARC Games survey.
+const base::Feature kHappinessTrackingSystemArcGames{
+    "HappinessTrackingArcGames", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

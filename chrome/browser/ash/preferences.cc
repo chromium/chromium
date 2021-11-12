@@ -417,6 +417,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsUnlockDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsArcGamesSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsArcGamesDeviceIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(

@@ -82,4 +82,13 @@ const HatsConfig kHatsUnlockSurvey = {
     prefs::kHatsUnlockSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
 
+// ARC++ Games Survey -- shown after a user played a top XX ARC++ game
+const HatsConfig kHatsArcGamesSurvey = {
+    ::features::kHappinessTrackingSystemArcGames,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.ArcGames",  // histogram_name
+    base::Days(7),                                 // new_device_threshold
+    prefs::kHatsArcGamesDeviceIsSelected,          // is_selected_pref_name
+    prefs::kHatsArcGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash
