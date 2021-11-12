@@ -34,6 +34,7 @@ class ToggleButton;
 
 class MediaDialogViewObserver;
 class MediaNotificationService;
+class NewBadgeLabel;
 class Profile;
 
 // Dialog that shows media controls that control the active media session.
@@ -140,6 +141,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       observed_items_;
 
   views::View* live_caption_container_ = nullptr;
+  // TODO(crbug.com/1055150): Remove live_caption_title_new_badge_ by M93.
+  NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
   views::Label* live_caption_title_ = nullptr;
   views::ToggleButton* live_caption_button_ = nullptr;
 

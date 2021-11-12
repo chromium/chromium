@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
+#include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
@@ -312,6 +313,20 @@ void MediaDialogView::Init() {
       live_caption_container->AddChildView(std::move(live_caption_title));
   live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
 
+  // Only create and show the new badge if Live Caption is not enabled at the
+  // initialization of the MediaDialogView.
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled)) {
+    auto live_caption_title_new_badge =
+        std::make_unique<NewBadgeLabel>(live_caption_title_message);
+    live_caption_title_new_badge->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+    live_caption_title_new_badge_ = live_caption_container->AddChildView(
+        std::move(live_caption_title_new_badge));
+    live_caption_container_layout->SetFlexForView(live_caption_title_new_badge_,
+                                                  1);
+    live_caption_title_->SetVisible(false);
+  }
+
   auto live_caption_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&MediaDialogView::OnLiveCaptionButtonPressed,
                           base::Unretained(this)));
@@ -347,6 +362,11 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
   live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
   live_caption_button_->SetIsOn(enabled);
+  if (live_caption_title_new_badge_ &&
+      live_caption_title_new_badge_->GetVisible()) {
+    live_caption_title_->SetVisible(true);
+    live_caption_title_new_badge_->SetVisible(false);
+  }
 }
 
 void MediaDialogView::OnSodaInstalled() {
