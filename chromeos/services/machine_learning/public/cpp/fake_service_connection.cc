@@ -465,6 +465,7 @@ void FakeServiceConnectionImpl::DetectCornersFromJPEGImage(
 void FakeServiceConnectionImpl::DoPostProcessing(
     base::ReadOnlySharedMemoryRegion jpeg_image,
     const std::vector<gfx::PointF>& corners,
+    chromeos::machine_learning::mojom::Rotation rotation,
     mojom::DocumentScanner::DoPostProcessingCallback callback) {
   ScheduleCall(base::BindOnce(
       &FakeServiceConnectionImpl::HandleDocumentScannerPostProcessingCall,

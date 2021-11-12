@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 // Datatypes and interfaces of document scanner API.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -16,6 +18,7 @@
 
 module chromeos.machine_learning.mojom;
 
+import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
@@ -64,8 +67,10 @@ interface DocumentScanner {
       => (DetectCornersResult result);
 
   // Do post processing such as rectification for the document region, contrast
-  // enhancement on the given `jpeg_image` according to document `corners`.
+  // enhancement on the given `jpeg_image` according to document `corners`,
+  // clockwise rotation in `rotation` degrees.
   DoPostProcessing@2(mojo_base.mojom.ReadOnlySharedMemoryRegion jpeg_image,
-                     array<gfx.mojom.PointF> corners)
+                     array<gfx.mojom.PointF> corners,
+                     [MinVersion=1] Rotation rotation)
       => (DoPostProcessingResult result);
 };

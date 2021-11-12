@@ -13,6 +13,13 @@ import {
   ScreenStateMonitorCallbackRouter,
   TabletModeMonitorCallbackRouter,
 } from '/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
+/* eslint-disable max-len */
+// All long mojo import path will be consolidated by crrev.com/c/3090445.
+import {
+  Rotation,
+} from
+    '/chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.js';
+/* eslint-enable max-len */
 import {
   CameraIntentAction,
 } from '/components/arc/mojom/camera_intent.mojom-webui.js';
@@ -20,7 +27,7 @@ import {
   PointF,  // eslint-disable-line no-unused-vars
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {assert} from '../chrome_util.js';
+import {assert, assertNotReached} from '../chrome_util.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {
@@ -48,6 +55,32 @@ let instance = null;
  */
 function castToNumberArray(data) {
   return data;
+}
+
+/**
+ * @const {!Array<!Rotation>}
+ */
+const toMojoRotation = [
+  Rotation.ROTATION_0,
+  Rotation.ROTATION_90,
+  Rotation.ROTATION_180,
+  Rotation.ROTATION_270,
+];
+
+/**
+ * Casts from rotation degrees to mojo rotation.
+ * @param {number} rotation
+ * @return {!Rotation}
+ */
+function castToMojoRotation(rotation) {
+  switch (rotation) {
+    case 0:
+    case 90:
+    case 180:
+    case 270:
+      return toMojoRotation[rotation / 90];
+  }
+  assertNotReached(`Invalid rotation ${rotation}`);
 }
 
 /**
@@ -312,10 +345,11 @@ export class ChromeHelper {
    * |mimeType|.
    * @param {!Blob} blob
    * @param {!Array<!Point>} corners
+   * @param {number} rotation
    * @param {!MimeType} mimeType
    * @return {!Promise<!Blob>}
    */
-  async convertToDocument(blob, corners, mimeType) {
+  async convertToDocument(blob, corners, rotation, mimeType) {
     assert(corners.length === 4, 'Unexpected amount of corners');
     const buffer = new Uint8Array(await blob.arrayBuffer());
     let outputFormat;
@@ -328,7 +362,8 @@ export class ChromeHelper {
     }
 
     const {docData} = await this.remote_.convertToDocument(
-        castToNumberArray(buffer), corners, outputFormat);
+        castToNumberArray(buffer), corners, castToMojoRotation(rotation),
+        outputFormat);
     return new Blob([new Uint8Array(docData)], {type: mimeType});
   }
 

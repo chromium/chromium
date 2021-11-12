@@ -4,6 +4,7 @@
 
 module ash.camera_app.mojom;
 
+import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "components/arc/mojom/camera_intent.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -186,12 +187,14 @@ interface CameraAppHelper {
       => (array<gfx.mojom.PointF> corners);
 
   // Does the post processing for document given by its |jpeg_data|, document
-  // |corners|, and convert the result to the desired |output_format|. The input
-  // |corners| should be the ones based on the image with corrected orientation.
-  // And it is guaranteed that the output |doc_data| will have none or corrected
+  // |corners|, clockwise rotate in |rotation| degrees and convert the result
+  // to the desired |output_format|. The input |corners| should be the ones
+  // based on the image with corrected orientation.  And it is guaranteed that
+  // the output |doc_data| will have none or corrected
   // orientation.
   ConvertToDocument(array<uint8> jpeg_data,
                     array<gfx.mojom.PointF, 4> corners,
+                    chromeos.machine_learning.mojom.Rotation rotation,
                     DocumentOutputFormat output_format)
       => (array<uint8> doc_data);
 

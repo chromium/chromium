@@ -19,10 +19,18 @@ mojom_component("mojom") {
     "web_platform_handwriting.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    ":document_scanner_param_types",
+    "//mojo/public/mojom/base",
+  ]
 
   deps = [ "//ui/gfx/geometry/mojom" ]
 
   output_prefix = "mlservice_mojom"
   macro_prefix = "MLSERVICE_MOJOM"
+}
+
+mojom("document_scanner_param_types") {
+  sources = [ "document_scanner_param_types.mojom" ]
+  webui_module_path = "/chromeos/services/machine_learning/public/mojom"
 }

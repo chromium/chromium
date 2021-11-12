@@ -17,6 +17,7 @@ using chromeos::machine_learning::mojom::DetectCornersResultPtr;
 using chromeos::machine_learning::mojom::DocumentScannerResultStatus;
 using chromeos::machine_learning::mojom::DoPostProcessingResultPtr;
 using chromeos::machine_learning::mojom::LoadModelResult;
+using chromeos::machine_learning::mojom::Rotation;
 
 constexpr char kOndeviceDocumentScanner[] = "ondevice_document_scanner";
 
@@ -101,6 +102,7 @@ void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
 void DocumentScannerServiceClient::DoPostProcessing(
     base::ReadOnlySharedMemoryRegion jpeg_image,
     const std::vector<gfx::PointF>& corners,
+    Rotation rotation,
     DoPostProcessingCallback callback) {
   DCHECK(IsSupported());
 
@@ -110,7 +112,7 @@ void DocumentScannerServiceClient::DoPostProcessing(
   }
 
   document_scanner_->DoPostProcessing(
-      std::move(jpeg_image), corners,
+      std::move(jpeg_image), corners, rotation,
       base::BindOnce(
           [](DoPostProcessingCallback callback,
              DoPostProcessingResultPtr result) {

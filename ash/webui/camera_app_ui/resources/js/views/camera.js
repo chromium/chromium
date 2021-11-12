@@ -764,20 +764,8 @@ export class Camera extends View {
     let result = null;
     try {
       await this.prepareReview_(async () => {
-        const doCrop = (blob, corners, rotation) => {
-          // Do rotation by rotating the index in corners array.
-          const rotatedCorns = [...corners];
-          for (const r
-                   of [Rotation.ANGLE_0, Rotation.ANGLE_270, Rotation.ANGLE_180,
-                       Rotation.ANGLE_90]) {
-            if (r === rotation) {
-              break;
-            }
-            const popped = rotatedCorns.pop();
-            rotatedCorns.unshift(popped);
-          }
-          return helper.convertToDocument(blob, rotatedCorns, MimeType.JPEG);
-        };
+        const doCrop = (blob, corners, rotation) =>
+            helper.convertToDocument(blob, corners, rotation, MimeType.JPEG);
         let corners =
             refCorners || getDefaultScanCorners(originImage.resolution);
         let docBlob;

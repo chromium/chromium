@@ -13,6 +13,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
+#include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
@@ -83,6 +84,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
                            ScanDocumentCornersCallback callback) override;
   void ConvertToDocument(const std::vector<uint8_t>& jpeg_data,
                          const std::vector<gfx::PointF>& corners,
+                         chromeos::machine_learning::mojom::Rotation rotation,
                          camera_app::mojom::DocumentOutputFormat output_format,
                          ConvertToDocumentCallback callback) override;
   void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
