@@ -2090,16 +2090,16 @@
       'example_value': False,
       'default': None,
       'id': 926,
-      'caption': '''Show history clusters on the Chrome history page''',
+      'caption': '''Show Journeys on the Chrome history page''',
       'tags': [],
       'desc':
-      '''This policy controls the visibility of history clusters on the Chrome history page.
+      '''This policy controls the visibility of Journeys on the Chrome history page.
 
-      If the policy is set to Enabled, history clusters will be visible at chrome://history/journeys.
+      If the policy is set to Enabled, Journeys will be visible at chrome://history/journeys.
 
-      If the policy is set to Disabled, history clusters will not be visible at chrome://history/journeys.
+      If the policy is set to Disabled, Journeys will not be visible at chrome://history/journeys.
 
-      If the policy is left unset, history clusters will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.
+      If the policy is left unset, Journeys will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.
       ''',
     },
     {
