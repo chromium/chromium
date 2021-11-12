@@ -30,15 +30,17 @@ export enum ResetDialogPage {
   RESET_NOT_ALLOWED = 'resetNotAllowed',
 }
 
-interface SettingsSecurityKeysResetDialogElement {
+export interface SettingsSecurityKeysResetDialogElement {
   $: {
+    button: HTMLElement,
     dialog: CrDialogElement,
+    resetFailed: HTMLElement,
   };
 }
 
 const SettingsSecurityKeysResetDialogElementBase = I18nMixin(PolymerElement);
 
-class SettingsSecurityKeysResetDialogElement extends
+export class SettingsSecurityKeysResetDialogElement extends
     SettingsSecurityKeysResetDialogElementBase {
   static get is() {
     return 'settings-security-keys-reset-dialog';
@@ -162,6 +164,13 @@ class SettingsSecurityKeysResetDialogElement extends
    */
   private maybeActionButton_(complete: boolean): string {
     return complete ? 'action-button' : 'cancel-button';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-reset-dialog':
+        SettingsSecurityKeysResetDialogElement;
   }
 }
 

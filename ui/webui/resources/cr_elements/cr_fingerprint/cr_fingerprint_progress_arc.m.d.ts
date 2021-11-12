@@ -10,6 +10,7 @@ interface CrFingerprintProgressArcElement extends LegacyElementMixin,
       prevPercentComplete: number, currPercentComplete: number,
       isComplete: boolean): void;
   reset(): void;
+  isComplete(): boolean;
 }
 
 export {CrFingerprintProgressArcElement};

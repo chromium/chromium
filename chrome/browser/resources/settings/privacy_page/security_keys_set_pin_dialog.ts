@@ -16,6 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -36,18 +37,22 @@ export enum SetPINDialogPage {
   SUCCESS = 'success',
 }
 
-interface SettingsSecurityKeysSetPinDialogElement {
+export interface SettingsSecurityKeysSetPinDialogElement {
   $: {
+    closeButton: CrButtonElement,
     confirmPIN: CrInputElement,
     currentPIN: CrInputElement,
+    currentPINEntry: HTMLElement,
     dialog: CrDialogElement,
+    error: HTMLElement,
     newPIN: CrInputElement,
+    pinSubmit: CrButtonElement,
   };
 }
 
 const SettingsSecurityKeysSetPinDialogElementBase = I18nMixin(PolymerElement);
 
-class SettingsSecurityKeysSetPinDialogElement extends
+export class SettingsSecurityKeysSetPinDialogElement extends
     SettingsSecurityKeysSetPinDialogElementBase {
   static get is() {
     return 'settings-security-keys-set-pin-dialog';
@@ -516,6 +521,13 @@ class SettingsSecurityKeysSetPinDialogElement extends
    */
   private inputType_(): string {
     return this.pinsVisible_ ? 'text' : 'password';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-set-pin-dialog':
+        SettingsSecurityKeysSetPinDialogElement;
   }
 }
 

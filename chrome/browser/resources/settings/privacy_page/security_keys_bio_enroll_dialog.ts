@@ -10,6 +10,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -19,8 +20,10 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -42,13 +45,16 @@ export enum BioEnrollDialogPage {
   ERROR = 'error',
 }
 
-interface SettingsSecurityKeysBioEnrollDialogElement {
+export interface SettingsSecurityKeysBioEnrollDialogElement {
   $: {
+    addButton: HTMLElement,
     arc: CrFingerprintProgressArcElement,
-    confirmButton: HTMLElement,
+    cancelButton: CrButtonElement,
+    confirmButton: CrButtonElement,
     dialog: CrDialogElement,
+    error: HTMLElement,
     enrollmentList: IronListElement,
-    enrollmentName: HTMLElement,
+    enrollmentName: CrInputElement,
     pin: SettingsSecurityKeysPinFieldElement,
   };
 }
@@ -56,7 +62,7 @@ interface SettingsSecurityKeysBioEnrollDialogElement {
 const SettingsSecurityKeysBioEnrollDialogElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsSecurityKeysBioEnrollDialogElement extends
+export class SettingsSecurityKeysBioEnrollDialogElement extends
     SettingsSecurityKeysBioEnrollDialogElementBase {
   static get is() {
     return 'settings-security-keys-bio-enroll-dialog';
@@ -143,6 +149,10 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
     });
   }
 
+  setDialogPageForTesting(page: BioEnrollDialogPage) {
+    this.dialogPage_ = page;
+  }
+
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
@@ -181,6 +191,10 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
         enrollments.slice().sort((a, b) => a.name.localeCompare(b.name));
     this.$.enrollmentList.fire('iron-resize');
     this.dialogPage_ = BioEnrollDialogPage.ENROLLMENTS;
+  }
+
+  setCancelButtonDisabledForTesting(disabled: boolean) {
+    this.cancelButtonDisabled_ = disabled;
   }
 
   private dialogPageChanged_() {
@@ -425,6 +439,13 @@ class SettingsSecurityKeysBioEnrollDialogElement extends
 
   private isNullOrEmpty_(s: string): boolean {
     return s === '' || !s;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-security-keys-bio-enroll-dialog':
+        SettingsSecurityKeysBioEnrollDialogElement;
   }
 }
 

@@ -88,7 +88,7 @@ non_preprocessed_files = [
   "search_settings_test.js",
   "secure_dns_interactive_test.ts",
   "secure_dns_test.ts",
-  "security_keys_subpage_test.js",
+  "security_keys_subpage_test.ts",
   "settings_animated_pages_test.js",
   "settings_category_default_radio_group_tests.js",
   "settings_main_test.js",
