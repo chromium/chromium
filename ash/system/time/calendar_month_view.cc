@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -189,9 +188,7 @@ CalendarMonthView::CalendarMonthView(
     : calendar_view_controller_(calendar_view_controller) {
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
-  // The layer is required in animation.
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+
   calendar_utils::SetUpWeekColumns(layout);
 
   base::Time::Exploded first_day_of_month_exploded =
