@@ -513,6 +513,10 @@ void AutofillPopupControllerImpl::ClearState() {
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
+  // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
+  // prevents recursive calls triggered by `view_->Hide()` (crbug.com/1267047).
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
 #if defined(OS_ANDROID)
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
