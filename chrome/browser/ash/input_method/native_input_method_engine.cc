@@ -978,6 +978,9 @@ void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
   property.cursor_position = window->highlighted_candidate;
   property.page_size = window->candidates.size();
   property.is_vertical = true;
+  property.is_auxiliary_text_visible =
+      window->auxiliary_text.value_or("") != "";
+  property.auxiliary_text = window->auxiliary_text.value_or("");
   candidate_window.SetProperty(property);
 
   GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,

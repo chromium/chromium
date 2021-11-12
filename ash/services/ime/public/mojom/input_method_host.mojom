@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module chromeos.ime.mojom;
 
@@ -194,7 +194,7 @@ struct Candidate {
 // The candidates window shows a list of potential candidates for the user's
 // current input. It is usually shown as a window below the current composition.
 //
-// Next ordinal: 1
+// Next ordinal: 2
 [Stable, MinVersion=2]
 struct CandidatesWindow {
   // List of candidates to be displayed. Must not be empty.
@@ -202,6 +202,10 @@ struct CandidatesWindow {
 
   // The index of the candidate that should be highlighted visually.
   uint32 highlighted_candidate@1;
+
+  // The text to show at the footer of the candidates window.
+  // If empty, no footer is shown.
+  [MinVersion=4] string? auxiliary_text@2;
 };
 
 // Metrics enum for various actions that can be performed on the Korean IME.
