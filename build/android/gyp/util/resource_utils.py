@@ -348,6 +348,39 @@ def _FixPackageIds(resource_value):
   return resource_value.replace('0x00', '0x7f')
 
 
+def ResolveStyleableReferences(r_txt_path):
+  # Convert lines like:
+  # int[] styleable ViewBack { 0x010100d4, com.android.webview.R.attr.backTint }
+  # to:
+  # int[] styleable ViewBack { 0x010100d4, 0xREALVALUE }
+  entries = _ParseTextSymbolsFile(r_txt_path)
+  lookup_table = {(e.resource_type, e.name): e.value for e in entries}
+
+  sb = []
+  with open(r_txt_path, encoding='utf8') as f:
+    for l in f:
+      if l.startswith('int[] styleable'):
+        brace_start = l.index('{') + 2
+        brace_end = l.index('}') - 1
+        values = [x for x in l[brace_start:brace_end].split(', ') if x]
+        new_values = []
+        for v in values:
+          try:
+            if not v.startswith('0x'):
+              resource_type, name = v.split('.')[-2:]
+              new_values.append(lookup_table[(resource_type, name)])
+            else:
+              new_values.append(v)
+          except:
+            logging.warning('Failed line: %r %r', l, v)
+            raise
+        l = l[:brace_start] + ', '.join(new_values) + l[brace_end:]
+      sb.append(l)
+
+  with open(r_txt_path, 'w', encoding='utf8') as f:
+    f.writelines(sb)
+
+
 def _GetRTxtResourceNames(r_txt_path):
   """Parse an R.txt file and extract the set of resource names from it."""
   return {entry.name for entry in _ParseTextSymbolsFile(r_txt_path)}

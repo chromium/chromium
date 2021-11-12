@@ -836,6 +836,13 @@ def _PackageApk(options, build):
 
   exit_code = link_proc.wait()
   logging.debug('Finished: aapt2 link')
+
+  if options.shared_resources:
+    logging.debug('Resolving styleables in R.txt')
+    # Need to resolve references because unused resource removal tool does not
+    # support references in R.txt files.
+    resource_utils.ResolveStyleableReferences(build.r_txt_path)
+
   if exit_code:
     raise subprocess.CalledProcessError(exit_code, link_command)
 
