@@ -1008,10 +1008,17 @@ error::Error WebGPUDecoderImpl::HandleRequestAdapter(
     const volatile void* cmd_data) {
   const volatile webgpu::cmds::RequestAdapter& c =
       *static_cast<const volatile webgpu::cmds::RequestAdapter*>(cmd_data);
-  PowerPreference power_preference =
-      static_cast<PowerPreference>(c.power_preference);
   DawnRequestAdapterSerial request_adapter_serial =
       static_cast<DawnRequestAdapterSerial>(c.request_adapter_serial);
+  PowerPreference power_preference =
+      static_cast<PowerPreference>(c.power_preference);
+  bool force_fallback_adapter = c.force_fallback_adapter;
+
+  if (force_fallback_adapter) {
+    SendAdapterProperties(request_adapter_serial, -1, nullptr,
+                          "WebGPU fallback adapter not implemented.");
+    return error::kNoError;
+  }
 
   if (gr_context_type_ != GrContextType::kVulkan) {
 #if defined(OS_LINUX)

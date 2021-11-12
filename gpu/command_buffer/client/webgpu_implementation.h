@@ -125,6 +125,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   ReservedTexture ReserveTexture(WGPUDevice device) override;
   void RequestAdapterAsync(
       PowerPreference power_preference,
+      bool force_fallback_adapter,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) override;

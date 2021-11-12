@@ -108,7 +108,7 @@ void WebGPUTest::Initialize(const Options& options) {
 
   bool done = false;
   webgpu()->RequestAdapterAsync(
-      webgpu::PowerPreference::kDefault,
+      webgpu::PowerPreference::kDefault, false,
       base::BindOnce(
           [](WebGPUTest* test, bool* done, int32_t adapter_id,
              const WGPUDeviceProperties& properties, const char*) {
@@ -258,7 +258,7 @@ TEST_F(WebGPUTest, RequestAdapterAfterContextLost) {
 
   bool called = false;
   webgpu()->RequestAdapterAsync(
-      webgpu::PowerPreference::kDefault,
+      webgpu::PowerPreference::kDefault, false,
       base::BindOnce(
           [](bool* called, int32_t adapter_id, const WGPUDeviceProperties&,
              const char*) {

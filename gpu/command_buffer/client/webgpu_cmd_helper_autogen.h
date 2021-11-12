@@ -57,10 +57,11 @@ void DissociateMailboxForPresent(GLuint device_id,
 }
 
 void RequestAdapter(uint64_t request_adapter_serial,
-                    uint32_t power_preference) {
+                    uint32_t power_preference,
+                    bool force_fallback_adapter) {
   webgpu::cmds::RequestAdapter* c = GetCmdSpace<webgpu::cmds::RequestAdapter>();
   if (c) {
-    c->Init(request_adapter_serial, power_preference);
+    c->Init(request_adapter_serial, power_preference, force_fallback_adapter);
   }
 }
 

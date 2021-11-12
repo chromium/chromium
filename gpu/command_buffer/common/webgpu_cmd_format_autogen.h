@@ -237,33 +237,40 @@ struct RequestAdapter {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(uint64_t _request_adapter_serial, uint32_t _power_preference) {
+  void Init(uint64_t _request_adapter_serial,
+            uint32_t _power_preference,
+            bool _force_fallback_adapter) {
     SetHeader();
     request_adapter_serial = _request_adapter_serial;
     power_preference = _power_preference;
+    force_fallback_adapter = _force_fallback_adapter;
   }
 
   void* Set(void* cmd,
             uint64_t _request_adapter_serial,
-            uint32_t _power_preference) {
-    static_cast<ValueType*>(cmd)->Init(_request_adapter_serial,
-                                       _power_preference);
+            uint32_t _power_preference,
+            bool _force_fallback_adapter) {
+    static_cast<ValueType*>(cmd)->Init(
+        _request_adapter_serial, _power_preference, _force_fallback_adapter);
     return NextCmdAddress<ValueType>(cmd);
   }
 
   gpu::CommandHeader header;
   uint32_t request_adapter_serial;
   uint32_t power_preference;
+  uint32_t force_fallback_adapter;
 };
 
-static_assert(sizeof(RequestAdapter) == 12,
-              "size of RequestAdapter should be 12");
+static_assert(sizeof(RequestAdapter) == 16,
+              "size of RequestAdapter should be 16");
 static_assert(offsetof(RequestAdapter, header) == 0,
               "offset of RequestAdapter header should be 0");
 static_assert(offsetof(RequestAdapter, request_adapter_serial) == 4,
               "offset of RequestAdapter request_adapter_serial should be 4");
 static_assert(offsetof(RequestAdapter, power_preference) == 8,
               "offset of RequestAdapter power_preference should be 8");
+static_assert(offsetof(RequestAdapter, force_fallback_adapter) == 12,
+              "offset of RequestAdapter force_fallback_adapter should be 12");
 
 struct RequestDevice {
   typedef RequestDevice ValueType;

@@ -236,20 +236,14 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  bool forceFallbackAdapter = options->forceFallbackAdapter();
+  bool force_fallback_adapter = options->forceFallbackAdapter();
 
   if (options->hasForceSoftware()) {
     AddConsoleWarning(
         ExecutionContext::From(script_state),
         "forceSoftware is deprecated. Use forceFallbackAdapter instead.");
 
-    forceFallbackAdapter = options->forceSoftware();
-  }
-
-  // Software adapters are not currently supported.
-  if (forceFallbackAdapter) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
-    return promise;
+    force_fallback_adapter = options->forceSoftware();
   }
 
   // For now we choose kHighPerformance by default.
@@ -263,7 +257,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
   DCHECK(context_provider);
   context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
-      power_preference,
+      power_preference, force_fallback_adapter,
       WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                 WrapPersistent(script_state), WrapPersistent(options),
                 WrapPersistent(resolver)));

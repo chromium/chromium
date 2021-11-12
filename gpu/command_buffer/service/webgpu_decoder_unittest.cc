@@ -41,7 +41,7 @@ class WebGPUDecoderTest : public ::testing::Test {
     constexpr uint32_t kAdapterClientID = 0;
     cmds::RequestAdapter requestAdapterCmd;
     requestAdapterCmd.Init(
-        kAdapterClientID,
+        kAdapterClientID, false,
         static_cast<uint32_t>(webgpu::PowerPreference::kHighPerformance));
     ASSERT_EQ(error::kNoError, ExecuteCmd(requestAdapterCmd));
 

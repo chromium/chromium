@@ -773,6 +773,7 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
 
   // Ensure Dawn wire is initialized.
   webgpu->RequestAdapterAsync(gpu::webgpu::PowerPreference::kHighPerformance,
+                              /*force_fallback_adapter*/ false,
                               base::DoNothing());
   WGPUDeviceProperties properties{};
   webgpu->RequestDeviceAsync(0, properties, base::DoNothing());

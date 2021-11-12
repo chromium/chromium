@@ -543,6 +543,7 @@ DawnRequestAdapterSerial WebGPUImplementation::NextRequestAdapterSerial() {
 
 void WebGPUImplementation::RequestAdapterAsync(
     PowerPreference power_preference,
+    bool force_fallback_adapter,
     base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
         request_adapter_callback) {
   if (lost_) {
@@ -560,7 +561,8 @@ void WebGPUImplementation::RequestAdapterAsync(
       std::move(request_adapter_callback);
 
   helper_->RequestAdapter(request_adapter_serial,
-                          static_cast<uint32_t>(power_preference));
+                          static_cast<uint32_t>(power_preference),
+                          force_fallback_adapter);
   helper_->Flush();
 }
 
@@ -647,7 +649,7 @@ WGPUDevice WebGPUImplementation::DeprecatedEnsureDefaultDeviceSync() {
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   RequestAdapterAsync(
-      PowerPreference::kDefault,
+      PowerPreference::kDefault, /* force_fallback_adapter */ false,
       base::BindOnce(
           [](WebGPUImplementation* self, WGPUDevice* result,
              base::OnceCallback<void()> done, int32_t adapter_id,
