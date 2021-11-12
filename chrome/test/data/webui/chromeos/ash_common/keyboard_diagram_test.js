@@ -81,34 +81,4 @@ export function keyboardDiagramTestSuite() {
     await flushTasks();
     assertEquals(377, keyboardElement.offsetHeight);
   });
-
-  test('resizeOnNumpadChange', async () => {
-    const keyboardElement = diagramElement.root.getElementById('keyboard');
-
-    document.body.style.width = '1000px';
-    diagramElement.showNumberPad = false;
-    await flushTasks();
-    assertEquals(377, keyboardElement.offsetHeight);
-
-    diagramElement.showNumberPad = true;
-    await flushTasks();
-    assertEquals(290, keyboardElement.offsetHeight);
-  });
-
-  test('dell-enterprise', async () => {
-    assertKeyHidden('dellDeleteKey');
-    assertKeyHidden('dellPageDownKey');
-    assertKeyHidden('dellPageUpKey');
-    assertKeyHidden('fnKey');
-    assertKeyHidden('layoutSwitchKey');
-
-    diagramElement.physicalLayout = PhysicalLayout.kChromeOSDellEnterprise;
-    await flushTasks();
-
-    assertKeyVisible('dellDeleteKey');
-    assertKeyVisible('dellPageDownKey');
-    assertKeyVisible('dellPageUpKey');
-    assertKeyVisible('fnKey');
-    assertKeyVisible('layoutSwitchKey');
-  });
 }
