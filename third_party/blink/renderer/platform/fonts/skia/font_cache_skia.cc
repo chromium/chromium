@@ -211,16 +211,25 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 #endif
 
   const AtomicString& family = creation_params.Family();
-  // If we're creating a fallback font (e.g. "-webkit-monospace"), convert the
-  // name into the fallback name (like "monospace") that fontconfig understands.
-  // TODO(https://crbug.com/1252383): Figure out why we still need the call to
-  // GetFallbackFontFamily to get serif to work on Android.
-  if (!family.length() || family.StartsWith("-webkit-")) {
-    name = GetFallbackFontFamily(font_description).GetString().Utf8();
-  } else {
-    // convert the name to utf8
-    name = family.Utf8();
-  }
+  DCHECK_NE(family, font_family_names::kSystemUi);
+#if defined(OS_ANDROID)
+  // FontFallbackList::GetFontData calls CSSFontSelector::GetFontData using
+  // "-webkit-standard" font family together with current FontDescription.
+  // On Android, FontSelector::FamilyNameFromSettings may then return the family
+  // name "-webkit-standard" unchanged, which is finally passed down here.
+  // In order to provide a name that fontconfig understands, replace it with the
+  // one obtained from FontDescription.
+  // TODO(crbug.com/1252383): Move this conversion into FamilyNameFromSettings
+  // and remove this special handling. This is currently not possible because
+  // GetLocaleSpecificFamilyName returns invalid values which would break
+  // rendering of serif font on Android.
+  name = family == font_family_names::kWebkitStandard
+             ? GetFallbackFontFamily(font_description).GetString().Utf8()
+             : family.Utf8();
+#else
+  // convert the name to utf8
+  name = family.Utf8();
+#endif
 
 #if defined(OS_ANDROID)
   // If this is a locale-specific family, try looking up locale-specific
