@@ -119,6 +119,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Cast.MeminfoMemAvailable2" units="MiB"
     expires_after="2021-11-30">
+  <obsolete>
+    Removed from code Nov 2021, expiry approaching and we don't use this data
+    any longer (newer cgroup memory data is more useful).
+  </obsolete>
   <owner>halliwell@chromium.org</owner>
   <summary>
     /proc/meminfo's 'MemAvailable' in MiB. Collected every 5s on Cast devices
@@ -128,6 +132,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Cast.MeminfoMemFreeDerived2" units="MiB"
     expires_after="2021-11-30">
+  <obsolete>
+    Removed from code Nov 2021, expiry approaching and we don't use this data
+    any longer (newer cgroup memory data is more useful).
+  </obsolete>
   <owner>halliwell@chromium.org</owner>
   <summary>
     Collect free + buffers + cache memory in MiB every 5s on Cast devices,

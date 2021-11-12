@@ -12714,7 +12714,9 @@ chromium-metrics-reviews@google.com.
       label="Inactive anonymous memory (data segments)."/>
   <suffix name="infoInactiveFile" label="Inactive file-backed memory."/>
   <suffix name="infoMapped" label="Mapped memory."/>
-  <suffix name="infoMemFree" label="Free memory."/>
+  <suffix name="infoMemFree"
+      label="Free memory. Logged from ChromeOS; previously logged from
+             Chromecast from M53 through M97."/>
   <suffix name="infoSwapUsedPercent" label="Used swap memory."/>
   <affected-histogram name="Platform.Mem"/>
 </histogram_suffixes>
