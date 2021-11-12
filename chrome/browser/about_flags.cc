@@ -7730,6 +7730,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kDesksTemplates)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"default-link-capturing-in-browser",
+     flag_descriptions::kDefaultLinkCapturingInBrowserName,
+     flag_descriptions::kDefaultLinkCapturingInBrowserDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kDefaultLinkCapturingInBrowser)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

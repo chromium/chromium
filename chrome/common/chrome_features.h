@@ -167,6 +167,11 @@ extern const base::Feature kDataLeakPreventionFilesRestriction;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kDefaultLinkCapturingInBrowser;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDMServerOAuthForChildUser;
 #endif
 

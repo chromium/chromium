@@ -1043,6 +1043,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "default-link-capturing-in-browser",
+    "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "default-user-agent",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 100

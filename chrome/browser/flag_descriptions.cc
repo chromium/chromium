@@ -4119,6 +4119,12 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kDefaultLinkCapturingInBrowserName[] =
+    "Default link capturing in the browser";
+const char kDefaultLinkCapturingInBrowserDescription[] =
+    "When enabled, newly installed apps will not capture links clicked in the "
+    "browser.";
+
 const char kDesksTemplatesName[] = "Desks Templates";
 const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

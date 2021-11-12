@@ -50056,6 +50056,7 @@ from previous Chrome versions.
       label="enable-defer-all-script-without-optimization-hints"/>
   <int value="-932164609"
       label="ProcessSharingWithDefaultSiteInstances:enabled"/>
+  <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
   <int value="-929944930"
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>
@@ -54042,6 +54043,7 @@ from previous Chrome versions.
   <int value="2098059607" label="WifiSyncAllowDeletes:disabled"/>
   <int value="2098714203" label="enable-generic-sensors"/>
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
+  <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
