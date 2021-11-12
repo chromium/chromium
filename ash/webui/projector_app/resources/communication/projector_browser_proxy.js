@@ -34,9 +34,9 @@ export class ProjectorBrowserProxy {
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<boolean>}
+   * @return {Promise<!projectorApp.NewScreencastPreconditionState>}
    */
-  canStartProjectorSession() {}
+  getNewScreencastPreconditionState() {}
 
   /**
    * Launches the Projector recording session. Returns true if a projector
@@ -72,12 +72,6 @@ export class ProjectorBrowserProxy {
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
   sendXhr(url, method, requestBody, useCredentials) {}
-
-  /**
-   * Return true if the "new screencast" button should be shown to the user.
-   * @return {!Promise<boolean>}
-   */
-  shouldShowNewScreencastButton() {}
 
   /**
    * Returns true if the "install speech recognition" button should be shown to
@@ -143,8 +137,8 @@ export class ProjectorBrowserProxyImpl {
   }
 
   /** @override */
-  canStartProjectorSession() {
-    return sendWithPromise('canStartProjectorSession');
+  getNewScreencastPreconditionState() {
+    return sendWithPromise('getNewScreencastPreconditionState');
   }
 
   /** @override */
@@ -166,11 +160,6 @@ export class ProjectorBrowserProxyImpl {
   sendXhr(url, method, requestBody, useCredentials) {
     return sendWithPromise(
         'sendXhr', [url, method, requestBody, useCredentials]);
-  }
-
-  /** @override */
-  shouldShowNewScreencastButton() {
-    return sendWithPromise('shouldShowNewScreencastButton');
   }
 
   /** @override */

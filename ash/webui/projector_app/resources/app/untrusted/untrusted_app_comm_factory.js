@@ -36,11 +36,11 @@ const CLIENT_DELEGATE = {
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<boolean>}
+   * @return {!Promise<!projectorApp.NewScreencastPreconditionState>}
    */
-  canStartProjectorSession() {
+  getNewScreencastPreconditionState() {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'canStartProjectorSession', []);
+        'getNewScreencastPreconditionState', []);
   },
 
   /**
@@ -98,15 +98,6 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'sendXhr',
         [url, method, requestBody ? requestBody : '', !!useCredentials]);
-  },
-
-  /**
-   * Return true if the "new screencast" button should be shown to the user.
-   * @return {!Promise<boolean>}
-   */
-  shouldShowNewScreencastButton() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'shouldShowNewScreencastButton', []);
   },
 
   /**
@@ -168,14 +159,14 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
 
-    this.registerMethod('onNewScreencastPreconditionChanged', (canStart) => {
-      if (canStart.length !== 1 || typeof canStart[0] !== 'boolean') {
+    this.registerMethod('onNewScreencastPreconditionChanged', (args) => {
+      if (args.length !== 1) {
         console.error(
-            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
+            'Invalid argument to onNewScreencastPreconditionChanged', args);
         return;
       }
 
-      getAppElement().onNewScreencastPreconditionChanged(canStart[0]);
+      getAppElement().onNewScreencastPreconditionChanged(args[0]);
     });
     this.registerMethod('onSodaInstallProgressUpdated', (args) => {
       if (args.length !== 1 || isNaN(args[0])) {

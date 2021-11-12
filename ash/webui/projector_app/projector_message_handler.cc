@@ -45,6 +45,10 @@ constexpr char kNoneStr[] = "NONE";
 constexpr char kOtherStr[] = "OTHER";
 constexpr char kTokenFetchFailureStr[] = "TOKEN_FETCH_FAILURE";
 
+// Projector NewScreencastPreconditionState keys.
+constexpr char kNewScreencastPreconditionState[] = "state";
+constexpr char kNewScreencastPreconditionReasons[] = "reasons";
+
 // Struct used to describe args to set user's preference.
 struct SetUserPrefArgs {
   std::string pref_name;
@@ -129,6 +133,25 @@ base::Value CreateRejectMessageForArgs(const base::Value& value) {
   return rejected_response;
 }
 
+base::Value GetNewScreencastPreconditionValue(bool can_start) {
+  // TODO(b/204233075): Provide Hidden state if device doesn't support on-device
+  // speech recognition.
+  auto state = can_start ? NewScreencastPreconditionState::kEnabled
+                         : NewScreencastPreconditionState::kDisabled;
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetIntKey(kNewScreencastPreconditionState, static_cast<int>(state));
+
+  base::Value reasons(base::Value::Type::LIST);
+
+  if (!can_start) {
+    // TODO(b/204233075): Provide more fine grained than kOthers.
+    reasons.Append(static_cast<int>(NewScreencastPreconditionReason::kOthers));
+  }
+
+  response.SetKey(kNewScreencastPreconditionReasons, std::move(reasons));
+  return response;
+}
+
 }  // namespace
 
 ProjectorMessageHandler::ProjectorMessageHandler(PrefService* pref_service)
@@ -153,9 +176,10 @@ void ProjectorMessageHandler::RegisterMessages() {
                                          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      "canStartProjectorSession",
-      base::BindRepeating(&ProjectorMessageHandler::CanStartProjectorSession,
-                          base::Unretained(this)));
+      "getNewScreencastPreconditionState",
+      base::BindRepeating(
+          &ProjectorMessageHandler::GetNewScreencastPrecondition,
+          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "startProjectorSession",
@@ -174,11 +198,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "shouldShowNewScreencastButton",
-      base::BindRepeating(
-          &ProjectorMessageHandler::ShouldShowNewScreencastButton,
-          base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "shouldDownloadSoda",
@@ -221,7 +240,7 @@ void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
     bool can_start) {
   AllowJavascript();
   FireWebUIListener("onNewScreencastPreconditionChanged",
-                    base::Value(can_start));
+                    GetNewScreencastPreconditionValue(can_start));
 }
 
 void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
@@ -251,7 +270,7 @@ void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
   ResolveJavascriptCallback(args[0], base::Value(std::move(response)));
 }
 
-void ProjectorMessageHandler::CanStartProjectorSession(
+void ProjectorMessageHandler::GetNewScreencastPrecondition(
     base::Value::ConstListView args) {
   AllowJavascript();
 
@@ -259,7 +278,8 @@ void ProjectorMessageHandler::CanStartProjectorSession(
   DCHECK_EQ(args.size(), 1u);
 
   ResolveJavascriptCallback(
-      args[0], base::Value(ProjectorController::Get()->CanStartNewSession()));
+      args[0], GetNewScreencastPreconditionValue(
+                   ProjectorController::Get()->CanStartNewSession()));
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
@@ -335,15 +355,6 @@ void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
       GURL(url), method, request_body, use_credentials,
       base::BindOnce(&ProjectorMessageHandler::OnXhrRequestCompleted,
                      GetWeakPtr(), callback_id));
-}
-
-void ProjectorMessageHandler::ShouldShowNewScreencastButton(
-    const base::Value::ConstListView args) {
-  AllowJavascript();
-  // TODO(b/200205765): Add checks on whether new screencast button should be
-  // shown.
-  const auto& js_callback_id = args[0].GetString();
-  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
 }
 
 void ProjectorMessageHandler::ShouldDownloadSoda(

@@ -30,6 +30,37 @@ enum class ProjectorError {
   kTokenFetchFailure,
 };
 
+// The new screencast button state in the Projector SWA.
+// Ensure that this enum class is synchronized with
+// NewScreencastPreconditionState enum in
+// //ash/webui/projector_app/resources/communication/message_types.js.
+enum class NewScreencastPreconditionState {
+  // The new screencast button is visible but is disabled.
+  kDisabled = 1,
+  // The new screencast button is enabled and the user can create new ones now.
+  kEnabled = 2,
+  // The new screencast button is hidden.
+  kHidden = 3
+};
+
+// The reason for the new screencast button state.
+// Ensure that this enum class is synchronized with
+// NewScreencastPreconditionReason enum in
+// //ash/webui/projector_app/resources/communication/message_types.js.
+enum class NewScreencastPreconditionReason {
+  // Reasons for NewScreenCastPreconditionState.kHidden state:
+  kOnDeviceSpeechRecognitionNotSupported = 1,
+  kUserLocaleNotSupported = 2,
+
+  // Reasons for NewScreenCastPreconditionState.kDisabled state:
+  kInProjectorSession = 3,
+  kScreenRecordingInProgress = 4,
+  kSodaDownloadInProgress = 5,
+  kOutOfDiskSpace = 6,
+  kNoMic = 7,
+  kOthers = 8
+};
+
 // Handles messages from the Projector WebUIs (i.e. chrome://projector).
 class ProjectorMessageHandler : public content::WebUIMessageHandler,
                                 public ProjectorAppClient::Observer {
@@ -67,9 +98,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // used in the account picker in the SWA.
   void GetAccounts(const base::Value::ConstListView args);
 
-  // Requested by the Projector SWA to check if it is possible to start a new
-  // Projector session.
-  void CanStartProjectorSession(const base::Value::ConstListView args);
+  // Requested by the Projector SWA to check the new screencast precondition
+  // state.
+  void GetNewScreencastPrecondition(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to start a new Projector session if it is
   // possible.
@@ -81,10 +112,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   // Requested by the Projector SWA to send XHR request.
   void SendXhr(const base::Value::ConstListView args);
-
-  // Requested by the Projector SWA on whether it should show the "new
-  // screencast" button.
-  void ShouldShowNewScreencastButton(const base::Value::ConstListView args);
 
   // Requested by the Projector SWA to check if SODA is not available and should
   // be downloaded. Returns false if the device doesn't support SODA.

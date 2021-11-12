@@ -36,8 +36,8 @@ const char kXhrResponseStringPath[] = "response";
 const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
 const char kWebUIResponse[] = "cr.webUIResponse";
 const char kGetAccountsCallback[] = "getAccountsCallback";
-const char kCanStartProjectorSessionCallback[] =
-    "canStartProjectorSessionCallback";
+const char kGetNewScreencastPreconditionCallback[] =
+    "getNewScreencastPreconditionCallback";
 const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
@@ -46,8 +46,6 @@ const char kOnNewScreencastPreconditionChanged[] =
 const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
 const char kOnSodaInstallError[] = "onSodaInstallError";
 
-const char kShouldShowNewScreencastButtonCallback[] =
-    "shouldShowNewScreencastButtonCallback";
 const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
 const char kInstallSodaCallback[] = "installSodaCallback";
 const char kGetPendingScreencastsCallback[] = "getPendingScreencastsCallback";
@@ -58,6 +56,8 @@ const char kGetUserPrefCallback[] = "getUserPrefCallback";
 constexpr char kRejectedRequestMessage[] = "Request Rejected";
 constexpr char kRejectedRequestMessageKey[] = "message";
 constexpr char kRejectedRequestArgsKey[] = "requestArgs";
+
+constexpr char kState[] = "state";
 }  // namespace
 
 namespace ash {
@@ -143,18 +143,22 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartProjectorSession) {
       .WillByDefault(testing::Return(true));
 
   base::ListValue list_args;
-  list_args.Append(kCanStartProjectorSessionCallback);
+  list_args.Append(kGetNewScreencastPreconditionCallback);
 
-  web_ui().HandleReceivedMessage("canStartProjectorSession", &list_args);
+  web_ui().HandleReceivedMessage("getNewScreencastPreconditionState",
+                                 &list_args);
 
   // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
 
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kCanStartProjectorSessionCallback);
+  EXPECT_EQ(call_data.arg1()->GetString(),
+            kGetNewScreencastPreconditionCallback);
   EXPECT_TRUE(call_data.arg2()->GetBool());
-  EXPECT_TRUE(call_data.arg3()->GetBool());
+  const auto* args = call_data.arg3();
+  EXPECT_EQ(*(args->FindIntKey(kState)),
+            static_cast<int>(NewScreencastPreconditionState::kEnabled));
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetOAuthTokenForAccount) {
@@ -262,7 +266,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartNewSession) {
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnNewScreencastPreconditionChanged);
-  EXPECT_TRUE(call_data.arg2()->GetBool());
+  EXPECT_EQ(*(call_data.arg2()->FindIntKey(kState)),
+            static_cast<int>(NewScreencastPreconditionState::kEnabled));
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
@@ -278,21 +283,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallError);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, ShouldShowNewScreencastButton) {
-  base::ListValue list_args;
-  list_args.Append(base::Value(kShouldShowNewScreencastButtonCallback));
-
-  web_ui().HandleReceivedMessage("shouldShowNewScreencastButton", &list_args);
-  base::RunLoop().RunUntilIdle();
-
-  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(),
-            kShouldShowNewScreencastButtonCallback);
-  EXPECT_EQ(call_data.arg2()->GetBool(), true);
-  EXPECT_EQ(call_data.arg3()->GetBool(), false);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
@@ -490,6 +480,7 @@ TEST_P(ProjectorSessionStartUnitTest, ProjectorSessionTest) {
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
   EXPECT_EQ(call_data.arg1()->GetString(), kStartProjectorSessionCallback);
   EXPECT_TRUE(call_data.arg2()->GetBool());
+
   EXPECT_EQ(call_data.arg3()->GetBool(), success);
 }
 

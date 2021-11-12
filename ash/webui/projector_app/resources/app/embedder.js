@@ -37,14 +37,10 @@ Polymer({
 
     const client = AppTrustedCommFactory.getPostMessageAPIClient();
 
-    this.addWebUIListener('onNewScreencastPreconditionChanged', (canStart) => {
-      if (typeof canStart !== "boolean") {
-        console.error(
-            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
-        return;
-      }
-      client.onNewScreencastPreconditionChanged(canStart);
-    });
+    this.addWebUIListener(
+        'onNewScreencastPreconditionChanged', (precondition) => {
+          client.onNewScreencastPreconditionChanged(precondition);
+        });
 
     this.addWebUIListener('onSodaInstallProgressUpdated', (progress) => {
       if (isNaN(progress)) {

@@ -191,6 +191,27 @@ projectorApp.XhrResponse.prototype.response;
 projectorApp.XhrResponse.prototype.error;
 
 /**
+ * The new screen cast enabled state.
+ * chrome.
+ * @record
+ * @struct
+ */
+projectorApp.NewScreencastPreconditionState = function() {};
+
+/**
+ * The new screencast Precondition state of type
+ * NEW_SCREENCAST_PRECONDITION_STATE.
+ * @type {number}
+ */
+projectorApp.NewScreencastPreconditionState.prototype.state;
+
+/**
+ * The reasons of type NEW_SCREENCAST_PRECONDITION_REASON for the precondition.
+ * @type {?Array<number>}
+ */
+projectorApp.NewScreencastPreconditionState.prototype.reasons;
+
+/**
  * The delegate interface that the Projector app can use to make requests to
  * chrome.
  * @record
@@ -207,9 +228,10 @@ projectorApp.ClientDelegate.prototype.getAccounts = function() {};
 
 /**
  * Checks whether the SWA can trigger a new Projector session.
- * @return {Promise<boolean>}
+ * @return {!Promise<!projectorApp.NewScreencastPreconditionState>}
  */
-projectorApp.ClientDelegate.prototype.canStartProjectorSession = function() {};
+projectorApp.ClientDelegate.prototype.getNewScreencastPreconditionState =
+    function() {};
 
 /**
  * Starts the Projector session if it is possible. Provides the storage
@@ -255,13 +277,6 @@ projectorApp.ClientDelegate.prototype.sendXhr = function(
     url, method, requestBody, useCredentials) {};
 
 /**
- * Return true if the "new screencast" button should be shown to the user.
- * @return {!Promise<boolean>}
- */
-projectorApp.ClientDelegate.prototype.shouldShowNewScreencastButton =
-    function() {};
-
-/**
  * Returns true if the device supports on device speech recognition.
  * @return {!Promise<boolean>}
  */
@@ -276,7 +291,7 @@ projectorApp.ClientDelegate.prototype.shouldDownloadSoda = function() {};
 projectorApp.ClientDelegate.prototype.installSoda = function() {};
 
 /**
- * Checks if the user has given consent for the creation flow during onboarding.
+ * Returns the value associated with the user preference if it is supported;
  * If the `userPref` is not supported the returned promise will be rejected.
  * @param {string} userPref
  * @return {!Promise<Object>}
@@ -284,7 +299,9 @@ projectorApp.ClientDelegate.prototype.installSoda = function() {};
 projectorApp.ClientDelegate.prototype.getUserPref = function(userPref) {};
 
 /**
- * Returns consent given by the user to enable creation flow during onboarding.
+ * Sets the user preference  if the preference is supported and the value is
+ * valid. If the `userPref` is not supported or the `value` is not the correct
+ * type, the returned promise will be rejected.
  * @param {string} userPref
  * @param {Object} value A preference can store multiple types (dictionaries,
  *     lists, Boolean, etc..); therefore, accept a generic Object value.
@@ -302,10 +319,10 @@ projectorApp.AppApi = function() {};
 
 /**
  * Notifies the Projector app that whether it can start a new session.
- * @param {boolean} canStart
+ * @param {!projectorApp.NewScreencastPreconditionState} state
  */
 projectorApp.AppApi.prototype.onNewScreencastPreconditionChanged = function(
-    canStart) {};
+    state) {};
 
 /**
  * Notfies the app when screencasts' pending state have changed.

@@ -34,3 +34,34 @@ export const ProjectorError = {
   TOKEN_FETCH_ALREADY_IN_PROGRESS: 'TOKEN_FETCH_ALREADY_IN_PROGRESS',
   OTHER: 'OTHER',
 };
+
+
+/**
+ * The new screencast button state. Corresponds to
+ * NEW_SCREENCAST_PRECONDITION_STATE in Google3 deployed resources.
+ * @enum {number}
+ */
+export const NewScreencastPreconditionState = {
+  DISABLED: 1,
+  ENABLED: 2,
+  HIDDEN: 3,
+};
+
+/**
+ * The new screencast precondition reason. Corresponds to
+ * NEW_SCREENCAST_PRECONDITION_REASON in Google3 deployed resources.
+ * @enum {number}
+ */
+export const NewScreencastPreconditionReason = {
+  // Reasons for NEW_SCREENCAST_PRECONDITION_STATE.HIDDEN state:
+  ON_DEVICE_RECOGNITION_NOT_SUPPORTED: 1,
+  USER_LOCALE_NOT_SUPPORTED: 2,
+
+  // Reasons for NEW_SCREENCAST_PRECONDITION_STATE.DISABLED state:
+  IN_PROJECTOR_SESSION: 3,
+  SCREEN_RECORDING_IN_PROGRESS: 4,
+  SODA_DOWNLOAD_IN_PROGRESS: 5,
+  OUT_OF_DISK_SPACE: 6,
+  NO_MIC: 7,
+  OTHERS: 8,
+};
