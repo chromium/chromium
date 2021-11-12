@@ -1122,35 +1122,6 @@ def _ParsePakSymbols(symbols_by_id, object_paths_by_pak_id):
   return raw_symbols
 
 
-def _ParseApkElfSectionRanges(section_ranges, metadata, apk_elf_result):
-  if metadata:
-    logging.debug('Extracting section sizes from .so within .apk')
-    apk_build_id, apk_section_ranges, elf_overhead_size = apk_elf_result.get()
-    assert apk_build_id == metadata[models.METADATA_ELF_BUILD_ID], (
-        'BuildID from apk_elf_result did not match')
-
-    packed_section_name = None
-    architecture = metadata[models.METADATA_ELF_ARCHITECTURE]
-    # Packing occurs enabled only arm32 & arm64.
-    if architecture == 'arm':
-      packed_section_name = '.rel.dyn'
-    elif architecture == 'arm64':
-      packed_section_name = '.rela.dyn'
-
-    if packed_section_name:
-      unpacked_range = section_ranges.get(packed_section_name)
-      if unpacked_range is None:
-        logging.warning('Packed section not present: %s', packed_section_name)
-      elif unpacked_range != apk_section_ranges.get(packed_section_name):
-        # These ranges are different only when using relocation_packer, which
-        # hasn't been used since switching from gold -> lld.
-        apk_section_ranges['%s (unpacked)' %
-                           packed_section_name] = unpacked_range
-  else:
-    _, apk_section_ranges, elf_overhead_size = apk_elf_result.get()
-  return apk_section_ranges, elf_overhead_size
-
-
 class _ResourcePathDeobfuscator:
 
   def __init__(self, pathmap_path):
@@ -1543,8 +1514,11 @@ def CreateContainerAndSymbols(knobs=None,
         linker_name=linker_name)
 
   if apk_elf_result:
-    section_ranges, elf_overhead_size = _ParseApkElfSectionRanges(
-        section_ranges, metadata, apk_elf_result)
+    logging.debug('Extracting section sizes from .so within .apk')
+    apk_build_id, section_ranges, elf_overhead_size = apk_elf_result.get()
+    if metadata and models.METADATA_ELF_BUILD_ID in metadata:
+      assert apk_build_id == metadata[models.METADATA_ELF_BUILD_ID], (
+          'BuildID from apk_elf_result did not match')
   elif elf_path:
     # Strip ELF before capturing section information to avoid recording
     # debug sections.
