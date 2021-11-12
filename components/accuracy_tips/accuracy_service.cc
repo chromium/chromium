@@ -45,6 +45,8 @@ const std::string GetHistogramSuffix(AccuracyTipInteraction interaction) {
       return "Closed";
     case AccuracyTipInteraction::kIgnore:
       return "Ignore";
+    case AccuracyTipInteraction::kPermissionRequested:
+      return "PermissionRequested";
     case AccuracyTipInteraction::kDisabledByExperiment:
       NOTREACHED();  // We don't need specific histograms for this.
       return "";

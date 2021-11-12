@@ -86,6 +86,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="NoAction"
       label="The accuracy tip was closed without user interaction"/>
   <suffix name="OptOut" label="Opt-out button within Accuracy Tip was clicked"/>
+  <suffix name="PermissionRequested"
+      label="The Accuracy Tip was closed because the site requested a
+             permission"/>
   <affected-histogram name="Privacy.AccuracyTip.AccuracyTipTimeOpen"/>
   <affected-histogram name="Privacy.AccuracyTip.NumDialogsShown"/>
 </histogram_suffixes>

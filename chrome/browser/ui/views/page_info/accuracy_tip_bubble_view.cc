@@ -162,11 +162,21 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3),
       vector_icons::kFeedIcon));
 
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  if (permission_request_manager) {
+    scoped_observation_.Observe(permission_request_manager);
+  }
+
   Layout();
   SizeToContents();
 }
 
 AccuracyTipBubbleView::~AccuracyTipBubbleView() = default;
+
+void AccuracyTipBubbleView::OnWidgetClosing(views::Widget* widget) {
+  scoped_observation_.Reset();
+}
 
 void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
@@ -194,6 +204,13 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
       break;
   }
   std::move(close_callback_).Run(action_taken_);
+}
+
+void AccuracyTipBubbleView::OnBubbleAdded() {
+  // The page requested a permission that triggered a permission prompt.
+  // Accuracy tips have lower priority and have to be closed.
+  action_taken_ = AccuracyTipInteraction::kPermissionRequested;
+  GetWidget()->Close();
 }
 
 void AccuracyTipBubbleView::OpenHelpCenter() {

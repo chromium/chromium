@@ -242,6 +242,7 @@ void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void PageInfoBubbleView::WebContentsDestroyed() {
+  PageInfoBubbleViewBase::WebContentsDestroyed();
   weak_factory_.InvalidateWeakPtrs();
 }
 
