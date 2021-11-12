@@ -192,7 +192,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
                 mSceneCoordinator.getWidth(), mSceneCoordinator.getHeight(), (imageUri) -> {
                     final String sheetTitle = getShareSheetTitle();
                     ShareParams params =
-                            new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, mShareUrl)
+                            new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, /*url=*/"")
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
                                     .setFileContentType(GIF_MIME_TYPE)
