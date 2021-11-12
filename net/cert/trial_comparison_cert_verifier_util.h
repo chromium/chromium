@@ -28,7 +28,8 @@ enum class TrialComparisonResult {
   kIgnoredWindowsRevCheckingEnabled = 12,
   kIgnoredBothAuthorityInvalid = 13,
   kIgnoredBothKnownRoot = 14,
-  kMaxValue = kIgnoredBothKnownRoot
+  kIgnoredBuiltinAuthorityInvalidPlatformSymantec = 15,
+  kMaxValue = kIgnoredBuiltinAuthorityInvalidPlatformSymantec
 };
 
 NET_EXPORT_PRIVATE bool CertVerifyResultEqual(const CertVerifyResult& a,

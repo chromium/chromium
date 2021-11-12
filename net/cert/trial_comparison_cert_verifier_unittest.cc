@@ -2110,4 +2110,62 @@ TEST_F(TrialComparisonCertVerifierTest, RevCheckingIgnoredWin) {
 }
 #endif
 
+// Ignore results where trial reports ERR_CERT_AUTHORITY_INVALID and the primary
+// reports any error with a cert status of CERT_STATUS_SYMANTEC_LEGACY
+TEST_F(TrialComparisonCertVerifierTest,
+       IgnoreAuthInvalidBuiltinWhenPrimaryReportSymantec) {
+  CertVerifyResult primary_result;
+  primary_result.verified_cert = cert_chain_1_;
+  primary_result.cert_status =
+      CERT_STATUS_DATE_INVALID | CERT_STATUS_SYMANTEC_LEGACY;
+  primary_result.is_issued_by_known_root = true;
+  scoped_refptr<FakeCertVerifyProc> verify_proc1 =
+      base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_COMMON_NAME_INVALID,
+                                               primary_result);
+
+  CertVerifyResult secondary_result;
+  secondary_result.verified_cert = cert_chain_2_;
+  secondary_result.cert_status = CERT_STATUS_AUTHORITY_INVALID;
+  secondary_result.is_issued_by_known_root = true;
+  scoped_refptr<FakeCertVerifyProc> verify_proc2 =
+      base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_AUTHORITY_INVALID,
+                                               secondary_result);
+
+  std::vector<TrialReportInfo> reports;
+  TrialComparisonCertVerifier verifier(
+      verify_proc1, verify_proc2,
+      base::BindRepeating(&RecordTrialReport, &reports));
+  verifier.set_trial_allowed(true);
+
+  CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
+                                     /*ocsp_response=*/std::string(),
+                                     /*sct_list=*/std::string());
+  CertVerifyResult result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+  int error = verifier.Verify(params, &result, callback.callback(), &request,
+                              NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
+
+  verify_proc2->WaitForVerifyCall();
+  RunUntilIdle();
+
+  // Expect no report.
+  EXPECT_TRUE(reports.empty());
+
+  EXPECT_EQ(1, verify_proc1->num_verifications());
+  EXPECT_EQ(1, verify_proc2->num_verifications());
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
+                               1);
+  histograms_.ExpectUniqueSample(
+      "Net.CertVerifier_TrialComparisonResult",
+      TrialComparisonResult::kIgnoredBuiltinAuthorityInvalidPlatformSymantec,
+      1);
+}
+
 }  // namespace net
