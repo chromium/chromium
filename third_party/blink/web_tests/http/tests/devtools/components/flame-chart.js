@@ -5,7 +5,6 @@
 (async function() {
   TestRunner.addResult(`Smoke test for basic FlameChart functionality.\n`);
 
-  await TestRunner.loadModule("perf_ui");
   await TestRunner.loadLegacyModule("perf_ui");
 
    class FlameChartProvider {
