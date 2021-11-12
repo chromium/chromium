@@ -51,6 +51,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   bool ApplyShader(const SVGResourceClient&,
                    const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
+                   const AutoDarkMode&,
                    PaintFlags&) override;
 
   static const LayoutSVGResourceType kResourceType = kPatternResourceType;

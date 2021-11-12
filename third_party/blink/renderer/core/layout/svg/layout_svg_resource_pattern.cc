@@ -178,6 +178,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
     const SVGResourceClient& client,
     const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
+    const AutoDarkMode&,
     PaintFlags& flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();

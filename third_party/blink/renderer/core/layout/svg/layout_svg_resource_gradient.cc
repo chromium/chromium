@@ -108,6 +108,7 @@ bool LayoutSVGResourceGradient::ApplyShader(
     const SVGResourceClient& client,
     const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
+    const AutoDarkMode& auto_dark_mode,
     PaintFlags& flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();
@@ -124,8 +125,8 @@ bool LayoutSVGResourceGradient::ApplyShader(
   if (additional_transform)
     transform = *additional_transform * transform;
   ImageDrawOptions draw_options;
-  // TODO(linn): Using style of the SVGResourceClient should be more accurate
-  draw_options.apply_dark_mode = StyleRef().ForceDark();
+  draw_options.apply_dark_mode =
+      auto_dark_mode.enabled && StyleRef().ForceDark();
   gradient_data->gradient->ApplyToFlags(
       flags, AffineTransformToSkMatrix(transform), draw_options);
   return true;

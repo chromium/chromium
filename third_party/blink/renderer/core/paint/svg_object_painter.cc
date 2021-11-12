@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
@@ -52,9 +53,12 @@ bool SVGObjectPainter::ApplyPaintResource(
       *client, paint.Resource());
   if (!uri_resource)
     return false;
+
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_object_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   if (!uri_resource->ApplyShader(
           *client, SVGResources::ReferenceBoxForEffects(layout_object_),
-          additional_paint_server_transform, flags))
+          additional_paint_server_transform, auto_dark_mode, flags))
     return false;
   return true;
 }
