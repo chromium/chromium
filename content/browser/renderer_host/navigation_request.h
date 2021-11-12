@@ -21,6 +21,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
@@ -906,6 +907,22 @@ class CONTENT_EXPORT NavigationRequest
     url::debug::ScopedOriginCrashKey initiator_origin_;
     base::debug::ScopedCrashKeyString url_;
   };
+
+  // Prerender2:
+  void set_prerender_trigger_type(PrerenderTriggerType type) {
+    DCHECK(!prerender_trigger_type_.has_value());
+    prerender_trigger_type_ = type;
+  }
+  PrerenderTriggerType prerender_trigger_type() const {
+    DCHECK(prerender_trigger_type_.has_value());
+    return prerender_trigger_type_.value();
+  }
+  void set_prerender_embedder_histogram_suffix(const std::string& suffix) {
+    prerender_embedder_histogram_suffix_ = suffix;
+  }
+  std::string prerender_embedder_histogram_suffix() const {
+    return prerender_embedder_histogram_suffix_;
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -1908,6 +1925,14 @@ class CONTENT_EXPORT NavigationRequest
   // will be mapped to them.
   absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
       pending_ad_components_map_;
+
+  // Prerender2:
+  // The type to trigger prerendering. The value is valid only when Prerender2
+  // is enabled.
+  absl::optional<PrerenderTriggerType> prerender_trigger_type_;
+  // The suffix of a prerender embedder. This value is valid only when
+  // PrerenderTriggerType is kEmbedder. Only used for metrics.
+  std::string prerender_embedder_histogram_suffix_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

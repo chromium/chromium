@@ -1287,10 +1287,11 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
-<histogram name="Navigation.TimeToActivatePrerender" units="ms"
-    expires_after="2022-01-01">
+<histogram name="Navigation.TimeToActivatePrerender{TriggerType}" units="ms"
+    expires_after="2022-01-31">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     The time needed to commit a navigation using prerender activation. This is
     the time from the beginning of NavigationStart to the end of
@@ -1298,6 +1299,16 @@ chromium-metrics-reviews@google.com.
 
     This metric is logged everytime prerender activation navigation commits.
   </summary>
+  <token key="TriggerType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead. Non-suffix name
+        was removed in Nov 2021.
+      </obsolete>
+    </variant>
+    <variant name=".Embedder_DirectURLInput"/>
+    <variant name=".SpeculationRule"/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"

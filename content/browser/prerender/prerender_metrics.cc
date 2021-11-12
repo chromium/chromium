@@ -40,4 +40,24 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
       ukm::UkmRecorder::Get());
 }
 
+void RecordPrerenderActivationTime(
+    base::TimeDelta delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  switch (trigger_type) {
+    case PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_histogram_suffix.empty());
+      base::UmaHistogramTimes(
+          "Navigation.TimeToActivatePrerender.SpeculationRule", delta);
+      return;
+    case PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_histogram_suffix.empty());
+      base::UmaHistogramTimes("Navigation.TimeToActivatePrerender.Embedder" +
+                                  embedder_histogram_suffix,
+                              delta);
+      return;
+  }
+  NOTREACHED();
+}
+
 }  // namespace content

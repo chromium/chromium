@@ -450,4 +450,20 @@ void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
     obs.OnTrigger(url);
 }
 
+PrerenderTriggerType PrerenderHostRegistry::GetPrerenderTriggerType(
+    int frame_tree_node_id) {
+  PrerenderHost* prerender_host = FindReservedHostById(frame_tree_node_id);
+  DCHECK(prerender_host);
+
+  return prerender_host->trigger_type();
+}
+
+const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
+    int frame_tree_node_id) {
+  PrerenderHost* prerender_host = FindReservedHostById(frame_tree_node_id);
+  DCHECK(prerender_host);
+
+  return prerender_host->embedder_histogram_suffix();
+}
+
 }  // namespace content

@@ -17,6 +17,7 @@ void PrerenderAttributes::WriteIntoTrace(
 PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
     PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix,
     Referrer referrer,
     absl::optional<url::Origin> initiator_origin,
     const GURL& initiator_url,
@@ -25,6 +26,7 @@ PrerenderAttributes::PrerenderAttributes(
     ukm::SourceId initiator_ukm_id)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
+      embedder_histogram_suffix(embedder_histogram_suffix),
       referrer(referrer),
       initiator_origin(std::move(initiator_origin)),
       initiator_url(initiator_url),
@@ -40,6 +42,7 @@ PrerenderAttributes::PrerenderAttributes(
 PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
     : prerendering_url(attributes.prerendering_url),
       trigger_type(attributes.trigger_type),
+      embedder_histogram_suffix(attributes.embedder_histogram_suffix),
       referrer(attributes.referrer),
       initiator_origin(attributes.initiator_origin),
       initiator_url(attributes.initiator_url),

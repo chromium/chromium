@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_H_
 
 #include <memory>
+#include <string>
 
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
@@ -167,6 +168,11 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   const absl::optional<FinalStatus>& final_status() const {
     return final_status_;
+  }
+
+  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  const std::string& embedder_histogram_suffix() const {
+    return attributes_.embedder_histogram_suffix;
   }
 
  private:

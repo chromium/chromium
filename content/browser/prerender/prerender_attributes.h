@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_ATTRIBUTES_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_ATTRIBUTES_H_
 
+#include <string>
+
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -15,6 +17,8 @@ namespace content {
 enum class PrerenderTriggerType {
   // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
   kSpeculationRule,
+  // Trigger used by content embedders like chrome/.
+  kEmbedder,
 };
 
 // Records the basic attributes of a prerender request.
@@ -22,6 +26,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
   PrerenderAttributes(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
       Referrer referrer,
       absl::optional<url::Origin> initiator_origin,
       const GURL& initiator_url,
@@ -39,6 +44,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   GURL prerendering_url;
 
   PrerenderTriggerType trigger_type;
+
+  // Used for kEmbedder trigger type to avoid exposing information of embedders
+  // to content/. Only used for metrics.
+  std::string embedder_histogram_suffix;
 
   Referrer referrer;
 

@@ -414,7 +414,8 @@ int TestWebContents::AddPrerender(const GURL& url) {
   TestRenderFrameHost* rfhi = GetMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(
       PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
-                          Referrer(), rfhi->GetLastCommittedOrigin(),
+                          /*embedder_histogram_suffix=*/"", Referrer(),
+                          rfhi->GetLastCommittedOrigin(),
                           rfhi->GetLastCommittedURL(),
                           rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
                           rfhi->GetPageUkmSourceId()),

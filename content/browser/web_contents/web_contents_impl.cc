@@ -9188,7 +9188,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   // specification of Prerender2 metrics is finalized.
   PrerenderAttributes attributes(
       prerendering_url, PrerenderTriggerType::kSpeculationRule,
-      content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
+      /*embedder_histogram_suffix=*/"", content::Referrer(),
+      /*initiator_origin=*/absl::nullopt, prerendering_url,
       content::ChildProcessHost::kInvalidUniqueID,
       /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId);
   int frame_tree_node_id =

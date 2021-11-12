@@ -4469,6 +4469,15 @@ void NavigationRequest::CommitPageActivation() {
     frame_tree_node_->render_manager()->RestorePage(
         activated_entry->TakeStoredPage());
   } else {
+    // Copy the prerender trigger type before PrerenderHost is destroyed in
+    // ActivateReservedHost().
+    PrerenderTriggerType trigger_type =
+        GetPrerenderHostRegistry().GetPrerenderTriggerType(
+            prerender_frame_tree_node_id());
+    const std::string embedder_histogram_suffix =
+        GetPrerenderHostRegistry().GetPrerenderEmbedderHistogramSuffix(
+            prerender_frame_tree_node_id());
+
     std::unique_ptr<StoredPage> stored_page =
         GetPrerenderHostRegistry().ActivateReservedHost(
             prerender_frame_tree_node_id_.value(), *this);
@@ -4485,6 +4494,10 @@ void NavigationRequest::CommitPageActivation() {
     }
 
     RenderFrameHostImpl* rfh = stored_page->render_frame_host.get();
+
+    // Set the prerender trigger type and embedder histogram suffix for metrics.
+    set_prerender_trigger_type(trigger_type);
+    set_prerender_embedder_histogram_suffix(embedder_histogram_suffix);
 
     // The prerender page might have navigated. Update the URL and the redirect
     // chain, as the prerendered page might have been redirected or performed

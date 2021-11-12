@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/time/time.h"
+#include "content/browser/prerender/prerender_attributes.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
@@ -26,6 +28,11 @@ enum class PrerenderCancelledInterface {
 void RecordPrerenderCancelledInterface(const std::string& interface_name);
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
+
+void RecordPrerenderActivationTime(
+    base::TimeDelta delta,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix);
 
 }  // namespace content
 

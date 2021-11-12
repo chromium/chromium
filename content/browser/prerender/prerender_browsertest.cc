@@ -2262,9 +2262,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_FALSE(rfh_b->IsInPrimaryMainFrame());
 
-  // "Navigation.TimeToActivatePrerender" histogram should be recorded on every
-  // prerender activation.
-  histogram_tester.ExpectTotalCount("Navigation.TimeToActivatePrerender", 1u);
+  // "Navigation.TimeToActivatePrerender.SpeculationRule" histogram should be
+  // recorded on every prerender activation.
+  histogram_tester.ExpectTotalCount(
+      "Navigation.TimeToActivatePrerender.SpeculationRule", 1u);
 }
 
 // Test that prerender activation is deferred and resumed after the ongoing

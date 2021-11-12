@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -144,6 +145,13 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // DCHECK when `reserved_prerender_host_by_frame_tree_node_id_` is not empty.
   // This will cancel all hosts in `prerender_host_by_frame_tree_node_id_`.
   void CancelAllHostsForTesting();
+
+  // Gets the trigger type from the reserved PrerenderHost.
+  PrerenderTriggerType GetPrerenderTriggerType(int frame_tree_node_id);
+  // Gets the embedder histogram suffix from the reserved PrerenderHost. Only
+  // used for metrics.
+  const std::string& GetPrerenderEmbedderHistogramSuffix(
+      int frame_tree_node_id);
 
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 

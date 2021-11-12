@@ -111,7 +111,8 @@ void ActivatePrerenderedPage(const GURL& prerendering_url,
 PrerenderAttributes GeneratePrerenderAttributes(const GURL& url,
                                                 RenderFrameHostImpl* rfh) {
   return PrerenderAttributes(url, PrerenderTriggerType::kSpeculationRule,
-                             Referrer(), rfh->GetLastCommittedOrigin(),
+                             /*embedder_histogram_suffix=*/"", Referrer(),
+                             rfh->GetLastCommittedOrigin(),
                              rfh->GetLastCommittedURL(),
                              rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
                              rfh->GetPageUkmSourceId());
