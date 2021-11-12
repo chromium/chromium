@@ -4725,6 +4725,7 @@ source_set("unit_tests") {
     "//third_party/blink/public:blink_headers",
     "//third_party/icu",
     "//third_party/leveldatabase",
+    "//third_party/private_membership:private_membership_proto",
     "//third_party/zlib/google:compression_utils",
     "//ui/base:test_support",
     "//ui/base/ime/ash",
