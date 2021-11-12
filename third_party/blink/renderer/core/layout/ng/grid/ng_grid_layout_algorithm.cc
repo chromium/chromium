@@ -3629,24 +3629,33 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           break_token
               ? LayoutUnit()
               : item_offsets.offset.block_offset - previous_consumed_block_size;
+      const bool min_block_size_should_encompass_intrinsic_size =
+          MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
+      LogicalRect grid_area;
+      const auto space = CreateConstraintSpaceForLayout(
+          *grid_geometry, grid_item, &grid_area, fragment_relative_block_offset,
+          min_block_size_should_encompass_intrinsic_size);
+
+      // Make the grid area relative to this fragment.
+      grid_area.offset.block_offset -= previous_consumed_block_size;
+
       const LayoutUnit fragmentainer_space =
           FragmentainerSpaceAtBfcStart(ConstraintSpace());
 
       // Check to see if this child should be placed within this fragmentainer.
-      // It can either be:
+      // We base this calculation on the grid-area rather than the offset.
+      // The row can either be:
       //  - Above, we've handled it already in a previous fragment.
       //  - Below, we'll handle it within a subsequent fragment.
-      if (fragment_relative_block_offset < LayoutUnit())
+      //
+      // NOTE: Basing this calculation of the row position has the effect that
+      // a child with a negative margin will be placed in the fragmentainer
+      // with its row, but placed above the block-start edge of the
+      // fragmentainer.
+      if (grid_area.offset.block_offset >= fragmentainer_space)
         continue;
-      if (fragment_relative_block_offset > fragmentainer_space)
+      if (grid_area.offset.block_offset < LayoutUnit() && !break_token)
         continue;
-
-      const bool min_block_size_should_encompass_intrinsic_size =
-          MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
-      LogicalRect grid_area;
-      const NGConstraintSpace space = CreateConstraintSpaceForLayout(
-          *grid_geometry, grid_item, &grid_area, fragment_relative_block_offset,
-          min_block_size_should_encompass_intrinsic_size);
 
       // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
       //  - what to set for has_container_separation?
@@ -3663,9 +3672,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       fragment_relative_block_offset);
-
-      // Make the grid area relative to this fragment.
-      grid_area.offset.block_offset -= previous_consumed_block_size;
 
       // This item may want to expand due to fragmentation. Record how much we
       // should grow the row by (if applicable).
@@ -3688,12 +3694,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // they'll expand the row).
           //
           // Instead of using the size of the fragment, expand the row to the
-          // rest of the fragmentainer, with an additional "1px". This "1px"
+          // rest of the fragmentainer, with an additional epsilon. This epsilon
           // will ensure that we continue layout for children in this row in
           // the next fragmentainer. Without it we'd drop those subsequent
           // fragments.
           item_expansion =
-              fragmentainer_space - grid_area.BlockEndOffset() + LayoutUnit(1);
+              (fragmentainer_space - grid_area.BlockEndOffset()).AddEpsilon();
         } else {
           item_expansion = fragment.BlockSize() - grid_area.BlockEndOffset();
         }
