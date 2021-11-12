@@ -7265,20 +7265,19 @@ crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-over
 # Sheriff 2021-11-09
 crbug.com/1268259 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure ]
 crbug.com/1268265 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure ]
-crbug.com/1268439 [ Linux ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
-crbug.com/1268439 [ Win10.20h2 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268518 [ Linux ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1268518 [ Mac10.12 ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1268519 [ Win10.20h2 ] virtual/scroll-unification/http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass ]
-crbug.com/1267734 [ Win7 ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
-crbug.com/1268931 [ Win10.20h2 ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268963 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
 crbug.com/1268947 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-crbug.com/1269011 [ Mac10.14 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
-crbug.com/1269011 [ Mac11 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 
 # Temporarily disable to unblock a WebRTC roll
 crbug.com/webrtc/13377 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
+
+# Sheriff 2021-11-12
+crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
