@@ -198,9 +198,6 @@ void DispatchOnTestSuite(DevToolsWindow* window,
       "    '' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite)));",
       &result));
   ASSERT_EQ("function", result) << "DevTools front-end is broken.";
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc, "uiTests.setupLegacyFilesForTest();", &result));
-  EXPECT_EQ("[OK]", result);
   DispatchOnTestSuiteSkipCheck(window, method, args...);
 }
 
