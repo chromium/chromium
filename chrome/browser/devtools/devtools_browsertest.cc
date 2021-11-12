@@ -183,6 +183,14 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
   EXPECT_EQ("[OK]", result);
 }
 
+void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
+  std::string result;
+  WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      wc, "uiTests.setupLegacyFilesForTest();", &result));
+  EXPECT_EQ("[OK]", result);
+}
+
 template <typename... T>
 void DispatchOnTestSuite(DevToolsWindow* window,
                          const char* method,
@@ -198,6 +206,7 @@ void DispatchOnTestSuite(DevToolsWindow* window,
       "    '' + (window.uiTests && (typeof uiTests.dispatchOnTestSuite)));",
       &result));
   ASSERT_EQ("function", result) << "DevTools front-end is broken.";
+  LoadLegacyFilesInFrontend(window);
   DispatchOnTestSuiteSkipCheck(window, method, args...);
 }
 
@@ -2485,6 +2494,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
       browser(), embedded_test_server()->GetURL("/hello.html")));
   window_ =
       DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), false);
+  LoadLegacyFilesInFrontend(window_);
   RunTestMethod("testLoadResourceForFrontend", url.spec().c_str(),
                 file_url.c_str());
   DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
@@ -2513,6 +2523,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
       browser()->profile());
+  LoadLegacyFilesInFrontend(window_);
   RunTestMethod("testNewWindowFromBrowserContext");
   DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
 }
@@ -2855,6 +2866,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsFetchTest, FetchFromDevToolsSchemeIsProhibited) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
   // Smoke test to make sure that `registerPreference` works from JavaScript.
   OpenDevToolsWindow("about:blank", true);
+  LoadLegacyFilesInFrontend(window_);
 
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
   ASSERT_TRUE(content::ExecJs(
@@ -2895,6 +2907,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
   DevToolsWindow* window = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetActiveWebContents(), GetProfile(0),
       true);
+  LoadLegacyFilesInFrontend(window);
 
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
   const auto result = content::EvalJs(wc, content::JsReplace(R"(
