@@ -420,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 
   // Select text and wait until the bounding box updates.
   auto* wc = shell()->web_contents();
+  BoundingBoxUpdateWaiter select_waiter(wc);
   ASSERT_TRUE(ExecJs(wc, "selectText();"));
-  WaitForSelectionBoundingBoxUpdate(wc);
+  select_waiter.Wait();
 
   // Verify the device scale factor.
   const float device_scale_factor =

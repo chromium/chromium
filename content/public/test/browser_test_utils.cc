@@ -1292,13 +1292,6 @@ BoundingBoxUpdateWaiter::~BoundingBoxUpdateWaiter() = default;
 void BoundingBoxUpdateWaiter::Wait() {
   impl_->Wait();
 }
-
-void WaitForSelectionBoundingBoxUpdate(WebContents* web_contents) {
-  RenderWidgetHostViewAura* rwhva = static_cast<RenderWidgetHostViewAura*>(
-      web_contents->GetRenderWidgetHostView());
-  BoundingBoxUpdateWaiterImpl waiter(rwhva);
-  waiter.Wait();
-}
 #endif
 
 void SimulateKeyPress(WebContents* web_contents,

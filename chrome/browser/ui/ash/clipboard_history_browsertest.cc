@@ -864,8 +864,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   // Select one part of the web page. Wait until the selection region updates.
   // Then copy the selected part to clipboard.
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::BoundingBoxUpdateWaiter select_part_one(web_contents);
   ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
-  content::WaitForSelectionBoundingBoxUpdate(web_contents);
+  select_part_one.Wait();
   ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
 
   // Wait until the clipboard history updates.
@@ -908,8 +909,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
 
   // Select another part. Wait until the selection region updates. Then copy
   // the selected html code to clipboard.
+  content::BoundingBoxUpdateWaiter select_part_two(web_contents);
   ASSERT_TRUE(ExecuteScript(web_contents, "selectPart2();"));
-  content::WaitForSelectionBoundingBoxUpdate(web_contents);
+  select_part_two.Wait();
   ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
 
   // Wait until the clipboard history updates.

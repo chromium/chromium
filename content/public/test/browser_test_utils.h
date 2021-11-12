@@ -347,6 +347,8 @@ void SimulateTouchEventAt(WebContents* web_contents,
 
 void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point);
 
+// Can be used to wait for updates to the bounding box (i.e. the rectangle
+// enclosing the selection region) associated with `web_contents`.
 class BoundingBoxUpdateWaiter {
  public:
   explicit BoundingBoxUpdateWaiter(WebContents* web_contents);
@@ -359,10 +361,6 @@ class BoundingBoxUpdateWaiter {
  private:
   std::unique_ptr<BoundingBoxUpdateWaiterImpl> impl_;
 };
-
-// Waits for the update in the bounding box (i.e. the rectangle enclosing the
-// selection region) associated with `web_contents`.
-void WaitForSelectionBoundingBoxUpdate(WebContents* web_contents);
 #endif
 
 // Taps the screen with modifires at |point|.
