@@ -54,6 +54,14 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
 
         for attribute in self._user_attributes:
             idl_type = attribute.idl_type.unwrap()
+            if idl_type.observable_array_definition_object:
+                # When an IDL attribute is declared in an IDL interface mixin,
+                # it's possible that the exactly same web_idl.Attribute is held
+                # in two (or more) web_idl.interfaces.  Then, it's possible
+                # that set_observable_array_definition_object has already been
+                # called.
+                assert idl_type.observable_array_definition_object is self
+                continue
             idl_type.set_observable_array_definition_object(self)
 
     @property
