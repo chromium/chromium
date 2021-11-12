@@ -145,7 +145,7 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
     return RulesetFilePtr(
         new base::File(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_SHARE_DELETE),
+                                      base::File::FLAG_WIN_SHARE_DELETE),
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   }
 

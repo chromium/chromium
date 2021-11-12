@@ -30,11 +30,11 @@ RulesetFilePtr VerifiedRulesetDealer::OpenAndSetRulesetFile(
     int expected_checksum,
     const base::FilePath& file_path) {
   DCHECK(CalledOnValidSequence());
-  // On Windows, open the file with FLAG_SHARE_DELETE to allow deletion while
-  // there are handles to it still open.
+  // On Windows, open the file with FLAG_WIN_SHARE_DELETE to allow deletion
+  // while there are handles to it still open.
   RulesetFilePtr file(
       new base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_SHARE_DELETE),
+                                    base::File::FLAG_WIN_SHARE_DELETE),
       base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "VerifiedRulesetDealer::OpenAndSetRulesetFile", "file_valid",

@@ -74,7 +74,7 @@ base::File TestRuleset::Open(const TestRuleset& ruleset) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file;
   file.Initialize(ruleset.path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_SHARE_DELETE);
+                                    base::File::FLAG_WIN_SHARE_DELETE);
   return file;
 }
 
