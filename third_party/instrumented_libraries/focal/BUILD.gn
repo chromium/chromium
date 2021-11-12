@@ -82,6 +82,10 @@ group("locally_built") {
 
 template("instrumented_library") {
   action(target_name) {
+    # Ignore "assignment had no effect" errors when there are no variables
+    # defined inside of the instrumented_library.
+    not_needed([ "invoker" ])
+
     script = "scripts/download_build_install.py"
     build_method = "destdir"
     if (defined(invoker.build_method)) {
@@ -779,6 +783,4 @@ instrumented_library("libudev1") {
 }
 
 instrumented_library("zlib1g") {
-  # --disable-static is not supported
-  patches = [ "patches/zlib1g.diff" ]
 }
