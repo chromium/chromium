@@ -245,6 +245,8 @@ TriggerManagerWebContentsHelper::TriggerManagerWebContentsHelper(
     content::WebContents* web_contents,
     TriggerManager* trigger_manager)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TriggerManagerWebContentsHelper>(
+          *web_contents),
       trigger_manager_(trigger_manager) {}
 
 TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() {}

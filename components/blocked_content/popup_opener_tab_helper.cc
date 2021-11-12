@@ -61,6 +61,7 @@ PopupOpenerTabHelper::PopupOpenerTabHelper(content::WebContents* web_contents,
                                            const base::TickClock* tick_clock,
                                            HostContentSettingsMap* settings_map)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PopupOpenerTabHelper>(*web_contents),
       tick_clock_(tick_clock),
       settings_map_(settings_map) {
   visibility_tracker_ = std::make_unique<ui::ScopedVisibilityTracker>(

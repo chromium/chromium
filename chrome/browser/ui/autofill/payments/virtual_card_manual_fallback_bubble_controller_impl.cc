@@ -248,7 +248,9 @@ void VirtualCardManualFallbackBubbleControllerImpl::
 VirtualCardManualFallbackBubbleControllerImpl::
     VirtualCardManualFallbackBubbleControllerImpl(
         content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents) {}
+    : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<
+          VirtualCardManualFallbackBubbleControllerImpl>(*web_contents) {}
 
 void VirtualCardManualFallbackBubbleControllerImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

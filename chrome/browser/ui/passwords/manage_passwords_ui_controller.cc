@@ -112,6 +112,7 @@ const password_manager::InteractionsStats* FindStatsByUsername(
 ManagePasswordsUIController::ManagePasswordsUIController(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ManagePasswordsUIController>(*web_contents),
       are_passwords_revealed_when_next_bubble_is_opened_(false) {
   passwords_data_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));

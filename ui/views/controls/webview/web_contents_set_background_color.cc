@@ -29,7 +29,10 @@ void WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
 WebContentsSetBackgroundColor::WebContentsSetBackgroundColor(
     content::WebContents* web_contents,
     SkColor color)
-    : content::WebContentsObserver(web_contents), color_(color) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsSetBackgroundColor>(
+          *web_contents),
+      color_(color) {}
 
 WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() = default;
 

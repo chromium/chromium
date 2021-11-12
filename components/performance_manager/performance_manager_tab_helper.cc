@@ -77,7 +77,8 @@ PerformanceManagerTabHelper::PageData::~PageData() = default;
 
 PerformanceManagerTabHelper::PerformanceManagerTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PerformanceManagerTabHelper>(*web_contents) {
   // We have an early WebContents creation hook so should see it when there is
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()

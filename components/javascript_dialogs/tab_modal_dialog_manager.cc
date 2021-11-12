@@ -365,6 +365,7 @@ TabModalDialogManager::TabModalDialogManager(
     content::WebContents* web_contents,
     std::unique_ptr<TabModalDialogManagerDelegate> delegate)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TabModalDialogManager>(*web_contents),
       delegate_(std::move(delegate)) {}
 
 void TabModalDialogManager::LogDialogDismissalCause(DismissalCause cause) {

@@ -114,6 +114,7 @@ PageSpecificContentSettings::WebContentsHandler::WebContentsHandler(
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate)
     : WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsHandler>(*web_contents),
       delegate_(std::move(delegate)),
       map_(delegate_->GetSettingsMap()) {
   DCHECK(!PageSpecificContentSettings::GetForCurrentDocument(

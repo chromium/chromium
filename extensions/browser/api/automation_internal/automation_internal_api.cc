@@ -270,6 +270,8 @@ class AutomationWebContentsObserver
 
   explicit AutomationWebContentsObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<AutomationWebContentsObserver>(
+            *web_contents),
         browser_context_(web_contents->GetBrowserContext()) {
     if (web_contents->IsCurrentlyAudible()) {
       content::RenderFrameHost* rfh = web_contents->GetMainFrame();

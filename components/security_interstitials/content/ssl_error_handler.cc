@@ -112,19 +112,20 @@ class CommonNameMismatchRedirectObserver
                                      const std::string& request_url_hostname,
                                      const std::string& suggested_url_hostname)
       : WebContentsObserver(web_contents),
-        web_contents_(web_contents),
+        content::WebContentsUserData<CommonNameMismatchRedirectObserver>(
+            *web_contents),
         request_url_hostname_(request_url_hostname),
         suggested_url_hostname_(suggested_url_hostname) {}
 
   // WebContentsObserver:
   void NavigationStopped() override {
     // Deletes |this|.
-    web_contents_->RemoveUserData(UserDataKey());
+    GetWebContents().RemoveUserData(UserDataKey());
   }
 
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& /* load_details */) override {
-    web_contents_->GetMainFrame()->AddMessageToConsole(
+    GetWebContents().GetMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kInfo,
         base::StringPrintf(
             "Redirecting navigation %s -> %s because the server presented a "
@@ -133,14 +134,13 @@ class CommonNameMismatchRedirectObserver
             "--disable-features=SSLCommonNameMismatchHandling",
             request_url_hostname_.c_str(), suggested_url_hostname_.c_str(),
             suggested_url_hostname_.c_str(), request_url_hostname_.c_str()));
-    web_contents_->RemoveUserData(UserDataKey());
+    GetWebContents().RemoveUserData(UserDataKey());
   }
 
   void WebContentsDestroyed() override {
-    web_contents_->RemoveUserData(UserDataKey());
+    GetWebContents().RemoveUserData(UserDataKey());
   }
 
-  content::WebContents* web_contents_;
   const std::string request_url_hostname_;
   const std::string suggested_url_hostname_;
 

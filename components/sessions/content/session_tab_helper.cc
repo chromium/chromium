@@ -22,6 +22,7 @@ namespace sessions {
 SessionTabHelper::SessionTabHelper(content::WebContents* contents,
                                    DelegateLookup lookup)
     : content::WebContentsObserver(contents),
+      content::WebContentsUserData<SessionTabHelper>(*contents),
       delegate_lookup_(std::move(lookup)),
       session_id_(SessionID::NewUnique()),
       window_id_(SessionID::InvalidValue()) {}

@@ -99,7 +99,9 @@ ContentSubresourceFilterWebContentsHelper::
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
             database_manager,
         VerifiedRulesetDealer::Handle* dealer_handle)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<ContentSubresourceFilterWebContentsHelper>(
+          *web_contents),
+      content::WebContentsObserver(web_contents),
       profile_context_(profile_context),
       database_manager_(database_manager),
       dealer_handle_(dealer_handle) {

@@ -47,8 +47,6 @@ class ScreenshotCapturedBubbleController
       content::WebContents* web_contents);
 
  private:
-  ScreenshotCapturedBubbleController();
-
   friend class content::WebContentsUserData<ScreenshotCapturedBubbleController>;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;

@@ -127,7 +127,7 @@ class PresentationServiceDelegateImpl
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
 
   // Returns the WebContents that owns this instance.
-  content::WebContents* web_contents() const { return web_contents_; }
+  content::WebContents* web_contents() { return &GetWebContents(); }
 
   bool HasScreenAvailabilityListenerForTest(
       int render_process_id,
@@ -205,7 +205,7 @@ class PresentationServiceDelegateImpl
 
 #if !defined(OS_ANDROID)
   // Returns true if auto-join requests should be cancelled for |origin|.
-  bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin) const;
+  bool ShouldCancelAutoJoinForOrigin(const url::Origin& origin);
 #endif
 
   // Ensures that |connection| contains a valid pair of
@@ -230,9 +230,7 @@ class PresentationServiceDelegateImpl
           state_changed_cb,
       const content::PresentationConnectionStateChangeInfo& info);
 
-  // References to the WebContents that owns this instance, and associated
-  // browser profile's MediaRouter instance.
-  content::WebContents* const web_contents_;
+  // Reference to the associated browser profile's MediaRouter instance.
   MediaRouter* router_;
 
   // References to the observers listening for changes to the default

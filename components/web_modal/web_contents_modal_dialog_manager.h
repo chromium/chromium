@@ -99,7 +99,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   void WebContentsDestroyed() override;
 
   // Delegate for notifying our owner about stuff. Not owned by us.
-  WebContentsModalDialogManagerDelegate* delegate_;
+  WebContentsModalDialogManagerDelegate* delegate_ = nullptr;
 
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;
@@ -108,7 +108,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   bool web_contents_is_hidden_;
 
   // True while closing the dialogs on WebContents close.
-  bool closing_all_dialogs_;
+  bool closing_all_dialogs_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

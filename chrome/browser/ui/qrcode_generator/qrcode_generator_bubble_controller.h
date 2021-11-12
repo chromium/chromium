@@ -55,14 +55,9 @@ class QRCodeGeneratorBubbleController
   explicit QRCodeGeneratorBubbleController(content::WebContents* web_contents);
 
  private:
-  QRCodeGeneratorBubbleController();
-
   friend class content::WebContentsUserData<QRCodeGeneratorBubbleController>;
 
   void UpdateIcon();
-
-  // The web_contents associated with this controller.
-  content::WebContents* web_contents_;
 
   // Will be nullptr if no bubble is currently shown.
   QRCodeGeneratorBubbleView* qrcode_generator_bubble_ = nullptr;

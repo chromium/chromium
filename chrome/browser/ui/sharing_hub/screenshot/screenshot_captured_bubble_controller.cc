@@ -72,9 +72,6 @@ void ScreenshotCapturedBubbleController::Capture(Browser* browser) {
   }
 }
 
-ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController() =
-    default;
-
 ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController(
     content::WebContents* web_contents)
     : content::WebContentsUserData<ScreenshotCapturedBubbleController>(

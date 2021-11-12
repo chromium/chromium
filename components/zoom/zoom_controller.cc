@@ -38,6 +38,7 @@ double ZoomController::GetZoomLevelForWebContents(
 
 ZoomController::ZoomController(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ZoomController>(*web_contents),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);

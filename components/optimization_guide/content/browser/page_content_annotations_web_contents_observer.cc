@@ -74,6 +74,8 @@ PageContentAnnotationsWebContentsObserver::
         PageContentAnnotationsService* page_content_annotations_service,
         TemplateURLService* template_url_service)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
+          *web_contents),
       page_content_annotations_service_(page_content_annotations_service),
       template_url_service_(template_url_service),
       max_size_for_text_dump_(features::MaxSizeForPageContentTextDump()) {

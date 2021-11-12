@@ -49,7 +49,7 @@ void PDFWebContentsHelper::BindPdfService(
 PDFWebContentsHelper::PDFWebContentsHelper(
     content::WebContents* web_contents,
     std::unique_ptr<PDFWebContentsHelperClient> client)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<PDFWebContentsHelper>(*web_contents),
       pdf_service_receivers_(web_contents, this),
       client_(std::move(client)) {}
 
@@ -76,10 +76,10 @@ void PDFWebContentsHelper::SetListener(
 }
 
 gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
-                                                float scale) const {
+                                                float scale) {
   gfx::PointF origin_f;
   content::RenderWidgetHostView* view =
-      web_contents_->GetRenderWidgetHostView();
+      GetWebContents().GetRenderWidgetHostView();
   if (view) {
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
     origin_f.Scale(scale);
@@ -88,13 +88,11 @@ gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
   return gfx::PointF(point_f.x() + origin_f.x(), point_f.y() + origin_f.y());
 }
 
-gfx::PointF PDFWebContentsHelper::ConvertFromRoot(
-    const gfx::PointF& point_f) const {
+gfx::PointF PDFWebContentsHelper::ConvertFromRoot(const gfx::PointF& point_f) {
   return ConvertHelper(point_f, -1.f);
 }
 
-gfx::PointF PDFWebContentsHelper::ConvertToRoot(
-    const gfx::PointF& point_f) const {
+gfx::PointF PDFWebContentsHelper::ConvertToRoot(const gfx::PointF& point_f) {
   return ConvertHelper(point_f, +1.f);
 }
 
@@ -111,7 +109,7 @@ void PDFWebContentsHelper::SelectionChanged(const gfx::PointF& left,
 }
 
 void PDFWebContentsHelper::SetPluginCanSave(bool can_save) {
-  client_->SetPluginCanSave(web_contents_, can_save);
+  client_->SetPluginCanSave(&GetWebContents(), can_save);
 }
 
 void PDFWebContentsHelper::GetPdfFindInPage(GetPdfFindInPageCallback callback) {
@@ -121,7 +119,8 @@ void PDFWebContentsHelper::GetPdfFindInPage(GetPdfFindInPageCallback callback) {
   }
 
   if (!find_factory_remote_) {
-    web_contents_->GetMainFrame()
+    GetWebContents()
+        .GetMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->GetInterface(&find_factory_remote_);
   }
@@ -232,13 +231,13 @@ void PDFWebContentsHelper::ExecuteCommand(int command_id, int event_flags) {
   // cut/paste commands.
   switch (command_id) {
     case ui::TouchEditable::kCopy:
-      web_contents_->Copy();
+      GetWebContents().Copy();
       break;
   }
 }
 
 void PDFWebContentsHelper::RunContextMenu() {
-  content::RenderFrameHost* focused_frame = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* focused_frame = GetWebContents().GetFocusedFrame();
   if (!focused_frame)
     return;
 
@@ -281,7 +280,7 @@ std::u16string PDFWebContentsHelper::GetSelectedText() {
 
 void PDFWebContentsHelper::InitTouchSelectionClientManager() {
   content::RenderWidgetHostView* view =
-      web_contents_->GetRenderWidgetHostView();
+      GetWebContents().GetRenderWidgetHostView();
   if (!view)
     return;
 
@@ -294,25 +293,25 @@ void PDFWebContentsHelper::InitTouchSelectionClientManager() {
 }
 
 void PDFWebContentsHelper::HasUnsupportedFeature() {
-  client_->OnPDFHasUnsupportedFeature(web_contents_);
+  client_->OnPDFHasUnsupportedFeature(&GetWebContents());
 }
 
 void PDFWebContentsHelper::SaveUrlAs(const GURL& url,
                                      network::mojom::ReferrerPolicy policy) {
-  client_->OnSaveURL(web_contents_);
+  client_->OnSaveURL(&GetWebContents());
 
-  content::RenderFrameHost* rfh = web_contents_->GetOuterWebContentsFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetOuterWebContentsFrame();
   if (!rfh)
     return;
 
   content::Referrer referrer(url, policy);
   referrer = content::Referrer::SanitizeForRequest(url, referrer);
-  web_contents_->SaveFrame(url, referrer, rfh);
+  GetWebContents().SaveFrame(url, referrer, rfh);
 }
 
 void PDFWebContentsHelper::UpdateContentRestrictions(
     int32_t content_restrictions) {
-  client_->UpdateContentRestrictions(web_contents_, content_restrictions);
+  client_->UpdateContentRestrictions(&GetWebContents(), content_restrictions);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFWebContentsHelper);

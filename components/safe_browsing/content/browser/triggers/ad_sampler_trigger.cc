@@ -87,6 +87,7 @@ AdSamplerTrigger::AdSamplerTrigger(
     history::HistoryService* history_service,
     ReferrerChainProvider* referrer_chain_provider)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AdSamplerTrigger>(*web_contents),
       sampler_frequency_denominator_(GetSamplerFrequencyDenominator()),
       start_report_delay_ms_(
           base::RandInt(kMinAdSampleCollectionStartDelayMilliseconds,

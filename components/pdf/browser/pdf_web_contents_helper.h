@@ -79,9 +79,9 @@ class PDFWebContentsHelper
                        std::unique_ptr<PDFWebContentsHelperClient> client);
 
   void InitTouchSelectionClientManager();
-  gfx::PointF ConvertFromRoot(const gfx::PointF& point_f) const;
-  gfx::PointF ConvertToRoot(const gfx::PointF& point_f) const;
-  gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale) const;
+  gfx::PointF ConvertFromRoot(const gfx::PointF& point_f);
+  gfx::PointF ConvertToRoot(const gfx::PointF& point_f);
+  gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale);
 
   // mojom::PdfService:
   void SetListener(mojo::PendingRemote<mojom::PdfListener> listener) override;
@@ -96,7 +96,6 @@ class PDFWebContentsHelper
   void SetPluginCanSave(bool can_save) override;
   void GetPdfFindInPage(GetPdfFindInPageCallback callback) override;
 
-  content::WebContents* const web_contents_;
   content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
   content::TouchSelectionControllerClientManager*

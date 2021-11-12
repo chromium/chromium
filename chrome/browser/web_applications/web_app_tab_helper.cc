@@ -31,7 +31,8 @@ void WebAppTabHelper::CreateForWebContents(content::WebContents* contents) {
 }
 
 WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   DCHECK(provider_);

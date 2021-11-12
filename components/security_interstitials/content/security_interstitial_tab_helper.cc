@@ -107,7 +107,10 @@ SecurityInterstitialTabHelper::
 
 SecurityInterstitialTabHelper::SecurityInterstitialTabHelper(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents), receivers_(web_contents, this) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<SecurityInterstitialTabHelper>(
+          *web_contents),
+      receivers_(web_contents, this) {}
 
 void SecurityInterstitialTabHelper::SetBlockingPage(
     int64_t navigation_id,

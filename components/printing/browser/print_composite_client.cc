@@ -73,7 +73,8 @@ void BindDiscardableSharedMemoryManagerOnIOThread(
 }  // namespace
 
 PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<PrintCompositeClient>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 PrintCompositeClient::~PrintCompositeClient() {}
 

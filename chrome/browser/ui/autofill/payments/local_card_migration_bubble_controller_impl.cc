@@ -28,7 +28,9 @@ namespace autofill {
 
 LocalCardMigrationBubbleControllerImpl::LocalCardMigrationBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents) {}
+    : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<LocalCardMigrationBubbleControllerImpl>(
+          *web_contents) {}
 
 LocalCardMigrationBubbleControllerImpl::
     ~LocalCardMigrationBubbleControllerImpl() = default;

@@ -553,6 +553,7 @@ void PermissionRequestManager::SetDecisionTime() {
 PermissionRequestManager::PermissionRequestManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PermissionRequestManager>(*web_contents),
       view_factory_(base::BindRepeating(&PermissionPrompt::Create)),
       view_(nullptr),
       tab_is_hidden_(web_contents->GetVisibility() ==

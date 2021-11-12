@@ -121,6 +121,8 @@ void PaymentRequestWebContentsManager::DestroyRequest(
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PaymentRequestWebContentsManager>(
+          *web_contents),
       spc_transaction_mode_(SPCTransactionMode::NONE) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentRequestWebContentsManager);
