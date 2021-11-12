@@ -218,7 +218,7 @@ void VideoDecoderClient::InitializeDecoderTask(const Video* video,
 
   video_ = video;
   encoded_data_helper_ =
-      std::make_unique<EncodedDataHelper>(video_->Data(), video_->Profile());
+      std::make_unique<EncodedDataHelper>(video_->Data(), video_->Codec());
 
   // (Re-)initialize the decoder.
   VideoDecoderConfig config(

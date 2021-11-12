@@ -145,10 +145,10 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
 }
 
 EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
-                                     VideoCodecProfile profile)
+                                     VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
                         stream.size())),
-      profile_(profile) {}
+      codec_(codec) {}
 
 EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
@@ -160,7 +160,7 @@ bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
-  switch (VideoCodecProfileToVideoCodec(profile_)) {
+  switch (codec_) {
     case VideoCodec::kH264:
     case VideoCodec::kHEVC:
       return GetNextFragment();
@@ -214,11 +214,11 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
 bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
   *skipped_fragments_count = 0;
   while (next_pos_to_decode_ + 4 < data_.size()) {
-    if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) &&
-        ((data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7)) {
+    if (codec_ == VideoCodec::kH264 &&
+        (data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7) {
       return true;
-    } else if ((profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) &&
-               ((data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42)) {
+    } else if (codec_ == VideoCodec::kHEVC &&
+               (data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42) {
       return true;
     }
     *skipped_fragments_count += 1;
