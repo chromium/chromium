@@ -591,7 +591,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool ShouldIgnoreHoveredStateForTesting() = 0;
 
   // Creates a string representation of this delegate's data.
-  std::string ToString() { return GetData().ToString(); }
+  std::string ToString() const { return GetData().ToString(); }
 
   // Returns a string representation of the subtree of delegates rooted at this
   // delegate.
