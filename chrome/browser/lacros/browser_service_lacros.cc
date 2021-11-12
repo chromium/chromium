@@ -260,10 +260,8 @@ void BrowserServiceLacros::OpenUrl(const GURL& url, OpenUrlCallback callback) {
     }
   }
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  DCHECK(browser) << "No browser is found.";
   NavigateParams navigate_params(
-      browser, url,
+      profile, url,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_FROM_API));
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
