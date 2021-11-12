@@ -15,6 +15,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/callback_forward.h"
+#include "base/containers/circular_deque.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
@@ -184,9 +185,8 @@ class BASE_EXPORT TaskTracker {
   // if it reaches zero.
   void DecrementNumIncompleteTaskSources();
 
-  // Calls |flush_callback_for_testing_| if one is available in a lock-safe
-  // manner.
-  void CallFlushCallbackForTesting();
+  // Invokes all |flush_callbacks_for_testing_| if any in a lock-safe manner.
+  void InvokeFlushCallbacksForTesting();
 
   // Dummy frames to allow identification of shutdown behavior in a stack trace.
   void RunContinueOnShutdown(Task& task,
@@ -241,16 +241,17 @@ class BASE_EXPORT TaskTracker {
   // |num_incomplete_task_sources_|. Full synchronization isn't needed
   // because it's atomic, but synchronization is needed to coordinate waking and
   // sleeping at the right time. Fully synchronizes access to
-  // |flush_callback_for_testing_|.
+  // |flush_callbacks_for_testing_|.
   mutable CheckedLock flush_lock_;
 
   // Signaled when |num_incomplete_task_sources_| is or reaches zero or when
   // shutdown completes.
   const std::unique_ptr<ConditionVariable> flush_cv_;
 
-  // Invoked if non-null when |num_incomplete_task_sources_| is zero or when
+  // All invoked, if any, when |num_incomplete_task_sources_| is zero or when
   // shutdown completes.
-  OnceClosure flush_callback_for_testing_ GUARDED_BY(flush_lock_);
+  base::circular_deque<OnceClosure> flush_callbacks_for_testing_
+      GUARDED_BY(flush_lock_);
 
   // Synchronizes access to shutdown related members below.
   mutable CheckedLock shutdown_lock_;
