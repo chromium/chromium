@@ -69,16 +69,20 @@ export function keyboardDiagramTestSuite() {
     assertKeyVisible('jisYenKey');
   });
 
-  test('resize', async () => {
-    const keyboardElement = diagramElement.root.getElementById('keyboard');
-    diagramElement.showNumberPad = false;
+  test('dell-enterprise', async () => {
+    assertKeyHidden('dellDeleteKey');
+    assertKeyHidden('dellPageDownKey');
+    assertKeyHidden('dellPageUpKey');
+    assertKeyHidden('fnKey');
+    assertKeyHidden('layoutSwitchKey');
 
-    document.body.style.width = '700px';
+    diagramElement.physicalLayout = PhysicalLayout.kChromeOSDellEnterprise;
     await flushTasks();
-    assertEquals(264, keyboardElement.offsetHeight);
 
-    document.body.style.width = '1000px';
-    await flushTasks();
-    assertEquals(377, keyboardElement.offsetHeight);
+    assertKeyVisible('dellDeleteKey');
+    assertKeyVisible('dellPageDownKey');
+    assertKeyVisible('dellPageUpKey');
+    assertKeyVisible('fnKey');
+    assertKeyVisible('layoutSwitchKey');
   });
 }
