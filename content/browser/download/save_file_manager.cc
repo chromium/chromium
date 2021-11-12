@@ -19,6 +19,7 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -283,13 +284,10 @@ void SaveFileManager::SaveURL(
           static_cast<StoragePartitionImpl*>(storage_partition);
       auto partition_domain =
           rfh->GetSiteInstance()->GetPartitionDomain(storage_partition_impl);
-      // TODO(https://crbug.com/1267272): Replace the in-line conversion to
-      // StorageKey below to use the correct third-party StorageKey value. May
-      // require fixing bugs in the browser tests covering this code path.
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
           rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
           storage_partition->GetFileSystemContext(), partition_domain,
-          blink::StorageKey(url::Origin::Create(url))));
+          static_cast<RenderFrameHostImpl*>(rfh)->storage_key()));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
       factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));

@@ -46,6 +46,7 @@
 #include "content/browser/download/network_download_pending_url_loader_factory.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/storage_partition_impl.h"
@@ -1333,16 +1334,13 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   } else if (rfh && params->url().SchemeIsFileSystem()) {
     StoragePartitionImpl* storage_partition =
         GetStoragePartitionForSiteUrl(browser_context_, site_url);
-    // TODO(https://crbug.com/1267272): Replace the in-line conversion to
-    // StorageKey below to use the correct third-party StorageKey value. May
-    // require fixing bugs in the browser tests covering this code path.
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             CreateFileSystemURLLoaderFactory(
                 rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
                 storage_partition->GetFileSystemContext(),
                 storage_partition->GetPartitionDomain(),
-                blink::StorageKey(url::Origin::Create(params->url()))));
+                static_cast<RenderFrameHostImpl*>(rfh)->storage_key()));
   } else if (params->url().SchemeIs(url::kDataScheme)) {
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

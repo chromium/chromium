@@ -679,9 +679,14 @@ class DownloadExtensionTest : public ExtensionApiTest {
                                !IncognitoInfo::IsSplitMode(extension_)
                            ? GURL(url::kAboutBlankURL)
                            : extension_->GetResourceURL("empty.html");
+      // Watch and wait for the navigation to take place.
+      auto observer = std::make_unique<content::TestNavigationObserver>(url);
+      observer->WatchExistingWebContents();
+      observer->StartWatchingNewWebContents();
       // Recreate the tab each time for insulation.
       content::WebContents* tab = chrome::AddSelectedTabWithURL(
           current_browser(), url, ui::PAGE_TRANSITION_LINK);
+      observer->WaitForNavigationFinished();
       function->set_extension(extension_);
       function->SetRenderFrameHost(tab->GetMainFrame());
       function->set_source_process_id(
@@ -943,12 +948,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
                RunFunctionAndReturnError(
                   open_function,
                   DownloadItemIdAsArgList(download_item)).c_str());
-  // RunFunctionAndReturnError() will trigger a navigation. Wait for it to
-  // finish before showing the prompt dialog. Otherwise the dialog will get
-  // automatically closed.
-  content::TestNavigationObserver navigation_observer(
-      current_browser()->tab_strip_model()->GetActiveWebContents());
-  navigation_observer.WaitForNavigationFinished();
+  current_browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(download_item->GetOpened());
 
   scoped_refptr<DownloadsOpenFunction> scoped_open(new DownloadsOpenFunction());
