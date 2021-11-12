@@ -20,6 +20,7 @@
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/variations/variations_ids_provider.h"
 #include "url/android/gurl_android.h"
 
@@ -179,7 +180,7 @@ bool FeedStream::IsActivityLoggingEnabled(JNIEnv* env,
   // won't have this information if the stream isn't yet loaded.
   // For this reason, we consider logging enabled as 'true' if it's enabled for
   // either stream type.
-  // TODO(crbug.com/1262376): Improve this.
+  // TODO(crbug.com/1268575): Remove IsActivityLoggingEnabled.
 
   return feed_stream_api_ &&
          (feed_stream_api_->IsActivityLoggingEnabled(kForYouStream) ||

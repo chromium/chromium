@@ -16,6 +16,7 @@ import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
@@ -52,6 +53,11 @@ public class NtpListContentManager implements ListContentManager {
         public String getKey() {
             return mKey;
         }
+
+        @Nullable
+        public LoggingParameters getLoggingParameters() {
+            return null;
+        }
     }
 
     /**
@@ -59,10 +65,12 @@ public class NtpListContentManager implements ListContentManager {
      */
     public static class ExternalViewContent extends FeedContent {
         private final byte[] mData;
+        private final LoggingParameters mLoggingParameters;
 
-        public ExternalViewContent(String key, byte[] data) {
+        public ExternalViewContent(String key, byte[] data, LoggingParameters loggingParameters) {
             super(key);
             mData = data;
+            mLoggingParameters = loggingParameters;
         }
 
         /**
@@ -76,6 +84,12 @@ public class NtpListContentManager implements ListContentManager {
         @Override
         public boolean isNativeView() {
             return false;
+        }
+
+        @Override
+        @Nullable
+        public LoggingParameters getLoggingParameters() {
+            return mLoggingParameters;
         }
     }
 
@@ -369,6 +383,18 @@ public class NtpListContentManager implements ListContentManager {
 
     @Override
     public Map<String, Object> getContextValues(int index) {
+        // We just return mHandlers for items unless they need logging parameters added.
+        if (index >= 0 && index < mFeedContentList.size()) {
+            LoggingParameters loggingParameters =
+                    mFeedContentList.get(index).getLoggingParameters();
+            if (loggingParameters != null) {
+                // It might be a good idea to cache this value, but it adds complexity because
+                // setHandlers() can be called after items are added.
+                Map<String, Object> contextValues = new HashMap<>(mHandlers);
+                contextValues.put(LoggingParameters.KEY, loggingParameters);
+                return contextValues;
+            }
+        }
         return mHandlers;
     }
 

@@ -67,7 +67,7 @@ TEST_F(FeedApiTest, BackgroundRefreshForYouSuccess) {
   EXPECT_FALSE(stream_->GetModel(kForYouStream));
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, WebFeedDoesNotBackgroundRefresh) {
@@ -160,7 +160,7 @@ TEST_F(FeedApiTest, SurfaceReceivesInitialContentLoadedAfterAttach) {
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }
 
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
 
   EXPECT_NE("", initial_state.updated_slices(0).slice().slice_id());
@@ -256,7 +256,8 @@ TEST_F(FeedApiTest, RemoveAllContentResultsInZeroState) {
                                  MakeOperation(MakeRemove(MakeClusterId(1))),
                              });
 
-  ASSERT_EQ("loading -> 2 slices -> no-cards", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices -> no-cards",
+            surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, DetachSurface) {
@@ -304,7 +305,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
       network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   // Verify the model is filled correctly.
   EXPECT_STRINGS_EQUAL(
       ModelStateFor(MakeTypicalInitialModelState()),
@@ -337,7 +338,7 @@ TEST_F(FeedApiTest, LoadFromNetworkDiscoFeedEnabled) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(1, network_.GetApiRequestCount<QueryNextPageDiscoverApi>());
-  EXPECT_EQ("loading -> 2 slices -> 2 slices +spinner -> 4 slices",
+  EXPECT_EQ("loading -> [user@foo] 2 slices -> 2 slices +spinner -> 4 slices",
             surface.DescribeUpdates());
 }
 
@@ -367,8 +368,8 @@ TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
   TestWebFeedSurface web_feed_surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("2 slices", surface.DescribeState());
-  EXPECT_EQ("2 slices", web_feed_surface.DescribeState());
+  EXPECT_EQ("[user@foo] 2 slices", surface.DescribeState());
+  EXPECT_EQ("[user@foo] 2 slices", web_feed_surface.DescribeState());
 
   // Total 2 queries (Web + For You).
   EXPECT_EQ(2, network_.send_query_call_count);
@@ -400,7 +401,7 @@ TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
             metrics_reporter_->background_refresh_status);
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, ForceRefreshForDebugging) {
@@ -416,7 +417,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, ForceRefreshForDebugging) {
 
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_EQ("2 slices", surface.DescribeState());
+  EXPECT_EQ("[user@foo] 2 slices", surface.DescribeState());
 }
 
 TEST_F(FeedApiTest, RefreshScheduleFlow) {
@@ -663,7 +664,7 @@ TEST_F(FeedApiTest, LoadStaleDataBecauseNetworkRequestFails) {
   WaitForIdleTaskQueue();
 
   ASSERT_TRUE(network_.query_request_sent);
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kDataInStoreIsStale,
             metrics_reporter_->load_stream_from_store_status);
   EXPECT_EQ(LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure,
@@ -751,7 +752,7 @@ TEST_F(FeedApiTest, LoadStreamAfterEulaIsAccepted) {
   stream_->OnEulaAccepted();
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
@@ -827,6 +828,9 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // The model should now be in the signed-in state.
   EXPECT_TRUE(stream_->GetModel(kForYouStream)->signed_in());
   EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
+
+  EXPECT_EQ("2 slices +spinner -> 4 slices -> loading -> [user@foo] 2 slices",
+            surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
@@ -850,7 +854,7 @@ TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_NE("", network_.last_gaia);
   EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
@@ -880,7 +884,7 @@ TEST_F(FeedApiTest, LoadStreamFromStore) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_FALSE(network_.query_request_sent);
   // Verify the model is filled correctly.
   EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
@@ -912,14 +916,14 @@ TEST_F(FeedApiTest, AttachMultipleSurfacesLoadsModelOnce) {
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(1, network_.send_query_call_count);
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  ASSERT_EQ("loading -> 2 slices", other_surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", other_surface.DescribeUpdates());
 
   // After load, another surface doesn't trigger any tasks,
   // and immediately has content.
   TestForYouSurface later_surface(stream_.get());
 
-  ASSERT_EQ("2 slices", later_surface.DescribeUpdates());
+  ASSERT_EQ("[user@foo] 2 slices", later_surface.DescribeUpdates());
   EXPECT_TRUE(IsTaskQueueIdle());
 }
 
@@ -1094,7 +1098,7 @@ TEST_F(FeedApiTest, FollowForcesRefreshWhileSurfaceAttached_NotWorking) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Follow a web feed.
   network_.InjectResponse(SuccessfulFollowResponse("dogs"));
@@ -1123,7 +1127,7 @@ TEST_F(FeedApiTest, FollowForcesRefresh) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
 
   // Detach the surface.
@@ -1176,7 +1180,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
@@ -1201,7 +1205,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadMorePersistsData) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
@@ -1223,7 +1227,7 @@ TEST_F(FeedApiTest, LoadMorePersistAndLoadMore) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
@@ -1262,7 +1266,7 @@ TEST_F(FeedApiTest, LoadMoreSendsTokens) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
@@ -1313,7 +1317,7 @@ TEST_F(FeedApiTest, LoadMoreAbortsIfNoNextPageToken) {
   // LoadMore fails, and does not make an additional request.
   EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(absl::nullopt, metrics_reporter_->load_more_surface_id)
       << "metrics reporter was informed about a load more operation which "
          "didn't begin";
@@ -1323,7 +1327,7 @@ TEST_F(FeedApiTest, LoadMoreFail) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Don't inject another response, which results in a proto translation
   // failure.
@@ -1339,7 +1343,7 @@ TEST_F(FeedApiTest, LoadMoreWithClearAllInResponse) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   // Use a different initial state (which includes a CLEAR_ALL).
   response_translator_.InjectResponse(MakeTypicalInitialModelState(5));
@@ -1385,7 +1389,7 @@ TEST_F(FeedApiTest, ReadNetworkResponse) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 10 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 10 slices", surface.DescribeUpdates());
 
   // Verify we're processing some of the data on the request.
 
@@ -1432,7 +1436,7 @@ TEST_F(FeedApiTest, ClearAllAfterLoadResultsInRefresh) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices -> loading -> 2 slices",
+  EXPECT_EQ("loading -> [user@foo] 2 slices -> loading -> 2 slices",
             surface.DescribeUpdates());
 }
 
@@ -1445,7 +1449,7 @@ TEST_F(FeedApiTest, ClearAllWithNoSurfacesAttachedDoesNotReload) {
   stream_->OnCacheDataCleared();  // triggers ClearAll().
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
@@ -1462,8 +1466,8 @@ TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
 
   EXPECT_EQ(false, cr.GetResult());
   EXPECT_EQ(
-      "loading -> 2 slices -> 2 slices +spinner -> 2 slices -> loading -> 2 "
-      "slices",
+      "loading -> [user@foo] 2 slices -> 2 slices +spinner -> 2 slices -> "
+      "loading -> [NO Logging] 2 slices",
       surface.DescribeUpdates());
 }
 
@@ -1483,7 +1487,7 @@ TEST_F(FeedApiTest, ClearAllWipesAllState) {
   stream_->OnCacheDataCleared();
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 2 slices -> loading -> cant-refresh",
+  ASSERT_EQ("loading -> [user@foo] 2 slices -> loading -> cant-refresh",
             surface.DescribeUpdates());
   EXPECT_EQ(R"("m": {
 }
@@ -1708,6 +1712,15 @@ TEST_F(FeedApiTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
       }
     }
   }
+}
+
+TEST_F(FeedApiTest, LoadStreamWithLoggingEnabled) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(stream_->IsActivityLoggingEnabled(kForYouStream));
+
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, BackgroundingAppUploadsActions) {
@@ -2231,8 +2244,10 @@ TEST_F(FeedApiTest, LoadMultipleStreams) {
 
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 2 slices", for_you_surface.DescribeUpdates());
-  ASSERT_EQ("loading -> 2 slices", web_feed_surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices",
+            for_you_surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices",
+            web_feed_surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
@@ -2283,7 +2298,7 @@ TEST_F(FeedApiTest, CreateAndCommitEphemeralChange) {
   stream_->CommitEphemeralChange(surface.GetStreamType(), change_id);
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 2 slices -> no-cards -> no-cards",
+  ASSERT_EQ("loading -> [user@foo] 2 slices -> no-cards -> no-cards",
             surface.DescribeUpdates());
 }
 
@@ -2297,7 +2312,7 @@ TEST_F(FeedApiTest, RejectEphemeralChange) {
   stream_->RejectEphemeralChange(surface.GetStreamType(), change_id);
   WaitForIdleTaskQueue();
 
-  ASSERT_EQ("loading -> 2 slices -> no-cards -> 2 slices",
+  ASSERT_EQ("loading -> [user@foo] 2 slices -> no-cards -> 2 slices",
             surface.DescribeUpdates());
 }
 
@@ -2338,7 +2353,7 @@ TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterFeedViewed) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   ASSERT_TRUE(stream_->HasUnreadContent(kForYouStream));
   stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
 
@@ -2357,7 +2372,8 @@ TEST_F(FeedApiTest, HasUnreadContentRemainsFalseIfFeedViewedBeforeRefresh) {
 
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices -> 3 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices -> 3 slices",
+            surface.DescribeUpdates());
   EXPECT_FALSE(stream_->HasUnreadContent(kForYouStream));
 }
 
@@ -2372,7 +2388,7 @@ TEST_F(FeedApiTest,
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ(2, network_.send_query_call_count);
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
 
@@ -2380,7 +2396,8 @@ TEST_F(FeedApiTest,
   TestWebFeedSurface web_feed_surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", web_feed_surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices",
+            web_feed_surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromStore,
             metrics_reporter_->load_stream_status);
 }
@@ -2392,7 +2409,7 @@ TEST_F(FeedApiTest,
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
   EXPECT_EQ(
@@ -2475,11 +2492,11 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface2(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface2.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface2.DescribeUpdates());
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
@@ -2501,11 +2518,11 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWebFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface2(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface2.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface2.DescribeUpdates());
 
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   CallbackReceiver<bool> callback;
@@ -2527,7 +2544,7 @@ TEST_F(FeedApiTest, ManualRefreshFailsBecauseNetworkRequestFails) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
   std::string original_store_dump =
@@ -2553,7 +2570,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterUnload) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 
   UnloadModel(surface.GetStreamType());
   WaitForIdleTaskQueue();
@@ -2582,7 +2599,7 @@ TEST_F(FeedApiTest, ManualRefreshSuccessAfterPreviousLoadFailure) {
   stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
   WaitForIdleTaskQueue();
   EXPECT_EQ(absl::optional<bool>(true), callback.GetResult());
-  EXPECT_EQ("no-cards -> 3 slices", surface.DescribeUpdates());
+  EXPECT_EQ("no-cards -> [user@foo] 3 slices", surface.DescribeUpdates());
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->load_stream_status);
   // Verify stored state is equivalent to in-memory model.
@@ -2603,7 +2620,7 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
   // Manual refresh should fail immediately when loading is still in progress.
   EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
   // The initial loading should finish.
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
 TEST_F(FeedApiTest, StartSurface) {
@@ -2643,7 +2660,7 @@ TEST_F(FeedApiTest, ForYouContentOrderUnset) {
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::
           FeedQuery_ContentOrder_CONTENT_ORDER_UNSPECIFIED,
@@ -2657,7 +2674,7 @@ TEST_F(FeedApiTest, ContentOrderIsGroupedByDefault) {
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
       network_.query_request_sent->feed_request().feed_query().order_by());
@@ -2677,7 +2694,7 @@ TEST_F(FeedApiTest, SetContentOrderReloadsContent) {
   stream_->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices -> loading -> 2 slices",
+  EXPECT_EQ("loading -> [user@foo] 2 slices -> loading -> 2 slices",
             surface.DescribeUpdates());
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
@@ -2701,7 +2718,7 @@ TEST_F(FeedApiTest, SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
   stream_->SetContentOrder(kWebFeedStream, ContentOrder::kGrouped);
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   // "Raw prefs" order value should have been updated.
   EXPECT_EQ(ContentOrder::kGrouped,
             feed::prefs::GetWebFeedContentOrder(profile_prefs_));
@@ -2720,7 +2737,7 @@ TEST_F(FeedApiTest, ContentOrderIsFinchControllable) {
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
       network_.query_request_sent->feed_request().feed_query().order_by());
@@ -2742,7 +2759,7 @@ TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(
       feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
       network_.query_request_sent->feed_request().feed_query().order_by());
@@ -2751,6 +2768,7 @@ TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
 
 // This is a regression test for crbug.com/1249772.
 TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
+  signed_in_gaia_.clear();  // not signed in initially.
   // Load content and simulate a restart, so that there is stored content.
   {
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -2770,11 +2788,25 @@ TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices -> loading -> 3 slices",
+  EXPECT_EQ("loading -> 2 slices -> loading -> [user@foo] 3 slices",
             surface.DescribeUpdates());
   // Even though content is updated, the feed remains in view, so content is not
   // unread.
   EXPECT_EQ(std::vector<bool>({false}), observer.calls);
+}
+
+TEST_F(FeedApiTest, SignOutWhileSurfaceIsOpen) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  signed_in_gaia_ = "";
+  stream_->OnSignedOut();
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "loading -> [user@foo] 2 slices -> loading -> [NO Logging] 3 slices",
+      surface.DescribeUpdates());
 }
 
 // TODO(crbug.com/1266030): Fix flakes.

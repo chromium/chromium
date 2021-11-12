@@ -158,6 +158,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   base::WeakPtr<FeedStream> stream_;
   std::vector<std::string> described_updates_;
   std::map<std::string, std::string> data_store_entries_;
+  std::string last_logging_parameters_description_;
 };
 
 class TestForYouSurface : public TestSurfaceBase {
@@ -439,6 +440,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool IsAutoplayEnabled() override;
   void ClearAll() override;
   std::string GetSyncSignedInGaia() override;
+  std::string GetSyncSignedInEmail() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
@@ -489,6 +491,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
   std::string signed_in_gaia_ = "examplegaia";
+  std::string signed_in_email_ = "user@foo";
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;

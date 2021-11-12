@@ -77,6 +77,7 @@ class FeedStream : public FeedApi,
     virtual bool IsAutoplayEnabled() = 0;
     virtual void ClearAll() = 0;
     virtual std::string GetSyncSignedInGaia() = 0;
+    virtual std::string GetSyncSignedInEmail() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
@@ -359,6 +360,7 @@ class FeedStream : public FeedApi,
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
+  LoggingParameters GetLoggingParameters(const StreamType& stream_type);
 
   void ClearAll();
 

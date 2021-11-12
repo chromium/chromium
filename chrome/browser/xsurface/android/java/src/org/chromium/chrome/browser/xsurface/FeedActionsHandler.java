@@ -25,6 +25,8 @@ public interface FeedActionsHandler {
      */
     default void processThereAndBackAgainData(byte[] data) {}
 
+    default void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {}
+
     /**
      * Triggers Chrome to send user feedback for this card.
      */

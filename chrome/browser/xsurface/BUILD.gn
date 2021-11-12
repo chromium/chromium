@@ -14,6 +14,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/ImageFetchClient.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManager.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManagerObserver.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/LoggingParameters.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/PersistentKeyValueCache.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ProcessScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ProcessScopeDependencyProvider.java",

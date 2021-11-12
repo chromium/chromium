@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -196,6 +197,14 @@ public class FeedStream implements Stream {
         @Override
         public void processThereAndBackAgainData(byte[] data) {
             assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data);
+        }
+
+        @Override
+        public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
+            assert ThreadUtils.runningOnUiThread();
+            // TODO(crbug.com/1268575): Forward loggingParameters to FeedApi, and check that they
+            // match the current state.
             FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data);
         }
 
@@ -841,6 +850,9 @@ public class FeedStream implements Stream {
 
         mLastFetchTimeMs = streamUpdate.getFetchTimeMs();
 
+        FeedLoggingParameters loggingParameters =
+                new FeedLoggingParameters(streamUpdate.getLoggingParameters());
+
         // Invalidate the saved scroll state if the content in the feed has changed.
         // Don't do anything if mLastFetchTimeMs is unset.
         if (mScrollStateToRestore != null && mLastFetchTimeMs != 0) {
@@ -862,7 +874,7 @@ public class FeedStream implements Stream {
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
                 NtpListContentManager.FeedContent content =
-                        createContentFromSlice(sliceUpdate.getSlice());
+                        createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
                 if (content != null) {
                     newContentList.add(content);
                 }
@@ -885,11 +897,12 @@ public class FeedStream implements Stream {
         maybeLoadMore(/*lookaheadTrigger=*/0);
     }
 
-    private NtpListContentManager.FeedContent createContentFromSlice(FeedUiProto.Slice slice) {
+    private NtpListContentManager.FeedContent createContentFromSlice(
+            FeedUiProto.Slice slice, LoggingParameters loggingParameters) {
         String sliceId = slice.getSliceId();
         if (slice.hasXsurfaceSlice()) {
-            return new NtpListContentManager.ExternalViewContent(
-                    sliceId, slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray());
+            return new NtpListContentManager.ExternalViewContent(sliceId,
+                    slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(), loggingParameters);
         } else if (slice.hasLoadingSpinnerSlice()) {
             // If the placeholder is shown, spinner is not needed.
             if (mIsPlaceholderShown) {

@@ -220,6 +220,33 @@ std::string TestSurfaceBase::CurrentState() {
     return "empty";
 
   bool has_loading_spinner = false;
+
+  // If logging parameters have changed, output the new parameters. Only check
+  // if updated_slices is non-empty, as this field is inconsequential otherwise.
+  // Output looks like [user@foo] or [NO Logging].
+  std::string parameter_change_description;
+  if (!update->updated_slices().empty()) {
+    std::string logging_parameters_description;
+    if (!update->logging_parameters().email().empty()) {
+      logging_parameters_description = update->logging_parameters().email();
+    }
+    if (!update->logging_parameters().session_id().empty()) {
+      CHECK(logging_parameters_description.empty());
+      logging_parameters_description =
+          update->logging_parameters().session_id();
+    }
+    if (last_logging_parameters_description_ !=
+        logging_parameters_description) {
+      last_logging_parameters_description_ = logging_parameters_description;
+      if (logging_parameters_description.empty()) {
+        parameter_change_description = "[NO Logging] ";
+      } else {
+        parameter_change_description =
+            "[" + logging_parameters_description + "] ";
+      }
+    }
+  }
+
   for (int i = 0; i < update->updated_slices().size(); ++i) {
     const feedui::StreamUpdate_SliceUpdate& slice_update =
         update->updated_slices(i);
@@ -238,6 +265,7 @@ std::string TestSurfaceBase::CurrentState() {
     }
   }
   std::stringstream ss;
+  ss << parameter_change_description;
   if (has_loading_spinner) {
     ss << update->updated_slices().size() - 1 << " slices +spinner";
   } else {
@@ -793,6 +821,9 @@ bool FeedApiTest::IsOffline() {
 }
 std::string FeedApiTest::GetSyncSignedInGaia() {
   return signed_in_gaia_;
+}
+std::string FeedApiTest::GetSyncSignedInEmail() {
+  return signed_in_gaia_.empty() ? "" : signed_in_email_;
 }
 void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
     size_t follow_count) {

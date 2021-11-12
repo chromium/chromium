@@ -89,6 +89,8 @@ class StreamModel {
     virtual void OnStoreChange(StoreUpdate update) = 0;
   };
 
+  // TODO(crbug.com/1268575): Add LoggingParameters here, as they should stay
+  // constant over the life of the model.
   explicit StreamModel(Context* context);
   ~StreamModel();
 

@@ -154,6 +154,10 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
     return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
         .gaia;
   }
+  std::string GetSyncSignedInEmail() override {
+    return identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        .email;
+  }
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);
   }

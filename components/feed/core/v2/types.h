@@ -146,6 +146,18 @@ struct LaunchResult {
   LaunchResult& operator=(const LaunchResult& other);
 };
 
+struct LoggingParameters {
+  // User ID. Either `email` or `session_id`. If both are empty, activity
+  // logging is not  enabled.
+  std::string email;
+  std::string session_id;
+
+  // A unique ID for this client. Used for reliability logging.
+  std::string client_instance_id;
+
+  bool operator==(const LoggingParameters& rhs) const;
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_TYPES_H_

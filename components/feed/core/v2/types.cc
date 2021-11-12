@@ -223,4 +223,9 @@ LaunchResult::LaunchResult(const LaunchResult& other) = default;
 LaunchResult::~LaunchResult() = default;
 LaunchResult& LaunchResult::operator=(const LaunchResult& other) = default;
 
+bool LoggingParameters::operator==(const LoggingParameters& rhs) const {
+  return std::tie(email, session_id, client_instance_id) ==
+         std::tie(rhs.email, rhs.session_id, rhs.client_instance_id);
+}
+
 }  // namespace feed
