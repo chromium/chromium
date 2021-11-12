@@ -872,6 +872,9 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       is_keep_alive_enabled
           ? crosapi::mojom::BrowserInitParams::InitialKeepAlive::kEnabled
           : crosapi::mojom::BrowserInitParams::InitialKeepAlive::kDisabled;
+
+  params->is_unfiltered_bluetooth_device_enabled =
+      chromeos::switches::IsUnfilteredBluetoothDevicesEnabled();
   return params;
 }
 

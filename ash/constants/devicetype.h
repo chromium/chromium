@@ -5,6 +5,8 @@
 #ifndef ASH_CONSTANTS_DEVICETYPE_H_
 #define ASH_CONSTANTS_DEVICETYPE_H_
 
+#include <string>
+
 #include "base/component_export.h"
 
 namespace ash {
@@ -17,8 +19,14 @@ enum class DeviceType {
   kUnknown,  // Unknown fallback device.
 };
 
-// Returns the current device type, eg, Chromebook, Chromebox.
+// Returns the current device type, e.g,, Chromebook, Chromebox.
 COMPONENT_EXPORT(ASH_CONSTANTS) DeviceType GetDeviceType();
+
+// Returns the name of current device for Bluetooth. |bluetooth_address| is
+// so it can be used (after hashing) to create a more identifiable device name,
+// e.g., "Chromebook_1A2B", "Chromebox_F9E8'.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+std::string GetDeviceBluetoothName(const std::string& bluetooth_address);
 
 // Returns true if the device is Google branded.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGoogleBrandedDevice();

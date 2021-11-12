@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -1214,8 +1213,10 @@ void BluetoothAdapterBlueZ::SetAdapter(const dbus::ObjectPath& object_path) {
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": using adapter.";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // No need to do this in Lacros because Ash would be around, and would have
+  // done this already.
   SetStandardChromeOSAdapterName();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   bluez::BluetoothAdapterClient::Properties* properties =
       bluez::BluezDBusManager::Get()
@@ -1244,33 +1245,10 @@ void BluetoothAdapterBlueZ::SetAdapter(const dbus::ObjectPath& object_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothAdapterBlueZ::SetStandardChromeOSAdapterName() {
   DCHECK(IsPresent());
-
-  std::string alias;
-  switch (chromeos::GetDeviceType()) {
-    case chromeos::DeviceType::kChromebase:
-      alias = "Chromebase";
-      break;
-    case chromeos::DeviceType::kChromebit:
-      alias = "Chromebit";
-      break;
-    case chromeos::DeviceType::kChromebook:
-      alias = "Chromebook";
-      break;
-    case chromeos::DeviceType::kChromebox:
-      alias = "Chromebox";
-      break;
-    case chromeos::DeviceType::kUnknown:
-      alias = "Chromebook";
-      break;
-  }
-  // Take the lower 2 bytes of hashed Bluetooth address and combine it with the
-  // device type to create a more identifiable device name.
-  const std::string address = GetAddress();
-  alias = base::StringPrintf("%s_%04X", alias.c_str(),
-                             base::PersistentHash(address) & 0xFFFF);
+  std::string alias = ash::GetDeviceBluetoothName(GetAddress());
   SetName(alias, base::DoNothing(), base::DoNothing());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void BluetoothAdapterBlueZ::RemoveAdapter() {
   DCHECK(IsPresent());

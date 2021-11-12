@@ -594,8 +594,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 31
-// Next id: 30
+// Next version: 32
+// Next id: 31
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -790,6 +790,11 @@ struct BrowserInitParams {
   // BrowserService::UpdateKeepAlive().
   [MinVersion=29]
   InitialKeepAlive initial_keep_alive@29;
+
+  // Whether the ash::switches::kUnfilteredBluetoothDevices command line switch
+  // is present for Ash.
+  [MinVersion=31]
+  bool is_unfiltered_bluetooth_device_enabled@30;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
