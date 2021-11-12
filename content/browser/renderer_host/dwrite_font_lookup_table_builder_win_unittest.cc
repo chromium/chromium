@@ -194,13 +194,13 @@ TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
         // Truncate table for testing
         base::FilePath cache_file_path = scoped_temp_dir_.GetPath().Append(
             FILE_PATH_LITERAL("font_unique_name_table.pb"));
-        // Use FLAG_EXCLUSIVE_WRITE to block file and make persisting the
+        // Use FLAG_WIN_EXCLUSIVE_WRITE to block file and make persisting the
         // cache fail as well, use FLAG_OPEN to ensure it got created by the
         // table builder implementation.
         cache_file = base::File(cache_file_path,
                                 base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_WRITE |
-                                    base::File::FLAG_EXCLUSIVE_WRITE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE);
         // Ensure the cache file was created in the empty scoped_temp_dir_
         // and has a non-zero length.
         ASSERT_TRUE(cache_file.IsValid());

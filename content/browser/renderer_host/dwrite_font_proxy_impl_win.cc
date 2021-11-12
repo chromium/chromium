@@ -266,12 +266,12 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
   // due to sandbox policy (it would get ERROR_ACCESS_DENIED instead). Passing
   // handles allows the renderer to bypass the restriction and use the fonts.
   for (const auto& custom_font_path : custom_font_path_set) {
-    // Specify FLAG_EXCLUSIVE_WRITE to prevent base::File from opening the file
-    // with FILE_SHARE_WRITE access. FLAG_EXCLUSIVE_WRITE doesn't actually open
-    // the file for write access.
+    // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
+    // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
+    // actually open the file for write access.
     base::File file(base::FilePath(custom_font_path),
                     base::File::FLAG_OPEN | base::File::FLAG_READ |
-                        base::File::FLAG_EXCLUSIVE_WRITE);
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     if (file.IsValid()) {
       file_handles.push_back(std::move(file));
     }
