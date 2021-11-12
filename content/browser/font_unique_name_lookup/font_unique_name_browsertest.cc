@@ -154,14 +154,7 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 };
 
 #if !defined(OS_FUCHSIA)
-// Flaky on Windows. http://crbug.com/1269720
-#if defined(OS_WIN)
-#define MAYBE_ContentLocalFontsMatching DISABLED_ContentLocalFontsMatching
-#else
-#define MAYBE_ContentLocalFontsMatching ContentLocalFontsMatching
-#endif
-IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
-                       MAYBE_ContentLocalFontsMatching) {
+IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
   LoadAndWait("/font_src_local_matching.html");
   Attach();
 
