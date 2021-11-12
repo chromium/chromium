@@ -203,7 +203,6 @@ WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
 // WindowTreeHost, public:
 
 WindowTreeHost::~WindowTreeHost() {
-  if (display::Screen::GetScreen())
   DCHECK(!compositor_) << "compositor must be destroyed before root window";
   if (owned_input_method_) {
     delete input_method_;
