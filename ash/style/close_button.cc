@@ -100,8 +100,10 @@ void CloseButton::OnThemeChanged() {
     enabled_icon_color = color_provider->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kButtonIconColor);
   }
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kCloseButtonIcon, enabled_icon_color));
+  SetImage(
+      views::Button::STATE_NORMAL,
+      gfx::CreateVectorIcon(kCloseButtonIcon, GetCloseButtonSize(type_) / 2,
+                            enabled_icon_color));
 
   // TODO(minch): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
