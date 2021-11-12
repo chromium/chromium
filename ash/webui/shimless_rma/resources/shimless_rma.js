@@ -209,10 +209,10 @@ const StateComponentMapping = {
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  */
-const ShimlessRmaElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ShimlessRmaBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-export class ShimlessRmaElement extends ShimlessRmaElementBase {
+export class ShimlessRma extends ShimlessRmaBase {
   static get is() {
     return 'shimless-rma';
   }
@@ -462,4 +462,4 @@ export class ShimlessRmaElement extends ShimlessRmaElementBase {
   }
 }
 
-customElements.define(ShimlessRmaElement.is, ShimlessRmaElement);
+customElements.define(ShimlessRma.is, ShimlessRma);

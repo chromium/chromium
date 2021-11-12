@@ -6,14 +6,14 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ButtonState, ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
+import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {RmadErrorCode, RmaState, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 export function shimlessRMAAppTest() {
-  /** @type {?ShimlessRmaElement} */
+  /** @type {?ShimlessRma} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -46,8 +46,8 @@ export function shimlessRMAAppTest() {
     service.setStates(states);
     service.setGetCurrentOsVersionResult(chromeVersion);
 
-    component = /** @type {!ShimlessRmaElement} */ (
-        document.createElement('shimless-rma'));
+    component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
     assertTrue(!!component);
     document.body.appendChild(component);
 
