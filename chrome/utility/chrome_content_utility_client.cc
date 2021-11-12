@@ -19,7 +19,8 @@
 #include "chrome/utility/services.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "sandbox/policy/switches.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
 #include "chrome/utility/printing_handler.h"
@@ -41,9 +42,10 @@ ChromeContentUtilityClient::~ChromeContentUtilityClient() = default;
 void ChromeContentUtilityClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
 #if defined(OS_WIN)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  utility_process_running_elevated_ = command_line->HasSwitch(
-      sandbox::policy::switches::kNoSandboxAndElevatedPrivileges);
+  auto& cmd_line = *base::CommandLine::ForCurrentProcess();
+  auto sandbox_type = sandbox::policy::SandboxTypeFromCommandLine(cmd_line);
+  utility_process_running_elevated_ =
+      sandbox_type == sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges;
 #endif
 
   // If our process runs with elevated privileges, only add elevated Mojo

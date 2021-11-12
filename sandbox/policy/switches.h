@@ -75,7 +75,6 @@ SANDBOX_POLICY_EXPORT extern const char kNoZygoteSandbox[];
 #if defined(OS_WIN)
 SANDBOX_POLICY_EXPORT extern const char kAllowThirdPartyModules[];
 SANDBOX_POLICY_EXPORT extern const char kAddGpuAppContainerCaps[];
-SANDBOX_POLICY_EXPORT extern const char kNoSandboxAndElevatedPrivileges[];
 SANDBOX_POLICY_EXPORT extern const char kAddXrAppContainerCaps[];
 #endif
 #if defined(OS_MAC)

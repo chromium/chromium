@@ -23,15 +23,6 @@ TEST(SandboxTypeTest, Empty) {
   command_line.AppendSwitchASCII(switches::kServiceSandboxType, "network");
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 
-#if defined(OS_WIN)
-  EXPECT_FALSE(
-      command_line.HasSwitch(switches::kNoSandboxAndElevatedPrivileges));
-  SetCommandLineFlagsForSandboxType(&command_line,
-                                    Sandbox::kNoSandboxAndElevatedPrivileges);
-  EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges,
-            SandboxTypeFromCommandLine(command_line));
-#endif
-
   EXPECT_FALSE(command_line.HasSwitch(switches::kNoSandbox));
   SetCommandLineFlagsForSandboxType(&command_line, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
@@ -100,6 +91,12 @@ TEST(SandboxTypeTest, Utility) {
   SetCommandLineFlagsForSandboxType(&command_line10, Sandbox::kXrCompositing);
   EXPECT_EQ(Sandbox::kXrCompositing,
             SandboxTypeFromCommandLine(command_line10));
+
+  base::CommandLine command_line11(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line11,
+                                    Sandbox::kNoSandboxAndElevatedPrivileges);
+  EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges,
+            SandboxTypeFromCommandLine(command_line11));
 
   base::CommandLine command_line12(command_line);
   SetCommandLineFlagsForSandboxType(&command_line12, Sandbox::kPdfConversion);

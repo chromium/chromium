@@ -107,9 +107,6 @@ const char kAllowThirdPartyModules[] = "allow-third-party-modules";
 // Add additional capabilities to the AppContainer sandbox on the GPU process.
 const char kAddGpuAppContainerCaps[] = "add-gpu-appcontainer-caps";
 
-// Disables the sandbox and gives the process elevated privileges.
-const char kNoSandboxAndElevatedPrivileges[] = "no-sandbox-and-elevated";
-
 // Add additional capabilities to the AppContainer sandbox used for XR
 // compositing.
 const char kAddXrAppContainerCaps[] = "add-xr-appcontainer-caps";
