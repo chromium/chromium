@@ -12,14 +12,13 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/win/sid.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 
@@ -47,11 +46,11 @@ class PolicyDiagnostic final : public PolicyInfo {
   JobLevel job_level_ = JOB_NONE;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
-  absl::optional<base::win::Sid> app_container_sid_;
+  std::unique_ptr<Sid> app_container_sid_;
   // Only populated if |app_container_sid_| is present.
-  std::vector<base::win::Sid> capabilities_;
+  std::vector<Sid> capabilities_;
   // Only populated if |app_container_sid_| is present.
-  std::vector<base::win::Sid> initial_capabilities_;
+  std::vector<Sid> initial_capabilities_;
   AppContainerType app_container_type_ = AppContainerType::kNone;
   std::unique_ptr<PolicyGlobal> policy_rules_;
   bool is_csrss_connected_ = false;

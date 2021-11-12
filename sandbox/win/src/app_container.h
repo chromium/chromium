@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/sid.h"
+#include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 
@@ -55,15 +55,14 @@ class AppContainer {
   // Adds a capability by name to this profile.
   virtual bool AddCapability(const wchar_t* capability_name) = 0;
   // Adds a capability from a known list.
-  virtual bool AddCapability(base::win::WellKnownCapability capability) = 0;
+  virtual bool AddCapability(WellKnownCapabilities capability) = 0;
   // Adds a capability from a SID
   virtual bool AddCapabilitySddl(const wchar_t* sddl_sid) = 0;
 
   // Adds an impersonation capability by name to this profile.
   virtual bool AddImpersonationCapability(const wchar_t* capability_name) = 0;
   // Adds an impersonation capability from a known list.
-  virtual bool AddImpersonationCapability(
-      base::win::WellKnownCapability capability) = 0;
+  virtual bool AddImpersonationCapability(WellKnownCapabilities capability) = 0;
   // Adds an impersonation capability from a SID
   virtual bool AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) = 0;
 

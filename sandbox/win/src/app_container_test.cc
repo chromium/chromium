@@ -99,16 +99,16 @@ void CheckToken(HANDLE token,
         << TokenTypeToName(token_type);
   }
 
-  absl::optional<base::win::Sid> package_sid = GetTokenAppContainerSid(token);
-  ASSERT_TRUE(package_sid) << TokenTypeToName(token_type);
+  std::unique_ptr<Sid> package_sid;
+  ASSERT_TRUE(GetTokenAppContainerSid(token, &package_sid))
+      << TokenTypeToName(token_type);
   EXPECT_TRUE(::EqualSid(security_capabilities->AppContainerSid,
                          package_sid->GetPSID()))
       << TokenTypeToName(token_type);
 
-  absl::optional<std::vector<SidAndAttributes>> capability_groups =
-      GetTokenGroups(token, ::TokenCapabilities);
-  ASSERT_TRUE(capability_groups) << TokenTypeToName(token_type);
-  const std::vector<SidAndAttributes>& capabilities = *capability_groups;
+  std::vector<SidAndAttributes> capabilities;
+  ASSERT_TRUE(GetTokenGroups(token, ::TokenCapabilities, &capabilities))
+      << TokenTypeToName(token_type);
 
   ASSERT_EQ(capabilities.size(), security_capabilities->CapabilityCount)
       << TokenTypeToName(token_type);
@@ -206,10 +206,10 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   constexpr const wchar_t* kBaseCapsSt[] = {
       L"lpacChromeInstallFiles", L"registryRead", L"lpacIdentityServices",
       L"lpacCryptoServices"};
-  constexpr const base::win::WellKnownCapability kBaseCapsWK[] = {
-      base::win::WellKnownCapability::kPrivateNetworkClientServer,
-      base::win::WellKnownCapability::kInternetClient,
-      base::win::WellKnownCapability::kEnterpriseAuthentication};
+  constexpr const WellKnownCapabilities kBaseCapsWK[] = {
+      WellKnownCapabilities::kPrivateNetworkClientServer,
+      WellKnownCapabilities::kInternetClient,
+      WellKnownCapabilities::kEnterpriseAuthentication};
 
   for (const auto* cap : kBaseCapsSt) {
     if (!app_container->AddCapability(cap)) {
@@ -555,9 +555,8 @@ TEST_F(AppContainerTest, WithCapabilities) {
   if (!container_)
     return;
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
-      base::win::WellKnownCapability::kInternetClientServer);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 
@@ -574,9 +573,8 @@ TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
   if (!container_)
     return;
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
-      base::win::WellKnownCapability::kInternetClientServer);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
   policy_->SetTokenLevel(USER_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS);
   policy_->SetJobLevel(JOB_NONE, 0);
 
@@ -593,13 +591,10 @@ TEST_F(AppContainerTest, WithImpersonationCapabilities) {
   if (!container_)
     return;
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
-      base::win::WellKnownCapability::kInternetClientServer);
-  container_->AddImpersonationCapability(
-      base::win::WellKnownCapability::kPrivateNetworkClientServer);
-  container_->AddImpersonationCapability(
-      base::win::WellKnownCapability::kPicturesLibrary);
+  container_->AddCapability(kInternetClient);
+  container_->AddCapability(kInternetClientServer);
+  container_->AddImpersonationCapability(kPrivateNetworkClientServer);
+  container_->AddImpersonationCapability(kPicturesLibrary);
   policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   policy_->SetJobLevel(JOB_NONE, 0);
 

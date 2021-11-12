@@ -127,14 +127,13 @@ absl::optional<Sid> FromSubAuthorities(
   return Sid::FromPSID(sid);
 }
 
-template <typename T>
-absl::optional<std::vector<Sid>> FromVector(
-    const std::vector<T>& values,
-    absl::optional<Sid> (*create_sid)(T)) {
+absl::optional<std::vector<Sid>> FromStringVector(
+    const std::vector<const wchar_t*>& strs,
+    decltype(Sid::FromSddlString)* create_sid) {
   std::vector<Sid> converted_sids;
-  converted_sids.reserve(values.size());
-  for (T value : values) {
-    auto sid = create_sid(value);
+  converted_sids.reserve(strs.size());
+  for (const wchar_t* str : strs) {
+    auto sid = create_sid(str);
     if (!sid)
       return absl::nullopt;
     converted_sids.push_back(std::move(*sid));
@@ -146,9 +145,7 @@ absl::optional<std::vector<Sid>> FromVector(
 
 Sid::Sid(const void* sid, size_t length)
     : sid_(static_cast<const char*>(sid),
-           static_cast<const char*>(sid) + length) {
-  DCHECK(::IsValidSid(GetPSID()));
-}
+           static_cast<const char*>(sid) + length) {}
 
 absl::optional<Sid> Sid::FromKnownCapability(WellKnownCapability capability) {
   absl::optional<DWORD> capability_rid = WellKnownCapabilityToRid(capability);
@@ -254,7 +251,13 @@ absl::optional<Sid> Sid::GenerateRandomSid() {
                             sub_authorities);
 }
 
-absl::optional<Sid> Sid::FromToken(HANDLE token) {
+absl::optional<Sid> Sid::CurrentUser() {
+  // Get the current token.
+  HANDLE token = nullptr;
+  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
+    return absl::nullopt;
+  ScopedHandle token_scoped(token);
+
   char user_buffer[sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(user_buffer);
 
@@ -267,15 +270,6 @@ absl::optional<Sid> Sid::FromToken(HANDLE token) {
   return Sid::FromPSID(user->User.Sid);
 }
 
-absl::optional<Sid> Sid::CurrentUser() {
-  // Get the current token.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
-    return absl::nullopt;
-  ScopedHandle token_scoped(token);
-  return FromToken(token);
-}
-
 absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
   SID_IDENTIFIER_AUTHORITY package_authority = {
       SECURITY_MANDATORY_LABEL_AUTHORITY};
@@ -284,29 +278,18 @@ absl::optional<Sid> Sid::FromIntegrityLevel(DWORD integrity_level) {
 
 absl::optional<std::vector<Sid>> Sid::FromSddlStringVector(
     const std::vector<const wchar_t*>& sddl_sids) {
-  return FromVector(sddl_sids, Sid::FromSddlString);
+  return FromStringVector(sddl_sids, Sid::FromSddlString);
 }
 
 absl::optional<std::vector<Sid>> Sid::FromNamedCapabilityVector(
     const std::vector<const wchar_t*>& capability_names) {
-  return FromVector(capability_names, Sid::FromNamedCapability);
-}
-
-absl::optional<std::vector<Sid>> Sid::FromKnownCapabilityVector(
-    const std::vector<WellKnownCapability>& capabilities) {
-  return FromVector(capabilities, Sid::FromKnownCapability);
-}
-
-absl::optional<std::vector<Sid>> Sid::FromKnownSidVector(
-    const std::vector<WellKnownSid>& sids) {
-  return FromVector(sids, Sid::FromKnownSid);
+  return FromStringVector(capability_names, Sid::FromNamedCapability);
 }
 
 Sid::Sid(Sid&& sid) = default;
 Sid::~Sid() = default;
 
 PSID Sid::GetPSID() const {
-  DCHECK(!sid_.empty());
   return const_cast<char*>(sid_.data());
 }
 
@@ -316,22 +299,6 @@ absl::optional<std::wstring> Sid::ToSddlString() const {
   if (!::ConvertSidToStringSid(GetPSID(), &sid))
     return absl::nullopt;
   return TakeLocalAlloc(sid).get();
-}
-
-Sid Sid::Clone() const {
-  return Sid(sid_.data(), sid_.size());
-}
-
-bool Sid::Equal(PSID sid) const {
-  return !!::EqualSid(GetPSID(), sid);
-}
-
-bool Sid::operator==(const Sid& sid) const {
-  return Equal(sid.GetPSID());
-}
-
-bool Sid::operator!=(const Sid& sid) const {
-  return !(operator==(sid));
 }
 
 }  // namespace win

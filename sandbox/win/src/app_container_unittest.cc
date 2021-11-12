@@ -16,10 +16,10 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/security_capabilities.h"
+#include "sandbox/win/src/sid.h"
 #include "sandbox/win/src/win_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,14 +27,14 @@ namespace sandbox {
 
 namespace {
 
-bool ValidSecurityCapabilities(
-    PSECURITY_CAPABILITIES security_capabilities,
-    const base::win::Sid& package_sid,
-    const std::vector<base::win::Sid>& capabilities) {
+bool ValidSecurityCapabilities(PSECURITY_CAPABILITIES security_capabilities,
+                               const Sid& package_sid,
+                               const std::vector<Sid>& capabilities) {
   if (!security_capabilities)
     return false;
 
-  if (!package_sid.Equal(security_capabilities->AppContainerSid)) {
+  if (!::EqualSid(package_sid.GetPSID(),
+                  security_capabilities->AppContainerSid)) {
     return false;
   }
 
@@ -52,8 +52,8 @@ bool ValidSecurityCapabilities(
 
   for (DWORD index = 0; index < security_capabilities->CapabilityCount;
        ++index) {
-    if (!capabilities[index].Equal(
-            security_capabilities->Capabilities[index].Sid)) {
+    if (!::EqualSid(capabilities[index].GetPSID(),
+                    security_capabilities->Capabilities[index].Sid)) {
       return false;
     }
     if (security_capabilities->Capabilities[index].Attributes !=
@@ -65,14 +65,14 @@ bool ValidSecurityCapabilities(
   return true;
 }
 
-bool CompareSidVectors(const std::vector<base::win::Sid>& left,
-                       const std::vector<base::win::Sid>& right) {
+bool CompareSidVectors(const std::vector<Sid>& left,
+                       const std::vector<Sid>& right) {
   if (left.size() != right.size())
     return false;
   auto left_interator = left.cbegin();
   auto right_interator = right.cbegin();
   while (left_interator != left.cend()) {
-    if (*left_interator != *right_interator)
+    if (!::EqualSid(left_interator->GetPSID(), right_interator->GetPSID()))
       return false;
     ++left_interator;
     ++right_interator;
@@ -119,24 +119,17 @@ class SECURITY_ATTRIBUTES_SDDL : public SECURITY_ATTRIBUTES {
   bool IsValid() { return lpSecurityDescriptor != nullptr; }
 };
 
-std::wstring CreateSddlWithSid(const base::win::Sid& sid) {
-  auto sddl_string = sid.ToSddlString();
-  if (!sddl_string)
+std::wstring CreateSddlWithSid(const Sid& sid) {
+  std::wstring sddl_string;
+  if (!sid.ToSddlString(&sddl_string))
     return L"";
   std::wstring base_sddl = L"D:(A;;GA;;;WD)(A;;GA;;;";
-  return base_sddl + *sddl_string + L")";
-}
-
-std::wstring CreateSddlWithSid(base::win::WellKnownSid known_sid) {
-  auto sid = base::win::Sid::FromKnownSid(known_sid);
-  if (!sid)
-    return L"";
-  return CreateSddlWithSid(*sid);
+  return base_sddl + sddl_string + L")";
 }
 
 void AccessCheckFile(AppContainer* container,
                      const base::FilePath& path,
-                     const base::win::Sid& sid,
+                     const Sid& sid,
                      DWORD desired_access,
                      DWORD expected_access,
                      BOOL expected_status) {
@@ -157,30 +150,6 @@ void AccessCheckFile(AppContainer* container,
     ASSERT_EQ(expected_access, granted_access);
 }
 
-void AccessCheckFile(AppContainer* container,
-                     const base::FilePath& path,
-                     base::win::WellKnownSid known_sid,
-                     DWORD desired_access,
-                     DWORD expected_access,
-                     BOOL expected_status) {
-  auto sid = base::win::Sid::FromKnownSid(known_sid);
-  ASSERT_TRUE(sid);
-  AccessCheckFile(container, path, *sid, desired_access, expected_access,
-                  expected_status);
-}
-
-void AccessCheckFile(AppContainer* container,
-                     const base::FilePath& path,
-                     base::win::WellKnownCapability known_cap,
-                     DWORD desired_access,
-                     DWORD expected_access,
-                     BOOL expected_status) {
-  auto sid = base::win::Sid::FromKnownCapability(known_cap);
-  ASSERT_TRUE(sid);
-  AccessCheckFile(container, path, *sid, desired_access, expected_access,
-                  expected_status);
-}
-
 }  // namespace
 
 TEST(AppContainerTest, SecurityCapabilities) {
@@ -188,22 +157,19 @@ TEST(AppContainerTest, SecurityCapabilities) {
     return;
 
   // This isn't a valid package SID but it doesn't matter for this test.
-  base::win::Sid package_sid =
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kNull);
+  Sid package_sid(::WinNullSid);
 
-  std::vector<base::win::Sid> capabilities;
+  std::vector<Sid> capabilities;
   SecurityCapabilities no_capabilities(package_sid);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&no_capabilities, package_sid, capabilities));
 
-  capabilities.push_back(
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld));
+  capabilities.push_back(::WinWorldSid);
   SecurityCapabilities one_capability(package_sid, capabilities);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&one_capability, package_sid, capabilities));
 
-  capabilities.push_back(
-      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kNetwork));
+  capabilities.push_back(::WinLocalSid);
   SecurityCapabilities two_capabilities(package_sid, capabilities);
   EXPECT_TRUE(
       ValidSecurityCapabilities(&two_capabilities, package_sid, capabilities));
@@ -268,7 +234,7 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
-  std::vector<base::win::Sid> capabilities;
+  std::vector<Sid> capabilities;
   auto no_capabilities = container->GetSecurityCapabilities();
   ASSERT_TRUE(ValidSecurityCapabilities(
       no_capabilities.get(), container->GetPackageSid(), capabilities));
@@ -276,17 +242,14 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
   // No support for named capabilities prior to Win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ASSERT_TRUE(container->AddCapability(L"FakeCapability"));
-    capabilities.push_back(
-        *base::win::Sid::FromNamedCapability(L"FakeCapability"));
+    capabilities.push_back(Sid::FromNamedCapability(L"FakeCapability"));
   }
 
-  ASSERT_TRUE(container->AddCapability(
-      base::win::WellKnownCapability::kInternetClient));
-  capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  ASSERT_TRUE(container->AddCapability(kInternetClient));
+  capabilities.push_back(Sid::FromKnownCapability(kInternetClient));
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddCapabilitySddl(kSddlSid));
-  capabilities.push_back(*base::win::Sid::FromSddlString(kSddlSid));
+  capabilities.push_back(Sid::FromSddlString(kSddlSid));
   auto with_capabilities = container->GetSecurityCapabilities();
   ASSERT_TRUE(ValidSecurityCapabilities(
       with_capabilities.get(), container->GetPackageSid(), capabilities));
@@ -326,37 +289,34 @@ TEST(AppContainerTest, AccessCheckFile) {
   std::wstring package_name = GenerateRandomPackageName();
   scoped_refptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
-  container->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container->AddCapability(kInternetClient);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path = temp_dir.GetPath().Append(package_name);
 
-  AccessCheckFile(container.get(), path, base::win::WellKnownSid::kNull,
-                  FILE_READ_DATA, 0, FALSE);
-  AccessCheckFile(container.get(), path,
-                  base::win::WellKnownSid::kAllApplicationPackages,
+  AccessCheckFile(container.get(), path, ::WinNullSid, FILE_READ_DATA, 0,
+                  FALSE);
+  AccessCheckFile(container.get(), path, ::WinBuiltinAnyPackageSid,
                   FILE_READ_DATA, FILE_READ_DATA, TRUE);
   AccessCheckFile(container.get(), path, container->GetPackageSid(),
                   FILE_READ_DATA, FILE_READ_DATA, TRUE);
   AccessCheckFile(container.get(), path,
-                  base::win::WellKnownCapability::kInternetClient,
-                  FILE_READ_DATA, FILE_READ_DATA, TRUE);
+                  Sid::FromKnownCapability(kInternetClient), FILE_READ_DATA,
+                  FILE_READ_DATA, TRUE);
 
   // Check mapping generic access rights.
-  AccessCheckFile(container.get(), path,
-                  base::win::WellKnownSid::kAllApplicationPackages,
+  AccessCheckFile(container.get(), path, ::WinBuiltinAnyPackageSid,
                   GENERIC_READ | GENERIC_EXECUTE,
                   FILE_GENERIC_READ | FILE_GENERIC_EXECUTE, TRUE);
   // No support for LPAC less than Win10 RS1.
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   container->SetEnableLowPrivilegeAppContainer(true);
-  AccessCheckFile(container.get(), path,
-                  base::win::WellKnownSid::kAllApplicationPackages,
+  AccessCheckFile(container.get(), path, ::WinBuiltinAnyPackageSid,
                   FILE_READ_DATA, 0, FALSE);
   AccessCheckFile(container.get(), path,
-                  base::win::WellKnownSid::kAllRestrictedApplicationPackages,
-                  FILE_READ_DATA, FILE_READ_DATA, TRUE);
+                  Sid::AllRestrictedApplicationPackages(), FILE_READ_DATA,
+                  FILE_READ_DATA, TRUE);
 }
 
 TEST(AppContainerTest, AccessCheckRegistry) {
@@ -370,8 +330,7 @@ TEST(AppContainerTest, AccessCheckRegistry) {
   // Ensure the key doesn't exist.
   RegDeleteKey(HKEY_CURRENT_USER, package_name.c_str());
   SECURITY_ATTRIBUTES_SDDL sa(
-      CreateSddlWithSid(base::win::WellKnownSid::kAllApplicationPackages)
-          .c_str());
+      CreateSddlWithSid(::WinBuiltinAnyPackageSid).c_str());
   HKEY key_handle;
   ASSERT_EQ(ERROR_SUCCESS,
             RegCreateKeyEx(HKEY_CURRENT_USER, package_name.c_str(), 0, nullptr,
@@ -400,34 +359,31 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
-  std::vector<base::win::Sid> capabilities;
-  std::vector<base::win::Sid> impersonation_capabilities;
+  std::vector<Sid> capabilities;
+  std::vector<Sid> impersonation_capabilities;
 
-  ASSERT_TRUE(container->AddCapability(
-      base::win::WellKnownCapability::kInternetClient));
-  capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
-  impersonation_capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kInternetClient));
+  ASSERT_TRUE(container->AddCapability(kInternetClient));
+  capabilities.push_back(Sid::FromKnownCapability(kInternetClient));
+  impersonation_capabilities.push_back(
+      Sid::FromKnownCapability(kInternetClient));
 
   ASSERT_TRUE(CompareSidVectors(container->GetCapabilities(), capabilities));
   ASSERT_TRUE(CompareSidVectors(container->GetImpersonationCapabilities(),
                                 impersonation_capabilities));
 
-  ASSERT_TRUE(container->AddImpersonationCapability(
-      base::win::WellKnownCapability::kPrivateNetworkClientServer));
-  impersonation_capabilities.push_back(*base::win::Sid::FromKnownCapability(
-      base::win::WellKnownCapability::kPrivateNetworkClientServer));
+  ASSERT_TRUE(
+      container->AddImpersonationCapability(kPrivateNetworkClientServer));
+  impersonation_capabilities.push_back(
+      Sid::FromKnownCapability(kPrivateNetworkClientServer));
   // No support for named capabilities prior to Win10.
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ASSERT_TRUE(container->AddImpersonationCapability(L"FakeCapability"));
     impersonation_capabilities.push_back(
-        *base::win::Sid::FromNamedCapability(L"FakeCapability"));
+        Sid::FromNamedCapability(L"FakeCapability"));
   }
   const wchar_t kSddlSid[] = L"S-1-15-3-1";
   ASSERT_TRUE(container->AddImpersonationCapabilitySddl(kSddlSid));
-  impersonation_capabilities.push_back(
-      *base::win::Sid::FromSddlString(kSddlSid));
+  impersonation_capabilities.push_back(Sid::FromSddlString(kSddlSid));
   ASSERT_TRUE(CompareSidVectors(container->GetCapabilities(), capabilities));
   ASSERT_TRUE(CompareSidVectors(container->GetImpersonationCapabilities(),
                                 impersonation_capabilities));

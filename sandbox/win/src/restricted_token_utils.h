@@ -9,10 +9,8 @@
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
-#include "base/win/sid.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/security_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Contains the utility functions to be able to create restricted tokens based
 // on a security profiles.
@@ -32,21 +30,16 @@ enum TokenType { IMPERSONATION = 0, PRIMARY };
 // |lockdown_default_dacl| indicates the token's default DACL should be locked
 // down to restrict what other process can open kernel resources created while
 // running under the token.
-// |unique_restricted_sid| indicates an optional restricted SID to add to the
-// token's restricted SID list defined by |security_level|. This allows a
-// sandbox process to be grant access to itself and its resources but not
-// other sandboxed processes at the same security level.
 // If the function succeeds, the return value is ERROR_SUCCESS. If the
 // function fails, the return value is the win32 error code corresponding to
 // the error.
-DWORD CreateRestrictedToken(
-    HANDLE effective_token,
-    TokenLevel security_level,
-    IntegrityLevel integrity_level,
-    TokenType token_type,
-    bool lockdown_default_dacl,
-    const absl::optional<base::win::Sid>& unique_restricted_sid,
-    base::win::ScopedHandle* token);
+DWORD CreateRestrictedToken(HANDLE effective_token,
+                            TokenLevel security_level,
+                            IntegrityLevel integrity_level,
+                            TokenType token_type,
+                            bool lockdown_default_dacl,
+                            PSID unique_restricted_sid,
+                            base::win::ScopedHandle* token);
 
 // Sets the integrity label on a object handle.
 DWORD SetObjectIntegrityLabel(HANDLE handle,

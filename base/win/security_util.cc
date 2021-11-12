@@ -89,21 +89,5 @@ bool GrantAccessToPath(const FilePath& path,
   return true;
 }
 
-std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {
-  std::vector<Sid> clone;
-  clone.reserve(sids.size());
-  for (const Sid& sid : sids) {
-    clone.push_back(sid.Clone());
-  }
-  return clone;
-}
-
-void AppendSidVector(std::vector<Sid>& base_sids,
-                     const std::vector<Sid>& append_sids) {
-  for (const Sid& sid : append_sids) {
-    base_sids.push_back(sid.Clone());
-  }
-}
-
 }  // namespace win
 }  // namespace base

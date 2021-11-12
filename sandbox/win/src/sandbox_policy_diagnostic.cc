@@ -119,13 +119,11 @@ std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
   }
 }
 
-std::wstring GetSidAsString(const base::win::Sid& sid) {
-  absl::optional<std::wstring> result = sid.ToSddlString();
-  if (!result) {
+std::wstring GetSidAsString(const Sid* sid) {
+  std::wstring result;
+  if (!sid->ToSddlString(&result))
     DCHECK(false) << "Failed to make sddl string";
-    return L"";
-  }
-  return *result;
+  return result;
 }
 
 std::string GetMitigationsAsHex(MitigationFlags mitigations) {
@@ -402,13 +400,14 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   desired_mitigations_ = policy->mitigations_ | policy->delayed_mitigations_;
 
   if (policy->app_container_) {
-    app_container_sid_.emplace(policy->app_container_->GetPackageSid().Clone());
+    app_container_sid_ =
+        std::make_unique<Sid>(policy->app_container_->GetPackageSid());
     for (const auto& sid : policy->app_container_->GetCapabilities()) {
-      capabilities_.push_back(sid.Clone());
+      capabilities_.push_back(sid);
     }
     for (const auto& sid :
          policy->app_container_->GetImpersonationCapabilities()) {
-      initial_capabilities_.push_back(sid.Clone());
+      initial_capabilities_.push_back(sid);
     }
 
     app_container_type_ = policy->app_container_->GetAppContainerType();
@@ -459,18 +458,18 @@ const char* PolicyDiagnostic::JsonString() {
   if (app_container_sid_) {
     value.SetStringKey(
         kAppContainerSid,
-        base::AsStringPiece16(GetSidAsString(*app_container_sid_)));
+        base::AsStringPiece16(GetSidAsString(app_container_sid_.get())));
     std::vector<base::Value> caps;
-    for (const auto& sid : capabilities_) {
-      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
+    for (auto sid : capabilities_) {
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(&sid)));
       caps.push_back(std::move(sid_value));
     }
     if (!caps.empty()) {
       value.SetKey(kAppContainerCapabilities, base::Value(std::move(caps)));
     }
     std::vector<base::Value> imp_caps;
-    for (const auto& sid : initial_capabilities_) {
-      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
+    for (auto sid : initial_capabilities_) {
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(&sid)));
       imp_caps.push_back(std::move(sid_value));
     }
     if (!imp_caps.empty()) {
@@ -479,8 +478,9 @@ const char* PolicyDiagnostic::JsonString() {
     }
 
     if (app_container_type_ == AppContainerType::kLowbox)
-      value.SetStringKey(kLowboxSid, base::AsStringPiece16(
-                                         GetSidAsString(*app_container_sid_)));
+      value.SetStringKey(
+          kLowboxSid,
+          base::AsStringPiece16(GetSidAsString(app_container_sid_.get())));
   }
 
   if (policy_rules_)

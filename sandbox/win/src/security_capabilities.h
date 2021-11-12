@@ -10,15 +10,15 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/win/sid.h"
+#include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 
 class SecurityCapabilities final : public SECURITY_CAPABILITIES {
  public:
-  explicit SecurityCapabilities(const base::win::Sid& package_sid);
-  SecurityCapabilities(const base::win::Sid& package_sid,
-                       const std::vector<base::win::Sid>& capabilities);
+  explicit SecurityCapabilities(const Sid& package_sid);
+  SecurityCapabilities(const Sid& package_sid,
+                       const std::vector<Sid>& capabilities);
 
   SecurityCapabilities(const SecurityCapabilities&) = delete;
   SecurityCapabilities& operator=(const SecurityCapabilities&) = delete;
@@ -26,9 +26,9 @@ class SecurityCapabilities final : public SECURITY_CAPABILITIES {
   ~SecurityCapabilities();
 
  private:
-  std::vector<base::win::Sid> capabilities_;
+  std::vector<Sid> capabilities_;
   std::vector<SID_AND_ATTRIBUTES> capability_sids_;
-  base::win::Sid package_sid_;
+  Sid package_sid_;
 };
 
 }  // namespace sandbox

@@ -19,6 +19,7 @@
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_level.h"
+#include "sandbox/win/src/sid.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -49,37 +50,28 @@ DWORD GetObjectSecurityDescriptor(HANDLE handle,
   return ERROR_SUCCESS;
 }
 
-void AddSidException(std::vector<base::win::Sid>& sids,
-                     base::win::WellKnownSid known_sid) {
-  absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
-  DCHECK(sid);
-  sids.push_back(std::move(*sid));
-}
-
 }  // namespace
 
-DWORD CreateRestrictedToken(
-    HANDLE effective_token,
-    TokenLevel security_level,
-    IntegrityLevel integrity_level,
-    TokenType token_type,
-    bool lockdown_default_dacl,
-    const absl::optional<base::win::Sid>& unique_restricted_sid,
-    base::win::ScopedHandle* token) {
+DWORD CreateRestrictedToken(HANDLE effective_token,
+                            TokenLevel security_level,
+                            IntegrityLevel integrity_level,
+                            TokenType token_type,
+                            bool lockdown_default_dacl,
+                            PSID unique_restricted_sid,
+                            base::win::ScopedHandle* token) {
   RestrictedToken restricted_token;
   restricted_token.Init(effective_token);
   if (lockdown_default_dacl)
     restricted_token.SetLockdownDefaultDacl();
   if (unique_restricted_sid) {
-    restricted_token.AddDefaultDaclSid(*unique_restricted_sid, GRANT_ACCESS,
+    restricted_token.AddDefaultDaclSid(Sid(unique_restricted_sid), GRANT_ACCESS,
                                        GENERIC_ALL);
-    restricted_token.AddDefaultDaclSid(
-        base::win::WellKnownSid::kCreatorOwnerRights, GRANT_ACCESS,
-        READ_CONTROL);
+    restricted_token.AddDefaultDaclSid(Sid(WinCreatorOwnerRightsSid),
+                                       GRANT_ACCESS, READ_CONTROL);
   }
 
   std::vector<std::wstring> privilege_exceptions;
-  std::vector<base::win::Sid> sid_exceptions;
+  std::vector<Sid> sid_exceptions;
 
   bool deny_sids = true;
   bool remove_privileges = true;
@@ -101,62 +93,55 @@ DWORD CreateRestrictedToken(
       break;
     }
     case USER_NON_ADMIN: {
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
-      AddSidException(sid_exceptions,
-                      base::win::WellKnownSid::kAuthenticatedUser);
+      sid_exceptions.push_back(WinBuiltinUsersSid);
+      sid_exceptions.push_back(WinWorldSid);
+      sid_exceptions.push_back(WinInteractiveSid);
+      sid_exceptions.push_back(WinAuthenticatedUserSid);
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       break;
     }
     case USER_RESTRICTED_NON_ADMIN: {
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
-      AddSidException(sid_exceptions,
-                      base::win::WellKnownSid::kAuthenticatedUser);
+      sid_exceptions.push_back(WinBuiltinUsersSid);
+      sid_exceptions.push_back(WinWorldSid);
+      sid_exceptions.push_back(WinInteractiveSid);
+      sid_exceptions.push_back(WinAuthenticatedUserSid);
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-      restricted_token.AddRestrictingSid(
-          base::win::WellKnownSid::kBuiltinUsers);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kInteractive);
-      restricted_token.AddRestrictingSid(
-          base::win::WellKnownSid::kAuthenticatedUser);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
+      restricted_token.AddRestrictingSid(WinBuiltinUsersSid);
+      restricted_token.AddRestrictingSid(WinWorldSid);
+      restricted_token.AddRestrictingSid(WinInteractiveSid);
+      restricted_token.AddRestrictingSid(WinAuthenticatedUserSid);
+      restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
       if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_INTERACTIVE: {
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
-      AddSidException(sid_exceptions,
-                      base::win::WellKnownSid::kAuthenticatedUser);
+      sid_exceptions.push_back(WinBuiltinUsersSid);
+      sid_exceptions.push_back(WinWorldSid);
+      sid_exceptions.push_back(WinInteractiveSid);
+      sid_exceptions.push_back(WinAuthenticatedUserSid);
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-      restricted_token.AddRestrictingSid(
-          base::win::WellKnownSid::kBuiltinUsers);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
+      restricted_token.AddRestrictingSid(WinBuiltinUsersSid);
+      restricted_token.AddRestrictingSid(WinWorldSid);
+      restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       restricted_token.AddRestrictingSidCurrentUser();
       restricted_token.AddRestrictingSidLogonSession();
       if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_LIMITED: {
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
+      sid_exceptions.push_back(WinBuiltinUsersSid);
+      sid_exceptions.push_back(WinWorldSid);
+      sid_exceptions.push_back(WinInteractiveSid);
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-      restricted_token.AddRestrictingSid(
-          base::win::WellKnownSid::kBuiltinUsers);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
+      restricted_token.AddRestrictingSid(WinBuiltinUsersSid);
+      restricted_token.AddRestrictingSid(WinWorldSid);
+      restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
 
       // This token has to be able to create objects in BNO.
       // Unfortunately, on Vista+, it needs the current logon sid
@@ -169,16 +154,16 @@ DWORD CreateRestrictedToken(
     case USER_RESTRICTED: {
       privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
       restricted_token.AddUserSidForDenyOnly();
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kRestricted);
+      restricted_token.AddRestrictingSid(WinRestrictedCodeSid);
       if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     case USER_LOCKDOWN: {
       restricted_token.AddUserSidForDenyOnly();
-      restricted_token.AddRestrictingSid(base::win::WellKnownSid::kNull);
+      restricted_token.AddRestrictingSid(WinNullSid);
       if (unique_restricted_sid)
-        restricted_token.AddRestrictingSid(*unique_restricted_sid);
+        restricted_token.AddRestrictingSid(Sid(unique_restricted_sid));
       break;
     }
     default: { return ERROR_BAD_ARGUMENTS; }

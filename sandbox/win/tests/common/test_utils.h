@@ -10,8 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/win/sid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 
@@ -33,22 +32,23 @@ class SidAndAttributes {
 
  private:
   DWORD attributes_;
-  base::win::Sid sid_;
+  sandbox::Sid sid_;
 };
 
 // Get the App Container sid for a token.
-absl::optional<base::win::Sid> GetTokenAppContainerSid(HANDLE token);
+bool GetTokenAppContainerSid(HANDLE token,
+                             std::unique_ptr<sandbox::Sid>* app_container_sid);
 
 // Get the a list of groups from a token. |information_class| can be one of
-// TokenGroups, TokenRestrictedSids or TokenCapabilities.
-absl::optional<std::vector<SidAndAttributes>> GetTokenGroups(
-    HANDLE token,
-    TOKEN_INFORMATION_CLASS information_class);
+// TokenGroups, TokenRestrictedSids or TokenCapabilites.
+bool GetTokenGroups(HANDLE token,
+                    TOKEN_INFORMATION_CLASS information_class,
+                    std::vector<SidAndAttributes>* groups);
 
 // Get a variable length property from a token.
-absl::optional<std::vector<char>> GetVariableTokenInformation(
-    HANDLE token,
-    TOKEN_INFORMATION_CLASS information_class);
+bool GetVariableTokenInformation(HANDLE token,
+                                 TOKEN_INFORMATION_CLASS information_class,
+                                 std::vector<char>* information);
 
 }  // namespace sandbox
 

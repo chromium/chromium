@@ -36,7 +36,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "printing/buildflags/buildflags.h"
@@ -689,9 +688,9 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     // Please refer to the following design doc on why we add the capabilities:
     // https://docs.google.com/document/d/19Y4Js5v3BlzA5uSuiVTvcvPNIOwmxcMSFJWtuc1A-w8/edit#heading=h.iqvhsrml3gl9
     if (!container->AddCapability(
-            base::win::WellKnownCapability::kPrivateNetworkClientServer) ||
+            sandbox::WellKnownCapabilities::kPrivateNetworkClientServer) ||
         !container->AddCapability(
-            base::win::WellKnownCapability::kInternetClient)) {
+            sandbox::WellKnownCapabilities::kInternetClient)) {
       DLOG(ERROR)
           << "AppContainer::AddCapability() - "
           << "Sandbox::kMediaFoundationCdm internet capabilities failed";
@@ -717,7 +716,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     if (!container->AddCapability(
-            base::win::WellKnownCapability::kInternetClient)) {
+            sandbox::WellKnownCapabilities::kInternetClient)) {
       DLOG(ERROR) << "AppContainer::AddCapability() - "
                   << "Sandbox::kWindowsSystemProxyResolver internet "
                      "capabilities failed";
@@ -768,10 +767,10 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   // Enable LPAC for Network service.
   if (sandbox_type == Sandbox::kNetwork) {
     container->AddCapability(
-        base::win::WellKnownCapability::kPrivateNetworkClientServer);
-    container->AddCapability(base::win::WellKnownCapability::kInternetClient);
+        sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
+    container->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
     container->AddCapability(
-        base::win::WellKnownCapability::kEnterpriseAuthentication);
+        sandbox::WellKnownCapabilities::kEnterpriseAuthentication);
     container->AddCapability(L"lpacIdentityServices");
     container->AddCapability(L"lpacCryptoServices");
     container->SetEnableLowPrivilegeAppContainer(true);
