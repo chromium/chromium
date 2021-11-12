@@ -168,7 +168,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   // Calculates the preferred width of each view, as well as updating the
   // ViewStates' `remaining_width`.
-  void CalculateSize(SizeCalculationType type) const;
+  void CalculateSize(SizeCalculationType type,
+                     const std::vector<ViewState*>& view_states) const;
 
   // Distributes `delta` among the resizable columns.
   void Resize(int delta) const;
