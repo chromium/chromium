@@ -106,7 +106,6 @@ ShellBrowserMainParts::ShellBrowserMainParts(
     ShellBrowserMainDelegate* browser_main_delegate)
     : extension_system_(nullptr),
       parameters_(std::move(parameters)),
-      run_message_loop_(true),
       browser_main_delegate_(browser_main_delegate) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
@@ -242,25 +241,18 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
           ::switches::kBrowserCrashTest))
     CrashForTest();
 
-  if (parameters_.ui_task) {
-    // For running browser tests.
-    std::move(parameters_.ui_task).Run();
-    run_message_loop_ = false;
-  } else {
+  // Skip these steps in integration tests.
+  if (!parameters_.ui_task) {
     browser_main_delegate_->Start(browser_context_.get());
+    desktop_controller_->PreMainMessageLoopRun();
   }
-
-  desktop_controller_->PreMainMessageLoopRun();
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void ShellBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  if (run_message_loop_)
-    desktop_controller_->WillRunMainMessageLoop(run_loop);
-  else
-    run_loop.reset();
+  desktop_controller_->WillRunMainMessageLoop(run_loop);
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {

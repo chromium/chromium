@@ -875,7 +875,6 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 
 int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl");
-  run_message_loop_ = false;
 
   if (browser_process_->GetApplicationLocale().empty()) {
     ShowMissingLocaleMessageBox();
@@ -918,11 +917,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 
 #if !defined(OS_ANDROID)
-  // Create the RunLoop for MainMessageLoopRun() to use, and pass a copy of
-  // its QuitClosure to the BrowserProcessImpl to call when it is time to exit.
-  DCHECK(!GetMainRunLoopInstance());
-  GetMainRunLoopInstance() = std::make_unique<base::RunLoop>();
-
   // These members must be initialized before returning from this function.
   // Android doesn't use StartupBrowserCreator.
   browser_creator_ = std::make_unique<StartupBrowserCreator>();
@@ -1730,41 +1724,41 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       parameters_.autorelease_pool->Recycle();
 #endif  // defined(OS_MAC)
 
-    // Transfer ownership of the browser's lifetime to the BrowserProcess.
+    // Create the RunLoop for MainMessageLoopRun() to use and transfer
+    // ownership of the browser's lifetime to the BrowserProcess.
+    DCHECK(!GetMainRunLoopInstance());
+    GetMainRunLoopInstance() = std::make_unique<base::RunLoop>();
     browser_process_->SetQuitClosure(
         GetMainRunLoopInstance()->QuitWhenIdleClosure());
-    DCHECK(!run_message_loop_);
-    run_message_loop_ = true;
   }
   browser_creator_.reset();
 #endif  // !defined(OS_ANDROID)
 
   PostBrowserStart();
 
-  // The ui_task can be injected by tests to replace the main message loop.
-  // In that case we Run() it here, and set a flag to avoid running the main
-  // message loop later, as the test will do so as needed from the |ui_task|.
-  if (parameters_.ui_task) {
-    std::move(parameters_.ui_task).Run();
-    run_message_loop_ = false;
-  }
-
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   // Clean up old user data directory, snapshots and disk cache directory.
   downgrade_manager_.DeleteMovedUserDataSoon(user_data_dir_);
 #endif
 
-#if defined(OS_ANDROID)
-  // We never run the C++ main loop on Android, since the UI thread message
-  // loop is controlled by the OS, so this is as close as we can get to
-  // the start of the main loop.
-  if (result_code_ <= 0) {
+  // This should be invoked as close as possible to the start of the browser's
+  // main loop, but before the end of PreMainMessageLoopRun in order for
+  // browser tests (which InterceptMainMessageLoopRun rather than
+  // MainMessageLoopRun) to be able to see its side-effect.
+  if (result_code_ <= 0)
     RecordBrowserStartupTime();
-  }
-#endif  // defined(OS_ANDROID)
 
   return result_code_;
 }
+
+#if !defined(OS_ANDROID)
+bool ChromeBrowserMainParts::ShouldInterceptMainMessageLoopRun() {
+  // Some early return paths in PreMainMessageLoopRunImpl intentionally prevent
+  // the main run loop from being created. Use this as a signal to indicate that
+  // the main message loop shouldn't be run.
+  return !!GetMainRunLoopInstance();
+}
+#endif
 
 void ChromeBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
@@ -1773,19 +1767,8 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   // Android specific MessageLoop
   NOTREACHED();
 #else
-  if (!run_message_loop_) {
-    run_loop.reset();
-    return;
-  }
-
-  // These should be invoked as close to the start of the browser's
-  // UI thread message loop as possible to get a stable measurement
-  // across versions.
-  RecordBrowserStartupTime();
-
   DCHECK(base::CurrentUIThread::IsSet());
 
-  DCHECK(GetMainRunLoopInstance());
   run_loop = std::move(GetMainRunLoopInstance());
 
   // Trace the entry and exit of this main message loop. We don't use the
