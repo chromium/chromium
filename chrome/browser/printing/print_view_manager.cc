@@ -26,8 +26,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
 #endif
 
 using content::BrowserThread;
@@ -192,14 +190,13 @@ void PrintViewManager::PrintPreviewDone() {
 
 void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
     base::OnceCallback<void(bool should_proceed)> callback) {
-  if (IsPrintingRestricted()) {
-    ShowBlockedNotification();
-    std::move(callback).Run(false);
-  } else if (ShouldWarnBeforePrinting()) {
-    ShowWarning(std::move(callback));
-  } else {
-    std::move(callback).Run(true);
-  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Don't print DLP restricted content on Chrome OS.
+  policy::DlpContentManager::Get()->CheckPrintingRestriction(
+      web_contents(), std::move(callback));
+#else
+  std::move(callback).Run(true);
+#endif
 }
 
 void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
@@ -412,41 +409,6 @@ void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {
     scripted_print_preview_rph_->SetBlocked(false);
     scripted_print_preview_rph_set_blocked_ = false;
   }
-}
-
-bool PrintViewManager::IsPrintingRestricted() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't print DLP restricted content on Chrome OS.
-  return policy::DlpContentManager::Get()->IsPrintingRestricted(web_contents());
-#else
-  return false;
-#endif
-}
-
-bool PrintViewManager::ShouldWarnBeforePrinting() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return policy::DlpContentManager::Get()->ShouldWarnBeforePrinting(
-      web_contents());
-#else
-  return false;
-#endif
-}
-
-void PrintViewManager::ShowWarning(
-    base::OnceCallback<void(bool should_proceed)> callback) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::DlpWarnDialog::ShowDlpPrintWarningDialog(std::move(callback));
-#else
-  NOTREACHED();
-#endif
-}
-
-void PrintViewManager::ShowBlockedNotification() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::ShowDlpPrintDisabledNotification();
-#else
-  NOTREACHED();
-#endif
 }
 
 void PrintViewManager::PrintPreviewRejectedForTesting() {

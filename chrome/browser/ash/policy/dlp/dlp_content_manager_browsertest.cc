@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -60,8 +62,6 @@ const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
                                                 DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
                                               DlpRulesManager::Level::kReport);
-const DlpContentRestrictionSet kPrintWarn(DlpContentRestriction::kPrint,
-                                          DlpRulesManager::Level::kWarn);
 const DlpContentRestrictionSet kVideoCaptureRestricted(
     DlpContentRestriction::kVideoCapture,
     DlpRulesManager::Level::kBlock);
@@ -717,14 +717,24 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+  absl::optional<bool> is_printing_allowed;
+
+  helper_.GetContentManager()->CheckPrintingRestriction(
+      web_contents,
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  EXPECT_TRUE(is_printing_allowed);
+  EXPECT_TRUE(is_printing_allowed.value());
 
   // Start printing and check that there is no notification when printing is not
   // restricted.
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
                        /*print_preview_disabled=*/false,
-                       /*print_only_selection=*/false);
+                       /*has_selection=*/false);
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
   CheckEvents(DlpRulesManager::Restriction::kPrinting,
@@ -840,6 +850,7 @@ class DlpContentManagerReportingBrowserTest
       cloned_tab_observer_;
 };
 
+// TODO(crbug.com/1265935): Add a test for warning
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        PrintingRestricted) {
   // Set up mock rules manager.
@@ -856,14 +867,29 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  // No event should be emitted when there is no restriction.
-  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+  absl::optional<bool> is_printing_allowed;
+  helper_.GetContentManager()->CheckPrintingRestriction(
+      web_contents,
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  EXPECT_TRUE(is_printing_allowed);
+  EXPECT_TRUE(is_printing_allowed.value());
 
   // Set up printing restriction.
   helper_.ChangeConfidentiality(web_contents, kPrintRestricted);
-
-  // Check that IsPrintingRestricted emitted an event.
-  EXPECT_TRUE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+  is_printing_allowed.reset();
+  helper_.GetContentManager()->CheckPrintingRestriction(
+      web_contents,
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  EXPECT_TRUE(is_printing_allowed);
+  EXPECT_FALSE(is_printing_allowed.value());
 
   // Start printing and wait for the end of
   // printing::PrintViewManager::RequestPrintPreview(). StartPrint() is an
@@ -877,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
                        /*print_preview_disabled=*/false,
-                       /*print_only_selection=*/false);
+                       /*has_selection=*/false);
   run_loop.Run();
 
   // Check for notification about printing restriction.
@@ -901,9 +927,18 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
   // Set up printing restriction.
+  absl::optional<bool> is_printing_allowed;
   helper_.ChangeConfidentiality(web_contents, kPrintReported);
-
-  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
+  // Printing should be reported, but still allowed.
+  helper_.GetContentManager()->CheckPrintingRestriction(
+      web_contents,
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  EXPECT_TRUE(is_printing_allowed);
+  EXPECT_TRUE(is_printing_allowed.value());
 
   base::RunLoop run_loop;
   printing::TestPrintViewManagerForRequestPreview::FromWebContents(web_contents)
@@ -911,30 +946,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   printing::StartPrint(web_contents,
                        /*print_renderer=*/mojo::NullAssociatedRemote(),
                        /*print_preview_disabled=*/false,
-                       /*print_only_selection=*/false);
+                       /*has_selection=*/false);
   run_loop.Run();
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
-}
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarn) {
-  // Set up mock rules manager.
-  SetupDlpRulesManager();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  EXPECT_FALSE(
-      helper_.GetContentManager()->ShouldWarnBeforePrinting(web_contents));
-
-  // Set up printing restriction.
-  helper_.ChangeConfidentiality(web_contents, kPrintWarn);
-
-  EXPECT_TRUE(
-      helper_.GetContentManager()->ShouldWarnBeforePrinting(web_contents));
-  EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
 }
 
 }  // namespace policy

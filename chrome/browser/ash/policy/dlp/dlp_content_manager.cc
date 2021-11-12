@@ -165,20 +165,24 @@ void DlpContentManager::CheckVideoCaptureRestriction(
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
-bool DlpContentManager::IsPrintingRestricted(
-    content::WebContents* web_contents) {
+void DlpContentManager::CheckPrintingRestriction(
+    content::WebContents* web_contents,
+    OnDlpRestrictionCheckedCallback callback) {
   const RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
   DlpBooleanHistogram(dlp::kPrintingBlockedUMA, IsBlocked(restriction_info));
-  return IsBlocked(restriction_info);
-}
-
-bool DlpContentManager::ShouldWarnBeforePrinting(
-    content::WebContents* web_contents) {
-  const RestrictionLevelAndUrl restriction_info =
-      GetPrintingRestrictionInfo(web_contents);
-  return IsWarn(restriction_info);
+  if (IsBlocked(restriction_info)) {
+    ShowDlpPrintDisabledNotification();
+    std::move(callback).Run(false);
+    return;
+  }
+  if (IsWarn(restriction_info)) {
+    DlpWarnDialog::ShowDlpPrintWarningDialog(std::move(callback));
+    return;
+  }
+  // No restriction
+  std::move(callback).Run(true);
 }
 
 bool DlpContentManager::IsScreenCaptureRestricted(

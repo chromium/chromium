@@ -433,20 +433,17 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
   PrintAllowance GetPrintAllowance() const { return allowance_; }
 
  private:
-  bool IsPrintingRestricted() const override {
-    return restriction_level_ == RestrictionLevel::kBlock;
-  }
-
-  bool ShouldWarnBeforePrinting() const override {
-    return restriction_level_ == RestrictionLevel::kWarnAllow ||
-           restriction_level_ == RestrictionLevel::kWarnCancel;
-  }
-
-  void ShowWarning(base::OnceCallback<void(bool)> callback) const override {
-    if (restriction_level_ == RestrictionLevel::kWarnAllow) {
-      std::move(callback).Run(true);
-    } else if (restriction_level_ == RestrictionLevel::kWarnCancel) {
-      std::move(callback).Run(false);
+  void RejectPrintPreviewRequestIfRestricted(
+      base::OnceCallback<void(bool)> callback) override {
+    switch (restriction_level_) {
+      case RestrictionLevel::kNotSet:
+      case RestrictionLevel::kWarnAllow:
+        std::move(callback).Run(true);
+        break;
+      case RestrictionLevel::kBlock:
+      case RestrictionLevel::kWarnCancel:
+        std::move(callback).Run(false);
+        break;
     }
   }
 
@@ -1163,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPWarnCanceled) {
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false,
-             /*print_only_selection=*/false);
+             /*has_selection=*/false);
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);
@@ -1189,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DLPBlocked) {
   StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
              /*print_renderer=*/mojo::NullAssociatedRemote(),
              /*print_preview_disabled=*/false,
-             /*print_only_selection=*/false);
+             /*has_selection=*/false);
   print_view_manager->WaitUntilPreviewIsShownOrCancelled();
   ASSERT_EQ(print_view_manager->GetPrintAllowance(),
             TestPrintViewManagerForDLP::PrintAllowance::kDisallowed);

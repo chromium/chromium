@@ -94,11 +94,12 @@ class DlpContentManager : public DlpContentObserver,
       const ScreenshotArea& area,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
-  // Returns whether printing should be restricted.
-  bool IsPrintingRestricted(content::WebContents* web_contents);
-
-  // Returns whether the user should be warned before printing.
-  bool ShouldWarnBeforePrinting(content::WebContents* web_contents);
+  // Checks whether printing of |web_contents| is restricted or not advised.
+  // Depending on the result, calls |callback| and passes an indicator whether
+  // to proceed or not.
+  virtual void CheckPrintingRestriction(
+      content::WebContents* web_contents,
+      OnDlpRestrictionCheckedCallback callback);
 
   // Returns whether screen capture of the defined content should be restricted.
   // TODO(crbug.com/1257493): Remove when it won't be used anymore.

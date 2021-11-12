@@ -124,26 +124,11 @@ class PrintViewManager : public PrintViewManagerBase,
 
   void MaybeUnblockScriptedPreviewRPH();
 
-  // Checks whether printing is restricted due to Data Leak Protection rules.
-  // Virtual to allow tests to override.
-  virtual bool IsPrintingRestricted() const;
-
-  // Checks whether printing is not advised due to Data Leak Protection rules.
-  // Virtual to allow tests to override.
-  virtual bool ShouldWarnBeforePrinting() const;
-
-  // On ChromeOS, shows a warning dialog that will invoke |callback| and pass to
-  // it the user's response. Virtual to allow tests to override.
-  virtual void ShowWarning(
-      base::OnceCallback<void(bool should_proceed)> callback) const;
-
-  // On ChromeOS, shows a notification that the printing is blocked.
-  void ShowBlockedNotification() const;
-
   // Checks whether printing is currently restricted and aborts print preview if
   // needed. Since this check is performed asynchronously, invokes |callback|
   // with an indicator whether to proceed or not.
-  void RejectPrintPreviewRequestIfRestricted(
+  // Virtual to allow tests to override.
+  virtual void RejectPrintPreviewRequestIfRestricted(
       base::OnceCallback<void(bool should_proceed)> callback);
 
   // Helper method for RejectPrintPreviewRequestIfRestricted(). Handles any

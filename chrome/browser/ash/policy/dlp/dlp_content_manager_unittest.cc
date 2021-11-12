@@ -20,7 +20,11 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -55,8 +59,6 @@ const DlpContentRestrictionSet kPrivacyScreenReported(
 const DlpContentRestrictionSet kPrintingRestricted(
     DlpContentRestriction::kPrint,
     DlpRulesManager::Level::kBlock);
-const DlpContentRestrictionSet kPrintingWarning(DlpContentRestriction::kPrint,
-                                                DlpRulesManager::Level::kWarn);
 
 class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
  public:
@@ -68,6 +70,9 @@ class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
 
 class DlpContentManagerTest : public testing::Test {
  public:
+  DlpContentManagerTest(const DlpContentManagerTest&) = delete;
+  DlpContentManagerTest& operator=(const DlpContentManagerTest&) = delete;
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
@@ -77,20 +82,20 @@ class DlpContentManagerTest : public testing::Test {
 
  protected:
   DlpContentManagerTest()
-      : profile_(std::make_unique<TestingProfile>()),
+      : profile_manager_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {}
-  DlpContentManagerTest(const DlpContentManagerTest&) = delete;
-  DlpContentManagerTest& operator=(const DlpContentManagerTest&) = delete;
   ~DlpContentManagerTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
-    return content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                             nullptr);
+    return content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
   }
 
   void SetUp() override {
     testing::Test::SetUp();
+
+    ASSERT_TRUE(profile_manager_.SetUp());
+    LoginFakeUser();
 
     EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
         .WillRepeatedly(::testing::Return(true));
@@ -120,21 +125,9 @@ class DlpContentManagerTest : public testing::Test {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
-  void LoginFakeUser() {
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
-    profile_->SetIsNewProfile(true);
-    user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, false /*is_affiliated*/,
-            user_manager::USER_TYPE_REGULAR, profile());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                false /* browser_restart */,
-                                false /* is_child */);
-  }
-
   DlpContentManager* GetManager() { return helper_.GetContentManager(); }
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return profile_; }
 
   DlpContentManagerTestHelper helper_;
   content::BrowserTaskEnvironment task_environment_{
@@ -145,8 +138,23 @@ class DlpContentManagerTest : public testing::Test {
   MockPrivacyScreenHelper mock_privacy_screen_helper_;
 
  private:
+  void LoginFakeUser() {
+    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+
+    profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
+    profile_->SetIsNewProfile(true);
+
+    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, false /*is_affiliated*/, user_manager::USER_TYPE_REGULAR,
+        profile_);
+    user_manager_->LoginUser(account_id, true /*set_profile_created_flag*/);
+
+    EXPECT_EQ(ProfileManager::GetActiveUserProfile(), profile_);
+  }
+
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  const std::unique_ptr<TestingProfile> profile_;
+  TestingProfileManager profile_manager_;
+  TestingProfile* profile_;
   ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
@@ -280,7 +288,6 @@ TEST_F(DlpContentManagerTest,
 }
 
 TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
-  LoginFakeUser();
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
@@ -347,7 +354,6 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
 }
 
 TEST_F(DlpContentManagerTest, PrivacyScreenReported) {
-  LoginFakeUser();
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
@@ -391,7 +397,6 @@ TEST_F(DlpContentManagerTest, PrivacyScreenReported) {
 
 TEST_F(DlpContentManagerTest,
        PrivacyScreenNotEnforcedAndReportedOnUnsupportedDevice) {
-  LoginFakeUser();
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
@@ -419,14 +424,26 @@ TEST_F(DlpContentManagerTest,
   helper_.DestroyWebContents(web_contents.get());
 }
 
+// TODO(crbug.com/1265935): Add a test for warning
 TEST_F(DlpContentManagerTest, PrintingRestricted) {
-  LoginFakeUser();
+  // Needs to be set because CheckPrintingRestriction() will show the blocked
+  // notification.
+  NotificationDisplayServiceTester display_service_tester(profile());
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
 
-  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
+  absl::optional<bool> is_printing_allowed;
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(
@@ -439,10 +456,20 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
       .Times(1)
       .WillOnce(::testing::Return(src_pattern));
 
+  is_printing_allowed.reset();
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kPrintingRestricted);
-  EXPECT_TRUE(GetManager()->IsPrintingRestricted(web_contents.get()));
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_FALSE(is_printing_allowed.value());
+
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -454,37 +481,23 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
                   src_pattern, DlpRulesManager::Restriction::kPrinting,
                   DlpRulesManager::Level::kBlock)));
 
+  is_printing_allowed.reset();
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
-}
-
-TEST_F(DlpContentManagerTest, PrintingWarning) {
-  LoginFakeUser();
-
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
-            kEmptyRestrictionSet);
-
-  EXPECT_FALSE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
-
-  SetupDlpRulesManager();
-
-  helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarning);
-  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
-            kPrintingWarning);
-  EXPECT_TRUE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
-  EXPECT_FALSE(GetManager()->IsPrintingRestricted(web_contents.get()));
-
-  helper_.DestroyWebContents(web_contents.get());
-  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
-            kEmptyRestrictionSet);
-  EXPECT_FALSE(GetManager()->ShouldWarnBeforePrinting(web_contents.get()));
 }
 
 }  // namespace policy
