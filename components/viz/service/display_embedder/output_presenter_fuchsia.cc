@@ -53,18 +53,6 @@ zx::event DuplicateZxEvent(const zx::event& event) {
   return result;
 }
 
-// Duplicates the given zx::events and stores in gfx::GpuFences.
-std::vector<gfx::GpuFence> ZxEventsToGpuFences(
-    const std::vector<zx::event>& events) {
-  std::vector<gfx::GpuFence> fences;
-  for (const auto& event : events) {
-    gfx::GpuFenceHandle handle;
-    handle.owned_event = DuplicateZxEvent(event);
-    fences.emplace_back(std::move(handle));
-  }
-  return fences;
-}
-
 class PresenterImageFuchsia : public OutputPresenter::Image {
  public:
   explicit PresenterImageFuchsia(uint32_t image_id);
@@ -167,17 +155,19 @@ std::unique_ptr<OutputPresenterFuchsia> OutputPresenterFuchsia::Create(
   if (!window_surface->SetTextureToNewImagePipe(image_pipe.NewRequest()))
     return {};
 
-  return std::make_unique<OutputPresenterFuchsia>(std::move(image_pipe), deps,
-                                                  shared_image_factory,
-                                                  representation_factory);
+  return std::make_unique<OutputPresenterFuchsia>(
+      window_surface, std::move(image_pipe), deps, shared_image_factory,
+      representation_factory);
 }
 
 OutputPresenterFuchsia::OutputPresenterFuchsia(
+    ui::PlatformWindowSurface* window_surface,
     fuchsia::images::ImagePipe2Ptr image_pipe,
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageFactory* shared_image_factory,
     gpu::SharedImageRepresentationFactory* representation_factory)
-    : image_pipe_(std::move(image_pipe)),
+    : window_surface_(window_surface),
+      image_pipe_(std::move(image_pipe)),
       dependency_(deps),
       shared_image_factory_(shared_image_factory),
       shared_image_representation_factory_(representation_factory) {
@@ -453,7 +443,7 @@ void OutputPresenterFuchsia::PresentNextFrame() {
                                  overlay.plane_z_order, overlay.transform,
                                  gfx::ToRoundedRect(overlay.display_rect),
                                  overlay.uv_rect, !overlay.is_opaque,
-                                 ZxEventsToGpuFences(frame.acquire_fences),
+                                 /*acquire_fences=*/{},
                                  /*release_fences=*/{});
   }
 
@@ -481,6 +471,8 @@ void OutputPresenterFuchsia::PresentNextFrame() {
   for (auto& fence : frame.release_fences) {
     release_fences_from_last_present_.push_back(DuplicateZxEvent(fence));
   }
+
+  window_surface_->FlushOverlaysLayout(frame.acquire_fences);
 
   image_pipe_->PresentImage(
       frame.image_id, present_time.ToZxTime(), std::move(frame.acquire_fences),

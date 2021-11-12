@@ -20,18 +20,6 @@ zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
   return fence.GetGpuFenceHandle().Clone().owned_event;
 }
 
-std::vector<zx::event> DuplicateZxEvents(
-    const std::vector<zx::event>& acquire_events) {
-  std::vector<zx::event> duped_events;
-  for (auto& event : acquire_events) {
-    duped_events.emplace_back();
-    zx_status_t status =
-        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &duped_events.back());
-    ZX_DCHECK(status == ZX_OK, status);
-  }
-  return duped_events;
-}
-
 }  // namespace
 
 SysmemNativePixmap::SysmemNativePixmap(
@@ -120,9 +108,8 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
 
   surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds, crop_rect, plane_transform,
-                                     DuplicateZxEvents(acquire_events));
-
+                                     display_bounds, crop_rect,
+                                     plane_transform);
   overlay_view->SetBlendMode(enable_blend);
   overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
                              std::move(release_events));

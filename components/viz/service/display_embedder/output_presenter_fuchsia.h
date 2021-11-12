@@ -31,6 +31,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
       gpu::SharedImageRepresentationFactory* representation_factory);
 
   OutputPresenterFuchsia(
+      ui::PlatformWindowSurface* window_surface,
       fuchsia::images::ImagePipe2Ptr image_pipe,
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageFactory* shared_image_factory,
@@ -97,6 +98,8 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
 
   void PresentNextFrame();
   void OnPresentComplete(fuchsia::images::PresentationInfo presentation_info);
+
+  ui::PlatformWindowSurface* const window_surface_;
 
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;

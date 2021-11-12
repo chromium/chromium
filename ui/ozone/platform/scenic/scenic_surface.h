@@ -44,6 +44,8 @@ class ScenicSurface : public ui::PlatformWindowSurface {
   bool SetTextureToNewImagePipe(
       fidl::InterfaceRequest<fuchsia::images::ImagePipe2> image_pipe_request)
       override;
+  void FlushOverlaysLayout(
+      const std::vector<zx::event>& acquire_fences) override;
 
   // Sets the texture of the surface to an image resource.
   void SetTextureToImage(const scenic::Image& image);
@@ -60,8 +62,7 @@ class ScenicSurface : public ui::PlatformWindowSurface {
                                  int plane_z_order,
                                  const gfx::Rect& display_bounds,
                                  const gfx::RectF& crop_rect,
-                                 gfx::OverlayTransform plane_transform,
-                                 std::vector<zx::event> acquire_fences);
+                                 gfx::OverlayTransform plane_transform);
 
   // Remove ViewHolder specified by |id|.
   bool RemoveOverlayView(gfx::SysmemBufferCollectionId id);
@@ -108,15 +109,23 @@ class ScenicSurface : public ui::PlatformWindowSurface {
 
     scenic::ViewHolder view_holder;
     scenic::EntityNode entity_node;
+
+    bool visible = false;
     int plane_z_order = 0;
     gfx::Rect display_bounds;
     gfx::RectF crop_rect;
     gfx::OverlayTransform plane_transform;
+
+    // Indicates that the overlay should be visible next time
+    // `FlushOverlayLayout()` is called.
+    bool should_be_visible = false;
   };
   std::unordered_map<gfx::SysmemBufferCollectionId,
                      OverlayViewInfo,
                      base::UnguessableTokenHash>
       overlays_;
+
+  bool layout_update_required_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

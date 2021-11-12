@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformWindowSurface {
   virtual bool SetTextureToNewImagePipe(
       fidl::InterfaceRequest<fuchsia::images::ImagePipe2>
           image_pipe_request) = 0;
+
+  // Updates overlays layout for the current frame.
+  virtual void FlushOverlaysLayout(
+      const std::vector<zx::event>& acquire_fences) {}
 #endif  // defined(OS_FUCHSIA)
 
   // Note: GL surface may be created through the GLOzone interface.
