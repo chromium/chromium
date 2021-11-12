@@ -108,3 +108,35 @@ policies (e.g. background wallpapers or printer configuration).
 ## Adding new policies
 
 See [adding new policies HowTo](https://www.chromium.org/developers/how-tos/enterprise/adding-new-policies).
+
+## Policy Ownership
+
+Each policy has two or more owners to minimize the risk of becoming orphaned
+when the author moves away from it.
+
+Policy owners can either be individuals or references to OWNERS files. At least
+one of the owners listed for a policy needs to be an individual, preferably one
+with a chromium.org or google.com account. This is to ensure that some external
+organizations like the translators team can more easily reach out in case of
+questions.
+
+### Responsibilities of the Policy Ownership
+
+The policy owner is expected to be familiar with the field which the policy
+affects so that they can help triage and fix issues with the functioning of the
+policy or answer questions about it. In many cases the policy owner might not be
+the author of the policy but they are still expected to fulfill the aforementioned
+obligations to the best extent possible. Potentially by enlisting help from other
+team members when necessary.
+
+### Orphaned Policies
+
+There are many policies where the ownership chain has been interrupted irreversably.
+In these cases the enterprise team members are enlisted as owners of such policies
+on a random principle. The owner in this case is not expected to always be able to
+address issues on their own. They should however assume ownership of the issue and
+seek out resolution by triaging severity and organizing the required resources to
+resove it.
+
+If the randomly assigned ownership is not suitable it is still a responsibility of
+the assigned owner to find a better owner and drive the transfer of ownership.
