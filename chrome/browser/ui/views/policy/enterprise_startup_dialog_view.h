@@ -53,9 +53,9 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
 
   // Remove all existing child views from the dialog, show/hide dialog buttons.
   void ResetDialog(bool show_accept_button);
-  // Append child views to the content area, setup the layout.
-  void SetupLayout(std::unique_ptr<views::View> icon,
-                   std::unique_ptr<views::View> text);
+  // Append child views to the content area.
+  void AddContent(std::unique_ptr<views::View> icon,
+                  std::unique_ptr<views::View> text);
 
   EnterpriseStartupDialog::DialogResultCallback callback_;
   bool can_show_browser_window_ = false;

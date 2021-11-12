@@ -32,7 +32,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 #if defined(OS_MAC)
 #include "base/task/current_thread.h"
@@ -100,6 +100,15 @@ END_METADATA
 EnterpriseStartupDialogView::EnterpriseStartupDialogView(
     EnterpriseStartupDialog::DialogResultCallback callback)
     : callback_(std::move(callback)) {
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
+
   set_draggable(true);
   SetButtons(ui::DIALOG_BUTTON_OK);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -137,7 +146,7 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
   throbber->SetPreferredSize(throbber_size);
   throbber->Start();
 
-  SetupLayout(std::move(throbber), std::move(text));
+  AddContent(std::move(throbber), std::move(text));
 }
 
 void EnterpriseStartupDialogView::DisplayErrorMessage(
@@ -155,7 +164,7 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
     // dialog's layout.
     GetOkButton()->SetText(*accept_button);
   }
-  SetupLayout(std::move(error_icon), std::move(text));
+  AddContent(std::move(error_icon), std::move(text));
 }
 
 void EnterpriseStartupDialogView::CloseDialog() {
@@ -211,34 +220,15 @@ void EnterpriseStartupDialogView::ResetDialog(bool show_accept_button) {
   RemoveAllChildViews();
 }
 
-void EnterpriseStartupDialogView::SetupLayout(
+void EnterpriseStartupDialogView::AddContent(
     std::unique_ptr<views::View> icon,
     std::unique_ptr<views::View> text) {
-  // Padding between icon and text
-  int text_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
+  AddChildView(std::move(icon));
+  AddChildView(std::move(text));
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  auto* columnset = layout->AddColumnSet(0);
-  // Horizontally centre the content.
-  columnset->AddPaddingColumn(1.0, 0);
-  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columnset->AddPaddingColumn(views::GridLayout::kFixedSize, text_padding);
-  columnset->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columnset->AddPaddingColumn(1.0, 0);
-
-  layout->AddPaddingRow(1.0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(std::move(icon));
-  layout->AddView(std::move(text));
-  layout->AddPaddingRow(1.0, 0);
-
-  // TODO(ellyjones): Why is this being done here?
+  // TODO(weili): The child views are added after the dialog shows. So it
+  // requires relayout and repaint. Consider a refactoring to add content
+  // before showing.
   GetWidget()->GetRootView()->Layout();
   GetWidget()->GetRootView()->SchedulePaint();
 }
