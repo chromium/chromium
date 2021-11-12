@@ -331,15 +331,6 @@ bool NodeAtPointInFragment(const NGPhysicalBoxFragment& fragment,
                                                     accumulated_offset, action);
 }
 
-void UpdateHitTestResult(HitTestResult& result,
-                         const NGPhysicalBoxFragment& fragment,
-                         PhysicalOffset offset) {
-  if (result.InnerNode())
-    return;
-  if (Node* node = fragment.NodeForHitTest())
-    result.SetNodeAndPosition(node, &fragment, offset);
-}
-
 // Return an ID for this fragmentainer, which is unique within the fragmentation
 // context. We need to provide this ID when block-fragmenting, so that we can
 // cache the painting of each individual fragment.
@@ -2367,28 +2358,43 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
 
     const PhysicalOffset child_offset = accumulated_offset + child.offset;
 
-    bool hit_child = false;
     if (block_child.IsPaintedAtomically()) {
-      if (action == kHitTestForeground) {
-        hit_child = HitTestAllPhasesInFragment(block_child, hit_test_location,
-                                               child_offset, &result);
-      }
+      if (action != kHitTestForeground)
+        continue;
+      if (!HitTestAllPhasesInFragment(block_child, hit_test_location,
+                                      child_offset, &result))
+        continue;
     } else {
-      hit_child = NodeAtPointInFragment(block_child, hit_test_location,
-                                        child_offset, action, &result);
+      if (!NodeAtPointInFragment(block_child, hit_test_location, child_offset,
+                                 action, &result))
+        continue;
     }
 
-    if (hit_child) {
-      UpdateHitTestResult(result, block_child,
-                          hit_test_location.Point() - accumulated_offset);
+    if (result.InnerNode())
+      return true;
 
-      // Our child may have been an anonymous-block, update the hit-test node
-      // to include our node if needed.
-      UpdateHitTestResult(result, box_fragment_,
-                          hit_test_location.Point() - accumulated_offset);
-
+    if (Node* node = block_child.NodeForHitTest()) {
+      result.SetNodeAndPosition(node, &block_child,
+                                hit_test_location.Point() - accumulated_offset);
       return true;
     }
+
+    // Our child may have been an anonymous-block, update the hit-test node
+    // to include our node if needed.
+    Node* node = box_fragment_.NodeForHitTest();
+    if (!node)
+      return true;
+
+    // Note: |accumulated_offset| includes container scrolled offset added
+    // in |NGBoxFragmentPainter::NodeAtPoint()|. See http://crbug.com/1268782
+    const PhysicalOffset scrolled_offset =
+        box_fragment_.IsScrollContainer()
+            ? PhysicalOffset(box_fragment_.PixelSnappedScrolledContentOffset())
+            : PhysicalOffset();
+    result.SetNodeAndPosition(
+        node, &box_fragment_,
+        hit_test_location.Point() - accumulated_offset - scrolled_offset);
+    return true;
   }
 
   return false;

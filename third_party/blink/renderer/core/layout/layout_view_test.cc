@@ -1135,6 +1135,230 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
   EXPECT_EQ(expected, HitTest(55, 5)) << "after XY";
 }
 
+// http://crbug.com/1268782
+TEST_P(LayoutViewHitTestTest, ScrolledBlockChildren) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    body {
+      margin: 0px;
+      font: 10px/15px Ahem;
+    }
+    #sample { height: 60px; overflow: scroll; }
+  )CSS");
+  SetBodyInnerHTML(
+      "<div id=sample>"
+      "0<br>1<br>2<br><b id=four>4</b><br><b id=five>5</b><br>"
+      "<div id=x>X</div>"
+      "<b id=six>6</b><br>7<br>8<br>9<br>"
+      "</div>");
+
+  Element& sample = *GetElementById("sample");
+  sample.scrollTo(0, 45);
+
+  const auto& text_4 = *To<Text>(GetElementById("four")->firstChild());
+  const auto& text_5 = *To<Text>(GetElementById("five")->firstChild());
+  const auto& text_6 = *To<Text>(GetElementById("six")->firstChild());
+  const auto& text_x = *To<Text>(GetElementById("x")->firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(text_4, 1), TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_5, 1), TextAffinity::kUpstream),
+            HitTest(15, 15));
+  EXPECT_EQ(PositionWithAffinity(Position(text_5, 1), TextAffinity::kUpstream),
+            HitTest(15, 25));
+  EXPECT_EQ(PositionWithAffinity(Position(text_x, 1), TextAffinity::kUpstream),
+            HitTest(15, 35));
+  if (LayoutNG()) {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+        HitTest(15, 45));
+  } else if (IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+        HitTest(15, 45));
+  } else {
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_6, 0), TextAffinity::kDownstream),
+        HitTest(15, 45));
+  }
+  EXPECT_EQ(PositionWithAffinity(Position(text_6, 1), TextAffinity::kUpstream),
+            HitTest(15, 55));
+}
+
+// See also "editing/selection/click-in-padding-with-multiple-line-boxes.html"
+TEST_P(LayoutViewHitTestTest, ScrolledInlineChildren) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    body {
+      margin: 0px;
+      font: 10px/15px Ahem;
+    }
+    #sample {
+      overflow: scroll;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      white-space: nowrap;
+      width: 60px;
+    }
+  )CSS");
+  SetBodyInnerHTML("<div id=sample>012345678</div>");
+
+  Element& sample = *GetElementById("sample");
+  sample.scrollTo(20, 0);
+
+  const auto& text = *To<Text>(sample.firstChild());
+
+  if (LayoutNG()) {
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 25));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(5, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 2)), HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(15, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 3)), HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(25, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 4)), HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(35, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 5)), HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(45, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 6)), HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(55, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 7)), HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(55, 25));
+    }
+  } else {
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 25));
+
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 15));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 25));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(5, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 2), TextAffinity::kUpstream),
+          HitTest(5, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(5, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(15, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kUpstream),
+          HitTest(15, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(15, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(25, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 4), TextAffinity::kUpstream),
+          HitTest(25, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(25, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(35, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream),
+          HitTest(35, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(35, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(45, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 6), TextAffinity::kUpstream),
+          HitTest(45, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(45, 25));
+
+      EXPECT_EQ(PositionWithAffinity(Position(text, 0)), HitTest(55, 5));
+      EXPECT_EQ(
+          PositionWithAffinity(Position(text, 7), TextAffinity::kUpstream),
+          HitTest(55, 15));
+      EXPECT_EQ(PositionWithAffinity(Position(text, 9)), HitTest(55, 25));
+    }
+  }
+}
+
 TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
   LoadAhem();
   InsertStyleElement(R"CSS(
