@@ -99,7 +99,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
   bool IsLeafConsideringChildren() const;
-  std::u16string GetInnerText() const override;
+  std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
   std::u16string GetHint() const;
 
@@ -173,13 +173,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
                                 int offset);
 
   // Append line start and end indices for the text of this node
-  // (as returned by GetInnerText()), adding |offset| to each one.
+  // (as returned by GetTextContentUTF16()), adding |offset| to each one.
   void GetLineBoundaries(std::vector<int32_t>* line_starts,
                          std::vector<int32_t>* line_ends,
                          int offset);
 
   // Append word start and end indices for the text of this node
-  // (as returned by GetInnerText()) to |word_starts| and |word_ends|,
+  // (as returned by GetTextContentUTF16()) to |word_starts| and |word_ends|,
   // adding |offset| to each one.
   void GetWordBoundaries(std::vector<int32_t>* word_starts,
                          std::vector<int32_t>* word_ends,

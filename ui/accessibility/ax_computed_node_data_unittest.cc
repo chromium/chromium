@@ -381,7 +381,7 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
               SizeIs(0));
 
   // No change to the various boundaries should have been observed since the
-  // root's inner text hasn't changed.
+  // root's text content hasn't changed.
   EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttribute(
                   ax::mojom::IntListAttribute::kWordStarts),
               ElementsAreArray(word_starts));
@@ -445,15 +445,14 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
               SizeIs(0));
 }
 
-TEST_F(AXComputedNodeDataTest, GetOrComputeInnerTextAndTextContent) {
+TEST_F(AXComputedNodeDataTest, GetOrComputeTextContent) {
   // Embedded object behavior is dependant on platform. We manually set it to a
   // specific value so that test results are consistent across platforms.
   testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
 
-  // `innerText` and `textContent` behave like they do in HTML. The former
-  // inserts extra line breaks between paragraphs.
-  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeInnerTextUTF8(),
+  EXPECT_THAT(root_node_->GetComputedNodeData()
+                  .GetOrComputeTextContentWithParagraphBreaksUTF8(),
               StrEq("t_1\ns+t++2...0.  0s t\n2\r0\r\n1"));
   EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeTextContentUTF8(),
               StrEq("t_1s+t++2...0.  0s t\n2\r0\r\n1"));
@@ -463,9 +462,9 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeInnerTextAndTextContent) {
 
   // Paragraph_0's text is ignored. Ignored text should not be visible.
   const AXNode* paragraph_0_node = root_node_->GetChildAtIndex(0);
-  EXPECT_THAT(
-      paragraph_0_node->GetComputedNodeData().GetOrComputeInnerTextUTF8(),
-      StrEq(""));
+  EXPECT_THAT(paragraph_0_node->GetComputedNodeData()
+                  .GetOrComputeTextContentWithParagraphBreaksUTF8(),
+              StrEq(""));
   EXPECT_THAT(
       paragraph_0_node->GetComputedNodeData().GetOrComputeTextContentUTF8(),
       StrEq(""));
@@ -473,12 +472,12 @@ TEST_F(AXComputedNodeDataTest, GetOrComputeInnerTextAndTextContent) {
                 .GetOrComputeTextContentLengthUTF8(),
             0);
 
-  // "innerText" and "textContent" should behave identically when line breaks
-  // are manually inserted via e.g. a <br> element in HTML, as this case
-  // demonstrates.
+  // The two incarnations of the "TextContent" methods should behave identically
+  // when line breaks are manually inserted via e.g. a <br> element in HTML, as
+  // this case demonstrates.
   const AXNode* paragraph_2_ignored_node = root_node_->GetChildAtIndex(2);
   EXPECT_THAT(paragraph_2_ignored_node->GetComputedNodeData()
-                  .GetOrComputeInnerTextUTF8(),
+                  .GetOrComputeTextContentWithParagraphBreaksUTF8(),
               StrEq("s+t++2...0.  0s t\n2\r0\r\n1"));
   EXPECT_THAT(paragraph_2_ignored_node->GetComputedNodeData()
                   .GetOrComputeTextContentUTF8(),

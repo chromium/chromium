@@ -370,11 +370,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Get text to announce for a live region change, for ATs that do not
   // implement this functionality.
   //
-  // TODO(nektar): Replace with `AXNode::GetInnerText()`.
+  // TODO(nektar): Replace with `AXNode::GetTextContentUTF16()`.
   std::string GetLiveRegionText() const;
 
   // |offset| could only be a character offset. Depending on the platform, the
-  // character offset could be either in the object's inner text (Android and
+  // character offset could be either in the object's text content (Android and
   // Mac), or an offset in the object's hypertext (Linux ATK and Windows IA2).
   // Converts to a leaf text position if you pass a character offset on a
   // non-leaf node.
@@ -485,7 +485,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
       const override;
   bool SetHypertextSelection(int start_offset, int end_offset) override;
-  std::u16string GetInnerText() const override;
+  std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,

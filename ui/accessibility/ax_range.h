@@ -26,11 +26,12 @@ namespace ui {
 // paragraph breaks, that have been introduced by layout. For example, consider
 // the following HTML snippet: "A<div>B</div>C".
 enum class AXTextConcatenationBehavior {
-  // Preserve any introduced formatting, line breaks, e.g. GetText = "A\nB\nC".
-  kAsInnerText,
-  // Ignore any introduced formatting, such as line breaks, e.g. GetText =
+  // Preserve any introduced formatting, such as paragraph breaks, e.g. GetText
+  // = "A\nB\nC".
+  kWithParagraphBreaks,
+  // Ignore any introduced formatting, such as paragraph breaks, e.g. GetText =
   // "ABC".
-  kAsTextContent
+  kWithoutParagraphBreaks
 };
 
 class AXRangeRectDelegate {
@@ -288,11 +289,12 @@ class AXRange {
   // Pass a |max_count| of -1 to retrieve all text in the AXRange.
   // Note that if this AXRange has its anchor or focus located at an ignored
   // position, we shrink the range to the closest unignored positions.
-  std::u16string GetText(AXTextConcatenationBehavior concatenation_behavior =
-                             AXTextConcatenationBehavior::kAsTextContent,
-                         int max_count = -1,
-                         bool include_ignored = false,
-                         size_t* appended_newlines_count = nullptr) const {
+  std::u16string GetText(
+      AXTextConcatenationBehavior concatenation_behavior =
+          AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+      int max_count = -1,
+      bool include_ignored = false,
+      size_t* appended_newlines_count = nullptr) const {
     if (max_count == 0 || IsNull())
       return std::u16string();
 
@@ -321,7 +323,7 @@ class AXRange {
 
       if (include_ignored || !start->IsIgnored()) {
         if (concatenation_behavior ==
-                AXTextConcatenationBehavior::kAsInnerText &&
+                AXTextConcatenationBehavior::kWithParagraphBreaks &&
             !start->IsInWhiteSpace()) {
           if (is_first_non_whitespace_leaf && !is_first_unignored_leaf) {
             // The first non-whitespace leaf in the range could be preceded by
@@ -379,7 +381,7 @@ class AXRange {
       } else {
         start = start->CreateNextLeafTextPosition();
         if (concatenation_behavior ==
-                AXTextConcatenationBehavior::kAsInnerText &&
+                AXTextConcatenationBehavior::kWithParagraphBreaks &&
             !crossed_paragraph_boundary && !is_first_non_whitespace_leaf) {
           crossed_paragraph_boundary = start->AtStartOfParagraph();
         }

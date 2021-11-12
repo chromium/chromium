@@ -453,10 +453,10 @@ class AX_EXPORT AXNode final {
   const std::string& GetNameUTF8() const;
   std::u16string GetNameUTF16() const;
 
-  // If this node is a leaf, returns the inner text of this node. This is
+  // If this node is a leaf, returns the text content of this node. This is
   // equivalent to its visible accessible name. Otherwise, if this node is not a
   // leaf, represents every non-textual child node with a special "embedded
-  // object character", and every textual child node with its inner text.
+  // object character", and every textual child node with its text content.
   // Textual nodes include e.g. static text and white space.
   //
   // This is how displayed text and embedded objects are represented in
@@ -479,10 +479,13 @@ class AX_EXPORT AXNode final {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node, is
   // not returned.
-  const std::string& GetInnerText() const;
-  const std::u16string& GetInnerTextUTF16() const;
+  //
+  // Does not take into account line breaks that have been introduced by layout.
+  // For example, in the Web context, "A<div>B</div>C" would produce "ABC".
+  const std::string& GetTextContentUTF8() const;
+  const std::u16string& GetTextContentUTF16() const;
 
-  // Returns the length of the text (in UTF16 code units) that is found inside
+  // Returns the length of the text (in code units) that is found inside
   // this node and all its descendants; including text found in embedded
   // objects.
   //
@@ -490,9 +493,10 @@ class AX_EXPORT AXNode final {
   // attributes that is either not displayed on screen, or outside this node, is
   // not included.
   //
-  // The length of the text is in UTF8 code units, not in grapheme clusters.
-  int GetInnerTextLength() const;
-  int GetInnerTextLengthUTF16() const;
+  // The length of the text is either in UTF8 or UTF16 code units, not in
+  // grapheme clusters.
+  int GetTextContentLengthUTF8() const;
+  int GetTextContentLengthUTF16() const;
 
   // Returns a string representing the language code.
   //
@@ -629,12 +633,12 @@ class AX_EXPORT AXNode final {
   // platform's accessibility layer.
   bool IsChildOfLeaf() const;
 
-  // Returns true if this is a leaf node that has no inner text. Note that all
+  // Returns true if this is a leaf node that has no text content. Note that all
   // descendants of a leaf node are not exposed to any platform's accessibility
-  // layer, but they may be used to compute the node's inner text. Note also
-  // that, ignored nodes (leaf or otherwise) do not expose their inner text or
-  // hypertext to the platforms' accessibility layer, but they expose the inner
-  // text or hypertext of their unignored descendants.
+  // layer, but they may be used to compute the node's text content. Note also
+  // that, ignored nodes (leaf or otherwise) do not expose their text content or
+  // hypertext to the platforms' accessibility layer, but they expose the text
+  // content or hypertext of their unignored descendants.
   //
   // For example, empty text fields might have a set of unignored nested divs
   // inside them:
@@ -720,12 +724,6 @@ class AX_EXPORT AXNode final {
   // Returns the value of a color well (a color chooser control) in a human
   // readable format. For example: "50% red 40% green 90% blue".
   std::string GetValueForColorWell() const;
-
-  // Returns the value of a text field. If necessary, computes the value from
-  // the field's internal representation in the accessibility tree, in order to
-  // minimize cross-process communication between the renderer and the browser
-  // processes.
-  std::string GetValueForTextField() const;
 
   // Compute the actual value of a color attribute that needs to be
   // blended with ancestor colors.

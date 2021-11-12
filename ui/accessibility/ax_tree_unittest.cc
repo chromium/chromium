@@ -3307,36 +3307,37 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
   ASSERT_EQ(2u, tree.root()->children().size());
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1\nLine 2Link text", tree.root()->GetInnerText());
-    EXPECT_EQ(22, tree.root()->GetInnerTextLength());
+    EXPECT_EQ("Line 1\nLine 2Link text", tree.root()->GetTextContentUTF8());
+    EXPECT_EQ(22, tree.root()->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1\nLine 2Link text", tree.root()->GetInnerTextUTF16());
-    EXPECT_EQ(22, tree.root()->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1\nLine 2Link text", tree.root()->GetTextContentUTF16());
+    EXPECT_EQ(22, tree.root()->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
     EXPECT_EQ("Line 1\nLine 2",
-              tree.root()->GetChildAtIndex(0)->GetInnerText());
-    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF8());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"Line 1\nLine 2",
-              tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
-    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF16());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Link text", tree.root()->GetChildAtIndex(1)->GetInnerText());
-    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+    EXPECT_EQ("Link text",
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF8());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"Link text",
-              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
-    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF16());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF16());
   }
 
   //
   // Flip the ignored state of the span, the link and the line break, and delete
   // the second line in the rich text field, all of which should change their
-  // cached inner text.
+  // cached text content.
 
   // kRootWebArea
   // ++kTextField (contenteditable)
@@ -3366,29 +3367,30 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
   ASSERT_EQ(2u, tree.root()->children().size());
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1span textLink text", tree.root()->GetInnerText());
-    EXPECT_EQ(24, tree.root()->GetInnerTextLength());
+    EXPECT_EQ("Line 1span textLink text", tree.root()->GetTextContentUTF8());
+    EXPECT_EQ(24, tree.root()->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1span textLink text", tree.root()->GetInnerTextUTF16());
-    EXPECT_EQ(24, tree.root()->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1span textLink text", tree.root()->GetTextContentUTF16());
+    EXPECT_EQ(24, tree.root()->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1", tree.root()->GetChildAtIndex(0)->GetInnerText());
-    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+    EXPECT_EQ("Line 1", tree.root()->GetChildAtIndex(0)->GetTextContentUTF8());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1", tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
-    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1",
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF16());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
     EXPECT_EQ("span textLink text",
-              tree.root()->GetChildAtIndex(1)->GetInnerText());
-    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF8());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"span textLink text",
-              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
-    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF16());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF16());
   }
 
   const std::vector<std::string>& change_log =

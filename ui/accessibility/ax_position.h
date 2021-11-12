@@ -1236,12 +1236,13 @@ class AXPosition {
     // than the length of all our children because the position would have been
     // invalid.
     //
-    // Note that even though ignored children should not contribute any inner
-    // text or hypertext to the tree's text representation, we have to include
-    // them because they might contain unignored descendants. We only exclude
-    // them if they are both ignored and contain no inner text or hypertext. The
-    // latter is to avoid, as much as we can, the possibility that an unignored
-    // position will turn into an ignored one after calling this method.
+    // Note that even though ignored children should not contribute any text
+    // content or hypertext to the tree's text representation, we have to
+    // include them because they might contain unignored descendants. We only
+    // exclude them if they are both ignored and contain no text content or
+    // hypertext. The latter is to avoid, as much as we can, the possibility
+    // that an unignored position will turn into an ignored one after calling
+    // this method.
 
     int child_index = 0;
     for (int current_offset = 0; child_index < copy->AnchorChildCount();
@@ -1262,7 +1263,7 @@ class AXPosition {
       // work properly.
       //
       // Note that in this context "adjacent children" excludes ignored
-      // children. Note also that children with no inner text or no hypertext
+      // children. Note also that children with no text content or no hypertext
       // are not skipped, otherwise the following situation will produce an
       // erroneous tree position:
       // ++kTextField contenteditable=true "" (empty)
@@ -1436,13 +1437,13 @@ class AXPosition {
       AXPositionInstance child = text_position->CreateChildPositionAt(0);
       DCHECK(!child->IsNullPosition());
 
-      // Note that even though ignored children should not contribute any inner
-      // text or hypertext to the tree's text representation, we have to include
-      // them because they might contain unignored descendants. We only exclude
-      // them if they are both ignored and contain no inner text or hypertext.
-      // The latter is to avoid, as much as we can, the possibility that an
-      // unignored position will turn into an ignored one after calling this
-      // method.
+      // Note that even though ignored children should not contribute any text
+      // content or hypertext to the tree's text representation, we have to
+      // include them because they might contain unignored descendants. We only
+      // exclude them if they are both ignored and contain no text content or
+      // hypertext. The latter is to avoid, as much as we can, the possibility
+      // that an unignored position will turn into an ignored one after calling
+      // this method.
       for (int i = 1;
            i < text_position->AnchorChildCount() && offset_in_parent >= 0;
            ++i) {
@@ -1453,7 +1454,7 @@ class AXPosition {
         if (offset_in_parent == 0 && contributes_no_text_in_parent &&
             is_anchor_unignored) {
           // If the text offset corresponds to multiple child positions because
-          // some of the children have no inner text or hypertext, the above
+          // some of the children have no text content or hypertext, the above
           // condition ensures that the first child will be chosen; unless it is
           // ignored as explained before.
           break;
@@ -1532,14 +1533,14 @@ class AXPosition {
   // 1. In the case of a text position, we move up the parent positions until we
   // find the next unignored equivalent parent position. We don't do this for
   // tree positions because, unlike text positions which maintain the
-  // corresponding text offset in the inner text of the parent node, tree
+  // corresponding text offset in the text content of the parent node, tree
   // positions would lose some information every time a parent position is
   // computed. In other words, the parent position of a tree position is, in
   // most cases, non-equivalent to the child position.
   // 2. If no equivalent and unignored parent position can be computed, we try
   // computing the leaf equivalent position. If this is unignored, we return it.
   // This can happen both for tree and text positions, provided that the leaf
-  // node and its inner text is visible to platform APIs, i.e. it's unignored.
+  // node and its text content is visible to platform APIs, i.e. it's unignored.
   // 3. As a last resort, we move either to the next or previous unignored
   // position in the accessibility tree, based on the "adjustment_behavior".
   AXPositionInstance AsUnignoredPosition(
@@ -2209,12 +2210,13 @@ class AXPosition {
       }
 
       case AXPositionKind::TEXT_POSITION: {
-        // On some platforms, such as Android, Mac and Chrome OS, the inner text
-        // of a node is made up by concatenating the text of child nodes. On
-        // other platforms, such as Windows IAccessible2 and Linux ATK, child
-        // nodes are represented by a single "object replacement character".
+        // On some platforms, such as Android, Mac and Chrome OS, the text
+        // content of a node is made up by concatenating the text of child
+        // nodes. On other platforms, such as Windows IAccessible2 and Linux
+        // ATK, child nodes are represented by a single "object replacement
+        // character".
         //
-        // If our parent's inner text is a concatenation of all its children's
+        // If our parent's text content is a concatenation of all its children's
         // text, we need to maintain the affinity and compute the corresponding
         // text offset. Otherwise, we have no choice but to return a position
         // that is either before or after this child, losing some information in
@@ -2245,17 +2247,17 @@ class AXPosition {
         ax::mojom::TextAffinity parent_affinity = affinity_;
 
         // "max_text_offset > 0" is required to filter out anchor nodes that are
-        // either ignored or empty, i.e. those that contribute no inner text or
-        // hypertext to their parent's text representation. (See example in the
-        // "else" block.)
+        // either ignored or empty, i.e. those that contribute no text content
+        // or hypertext to their parent's text representation. (See example in
+        // the "else" block.)
         if (max_text_offset > 0 &&
             max_text_offset == max_text_offset_in_parent) {
           // Our parent contains all our text. No information would be lost when
           // moving to a parent equivalent position. It turns out, that even in
           // the unusual case where there is a single character in our anchor's
-          // inner text but our anchor is represented in our parent by an
-          // "embedded object replacement character" and not by our inner text,
-          // the outcome is still correct.
+          // text content but our anchor is represented in our parent by an
+          // "embedded object replacement character" and not by our text
+          // content, the outcome is still correct.
           parent_offset += text_offset_;
         } else {
           // Our parent represents our anchor node using an "object replacement"
@@ -3650,7 +3652,7 @@ class AXPosition {
     // All anchor nodes that are empty leaf nodes or have only ignored
     // descendants should be treated as empty objects. Empty leaf nodes do not
     // expose their descendants to platform accessibility APIs, but may have
-    // unignored descendants. They do not have any inner text, however, hence
+    // unignored descendants. They do not have any text content, however, hence
     // they are still empty from our perspective. For example, an empty text
     // field may still have an unignored generic container inside it.
     if (AnchorUnignoredChildCount() && !GetAnchor()->IsEmptyLeaf())
@@ -3750,7 +3752,7 @@ class AXPosition {
     // need to still treat it as a character and a word boundary. We achieve
     // this by adding an embedded object character in the text representation
     // used by this class, but we don't expose that character to assistive
-    // software that tries to retrieve the node's inner text.
+    // software that tries to retrieve the node's text content.
     static const base::NoDestructor<std::u16string> embedded_character_str(
         AXNode::kEmbeddedCharacter);
     if (IsEmptyObjectReplacedByCharacter())
@@ -3758,7 +3760,7 @@ class AXPosition {
 
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
-        return GetAnchor()->GetInnerTextUTF16();
+        return GetAnchor()->GetTextContentUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
         return GetAnchor()->GetHypertext();
     }
@@ -3832,15 +3834,15 @@ class AXPosition {
     // it as a character and a word boundary. We achieve this by adding an
     // "object replacement character" in the accessibility tree's text
     // representation, but we don't expose that character to assistive software
-    // that tries to retrieve the node's inner text or hypertext.
+    // that tries to retrieve the node's text content or hypertext.
     if (IsEmptyObjectReplacedByCharacter())
       return AXNode::kEmbeddedCharacterLength;
 
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
-        // TODO(nektar): Switch to anchor->GetInnerTextLengthUTF8() after
+        // TODO(nektar): Switch to anchor->GetTextContentLengthUTF8() after
         // AXPosition switches to using UTF8.
-        return GetAnchor()->GetInnerTextLengthUTF16();
+        return GetAnchor()->GetTextContentLengthUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
         return static_cast<int>(GetAnchor()->GetHypertext().length());
     }
@@ -3887,7 +3889,7 @@ class AXPosition {
     // child nodes.
     //
     // Ignored positions are not visible to platform APIs. As a result, their
-    // inner text or hypertext does not appear in their parent node, but the
+    // text content or hypertext does not appear in their parent node, but the
     // text of their unignored children does. (See `AXNode::GetHypertext()` for
     // the meaning of "hypertext" in this context.
     AXPositionInstance tree_position =
@@ -3913,7 +3915,7 @@ class AXPosition {
   //
   // We only allow creating this iterator on leaf nodes. We currently don't need
   // to move by grapheme boundaries on non-leaf nodes and computing plus caching
-  // the inner text for all nodes is costly.
+  // the text content for all nodes is costly.
   std::unique_ptr<base::i18n::BreakIterator> GetGraphemeIterator() const {
     if (!IsLeafTextPosition())
       return {};
@@ -4003,15 +4005,15 @@ class AXPosition {
       return 0;
 
     // Ignored anchors are not visible to platform APIs. As a result, their
-    // inner text or hypertext does not appear in their parent node, but the
+    // text content or hypertext does not appear in their parent node, but the
     // text of their unignored children does, if any. (See
     // `AXNode::GetHypertext()` for the meaning of "hypertext" in this context.
     if (!GetAnchor()->IsIgnored()) {
       if (IsEmbeddedObjectInParent())
         return AXNode::kEmbeddedCharacterLength;
     } else {
-      // Ignored leaf (text) nodes might contain inner text or hypertext, but it
-      // should not be exposed in their parent.
+      // Ignored leaf (text) nodes might contain text content or hypertext, but
+      // it should not be exposed in their parent.
       if (!AnchorUnignoredChildCount())
         return 0;
     }
@@ -4948,8 +4950,8 @@ class AXPosition {
   // Cached members that should be lazily created on first use.
   //
 
-  // In the case of a leaf position, its inner text (in UTF16 format). Used for
-  // initializing a grapheme break iterator.
+  // In the case of a leaf position, its text content (in UTF16 format). Used
+  // for initializing a grapheme break iterator.
   mutable std::u16string name_;
 };
 

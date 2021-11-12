@@ -2388,8 +2388,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return nil;
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name = _owner->GetInnerText();
-    // Leaf node with aria-label will have empty inner text.
+    std::u16string name = _owner->GetTextContentUTF16();
+    // Leaf node with aria-label will have empty text content.
     // e.g. <div role="option" aria-label="label">content</div>
     // So we use its computed name for AXValue.
     if (name.empty())
@@ -2576,12 +2576,12 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
 
-  std::u16string innerText = _owner->GetInnerText();
-  if (NSMaxRange(range) > innerText.length())
+  std::u16string textContent = _owner->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length())
     return nil;
 
   return base::SysUTF16ToNSString(
-      innerText.substr(range.location, range.length));
+      textContent.substr(range.location, range.length));
 }
 
 // Retrieves the text inside this object and decorates it with attributes
@@ -2591,23 +2591,23 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
 
-  std::u16string innerText = _owner->GetInnerText();
-  if (NSMaxRange(range) > innerText.length())
+  std::u16string textContent = _owner->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length())
     return nil;
 
-  // We potentially need to add text attributes to the whole inner text because
-  // a spelling mistake might start or end outside the given range.
-  NSMutableAttributedString* attributedInnerText =
+  // We potentially need to add text attributes to the whole text content
+  // because a spelling mistake might start or end outside the given range.
+  NSMutableAttributedString* attributedTextContent =
       [[[NSMutableAttributedString alloc]
-          initWithString:base::SysUTF16ToNSString(innerText)] autorelease];
+          initWithString:base::SysUTF16ToNSString(textContent)] autorelease];
   if (!_owner->IsText()) {
     BrowserAccessibility::AXRange ax_range(
         _owner->CreateTextPositionAt(0),
-        _owner->CreateTextPositionAt(static_cast<int>(innerText.length())));
-    AddMisspelledTextAttributes(ax_range, attributedInnerText);
+        _owner->CreateTextPositionAt(static_cast<int>(textContent.length())));
+    AddMisspelledTextAttributes(ax_range, attributedTextContent);
   }
 
-  return [attributedInnerText attributedSubstringFromRange:range];
+  return [attributedTextContent attributedSubstringFromRange:range];
 }
 
 - (NSRect)frameForRange:(NSRange)range {

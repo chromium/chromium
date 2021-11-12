@@ -319,7 +319,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
-  std::u16string GetInnerText() const;
+  std::u16string GetTextContentUTF16() const;
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize

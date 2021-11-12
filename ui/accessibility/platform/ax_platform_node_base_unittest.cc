@@ -148,7 +148,7 @@ TEST(AXPlatformNodeBaseTest, GetHypertextIgnoredContainerSiblings) {
   EXPECT_EQ(text3_ignored_container->GetHypertext(), u"text3");
 }
 
-TEST(AXPlatformNodeBaseTest, InnerTextIgnoresInvisibleAndIgnored) {
+TEST(AXPlatformNodeBaseTest, GetTextContentIgnoresInvisibleAndIgnored) {
   AXTreeUpdate update;
 
   update.root_id = 1;
@@ -172,32 +172,32 @@ TEST(AXPlatformNodeBaseTest, InnerTextIgnoresInvisibleAndIgnored) {
   // determine if it should enable accessibility.
   ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
 
-  EXPECT_EQ(root->GetInnerText(), u"abde");
+  EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
   // Setting invisible or ignored on a static text node causes it to be included
-  // or excluded from the root node's inner text:
+  // or excluded from the root node's text content:
   {
     SetIsInvisible(&tree, 2, true);
-    EXPECT_EQ(root->GetInnerText(), u"bde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"bde");
 
     SetIsInvisible(&tree, 2, false);
-    EXPECT_EQ(root->GetInnerText(), u"abde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
     SetRole(&tree, 2, ax::mojom::Role::kNone);
-    EXPECT_EQ(root->GetInnerText(), u"bde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"bde");
 
     SetRole(&tree, 2, ax::mojom::Role::kStaticText);
-    EXPECT_EQ(root->GetInnerText(), u"abde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
   }
 
-  // Setting invisible or ignored on a group node has no effect on the inner
-  // text:
+  // Setting invisible or ignored on a group node has no effect on the
+  // text content:
   {
     SetIsInvisible(&tree, 4, true);
-    EXPECT_EQ(root->GetInnerText(), u"abde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
     SetRole(&tree, 4, ax::mojom::Role::kNone);
-    EXPECT_EQ(root->GetInnerText(), u"abde");
+    EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
   }
 }
 

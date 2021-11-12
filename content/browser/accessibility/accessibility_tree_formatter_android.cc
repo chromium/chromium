@@ -196,7 +196,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("interesting", android_node->IsInterestingOnAndroid());
 
   // String attributes.
-  dict->SetString("name", android_node->GetInnerText());
+  dict->SetString("name", android_node->GetTextContentUTF16());
   dict->SetString("hint", android_node->GetHint());
   dict->SetString("role_description", android_node->GetRoleDescription());
   dict->SetString("state_description", android_node->GetStateDescription());

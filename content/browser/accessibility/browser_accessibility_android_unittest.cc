@@ -458,7 +458,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
   EXPECT_EQ(
       u"This image isn't labeled. Open the More Options menu "
       u"at the top right to get image descriptions.",
-      image_ltr->GetInnerText());
+      image_ltr->GetTextContentUTF16());
 
   BrowserAccessibilityAndroid* image_rtl =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -467,7 +467,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
   EXPECT_EQ(
       u"image_name, This image isn't labeled. Open the More Options "
       u"menu at the top left to get image descriptions.",
-      image_rtl->GetInnerText());
+      image_rtl->GetTextContentUTF16());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,
@@ -522,11 +522,11 @@ TEST_F(BrowserAccessibilityAndroidTest,
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(3));
 
-  EXPECT_EQ(u"Getting description...", image_pending->GetInnerText());
-  EXPECT_EQ(u"No description available.", image_empty->GetInnerText());
+  EXPECT_EQ(u"Getting description...", image_pending->GetTextContentUTF16());
+  EXPECT_EQ(u"No description available.", image_empty->GetTextContentUTF16());
   EXPECT_EQ(u"Appears to contain adult content. No description available.",
-            image_adult->GetInnerText());
-  EXPECT_EQ(u"No description available.", image_failed->GetInnerText());
+            image_adult->GetTextContentUTF16());
+  EXPECT_EQ(u"No description available.", image_failed->GetTextContentUTF16());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
@@ -581,10 +581,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(3));
 
-  EXPECT_EQ(std::u16string(), image_none->GetInnerText());
-  EXPECT_EQ(u"image_name", image_scheme->GetInnerText());
-  EXPECT_EQ(std::u16string(), image_ineligible->GetInnerText());
-  EXPECT_EQ(std::u16string(), image_silent->GetInnerText());
+  EXPECT_EQ(std::u16string(), image_none->GetTextContentUTF16());
+  EXPECT_EQ(u"image_name", image_scheme->GetTextContentUTF16());
+  EXPECT_EQ(std::u16string(), image_ineligible->GetTextContentUTF16());
+  EXPECT_EQ(std::u16string(), image_silent->GetTextContentUTF16());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,
@@ -626,8 +626,9 @@ TEST_F(BrowserAccessibilityAndroidTest,
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(1));
 
-  EXPECT_EQ(u"test_annotation", image_succeeded->GetInnerText());
-  EXPECT_EQ(u"test_annotation", image_succeeded_with_name->GetInnerText());
+  EXPECT_EQ(u"test_annotation", image_succeeded->GetTextContentUTF16());
+  EXPECT_EQ(u"test_annotation",
+            image_succeeded_with_name->GetTextContentUTF16());
 }
 
 }  // namespace content

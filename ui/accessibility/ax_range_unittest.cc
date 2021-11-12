@@ -1099,13 +1099,15 @@ TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
     TestPositionRange backward_test_range(std::move(range_end),
                                           std::move(range_start));
     size_t appended_newlines_count = 0;
-    EXPECT_EQ(expected_text, forward_test_range.GetText(
-                                 AXTextConcatenationBehavior::kAsInnerText, -1,
-                                 false, &appended_newlines_count));
+    EXPECT_EQ(expected_text,
+              forward_test_range.GetText(
+                  AXTextConcatenationBehavior::kWithParagraphBreaks, -1, false,
+                  &appended_newlines_count));
     EXPECT_EQ(expected_appended_newlines_count, appended_newlines_count);
-    EXPECT_EQ(expected_text, backward_test_range.GetText(
-                                 AXTextConcatenationBehavior::kAsInnerText, -1,
-                                 false, &appended_newlines_count));
+    EXPECT_EQ(expected_text,
+              backward_test_range.GetText(
+                  AXTextConcatenationBehavior::kWithParagraphBreaks, -1, false,
+                  &appended_newlines_count));
     EXPECT_EQ(expected_appended_newlines_count, appended_newlines_count);
   };
 
@@ -1159,16 +1161,19 @@ TEST_F(AXRangeTest, GetTextWithMaxCount) {
       ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange test_range(line1_start->Clone(), line2_end->Clone());
-  EXPECT_EQ(LINE_1.substr(0, 2),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, 2));
+  EXPECT_EQ(
+      LINE_1.substr(0, 2),
+      test_range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks, 2));
 
   // Test the case where an appended newline falls right at max_count.
-  EXPECT_EQ(LINE_1.substr().append(NEWLINE),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, 7));
+  EXPECT_EQ(
+      LINE_1.substr().append(NEWLINE),
+      test_range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks, 7));
 
   // Test passing -1 for max_count.
   EXPECT_EQ(LINE_1.substr().append(NEWLINE).append(LINE_2),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, -1));
+            test_range.GetText(
+                AXTextConcatenationBehavior::kWithParagraphBreaks, -1));
 }
 
 TEST_F(AXRangeTest, GetTextWithList) {
@@ -1302,11 +1307,11 @@ TEST_F(AXRangeTest, GetTextWithList) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
-  EXPECT_EQ(kAllText,
-            forward_range.GetText(AXTextConcatenationBehavior::kAsInnerText));
+  EXPECT_EQ(kAllText, forward_range.GetText(
+                          AXTextConcatenationBehavior::kWithParagraphBreaks));
   TestPositionRange backward_range(std::move(end), std::move(start));
-  EXPECT_EQ(kAllText,
-            backward_range.GetText(AXTextConcatenationBehavior::kAsInnerText));
+  EXPECT_EQ(kAllText, backward_range.GetText(
+                          AXTextConcatenationBehavior::kWithParagraphBreaks));
 }
 
 TEST_F(AXRangeTest, GetRects) {

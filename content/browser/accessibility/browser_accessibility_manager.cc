@@ -1254,7 +1254,7 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   return GetTextForRange(start_object, 0, end_object,
-                         end_object.GetInnerText().length());
+                         end_object.GetTextContentUTF16().length());
 }
 
 // static
@@ -1271,13 +1271,14 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetInnerText().length()) ||
-        end_offset > static_cast<int>(start_object.GetInnerText().length())) {
+            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+        end_offset >
+            static_cast<int>(start_object.GetTextContentUTF16().length())) {
       return std::u16string();
     }
 
-    return start_object.GetInnerText().substr(start_offset,
-                                              end_offset - start_offset);
+    return start_object.GetTextContentUTF16().substr(start_offset,
+                                                     end_offset - start_offset);
   }
 
   std::vector<const BrowserAccessibility*> text_only_objects =
@@ -1291,12 +1292,14 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     const BrowserAccessibility* text_object = text_only_objects[0];
-    if (start_offset < static_cast<int>(text_object->GetInnerText().length()) &&
-        end_offset <= static_cast<int>(text_object->GetInnerText().length())) {
-      return text_object->GetInnerText().substr(start_offset,
-                                                end_offset - start_offset);
+    if (start_offset <
+            static_cast<int>(text_object->GetTextContentUTF16().length()) &&
+        end_offset <=
+            static_cast<int>(text_object->GetTextContentUTF16().length())) {
+      return text_object->GetTextContentUTF16().substr(
+          start_offset, end_offset - start_offset);
     }
-    return text_object->GetInnerText();
+    return text_object->GetTextContentUTF16();
   }
 
   std::u16string text;
@@ -1309,22 +1312,22 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     std::swap(start_offset, end_offset);
 
   if (start_offset <
-      static_cast<int>(start_text_object->GetInnerText().length())) {
-    text += start_text_object->GetInnerText().substr(start_offset);
+      static_cast<int>(start_text_object->GetTextContentUTF16().length())) {
+    text += start_text_object->GetTextContentUTF16().substr(start_offset);
   } else {
-    text += start_text_object->GetInnerText();
+    text += start_text_object->GetTextContentUTF16();
   }
 
   for (size_t i = 1; i < text_only_objects.size() - 1; ++i) {
-    text += text_only_objects[i]->GetInnerText();
+    text += text_only_objects[i]->GetTextContentUTF16();
   }
 
   const BrowserAccessibility* end_text_object = text_only_objects.back();
   if (end_offset <=
-      static_cast<int>(end_text_object->GetInnerText().length())) {
-    text += end_text_object->GetInnerText().substr(0, end_offset);
+      static_cast<int>(end_text_object->GetTextContentUTF16().length())) {
+    text += end_text_object->GetTextContentUTF16().substr(0, end_offset);
   } else {
-    text += end_text_object->GetInnerText();
+    text += end_text_object->GetTextContentUTF16();
   }
 
   return text;
@@ -1344,8 +1347,9 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetInnerText().length()) ||
-        end_offset > static_cast<int>(start_object.GetInnerText().length())) {
+            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+        end_offset >
+            static_cast<int>(start_object.GetTextContentUTF16().length())) {
       return gfx::Rect();
     }
 
@@ -1372,7 +1376,7 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
   const BrowserAccessibility* current = first;
   do {
     if (current->IsText()) {
-      int len = static_cast<int>(current->GetInnerText().size());
+      int len = static_cast<int>(current->GetTextContentUTF16().size());
       int start_char_index = 0;
       int end_char_index = len;
       if (current == first)

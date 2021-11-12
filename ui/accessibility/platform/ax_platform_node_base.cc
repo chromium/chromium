@@ -791,20 +791,20 @@ std::u16string AXPlatformNodeBase::GetHypertext() const {
     return std::u16string();
 
   // Hypertext of platform leaves, which internally are composite objects, are
-  // represented with the inner text of the internal composite object. These
+  // represented with the text content of the internal composite object. These
   // don't exist on non-web content.
   if (IsChildOfLeaf())
-    return GetInnerText();
+    return GetTextContentUTF16();
 
   if (hypertext_.needs_update)
     UpdateComputedHypertext();
   return hypertext_.hypertext;
 }
 
-std::u16string AXPlatformNodeBase::GetInnerText() const {
+std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
   if (!delegate_)
     return std::u16string();
-  return delegate_->GetInnerText();
+  return delegate_->GetTextContentUTF16();
 }
 
 std::u16string
@@ -1495,7 +1495,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   hypertext_ = AXLegacyHypertext();
 
   if (IsLeaf()) {
-    hypertext_.hypertext = GetInnerText();
+    hypertext_.hypertext = GetTextContentUTF16();
     hypertext_.needs_update = false;
     return;
   }
@@ -1512,7 +1512,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (child_iter->IsText()) {
-      hypertext_.hypertext += child_iter->GetInnerText();
+      hypertext_.hypertext += child_iter->GetTextContentUTF16();
     } else {
       int32_t char_offset = static_cast<int32_t>(hypertext_.hypertext.size());
       int32_t child_unique_id = child_iter->GetUniqueId();
@@ -2084,7 +2084,8 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
                                 ->GetInnerTextRangeBoundsRect(
                                     0, 1, coordinate_system, clipping_behavior)
                                 .ManhattanDistanceToPoint(point);
-  for (int i = 1, text_length = GetInnerText().length(); i < text_length; ++i) {
+  for (int i = 1, text_length = GetTextContentUTF16().length(); i < text_length;
+       ++i) {
     float current_distance =
         GetDelegate()
             ->GetInnerTextRangeBoundsRect(i, i + 1, coordinate_system,

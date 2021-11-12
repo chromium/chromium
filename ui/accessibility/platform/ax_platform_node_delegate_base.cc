@@ -209,7 +209,7 @@ ax::mojom::NameFrom AXPlatformNodeDelegateBase::GetNameFrom() const {
   return GetData().GetNameFrom();
 }
 
-std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
+std::u16string AXPlatformNodeDelegateBase::GetTextContentUTF16() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
   // are carefully crafted by hand, in contrast to HTML pages, where any content
@@ -228,7 +228,7 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   if (IsLeaf() && !IsInvisibleOrIgnored())
     return GetString16Attribute(ax::mojom::StringAttribute::kName);
 
-  std::u16string inner_text;
+  std::u16string text_content;
   for (int i = 0; i < GetChildCount(); ++i) {
     // TODO(nektar): Add const to all tree traversal methods and remove
     // const_cast.
@@ -236,9 +236,9 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
         const_cast<AXPlatformNodeDelegateBase*>(this)->ChildAtIndex(i));
     if (!child || !child->GetDelegate())
       continue;
-    inner_text += child->GetDelegate()->GetInnerText();
+    text_content += child->GetDelegate()->GetTextContentUTF16();
   }
-  return inner_text;
+  return text_content;
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {

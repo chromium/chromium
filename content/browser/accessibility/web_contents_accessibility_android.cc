@@ -839,7 +839,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(), !node->GetInnerText().empty(),
+      node->HasNonEmptyValue(), !node->GetTextContentUTF16().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBaseAttributes(
@@ -874,7 +874,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoText(
       env, obj, info,
-      base::android::ConvertUTF16ToJavaString(env, node->GetInnerText()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
       node->IsLink(), node->IsTextField(),
       GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
                                      ax::mojom::StringAttribute::kLanguage)),
@@ -952,7 +952,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {
       std::u16string before_text = node->GetTextChangeBeforeText();
-      std::u16string text = node->GetInnerText();
+      std::u16string text = node->GetTextContentUTF16();
       Java_WebContentsAccessibilityImpl_setAccessibilityEventTextChangedAttrs(
           env, obj, event, node->GetTextChangeFromIndex(),
           node->GetTextChangeAddedCount(), node->GetTextChangeRemovedCount(),
@@ -961,7 +961,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
       break;
     }
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_SELECTION_CHANGED: {
-      std::u16string text = node->GetInnerText();
+      std::u16string text = node->GetTextContentUTF16();
       Java_WebContentsAccessibilityImpl_setAccessibilityEventSelectionAttrs(
           env, obj, event, node->GetSelectionStart(), node->GetSelectionEnd(),
           node->GetEditableTextLength(),
@@ -1186,7 +1186,7 @@ jboolean WebContentsAccessibilityAndroid::NextAtGranularity(
   int end_index = -1;
   if (root_manager->NextAtGranularity(granularity, cursor_index, node,
                                       &start_index, &end_index)) {
-    std::u16string text = node->GetInnerText();
+    std::u16string text = node->GetTextContentUTF16();
     Java_WebContentsAccessibilityImpl_finishGranularityMoveNext(
         env, obj, base::android::ConvertUTF16ToJavaString(env, text),
         extend_selection, start_index, end_index);
@@ -1202,7 +1202,7 @@ jint WebContentsAccessibilityAndroid::GetTextLength(
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (!node)
     return -1;
-  std::u16string text = node->GetInnerText();
+  std::u16string text = node->GetTextContentUTF16();
   return text.size();
 }
 
@@ -1221,7 +1221,7 @@ void WebContentsAccessibilityAndroid::AddSpellingErrorForTesting(
   }
 
   CHECK(node->GetRole() == ax::mojom::Role::kStaticText);
-  std::u16string text = node->GetInnerText();
+  std::u16string text = node->GetTextContentUTF16();
   CHECK_LT(start_offset, static_cast<int>(text.size()));
   CHECK_LE(end_offset, static_cast<int>(text.size()));
 
@@ -1258,7 +1258,8 @@ jboolean WebContentsAccessibilityAndroid::PreviousAtGranularity(
                                           &start_index, &end_index)) {
     Java_WebContentsAccessibilityImpl_finishGranularityMovePrevious(
         env, obj,
-        base::android::ConvertUTF16ToJavaString(env, node->GetInnerText()),
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetTextContentUTF16()),
         extend_selection, start_index, end_index);
     return true;
   }

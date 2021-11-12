@@ -222,10 +222,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ALERT: {
       // When an alertdialog is shown, we will announce the hint, which
       // (should) contain the description set by the author. If it is
-      // empty, then we will try GetInnerText() as a fallback.
+      // empty, then we will try GetTextContentUTF16() as a fallback.
       std::u16string text = android_node->GetHint();
       if (text.empty())
-        text = android_node->GetInnerText();
+        text = android_node->GetTextContentUTF16();
 
       wcax->AnnounceLiveRegionText(text);
       break;
@@ -254,7 +254,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
       // Speak its text.
-      std::u16string text = android_node->GetInnerText();
+      std::u16string text = android_node->GetTextContentUTF16();
       wcax->AnnounceLiveRegionText(text);
       break;
     }
@@ -386,7 +386,7 @@ bool BrowserAccessibilityManagerAndroid::NextAtGranularity(
     int32_t* end_index) {
   switch (granularity) {
     case ANDROID_ACCESSIBILITY_NODE_INFO_MOVEMENT_GRANULARITY_CHARACTER: {
-      std::u16string text = node->GetInnerText();
+      std::u16string text = node->GetTextContentUTF16();
       if (cursor_index >= static_cast<int32_t>(text.length()))
         return false;
       base::i18n::UTF16CharIterator iter(text);
@@ -435,7 +435,7 @@ bool BrowserAccessibilityManagerAndroid::PreviousAtGranularity(
     case ANDROID_ACCESSIBILITY_NODE_INFO_MOVEMENT_GRANULARITY_CHARACTER: {
       if (cursor_index <= 0)
         return false;
-      std::u16string text = node->GetInnerText();
+      std::u16string text = node->GetTextContentUTF16();
       base::i18n::UTF16CharIterator iter(text);
       int previous_index = 0;
       while (!iter.end() &&

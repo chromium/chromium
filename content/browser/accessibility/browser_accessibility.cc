@@ -713,9 +713,8 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRect(
     const ui::AXCoordinateSystem coordinate_system,
     const ui::AXClippingBehavior clipping_behavior,
     ui::AXOffscreenResult* offscreen_result) const {
-  const int inner_text_length = GetInnerText().length();
-  if (start_offset < 0 || end_offset > inner_text_length ||
-      start_offset > end_offset)
+  const int text_length = GetTextContentUTF16().length();
+  if (start_offset < 0 || end_offset > text_length || start_offset > end_offset)
     return gfx::Rect();
 
   return GetInnerTextRangeBoundsRectInSubtree(
@@ -731,7 +730,8 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
     ui::AXOffscreenResult* offscreen_result) const {
   if (GetRole() == ax::mojom::Role::kInlineTextBox) {
     return RelativeToAbsoluteBounds(
-        GetInlineTextRect(start_offset, end_offset, GetInnerText().length()),
+        GetInlineTextRect(start_offset, end_offset,
+                          GetTextContentUTF16().length()),
         coordinate_system, clipping_behavior, offscreen_result);
   }
 
@@ -740,20 +740,20 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
   for (InternalChildIterator it = InternalChildrenBegin();
        it != InternalChildrenEnd(); ++it) {
     const BrowserAccessibility* browser_accessibility_child = it.get();
-    const int child_inner_text_length =
-        browser_accessibility_child->GetInnerText().length();
+    const int child_text_length =
+        browser_accessibility_child->GetTextContentUTF16().length();
 
     // The text bounds queried are not in this subtree; skip it and continue.
     const int child_start_offset =
         std::max(start_offset - child_offset_in_parent, 0);
-    if (child_start_offset > child_inner_text_length) {
-      child_offset_in_parent += child_inner_text_length;
+    if (child_start_offset > child_text_length) {
+      child_offset_in_parent += child_text_length;
       continue;
     }
 
     // The text bounds queried have already been gathered; short circuit.
     const int child_end_offset =
-        std::min(end_offset - child_offset_in_parent, child_inner_text_length);
+        std::min(end_offset - child_offset_in_parent, child_text_length);
     if (child_end_offset < 0)
       return bounds;
 
@@ -767,7 +767,7 @@ gfx::Rect BrowserAccessibility::GetInnerTextRangeBoundsRectInSubtree(
     else
       bounds.Union(child_bounds);
 
-    child_offset_in_parent += child_inner_text_length;
+    child_offset_in_parent += child_text_length;
   }
 
   return bounds;
@@ -971,8 +971,8 @@ BrowserAccessibility::GetHypertextOffsetToHyperlinkChildIndex() const {
   return node_->GetHypertextOffsetToHyperlinkChildIndex();
 }
 
-std::u16string BrowserAccessibility::GetInnerText() const {
-  return base::UTF8ToUTF16(node()->GetInnerText());
+std::u16string BrowserAccessibility::GetTextContentUTF16() const {
+  return node()->GetTextContentUTF16();
 }
 
 std::u16string BrowserAccessibility::GetValueForControl() const {

@@ -506,8 +506,9 @@ bool IsAXSetter(SEL selector) {
 
   NSString* name = [self getName];
   NSString* announcementText =
-      [name length] > 0 ? name
-                        : base::SysUTF16ToNSString(_node->GetInnerText());
+      [name length] > 0
+          ? name
+          : base::SysUTF16ToNSString(_node->GetTextContentUTF16());
   if ([announcementText length] == 0)
     return nullptr;
 
