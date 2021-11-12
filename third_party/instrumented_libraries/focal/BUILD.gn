@@ -408,20 +408,27 @@ instrumented_library("libgcrypt20") {
 }
 
 instrumented_library("libgdk-pixbuf2.0-0") {
+  build_method = "meson"
   extra_configure_flags = [
-    "--disable-static",
-    "--without-libjasper",
-    "--disable-introspection",
-
-    # From debian/rules.
-    "--with-x11",
+    "-Dgir=false",
+    "-Dman=false",
+    "-Dx11=true",
+    "-Djasper=false",
+    "-Dinstalled_tests=false",
 
     # Do not use loadable modules. Same as with Pango, there's no easy way
     # to make gdk-pixbuf pick instrumented versions over system-installed
     # ones.
-    "--disable-modules",
+    "-Dbuiltin_loaders='all'",
   ]
   pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
+
+  # Ignore MSAN errors during the build.  It's unclear why this only works on
+  # some binaries.
+  env = [ [
+        "MSAN_OPTIONS",
+        "halt_on_error=0 exitcode=0",
+      ] ]
 }
 
 instrumented_library("libglib2.0-0") {
