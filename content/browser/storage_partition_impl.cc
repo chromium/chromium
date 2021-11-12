@@ -832,8 +832,6 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
   }
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL)
     quota_client_types.insert(storage::QuotaClientType::kDatabase);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_APPCACHE)
-    quota_client_types.insert(storage::QuotaClientType::kAppcache);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_INDEXEDDB)
     quota_client_types.insert(storage::QuotaClientType::kIndexedDatabase);
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS)
@@ -2385,7 +2383,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
       remove_mask_ & REMOVE_DATA_MASK_WEBSQL ||
-      remove_mask_ & REMOVE_DATA_MASK_APPCACHE ||
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||
       remove_mask_ & REMOVE_DATA_MASK_SERVICE_WORKERS ||
       remove_mask_ & REMOVE_DATA_MASK_CACHE_STORAGE) {

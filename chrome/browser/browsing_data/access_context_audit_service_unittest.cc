@@ -381,7 +381,7 @@ TEST_F(AccessContextAuditServiceTest, OriginKeyedStorageDeleted) {
   const auto kTestStorageType1 =
       AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
   const auto kTestStorageType2 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
   const url::Origin kTestOrigin1 =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kTestOrigin2 =
@@ -551,7 +551,7 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
   const auto kTestStorageType1 =
       AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
   const auto kTestStorageType2 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
 
   clock()->SetNow(base::Time::Now());
   service()->SetClockForTesting(clock());
@@ -703,7 +703,7 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   const auto kTestStorageType2 =
       AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
   const auto kTestStorageType3 =
-      AccessContextAuditDatabase::StorageAPIType::kAppCache;
+      AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
 
   clock()->SetNow(base::Time());
   service()->SetClockForTesting(clock());

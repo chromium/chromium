@@ -99,8 +99,6 @@ constexpr char kOnDiskFallback[] = "ondiskfallback";
 // that storage partition mask is a subset of webview's data removal mask.
 uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
   uint32_t mask = 0;
-  if (web_view_removal_mask & webview::WEB_VIEW_REMOVE_DATA_MASK_APPCACHE)
-    mask |= StoragePartition::REMOVE_DATA_MASK_APPCACHE;
   if (web_view_removal_mask &
       (webview::WEB_VIEW_REMOVE_DATA_MASK_COOKIES |
        webview::WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES |

@@ -12,7 +12,6 @@ const QuotaClientTypes& AllQuotaClientTypes() {
   static base::NoDestructor<QuotaClientTypes> all{{
       QuotaClientType::kFileSystem,
       QuotaClientType::kDatabase,
-      QuotaClientType::kAppcache,
       QuotaClientType::kIndexedDatabase,
       QuotaClientType::kServiceWorkerCache,
       QuotaClientType::kServiceWorker,

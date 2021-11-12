@@ -45,7 +45,6 @@ const char kDataToRemoveKey[] = "dataToRemove";
 const char kOptionsKey[] = "options";
 
 // Type keys.
-const char kAppCacheKey[] = "appcache";
 const char kCacheKey[] = "cache";
 const char kCookiesKey[] = "cookies";
 const char kDownloadsKey[] = "downloads";
@@ -96,8 +95,6 @@ static_assert((kFilterableDataTypes &
               "chrome_browsing_data_remover::FILTERABLE_DATA_TYPES");
 
 uint64_t MaskForKey(const char* key) {
-  if (strcmp(key, extension_browsing_data_api_constants::kAppCacheKey) == 0)
-    return content::BrowsingDataRemover::DATA_TYPE_APP_CACHE;
   if (strcmp(key, extension_browsing_data_api_constants::kCacheKey) == 0)
     return content::BrowsingDataRemover::DATA_TYPE_CACHE;
   if (strcmp(key, extension_browsing_data_api_constants::kCookiesKey) == 0)
@@ -201,9 +198,6 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
       isDataTypeSelected(BrowsingDataType::COOKIES, tab) ||
       isDataTypeSelected(BrowsingDataType::HOSTED_APPS_DATA, tab);
 
-  SetDetails(selected.get(), permitted.get(),
-             extension_browsing_data_api_constants::kAppCacheKey,
-             delete_site_data);
   SetDetails(selected.get(), permitted.get(),
              extension_browsing_data_api_constants::kCookiesKey,
              delete_site_data);
@@ -522,7 +516,8 @@ bool BrowsingDataRemoveFunction::IsPauseSyncAllowed() {
 
 bool BrowsingDataRemoveAppcacheFunction::GetRemovalMask(
     uint64_t* removal_mask) {
-  *removal_mask = content::BrowsingDataRemover::DATA_TYPE_APP_CACHE;
+  // TODO(http://crbug.com/1266606): deprecate and remove this extension api
+  *removal_mask = 0;
   return true;
 }
 

@@ -224,9 +224,6 @@ void UsageTracker::AccumulateClientHostUsage(base::OnceClosure callback,
     case QuotaClientType::kDatabase:
       info->usage_breakdown->webSql += usage;
       break;
-    case QuotaClientType::kAppcache:
-      info->usage_breakdown->appcache += usage;
-      break;
     case QuotaClientType::kIndexedDatabase:
       info->usage_breakdown->indexedDatabase += usage;
       break;

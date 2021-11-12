@@ -33,7 +33,6 @@ namespace chromecast {
 namespace {
 
 uint32_t remove_data_mask =
-    content::StoragePartition::REMOVE_DATA_MASK_APPCACHE |
     content::StoragePartition::REMOVE_DATA_MASK_COOKIES |
     content::StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
     content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |

@@ -41,6 +41,7 @@ class ExtensionBrowsingDataTest : public InProcessBrowserTest {};
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// TODO(http://crbug.com/1266606): appcache is a noop and should be removed.
 const char kRemoveEverythingArguments[] =
     R"([{"since": 1000}, {
     "appcache": true, "cache": true, "cookies": true,

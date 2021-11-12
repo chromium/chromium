@@ -241,8 +241,6 @@ void AccessContextAuditService::OnOriginDataCleared(
     const base::Time end) {
   std::set<AccessContextAuditDatabase::StorageAPIType> types;
 
-  if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_APPCACHE)
-    types.insert(AccessContextAuditDatabase::StorageAPIType::kAppCache);
   if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS)
     types.insert(AccessContextAuditDatabase::StorageAPIType::kFileSystem);
   if (remove_mask & content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB)
@@ -260,7 +258,7 @@ void AccessContextAuditService::OnOriginDataCleared(
     return;
 
   DCHECK_EQ(AccessContextAuditDatabase::StorageAPIType::kMaxValue,
-            AccessContextAuditDatabase::StorageAPIType::kAppCache)
+            AccessContextAuditDatabase::StorageAPIType::kAppCacheDeprecated)
       << "Unexpected number of storage types. Ensure that all storage types "
          "are accounted for when checking |remove_mask|.";
   bool all_origin_storage_types = types.size() == 7;

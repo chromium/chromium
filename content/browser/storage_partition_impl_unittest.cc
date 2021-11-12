@@ -111,7 +111,6 @@ const storage::QuotaClientType kClientFile =
     storage::QuotaClientType::kFileSystem;
 
 const uint32_t kAllQuotaRemoveMask =
-    StoragePartition::REMOVE_DATA_MASK_APPCACHE |
     StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
     StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
     StoragePartition::REMOVE_DATA_MASK_WEBSQL;
@@ -993,16 +992,12 @@ TEST_F(StoragePartitionImplTest, QuotaClientTypesGeneration) {
                   StoragePartition::REMOVE_DATA_MASK_WEBSQL),
               testing::ElementsAre(storage::QuotaClientType::kDatabase));
   EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
-                  StoragePartition::REMOVE_DATA_MASK_APPCACHE),
-              testing::ElementsAre(storage::QuotaClientType::kAppcache));
-  EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
                   StoragePartition::REMOVE_DATA_MASK_INDEXEDDB),
               testing::ElementsAre(storage::QuotaClientType::kIndexedDatabase));
   EXPECT_THAT(
       StoragePartitionImpl::GenerateQuotaClientTypes(kAllQuotaRemoveMask),
       testing::UnorderedElementsAre(storage::QuotaClientType::kFileSystem,
                                     storage::QuotaClientType::kDatabase,
-                                    storage::QuotaClientType::kAppcache,
                                     storage::QuotaClientType::kIndexedDatabase,
                                     storage::QuotaClientType::kNativeIO));
 }
@@ -2054,7 +2049,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
   const uint32_t kTestClearMask =
-      content::StoragePartition::REMOVE_DATA_MASK_APPCACHE |
+      content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
       content::StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   const uint32_t kTestQuotaClearMask = 0;
   const auto kTestOrigin = GURL("https://example.com");

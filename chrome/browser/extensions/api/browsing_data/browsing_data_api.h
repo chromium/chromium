@@ -29,7 +29,6 @@ extern const char kDataToRemoveKey[];
 extern const char kOptionsKey[];
 
 // Type keys.
-extern const char kAppCacheKey[];
 extern const char kCacheKey[];
 extern const char kCookiesKey[];
 extern const char kDownloadsKey[];

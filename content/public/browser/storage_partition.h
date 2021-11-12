@@ -163,7 +163,7 @@ class CONTENT_EXPORT StoragePartition {
           optional_proto_db_provider) = 0;
 
   enum : uint32_t {
-    REMOVE_DATA_MASK_APPCACHE = 1 << 0,
+    REMOVE_DATA_MASK_APPCACHE_DEPRECATED = 1 << 0,
     REMOVE_DATA_MASK_COOKIES = 1 << 1,
     REMOVE_DATA_MASK_FILE_SYSTEMS = 1 << 2,
     REMOVE_DATA_MASK_INDEXEDDB = 1 << 3,
