@@ -185,8 +185,11 @@ class AssistantClient {
   virtual void RemoveTimer(const std::string& timer_id) = 0;
   // Resumes the specified timer (expected to be in paused state).
   virtual void ResumeTimer(const std::string& timer_id) = 0;
-  // Returns the list of all currently scheduled, ringing or paused timers.
-  virtual std::vector<assistant::AssistantTimer> GetTimers() = 0;
+  // Returns the list of all currently scheduled, ringing or paused timers in
+  // the callback.
+  virtual void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) = 0;
 
   // Registers |observer| to get notified on any alarm/timer status change.
   virtual void RegisterAlarmTimerEventObserver(

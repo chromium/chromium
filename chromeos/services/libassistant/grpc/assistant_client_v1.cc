@@ -535,49 +535,64 @@ void AssistantClientV1::ResumeTimer(const std::string& timer_id) {
     alarm_timer_manager()->ResumeTimer(timer_id);
 }
 
-std::vector<assistant::AssistantTimer> AssistantClientV1::GetTimers() {
-  if (alarm_timer_manager())
-    return GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
-
-  return std::vector<assistant::AssistantTimer>();
+void AssistantClientV1::GetTimers(
+    base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+        on_done) {
+  std::vector<assistant::AssistantTimer> timers;
+  if (alarm_timer_manager()) {
+    timers =
+        GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
+  }
+  std::move(on_done).Run(std::move(timers));
 }
 
 void AssistantClientV1::RegisterAlarmTimerEventObserver(
     base::WeakPtr<GrpcServicesObserver<OnAlarmTimerEventRequest>> observer) {
+  // TODO(b/189973553): Change this to observer list so that we can add more
+  // observers. It will be done in the next cl after changing the WeakPtr to
+  // pointer of the observer.
+  timer_observer_ = observer;
+
   // We always want to know when a timer has started ringing.
   alarm_timer_manager()->RegisterRingingStateListener(
       ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<
-                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
-             const base::WeakPtr<AssistantClientV1>& self) {
-            if (self && observer) {
-              observer->OnGrpcMessage(
-                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+          [](const base::WeakPtr<AssistantClientV1>& self) {
+            if (self) {
+              self->GetAndNotifyTimerStatus();
             }
           },
-          observer, weak_factory_.GetWeakPtr())));
+          weak_factory_.GetWeakPtr())));
 
   // In timers v2, we also want to know when timers are scheduled,
   // updated, and/or removed so that we can represent those states
   // in UI.
   alarm_timer_manager()->RegisterTimerActionListener(
       ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<
-                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
-             const base::WeakPtr<AssistantClientV1>& self,
+          [](const base::WeakPtr<AssistantClientV1>& self,
              const assistant_client::AlarmTimerManager::EventActionType&
                  ignore) {
-            if (self && observer) {
-              observer->OnGrpcMessage(
-                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+            if (self) {
+              self->GetAndNotifyTimerStatus();
             }
           },
-          observer, weak_factory_.GetWeakPtr())));
+          weak_factory_.GetWeakPtr())));
 }
 
 assistant_client::AlarmTimerManager* AssistantClientV1::alarm_timer_manager() {
   DCHECK(assistant_manager_internal());
   return assistant_manager_internal()->GetAlarmTimerManager();
+}
+
+void AssistantClientV1::GetAndNotifyTimerStatus() {
+  GetTimers(base::BindOnce(
+      [](const base::WeakPtr<AssistantClientV1>& self,
+         const std::vector<assistant::AssistantTimer>& timers) {
+        if (self && self->timer_observer_) {
+          self->timer_observer_->OnGrpcMessage(
+              CreateOnAlarmTimerEventRequestProtoForV1(timers));
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace libassistant

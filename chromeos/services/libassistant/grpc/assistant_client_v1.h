@@ -92,7 +92,9 @@ class AssistantClientV1 : public AssistantClient {
   void PauseTimer(const std::string& timer_id) override;
   void RemoveTimer(const std::string& timer_id) override;
   void ResumeTimer(const std::string& timer_id) override;
-  std::vector<assistant::AssistantTimer> GetTimers() override;
+  void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) override;
   void RegisterAlarmTimerEventObserver(
       base::WeakPtr<
           GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
@@ -114,6 +116,9 @@ class AssistantClientV1 : public AssistantClient {
 
   assistant_client::AlarmTimerManager* alarm_timer_manager();
 
+  // Get the timer status and notify the `timer_observer_`.
+  void GetAndNotifyTimerStatus();
+
   absl::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
@@ -126,6 +131,10 @@ class AssistantClientV1 : public AssistantClient {
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
+
+  base::WeakPtr<
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+      timer_observer_;
 
   ServicesStatusObserver* services_status_observer_ = nullptr;
 

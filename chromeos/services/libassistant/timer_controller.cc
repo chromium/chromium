@@ -26,9 +26,7 @@ class TimerController::TimerListener
  public:
   TimerListener(AssistantClient* assistant_client,
                 mojom::TimerDelegate* delegate)
-      : assistant_client_(*assistant_client),
-        delegate_(*delegate),
-        main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : assistant_client_(*assistant_client), delegate_(*delegate) {}
   TimerListener(const TimerListener&) = delete;
   TimerListener& operator=(const TimerListener&) = delete;
   ~TimerListener() override = default;
@@ -43,7 +41,8 @@ class TimerController::TimerListener
         weak_factory_.GetWeakPtr());
 
     // Force sync the initial timer state.
-    NotifyTimerStatusChanged(assistant_client_.GetTimers());
+    assistant_client_.GetTimers(base::BindOnce(
+        &TimerListener::NotifyTimerStatusChanged, weak_factory_.GetWeakPtr()));
   }
 
   void Stop() {
@@ -80,8 +79,6 @@ class TimerController::TimerListener
 
   AssistantClient& assistant_client_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojom::TimerDelegate& delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   base::WeakPtrFactory<TimerListener> weak_factory_{this};
 };
