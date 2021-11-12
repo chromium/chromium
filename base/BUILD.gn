@@ -4434,6 +4434,19 @@ fuzzer_test("string_tokenizer_fuzzer") {
   deps = [ "//base" ]
 }
 
+fuzzer_test("time_delta_from_string_fuzzer") {
+  sources = [ "time/time_delta_from_string_fuzzer.cc" ]
+  deps = [ "//base" ]
+}
+
+fuzzer_test("time_fuzzer") {
+  sources = [ "time/time_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 fuzzer_test("utf_string_conversions_fuzzer") {
   sources = [ "strings/utf_string_conversions_fuzzer.cc" ]
   deps = [ "//base" ]
