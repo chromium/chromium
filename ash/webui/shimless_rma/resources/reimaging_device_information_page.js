@@ -8,7 +8,7 @@ import './icons.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -135,9 +135,13 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
         .then((result) => {
           this.regions_ = result.regions;
           this.regionIndex_ = this.originalRegionIndex_;
-          // TODO(gavindodd) This does not work. Find a way to bind the list.
-          this.shadowRoot.querySelector('#regionSelect').selectedIndex =
-              this.regionIndex_;
+
+          // Need to wait for the select options to render before setting the
+          // selected index.
+          afterNextRender(this, () => {
+            this.shadowRoot.querySelector('#regionSelect').selectedIndex =
+                this.regionIndex_;
+          });
         });
   }
 
@@ -151,9 +155,13 @@ export class ReimagingDeviceInformationPageElement extends PolymerElement {
         .then((result) => {
           this.skus_ = result.skus;
           this.skuIndex_ = this.originalSkuIndex_;
-          // TODO(gavindodd) This does not work. Find a way to bind the list.
-          this.shadowRoot.querySelector('#skuSelect').selectedIndex =
-              this.skuIndex_;
+
+          // Need to wait for the select options to render before setting the
+          // selected index.
+          afterNextRender(this, () => {
+            this.shadowRoot.querySelector('#skuSelect').selectedIndex =
+                this.skuIndex_;
+          });
         });
   }
 
