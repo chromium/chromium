@@ -14,9 +14,8 @@
 namespace system_logs {
 
 // This class gathers log data from the Lacros browser, when running as Ash on a
-// Lacros-enabled install of ChromeOS. Since Lacros date-versions logs, it is
-// necessary to resolve the symbolic links to the get the most and the second
-// most recent log files, which this class does on a worker thread.
+// Lacros-enabled install of ChromeOS. It will attach the current and previous
+// Lacros log files, if they exist.
 class LacrosLogFilesLogSource : public SystemLogsSource {
  public:
   LacrosLogFilesLogSource(const base::FilePath& log_base_path,
@@ -29,9 +28,8 @@ class LacrosLogFilesLogSource : public SystemLogsSource {
   void Fetch(SysLogsSourceCallback callback) override;
 
  private:
-  // This method must run on a blocking sequence. It resolves the symbolic links
-  // in the |log_base_path| directory at 'lacros.log' and 'lacros.log.PREVIOUS'.
-  // Assuming the linked files exist they are attached to |response|.
+  // This method must run on a blocking sequence. It attempts to attach both the
+  // current and previous log files to |response|.
   void FindFiles(const base::FilePath& log_base_path,
                  const std::string& log_key_base,
                  SystemLogsResponse* response);
@@ -42,7 +40,7 @@ class LacrosLogFilesLogSource : public SystemLogsSource {
                 SystemLogsResponse* response);
 
   // This is the base path for all Lacros logs. This class will search for a
-  // 'lacros.log' and 'lacros.log.PREVIOUS' link in this directory.
+  // 'lacros.log' and 'lacros.log.PREVIOUS' file in this directory.
   const base::FilePath log_base_path_;
   // This is the key base for Lacros logs in Ash feedback reports. This class
   // attaches the key base to the newest log, and appends '_previous' to the key
