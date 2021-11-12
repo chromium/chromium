@@ -43654,6 +43654,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="WebPAllDataReceivedInitially"/>
 </enum>
 
+<enum name="InDeveloperMode">
+  <summary>A boolean for whether the user is in the developer mode.</summary>
+  <int value="0" label="User is not in the developer mode"/>
+  <int value="1" label="User is in the developer mode"/>
+</enum>
+
 <enum name="IndexedDatabaseMethods">
   <obsolete>
     Deprecated as of July 2018.
