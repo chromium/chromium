@@ -513,6 +513,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             final String contentPublisher, @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
+        // Don't show the dialog if this tab doesn't have an activity. See https://crbug.com/1267383
+        if (activity == null) return;
         // If the activity's decor view is not attached to window, we don't show the dialog because
         // the window manager might have revoked the window token for this activity. See
         // https://crbug.com/921450.
