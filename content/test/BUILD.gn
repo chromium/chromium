@@ -2254,6 +2254,7 @@ test("content_unittests") {
     "../browser/webid/test/webid_test_content_browser_client.h",
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
+    "../browser/webtransport/web_transport_throttle_context_unittest.cc",
     "../browser/webui/web_ui_data_source_unittest.cc",
     "../browser/webui/web_ui_main_frame_observer_unittest.cc",
     "../browser/webui/web_ui_message_handler_unittest.cc",

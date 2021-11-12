@@ -65,20 +65,13 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
       base::WeakPtr<RenderFrameHostImpl> frame,
       const GURL& url,
       mojo::PendingRemote<WebTransportHandshakeClient> remote,
-      base::WeakPtr<WebTransportThrottleContext> throttle_context)
+      std::unique_ptr<WebTransportThrottleContext::Tracker> tracker)
       : frame_(std::move(frame)),
         url_(url),
         remote_(std::move(remote)),
-        throttle_context_(std::move(throttle_context)) {
-    if (throttle_context_)
-      throttle_context_->StartThrottling();
-  }
+        tracker_(std::move(tracker)) {}
 
-  ~InterceptingHandshakeClient() override {
-    if (throttle_context_) {
-      throttle_context_->OnHandshakeFailed();
-    }
-  }
+  ~InterceptingHandshakeClient() override = default;
 
   // WebTransportHandshakeClient implementation:
   void OnConnectionEstablished(
@@ -86,9 +79,8 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers)
       override {
-    if (throttle_context_) {
-      throttle_context_->OnHandshakeEstablished();
-      throttle_context_ = nullptr;
+    if (tracker_) {
+      tracker_->OnHandshakeEstablished();
     }
 
     // We don't need to pass headers to the renderer here.
@@ -99,9 +91,8 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
   }
   void OnHandshakeFailed(
       const absl::optional<net::WebTransportError>& error) override {
-    if (throttle_context_) {
-      throttle_context_->OnHandshakeFailed();
-      throttle_context_ = nullptr;
+    if (tracker_) {
+      tracker_->OnHandshakeFailed();
     }
 
     // Here we pass null because it is dangerous to pass the error details
@@ -121,7 +112,7 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
 
   // Target for notifying the throttle of handshake result. nullptr if the
   // result has already been signalled.
-  base::WeakPtr<WebTransportThrottleContext> throttle_context_;
+  const std::unique_ptr<WebTransportThrottleContext::Tracker> tracker_;
 };
 
 }  // namespace
@@ -152,21 +143,38 @@ void WebTransportConnectorImpl::Connect(
     return;
   }
 
-  if (throttle_context_ &&
-      throttle_context_->CheckThrottle() ==
-          WebTransportThrottleContext::CheckResult::kTooManyPendingSessions) {
-    if (frame_) {
-      frame_->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf("WebTransport session establishment failed. "
-                             "Too many pending WebTransport sessions (%d)",
-                             WebTransportThrottleContext::kMaxPendingSessions));
+  if (throttle_context_) {
+    auto result = throttle_context_->PerformThrottle(base::BindOnce(
+        &WebTransportConnectorImpl::OnThrottleDone, weak_factory_.GetWeakPtr(),
+        url, std::move(fingerprints), std::move(handshake_client)));
+    if (result ==
+        WebTransportThrottleContext::ThrottleResult::kTooManyPendingSessions) {
+      if (frame_) {
+        frame_->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            base::StringPrintf(
+                "WebTransport session establishment failed. "
+                "Too many pending WebTransport sessions (%d)",
+                WebTransportThrottleContext::kMaxPendingSessions));
+      }
+      // The handshake will be considered failed by the render process since
+      // `handshake_client` was destroyed when the callback was discarded.
     }
+  } else {
+    OnThrottleDone(url, std::move(fingerprints), std::move(handshake_client),
+                   /*tracker=*/nullptr);
+  }
+}
 
-    mojo::Remote<network::mojom::WebTransportHandshakeClient> client(
-        std::move(handshake_client));
-
-    client->OnHandshakeFailed(absl::nullopt);
+void WebTransportConnectorImpl::OnThrottleDone(
+    const GURL& url,
+    std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
+        fingerprints,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
+    std::unique_ptr<WebTransportThrottleContext::Tracker> tracker) {
+  RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
+  if (!process) {
     return;
   }
 
@@ -179,7 +187,7 @@ void WebTransportConnectorImpl::Connect(
   // the WebTransportHandshakeClient is going away.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<InterceptingHandshakeClient>(
-          frame_, url, std::move(handshake_client), throttle_context_),
+          frame_, url, std::move(handshake_client), std::move(tracker)),
       std::move(client_receiver));
 
   GetContentClient()->browser()->WillCreateWebTransport(
