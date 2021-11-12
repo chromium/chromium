@@ -19,7 +19,12 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/interpolated_transform.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -45,6 +50,20 @@ constexpr int kPrepareEndOfView = 30;
 // After the user is finished navigating to a different month, this is how long
 // we wait before fetchiung more events.
 constexpr base::TimeDelta kScrollingSettledTimeout = base::Milliseconds(100);
+
+// Duration of opacity animation for visibility changes.
+constexpr base::TimeDelta kAnimationDurationForVisibility =
+    base::Milliseconds(100);
+
+// Duration of moving animation.
+constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
+
+// Duration of the delay for modifying opacity.
+constexpr base::TimeDelta kDelayVisibilityAnimationDuration =
+    base::Milliseconds(200);
+
+// The cool-down time for enabling animation.
+constexpr base::TimeDelta kAnimationDisablingTimeout = base::Milliseconds(500);
 
 // TODO(https://crbug.com/1236276): for some language it may start from "M".
 constexpr int kDefaultWeekTitles[] = {
@@ -123,6 +142,9 @@ class CalendarView::MonthYearHeaderView : public views::View {
   MonthYearHeaderView(LabelType type,
                       CalendarViewController* calendar_view_controller)
       : month_label_(AddChildView(std::make_unique<views::Label>())) {
+    // The layer is required in animation.
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     switch (type) {
       case PREVIOUS:
         date_ = calendar_view_controller->GetPreviousMonthFirstDayLocal(1);
@@ -188,6 +210,44 @@ class CalendarView::MonthYearHeaderView : public views::View {
   views::Label* year_label_ = nullptr;
 };
 
+CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
+                                       const std::u16string& year)
+    : header_(AddChildView(std::make_unique<views::Label>())),
+      header_year_(AddChildView(std::make_unique<views::Label>())) {
+  // The layer is required in animation.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+
+  header_->SetText(month);
+  header_->SetTextContext(CONTEXT_CALENDAR_LABEL);
+  header_->SetAutoColorReadabilityEnabled(false);
+  header_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+
+  header_year_->SetText(year);
+  header_year_->SetBorder(views::CreateEmptyBorder(
+      0, kLabelTextInBetweenPadding, 0, kLabelTextInBetweenPadding));
+  header_year_->SetTextContext(CONTEXT_CALENDAR_LABEL);
+  header_year_->SetAutoColorReadabilityEnabled(false);
+  header_year_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+}
+
+CalendarHeaderView::~CalendarHeaderView() = default;
+
+void CalendarHeaderView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  header_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
+  header_year_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
+}
+
+void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
+                                       const std::u16string& year) {
+  header_->SetText(month);
+  header_year_->SetText(year);
+}
+
 CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
@@ -197,42 +257,41 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
           FROM_HERE,
           kScrollingSettledTimeout,
           base::BindRepeating(&CalendarView::OnScrollingSettledTimerFired,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      animation_restart_timer_(FROM_HERE,
+                               kAnimationDisablingTimeout,
+                               base::BindRepeating(
+                                   [](CalendarView* calendar_view) {
+                                     if (!calendar_view)
+                                       return;
+                                     calendar_view->should_show_animation_ =
+                                         true;
+                                   },
+                                   base::Unretained(this))) {
   CreateTitleRow(IDS_ASH_CALENDAR_TITLE);
 
   // Add the header.
-  header_ = TrayPopupUtils::CreateDefaultLabel();
-  header_->SetText(calendar_view_controller_->GetOnScreenMonthName());
-  header_->SetTextContext(CONTEXT_CALENDAR_LABEL);
-  header_->SetAutoColorReadabilityEnabled(false);
-  header_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-
-  header_year_ = TrayPopupUtils::CreateDefaultLabel();
-  header_year_->SetText(base::UTF8ToUTF16(base::NumberToString(
-      calendar_utils::GetExplodedLocal(
-          calendar_view_controller_->GetOnScreenMonthFirstDayLocal())
-          .year)));
-  header_year_->SetBorder(views::CreateEmptyBorder(
-      0, kLabelTextInBetweenPadding, 0, kLabelTextInBetweenPadding));
-  header_year_->SetTextContext(CONTEXT_CALENDAR_LABEL);
-  header_->SetAutoColorReadabilityEnabled(false);
-  header_year_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  header_ = new CalendarHeaderView(
+      calendar_view_controller_->GetOnScreenMonthName(),
+      base::UTF8ToUTF16(base::NumberToString(
+          calendar_utils::GetExplodedLocal(
+              calendar_view_controller_->GetOnScreenMonthFirstDayLocal())
+              .year)));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
   tri_view->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding,
                                                kContentHorizontalPadding, 0,
                                                kContentHorizontalPadding));
   tri_view->AddView(TriView::Container::START, header_);
-  tri_view->AddView(TriView::Container::START, header_year_);
 
   down_button_ = new HeaderButton(
-      base::BindRepeating(&CalendarView::ScrollDownOneMonthAndAutoScroll,
-                          base::Unretained(this)),
+      base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
+                          base::Unretained(this), /*is_scrolling_up=*/false),
       vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
   up_button_ = new HeaderButton(
-      base::BindRepeating(&CalendarView::ScrollUpOneMonthAndAutoScroll,
-                          base::Unretained(this)),
+      base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
+                          base::Unretained(this), /*is_scrolling_up=*/true),
       vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
 
@@ -363,6 +422,47 @@ void CalendarView::ResetToToday() {
   MaybeResetContentViewFocusBehavior();
 }
 
+void CalendarView::UpdateHeaders() {
+  header_->UpdateHeaders(calendar_view_controller_->GetOnScreenMonthName(),
+                         base::UTF8ToUTF16(base::NumberToString(
+                             calendar_utils::GetExplodedLocal(
+                                 calendar_view_controller_->current_date())
+                                 .year)));
+}
+
+void CalendarView::RestoreHeadersStatus() {
+  header_->layer()->GetAnimator()->StopAnimating();
+  header_->layer()->SetOpacity(1.0f);
+  header_->layer()->SetTransform(gfx::Transform());
+  scrolling_settled_timer_.Reset();
+  if (!should_show_animation_)
+    animation_restart_timer_.Reset();
+}
+
+void CalendarView::RestoreMonthStatus(bool is_scrolling_up) {
+  current_month_->layer()->GetAnimator()->StopAnimating();
+  current_month_->layer()->SetOpacity(1.0f);
+  current_month_->layer()->SetTransform(gfx::Transform());
+
+  if (is_scrolling_up) {
+    current_label_->layer()->GetAnimator()->StopAnimating();
+    previous_month_->layer()->GetAnimator()->StopAnimating();
+    current_label_->layer()->SetOpacity(1.0f);
+    current_label_->layer()->SetTransform(gfx::Transform());
+    previous_month_->layer()->SetOpacity(1.0f);
+    previous_month_->layer()->SetTransform(gfx::Transform());
+  } else {
+    next_label_->layer()->GetAnimator()->StopAnimating();
+    next_month_->layer()->GetAnimator()->StopAnimating();
+    next_label_->layer()->SetOpacity(1.0f);
+    next_label_->layer()->SetTransform(gfx::Transform());
+    next_month_->layer()->SetOpacity(1.0f);
+    next_month_->layer()->SetTransform(gfx::Transform());
+  }
+  if (!should_show_animation_)
+    animation_restart_timer_.Reset();
+}
+
 void CalendarView::ScrollToToday() {
   {
     base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
@@ -401,13 +501,6 @@ void CalendarView::MaybeResetContentViewFocusBehavior() {
   }
 
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-}
-
-void CalendarView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  header_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-  header_year_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
 }
 
 void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
@@ -481,13 +574,95 @@ CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
 }
 
 void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
-  std::u16string year_string =
-      base::UTF8ToUTF16(base::NumberToString(current_month.year));
+  if (!should_show_animation_) {
+    UpdateHeaders();
+    RestoreHeadersStatus();
+    return;
+  }
+  const int header_height = header_->GetPreferredSize().height();
+  const gfx::Vector2dF moving_location = gfx::Vector2dF(
+      0, calendar_view_controller_->was_on_later_month() ? -header_height / 2
+                                                         : header_height / 2);
+  gfx::Transform header_moving = gfx::TransformAboutPivot(
+      header_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  header_moving.Translate(moving_location);
 
-  header_->SetText(calendar_view_controller_->GetOnScreenMonthName());
-  header_year_->SetText(year_string);
+  should_show_animation_ = false;
 
-  scrolling_settled_timer_.Reset();
+  auto on_animation_aborted = [](base::WeakPtr<CalendarView> calendar_view) {
+    if (!calendar_view)
+      return;
+    calendar_view->UpdateHeaders();
+    calendar_view->RestoreHeadersStatus();
+  };
+
+  auto on_animation_ended = [](base::WeakPtr<CalendarView> calendar_view) {
+    if (!calendar_view)
+      return;
+    DCHECK(!calendar_view->header_->layer()->GetAnimator()->is_animating());
+
+    calendar_view->header_->layer()->SetTransform(gfx::Transform());
+    calendar_view->header_->layer()->SetOpacity(0.0f);
+    calendar_view->UpdateHeaders();
+    const int header_height =
+        calendar_view->header_->GetPreferredSize().height();
+    gfx::Vector2dF moving_location = gfx::Vector2dF(
+        0, calendar_view->calendar_view_controller_->was_on_later_month()
+               ? header_height / 2
+               : -header_height / 2);
+    gfx::Transform initial_state = gfx::TransformAboutPivot(
+        calendar_view->header_->GetLocalBounds().CenterPoint(),
+        gfx::Transform());
+    initial_state.Translate(moving_location);
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindOnce(
+            [](base::WeakPtr<CalendarView> calendar_view) {
+              if (!calendar_view)
+                return;
+              calendar_view->should_show_animation_ = true;
+              calendar_view->scrolling_settled_timer_.Reset();
+            },
+            calendar_view->weak_factory_.GetWeakPtr()))
+        .OnAborted(base::BindOnce(
+            [](base::WeakPtr<CalendarView> calendar_view) {
+              if (!calendar_view)
+                return;
+              calendar_view->UpdateHeaders();
+              calendar_view->RestoreHeadersStatus();
+            },
+            calendar_view->weak_factory_.GetWeakPtr()))
+        .Once()
+        .SetDuration(base::TimeDelta())
+        .SetTransform(calendar_view->header_, std::move(initial_state))
+        .Then()
+        .SetDuration(kAnimationDurationForMoving)
+        .SetTransform(calendar_view->header_, gfx::Transform(),
+                      gfx::Tween::EASE_OUT_2)
+        .At(base::Milliseconds(0))
+        .SetDuration(kDelayVisibilityAnimationDuration)
+        .Then()
+        .SetDuration(kAnimationDurationForVisibility)
+        .SetOpacity(calendar_view->header_, 1.0);
+    calendar_view->should_show_animation_ = true;
+    calendar_view->scrolling_settled_timer_.Reset();
+  };
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(on_animation_ended, weak_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(on_animation_aborted, weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kAnimationDurationForMoving)
+      .SetTransform(header_, std::move(header_moving), gfx::Tween::EASE_OUT_2)
+      .At(base::Milliseconds(0))
+      .SetDuration(kDelayVisibilityAnimationDuration)
+      .Then()
+      .SetDuration(kAnimationDurationForVisibility)
+      .SetOpacity(header_, 0.0);
 }
 
 void CalendarView::OnEventsFetched(
@@ -569,6 +744,7 @@ void CalendarView::ScrollUpOneMonthAndAutoScroll() {
     return;
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+  RestoreMonthStatus(/*is_scrolling_up=*/true);
   ScrollUpOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfCurrentMonth());
@@ -579,9 +755,86 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
     return;
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+  RestoreMonthStatus(/*is_scrolling_up=*/false);
   ScrollDownOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfCurrentMonth());
+}
+
+void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
+  if (is_resetting_scroll_)
+    return;
+
+  // If there's already an existing animation, restores each layer's visibility
+  // and position.
+  if (!should_show_animation_) {
+    if (is_scrolling_up) {
+      ScrollUpOneMonthAndAutoScroll();
+      return;
+    }
+    ScrollDownOneMonthAndAutoScroll();
+    return;
+  }
+
+  should_show_animation_ = false;
+  gfx::Vector2dF moving_up_location =
+      gfx::Vector2dF(0, previous_month_->GetPreferredSize().height() +
+                            current_label_->GetPreferredSize().height());
+  gfx::Vector2dF moving_down_location =
+      gfx::Vector2dF(0, -current_month_->GetPreferredSize().height() -
+                            next_label_->GetPreferredSize().height());
+
+  gfx::Transform current_month_moving = gfx::TransformAboutPivot(
+      current_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  current_month_moving.Translate(is_scrolling_up ? moving_up_location
+                                                 : moving_down_location);
+  gfx::Transform current_label_moving = gfx::TransformAboutPivot(
+      current_label_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  current_label_moving.Translate(moving_up_location);
+  gfx::Transform previous_month_moving = gfx::TransformAboutPivot(
+      previous_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  previous_month_moving.Translate(moving_up_location);
+
+  gfx::Transform next_label_moving = gfx::TransformAboutPivot(
+      next_label_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  next_label_moving.Translate(moving_down_location);
+  gfx::Transform next_month_moving = gfx::TransformAboutPivot(
+      next_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  next_month_moving.Translate(moving_down_location);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view, bool is_scrolling_up) {
+            if (!calendar_view)
+              return;
+            calendar_view->should_show_animation_ = true;
+            is_scrolling_up ? calendar_view->ScrollUpOneMonthAndAutoScroll()
+                            : calendar_view->ScrollDownOneMonthAndAutoScroll();
+          },
+          weak_factory_.GetWeakPtr(), is_scrolling_up))
+      .OnAborted(base::BindOnce(
+          [](base::WeakPtr<CalendarView> calendar_view, bool is_scrolling_up) {
+            if (!calendar_view)
+              return;
+            is_scrolling_up ? calendar_view->ScrollUpOneMonthAndAutoScroll()
+                            : calendar_view->ScrollDownOneMonthAndAutoScroll();
+          },
+          weak_factory_.GetWeakPtr(), is_scrolling_up))
+      .Once()
+      .SetDuration(kAnimationDurationForMoving * 2)
+      .SetTransform(current_month_, std::move(current_month_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetTransform(
+          is_scrolling_up ? current_label_ : next_label_,
+          std::move(is_scrolling_up ? current_label_moving : next_label_moving),
+          gfx::Tween::EASE_OUT_2)
+      .SetTransform(is_scrolling_up ? previous_month_ : next_month_,
+                    std::move(is_scrolling_up ? previous_month_moving
+                                              : next_month_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetOpacity(current_month_, 0.0);
 }
 
 void CalendarView::OnEvent(ui::Event* event) {

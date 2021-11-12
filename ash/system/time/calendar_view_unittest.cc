@@ -9,8 +9,11 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
@@ -99,8 +102,8 @@ class CalendarViewTest : public AshTestBase {
   CalendarMonthView* current_month() { return calendar_view_->current_month_; }
   CalendarMonthView* next_month() { return calendar_view_->next_month_; }
 
-  views::Label* header_() { return calendar_view_->header_; }
-  views::Label* header_year_() { return calendar_view_->header_year_; }
+  views::Label* month_header() { return calendar_view_->header_->header_; }
+  views::Label* header_year() { return calendar_view_->header_->header_year_; }
 
   views::Button* reset_to_today_button() {
     return calendar_view_->reset_to_today_button_;
@@ -147,7 +150,6 @@ class CalendarViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
   CalendarView* calendar_view_ = nullptr;
-  std::unique_ptr<CalendarViewController> controller_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
@@ -172,8 +174,8 @@ TEST_F(CalendarViewTest, Init) {
   EXPECT_EQ(u"July", GetPreviousLabelText());
   EXPECT_EQ(u"August", GetCurrentLabelText());
   EXPECT_EQ(u"September", GetNextLabelText());
-  EXPECT_EQ(u"August", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"August", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   EXPECT_EQ(u"27",
             static_cast<views::LabelButton*>(previous_month()->children()[0])
@@ -202,8 +204,8 @@ TEST_F(CalendarViewTest, InitDec) {
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
   EXPECT_EQ(u"January2022", GetNextLabelText());
-  EXPECT_EQ(u"December", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"December", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   EXPECT_EQ(u"31",
             static_cast<views::LabelButton*>(previous_month()->children()[0])
@@ -231,8 +233,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"September", GetPreviousLabelText());
   EXPECT_EQ(u"October", GetCurrentLabelText());
   EXPECT_EQ(u"November", GetNextLabelText());
-  EXPECT_EQ(u"October", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   // Scrolls to the next month.
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
@@ -241,8 +243,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"October", GetPreviousLabelText());
   EXPECT_EQ(u"November", GetCurrentLabelText());
   EXPECT_EQ(u"December", GetNextLabelText());
-  EXPECT_EQ(u"November", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"November", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
                                    NextMonthPosition());
@@ -250,8 +252,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
   EXPECT_EQ(u"January2022", GetNextLabelText());
-  EXPECT_EQ(u"December", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"December", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   scroll_view_()->ScrollToPosition(scroll_view_()->vertical_scroll_bar(),
                                    NextMonthPosition());
@@ -259,8 +261,8 @@ TEST_F(CalendarViewTest, Scroll) {
   EXPECT_EQ(u"December", GetPreviousLabelText());
   EXPECT_EQ(u"January2022", GetCurrentLabelText());
   EXPECT_EQ(u"February2022", GetNextLabelText());
-  EXPECT_EQ(u"January", header_()->GetText());
-  EXPECT_EQ(u"2022", header_year_()->GetText());
+  EXPECT_EQ(u"January", month_header()->GetText());
+  EXPECT_EQ(u"2022", header_year()->GetText());
 }
 
 // Tests the up, down, and reset_to_today button callback functions.
@@ -279,48 +281,48 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
   EXPECT_EQ(u"September", GetPreviousLabelText());
   EXPECT_EQ(u"October", GetCurrentLabelText());
   EXPECT_EQ(u"November", GetNextLabelText());
-  EXPECT_EQ(u"October", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"October", GetPreviousLabelText());
   EXPECT_EQ(u"November", GetCurrentLabelText());
   EXPECT_EQ(u"December", GetNextLabelText());
-  EXPECT_EQ(u"November", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"November", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
   EXPECT_EQ(u"January2022", GetNextLabelText());
-  EXPECT_EQ(u"December", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"December", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
   EXPECT_EQ(u"January2022", GetCurrentLabelText());
   EXPECT_EQ(u"February2022", GetNextLabelText());
-  EXPECT_EQ(u"January", header_()->GetText());
-  EXPECT_EQ(u"2022", header_year_()->GetText());
+  EXPECT_EQ(u"January", month_header()->GetText());
+  EXPECT_EQ(u"2022", header_year()->GetText());
 
   ScrollUpOneMonth();
 
   EXPECT_EQ(u"November", GetPreviousLabelText());
   EXPECT_EQ(u"December", GetCurrentLabelText());
   EXPECT_EQ(u"January2022", GetNextLabelText());
-  EXPECT_EQ(u"December", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"December", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 
   ScrollDownOneMonth();
 
   EXPECT_EQ(u"December", GetPreviousLabelText());
   EXPECT_EQ(u"January2022", GetCurrentLabelText());
   EXPECT_EQ(u"February2022", GetNextLabelText());
-  EXPECT_EQ(u"January", header_()->GetText());
-  EXPECT_EQ(u"2022", header_year_()->GetText());
+  EXPECT_EQ(u"January", month_header()->GetText());
+  EXPECT_EQ(u"2022", header_year()->GetText());
 
   // Goes back to the landing view.
   ResetToToday();
@@ -328,8 +330,8 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
   EXPECT_EQ(u"September", GetPreviousLabelText());
   EXPECT_EQ(u"October", GetCurrentLabelText());
   EXPECT_EQ(u"November", GetNextLabelText());
-  EXPECT_EQ(u"October", header_()->GetText());
-  EXPECT_EQ(u"2021", header_year_()->GetText());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
 // For all the Focusing tests below, Jun, 2021 is used.
@@ -552,6 +554,104 @@ TEST_F(CalendarViewTest, FocusingToNavigate) {
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
   EXPECT_EQ(u"April", GetCurrentLabelText());
+}
+
+// A test class for testing animation. This class cannot set fake now since it's
+// using `MOCK_TIME` to test the animations.
+class CalendarViewAnimationTest : public AshTestBase {
+ public:
+  CalendarViewAnimationTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  CalendarViewAnimationTest(const CalendarViewAnimationTest&) = delete;
+  CalendarViewAnimationTest& operator=(const CalendarViewAnimationTest&) =
+      delete;
+  ~CalendarViewAnimationTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    delegate_ =
+        std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
+    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_controller_ =
+        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    delegate_.reset();
+    tray_controller_.reset();
+    tray_model_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void CreateCalendarView() {
+    calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
+        delegate_.get(), tray_controller_.get()));
+  }
+
+  CalendarView* calendar_view() { return calendar_view_; }
+
+  views::Label* month_header() { return calendar_view_->header_->header_; }
+  views::Label* header_year() { return calendar_view_->header_->header_year_; }
+  CalendarHeaderView* header() { return calendar_view_->header_; }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+  // Owned by `widget_`.
+  CalendarView* calendar_view_ = nullptr;
+  std::unique_ptr<DetailedViewDelegate> delegate_;
+  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
+  static base::Time fake_time_;
+};
+
+TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
+
+  CreateCalendarView();
+  calendar_view()->calendar_view_controller()->UpdateMonth(date);
+  // Gives it a duration to let the animation finish and pass the cool down
+  // duration.
+  task_environment()->FastForwardBy(base::Milliseconds(1200));
+
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // Update the header to next month.
+  calendar_view()->calendar_view_controller()->UpdateMonth(date +
+                                                           base::Days(33));
+
+  // The Opacity is updated from 1.0f to 0.0f after 200ms delay duration.
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(base::Milliseconds(210));
+  EXPECT_EQ(0.0f, header()->layer()->opacity());
+
+  // Now the header is updated to the new month and year before it starts to
+  // showing up.
+  EXPECT_EQ(u"November", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // The Opacity is back from 0.0f to 1.0 after 200ms delay duration.
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(0.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(base::Milliseconds(210));
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+
+  // Gives it a duration to let the animation finish.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  EXPECT_EQ(u"November", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
 }  // namespace ash

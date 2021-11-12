@@ -73,6 +73,12 @@ void CalendarViewController::RemoveObserver(Observer* observer) {
 
 void CalendarViewController::UpdateMonth(
     const base::Time current_month_first_date) {
+  if (calendar_utils::GetExplodedLocal(current_date_).month ==
+      calendar_utils::GetExplodedLocal(current_month_first_date).month) {
+    return;
+  }
+
+  was_on_later_month_ = current_date_ > current_month_first_date;
   current_date_ = current_month_first_date;
   for (auto& observer : observers_) {
     observer.OnMonthChanged(
