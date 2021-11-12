@@ -142,9 +142,6 @@ struct TypeConverter<mojom::UrlRequestActionPtr,
             mojo::ConvertTo<mojom::UrlRequestRewriteAppendToQueryPtr>(
                 input.append_to_query()));
       default:
-        // This is to prevent build breakage when adding new rewrites to the
-        // FIDL definition.
-        NOTREACHED();
         return nullptr;
     }
   }
