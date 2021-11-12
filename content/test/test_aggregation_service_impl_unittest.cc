@@ -26,7 +26,7 @@ class TestAggregationServiceImplTest : public testing::Test {
  public:
   TestAggregationServiceImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        impl_(std::make_unique<TestAggregationServiceImpl>(
+        service_impl_(std::make_unique<TestAggregationServiceImpl>(
             task_environment_.GetMockClock(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_))) {}
@@ -36,7 +36,7 @@ class TestAggregationServiceImplTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  protected:
-  std::unique_ptr<TestAggregationServiceImpl> impl_;
+  std::unique_ptr<TestAggregationServiceImpl> service_impl_;
 };
 
 TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
@@ -57,13 +57,13 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
 
-  impl_->SetPublicKeys(origin, json_string,
-                       base::BindLambdaForTesting([&](bool succeeded) {
-                         EXPECT_TRUE(succeeded);
-                       }));
+  service_impl_->SetPublicKeys(origin, json_string,
+                               base::BindLambdaForTesting([&](bool succeeded) {
+                                 EXPECT_TRUE(succeeded);
+                               }));
 
   base::RunLoop run_loop;
-  impl_->GetPublicKeys(
+  service_impl_->GetPublicKeys(
       origin, base::BindLambdaForTesting([&](std::vector<PublicKey> keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
             {generated_key.public_key}, keys));

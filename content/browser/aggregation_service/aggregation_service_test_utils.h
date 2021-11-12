@@ -14,9 +14,9 @@
 
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,16 +83,17 @@ TestHpkeKey GenerateKey(std::string key_id = "example_id");
 const std::vector<uint8_t> kABCD1234AsBytes = {0, 16, 131, 215, 109, 248};
 const std::vector<uint8_t> kEFGH5678AsBytes = {16, 81, 135, 231, 174, 252};
 
-class TestAggregatableReportManager : public AggregatableReportManager {
+class TestAggregationServiceStorageContext
+    : public AggregationServiceStorageContext {
  public:
-  explicit TestAggregatableReportManager(const base::Clock* clock);
-  TestAggregatableReportManager(const TestAggregatableReportManager& other) =
-      delete;
-  TestAggregatableReportManager& operator=(
-      const TestAggregatableReportManager& other) = delete;
-  ~TestAggregatableReportManager() override;
+  explicit TestAggregationServiceStorageContext(const base::Clock* clock);
+  TestAggregationServiceStorageContext(
+      const TestAggregationServiceStorageContext& other) = delete;
+  TestAggregationServiceStorageContext& operator=(
+      const TestAggregationServiceStorageContext& other) = delete;
+  ~TestAggregationServiceStorageContext() override;
 
-  // AggregatableReportManager:
+  // AggregationServiceStorageContext:
   const base::SequenceBound<content::AggregationServiceKeyStorage>&
   GetKeyStorage() override;
 

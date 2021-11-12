@@ -17,9 +17,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/aggregation_service_network_fetcher_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,22 +29,22 @@
 namespace content {
 
 AggregatableReportAssembler::AggregatableReportAssembler(
-    AggregatableReportManager* manager,
+    AggregationServiceStorageContext* storage_context,
     StoragePartition* storage_partition)
     : AggregatableReportAssembler(
           std::make_unique<AggregationServiceKeyFetcher>(
-              manager,
+              storage_context,
               std::make_unique<AggregationServiceNetworkFetcherImpl>(
                   base::DefaultClock::GetInstance(),
                   storage_partition)),
           std::make_unique<AggregatableReport::Provider>()) {}
 
 AggregatableReportAssembler::AggregatableReportAssembler(
-    AggregatableReportManager* manager,
+    AggregationServiceStorageContext* storage_context,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : AggregatableReportAssembler(
           std::make_unique<AggregationServiceKeyFetcher>(
-              manager,
+              storage_context,
               AggregationServiceNetworkFetcherImpl::
                   CreateForTesting(  // IN-TEST
                       base::DefaultClock::GetInstance(),
@@ -90,10 +90,10 @@ AggregatableReportAssembler::CreateForTesting(
 // static
 std::unique_ptr<AggregatableReportAssembler>
 AggregatableReportAssembler::CreateForTesting(
-    AggregatableReportManager* manager,
+    AggregationServiceStorageContext* storage_context,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return base::WrapUnique(
-      new AggregatableReportAssembler(manager, std::move(url_loader_factory)));
+  return base::WrapUnique(new AggregatableReportAssembler(
+      storage_context, std::move(url_loader_factory)));
 }
 
 void AggregatableReportAssembler::AssembleReport(

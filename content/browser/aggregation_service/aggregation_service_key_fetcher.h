@@ -22,7 +22,7 @@ class Origin;
 
 namespace content {
 
-class AggregatableReportManager;
+class AggregationServiceStorageContext;
 
 // This class is responsible for requesting keys from storage, owned by the
 // assembler.
@@ -53,8 +53,9 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   using FetchCallback =
       base::OnceCallback<void(absl::optional<PublicKey>, PublicKeyFetchStatus)>;
 
-  AggregationServiceKeyFetcher(AggregatableReportManager* manager,
-                               std::unique_ptr<NetworkFetcher> network_fetcher);
+  AggregationServiceKeyFetcher(
+      AggregationServiceStorageContext* storage_context,
+      std::unique_ptr<NetworkFetcher> network_fetcher);
   AggregationServiceKeyFetcher(const AggregationServiceKeyFetcher& other) =
       delete;
   AggregationServiceKeyFetcher& operator=(
@@ -95,9 +96,9 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
   void RunCallbacksForOrigin(const url::Origin& origin,
                              const std::vector<PublicKey>& keys);
 
-  // Using a raw pointer is safe because `manager_` is guaranteed to outlive
-  // `this`.
-  AggregatableReportManager* manager_;
+  // Using a raw pointer is safe because `storage_context_` is guaranteed to
+  // outlive `this`.
+  AggregationServiceStorageContext* storage_context_;
 
   // Map of all origins that are currently waiting for the public keys, and
   // their associated fetch callbacks. Used to cache ongoing requests to the

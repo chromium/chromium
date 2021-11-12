@@ -39,6 +39,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
@@ -1340,6 +1341,12 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = FontAccessManagerImpl::Create();
   compute_pressure_manager_ = ComputePressureManager::Create();
+
+  if (base::FeatureList::IsEnabled(
+          features::kPrivacySandboxAggregationService)) {
+    aggregation_service_ =
+        std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
+  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1642,6 +1649,11 @@ ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {
 NativeIOContext* StoragePartitionImpl::GetNativeIOContext() {
   DCHECK(initialized_);
   return native_io_context_.get();
+}
+
+AggregationServiceImpl* StoragePartitionImpl::GetAggregationService() {
+  DCHECK(initialized_);
+  return aggregation_service_.get();
 }
 
 leveldb_proto::ProtoDatabaseProvider*

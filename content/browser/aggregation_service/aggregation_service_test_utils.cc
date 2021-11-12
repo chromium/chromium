@@ -222,7 +222,7 @@ TestHpkeKey GenerateKey(std::string key_id) {
 
 }  // namespace aggregation_service
 
-TestAggregatableReportManager::TestAggregatableReportManager(
+TestAggregationServiceStorageContext::TestAggregationServiceStorageContext(
     const base::Clock* clock)
     : storage_(base::SequenceBound<AggregationServiceStorageSql>(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
@@ -230,15 +230,16 @@ TestAggregatableReportManager::TestAggregatableReportManager(
           /*path_to_database=*/base::FilePath(),
           clock)) {}
 
-TestAggregatableReportManager::~TestAggregatableReportManager() = default;
+TestAggregationServiceStorageContext::~TestAggregationServiceStorageContext() =
+    default;
 
 const base::SequenceBound<content::AggregationServiceKeyStorage>&
-TestAggregatableReportManager::GetKeyStorage() {
+TestAggregationServiceStorageContext::GetKeyStorage() {
   return storage_;
 }
 
 TestAggregationServiceKeyFetcher::TestAggregationServiceKeyFetcher()
-    : AggregationServiceKeyFetcher(/*manager=*/nullptr,
+    : AggregationServiceKeyFetcher(/*storage_context=*/nullptr,
                                    /*network_fetcher=*/nullptr) {}
 
 TestAggregationServiceKeyFetcher::~TestAggregationServiceKeyFetcher() = default;

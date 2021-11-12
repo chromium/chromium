@@ -81,15 +81,15 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
  public:
   AggregationServiceKeyFetcherTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        manager_(task_environment_.GetMockClock()) {
+        storage_context_(task_environment_.GetMockClock()) {
     auto network_fetcher = std::make_unique<MockNetworkFetcher>();
     network_fetcher_ = network_fetcher.get();
     fetcher_ = std::make_unique<AggregationServiceKeyFetcher>(
-        &manager_, std::move(network_fetcher));
+        &storage_context_, std::move(network_fetcher));
   }
 
   void SetPublicKeysInStorage(const url::Origin& origin, PublicKeyset keyset) {
-    manager_.GetKeyStorage()
+    storage_context_.GetKeyStorage()
         .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
         .WithArgs(origin, std::move(keyset));
   }
@@ -97,7 +97,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   void ExpectPublicKeysInStorage(const url::Origin& origin,
                                  const std::vector<PublicKey>& expected_keys) {
     base::RunLoop run_loop;
-    manager_.GetKeyStorage()
+    storage_context_.GetKeyStorage()
         .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
         .WithArgs(origin)
         .Then(
@@ -130,7 +130,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
   const base::Clock& clock() const { return *task_environment_.GetMockClock(); }
 
   base::test::TaskEnvironment task_environment_;
-  TestAggregatableReportManager manager_;
+  TestAggregationServiceStorageContext storage_context_;
   std::unique_ptr<AggregationServiceKeyFetcher> fetcher_;
   MockNetworkFetcher* network_fetcher_;
 

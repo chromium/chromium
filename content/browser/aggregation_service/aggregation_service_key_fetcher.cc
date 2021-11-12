@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/rand_util.h"
-#include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -21,9 +21,10 @@
 namespace content {
 
 AggregationServiceKeyFetcher::AggregationServiceKeyFetcher(
-    AggregatableReportManager* manager,
+    AggregationServiceStorageContext* storage_context,
     std::unique_ptr<NetworkFetcher> network_fetcher)
-    : manager_(manager), network_fetcher_(std::move(network_fetcher)) {}
+    : storage_context_(storage_context),
+      network_fetcher_(std::move(network_fetcher)) {}
 
 AggregationServiceKeyFetcher::~AggregationServiceKeyFetcher() = default;
 
@@ -43,7 +44,7 @@ void AggregationServiceKeyFetcher::GetPublicKey(const url::Origin& origin,
 
   // First we check if we already have keys stored.
   // TODO(crbug.com/1223488): Pass origin by value and move after C++17.
-  manager_->GetKeyStorage()
+  storage_context_->GetKeyStorage()
       .AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
       .WithArgs(origin)
       .Then(base::BindOnce(
@@ -87,13 +88,13 @@ void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromNetwork(
     // `keyset` will be absl::nullopt if an error occurred and `expiry_time`
     // will be null if the freshness lifetime was zero. In these cases, we will
     // still update the keys for `origin`, i,e. clear them.
-    manager_->GetKeyStorage()
+    storage_context_->GetKeyStorage()
         .AsyncCall(&AggregationServiceKeyStorage::ClearPublicKeys)
         .WithArgs(origin);
   } else {
     // Store public keys fetched from network to storage, the old keys will be
     // deleted from storage.
-    manager_->GetKeyStorage()
+    storage_context_->GetKeyStorage()
         .AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
         .WithArgs(origin, keyset.value());
   }

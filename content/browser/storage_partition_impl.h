@@ -55,6 +55,7 @@ class IsolationInfo;
 
 namespace content {
 
+class AggregationServiceImpl;
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
@@ -235,6 +236,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   InterestGroupManager* GetInterestGroupManager();
   ComputePressureManager* GetComputePressureManager();
   std::string GetPartitionDomain();
+  AggregationServiceImpl* GetAggregationService();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -578,6 +580,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
   std::unique_ptr<FontAccessManagerImpl> font_access_manager_;
   std::unique_ptr<InterestGroupManager> interest_group_manager_;
+  std::unique_ptr<AggregationServiceImpl> aggregation_service_;
 
   // TODO(crbug.com/1205695): ComputePressureManager should live elsewher. The
   //                          Compute Pressure API does not store data.

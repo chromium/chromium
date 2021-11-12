@@ -576,6 +576,10 @@ const base::Feature kProcessSharingWithStrictSiteInstances{
 const base::Feature kHighPriorityBeforeUnload{
     "HighPriorityBeforeUnload", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Aggregation Service. See crbug.com/1207974.
+const base::Feature kPrivacySandboxAggregationService = {
+    "PrivacySandboxAggregationService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
 // See: https://wicg.github.io/private-network-access/#cors-preflight

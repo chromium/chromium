@@ -30,7 +30,7 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class AggregatableReportManager;
+class AggregationServiceStorageContext;
 class StoragePartition;
 
 // This class provides an interface for assembling an aggregatable report. It is
@@ -60,7 +60,7 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // the possibility of unbounded memory growth
   static constexpr size_t kMaxSimultaneousRequests = 1000;
 
-  AggregatableReportAssembler(AggregatableReportManager* manager,
+  AggregatableReportAssembler(AggregationServiceStorageContext* storage_context,
                               StoragePartition* storage_partition);
   // Not copyable or movable.
   AggregatableReportAssembler(const AggregatableReportAssembler& other) =
@@ -76,14 +76,20 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   // Used by the aggregation service tool to inject a `url_loader_factory` to
   // AggregationServiceNetworkFetcherImpl if one is provided.
   static std::unique_ptr<AggregatableReportAssembler> CreateForTesting(
-      AggregatableReportManager* manager,
+      AggregationServiceStorageContext* storage_context,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Fetches the necessary public keys and uses it to construct an
   // AggregatableReport from the information in `report_request`. See the
   // AggregatableReport documentation for more detail on the returned report.
-  void AssembleReport(AggregatableReportRequest report_request,
-                      AssemblyCallback callback);
+  virtual void AssembleReport(AggregatableReportRequest report_request,
+                              AssemblyCallback callback);
+
+ protected:
+  // For testing only.
+  AggregatableReportAssembler(
+      AggregationServiceStorageContext* storage_context,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
   // Represents a request to assemble a report that has not completed.
@@ -112,11 +118,6 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   AggregatableReportAssembler(
       std::unique_ptr<AggregationServiceKeyFetcher> fetcher,
       std::unique_ptr<AggregatableReport::Provider> report_provider);
-
-  // For testing only.
-  AggregatableReportAssembler(
-      AggregatableReportManager* manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when a result is returned from the key fetcher. Handles throwing
   // errors on a failed fetch, waiting for both results to return and calling

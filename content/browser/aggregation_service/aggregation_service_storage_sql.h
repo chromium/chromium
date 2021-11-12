@@ -44,8 +44,7 @@ struct PublicKeyset;
 class CONTENT_EXPORT AggregationServiceStorageSql
     : public AggregationServiceKeyStorage {
  public:
-  // `clock` must be a non-null pointer to an AggregationServiceStorageSql that
-  // is valid as long as this object.
+  // `clock` must be a non-null pointer that is valid as long as this object.
   AggregationServiceStorageSql(bool run_in_memory,
                                const base::FilePath& path_to_database,
                                const base::Clock* clock);
