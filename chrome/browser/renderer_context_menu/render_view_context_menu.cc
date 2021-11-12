@@ -1815,6 +1815,10 @@ void RenderViewContextMenu::AppendCopyItem() {
 }
 
 void RenderViewContextMenu::AppendLinkToTextItems() {
+  if (!GetPrefs(browser_context_)
+           ->GetBoolean(prefs::kScrollToTextFragmentEnabled))
+    return;
+
   if (link_to_text_menu_observer_)
     return;
 

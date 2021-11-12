@@ -169,6 +169,26 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
                              ui::MENU_SOURCE_NONE);
   }
 
+  std::unique_ptr<TestRenderViewContextMenu>
+  CreateContextMenuForTextInWebContents(const std::u16string& selection_text) {
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
+    params.selection_text = selection_text;
+    params.page_url = web_contents->GetVisibleURL();
+    params.source_type = ui::MENU_SOURCE_NONE;
+#if defined(OS_MAC)
+    params.writing_direction_default = 0;
+    params.writing_direction_left_to_right = 0;
+    params.writing_direction_right_to_left = 0;
+#endif
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetMainFrame(), params);
+    menu->Init();
+    return menu;
+  }
+
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
       const GURL& unfiltered_url,
       const GURL& url,
@@ -2059,4 +2079,15 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToJpg) {
       gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66), ".jpg");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       CopyLinkToTextDisabledWithScrollToTextPolicyDisabled) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kScrollToTextFragmentEnabled, false);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuForTextInWebContents(u"selection text");
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
+}
 }  // namespace
