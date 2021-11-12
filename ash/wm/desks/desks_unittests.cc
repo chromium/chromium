@@ -385,6 +385,33 @@ TEST_F(DesksTest, DesksCreationAndRemoval) {
   controller->RemoveObserver(&observer);
 }
 
+// Regression test for a crash reported at https://crbug.com/1267069. If a
+// window was created while the MRU tracker is paused (so it's not tracked), and
+// later the desk on which this window resides is removed, that window will be
+// moved to an adjacent desk, and its order in the MRU tracker is updated. But
+// the MRU tracker was not tracking it to begin with, so this case has to be
+// handled.
+TEST_F(DesksTest, DeskRemovalWithPausedMruTracker) {
+  NewDesk();
+  auto* controller = DesksController::Get();
+  EXPECT_EQ(2u, controller->desks().size());
+
+  auto* desk_2 = controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  const auto win_bounds = gfx::Rect{10, 20, 250, 100};
+  auto win1 = CreateAppWindow(win_bounds);
+  auto* mru_tracker = Shell::Get()->mru_window_tracker();
+  // Pause the MRU tracking and create a new window.
+  mru_tracker->SetIgnoreActivations(true);
+  auto win2 = CreateAppWindow(win_bounds);
+
+  // Enter overview and remove `desk_2`. A crash should not be observed.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  RemoveDesk(desk_2);
+}
+
 // Verifies that desk's name change notifies |DesksController::Observer|.
 TEST_F(DesksTest, OnDeskNameChanged) {
   TestObserver observer;
