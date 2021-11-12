@@ -204,6 +204,11 @@ public class BookmarkSaveFlowCoordinator {
         public int getSheetFullHeightAccessibilityStringId() {
             return R.string.bookmarks_save_flow_opened_full;
         }
+
+        @Override
+        public boolean hasCustomScrimLifecycle() {
+            return true;
+        }
     }
 
     @VisibleForTesting
