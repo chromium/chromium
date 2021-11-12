@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -23,6 +24,8 @@
 namespace {
 
 #if defined(OS_ANDROID)
+// Seems like on Android `1 dip == 1 px`. The value of `kDipForServerRequests`
+// can be overridden by `features::kLargeFaviconFromGoogle`.
 const int kDipForServerRequests = 24;
 const favicon_base::IconType kIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
@@ -75,8 +78,16 @@ KeyedService* LargeIconServiceFactory::BuildServiceInstanceFor(
           std::make_unique<ImageDecoderImpl>(),
           profile->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()),
-      kDipForServerRequests, kIconTypeForServerRequests,
+      desired_size_in_dip_for_server_requests(), kIconTypeForServerRequests,
       kGoogleServerClientParam);
+}
+
+// static
+int LargeIconServiceFactory::desired_size_in_dip_for_server_requests() {
+  if (base::FeatureList::IsEnabled(features::kLargeFaviconFromGoogle)) {
+    return features::kLargeFaviconFromGoogleSizeInDip.Get();
+  }
+  return kDipForServerRequests;
 }
 
 bool LargeIconServiceFactory::ServiceIsNULLWhileTesting() const {

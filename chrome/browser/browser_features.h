@@ -61,6 +61,9 @@ extern const base::Feature kWebUsbDeviceDetection;
 extern const base::Feature kCertificateTransparencyAndroid;
 #endif
 
+extern const base::Feature kLargeFaviconFromGoogle;
+extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

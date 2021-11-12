@@ -2707,8 +2707,18 @@ const FeatureEntry::FeatureParam kScrollCaptureInMemory[] = {
 const FeatureEntry::FeatureVariation kScrollCaptureVariations[] = {
     {"(in memory capture)", kScrollCaptureInMemory,
      base::size(kScrollCaptureInMemory), nullptr}};
-
 #endif  // defined(OS_ANDROID)
+
+const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {
+    {"favicon_size_in_dip", "96"}};
+const FeatureEntry::FeatureParam kLargeFaviconFromGoogle128[] = {
+    {"favicon_size_in_dip", "128"}};
+
+const FeatureEntry::FeatureVariation kLargeFaviconFromGoogleVariations[] = {
+    {"(96dip)", kLargeFaviconFromGoogle96,
+     base::size(kLargeFaviconFromGoogle96), nullptr},
+    {"(128dip)", kLargeFaviconFromGoogle128,
+     base::size(kLargeFaviconFromGoogle128), nullptr}};
 
 const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -7744,6 +7754,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultLinkCapturingInBrowserDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kDefaultLinkCapturingInBrowser)},
 #endif
+
+    {"large-favicon-from-google",
+     flag_descriptions::kLargeFaviconFromGoogleName,
+     flag_descriptions::kLargeFaviconFromGoogleDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLargeFaviconFromGoogle,
+                                    kLargeFaviconFromGoogleVariations,
+                                    "LargeFaviconFromGoogle")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

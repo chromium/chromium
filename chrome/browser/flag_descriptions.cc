@@ -1560,6 +1560,10 @@ const char kJourneysOmniboxActionName[] = "History Journeys Omnibox Action";
 const char kJourneysOmniboxActionDescription[] =
     "Enables the History Journeys Omnibox Action.";
 
+const char kLargeFaviconFromGoogleName[] = "Large favicons from Google";
+const char kLargeFaviconFromGoogleDescription[] =
+    "Request large favicons from Google's favicon service";
+
 const char kLensCameraAssistedSearchName[] =
     "Google Lens in Omnibox and New Tab Page";
 const char kLensCameraAssistedSearchDescription[] =

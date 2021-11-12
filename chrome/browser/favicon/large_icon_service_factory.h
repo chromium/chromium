@@ -31,6 +31,10 @@ class LargeIconServiceFactory : public BrowserContextKeyedServiceFactory {
   LargeIconServiceFactory(const LargeIconServiceFactory&) = delete;
   LargeIconServiceFactory& operator=(const LargeIconServiceFactory&) = delete;
 
+  // Returns the icon size requested from server. The returned value takes into
+  // account the state of `features::kLargeFaviconFromGoogle`.
+  static int desired_size_in_dip_for_server_requests();
+
  private:
   friend struct base::DefaultSingletonTraits<LargeIconServiceFactory>;
 

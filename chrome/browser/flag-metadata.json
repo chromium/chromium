@@ -3619,6 +3619,13 @@
     "expiry_milestone": 130
   },
   {
+    "name": "large-favicon-from-google",
+    "owners": [
+      "bttk"
+    ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "launcher-nudge",
     "owners": [ "wcwang", "//ash/app_list/OWNERS" ],
     "expiry_milestone": 104

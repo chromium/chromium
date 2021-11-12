@@ -4544,6 +4544,7 @@ test("unit_tests") {
     "../browser/enterprise/reporting/report_scheduler_unittest.cc",
     "../browser/enterprise/util/managed_browser_utils_unittest.cc",
     "../browser/external_protocol/external_protocol_handler_unittest.cc",
+    "../browser/favicon/large_icon_service_factory_unittest.cc",
     "../browser/federated_learning/floc_eligibility_unittest.cc",
     "../browser/federated_learning/floc_event_logger_unittest.cc",
     "../browser/federated_learning/floc_id_provider_unittest.cc",

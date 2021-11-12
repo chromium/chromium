@@ -55,7 +55,7 @@ using ::testing::ReturnArg;
 namespace ntp_tiles {
 namespace {
 
-const int kTestDipForServerRequests = 24;
+const int kTestDipForServerRequests = 32;
 const favicon_base::IconType kTestIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
 const char kTestGoogleServerClientParam[] = "test_chrome";

@@ -133,4 +133,9 @@ const base::Feature kCertificateTransparencyAndroid{
     "CertificateTransparencyAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kLargeFaviconFromGoogle{"LargeFaviconFromGoogle",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
+    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
+
 }  // namespace features
