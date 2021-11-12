@@ -529,7 +529,7 @@ bool ComputeSHA256DigestOfPath(const base::FilePath& path,
   DCHECK(digest);
 
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 
