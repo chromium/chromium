@@ -144,7 +144,7 @@ bool ClipboardMac::IsFormatAvailable(
   if (format == ClipboardFormatType::PngType() ||
       format == ClipboardFormatType::BitmapType()) {
     return [types containsObject:NSPasteboardTypePNG] ||
-           [types containsObject:NSTIFFPboardType];
+           [types containsObject:NSPasteboardTypeTIFF];
   }
   return [types containsObject:format.ToNSString()];
 }
