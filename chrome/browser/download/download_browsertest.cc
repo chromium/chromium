@@ -3773,7 +3773,8 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
 }
 
 // TODO(https://crbug.com/1244128): Flaky on Win7
-#if defined(OS_WIN) || defined(OS_LINUX)
+// TODO(crbug.com/1269422): Flaky on Lacros
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_SaveLinkAsVsCrossOriginResourcePolicy \
   DISABLED_SaveLinkAsVsCrossOriginResourcePolicy
 #else
