@@ -170,7 +170,7 @@ int SuggestionChipContainerView::DoUpdate() {
                                    notifier_results);
   }
 
-  InvalidateLayout();
+  Layout();
   return std::min(kMaxSuggestionChips, display_results.size());
 }
 

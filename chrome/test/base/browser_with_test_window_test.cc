@@ -134,8 +134,8 @@ void BrowserWithTestWindowTest::TearDown() {
   // as part of the teardown will avoid unexpected test failures.
   ash::KioskAppManager::Shutdown();
 
-  test_views_delegate_.reset();
   ash_test_helper_.TearDown();
+  test_views_delegate_.reset();
 #elif defined(TOOLKIT_VIEWS)
   views_test_helper_.reset();
 #endif
