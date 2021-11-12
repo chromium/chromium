@@ -14,4 +14,5 @@ interface HTMLSelectMenuElement : HTMLElement {
   [ImplementedAs=formOwner] readonly attribute HTMLFormElement? form;
   [CEReactions, Reflect] attribute DOMString name;
   readonly attribute DOMString type;
+  [CEReactions, Reflect] attribute boolean required;
 };

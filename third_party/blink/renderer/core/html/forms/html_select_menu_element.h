@@ -83,6 +83,9 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void SetButtonPart(Element* new_button_part);
   void SetListboxPart(HTMLPopupElement* new_listbox_part);
 
+  bool IsRequiredFormControl() const override;
+  bool IsOptionalFormControl() const override;
+
   // HTMLFormControlElementWithState overrides:
   const AtomicString& FormControlType() const override;
   bool MayTriggerVirtualKeyboard() const override;

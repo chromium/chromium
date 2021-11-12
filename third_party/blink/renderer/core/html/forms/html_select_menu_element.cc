@@ -832,6 +832,14 @@ void HTMLSelectMenuElement::RestoreFormControlState(
   setValue(state[0]);
 }
 
+bool HTMLSelectMenuElement::IsRequiredFormControl() const {
+  return IsRequired();
+}
+
+bool HTMLSelectMenuElement::IsOptionalFormControl() const {
+  return !IsRequiredFormControl();
+}
+
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_part_listener_);
   visitor->Trace(option_part_listener_);

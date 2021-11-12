@@ -976,6 +976,7 @@ html element selectmenu
     property form
     property name
     property open
+    property required
     property type
     property value
 html element slot
