@@ -42,6 +42,7 @@ group("locally_built") {
     ":libindicator3-7",
     ":libjpeg-turbo8",
     ":libldap-2.4-2",
+    ":libnettle7",
     ":libnspr4",
     ":libp11-kit0",
     ":libpci3",
@@ -555,6 +556,9 @@ instrumented_library("libnspr4") {
     "--disable-debug",
   ]
   pre_build = "scripts/pre-build/libnspr4.sh"
+}
+
+instrumented_library("libnettle7") {
 }
 
 instrumented_library("libp11-kit0") {
