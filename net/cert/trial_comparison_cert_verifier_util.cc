@@ -4,6 +4,7 @@
 
 #include "net/cert/trial_comparison_cert_verifier_util.h"
 
+#include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
@@ -107,7 +108,8 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
     int primary_error,
     const CertVerifyResult& primary_result,
     int trial_error,
-    const CertVerifyResult& trial_result) {
+    const CertVerifyResult& trial_result,
+    bool sha1_local_anchors_enabled) {
   DCHECK(primary_result.verified_cert);
   DCHECK(trial_result.verified_cert);
 
@@ -132,6 +134,53 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
       return TrialComparisonResult::kIgnoredMultipleEVPoliciesAndOneMatchesRoot;
     }
   }
+
+  // SHA-1 signatures are not supported; ignore any results with expected SHA-1
+  // errors. There are however a few cases with SHA-1 signatures where we might
+  // want to see the difference:
+  //
+  //  * local anchors enabled, and one verifier built to a SHA-1 local root but
+  //     the other built to a known root.
+  //  * If a verifier returned a SHA-1 signature status but did not return an
+  //    error.
+  if (!(sha1_local_anchors_enabled &&
+        (!primary_result.is_issued_by_known_root ||
+         !trial_result.is_issued_by_known_root)) &&
+      (primary_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT) &&
+      (trial_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT) &&
+      primary_error != OK && trial_error != OK) {
+    return TrialComparisonResult::kIgnoredSHA1SignaturePresent;
+  }
+
+#if defined(OS_WIN)
+  // cert_verify_proc_win has some oddities around revocation checking
+  // and EV certs; if the only difference is the primary windows verifier
+  // had CERT_STATUS_REV_CHECKING_ENABLED in addition then we can ignore.
+  if (chains_equal &&
+      (primary_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED) &&
+      ((primary_result.cert_status ^ CERT_STATUS_REV_CHECKING_ENABLED) ==
+       trial_result.cert_status)) {
+    return TrialComparisonResult::kIgnoredWindowsRevCheckingEnabled;
+  }
+#endif
+
+  // Differences in chain or errors don't matter much if both
+  // return AUTHORITY_INVALID.
+  if ((primary_result.cert_status & CERT_STATUS_AUTHORITY_INVALID) &&
+      (trial_result.cert_status & CERT_STATUS_AUTHORITY_INVALID)) {
+    return TrialComparisonResult::kIgnoredBothAuthorityInvalid;
+  }
+
+  // Due to differences in path building preferences we may end up with
+  // different chains in cross-signing situations. These cases are ignorable if
+  // the errors are equivalent and both chains end up at a known_root.
+  if (!chains_equal && (primary_error == trial_error) &&
+      primary_result.is_issued_by_known_root &&
+      trial_result.is_issued_by_known_root &&
+      (primary_result.cert_status == trial_result.cert_status)) {
+    return TrialComparisonResult::kIgnoredBothKnownRoot;
+  }
+
   return TrialComparisonResult::kInvalid;
 }
 
