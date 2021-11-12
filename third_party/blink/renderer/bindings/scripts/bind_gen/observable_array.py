@@ -118,6 +118,15 @@ def make_handler_class(cg_context):
 def make_constructors(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
+    func_decl = CxxFuncDeclNode(
+        name=cg_context.class_name,
+        arg_decls=[
+            "ScriptWrappable* platform_object",
+            "SetAlgorithmCallback set_algorithm_callback",
+            "DeleteAlgorithmCallback delete_algorithm_callback",
+        ],
+        return_type="",
+        explicit=True)
     func_def = CxxFuncDefNode(
         name=cg_context.class_name,
         arg_decls=[
@@ -126,7 +135,7 @@ def make_constructors(cg_context):
             "DeleteAlgorithmCallback delete_algorithm_callback",
         ],
         return_type="",
-        explicit=True,
+        class_name=cg_context.class_name,
         member_initializer_list=[
             "BaseClass(platform_object)",
             "set_algorithm_callback_(set_algorithm_callback)",
@@ -134,7 +143,7 @@ def make_constructors(cg_context):
         ])
     func_def.set_base_template_vars(cg_context.template_bindings())
 
-    return func_def, None
+    return func_decl, func_def
 
 
 def make_attribute_set_function(cg_context):
@@ -239,6 +248,28 @@ def make_handler_template_function(cg_context):
           "${world}, kTemplateKey, constructor_template);"),
         T("return constructor_template;"),
     ])
+
+    return func_decl, func_def
+
+
+def make_trace_function(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    func_decl = CxxFuncDeclNode(name="Trace",
+                                arg_decls=["Visitor* visitor"],
+                                return_type="void",
+                                const=True,
+                                override=True)
+
+    func_def = CxxFuncDefNode(name="Trace",
+                              arg_decls=["Visitor* visitor"],
+                              return_type="void",
+                              class_name=cg_context.class_name,
+                              const=True)
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    body.append(TextNode("BaseClass::Trace(visitor);"))
 
     return func_decl, func_def
 
@@ -353,6 +384,7 @@ def generate_observable_array(observable_array_identifier):
     attr_set_decls, attr_set_defs = make_attribute_set_function(cg_context)
     handler_func_decls, handler_func_defs = make_handler_template_function(
         cg_context)
+    trace_func_decls, trace_func_defs = make_trace_function(cg_context)
     install_backing_list_decls, install_backing_list_defs = (
         make_install_backing_list_template_function(cg_context))
     name_func_decls, name_func_defs = make_name_function(cg_context)
@@ -463,6 +495,11 @@ def generate_observable_array(observable_array_identifier):
     class_def.public_section.append(handler_func_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(handler_func_defs)
+    source_blink_ns.body.append(EmptyNode())
+
+    class_def.public_section.append(trace_func_decls)
+    class_def.public_section.append(EmptyNode())
+    source_blink_ns.body.append(trace_func_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(install_backing_list_decls)
