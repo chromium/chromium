@@ -22,10 +22,6 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-namespace views {
-class GridLayout;
-}  // namespace views
-
 namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
@@ -69,14 +65,14 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   void AddedToWidget() override;
 
   // Creates the subtitle / hint text used in V2.
-  void CreateHintTextLabel(views::GridLayout* layout);
+  void CreateHintTextLabel();
 
   // Creates the scroll view containing target devices.
-  void CreateDevicesScrollView(views::GridLayout* layout);
+  void CreateDevicesScrollView();
 
   // Creates the link leading to a page where the user can manage their known
   // target devices.
-  void CreateManageDevicesLink(views::GridLayout* layout);
+  void CreateManageDevicesLink();
 
   SendTabToSelfBubbleController* controller_;  // Weak reference.
 

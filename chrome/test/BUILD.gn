@@ -2917,6 +2917,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog_browsertest.cc",
         "../browser/ui/views/safe_browsing/password_reuse_modal_warning_dialog_browsertest.cc",
         "../browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc",
+        "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl_browsertest.cc",
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
@@ -2964,6 +2965,8 @@ if (!is_android && !is_fuchsia) {
       deps += [
         ":test_support_ui",
         "//components/page_info:proto",
+        "//components/send_tab_to_self",
+        "//components/send_tab_to_self:test_support",
         "//ui/base/dragdrop:types",
         "//ui/views",
         "//url",

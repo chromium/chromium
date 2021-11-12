@@ -56,7 +56,7 @@ class SendTabToSelfBubbleController
   // Returns the valid devices info map.
   virtual std::vector<TargetDeviceInfo> GetValidDevices() const;
 
-  AccountInfo GetSharingAccountInfo() const;
+  virtual AccountInfo GetSharingAccountInfo() const;
 
   // Handles the action when the user click on one valid device. Sends tab to
   // the target device.

@@ -31,9 +31,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace send_tab_to_self {
 
@@ -131,36 +130,34 @@ const views::View* SendTabToSelfBubbleViewImpl::GetButtonContainerForTesting()
 
 void SendTabToSelfBubbleViewImpl::Init() {
   auto* provider = ChromeLayoutProvider::Get();
-  int width =
-      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  // TODO(crbug.com/1243793): Use views::BoxLayout since there's only 1 column.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, width, width);
+  const bool create_hint_text_label =
+      base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
+      share::AreUpcomingSharingFeaturesEnabled();
+  const int top_margin = provider->GetDistanceMetric(
+      create_hint_text_label
+          ? views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT
+          : views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
+  const bool create_manage_devices_link = base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfManageDevicesLink);
+  const int bottom_margin =
+      create_manage_devices_link
+          ? 0
+          : provider->GetDistanceMetric(
+                views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
+  set_margins(gfx::Insets(top_margin, 0, bottom_margin, 0));
 
-  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
-      share::AreUpcomingSharingFeaturesEnabled()) {
-    CreateHintTextLabel(layout);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  if (create_hint_text_label)
+    CreateHintTextLabel();
+
+  CreateDevicesScrollView();
+
+  if (create_manage_devices_link) {
+    AddChildView(std::make_unique<views::Separator>());
+    CreateManageDevicesLink();
   }
-
-  CreateDevicesScrollView(layout);
-
-  int bottom_margin = provider->GetDistanceMetric(
-      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
-    CreateManageDevicesLink(layout);
-    // Remove the extra bottom space because the link has a different background
-    // color.
-    bottom_margin = 0;
-  }
-  set_margins(
-      gfx::Insets(provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
-                  0, bottom_margin, 0));
 }
 
 void SendTabToSelfBubbleViewImpl::AddedToWidget() {
@@ -175,39 +172,33 @@ void SendTabToSelfBubbleViewImpl::AddedToWidget() {
           GetWindowTitle()));
 }
 
-void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
-    views::GridLayout* layout) {
-  layout->StartRow(1.0f, 0);
-
+void SendTabToSelfBubbleViewImpl::CreateHintTextLabel() {
+  views::View* container = AddChildView(std::make_unique<views::View>());
   auto* provider = ChromeLayoutProvider::Get();
-  int margin =
-      provider->GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
-
-  views::View* container = layout->AddView(std::make_unique<views::View>());
+  container->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(0, 0,
+                  provider->GetDistanceMetric(
+                      views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                  0));
   auto* container_layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(0, margin, 0, margin)));
+          gfx::Insets(0, provider->GetDistanceMetric(
+                             views::DISTANCE_BUTTON_HORIZONTAL_PADDING))));
   container_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  auto description = std::make_unique<views::Label>(
+  auto* description = container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_HINT_TEXT),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  container->AddChildView(std::move(description));
-
-  const int vertical_distance =
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_distance);
 }
 
-void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView(
-    views::GridLayout* layout) {
-  layout->StartRow(1.0f, 0);
-  scroll_view_ = layout->AddView(std::make_unique<views::ScrollView>());
+void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView() {
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->ClipHeightTo(0, kDeviceButtonHeight * kMaximumButtons);
 
   auto* device_list_view =
@@ -222,21 +213,10 @@ void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView(
 
   if (!device_list_view->children().empty())
     SetInitiallyFocusedView(device_list_view->children()[0]);
-
-  // May be null if the dialog is opening.
-  if (GetWidget())
-    SizeToContents();
-
-  Layout();
 }
 
-void SendTabToSelfBubbleViewImpl::CreateManageDevicesLink(
-    views::GridLayout* layout) {
-  layout->StartRow(1.0f, 0);
-  layout->AddView(std::make_unique<views::Separator>());
-
-  layout->StartRow(1.0f, 0);
-  auto* container = layout->AddView(std::make_unique<views::View>());
+void SendTabToSelfBubbleViewImpl::CreateManageDevicesLink() {
+  auto* container = AddChildView(std::make_unique<views::View>());
   container->SetBackground(views::CreateThemedSolidBackground(
       container, ui::kColorMenuItemBackgroundHighlighted));
 
