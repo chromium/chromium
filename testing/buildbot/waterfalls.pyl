@@ -1899,7 +1899,6 @@
           'chrome-tester-service-account',
           'mac_x64',
           'chrome-swarming-pool',
-          'no_gpu',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
