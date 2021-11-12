@@ -46,7 +46,6 @@ class Profile;
 namespace web_app {
 
 class WebAppUiManager;
-class OsIntegrationManager;
 class WebAppSyncBridge;
 class WebAppPolicyManager;
 
@@ -84,7 +83,6 @@ class SystemWebAppManager {
       WebAppRegistrar* registrar,
       WebAppSyncBridge* sync_bridge,
       WebAppUiManager* ui_manager,
-      OsIntegrationManager* os_integration_manager,
       WebAppPolicyManager* web_app_policy_manager);
 
   void Start();
@@ -216,8 +214,6 @@ class SystemWebAppManager {
   WebAppSyncBridge* sync_bridge_ = nullptr;
 
   WebAppUiManager* ui_manager_ = nullptr;
-
-  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   WebAppPolicyManager* web_app_policy_manager_ = nullptr;
 

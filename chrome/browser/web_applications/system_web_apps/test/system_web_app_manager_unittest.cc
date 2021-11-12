@@ -175,8 +175,7 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     system_web_app_manager().SetSubsystems(
         &externally_managed_app_manager(), &controller().registrar(),
-        &controller().sync_bridge(), &ui_manager(),
-        &controller().os_integration_manager(), &web_app_policy_manager());
+        &controller().sync_bridge(), &ui_manager(), &web_app_policy_manager());
   }
 
   void TearDown() override {
@@ -1019,8 +1018,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
 
   unsynced_system_web_app_manager->SetSubsystems(
       &externally_managed_app_manager(), &controller().registrar(),
-      &controller().sync_bridge(), &ui_manager(),
-      &controller().os_integration_manager(), &web_app_policy_manager());
+      &controller().sync_bridge(), &ui_manager(), &web_app_policy_manager());
   {
     SystemAppMapType system_apps;
     system_apps.emplace(SystemAppType::SETTINGS,
@@ -1381,8 +1379,7 @@ TEST_F(SystemWebAppManagerTest,
 
   unsynced_system_web_app_manager->SetSubsystems(
       &externally_managed_app_manager(), &controller().registrar(),
-      &controller().sync_bridge(), &ui_manager(),
-      &controller().os_integration_manager(), &web_app_policy_manager());
+      &controller().sync_bridge(), &ui_manager(), &web_app_policy_manager());
 
   // Before Apps are synchronized, WebAppRegistry should know about the App.
   const WebApp* web_app = controller().registrar().GetAppById(*opt_app_id);

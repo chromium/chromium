@@ -315,8 +315,7 @@ void WebAppProvider::ConnectSubsystems() {
       registrar_.get(), externally_managed_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       externally_managed_app_manager_.get(), registrar_.get(),
-      sync_bridge_.get(), ui_manager_.get(), os_integration_manager_.get(),
-      web_app_policy_manager_.get());
+      sync_bridge_.get(), ui_manager_.get(), web_app_policy_manager_.get());
   web_app_policy_manager_->SetSubsystems(externally_managed_app_manager_.get(),
                                          registrar_.get(), sync_bridge_.get(),
                                          system_web_app_manager_.get(),
