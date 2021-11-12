@@ -1436,6 +1436,11 @@ const char kHideShelfControlsInTabletModeDescription[] =
     "Hides home, back, and overview button from the shelf while the device is "
     "in tablet mode. Predicated on shelf-hotseat feature being enabled.";
 
+const char kTabSearchMediaTabsId[] = "tab-search-media-tabs";
+const char kTabSearchMediaTabsName[] = "Tab Search Media Tabs";
+const char kTabSearchMediaTabsDescription[] =
+    "Enable indicators on media tabs in Tab Search.";
+
 const char kTabSwitcherOnReturnName[] = "Tab switcher on return";
 const char kTabSwitcherOnReturnDescription[] =
     "Enable tab switcher on return after specified time has elapsed";

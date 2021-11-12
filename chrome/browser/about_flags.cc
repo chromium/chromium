@@ -7168,6 +7168,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDrawPredictedPointVariations,
                                     "DrawPredictedInkPoint")},
 
+    {flag_descriptions::kTabSearchMediaTabsId,
+     flag_descriptions::kTabSearchMediaTabsName,
+     flag_descriptions::kTabSearchMediaTabsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabSearchMediaTabs)},
+
     {"enable-tflite-language-detection",
      flag_descriptions::kTFLiteLanguageDetectionName,
      flag_descriptions::kTFLiteLanguageDetectionDescription, kOsAll,

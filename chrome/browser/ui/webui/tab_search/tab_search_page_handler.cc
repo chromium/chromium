@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -430,6 +431,9 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->last_active_time_ticks = last_active_time_ticks;
   tab_data->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time_ticks);
+
+  if (base::FeatureList::IsEnabled(features::kTabSearchMediaTabs))
+    tab_data->alert_states = chrome::GetTabAlertStatesForContents(contents);
 
   return tab_data;
 }

@@ -22,6 +22,9 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom",
                             root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
+                            root_build_dir),
                   ]
   deps = [
     ":bimap_test",

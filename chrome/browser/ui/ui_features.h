@@ -137,6 +137,8 @@ extern const char kTabSearchSearchThresholdName[];
 // This means that it will not matter where in the string the pattern occurs.
 extern const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation;
 
+extern const base::Feature kTabSearchMediaTabs;
+
 // Determines how close the match must be to the beginning of the string. Eg a
 // distance of 100 and threshold of 0.8 would require a perfect match to be
 // within 80 characters of the beginning of the string.
