@@ -135,6 +135,20 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_FINALIZE_FAILED_BLOCKING},
       {"finalizePageFailedNonBlockingText",
        IDS_SHIMLESS_RMA_FINALIZE_FAILED_NON_BLOCKING},
+      // Run calibration page
+      {"runCalibrationTitleText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE},
+      {"runCalibrationCompleteText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE},
+      {"runCalibrationStartingText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING},
+      {"runCalibrationComponentWaitingText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_WAITING},
+      {"runCalibrationComponentProgressText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_PROGRESS},
+      {"runCalibrationComponentCompleteText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_COMPLETE},
+      {"runCalibrationComponentFailedText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_FAILED},
+      {"runCalibrationComponentSkippedText",
+       IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_SKIPPED},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       // Manual disable wp page

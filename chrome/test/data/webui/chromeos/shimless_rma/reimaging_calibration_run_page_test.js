@@ -5,7 +5,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingCalibrationRunPageElement} from 'chrome://shimless-rma/reimaging_calibration_run_page.js';
+import {ReimagingCalibrationRunPage} from 'chrome://shimless-rma/reimaging_calibration_run_page.js';
 import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationOverallStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
@@ -20,7 +20,7 @@ export function reimagingCalibrationRunPageTest() {
    */
   let shimless_rma_component = null;
 
-  /** @type {?ReimagingCalibrationRunPageElement} */
+  /** @type {?ReimagingCalibrationRunPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -54,7 +54,7 @@ export function reimagingCalibrationRunPageTest() {
     assertTrue(!!shimless_rma_component);
     document.body.appendChild(shimless_rma_component);
 
-    component = /** @type {!ReimagingCalibrationRunPageElement} */ (
+    component = /** @type {!ReimagingCalibrationRunPage} */ (
         document.createElement('reimaging-calibration-run-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
