@@ -110,8 +110,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
       bool only_managed_autoconnect,
       bool available_only);
 
-  // Disconnects the connection to the network represented by |service_path|.
-  void DisconnectNetwork(const std::string& service_path);
+  // Disconnects the connection to the |network|.
+  void DisconnectNetwork(const NetworkState* network);
 
   // Removes the network configuration for the network represented by
   // |service_path|.

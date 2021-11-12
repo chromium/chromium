@@ -569,6 +569,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Cellular.{SimType}.DisconnectByPolicy.Result"
+    enum="BooleanSuccess" expires_after="2022-09-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the rate of success of disconnecting the connected unmanaged
+    {SimType} networks when restricting cellular networks is enforced by policy.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Cellular.{SimType}.Disconnections"
     enum="NetworkCellularConnectionState" expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>

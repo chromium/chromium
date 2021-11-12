@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,10 +30,29 @@ namespace chromeos {
 
 namespace {
 
+constexpr char kESimPolicyDisconnectByPolicyHistogram[] =
+    "Network.Cellular.ESim.DisconnectByPolicy.Result";
+
+constexpr char kPSimPolicyDisconnectByPolicyHistogram[] =
+    "Network.Cellular.PSim.DisconnectByPolicy.Result";
+
+void RecordDisconnectByPolicyResult(const NetworkState* network, bool success) {
+  if (network->type() == shill::kTypeCellular) {
+    if (network->eid().empty()) {
+      base::UmaHistogramBoolean(kPSimPolicyDisconnectByPolicyHistogram,
+                                success);
+      return;
+    }
+    base::UmaHistogramBoolean(kESimPolicyDisconnectByPolicyHistogram, success);
+  }
+}
+
 void DisconnectErrorCallback(
-    const std::string& network_path,
+    const NetworkState* network,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
+  RecordDisconnectByPolicyResult(network, /*success=*/false);
+
   std::stringstream error_data_ss;
   if (error_data)
     error_data_ss << *error_data;
@@ -40,7 +60,8 @@ void DisconnectErrorCallback(
     error_data_ss << "<none>";
 
   NET_LOG(ERROR) << "AutoConnectHandler.Disconnect failed for: "
-                 << NetworkPathId(network_path) << " Error name: " << error_name
+                 << NetworkPathId(network->path())
+                 << " Error name: " << error_name
                  << ", Data: " << error_data_ss.str();
 }
 
@@ -421,7 +442,7 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
     if (network->blocked_by_policy()) {
       // Disconnect blocked network.
       if (network->IsConnectingOrConnected())
-        DisconnectNetwork(network->path());
+        DisconnectNetwork(network);
       // Remove configuration if it's in profile and either is Cellular network
       // or AllowOnlyPolicyWiFiToConnectIfAvailable is enable for WiFi network.
       if (network->IsInProfile() && (is_cellular_type || !available_only))
@@ -429,7 +450,7 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
     } else if (only_managed_autoconnect) {
       // Disconnect & disable auto-connect.
       if (network->IsConnectingOrConnected())
-        DisconnectNetwork(network->path());
+        DisconnectNetwork(network);
       if (network->IsInProfile())
         DisableAutoconnectForNetwork(
             network->path(), is_cellular_type ? ::onc::network_config::kCellular
@@ -438,12 +459,14 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
   }
 }
 
-void AutoConnectHandler::DisconnectNetwork(const std::string& service_path) {
+void AutoConnectHandler::DisconnectNetwork(const NetworkState* network) {
   NET_LOG(EVENT) << "Disconnect forced by policy for: "
-                 << NetworkPathId(service_path);
+                 << NetworkPathId(network->path());
   network_connection_handler_->DisconnectNetwork(
-      service_path, base::DoNothing(),
-      base::BindOnce(&DisconnectErrorCallback, service_path));
+      network->path(),
+      base::BindOnce(&RecordDisconnectByPolicyResult, network,
+                     /*success=*/true),
+      base::BindOnce(&DisconnectErrorCallback, network));
 }
 
 void AutoConnectHandler::RemoveNetworkConfigurationForNetwork(

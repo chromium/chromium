@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/network/client_cert_resolver.h"
@@ -40,6 +41,10 @@ namespace chromeos {
 namespace {
 
 constexpr char kWifiDevicePath[] = "/device/wifi1";
+constexpr char kESimDisconnectByPolicyHistogram[] =
+    "Network.Cellular.ESim.DisconnectByPolicy.Result";
+constexpr char kPSimDisconnectByPolicyHistogram[] =
+    "Network.Cellular.PSim.DisconnectByPolicy.Result";
 
 class TestAutoConnectHandlerObserver : public AutoConnectHandler::Observer {
  public:
@@ -107,7 +112,7 @@ class TestCertResolveObserver : public ClientCertResolver::Observer {
 class TestNetworkConnectionHandler : public NetworkConnectionHandler {
  public:
   TestNetworkConnectionHandler(
-      base::OnceCallback<void(const std::string&)> disconnect_handler)
+      base::RepeatingCallback<void(const std::string&)> disconnect_handler)
       : NetworkConnectionHandler(),
         disconnect_handler_(std::move(disconnect_handler)) {}
   ~TestNetworkConnectionHandler() override = default;
@@ -117,7 +122,7 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       const std::string& service_path,
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) override {
-    std::move(disconnect_handler_).Run(service_path);
+    disconnect_handler_.Run(service_path);
     std::move(success_callback).Run();
   }
 
@@ -134,7 +139,7 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       CellularConnectionHandler* cellular_connection_handler) override {}
 
  private:
-  base::OnceCallback<void(const std::string&)> disconnect_handler_;
+  base::RepeatingCallback<void(const std::string&)> disconnect_handler_;
 };
 
 }  // namespace
@@ -178,7 +183,7 @@ class AutoConnectHandlerTest : public testing::Test {
         nullptr /* prohibited_technologies_handler */);
 
     test_network_connection_handler_ =
-        std::make_unique<TestNetworkConnectionHandler>(base::BindOnce(
+        std::make_unique<TestNetworkConnectionHandler>(base::BindRepeating(
             &AutoConnectHandlerTest::SetDisconnected, base::Unretained(this)));
 
     client_cert_resolver_ = std::make_unique<ClientCertResolver>();
@@ -313,6 +318,11 @@ const char* kConfigureCellular1UnmanagedConnected = R"(
 const char* kConfigureCellular2ManagedConnectable = R"(
   { "GUID": "cellular2", "Type": "cellular", "State": "idle",
     "AutoConnect": true, "Profile": "/profile/default" })";
+
+const char* kConfigureCellular3UnmanagedConnected = R"(
+  { "GUID": "cellular3", "Type": "cellular", "State": "online",
+    "AutoConnect": true, "Profile": "/profile/default",
+    "Cellular.EID": "1234567890"})";
 
 const char* kConfigWifi0UnmanagedSharedConnected = R"(
   { "GUID": "wifi0", "Type": "wifi", "State": "online",
@@ -886,6 +896,7 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
 
 TEST_F(AutoConnectHandlerTest,
        DisableCellularAutoConnectOnAllowOnlyPolicyNetworksAutoconnect) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   std::string cellular1_service_path =
@@ -894,17 +905,24 @@ TEST_F(AutoConnectHandlerTest,
   std::string cellular2_service_path =
       ConfigureService(kConfigureCellular2ManagedConnectable);
   ASSERT_FALSE(cellular2_service_path.empty());
+  std::string cellular3_service_path =
+      ConfigureService(kConfigureCellular3UnmanagedConnected);
+  ASSERT_FALSE(cellular3_service_path.empty());
 
   EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular1_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular3_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(cellular2_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular3_service_path));
   const base::Value* properties =
       helper().service_test()->GetServiceProperties(cellular1_service_path);
   absl::optional<bool> auto_connect =
       properties->FindBoolKey(shill::kAutoConnectProperty);
   ASSERT_TRUE(auto_connect);
   EXPECT_TRUE(*auto_connect);
+  histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 0);
 
   // Apply 'AllowOnlyPolicyNetworksToAutoconnect' policy as a device
   // policy and provide a network configuration for cellular2 to make it
@@ -915,19 +933,26 @@ TEST_F(AutoConnectHandlerTest,
       base::Value(true));
   SetupPolicy(kCellularPolicy, global_config,
               false /* load as device policy */);
-  // cellular1's service state should be set to idle and autoconnect property
-  // should be set false.
+  // cellular1 and cellular3's service state should be set to idle and
+  // autoconnect property should be set false.
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular1_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular3_service_path));
   properties =
       helper().service_test()->GetServiceProperties(cellular1_service_path);
   auto_connect = properties->FindBoolKey(shill::kAutoConnectProperty);
   ASSERT_TRUE(auto_connect);
   EXPECT_FALSE(*auto_connect);
+
+  histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 1);
+  histogram_tester.ExpectBucketCount(kESimDisconnectByPolicyHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPSimDisconnectByPolicyHistogram, true, 1);
 }
 
 TEST_F(AutoConnectHandlerTest,
        DisconnectCellularOnPolicyLoadingAllowOnlyPolicyCellularNetworks) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   std::string cellular1_service_path =
@@ -936,10 +961,17 @@ TEST_F(AutoConnectHandlerTest,
   std::string cellular2_service_path =
       ConfigureService(kConfigureCellular2ManagedConnectable);
   ASSERT_FALSE(cellular2_service_path.empty());
+  std::string cellular3_service_path =
+      ConfigureService(kConfigureCellular3UnmanagedConnected);
+  ASSERT_FALSE(cellular3_service_path.empty());
 
   EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular1_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
+  EXPECT_EQ(shill::kStateOnline, GetServiceState(cellular3_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular3_service_path));
+  histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 0);
+  histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 0);
 
   // Apply 'AllowOnlyPolicyCellularNetworks' policy as a device policy and
   // provide a network configuration for cellular2 to make it managed.
@@ -950,8 +982,13 @@ TEST_F(AutoConnectHandlerTest,
   SetupPolicy(kCellularPolicy, global_config,
               false /* load as device policy */);
 
-  // The cellular1 service configuration should be removed.
+  // The cellular1 and cellular3 service configuration should be removed.
   EXPECT_FALSE(helper().profile_test()->HasService(cellular1_service_path));
+  EXPECT_FALSE(helper().profile_test()->HasService(cellular3_service_path));
+  histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 1);
+  histogram_tester.ExpectBucketCount(kESimDisconnectByPolicyHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPSimDisconnectByPolicyHistogram, true, 1);
 }
 
 TEST_F(AutoConnectHandlerTest, DisconnectFromBlockedNetwork) {
