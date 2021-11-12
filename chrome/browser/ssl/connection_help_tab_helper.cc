@@ -49,7 +49,8 @@ void ConnectionHelpTabHelper::SetHelpCenterUrlForTesting(const GURL& url) {
 
 ConnectionHelpTabHelper::ConnectionHelpTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ConnectionHelpTabHelper>(*web_contents) {}
 
 GURL ConnectionHelpTabHelper::GetHelpCenterURL() {
   if (testing_url_.is_valid())

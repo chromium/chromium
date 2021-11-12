@@ -9,7 +9,8 @@
 namespace autofill {
 
 OfferNotificationHelper::OfferNotificationHelper(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<OfferNotificationHelper>(*contents) {}
 
 OfferNotificationHelper::~OfferNotificationHelper() = default;
 

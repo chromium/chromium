@@ -65,8 +65,6 @@ class NavigationPredictorPreconnectClient
   absl::optional<bool> IsPubliclyRoutable(
       content::NavigationHandle* navigation_handle) const;
 
-  content::WebContents* web_contents_;
-
   // Used to get keyed services.
   content::BrowserContext* const browser_context_;
 

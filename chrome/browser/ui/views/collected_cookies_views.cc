@@ -145,7 +145,9 @@ class CollectedCookiesViews::WebContentsUserData
  private:
   friend class content::WebContentsUserData<WebContentsUserData>;
 
-  explicit WebContentsUserData(content::WebContents* web_contents) {
+  explicit WebContentsUserData(content::WebContents* web_contents)
+      : content::WebContentsUserData<
+            CollectedCookiesViews::WebContentsUserData>(*web_contents) {
     // Owned by its Widget
     CollectedCookiesViews* const dialog =
         new CollectedCookiesViews(web_contents);

@@ -88,7 +88,9 @@ void FileSystemAccessPermissionRequestManager::AddRequest(
 
 FileSystemAccessPermissionRequestManager::
     FileSystemAccessPermissionRequestManager(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<FileSystemAccessPermissionRequestManager>(
+          *web_contents) {}
 
 bool FileSystemAccessPermissionRequestManager::CanShowRequest() const {
   // Deley showing requests until the main frame is fully loaded.

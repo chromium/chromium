@@ -37,7 +37,8 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
 
 FramebustBlockTabHelper::FramebustBlockTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<FramebustBlockTabHelper>(*web_contents) {}
 
 void FramebustBlockTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

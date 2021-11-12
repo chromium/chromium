@@ -22,7 +22,9 @@ namespace sync_sessions {
 SyncSessionsRouterTabHelper::SyncSessionsRouterTabHelper(
     content::WebContents* web_contents,
     SyncSessionsWebContentsRouter* router)
-    : content::WebContentsObserver(web_contents), router_(router) {
+    : content::WebContentsUserData<SyncSessionsRouterTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
+      router_(router) {
   chrome_translate_client_ =
       ChromeTranslateClient::FromWebContents(web_contents);
   // A translate client is not always attached to web contents (e.g. tests).

@@ -14,7 +14,9 @@
 
 MediaHistoryContentsObserver::MediaHistoryContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), service_(nullptr) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<MediaHistoryContentsObserver>(
+          *web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

@@ -379,7 +379,9 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
 
 PaymentAppProviderImpl::PaymentAppProviderImpl(
     WebContents* payment_request_web_contents)
-    : payment_request_web_contents_(payment_request_web_contents),
+    : WebContentsUserData<PaymentAppProviderImpl>(
+          *payment_request_web_contents),
+      payment_request_web_contents_(payment_request_web_contents),
       event_dispatcher_(std::make_unique<PaymentEventDispatcher>()) {
   event_dispatcher_->set_payment_app_provider(weak_ptr_factory_.GetWeakPtr());
 }

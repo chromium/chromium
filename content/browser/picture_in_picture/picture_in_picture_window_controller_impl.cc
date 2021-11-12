@@ -45,9 +45,8 @@ PictureInPictureWindowControllerImpl::~PictureInPictureWindowControllerImpl() =
 
 PictureInPictureWindowControllerImpl::PictureInPictureWindowControllerImpl(
     WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-  DCHECK(web_contents);
-
+    : WebContentsUserData<PictureInPictureWindowControllerImpl>(*web_contents),
+      WebContentsObserver(web_contents) {
   EnsureWindow();
   DCHECK(window_) << "Picture in Picture requires a valid window.";
 }

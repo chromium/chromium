@@ -34,20 +34,20 @@ class PdfWebContentsLifetimeHelper
     : public content::WebContentsUserData<PdfWebContentsLifetimeHelper> {
  public:
   explicit PdfWebContentsLifetimeHelper(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
+      : content::WebContentsUserData<PdfWebContentsLifetimeHelper>(
+            *web_contents) {}
 
   base::WeakPtr<PdfWebContentsLifetimeHelper> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
   void NavigateIFrameToPlaceholder(const content::OpenURLParams& url_params) {
-    web_contents_->OpenURL(url_params);
+    GetWebContents().OpenURL(url_params);
   }
 
  private:
   friend class content::WebContentsUserData<PdfWebContentsLifetimeHelper>;
 
-  content::WebContents* const web_contents_;
   base::WeakPtrFactory<PdfWebContentsLifetimeHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

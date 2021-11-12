@@ -113,7 +113,9 @@ class PageLoadMetricsWebContentsObserver
 
 PageLoadMetricsWebContentsObserver::PageLoadMetricsWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageLoadMetricsWebContentsObserver>(
+          *web_contents) {
   visible_loads_.fill(0);
   hidden_loads_.fill(0);
 }

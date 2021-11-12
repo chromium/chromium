@@ -42,9 +42,10 @@ class StreamInfoHelper : public content::WebContentsUserData<StreamInfoHelper> {
   friend class content::WebContentsUserData<StreamInfoHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  StreamInfoHelper(content::WebContents* /*contents*/,
+  StreamInfoHelper(content::WebContents* contents,
                    pdf::PdfStreamDelegate::StreamInfo stream_info)
-      : stream_info_(std::move(stream_info)) {}
+      : content::WebContentsUserData<StreamInfoHelper>(*contents),
+        stream_info_(std::move(stream_info)) {}
 
   absl::optional<pdf::PdfStreamDelegate::StreamInfo> stream_info_;
 };

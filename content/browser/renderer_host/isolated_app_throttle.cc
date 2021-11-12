@@ -44,7 +44,8 @@ class WebContentsIsolationInfo
   friend class WebContentsUserData<WebContentsIsolationInfo>;
   explicit WebContentsIsolationInfo(WebContents* web_contents,
                                     absl::optional<url::Origin> isolated_origin)
-      : isolated_origin_(isolated_origin) {}
+      : WebContentsUserData<WebContentsIsolationInfo>(*web_contents),
+        isolated_origin_(isolated_origin) {}
 
   absl::optional<url::Origin> isolated_origin_;
 

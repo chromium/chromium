@@ -106,7 +106,8 @@ ReauthTabHelper::ReauthTabHelper(content::WebContents* web_contents,
                                  const GURL& reauth_url,
                                  bool restrict_to_reauth_origin,
                                  ReauthCallback callback)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<ReauthTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
       reauth_url_(reauth_url),
       restrict_to_reauth_origin_(restrict_to_reauth_origin),
       callback_(std::move(callback)) {}

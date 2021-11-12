@@ -1228,6 +1228,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
     content::WebContents* web_contents,
     autofill::AutofillClient* autofill_client)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromePasswordManagerClient>(*web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       password_manager_(this),
       password_feature_manager_(profile_->GetPrefs(),

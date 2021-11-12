@@ -19,7 +19,8 @@ using content::RenderFrameHost;
 using content::WebContents;
 
 MixedContentSettingsTabHelper::MixedContentSettingsTabHelper(WebContents* tab)
-    : content::WebContentsObserver(tab) {
+    : content::WebContentsObserver(tab),
+      content::WebContentsUserData<MixedContentSettingsTabHelper>(*tab) {
   if (!tab->HasOpener())
     return;
 

@@ -14,7 +14,8 @@
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LogoutTabHelper);
 
 LogoutTabHelper::LogoutTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<LogoutTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 LogoutTabHelper::~LogoutTabHelper() = default;
 

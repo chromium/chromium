@@ -64,6 +64,7 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
     ReferrerChainProvider* referrer_chain_provider,
     bool monitor_mode)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SuspiciousSiteTrigger>(*web_contents),
       finish_report_delay_ms_(kSuspiciousSiteCollectionPeriodMilliseconds),
       current_state_(monitor_mode ? TriggerState::MONITOR_MODE
                                   : TriggerState::IDLE),

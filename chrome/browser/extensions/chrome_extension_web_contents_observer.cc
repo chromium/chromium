@@ -34,7 +34,9 @@ namespace extensions {
 
 ChromeExtensionWebContentsObserver::ChromeExtensionWebContentsObserver(
     content::WebContents* web_contents)
-    : ExtensionWebContentsObserver(web_contents) {}
+    : ExtensionWebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeExtensionWebContentsObserver>(
+          *web_contents) {}
 
 ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() {}
 

@@ -109,7 +109,7 @@ void SharingHubBubbleController::HideBubble() {
 }
 
 void SharingHubBubbleController::ShowBubble() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore subsequent calls to open the Sharesheet if it already is open. This
@@ -121,7 +121,7 @@ void SharingHubBubbleController::ShowBubble() {
   ShowSharesheet(browser->window()->GetSharingHubIconButton());
 #else
   sharing_hub_bubble_view_ =
-      browser->window()->ShowSharingHubBubble(web_contents_, this, true);
+      browser->window()->ShowSharingHubBubble(web_contents(), this, true);
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 #endif
 }
@@ -136,20 +136,17 @@ std::u16string SharingHubBubbleController::GetWindowTitle() const {
 }
 
 Profile* SharingHubBubbleController::GetProfile() const {
-  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
-  if (!web_contents_)
-    return false;
-
   if (GetProfile()->IsIncognitoProfile() || GetProfile()->IsGuestSession())
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
 #else
-  return SharingHubOmniboxEnabled(web_contents_->GetBrowserContext());
+  return SharingHubOmniboxEnabled(GetWebContents().GetBrowserContext());
 #endif
 }
 
@@ -159,7 +156,7 @@ SharingHubBubbleController::GetFirstPartyActions() {
 
   SharingHubModel* model = GetSharingHubModel();
   if (model)
-    model->GetFirstPartyActionList(web_contents_, &actions);
+    model->GetFirstPartyActionList(&GetWebContents(), &actions);
 
   return actions;
 }
@@ -179,7 +176,7 @@ void SharingHubBubbleController::OnActionSelected(
     int command_id,
     bool is_first_party,
     std::string feature_name_for_metrics) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   // Can be null in tests.
   if (!browser)
     return;
@@ -190,13 +187,14 @@ void SharingHubBubbleController::OnActionSelected(
     // Show a back button for 1P dialogs anchored to the sharing hub icon.
     if (command_id == IDC_QRCODE_GENERATOR) {
       qrcode_generator::QRCodeGeneratorBubbleController* qrcode_controller =
-          qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents_);
-      qrcode_controller->ShowBubble(web_contents_->GetURL(), true);
+          qrcode_generator::QRCodeGeneratorBubbleController::Get(
+              &GetWebContents());
+      qrcode_controller->ShowBubble(GetWebContents().GetURL(), true);
     } else if (command_id == IDC_SEND_TAB_TO_SELF) {
       send_tab_to_self::SendTabToSelfBubbleController*
           send_tab_to_self_controller =
               send_tab_to_self::SendTabToSelfBubbleController::
-                  CreateOrGetFromWebContents(web_contents_);
+                  CreateOrGetFromWebContents(&GetWebContents());
       send_tab_to_self_controller->ShowBubble(true);
     } else {
       chrome::ExecuteCommand(browser, command_id);
@@ -204,7 +202,7 @@ void SharingHubBubbleController::OnActionSelected(
   } else {
     SharingHubModel* model = GetSharingHubModel();
     DCHECK(model);
-    model->ExecuteThirdPartyAction(web_contents_, command_id);
+    model->ExecuteThirdPartyAction(&GetWebContents(), command_id);
   }
 }
 
@@ -226,12 +224,9 @@ SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 sharesheet::SharesheetService*
 SharingHubBubbleController::GetSharesheetService() {
-  if (!web_contents_)
-    return nullptr;
-
   if (!sharesheet_service_) {
     Profile* const profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
     DCHECK(profile);
 
     sharesheet_service_ =
@@ -255,10 +250,10 @@ void SharingHubBubbleController::ShowSharesheet(
     return;
 
   apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromText(
-      web_contents_->GetURL().spec(),
-      base::UTF16ToUTF8(web_contents_->GetTitle()));
+      GetWebContents().GetURL().spec(),
+      base::UTF16ToUTF8(GetWebContents().GetTitle()));
   sharesheet_service->ShowBubble(
-      web_contents_, std::move(intent),
+      &GetWebContents(), std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -267,7 +262,7 @@ void SharingHubBubbleController::ShowSharesheet(
 
   // Save the window in order to close the sharesheet if the tab is closed. This
   // will return the incorrect window if called later.
-  web_contents_containing_window_ = web_contents_->GetTopLevelNativeWindow();
+  web_contents_containing_window_ = GetWebContents().GetTopLevelNativeWindow();
 }
 
 void SharingHubBubbleController::CloseSharesheet() {
@@ -317,20 +312,16 @@ void SharingHubBubbleController::OnVisibilityChanged(
   // Cancel the current share attempt if the user switches to a different tab in
   // the window. Switching windows is permitted since a sharesheet is tied to
   // the native window.
-  if (bubble_showing_ && web_contents_ &&
-      visibility == content::Visibility::HIDDEN) {
+  if (bubble_showing_ && visibility == content::Visibility::HIDDEN) {
     CloseSharesheet();
   }
 }
 #endif
 
-SharingHubBubbleController::SharingHubBubbleController() = default;
-
 SharingHubBubbleController::SharingHubBubbleController(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), web_contents_(web_contents) {
-  DCHECK(web_contents);
-}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SharingHubBubbleController>(*web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SharingHubBubbleController);
 

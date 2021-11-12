@@ -83,7 +83,8 @@ using safe_browsing::SafeBrowsingUIManager;
 
 SecurityStateTabHelper::SecurityStateTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SecurityStateTabHelper>(*web_contents) {}
 
 SecurityStateTabHelper::~SecurityStateTabHelper() {}
 

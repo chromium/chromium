@@ -297,6 +297,8 @@ void ReputationWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
 ReputationWebContentsObserver::ReputationWebContentsObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
+      content::WebContentsUserData<ReputationWebContentsObserver>(
+          *web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       reputation_check_pending_for_testing_(true),
       weak_factory_(this) {

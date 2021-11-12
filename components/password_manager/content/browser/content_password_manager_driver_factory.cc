@@ -30,6 +30,8 @@ ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
     PasswordManagerClient* password_client,
     autofill::AutofillClient* autofill_client)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ContentPasswordManagerDriverFactory>(
+          *web_contents),
       password_client_(password_client),
       autofill_client_(autofill_client) {}
 

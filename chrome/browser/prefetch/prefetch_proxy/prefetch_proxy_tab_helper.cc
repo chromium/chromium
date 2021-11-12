@@ -276,7 +276,8 @@ void PrefetchProxyTabHelper::SetServiceWorkerContextForTest(
 
 PrefetchProxyTabHelper::PrefetchProxyTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PrefetchProxyTabHelper>(*web_contents) {
   page_ = std::make_unique<CurrentPageLoad>(nullptr);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
 

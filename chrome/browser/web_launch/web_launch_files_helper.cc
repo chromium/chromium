@@ -175,6 +175,7 @@ WebLaunchFilesHelper::WebLaunchFilesHelper(
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebLaunchFilesHelper>(*web_contents),
       app_scope_(app_scope.spec()),
       launch_url_(std::move(launch_url)),
       launch_dir_(std::move(launch_dir)),

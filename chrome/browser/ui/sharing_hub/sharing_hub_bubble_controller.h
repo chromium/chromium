@@ -82,7 +82,6 @@ class SharingHubBubbleController
 #endif
 
  protected:
-  SharingHubBubbleController();
   explicit SharingHubBubbleController(content::WebContents* web_contents);
 
  private:
@@ -105,8 +104,6 @@ class SharingHubBubbleController
   bool bubble_showing_ = false;
 #endif
 
-  // The web_contents associated with this controller.
-  content::WebContents* web_contents_;
   // Weak reference. Will be nullptr if no bubble is currently shown.
   SharingHubBubbleView* sharing_hub_bubble_view_ = nullptr;
   // Cached reference to the model.

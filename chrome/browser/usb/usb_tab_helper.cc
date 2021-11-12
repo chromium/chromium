@@ -39,20 +39,19 @@ UsbTabHelper::~UsbTabHelper() {
 }
 
 UsbTabHelper::UsbTabHelper(WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<UsbTabHelper>(*web_contents) {}
 
-void UsbTabHelper::NotifyIsDeviceConnectedChanged(
-    bool is_device_connected) const {
+void UsbTabHelper::NotifyIsDeviceConnectedChanged(bool is_device_connected) {
   performance_manager::PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
-      web_contents_, is_device_connected);
+      &GetWebContents(), is_device_connected);
 
   // TODO(https://crbug.com/601627): Implement tab indicator for Android.
 #if !defined(OS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   if (browser) {
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     tab_strip_model->UpdateWebContentsStateAt(
-        tab_strip_model->GetIndexOfWebContents(web_contents_),
+        tab_strip_model->GetIndexOfWebContents(&GetWebContents()),
         TabChangeType::kAll);
   }
 #endif

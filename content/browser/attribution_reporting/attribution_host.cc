@@ -86,6 +86,7 @@ AttributionHost::AttributionHost(
     WebContents* web_contents,
     std::unique_ptr<AttributionManager::Provider> attribution_manager_provider)
     : WebContentsObserver(web_contents),
+      WebContentsUserData<AttributionHost>(*web_contents),
       attribution_manager_provider_(std::move(attribution_manager_provider)),
       receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK

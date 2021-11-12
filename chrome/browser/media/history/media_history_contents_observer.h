@@ -73,7 +73,7 @@ class MediaHistoryContentsObserver
   // before we can commit it to the database.
   bool frozen_ = false;
 
-  media_history::MediaHistoryKeyedService* service_;
+  media_history::MediaHistoryKeyedService* service_ = nullptr;
 
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};

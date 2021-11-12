@@ -47,7 +47,7 @@ struct LastMuteMetadata
   std::string extension_id;  // Only valid when |reason| is EXTENSION.
 
  private:
-  explicit LastMuteMetadata(content::WebContents* contents) {}
+  explicit LastMuteMetadata(content::WebContents* contents);
   friend class content::WebContentsUserData<LastMuteMetadata>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

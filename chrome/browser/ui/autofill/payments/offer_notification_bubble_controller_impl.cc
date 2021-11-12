@@ -50,6 +50,8 @@ OfferNotificationBubbleController* OfferNotificationBubbleController::Get(
 OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<OfferNotificationBubbleControllerImpl>(
+          *web_contents),
       coupon_service_(CouponServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 

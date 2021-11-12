@@ -35,7 +35,8 @@ SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
 SadTabHelper::~SadTabHelper() {}
 
 SadTabHelper::SadTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SadTabHelper>(*web_contents) {}
 
 void SadTabHelper::ReinstallInWebView() {
   if (sad_tab_)

@@ -33,9 +33,9 @@ void ScreenshotCapturedBubbleController::ShowBubble(
   const gfx::Image& captured_image = image.image;
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteImage(*captured_image.ToSkBitmap());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  browser->window()->ShowScreenshotCapturedBubble(web_contents_, captured_image,
-                                                  this);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  browser->window()->ShowScreenshotCapturedBubble(&GetWebContents(),
+                                                  captured_image, this);
 }
 
 void ScreenshotCapturedBubbleController::HideBubble() {
@@ -77,7 +77,8 @@ ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController() =
 
 ScreenshotCapturedBubbleController::ScreenshotCapturedBubbleController(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<ScreenshotCapturedBubbleController>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ScreenshotCapturedBubbleController);
 

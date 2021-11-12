@@ -939,7 +939,8 @@ void ChromeAutofillClient::OnZoomChanged(
 #endif  // !defined(OS_ANDROID)
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<ChromeAutofillClient>(*web_contents),
+      content::WebContentsObserver(web_contents),
       payments_client_(std::make_unique<payments::PaymentsClient>(
           Profile::FromBrowserContext(web_contents->GetBrowserContext())
               ->GetURLLoaderFactory(),

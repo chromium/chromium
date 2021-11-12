@@ -45,7 +45,9 @@ bool IsValidOptimizationGuideNavigation(
 
 OptimizationGuideWebContentsObserver::OptimizationGuideWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OptimizationGuideWebContentsObserver>(
+          *web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   optimization_guide_keyed_service_ =
