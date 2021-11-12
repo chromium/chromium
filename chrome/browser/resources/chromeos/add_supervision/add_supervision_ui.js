@@ -28,6 +28,13 @@ const ALLOWED_HOSTS = [
 ];
 
 /**
+ * Time in ms to wait before focusing the webview. Refer to the webview's
+ * loadstop event listener for details.
+ * @const {number}
+ */
+const INITIAL_FOCUS_DELAY_MS = 50;
+
+/**
  * Returns whether the provided request should be allowed, based on whether
  * its URL matches the list of allowed hosts.
  * @param {!{url: string}} requestDetails Request that is issued by the webview.
@@ -95,6 +102,18 @@ Polymer({
       // Allow guest webview content to open links in new windows.
       webview.addEventListener('newwindow', function(e) {
         window.open(e.targetUrl);
+      });
+
+      // Sets focus on the inner webview, so that ChromeVox users don't need to
+      // navigate through multiple containers when linear navigating through the
+      // page (https://crbug.com/1231798).
+      // We want the dialog content to be automatically announced once loaded.
+      // ChromeVox automatically reads all content when it enters a role=dialog
+      // div. If the webview is focused too soon, there's no content to read
+      // yet. Therefore we wait for it to be loaded first, with a delay (so that
+      // the accessibility tree is fully updated).
+      webview.addEventListener('loadstop', () => {
+        setTimeout(() => webview.focus(), INITIAL_FOCUS_DELAY_MS);
       });
 
       // Block any requests to URLs other than one specified
