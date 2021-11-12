@@ -1374,7 +1374,8 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableIf.Build(message = "EME not working before M", sdk_is_less_than = Build.VERSION_CODES.M)
+    @DisableIf.Build(message = "EME not working before M", sdk_is_less_than = Build.VERSION_CODES.M,
+        sdk_is_greater_than = Build.VERSION_CODES.Q)
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1234530
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
