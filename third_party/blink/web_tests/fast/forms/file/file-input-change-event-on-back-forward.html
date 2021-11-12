@@ -31,6 +31,9 @@ function eventHandler(e) {
 window.onload = () => {
   requestAnimationFrame(() => {
     if (beenHere.value === 'start') {
+      // TODO move this test to WPT if/when WPT gets support for setting the
+      // value of <input type=file> elements so we can replace the usage of
+      // content_shell's window.eventSender.
       if (window.eventSender)
         dragFilesOntoElement(fileInput, ['foo.txt']);
       assert_equals(fileInput.value, 'C:\\fakepath\\foo.txt');
