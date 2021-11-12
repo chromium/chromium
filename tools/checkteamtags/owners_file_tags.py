@@ -81,7 +81,7 @@ def aggregate_components_from_owners(all_owners_data, root):
   dir_to_component = {}
   dir_missing_info_by_depth = defaultdict(list)
   dir_to_team = {}
-  for rel_dirname, owners_data in all_owners_data.iteritems():
+  for rel_dirname, owners_data in all_owners_data.items():
     # Normalize this relative path to posix-style to make counting separators
     # work correctly as a means of obtaining the file_depth.
     rel_path = uniform_path_format(os.path.relpath(rel_dirname, root))
@@ -113,12 +113,11 @@ def aggregate_components_from_owners(all_owners_data, root):
         dir_missing_info_by_depth[file_depth].append(rel_owners_path)
 
   mappings = {
-      'component-to-team': {
-          k: v['team'] for k, v in topmost_team.iteritems()
-      },
-      'teams-per-component': {
-          k: sorted(list(v)) for k, v in teams_per_component.iteritems()
-      },
+      'component-to-team': {k: v['team']
+                            for k, v in topmost_team.items()},
+      'teams-per-component':
+      {k: sorted(list(v))
+       for k, v in teams_per_component.items()},
       'dir-to-component': dir_to_component,
       'dir-to-team': dir_to_team,
   }
@@ -186,7 +185,7 @@ def scrape_owners(root, include_subdirs):
       if rel_ancestor == '.':
         break
       ancestor = os.path.dirname(ancestor)
-    return
+    return ''
 
   for dirname, _, files in os.walk(root):
     # Proofing against windows casing oddities.
