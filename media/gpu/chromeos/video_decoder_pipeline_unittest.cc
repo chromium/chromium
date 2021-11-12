@@ -6,7 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -20,6 +23,7 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
@@ -34,6 +38,8 @@ using ::testing::StrictMock;
 using ::testing::TestWithParam;
 
 namespace media {
+
+using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
 MATCHER_P(MatchesStatusCode, status_code, "") {
   // media::Status doesn't provide an operator==(...), we add here a simple one.
@@ -115,6 +121,19 @@ class FakeCdmContextRef : public CdmContextRef {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+class MockImageProcessor : public ImageProcessor {
+ public:
+  explicit MockImageProcessor(
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner)
+      : ImageProcessor(nullptr,
+                       client_task_runner,
+                       /*backend_task_runner=*/
+                       base::ThreadPool::CreateSequencedTaskRunner({})) {}
+
+  MOCK_CONST_METHOD0(input_config, const ImageProcessorBackend::PortConfig&());
+  MOCK_CONST_METHOD0(output_config, const ImageProcessorBackend::PortConfig&());
+};
+
 struct DecoderPipelineTestParams {
   // GTest params need to be copyable; hence we need here a RepeatingCallback
   // version of VideoDecoderPipeline::CreateDecoderFunctionCB.
@@ -162,6 +181,12 @@ class VideoDecoderPipelineTest
   void SetCreateDecoderFunctionCB(VideoDecoderPipeline::CreateDecoderFunctionCB
                                       function) NO_THREAD_SAFETY_ANALYSIS {
     decoder_->create_decoder_function_cb_ = std::move(function);
+  }
+
+  void SetCreateImageProcessorCBForTesting(
+      VideoDecoderPipeline::CreateImageProcessorCBForTesting function)
+      NO_THREAD_SAFETY_ANALYSIS {
+    decoder_->create_image_processor_cb_for_testing_ = std::move(function);
   }
 
   // Constructs |decoder_| with a given |create_decoder_function_cb| and
@@ -272,18 +297,37 @@ class VideoDecoderPipelineTest
     return decoder_->decoder_.get();
   }
 
-  void DetachDecoderSequenceChecker() {
+  void DetachDecoderSequenceChecker() NO_THREAD_SAFETY_ANALYSIS {
     // |decoder_| will be destroyed on its |decoder_task_runner| via
     // DestroyAsync(). This will trip its |decoder_sequence_checker_| if it has
     // been pegged to the test task runner, e.g. in PickDecoderOutputFormat().
     // Since in that case we don't care about threading, just detach it.
     DETACH_FROM_SEQUENCE(decoder_->decoder_sequence_checker_);
+
+    if (decoder_->image_processor_) {
+      // |decoder_->image_processor_->sequence_checker_| is pegged to the test
+      // task runner because |decoder_->image_processor_| is created when we
+      // call PickDecoderOutputFormat() from test code.
+      // |decoder_->image_processor_| is then destroyed on the decoder task
+      // runner because of VideoDecoderPipeline::DestroyAsync(). Thus the need
+      // for this detachment.
+      DETACH_FROM_SEQUENCE(decoder_->image_processor_->sequence_checker_);
+    }
   }
 
   void InvokeWaitingCB(WaitingReason reason) {
     decoder_->decoder_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&VideoDecoderPipeline::OnDecoderWaiting,
                                   base::Unretained(decoder_.get()), reason));
+  }
+
+  bool DecoderHasImageProcessor() NO_THREAD_SAFETY_ANALYSIS {
+    return !!decoder_->image_processor_;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner()
+      NO_THREAD_SAFETY_ANALYSIS {
+    return decoder_->decoder_task_runner_;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -566,67 +610,152 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
   constexpr gfx::Size kSize(320, 240);
   constexpr gfx::Rect kVisibleRect(320, 240);
   constexpr size_t kMaxNumOfFrames = 4u;
+  constexpr uint64_t kModifier = ~DRM_FORMAT_MOD_LINEAR;
 
   const struct {
-    std::vector<std::pair<Fourcc, gfx::Size>> input_candidates;
-    std::pair<Fourcc, gfx::Size> expected_chosen_candidate;
+    std::vector<PixelLayoutCandidate> input_candidates;
+    PixelLayoutCandidate expected_chosen_candidate;
   } test_vectors[] = {
       // Easy cases: one candidate that is supported, should be chosen.
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize)},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
       // Two candidates, both supported: pick as per implementation.
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
       // Two candidates, only one supported, the supported one should be picked.
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::YU16, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::NV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::YU16, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)},
-      {{std::pair<Fourcc, gfx::Size>(Fourcc::YU16, kSize),
-        std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize)},
-       std::pair<Fourcc, gfx::Size>(Fourcc::P010, kSize)}};
+      {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::NV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::YV12), kSize, kModifier}},
+      {{PixelLayoutCandidate{Fourcc(Fourcc::YU16), kSize, kModifier},
+        PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}},
+       PixelLayoutCandidate{Fourcc(Fourcc::P010), kSize, kModifier}}};
 
   for (const auto& test_vector : test_vectors) {
-    const Fourcc& expected_fourcc = test_vector.expected_chosen_candidate.first;
+    const Fourcc& expected_fourcc =
+        test_vector.expected_chosen_candidate.fourcc;
     const gfx::Size& expected_coded_size =
-        test_vector.expected_chosen_candidate.second;
+        test_vector.expected_chosen_candidate.size;
     std::vector<ColorPlaneLayout> planes(
         VideoFrame::NumPlanes(expected_fourcc.ToVideoPixelFormat()));
     EXPECT_CALL(*pool_,
                 Initialize(expected_fourcc, expected_coded_size, kVisibleRect,
                            /*natural_size=*/kVisibleRect.size(),
                            kMaxNumOfFrames, /*use_protected=*/false))
-        .WillOnce(Return(
-            *GpuBufferLayout::Create(expected_fourcc, expected_coded_size,
-                                     std::move(planes), /*modifier=*/0u)));
+        .WillOnce(Return(*GpuBufferLayout::Create(
+            expected_fourcc, expected_coded_size, std::move(planes),
+            /*modifier=*/kModifier)));
     auto status_or_chosen_candidate = decoder_->PickDecoderOutputFormat(
         test_vector.input_candidates, kVisibleRect,
         /*decoder_natural_size=*/kVisibleRect.size(),
         /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
         /*use_protected=*/false, /*need_aux_frame_pool=*/false);
     ASSERT_TRUE(status_or_chosen_candidate.has_value());
-    const auto chosen_candidate = std::move(status_or_chosen_candidate).value();
+    const PixelLayoutCandidate chosen_candidate =
+        std::move(status_or_chosen_candidate).value();
     EXPECT_EQ(test_vector.expected_chosen_candidate, chosen_candidate)
         << " expected: "
-        << test_vector.expected_chosen_candidate.first.ToString()
-        << ", actual: " << chosen_candidate.first.ToString();
+        << test_vector.expected_chosen_candidate.fourcc.ToString()
+        << ", actual: " << chosen_candidate.fourcc.ToString();
+    EXPECT_FALSE(DecoderHasImageProcessor());
     testing::Mock::VerifyAndClearExpectations(pool_);
   }
   DetachDecoderSequenceChecker();
 }
+
+#if BUILDFLAG(USE_VAAPI)
+// Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
+// as expected when the pool returns linear buffers. It should allocate an image
+// processor in those cases.
+TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatLinearModifier) {
+  constexpr gfx::Size kSize(320, 240);
+  constexpr gfx::Rect kVisibleRect(320, 240);
+  constexpr size_t kMaxNumOfFrames = 4u;
+  const Fourcc kFourcc(Fourcc::NV12);
+
+  auto image_processor =
+      std::make_unique<MockImageProcessor>(GetDecoderTaskRunner());
+  ImageProcessorBackend::PortConfig port_config(
+      Fourcc(Fourcc::NV12), gfx::Size(320, 240), {}, gfx::Rect(320, 240), {});
+  EXPECT_CALL(*image_processor, input_config())
+      .WillRepeatedly(testing::ReturnRef(port_config));
+  EXPECT_CALL(*image_processor, output_config())
+      .WillRepeatedly(testing::ReturnRef(port_config));
+
+  base::MockCallback<VideoDecoderPipeline::CreateImageProcessorCBForTesting>
+      image_processor_cb;
+  EXPECT_CALL(image_processor_cb, Run(_, _, kSize, _))
+      .WillOnce(Return(testing::ByMove(std::move(image_processor))));
+  SetCreateImageProcessorCBForTesting(image_processor_cb.Get());
+
+  // Modifier should be the linear format.
+  GpuBufferLayout gpu_buffer_layout = *GpuBufferLayout::Create(
+      kFourcc, kSize,
+      std::vector<ColorPlaneLayout>(
+          VideoFrame::NumPlanes(kFourcc.ToVideoPixelFormat())),
+      /*modifier=*/DRM_FORMAT_MOD_LINEAR);
+  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _))
+      .WillRepeatedly(Return(gpu_buffer_layout));
+
+  PixelLayoutCandidate candidate{Fourcc(Fourcc::NV12), kSize,
+                                 /*modifier=*/~DRM_FORMAT_MOD_LINEAR};
+  auto status_or_chosen_candidate = decoder_->PickDecoderOutputFormat(
+      {candidate}, kVisibleRect,
+      /*decoder_natural_size=*/kVisibleRect.size(),
+      /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
+      /*use_protected=*/false, /*need_aux_frame_pool=*/false);
+
+  EXPECT_TRUE(status_or_chosen_candidate.has_value());
+  // Main concern is that the image processor was set.
+  EXPECT_TRUE(DecoderHasImageProcessor());
+  DetachDecoderSequenceChecker();
+}
+
+// Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
+// as expected when the frame pool returns buffers that have an unsupported
+// modifier.
+TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
+  constexpr gfx::Size kSize(320, 240);
+  constexpr gfx::Rect kVisibleRect(320, 240);
+  constexpr size_t kMaxNumOfFrames = 4u;
+  const Fourcc kFourcc(Fourcc::NV12);
+
+  // Modifier is *not* the linear format.
+  GpuBufferLayout gpu_buffer_layout = *GpuBufferLayout::Create(
+      kFourcc, kSize,
+      std::vector<ColorPlaneLayout>(
+          VideoFrame::NumPlanes(kFourcc.ToVideoPixelFormat())),
+      /*modifier=*/~DRM_FORMAT_MOD_LINEAR);
+  EXPECT_CALL(*pool_, Initialize(_, _, _, _, _, _))
+      .WillRepeatedly(Return(gpu_buffer_layout));
+
+  // Make sure the modifier mismatches the |gpu_buffer_layout|'s
+  constexpr uint64_t modifier = ~DRM_FORMAT_MOD_LINEAR + 1;
+  PixelLayoutCandidate candidate{Fourcc(Fourcc::NV12), kSize, modifier};
+  auto status_or_chosen_candidate = decoder_->PickDecoderOutputFormat(
+      {candidate}, kVisibleRect,
+      /*decoder_natural_size=*/kVisibleRect.size(),
+      /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
+      /*use_protected=*/false, /*need_aux_frame_pool=*/false);
+
+  EXPECT_TRUE(status_or_chosen_candidate.has_error());
+  EXPECT_FALSE(DecoderHasImageProcessor());
+  DetachDecoderSequenceChecker();
+}
+#endif
 
 // Verifies that ReleaseAllFrames is called on the frame pool when we receive
 // the kDecoderStateLost event through the waiting callback. This can occur

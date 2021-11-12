@@ -17,9 +17,11 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace media {
 
@@ -29,6 +31,18 @@ namespace media {
 // in a format different from what the rest of the pipeline expects.
 class MEDIA_GPU_EXPORT ImageProcessor {
  public:
+  struct PixelLayoutCandidate {
+    Fourcc fourcc;
+    gfx::Size size;
+    uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
+
+    // For testing.
+    bool operator==(const PixelLayoutCandidate& candidate) const {
+      return this->fourcc == candidate.fourcc && this->size == candidate.size &&
+             this->modifier == candidate.modifier;
+    }
+  };
+
   using PortConfig = ImageProcessorBackend::PortConfig;
   using OutputMode = ImageProcessorBackend::OutputMode;
   using ErrorCB = ImageProcessorBackend::ErrorCB;
@@ -61,8 +75,9 @@ class MEDIA_GPU_EXPORT ImageProcessor {
 
   virtual ~ImageProcessor();
 
-  const PortConfig& input_config() const { return backend_->input_config(); }
-  const PortConfig& output_config() const { return backend_->output_config(); }
+  virtual const PortConfig& input_config() const;
+  virtual const PortConfig& output_config() const;
+
   OutputMode output_mode() const { return backend_->output_mode(); }
 
   // Called by client to process |frame|. The resulting processed frame will be

@@ -20,6 +20,8 @@ namespace media {
 
 namespace {
 
+using PortConfig = ImageProcessorBackend::PortConfig;
+
 // Verify if the format of |frame| matches |config|.
 bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
                            const VideoFrame& frame) {
@@ -233,6 +235,14 @@ int ImageProcessor::StoreCallback(ClientCallback cb) {
   int cb_index = next_cb_index_++;
   pending_cbs_.emplace(cb_index, std::move(cb));
   return cb_index;
+}
+
+const PortConfig& ImageProcessor::input_config() const {
+  return backend_->input_config();
+}
+
+const PortConfig& ImageProcessor::output_config() const {
+  return backend_->output_config();
 }
 
 }  // namespace media

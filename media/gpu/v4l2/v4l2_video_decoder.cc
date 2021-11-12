@@ -19,6 +19,9 @@
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/image_processor.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_status.h"
@@ -28,6 +31,8 @@
 namespace media {
 
 namespace {
+
+using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
 // See http://crbug.com/255116.
 constexpr int k1080pArea = 1920 * 1088;
@@ -386,7 +391,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
             << ", visible_rect: " << visible_rect.ToString();
 
   // Get the supported output formats and their corresponding negotiated sizes.
-  std::vector<std::pair<Fourcc, gfx::Size>> candidates;
+  std::vector<PixelLayoutCandidate> candidates;
   for (const uint32_t& pixfmt : device_->EnumerateSupportedPixelformats(
            V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
     const auto candidate = Fourcc::FromV4L2PixFmt(pixfmt);
@@ -403,11 +408,13 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 
     gfx::Size adjusted_size(format->fmt.pix_mp.width,
                             format->fmt.pix_mp.height);
-    candidates.emplace_back(*candidate, adjusted_size);
+
+    candidates.emplace_back(
+        PixelLayoutCandidate{.fourcc = *candidate, .size = adjusted_size});
   }
 
   // Ask the pipeline to pick the output format.
-  CroStatus::Or<std::pair<Fourcc, gfx::Size>> status_or_output_format =
+  CroStatus::Or<PixelLayoutCandidate> status_or_output_format =
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
           /*output_size=*/absl::nullopt, num_output_frames_,
@@ -416,9 +423,10 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     VLOGF(1) << "Failed to pick an output format.";
     return std::move(status_or_output_format).error().code();
   }
-  const auto output_format = std::move(status_or_output_format).value();
-  Fourcc fourcc = std::move(output_format.first);
-  gfx::Size picked_size = std::move(output_format.second);
+  const PixelLayoutCandidate output_format =
+      std::move(status_or_output_format).value();
+  Fourcc fourcc = std::move(output_format.fourcc);
+  gfx::Size picked_size = std::move(output_format.size);
 
   // We successfully picked the output format. Now setup output format again.
   absl::optional<struct v4l2_format> format =

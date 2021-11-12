@@ -69,7 +69,7 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
   // the factory can instantiate a suitable ImageProcessor. Returns nullptr if
   // an ImageProcessor can't be created.
   static std::unique_ptr<ImageProcessor> CreateWithInputCandidates(
-      const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
+      const std::vector<ImageProcessor::PixelLayoutCandidate>& input_candidates,
       const gfx::Rect& input_visible_rect,
       const gfx::Size& output_size,
       size_t num_buffers,

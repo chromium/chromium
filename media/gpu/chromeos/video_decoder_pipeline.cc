@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
+#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else
@@ -36,6 +37,8 @@
 
 namespace media {
 namespace {
+
+using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
 // The number of requested frames used for the image processor should be the
 // number of frames in media::Pipeline plus the current processing frame.
@@ -155,8 +158,14 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
     : client_task_runner_(std::move(client_task_runner)),
+      // Note that the decoder thread is created with base::MayBlock(). This is
+      // because the underlying |decoder_| may need to allocate a dummy buffer
+      // to discover the most native modifier accepted by the hardware video
+      // decoder; this in turn may need to open the render node, and this is the
+      // operation that may block.
       decoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE},
+          {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
+           base::MayBlock()},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
@@ -598,9 +607,9 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   return main_frame_pool_.get();
 }
 
-CroStatus::Or<std::pair<Fourcc, gfx::Size>>
+CroStatus::Or<PixelLayoutCandidate>
 VideoDecoderPipeline::PickDecoderOutputFormat(
-    const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
+    const std::vector<PixelLayoutCandidate>& candidates,
     const gfx::Rect& decoder_visible_rect,
     const gfx::Size& decoder_natural_size,
     absl::optional<gfx::Size> output_size,
@@ -617,32 +626,69 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   image_processor_.reset();
 
   // As long as we're not scaling, check if any of the |candidates| formats is
-  // directly renderable.
+  // directly renderable. If so, and (VA-API-only) the modifier of buffers
+  // provided by the frame pool matches the one supported by the |decoder_|, we
+  // don't need an image processor.
+  absl::optional<PixelLayoutCandidate> viable_candidate;
   if (!output_size || *output_size == decoder_visible_rect.size()) {
     for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
       for (const auto& candidate : candidates) {
-        if (candidate.first == Fourcc(preferred_fourcc)) {
-          CroStatus::Or<GpuBufferLayout> status_or_layout =
-              main_frame_pool_->Initialize(
-                  candidate.first, candidate.second, decoder_visible_rect,
-                  decoder_natural_size, num_of_pictures, use_protected);
-          if (status_or_layout.has_error())
-            return std::move(status_or_layout).error();
-          return candidate;
+        if (candidate.fourcc == Fourcc(preferred_fourcc)) {
+          viable_candidate = candidate;
+          break;
         }
       }
+      if (viable_candidate)
+        break;
     }
   }
+  if (viable_candidate) {
+    CroStatus::Or<GpuBufferLayout> status_or_layout =
+        main_frame_pool_->Initialize(viable_candidate->fourcc,
+                                     viable_candidate->size,
+                                     decoder_visible_rect, decoder_natural_size,
+                                     num_of_pictures, use_protected);
+    if (status_or_layout.has_error())
+      return std::move(status_or_layout).error();
 
-  std::unique_ptr<ImageProcessor> image_processor =
-      ImageProcessorFactory::CreateWithInputCandidates(
-          candidates, /*input_visible_rect=*/decoder_visible_rect,
-          output_size ? *output_size : decoder_visible_rect.size(),
-          kNumFramesForImageProcessor, decoder_task_runner_,
-          base::BindRepeating(&PickRenderableFourcc),
-          BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
-                                                decoder_weak_this_,
-                                                "ImageProcessor error")));
+#if BUILDFLAG(USE_VAAPI)
+    const GpuBufferLayout layout(std::move(status_or_layout).value());
+    if (layout.modifier() == viable_candidate->modifier) {
+      return *viable_candidate;
+    } else if (layout.modifier() != DRM_FORMAT_MOD_LINEAR) {
+      // In theory, we could accept any |layout|.modifier(). However, the only
+      // known use case for a modifier different than the one native to the
+      // |decoder_| is when Android wishes to get linear decoded data. Thus, to
+      // reduce the number of of moving parts that can fail, we restrict the
+      // modifiers of pool buffers to be either the hardware decoder's native
+      // modifier or DRM_FORMAT_MOD_LINEAR.
+      DVLOGF(2) << "Unsupported modifier, " << std::hex
+                << viable_candidate->modifier << ", passed in";
+      return CroStatus::Codes::kFailedToCreateImageProcessor;
+    }
+#else
+    return *viable_candidate;
+#endif
+  }
+
+  std::unique_ptr<ImageProcessor> image_processor;
+  if (create_image_processor_cb_for_testing_) {
+    image_processor = create_image_processor_cb_for_testing_.Run(
+        candidates,
+        /*input_visible_rect=*/decoder_visible_rect,
+        output_size ? *output_size : decoder_visible_rect.size(),
+        kNumFramesForImageProcessor);
+  } else {
+    image_processor = ImageProcessorFactory::CreateWithInputCandidates(
+        candidates, /*input_visible_rect=*/decoder_visible_rect,
+        output_size ? *output_size : decoder_visible_rect.size(),
+        kNumFramesForImageProcessor, decoder_task_runner_,
+        base::BindRepeating(&PickRenderableFourcc),
+        BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
+                                              decoder_weak_this_,
+                                              "ImageProcessor error")));
+  }
+
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
     // TODO(crbug/1103510): Make CreateWithInputCandidates return an Or type.
@@ -671,12 +717,15 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
       return std::move(status_or_layout).error();
     }
   }
-
   // Note that fourcc is specified in ImageProcessor's factory method.
   auto fourcc = image_processor->input_config().fourcc;
   auto size = image_processor->input_config().size;
 
   // Setup new pipeline.
+  // TODO(b/203240043): Verify that if we're using the image processor for tiled
+  // to linear transformation, that the created frame pool is of linear format.
+  // TODO(b/203240043): Add CHECKs to verify that the image processor is being
+  // created for only valid use cases. Writing to a linear output buffer, e.g.
   auto status_or_image_processor = ImageProcessorWithPool::Create(
       std::move(image_processor), main_frame_pool_.get(),
       kNumFramesForImageProcessor, use_protected, decoder_task_runner_);
@@ -686,7 +735,11 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   }
 
   image_processor_ = std::move(status_or_image_processor).value();
-  return std::make_pair(fourcc, size);
+  // TODO(b/203240043): Currently, the modifier is not read by any callers of
+  // this function. We can eventually provide it by making it available to fetch
+  // through the |image_processor|.
+  return PixelLayoutCandidate{fourcc, size,
+                              gfx::NativePixmapHandle::kNoModifier};
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -762,10 +762,29 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 
   const gfx::Size decoder_natural_size =
       aspect_ratio_.GetNaturalSize(decoder_visible_rect);
+  // TODO(b/203240043): We assume that the |dummy_frame|'s modifier matches the
+  // buffer returned by the video frame pool. We should create a test to make
+  // sure this assumption is never violated.
+  // TODO(b/203240043): Create a GMB directly instead of allocating a
+  // VideoFrame.
+  scoped_refptr<VideoFrame> dummy_frame = CreateGpuMemoryBufferVideoFrame(
+      /*gpu_memory_buffer_factory=*/nullptr, *format, decoder_pic_size,
+      decoder_visible_rect, decoder_natural_size,
+      /*timestamp=*/base::TimeDelta(),
+      cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
+  if (!dummy_frame) {
+    SetErrorState("failed to allocate a dummy buffer");
+    return;
+  }
+
+  ImageProcessor::PixelLayoutCandidate candidate{
+      .fourcc = *format_fourcc,
+      .size = decoder_pic_size,
+      .modifier = dummy_frame->layout().modifier()};
   auto status_or_layout = client_->PickDecoderOutputFormat(
-      /*candidates=*/{{*format_fourcc, decoder_pic_size}}, decoder_visible_rect,
-      decoder_natural_size, output_visible_rect.size(),
-      decoder_->GetRequiredNumOfPictures(),
+      {candidate}, decoder_visible_rect, decoder_natural_size,
+      output_visible_rect.size(), decoder_->GetRequiredNumOfPictures(),
       /*use_protected=*/!!cdm_context_ref_,
       /*need_aux_frame_pool=*/true);
   if (status_or_layout.has_error()) {

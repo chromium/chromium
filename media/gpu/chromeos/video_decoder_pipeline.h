@@ -23,6 +23,8 @@
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/gpu/chromeos/decoder_buffer_transcryptor.h"
@@ -66,19 +68,21 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // (i.e., the size of |decoder_visible_rect| is equal to |output_size|), it
     // selects a renderable format out of |candidates| and initializes the main
     // video frame pool with the selected format and the given arguments. If
-    // scaling or none of the |candidates| are considered renderable, this
-    // method attempts to initialize an image processor to reconcile the formats
-    // and/or perform scaling. |need_aux_frame_pool| indicates whether the
-    // caller needs a frame pool in the event that an image processor is needed:
-    // if true, a new pool is initialized and that pool can be obtained by
-    // calling GetVideoFramePool(). This pool will provide buffers consistent
-    // with the selected candidate out of |candidates|. If false, the caller
-    // must allocate its own buffers.
+    // scaling, or if none of the |candidates| is considered renderable, or if
+    // (VA-API-only) the modifier of the frame pool's buffers is incompatible
+    // with the hardware decoder, this method attempts to initialize an image
+    // processor to reconcile the formats and/or perform scaling.
+    // |need_aux_frame_pool| indicates whether the caller needs a frame pool in
+    // the event that an image processor is needed: if true, a new pool is
+    // initialized and that pool can be obtained by calling GetVideoFramePool().
+    // This pool will provide buffers consistent with the selected candidate out
+    // of |candidates|. If false, the caller must allocate its own buffers.
     //
     // Note: after a call to this method, callers should assume that a pointer
     // returned by a prior call to GetVideoFramePool() is no longer valid.
-    virtual CroStatus::Or<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
-        const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
+    virtual CroStatus::Or<ImageProcessor::PixelLayoutCandidate>
+    PickDecoderOutputFormat(
+        const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
         const gfx::Rect& decoder_visible_rect,
         const gfx::Size& decoder_natural_size,
         absl::optional<gfx::Size> output_size,
@@ -159,8 +163,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // VideoDecoderMixin::Client implementation.
   DmabufVideoFramePool* GetVideoFramePool() const override;
   void PrepareChangeResolution() override;
-  CroStatus::Or<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
-      const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
+  CroStatus::Or<ImageProcessor::PixelLayoutCandidate> PickDecoderOutputFormat(
+      const std::vector<ImageProcessor::PixelLayoutCandidate>& candidates,
       const gfx::Rect& decoder_visible_rect,
       const gfx::Size& decoder_natural_size,
       absl::optional<gfx::Size> output_size,
@@ -170,6 +174,10 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
  private:
   friend class VideoDecoderPipelineTest;
+#if BUILDFLAG(USE_VAAPI)
+  FRIEND_TEST_ALL_PREFIXES(VideoDecoderPipelineTest,
+                           PickDecoderOutputFormatLinearModifier);
+#endif
 
   VideoDecoderPipeline(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -274,6 +282,16 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   OutputCB client_output_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
   DecodeCB client_flush_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  using CreateImageProcessorCBForTesting =
+      base::RepeatingCallback<std::unique_ptr<ImageProcessor>(
+          const std::vector<ImageProcessor::PixelLayoutCandidate>&
+              input_candidates,
+          const gfx::Rect& input_visible_rect,
+          const gfx::Size& output_size,
+          size_t num_buffers)>;
+  CreateImageProcessorCBForTesting create_image_processor_cb_for_testing_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // True if we need to notify |decoder_| that the pipeline is flushed via
   // VideoDecoderMixin::ApplyResolutionChange().
