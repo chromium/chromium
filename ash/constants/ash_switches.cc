@@ -344,6 +344,9 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
+// Disables the Lacros keep alive for testing.
+const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
+
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
 

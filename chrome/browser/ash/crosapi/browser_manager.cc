@@ -238,6 +238,11 @@ browser_util::InitialBrowserAction GetInitialBrowserAction() {
           : mojom::InitialBrowserAction::kUseStartupPreference);
 }
 
+bool IsKeepAliveDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kDisableLacrosKeepAliveForTesting);
+}
+
 }  // namespace
 
 // To be sure the lacros is running with neutral priority.
@@ -1067,6 +1072,9 @@ LaunchParamsFromBackground::LaunchParamsFromBackground(
 LaunchParamsFromBackground::~LaunchParamsFromBackground() = default;
 
 void BrowserManager::StartKeepAlive(Feature feature) {
+  if (IsKeepAliveDisabledForTesting())
+    return;
+
   DCHECK(keep_alive_features_.find(feature) == keep_alive_features_.end())
       << "Features should never be double registered.";
 
