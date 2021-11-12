@@ -200,47 +200,7 @@ class BASE_EXPORT TaskQueueImpl {
   // |delayed_work_queue|. Must be called from the main thread.
   void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now);
 
-  // Enqueues |task| on the |delayed_work_queue|. Called during wake-ups to
-  // queue delayed tasks in order of delayed run time across multiple task
-  // queues. Must be called from the main thread.
-  void MoveReadyDelayedTaskToWorkQueue(Task task);
-
-  // RAII handle created at the start of a wake-up for a given task queue. This
-  // finishes the wake-up for that task queue when the object goes out of scope.
-  class WakeUpHandle {
-   public:
-    WakeUpHandle(TaskQueueImpl* queue, LazyNow* lazy_now);
-    WakeUpHandle(WakeUpHandle&&);
-    ~WakeUpHandle();
-
-    TaskQueueImpl* GetTaskQueue() { return task_queue_; }
-
-   private:
-    TaskQueueImpl* task_queue_;
-    LazyNow* lazy_now_;
-  };
-  // Called at the start of a wake-up by TimeDomain. This is expected to clear
-  // the current wake-up. Must be called from the main thread.
-  WakeUpHandle OnStartWakeUp(LazyNow& lazy_now);
-
-  // Wrapper around a ready delayed task and its task queue used for ordering
-  // tasks across task queues by delayed run time during wake-ups.
-  struct ReadyDelayedTask {
-    ReadyDelayedTask(TaskQueueImpl* queue, Task task);
-    ReadyDelayedTask(ReadyDelayedTask&&);
-    ReadyDelayedTask& operator=(ReadyDelayedTask&&);
-
-    // Used for sorting.
-    bool operator<(const ReadyDelayedTask& other) const;
-
-    TaskQueueImpl* task_queue;
-    Task task;
-  };
-
-  // Called during wake-ups to move all delayed task whose delays expire before
-  // |lazy_now| into |tasks|. Must be called from the main thread.
-  void TakeReadyDelayedTasks(LazyNow& lazy_now,
-                             std::vector<ReadyDelayedTask>& tasks);
+  void OnWakeUp(LazyNow* lazy_now);
 
   HeapHandle heap_handle() const { return main_thread_only().heap_handle; }
 
@@ -528,14 +488,6 @@ class BASE_EXPORT TaskQueueImpl {
 
   // Invoked when the queue becomes enabled and not blocked by a fence.
   void OnQueueUnblocked();
-
-  // Update task state in preparation to move |task| to the delayed work queue.
-  void UpdateTaskOnDelayExpired(Task& task);
-
-  // Called at the end of a wake-up when a WakeUpHandle goes out of scope. This
-  // is expected to update the throttling state and set the next desired
-  // wake-up. Must be called from the main thread.
-  void OnFinishWakeUp(LazyNow& lazy_now);
 
   const char* name_;
   SequenceManagerImpl* const sequence_manager_;
