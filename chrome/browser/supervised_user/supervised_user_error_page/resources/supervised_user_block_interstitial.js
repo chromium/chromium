@@ -126,6 +126,9 @@ function initialize() {
     $('feedback').hidden = true;
     $('details-button-container').hidden = true;
   }
+
+  // Focus the top-level div for screen readers.
+  $('frame-blocked').focus();
 }
 
 /**

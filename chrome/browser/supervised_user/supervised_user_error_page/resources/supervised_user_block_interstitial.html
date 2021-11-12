@@ -14,21 +14,21 @@
 <script src="supervised_user_block_interstitial.js"></script>
 </head>
 <body class="supervised-user-block">
-<div class="frame-blocked">
+<div class="frame-blocked" id="frame-blocked" tabindex="-1">
   <div class="message-container">
     <div class="icon" id="icon" aria-hidden="true">
       <img id="family-link-kite">
     </div>
     <picture>
-      <source 
-        srcset="error_page_illustration_dark_theme.svg"              
+      <source
+        srcset="error_page_illustration_dark_theme.svg"
         media="(prefers-color-scheme: dark)">
       <img id="illustration"
         src="error_page_illustration_light_theme.svg">
     </picture>
     <div id="main-message">
-      <h1 id="block-page-header">$i18n{blockPageHeader}</h1>
-      <p id="block-page-message">$i18n{blockPageMessage}</p>
+      <h1 id="block-page-header" tabindex="-1">$i18n{blockPageHeader}</h1>
+      <p id="block-page-message" tabindex="-1">$i18n{blockPageMessage}</p>
       <h1 id="request-failed-message" role="alert" hidden>$i18n{requestFailedMessage}</h1>
       <h1 id="request-sent-message" role="alert" hidden>$i18n{requestSentMessage}</h1>
       <p id="request-sent-description" hidden>$i18n{requestSentDescription}</p>
@@ -37,8 +37,8 @@
       <div id="custodian-information" class="custodian-information">
         <img id="custodian-avatar-img" class="avatar-img">
         <div id="custodian-contact" class="custodian-contact">
-          <div id="custodian-name" class="custodian-name"></div>
-          <div id="custodian-email" class="custodian-email"></div>
+          <div id="custodian-name" tabindex="-1" class="custodian-name"></div>
+          <div id="custodian-email" tabindex="-1" class="custodian-email"></div>
         </div>
       </div>
       <div id="second-custodian-information" class="custodian-information" hidden>
