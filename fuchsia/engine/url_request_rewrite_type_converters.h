@@ -12,6 +12,15 @@
 
 namespace mojo {
 
+// This conversion is done with a TypeCoverter rather than a typemap because
+// it is only done one way, from the FIDL type to the Mojo type. This conversion
+// is only done once, in the browser process. These rules are validated after
+// they have been converted into Mojo.
+// In WebEngine, we have a one-way flow from the untrusted embedder into the
+// browser process, via a FIDL API. From there, the rules are converted into
+// Mojo and then validated before being sent to renderer processes. No further
+// conversion is performed, the Mojo types are used as is to apply the rewrites
+// on URL requests.
 template <>
 struct TypeConverter<mojom::UrlRequestRewriteRulesPtr,
                      std::vector<fuchsia::web::UrlRequestRewriteRule>> {
