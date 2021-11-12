@@ -36,8 +36,8 @@ bool CheckResourceIntegrityInternal(
   // Open the file for reading; allowing other consumers to also open it for
   // reading and deleting. Do not allow others to write to it.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_EXCLUSIVE_WRITE |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                            base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 
