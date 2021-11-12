@@ -63,10 +63,15 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // This API must be called whenever the client coordinates (i.e. relative to
   // the origin of the viewport) of the view of the EditContext have changed.
   // This includes if the viewport is scrolled or the position of the editable
-  // contents changes in response to other updates to the view. The arguments to
-  // this method describe a bounding box in client coordinates for both the
-  // editable region and also the current selection.
-  void updateBounds(DOMRect* control_bounds, DOMRect* selection_bounds);
+  // contents changes in response to other updates to the view. The argument
+  // describes a bounding box in client coordinates for the editable region.
+  void updateControlBounds(DOMRect* control_bounds);
+
+  // This API must be called whenever the client coordinates of the view of
+  // the EditContext have changed. The argument describes a bounding box in
+  // client coordinates for the current selection (or the caret if the
+  // selection is collapsed.)
+  void updateSelectionBounds(DOMRect* selection_bounds);
 
   // This API should be called when the consumer of the EditContext receives
   // CharacterBoundsUpdateEvent. The arguments to this method describe a

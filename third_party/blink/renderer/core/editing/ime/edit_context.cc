@@ -251,13 +251,16 @@ void EditContext::updateCharacterBounds(
       });
 }
 
-void EditContext::updateBounds(DOMRect* control_bounds,
-                               DOMRect* selection_bounds) {
+void EditContext::updateControlBounds(DOMRect* control_bounds) {
   // Return the IntRect containing the given DOMRect.
   const DoubleRect control_bounds_double_rect(
       control_bounds->x(), control_bounds->y(), control_bounds->width(),
       control_bounds->height());
   control_bounds_ = ToGfxRect(EnclosingIntRect(control_bounds_double_rect));
+}
+
+void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
+  // Return the IntRect containing the given DOMRect.
   const DoubleRect selection_bounds_double_rect(
       selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
       selection_bounds->height());

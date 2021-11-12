@@ -2175,9 +2175,10 @@ interface EditContext : EventTarget
     method attachedElements
     method characterBounds
     method constructor
-    method updateBounds
     method updateCharacterBounds
+    method updateControlBounds
     method updateSelection
+    method updateSelectionBounds
     method updateText
     setter enterKeyHint
     setter inputMode

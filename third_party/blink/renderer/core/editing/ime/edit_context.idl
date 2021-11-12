@@ -16,7 +16,8 @@
 ] interface EditContext : EventTarget {
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
-    void updateBounds(DOMRect controlBounds, DOMRect selectionBounds);
+    void updateControlBounds(DOMRect controlBounds);
+    void updateSelectionBounds(DOMRect selectionBounds);
     void updateCharacterBounds(unsigned long rangeStart, sequence<DOMRect> characterBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
     sequence<Element> attachedElements();

@@ -1434,9 +1434,10 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "const editContext = new EditContext();"
       "document.body.editContext = editContext;"
       "document.body.focus();editContext.inputPanelPolicy=\"auto\";"
-      "const control_bound = new DOMRect(10, 20, 30, 40);"
-      "const selection_bound = new DOMRect(10, 20, 1, 5);"
-      "editContext.updateBounds(control_bound, selection_bound);");
+      "const control_bounds = new DOMRect(10, 20, 30, 40);"
+      "const selection_bounds = new DOMRect(10, 20, 1, 5);"
+      "editContext.updateControlBounds(control_bounds);"
+      "editContext.updateSelectionBounds(selection_bounds);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
   base::RunLoop().RunUntilIdle();
@@ -1477,9 +1478,10 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "const editContext = new EditContext();"
       "document.body.editContext = editContext;"
       "document.body.focus();editContext.inputPanelPolicy=\"auto\";"
-      "const control_bound = new DOMRect(10.14, 20.25, 30.15, 40.50);"
-      "const selection_bound = new DOMRect(10, 20, 1, 5);"
-      "editContext.updateBounds(control_bound, selection_bound);");
+      "const control_bounds = new DOMRect(10.14, 20.25, 30.15, 40.50);"
+      "const selection_bounds = new DOMRect(10, 20, 1, 5);"
+      "editContext.updateControlBounds(control_bounds);"
+      "editContext.updateSelectionBounds(selection_bounds);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
   base::RunLoop().RunUntilIdle();
@@ -1520,10 +1522,11 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "const editContext = new EditContext();"
       "document.body.editContext = editContext;"
       "document.body.focus(); editContext.inputPanelPolicy=\"auto\";"
-      "const control_bound = new DOMRect(-3964254814208.000000,"
+      "const control_bounds = new DOMRect(-3964254814208.000000,"
       "-60129542144.000000, 674309865472.000000, 64424509440.000000);"
-      "const selection_bound = new DOMRect(10, 20, 1, 5);"
-      "editContext.updateBounds(control_bound, selection_bound);");
+      "const selection_bounds = new DOMRect(10, 20, 1, 5);"
+      "editContext.updateControlBounds(control_bounds);"
+      "editContext.updateSelectionBounds(selection_bounds);");
   // This RunLoop is waiting for EditContext to be created and layout bounds
   // to be updated in the EditContext.
   base::RunLoop().RunUntilIdle();

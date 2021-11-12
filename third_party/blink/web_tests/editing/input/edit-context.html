@@ -584,7 +584,8 @@ test(function() {
   assert_equals(editContext.selectionEnd, 1);
   editContext.selectionStart = 1;
   assert_equals(editContext.selectionStart, 1);
-  editContext.updateBounds(viewRect, caretRect);
+  editContext.updateControlBounds(viewRect);
+  editContext.updateSelectionBounds(caretRect);
 }, 'Testing EditContext update text, selection and layout');
 
 test(function() {
