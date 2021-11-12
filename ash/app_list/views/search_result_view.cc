@@ -10,7 +10,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
-#include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
@@ -214,86 +213,56 @@ void SearchResultView::UpdateDetailsText() {
   }
 }
 
-void SearchResultView::StyleTitleLabel() {
-  title_label_->ClearStyleRanges();
-  views::StyledLabel::RangeStyleInfo title_style;
+void SearchResultView::StyleLabel(views::StyledLabel* label,
+                                  const SearchResult::Tags& tags) {
+  label->ClearStyleRanges();
 
+  // Apply font weight styles.
+  bool is_url = false;
+  for (const auto& tag : tags) {
+    bool has_url_tag = (tag.styles & SearchResult::Tag::URL);
+    bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
+    is_url = has_url_tag || is_url;
+    if (has_match_tag) {
+      views::StyledLabel::RangeStyleInfo selected_text_bold;
+      selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
+      selected_text_bold.disable_line_wrapping = true;
+      selected_text_bold.override_color =
+          is_url ? AshColorProvider::Get()->GetContentLayerColor(
+                       AshColorProvider::ContentLayerType::kTextColorURL)
+                 : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                       kDeprecatedSearchBoxTextDefaultColor);
+      label->AddStyleRange(tag.range, selected_text_bold);
+    }
+  }
+
+  // Apply font color styles.
+  views::StyledLabel::RangeStyleInfo base_style;
   switch (view_type_) {
     case SearchResultViewType::kClassic:
-      title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      title_label_->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
+      label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      label->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
       break;
     case SearchResultViewType::kInlineAnswer:
     case SearchResultViewType::kDefault:
-      title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      title_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+      label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      label->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
   }
-  title_style.override_color =
-      AppListColorProvider::Get()->GetSearchBoxTextColor(
-          kDeprecatedSearchBoxTextDefaultColor);
+  base_style.override_color =
+      is_url ? AshColorProvider::Get()->GetContentLayerColor(
+                   AshColorProvider::ContentLayerType::kTextColorURL)
+             : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                   kDeprecatedSearchBoxTextDefaultColor);
+  base_style.disable_line_wrapping = true;
+  label->AddStyleRange(gfx::Range(0, label->GetText().size()), base_style);
+}
 
-  title_style.disable_line_wrapping = true;
-  title_label_->AddStyleRange(gfx::Range(0, result()->title().size()),
-                              title_style);
-
-  // Apply styling options for title_label_.
-  const SearchResult::Tags& tags = result()->title_tags();
-  for (const auto& tag : tags) {
-    if (tag.styles & SearchResult::Tag::URL) {
-      views::StyledLabel::RangeStyleInfo url_text_color;
-      url_text_color.override_color =
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorURL);
-      title_label_->AddStyleRange(tag.range, url_text_color);
-    }
-    if (tag.styles & SearchResult::Tag::MATCH) {
-      views::StyledLabel::RangeStyleInfo selected_text_bold;
-      selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
-      title_label_->AddStyleRange(tag.range, selected_text_bold);
-    }
-  }
+void SearchResultView::StyleTitleLabel() {
+  StyleLabel(title_label_, result()->title_tags());
 }
 
 void SearchResultView::StyleDetailsLabel() {
-  details_label_->ClearStyleRanges();
-  views::StyledLabel::RangeStyleInfo details_style;
-  switch (view_type_) {
-    case SearchResultViewType::kClassic:
-      details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      details_label_->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
-      break;
-    case SearchResultViewType::kInlineAnswer:
-      details_label_->SetTextContext(
-          CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS);
-      details_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-      break;
-    case SearchResultViewType::kDefault:
-      details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      details_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-  }
-  details_style.override_color =
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor);
-  details_style.disable_line_wrapping = true;
-  details_label_->AddStyleRange(gfx::Range(0, details_label_->GetText().size()),
-                                details_style);
-
-  // Apply styling options for details_label_.
-  const SearchResult::Tags& tags = result()->details_tags();
-  for (const auto& tag : tags) {
-    if (tag.styles & SearchResult::Tag::URL) {
-      views::StyledLabel::RangeStyleInfo url_text_color;
-      url_text_color.override_color =
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorURL);
-      details_label_->AddStyleRange(tag.range, url_text_color);
-    }
-    if (tag.styles & SearchResult::Tag::MATCH) {
-      views::StyledLabel::RangeStyleInfo selected_text_bold;
-      selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
-      details_label_->AddStyleRange(tag.range, selected_text_bold);
-    }
-  }
+  StyleLabel(details_label_, result()->details_tags());
 }
 
 void SearchResultView::OnQueryRemovalAccepted(bool accepted) {

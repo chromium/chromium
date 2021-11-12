@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -80,6 +81,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void UpdateTitleText();
   void UpdateDetailsText();
 
+  void StyleLabel(views::StyledLabel* label, const SearchResult::Tags& tags);
   void StyleTitleLabel();
   void StyleDetailsLabel();
 
