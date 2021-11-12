@@ -21,56 +21,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/page_transition_types.h"
-
-// Helpers --------------------------------------------------------------------
-
-namespace {
-
-// Helper class for posting a task to reload a tab, to avoid doing a re-entrant
-// navigation, since it can be called when starting a navigation. This class
-// makes sure to only execute the reload if the WebContents still exists.
-class TabReloader : public content::WebContentsUserData<TabReloader> {
- public:
-  ~TabReloader() override {}
-
-  static void Reload(content::WebContents* web_contents) {
-    TabReloader::CreateForWebContents(web_contents);
-  }
-
- private:
-  friend class content::WebContentsUserData<TabReloader>;
-
-  explicit TabReloader(content::WebContents* web_contents)
-      : web_contents_(web_contents) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&TabReloader::ReloadImpl,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void ReloadImpl() {
-    web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
-
-    // As the reload was not triggered by the user we don't want to close any
-    // infobars. We have to tell the infobars::ContentInfoBarManager after the
-    // reload, otherwise it would ignore this call when
-    // WebContentsObserver::DidStartNavigationToPendingEntry is invoked.
-    infobars::ContentInfoBarManager::FromWebContents(web_contents_)
-        ->set_ignore_next_reload();
-
-    web_contents_->RemoveUserData(UserDataKey());
-  }
-
-  content::WebContents* web_contents_;
-  base::WeakPtrFactory<TabReloader> weak_ptr_factory_{this};
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabReloader);
-
-}  // namespace
 
 // BrowserInstantController ---------------------------------------------------
 
