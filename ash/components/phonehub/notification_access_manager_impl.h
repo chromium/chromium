@@ -12,11 +12,11 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-class MessageSender;
 class ConnectionScheduler;
+class MessageSender;
 
 // Implements NotificationAccessManager by persisting the last-known
 // notification access value to user prefs.
@@ -56,6 +56,6 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_IMPL_H_

@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/notification_access_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeNotificationAccessManager : public NotificationAccessManager {
@@ -35,6 +35,13 @@ class FakeNotificationAccessManager : public NotificationAccessManager {
 };
 
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::FakeNotificationAccessManager;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_ACCESS_MANAGER_H_

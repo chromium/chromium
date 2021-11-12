@@ -9,7 +9,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageSender;
@@ -62,6 +62,6 @@ class CrosStateSender
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_

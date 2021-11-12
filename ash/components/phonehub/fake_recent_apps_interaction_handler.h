@@ -10,7 +10,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
@@ -48,6 +48,6 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_RECENT_APPS_INTERACTION_HANDLER_H_

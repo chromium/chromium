@@ -42,7 +42,7 @@ LaunchAppHelper::~LaunchAppHelper() = default;
 bool LaunchAppHelper::IsAppLaunchAllowed() const {
   const bool enable_phone_screen_lock =
       phone_hub_manager_->GetScreenLockManager()->GetLockStatus() ==
-      chromeos::phonehub::ScreenLockManager::LockStatus::kLockedOn;
+      phonehub::ScreenLockManager::LockStatus::kLockedOn;
   auto* session_controller = ash::Shell::Get()->session_controller();
   const bool enable_cros_screen_lock =
       session_controller->CanLockScreen() &&

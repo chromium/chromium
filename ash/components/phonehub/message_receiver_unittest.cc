@@ -14,8 +14,9 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 class FakeObserver : public MessageReceiver::Observer {
@@ -323,4 +324,4 @@ TEST_F(MessageReceiverImplTest,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

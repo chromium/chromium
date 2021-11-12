@@ -86,8 +86,7 @@ class PlaceholderView : public views::Label {
 }  // namespace
 
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
-    chromeos::phonehub::RecentAppsInteractionHandler*
-        recent_apps_interaction_handler)
+    phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler)
     : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
   SetID(PhoneHubViewID::kPhoneHubRecentAppsView);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -172,7 +171,7 @@ void PhoneHubRecentAppsView::Update() {
   recent_app_buttons_view_->Reset();
   recent_app_button_list_.clear();
 
-  std::vector<chromeos::phonehub::Notification::AppMetadata> recent_apps_list =
+  std::vector<phonehub::Notification::AppMetadata> recent_apps_list =
       recent_apps_interaction_handler_->FetchRecentAppMetadataList();
   if (recent_apps_list.empty()) {
     recent_app_buttons_view_->SetVisible(false);
@@ -182,8 +181,7 @@ void PhoneHubRecentAppsView::Update() {
 
   for (const auto& recent_app : recent_apps_list) {
     auto pressed_callback = base::BindRepeating(
-        &chromeos::phonehub::RecentAppsInteractionHandler::
-            NotifyRecentAppClicked,
+        &phonehub::RecentAppsInteractionHandler::NotifyRecentAppClicked,
         base::Unretained(recent_apps_interaction_handler_), recent_app);
     recent_app_button_list_.push_back(std::make_unique<PhoneHubRecentAppButton>(
         recent_app.icon, recent_app.visible_app_name, pressed_callback));

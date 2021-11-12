@@ -9,7 +9,7 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace util {
 
@@ -89,4 +89,4 @@ void LogMessageResult(proto::MessageType message_type,
 
 }  // namespace util
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -11,13 +11,10 @@
 #include <string>
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-class ConnectionManager;
-}  // namespace secure_channel
-
+namespace ash {
 namespace phonehub {
 
 class MessageSenderImpl : public MessageSender {
@@ -52,6 +49,6 @@ class MessageSenderImpl : public MessageSender {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_

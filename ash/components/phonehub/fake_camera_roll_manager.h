@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeCameraRollManager : public CameraRollManager {
@@ -36,6 +36,6 @@ class FakeCameraRollManager : public CameraRollManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_CAMERA_ROLL_MANAGER_H_

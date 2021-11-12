@@ -7,7 +7,7 @@
 #include "ash/components/phonehub/camera_roll_item.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 CameraRollManager::CameraRollManager() = default;
@@ -46,4 +46,4 @@ void CameraRollManager::NotifyCameraRollViewUiStateUpdated() {
 void CameraRollManager::Observer::OnCameraRollViewUiStateUpdated() {}
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

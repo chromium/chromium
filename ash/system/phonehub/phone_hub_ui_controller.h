@@ -17,24 +17,22 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
-}  // namespace chromeos
-
 namespace views {
 class View;
 }  // namespace views
 
 namespace ash {
 
+namespace phonehub {
+class PhoneHubManager;
+}
+
 // This controller translates the state received from PhoneHubManager into the
 // corresponding main content view to be displayed in the tray bubble.
 class ASH_EXPORT PhoneHubUiController
-    : public chromeos::phonehub::FeatureStatusProvider::Observer,
-      public chromeos::phonehub::OnboardingUiTracker::Observer,
-      public chromeos::phonehub::PhoneModel::Observer,
+    : public phonehub::FeatureStatusProvider::Observer,
+      public phonehub::OnboardingUiTracker::Observer,
+      public phonehub::PhoneModel::Observer,
       public SessionObserver {
  public:
   class Observer : public base::CheckedObserver {
@@ -63,8 +61,7 @@ class ASH_EXPORT PhoneHubUiController
   PhoneHubUiController& operator=(const PhoneHubUiController&) = delete;
 
   // Sets the PhoneHubManager that provides the data to drive the UI.
-  void SetPhoneHubManager(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  void SetPhoneHubManager(phonehub::PhoneHubManager* phone_hub_manager);
 
   // Creates the corresponding content view for the current UI state.
   // |bubble_view| will be the parent the created content view.
@@ -86,13 +83,13 @@ class ASH_EXPORT PhoneHubUiController
   UiState ui_state() const { return ui_state_; }
 
  private:
-  // chromeos::phonehub::FeatureStatusProvider::Observer:
+  // phonehub::FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
-  // chromeos::phonehub::OnboardingUiTracker::Observer:
+  // phonehub::OnboardingUiTracker::Observer:
   void OnShouldShowOnboardingUiChanged() override;
 
-  // chromeos::phonehub::PhoneModel::Observer:
+  // phonehub::PhoneModel::Observer:
   void OnModelChanged() override;
 
   // SessionObserver:
@@ -112,7 +109,7 @@ class ASH_EXPORT PhoneHubUiController
   void OnConnectingViewTimerEnd();
 
   // The PhoneHubManager that provides data for the UI.
-  chromeos::phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
+  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
   // The current UI state.
   UiState ui_state_ = UiState::kHidden;

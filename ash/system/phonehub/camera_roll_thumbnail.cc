@@ -29,9 +29,9 @@ constexpr int kCameraRollThumbnailVideoIconSize = 20;
 
 CameraRollThumbnail::CameraRollThumbnail(
     const int index,
-    const chromeos::phonehub::CameraRollItem& item,
-    chromeos::phonehub::CameraRollManager* camera_roll_manager,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    const phonehub::CameraRollItem& item,
+    phonehub::CameraRollManager* camera_roll_manager,
+    phonehub::UserActionRecorder* user_action_recorder)
     : views::MenuButton(base::BindRepeating(&CameraRollThumbnail::ButtonPressed,
                                             base::Unretained(this))),
       index_(index),

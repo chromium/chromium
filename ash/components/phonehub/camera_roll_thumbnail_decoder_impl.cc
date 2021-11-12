@@ -15,12 +15,15 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 using BatchDecodeCallback =
-    base::OnceCallback<void(CameraRollThumbnailDecoder::BatchDecodeResult,
-                            const std::vector<CameraRollItem>&)>;
+    ::base::OnceCallback<void(CameraRollThumbnailDecoder::BatchDecodeResult,
+                              const std::vector<CameraRollItem>&)>;
+
 }  // namespace
 
 CameraRollThumbnailDecoderImpl::DecodeRequest::DecodeRequest(
@@ -163,4 +166,4 @@ void CameraRollThumbnailDecoderImpl::CompletePendingRequestsWithResult(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

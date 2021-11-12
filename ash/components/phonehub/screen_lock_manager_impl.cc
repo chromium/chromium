@@ -8,7 +8,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // static
@@ -34,4 +34,4 @@ void ScreenLockManagerImpl::SetLockStatusInternal(LockStatus lock_status) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -13,8 +13,9 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
@@ -311,4 +312,4 @@ TEST_F(CameraRollThumbnailDecoderImplTest, BatchDecodeWithInProgresRequests) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

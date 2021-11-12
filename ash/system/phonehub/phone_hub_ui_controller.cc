@@ -24,12 +24,12 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 
-using FeatureStatus = chromeos::phonehub::FeatureStatus;
-using TetherStatus = chromeos::phonehub::TetherController::Status;
-
 namespace ash {
 
 namespace {
+
+using FeatureStatus = phonehub::FeatureStatus;
+using TetherStatus = phonehub::TetherController::Status;
 
 constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
 
@@ -49,7 +49,7 @@ PhoneHubUiController::~PhoneHubUiController() {
 }
 
 void PhoneHubUiController::SetPhoneHubManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   if (phone_hub_manager == phone_hub_manager_)
     return;
 

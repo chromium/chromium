@@ -36,15 +36,6 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
-// migrated.
-using ::chromeos::phonehub::CameraRollManagerImpl;
-using ::chromeos::phonehub::MultideviceSetupStateUpdater;
-using ::chromeos::phonehub::NotificationAccessManagerImpl;
-using ::chromeos::phonehub::OnboardingUiTrackerImpl;
-using ::chromeos::phonehub::PhoneHubManagerImpl;
-using ::chromeos::phonehub::ScreenLockManagerImpl;
-
 content::BrowserContext* g_context_for_service = nullptr;
 
 bool IsProhibitedByPolicy(Profile* profile) {

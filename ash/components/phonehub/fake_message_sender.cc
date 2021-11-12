@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_message_sender.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeMessageSender::FakeMessageSender() = default;
@@ -139,4 +139,4 @@ FakeMessageSender::GetRecentInitiateCameraRollItemTransferRequest() const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollItem;
@@ -52,6 +52,6 @@ class CameraRollThumbnailDecoder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_H_

@@ -23,7 +23,7 @@ namespace phonehub {
 
 // CameraRollDownloadManager implementation.
 class CameraRollDownloadManagerImpl
-    : public chromeos::phonehub::CameraRollDownloadManager {
+    : public phonehub::CameraRollDownloadManager {
  public:
   CameraRollDownloadManagerImpl(
       const base::FilePath& download_path,
@@ -33,7 +33,7 @@ class CameraRollDownloadManagerImpl
   // CameraRollDownloadManager:
   void CreatePayloadFiles(
       int64_t payload_id,
-      const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata,
+      const proto::CameraRollItemMetadata& item_metadata,
       CreatePayloadFilesCallback payload_files_callback) override;
   void UpdateDownloadProgress(
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;

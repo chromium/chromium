@@ -10,11 +10,11 @@
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
 
 class BrowserTabsModelControllerTest : public testing::Test {
  protected:
@@ -78,4 +78,4 @@ TEST_F(BrowserTabsModelControllerTest, MutablePhoneModelProperlySet) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

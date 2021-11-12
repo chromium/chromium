@@ -25,10 +25,10 @@ constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(5);
 
 }  // namespace
 
-using Status = chromeos::phonehub::FindMyDeviceController::Status;
+using Status = phonehub::FindMyDeviceController::Status;
 
 LocatePhoneQuickActionController::LocatePhoneQuickActionController(
-    chromeos::phonehub::FindMyDeviceController* find_my_device_controller)
+    phonehub::FindMyDeviceController* find_my_device_controller)
     : find_my_device_controller_(find_my_device_controller) {
   DCHECK(find_my_device_controller_);
   find_my_device_controller_->AddObserver(this);

@@ -7,7 +7,7 @@
 #include "ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 TEST(BrowserTabsModelTest, Initialization) {
@@ -36,4 +36,4 @@ TEST(BrowserTabsModelTest, Initialization) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -64,7 +64,7 @@ PhoneHubTray::~PhoneHubTray() {
 }
 
 void PhoneHubTray::SetPhoneHubManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   ui_controller_->SetPhoneHubManager(phone_hub_manager);
 }
 

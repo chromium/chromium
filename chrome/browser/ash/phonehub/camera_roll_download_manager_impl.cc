@@ -38,9 +38,8 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
-bool HasEnoughDiskSpace(
-    const base::FilePath& root_path,
-    const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata) {
+bool HasEnoughDiskSpace(const base::FilePath& root_path,
+                        const proto::CameraRollItemMetadata& item_metadata) {
   DCHECK(item_metadata.file_size_bytes() >= 0);
   return base::SysInfo::AmountOfFreeDiskSpace(root_path) >=
          item_metadata.file_size_bytes();
@@ -84,7 +83,7 @@ CameraRollDownloadManagerImpl::~CameraRollDownloadManagerImpl() = default;
 
 void CameraRollDownloadManagerImpl::CreatePayloadFiles(
     int64_t payload_id,
-    const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata,
+    const proto::CameraRollItemMetadata& item_metadata,
     CreatePayloadFilesCallback payload_files_callback) {
   absl::optional<base::SafeBaseName> base_name(
       base::SafeBaseName::Create(item_metadata.file_name()));

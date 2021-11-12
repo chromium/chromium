@@ -12,17 +12,16 @@
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-using google::protobuf::RepeatedPtrField;
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
+using ::google::protobuf::RepeatedPtrField;
+
 class DoNotDisturbController;
-class FeatureStatusProvider;
 class FindMyDeviceController;
+class MutablePhoneModel;
 class NotificationAccessManager;
 class NotificationProcessor;
-class MutablePhoneModel;
 class ScreenLockManager;
 
 // Responsible for receiving incoming protos and calling on clients to update
@@ -87,6 +86,6 @@ class PhoneStatusProcessor
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_STATUS_PROCESSOR_H_

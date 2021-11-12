@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeNotificationManager::InlineReplyMetadata::InlineReplyMetadata(
@@ -44,4 +44,4 @@ void FakeNotificationManager::SendInlineReply(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

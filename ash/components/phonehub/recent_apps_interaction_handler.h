@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // The handler that exposes APIs to interact with Phone Hub Recent Apps.
@@ -45,13 +45,6 @@ class RecentAppsInteractionHandler {
       recent_app_metadata_list_;
 };
 
-}  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::RecentAppsInteractionHandler;
 }  // namespace phonehub
 }  // namespace ash
 

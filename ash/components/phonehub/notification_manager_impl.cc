@@ -10,11 +10,11 @@
 #include "base/containers/flat_set.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
 
 NotificationManagerImpl::NotificationManagerImpl(
     MessageSender* message_sender,
@@ -78,4 +78,4 @@ void NotificationManagerImpl::OnFeatureStatesChanged(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

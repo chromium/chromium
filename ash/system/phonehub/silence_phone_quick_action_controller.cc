@@ -26,7 +26,7 @@ constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(10);
 }  // namespace
 
 SilencePhoneQuickActionController::SilencePhoneQuickActionController(
-    chromeos::phonehub::DoNotDisturbController* dnd_controller)
+    phonehub::DoNotDisturbController* dnd_controller)
     : dnd_controller_(dnd_controller) {
   DCHECK(dnd_controller_);
   dnd_controller_->AddObserver(this);

@@ -16,8 +16,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace phonehub {
 
 // FeatureStatusProvider implementation which utilizes DeviceSyncClient,
@@ -96,6 +95,6 @@ class FeatureStatusProviderImpl
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_IMPL_H_

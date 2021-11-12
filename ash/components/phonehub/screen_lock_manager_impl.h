@@ -10,7 +10,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Implements ScreenLockManager by persisting the last-known screen lock value
@@ -31,6 +31,6 @@ class ScreenLockManagerImpl : public ScreenLockManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_SCREEN_LOCK_MANAGER_IMPL_H_

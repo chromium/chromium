@@ -14,12 +14,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "base/scoped_observation.h"
 
-namespace chromeos {
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
-}  // namespace chromeos
-
 namespace views {
 class ImageView;
 }
@@ -29,6 +23,10 @@ namespace ash {
 class PhoneHubContentView;
 class TrayBubbleWrapper;
 class SessionControllerImpl;
+
+namespace phonehub {
+class PhoneHubManager;
+}
 
 // This class represents the Phone Hub tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
@@ -44,8 +42,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   PhoneHubTray& operator=(const PhoneHubTray&) = delete;
 
   // Sets the PhoneHubManager that provides the data to drive the UI.
-  void SetPhoneHubManager(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  void SetPhoneHubManager(phonehub::PhoneHubManager* phone_hub_manager);
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;

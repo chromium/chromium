@@ -4,6 +4,9 @@
 
 #include "ash/components/phonehub/phone_status_processor.h"
 
+#include <algorithm>
+#include <string>
+
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 #include "ash/components/phonehub/find_my_device_controller.h"
 #include "ash/components/phonehub/message_receiver.h"
@@ -16,12 +19,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-#include <algorithm>
-#include <string>
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 using multidevice_setup::MultiDeviceSetupClient;
 
 PhoneStatusModel::MobileStatus GetMobileStatusFromProto(
@@ -182,10 +184,11 @@ PhoneStatusProcessor::~PhoneStatusProcessor() {
 
 void PhoneStatusProcessor::ProcessReceivedNotifications(
     const RepeatedPtrField<proto::Notification>& notification_protos) {
-  multidevice_setup::mojom::FeatureState feature_state =
+  chromeos::multidevice_setup::mojom::FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(
-          multidevice_setup::mojom::Feature::kPhoneHubNotifications);
-  if (feature_state != multidevice_setup::mojom::FeatureState::kEnabledByUser) {
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubNotifications);
+  if (feature_state !=
+      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     // Do not process any notifications if notifications are not enabled in
     // settings.
     return;
@@ -281,4 +284,4 @@ void PhoneStatusProcessor::OnHostStatusChanged(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

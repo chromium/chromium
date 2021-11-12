@@ -13,7 +13,7 @@
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeCameraRollDownloadManager::FakeCameraRollDownloadManager() = default;
@@ -22,7 +22,7 @@ FakeCameraRollDownloadManager::~FakeCameraRollDownloadManager() = default;
 
 void FakeCameraRollDownloadManager::CreatePayloadFiles(
     int64_t payload_id,
-    const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata,
+    const phonehub::proto::CameraRollItemMetadata& item_metadata,
     CreatePayloadFilesCallback payload_files_callback) {
   if (should_create_payload_files_succeed_) {
     payload_update_map_.emplace(
@@ -54,4 +54,4 @@ FakeCameraRollDownloadManager::GetFileTransferUpdates(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

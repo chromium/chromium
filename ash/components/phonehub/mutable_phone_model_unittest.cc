@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -121,4 +121,4 @@ TEST_F(MutablePhoneModelTest, BrowserTabsModel) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

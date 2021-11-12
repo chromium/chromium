@@ -325,7 +325,7 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
 
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
   Profile* profile = Profile::FromWebUI(web_ui());
-  chromeos::phonehub::PhoneHubManager* phone_hub_manager =
+  auto* phone_hub_manager =
       phonehub::PhoneHubManagerFactory::GetForProfile(profile);
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
@@ -569,15 +569,14 @@ void MultidevicePhoneHubHandler::HandleRemoveNotification(
 void MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi(
     const base::ListValue* args) {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  prefs->SetBoolean(chromeos::phonehub::prefs::kHideOnboardingUi, false);
+  prefs->SetBoolean(phonehub::prefs::kHideOnboardingUi, false);
   PA_LOG(VERBOSE) << "Reset kHideOnboardingUi pref";
 }
 
 void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(
     const base::ListValue* args) {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  prefs->SetBoolean(chromeos::phonehub::prefs::kHasDismissedSetupRequiredUi,
-                    false);
+  prefs->SetBoolean(phonehub::prefs::kHasDismissedSetupRequiredUi, false);
   PA_LOG(VERBOSE) << "Reset kHasDismissedSetupRequiredUi pref";
 }
 
@@ -606,7 +605,7 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
     std::vector<phonehub::CameraRollItem> items;
     // Create items in descending key order
     for (int i = *number_of_thumbnails; i > 0; --i) {
-      phonehub::proto::CameraRollItemMetadata metadata;
+      ash::phonehub::proto::CameraRollItemMetadata metadata;
       metadata.set_key(base::NumberToString(i));
       metadata.set_mime_type(file_type);
       metadata.set_last_modified_millis(1577865600 + i);

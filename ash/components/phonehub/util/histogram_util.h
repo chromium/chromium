@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace util {
 
@@ -49,6 +49,13 @@ void LogMessageResult(proto::MessageType message, PhoneHubMessageResult result);
 
 }  // namespace util
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+namespace util = ::ash::phonehub::util;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_UTIL_HISTOGRAM_UTIL_H_

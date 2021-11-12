@@ -9,9 +9,12 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
+
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
 
 // The minimum time to wait before checking whether the phone has responded to
 // status messages sent by CrosStateSender, and re-sending the status messages
@@ -24,9 +27,6 @@ constexpr base::TimeDelta kMinimumRetryDelay = base::Seconds(15u);
 constexpr int kRetryDelayMultiplier = 2;
 
 }  // namespace
-
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
 
 CrosStateSender::CrosStateSender(
     MessageSender* message_sender,
@@ -130,4 +130,4 @@ void CrosStateSender::OnFeatureStatesChanged(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

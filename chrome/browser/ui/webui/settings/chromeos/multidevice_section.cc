@@ -40,6 +40,9 @@ namespace {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
 
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace phonehub = ::ash::phonehub;
+
 const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,

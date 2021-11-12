@@ -10,14 +10,11 @@
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-class ConnectionManager;
-}  // namespace secure_channel
-
+namespace ash {
 namespace phonehub {
 
 // ConnectionScheduler implementation that schedules calls to ConnectionManager
@@ -56,6 +53,6 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_IMPL_H_

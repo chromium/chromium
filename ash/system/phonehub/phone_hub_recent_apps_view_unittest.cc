@@ -51,9 +51,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
 
   void NotifyRecentAppAddedOrUpdated() {
     fake_recent_apps_interaction_handler_.NotifyRecentAppAddedOrUpdated(
-        chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                      /*icon=*/gfx::Image(),
-                                                      kUserId),
+        phonehub::Notification::AppMetadata(kAppName, kPackageName,
+                                            /*icon=*/gfx::Image(), kUserId),
         base::Time::Now());
   }
 
@@ -64,7 +63,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<PhoneHubRecentAppsView> phone_hub_recent_apps_view_;
-  chromeos::phonehub::FakeRecentAppsInteractionHandler
+  phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
 };
 

@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_
 #define ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace prefs {
 
@@ -19,6 +19,13 @@ extern const char kScreenLockStatus[];
 
 }  // namespace prefs
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+namespace prefs = ::ash::phonehub::prefs;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PREF_NAMES_H_

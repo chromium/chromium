@@ -56,7 +56,7 @@ class SystemTrayModel : public SystemTray {
   void ShowVolumeSliderBubble() override;
   void ShowNetworkDetailedViewBubble() override;
   void SetPhoneHubManager(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager) override;
+      phonehub::PhoneHubManager* phone_hub_manager) override;
 
   ClockModel* clock() { return clock_.get(); }
   EnterpriseDomainModel* enterprise_domain() {

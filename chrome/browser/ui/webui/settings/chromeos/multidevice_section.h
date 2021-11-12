@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_SECTION_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
@@ -20,11 +22,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace chromeos {
-
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
-
 namespace settings {
 
 class SearchTagRegistry;

@@ -11,7 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 const char kCompletedActionMetricName[] = "PhoneHub.CompletedUserAction";
@@ -99,4 +99,4 @@ TEST_F(UserActionRecorderImplTest, UiOpenedOnlyRecordedWhenConnected) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

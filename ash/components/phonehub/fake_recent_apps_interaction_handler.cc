@@ -6,7 +6,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
@@ -48,4 +48,4 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

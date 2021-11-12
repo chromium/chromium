@@ -10,7 +10,7 @@
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Manages photo and videos files downloaded via Camera Roll. Files will be
@@ -65,6 +65,6 @@ class CameraRollDownloadManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_

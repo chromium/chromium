@@ -15,7 +15,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageSenderImplTest : public testing::Test {
@@ -169,4 +169,4 @@ TEST_F(MessageSenderImplTest, SendInitiateCameraRollItemTransferRequest) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

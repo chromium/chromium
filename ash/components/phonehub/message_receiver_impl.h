@@ -9,7 +9,7 @@
 
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // MessageReceiver implementation that observes all received messages from
@@ -29,6 +29,6 @@ class MessageReceiverImpl : public MessageReceiver,
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_IMPL_H_

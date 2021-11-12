@@ -22,9 +22,8 @@ namespace ash {
 
 // The header row at the top of the Phone Hub panel, showing phone title and
 // status (wifi, volime, etc.).
-class ASH_EXPORT PhoneStatusView
-    : public TriView,
-      public chromeos::phonehub::PhoneModel::Observer {
+class ASH_EXPORT PhoneStatusView : public TriView,
+                                   public phonehub::PhoneModel::Observer {
  public:
   class Delegate {
    public:
@@ -32,13 +31,12 @@ class ASH_EXPORT PhoneStatusView
     virtual void OpenConnectedDevicesSettings() = 0;
   };
 
-  PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
-                  Delegate* delegate);
+  PhoneStatusView(phonehub::PhoneModel* phone_model, Delegate* delegate);
   ~PhoneStatusView() override;
   PhoneStatusView(PhoneStatusView&) = delete;
   PhoneStatusView operator=(PhoneStatusView&) = delete;
 
-  // chromeos::phonehub::PhoneHubModel::Observer:
+  // phonehub::PhoneHubModel::Observer:
   void OnModelChanged() override;
 
  private:
@@ -59,7 +57,7 @@ class ASH_EXPORT PhoneStatusView
 
   void ConfigureTriViewContainer(TriView::Container container);
 
-  chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
+  phonehub::PhoneModel* phone_model_ = nullptr;
   Delegate* delegate_ = nullptr;
 
   // Owned by views hierarchy.

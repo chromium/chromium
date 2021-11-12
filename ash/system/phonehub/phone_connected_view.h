@@ -9,20 +9,17 @@
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace phonehub {
 class PhoneHubManager;
-}  // namespace phonehub
-}  // namespace chromeos
-
-namespace ash {
+}
 
 // A view of the Phone Hub panel, displaying phone status and utility actions
 // such as phone status, task continuation, etc.
 class PhoneConnectedView : public PhoneHubContentView {
  public:
-  explicit PhoneConnectedView(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
+  explicit PhoneConnectedView(phonehub::PhoneHubManager* phone_hub_manager);
   ~PhoneConnectedView() override;
 
   // views::View:

@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FindMyDeviceControllerImpl::FindMyDeviceControllerImpl(
@@ -51,4 +51,4 @@ void FindMyDeviceControllerImpl::RequestNewPhoneRingingState(bool ringing) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

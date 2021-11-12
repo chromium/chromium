@@ -9,7 +9,7 @@
 
 #include "ash/components/phonehub/connection_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeConnectionScheduler : public ConnectionScheduler {
@@ -29,6 +29,6 @@ class FakeConnectionScheduler : public ConnectionScheduler {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_CONNECTION_SCHEDULER_H_

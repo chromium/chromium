@@ -11,7 +11,7 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class PhoneModel;
@@ -53,6 +53,6 @@ class InvalidConnectionDisconnector
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_

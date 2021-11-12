@@ -35,7 +35,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 const char kSecureChannelFeatureName[] = "phone_hub";
 const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
@@ -250,4 +250,4 @@ void PhoneHubManagerImpl::Shutdown() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

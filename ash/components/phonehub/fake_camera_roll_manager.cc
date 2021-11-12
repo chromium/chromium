@@ -6,7 +6,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeCameraRollManager::FakeCameraRollManager() = default;
@@ -47,4 +47,4 @@ void FakeCameraRollManager::ComputeAndUpdateUiState() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

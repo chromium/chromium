@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Interface used to listen for a recent app click.
@@ -21,13 +21,6 @@ class RecentAppClickObserver : public base::CheckedObserver {
       const Notification::AppMetadata& app_metadata) = 0;
 };
 
-}  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::RecentAppClickObserver;
 }  // namespace phonehub
 }  // namespace ash
 

@@ -23,9 +23,14 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace multidevice_setup = ::chromeos::multidevice_setup;
+namespace secure_channel = ::chromeos::secure_channel;
 
 bool IsCameraRollSupportedOnAndroidDevice(
     const proto::CameraRollAccessState& access_state) {
@@ -91,7 +96,8 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
 void CameraRollManagerImpl::OnPayloadFilesCreated(
     const proto::FetchCameraRollItemDataResponse& response,
     CameraRollDownloadManager::CreatePayloadFilesResult result,
-    absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
+    absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+        payload_files) {
   if (result != CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess) {
     // TODO(http://crbug.com/1221297): notify the user that the item cannot be
     // downloaded and log the result code.
@@ -194,7 +200,7 @@ void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
 
 void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
   multidevice_setup_client_->SetFeatureEnabledState(
-      multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
       /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
   // Re-compute and update ui immediately instead of waiting for the callback to
   // finish would hide the view on user's tap action, giving a indicator for the
@@ -204,11 +210,11 @@ void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
 }
 
 bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {
-  multidevice_setup::mojom::FeatureState camera_roll_feature_state =
+  chromeos::multidevice_setup::mojom::FeatureState camera_roll_feature_state =
       multidevice_setup_client_->GetFeatureState(
-          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   return camera_roll_feature_state ==
-         multidevice_setup::mojom::FeatureState::kEnabledByUser;
+         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
 void CameraRollManagerImpl::OnFeatureStatesChanged(
@@ -255,4 +261,4 @@ void CameraRollManagerImpl::ComputeAndUpdateUiState() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

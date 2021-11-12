@@ -14,8 +14,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
+
 CameraRollOptInView::CameraRollOptInView(
-    chromeos::phonehub::CameraRollManager* camera_roll_manager)
+    phonehub::CameraRollManager* camera_roll_manager)
     : SubFeatureOptInView(PhoneHubViewID::kCameraRollOptInView,
                           IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_DESCRIPTION,
                           IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_TURN_ON_BUTTON),

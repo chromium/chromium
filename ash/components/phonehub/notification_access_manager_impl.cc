@@ -11,7 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // static
@@ -177,4 +177,4 @@ void NotificationAccessManagerImpl::SendShowNotificationAccessSetupRequest() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

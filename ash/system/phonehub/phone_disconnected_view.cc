@@ -29,7 +29,7 @@ using phone_hub_metrics::InterstitialScreenEvent;
 using phone_hub_metrics::Screen;
 
 PhoneDisconnectedView::PhoneDisconnectedView(
-    chromeos::phonehub::ConnectionScheduler* connection_scheduler)
+    phonehub::ConnectionScheduler* connection_scheduler)
     : connection_scheduler_(connection_scheduler) {
   SetID(PhoneHubViewID::kDisconnectedView);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -55,7 +55,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           base::BindRepeating(
               &NewWindowDelegate::OpenUrl,
               base::Unretained(NewWindowDelegate::GetInstance()),
-              GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
+              GURL(phonehub::kPhoneHubLearnMoreLink),
               /*from_user_interaction=*/true)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
@@ -68,7 +68,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
           InterstitialScreenEvent::kConfirm,
           base::BindRepeating(
-              &chromeos::phonehub::ConnectionScheduler::ScheduleConnectionNow,
+              &phonehub::ConnectionScheduler::ScheduleConnectionNow,
               base::Unretained(connection_scheduler_))),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),

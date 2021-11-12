@@ -14,11 +14,11 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
 
 class CrosStateSenderTest : public testing::Test {
  protected:
@@ -192,4 +192,4 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

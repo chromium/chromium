@@ -44,10 +44,9 @@ using phone_hub_metrics::Screen;
 // to enable this feature or dismiss the screen.
 class OnboardingMainView : public PhoneHubInterstitialView {
  public:
-  OnboardingMainView(
-      chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
-      OnboardingView* parent_view,
-      OnboardingView::OnboardingFlow onboarding_flow)
+  OnboardingMainView(phonehub::OnboardingUiTracker* onboarding_ui_tracker,
+                     OnboardingView* parent_view,
+                     OnboardingView::OnboardingFlow onboarding_flow)
       : PhoneHubInterstitialView(/*show_progress=*/false),
         onboarding_ui_tracker_(onboarding_ui_tracker),
         parent_view_(parent_view),
@@ -108,7 +107,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
     parent_view_->ShowDismissPrompt();
   }
 
-  chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
+  phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
   OnboardingView* parent_view_ = nullptr;
   const OnboardingView::OnboardingFlow onboarding_flow_;
 };
@@ -120,7 +119,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
 class OnboardingDismissPromptView : public PhoneHubInterstitialView {
  public:
   explicit OnboardingDismissPromptView(
-      chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker)
+      phonehub::OnboardingUiTracker* onboarding_ui_tracker)
       : PhoneHubInterstitialView(/*show_progress=*/false, /*show_image=*/false),
         onboarding_ui_tracker_(onboarding_ui_tracker) {
     SetID(PhoneHubViewID::kOnboardingDismissPromptView);
@@ -176,12 +175,12 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     return Screen::kOnboardingDismissPrompt;
   }
 
-  chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
+  phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
 };
 
 // OnboardingView -------------------------------------------------------------
 OnboardingView::OnboardingView(
-    chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
+    phonehub::OnboardingUiTracker* onboarding_ui_tracker,
     Delegate* delegate,
     OnboardingFlow onboarding_flow)
     : onboarding_ui_tracker_(onboarding_ui_tracker), delegate_(delegate) {

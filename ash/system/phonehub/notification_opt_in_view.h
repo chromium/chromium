@@ -11,29 +11,23 @@
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace chromeos {
-namespace phonehub {
-class NotificationAccessManager;
-}  // namespace phonehub
-}  // namespace chromeos
-
 namespace ash {
 
 // An additional entry point shown on the Phone Hub bubble for the user to grant
 // access or opt out for notifications from the phone.
 class ASH_EXPORT NotificationOptInView
     : public SubFeatureOptInView,
-      public chromeos::phonehub::NotificationAccessManager::Observer {
+      public phonehub::NotificationAccessManager::Observer {
  public:
   METADATA_HEADER(NotificationOptInView);
 
-  explicit NotificationOptInView(chromeos::phonehub::NotificationAccessManager*
-                                     notification_access_manager);
+  explicit NotificationOptInView(
+      phonehub::NotificationAccessManager* notification_access_manager);
   NotificationOptInView(const NotificationOptInView&) = delete;
   NotificationOptInView& operator=(const NotificationOptInView&) = delete;
   ~NotificationOptInView() override;
 
-  // chromeos::phonehub::NotificationAccessManager::Observer:
+  // phonehub::NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
  private:
   void SetUpButtonPressed() override;
@@ -43,11 +37,10 @@ class ASH_EXPORT NotificationOptInView
   // accordingly.
   void UpdateVisibility();
 
-  chromeos::phonehub::NotificationAccessManager* notification_access_manager_;
+  phonehub::NotificationAccessManager* notification_access_manager_;
 
-  base::ScopedObservation<
-      chromeos::phonehub::NotificationAccessManager,
-      chromeos::phonehub::NotificationAccessManager::Observer>
+  base::ScopedObservation<phonehub::NotificationAccessManager,
+                          phonehub::NotificationAccessManager::Observer>
       access_manager_observation_{this};
 };
 

@@ -14,9 +14,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
+
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
@@ -28,19 +31,15 @@ const char16_t kTextContent[] = u"This is a test notification";
 enum class NotificationState { kAdded, kUpdated, kRemoved };
 
 Notification CreateNotification(int64_t id) {
-  return chromeos::phonehub::Notification(
+  return phonehub::Notification(
       id,
-      chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image(),
-                                                    kUserId),
+      phonehub::Notification::AppMetadata(kAppName, kPackageName,
+                                          /*icon=*/gfx::Image(), kUserId),
       base::Time::Now(), Notification::Importance::kDefault,
       Notification::Category::kConversation,
       {{Notification::ActionType::kInlineReply, /*action_id=*/0}},
       Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 }
-
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
 
 class FakeObserver : public NotificationManager::Observer {
  public:
@@ -274,4 +273,4 @@ TEST_F(NotificationManagerImplTest, ClearNotificationsOnFeatureStatusChanged) {
   EXPECT_EQ(0u, GetNumNotifications());
 }
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

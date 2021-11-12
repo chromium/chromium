@@ -160,7 +160,7 @@ class PhoneHubNotificationController::NotificationDelegate
   NotificationDelegate(PhoneHubNotificationController* controller,
                        int64_t phone_hub_id,
                        const std::string& cros_id,
-                       chromeos::phonehub::Notification::Category category)
+                       phonehub::Notification::Category category)
       : controller_(controller),
         phone_hub_id_(phone_hub_id),
         cros_id_(cros_id),
@@ -191,9 +191,8 @@ class PhoneHubNotificationController::NotificationDelegate
     if (!controller_ || removed_by_phone_hub_)
       return;
 
-    if (category_ ==
-            chromeos::phonehub::Notification::Category::kIncomingCall ||
-        category_ == chromeos::phonehub::Notification::Category::kOngoingCall) {
+    if (category_ == phonehub::Notification::Category::kIncomingCall ||
+        category_ == phonehub::Notification::Category::kOngoingCall) {
       // TODO(b/203734343): Wait for UX confirm. Call notification is not
       // dismissible in android phone.
       PA_LOG(INFO)
@@ -216,8 +215,7 @@ class PhoneHubNotificationController::NotificationDelegate
                              ->app_metadata());
       return;
     }
-    if (category_ ==
-        chromeos::phonehub::Notification::Category::kIncomingCall) {
+    if (category_ == phonehub::Notification::Category::kIncomingCall) {
       // TODO(b/199223417): Implement actions.
       switch (*button_index) {
         case BUTTON_ANSWER:
@@ -227,8 +225,7 @@ class PhoneHubNotificationController::NotificationDelegate
           PA_LOG(INFO) << "decline button clicked";
           break;
       }
-    } else if (category_ ==
-               chromeos::phonehub::Notification::Category::kOngoingCall) {
+    } else if (category_ == phonehub::Notification::Category::kOngoingCall) {
       switch (*button_index) {
         case BUTTON_HANGUP:
           PA_LOG(INFO) << "hangup button clicked";
@@ -244,7 +241,7 @@ class PhoneHubNotificationController::NotificationDelegate
       controller_->OpenSettings();
   }
 
-  chromeos::phonehub::Notification::Category Category() { return category_; }
+  phonehub::Notification::Category Category() { return category_; }
 
  private:
   // Incoming call buttons that appear in notifications.
@@ -262,7 +259,7 @@ class PhoneHubNotificationController::NotificationDelegate
   const std::string cros_id_;
 
   // The category of the notification.
-  chromeos::phonehub::Notification::Category category_;
+  phonehub::Notification::Category category_;
 
   // Flag set if the notification was removed by PhoneHub so we avoid a cycle.
   bool removed_by_phone_hub_ = false;
@@ -300,7 +297,7 @@ PhoneHubNotificationController::~PhoneHubNotificationController() {
 }
 
 void PhoneHubNotificationController::SetManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   if (manager_)
     manager_->RemoveObserver(this);
   if (phone_hub_manager) {
@@ -355,11 +352,11 @@ void PhoneHubNotificationController::OnFeatureStatusChanged() {
   // Various states in which the feature is enabled, even if it is not actually
   // in use (e.g., if Bluetooth is disabled or if the screen is locked).
   bool is_feature_enabled =
-      status == chromeos::phonehub::FeatureStatus::kUnavailableBluetoothOff ||
-      status == chromeos::phonehub::FeatureStatus::kLockOrSuspended ||
-      status == chromeos::phonehub::FeatureStatus::kEnabledButDisconnected ||
-      status == chromeos::phonehub::FeatureStatus::kEnabledAndConnecting ||
-      status == chromeos::phonehub::FeatureStatus::kEnabledAndConnected;
+      status == phonehub::FeatureStatus::kUnavailableBluetoothOff ||
+      status == phonehub::FeatureStatus::kLockOrSuspended ||
+      status == phonehub::FeatureStatus::kEnabledButDisconnected ||
+      status == phonehub::FeatureStatus::kEnabledAndConnecting ||
+      status == phonehub::FeatureStatus::kEnabledAndConnected;
 
   // Reset the set of shown notifications when Phone Hub is disabled. If it is
   // enabled, we skip this step to ensure that notifications that have already
@@ -451,16 +448,16 @@ void PhoneHubNotificationController::DismissNotification(
 
 void PhoneHubNotificationController::HandleNotificationBodyClick(
     int64_t notification_id,
-    const chromeos::phonehub::Notification::AppMetadata& app_metadata) {
+    const phonehub::Notification::AppMetadata& app_metadata) {
   CHECK(manager_);
   if (!notification_interaction_handler_)
     return;
-  const chromeos::phonehub::Notification* notification =
+  const phonehub::Notification* notification =
       manager_->GetNotification(notification_id);
   if (!notification)
     return;
   if (notification->interaction_behavior() ==
-      chromeos::phonehub::Notification::InteractionBehavior::kOpenable) {
+      phonehub::Notification::InteractionBehavior::kOpenable) {
     notification_interaction_handler_->HandleNotificationClicked(
         notification_id, app_metadata);
   }
@@ -481,7 +478,7 @@ void PhoneHubNotificationController::LogNotificationCount() {
 }
 
 void PhoneHubNotificationController::SetNotification(
-    const chromeos::phonehub::Notification* notification,
+    const phonehub::Notification* notification,
     bool is_update) {
   int64_t phone_hub_id = notification->id();
   std::string cros_id = base::StrCat(
@@ -499,9 +496,9 @@ void PhoneHubNotificationController::SetNotification(
       CreateNotification(notification, cros_id, delegate, is_update);
 
   if (notification->category() ==
-          chromeos::phonehub::Notification::Category::kIncomingCall ||
+          phonehub::Notification::Category::kIncomingCall ||
       notification->category() ==
-          chromeos::phonehub::Notification::Category::kOngoingCall) {
+          phonehub::Notification::Category::kOngoingCall) {
     cros_notification->set_custom_view_type(kNotificationCustomCallViewType);
   } else {
     cros_notification->set_custom_view_type(kNotificationCustomViewType);
@@ -518,7 +515,7 @@ void PhoneHubNotificationController::SetNotification(
 
 std::unique_ptr<message_center::Notification>
 PhoneHubNotificationController::CreateNotification(
-    const chromeos::phonehub::Notification* notification,
+    const phonehub::Notification* notification,
     const std::string& cros_id,
     NotificationDelegate* delegate,
     bool is_update) {
@@ -558,7 +555,7 @@ PhoneHubNotificationController::CreateNotification(
     optional_fields.renotify = true;
 
   switch (notification->category()) {
-    case chromeos::phonehub::Notification::Category::kIncomingCall: {
+    case phonehub::Notification::Category::kIncomingCall: {
       message_center::ButtonInfo decline_button;
       decline_button.title = l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_DECLINE_BUTTON);
@@ -570,7 +567,7 @@ PhoneHubNotificationController::CreateNotification(
       optional_fields.buttons.push_back(answer_button);
       break;
     }
-    case chromeos::phonehub::Notification::Category::kOngoingCall: {
+    case phonehub::Notification::Category::kOngoingCall: {
       message_center::ButtonInfo hangup_button;
       hangup_button.title = l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_HANGUP_BUTTON);
@@ -600,7 +597,7 @@ PhoneHubNotificationController::CreateNotification(
 }
 
 int PhoneHubNotificationController::GetSystemPriorityForNotification(
-    const chromeos::phonehub::Notification* notification,
+    const phonehub::Notification* notification,
     bool is_update) {
   bool has_notification_been_shown =
       base::Contains(shown_notification_ids_, notification->id());

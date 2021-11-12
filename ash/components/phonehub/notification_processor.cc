@@ -15,8 +15,9 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 Notification::Importance GetNotificationImportanceFromProto(
@@ -339,4 +340,4 @@ void NotificationProcessor::RemoveNotificationsAndProcessNextRequest(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

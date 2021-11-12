@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FeatureStatusProvider::FeatureStatusProvider() = default;
@@ -25,4 +25,4 @@ void FeatureStatusProvider::NotifyStatusChanged() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

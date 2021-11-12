@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Responsible for providing BrowserTabsModel information to observers.
@@ -53,13 +53,6 @@ class BrowserTabsModelProvider {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::BrowserTabsModelProvider;
-}
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_PROVIDER_H_

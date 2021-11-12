@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -36,10 +38,6 @@ class CupsPrintersManager;
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
 }  // namespace multidevice_setup
-
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
 
 namespace settings {
 

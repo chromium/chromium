@@ -22,7 +22,7 @@
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // This class initializes fake versions of the core business logic of Phone Hub.
@@ -125,13 +125,13 @@ class FakePhoneHubManager : public PhoneHubManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::FakePhoneHubManager;
-}  // namespace phonehub
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::FakePhoneHubManager;
+}
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_

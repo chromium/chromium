@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakePhoneHubManager::FakePhoneHubManager() = default;
@@ -80,4 +80,4 @@ UserActionRecorder* FakePhoneHubManager::GetUserActionRecorder() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_PHONE_HUB_HANDLER_H_
 
 #include "ash/components/phonehub/do_not_disturb_controller.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/find_my_device_controller.h"
 #include "ash/components/phonehub/notification_manager.h"
 #include "ash/components/phonehub/onboarding_ui_tracker.h"
@@ -14,11 +16,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace chromeos {
-
-namespace phonehub {
-class FakePhoneHubManager;
-}  // namespace phonehub
-
 namespace multidevice {
 
 // WebUIMessageHandler for chrome://multidevice-internals PhoneHub section.

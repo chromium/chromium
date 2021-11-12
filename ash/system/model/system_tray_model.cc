@@ -127,7 +127,7 @@ void SystemTrayModel::ShowNetworkDetailedViewBubble() {
 }
 
 void SystemTrayModel::SetPhoneHubManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   for (RootWindowController* root_window_controller :
        Shell::GetAllRootWindowControllers()) {
     auto* phone_hub_tray =

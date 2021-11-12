@@ -14,7 +14,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
@@ -96,6 +96,6 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_IMPL_H_

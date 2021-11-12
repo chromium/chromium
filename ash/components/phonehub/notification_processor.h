@@ -16,10 +16,10 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-using google::protobuf::RepeatedPtrField;
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
+using ::google::protobuf::RepeatedPtrField;
 
 class Notification;
 class NotificationManager;
@@ -131,6 +131,6 @@ class NotificationProcessor {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_PROCESSOR_H_

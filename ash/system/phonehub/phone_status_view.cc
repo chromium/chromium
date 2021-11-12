@@ -36,9 +36,9 @@
 
 namespace ash {
 
-using PhoneStatusModel = chromeos::phonehub::PhoneStatusModel;
-
 namespace {
+
+using PhoneStatusModel = phonehub::PhoneStatusModel;
 
 // Appearance in Dip.
 constexpr int kTitleContainerSpacing = 16;
@@ -80,7 +80,7 @@ bool IsBatterySaverModeOn(const PhoneStatusModel& phone_status) {
 
 }  // namespace
 
-PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
+PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
                                  Delegate* delegate)
     : TriView(kTitleContainerSpacing),
       phone_model_(phone_model),

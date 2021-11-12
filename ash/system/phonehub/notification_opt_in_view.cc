@@ -31,7 +31,7 @@ constexpr char kMultideviceSettingsUrl[] =
 }  // namespace
 
 NotificationOptInView::NotificationOptInView(
-    chromeos::phonehub::NotificationAccessManager* notification_access_manager)
+    phonehub::NotificationAccessManager* notification_access_manager)
     : SubFeatureOptInView(PhoneHubViewID::kNotificationOptInView,
                           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION,
                           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
@@ -70,8 +70,8 @@ void NotificationOptInView::UpdateVisibility() {
 
   // Can only request access if it is available but has not yet been granted.
   bool can_request_access = notification_access_manager_->GetAccessStatus() ==
-                            chromeos::phonehub::NotificationAccessManager::
-                                AccessStatus::kAvailableButNotGranted;
+                            phonehub::NotificationAccessManager::AccessStatus::
+                                kAvailableButNotGranted;
   const bool should_show =
       can_request_access &&
       !notification_access_manager_->HasNotificationSetupUiBeenDismissed();

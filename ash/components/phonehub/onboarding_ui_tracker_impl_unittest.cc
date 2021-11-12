@@ -16,11 +16,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
-using multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::Feature;
 
 class FakeObserver : public OnboardingUiTracker::Observer {
  public:
@@ -72,8 +72,8 @@ class OnboardingUiTrackerImplTest : public testing::Test {
     fake_feature_status_provider_->SetStatus(feature_status);
   }
 
-  void SetFeatureState(multidevice_setup::mojom::Feature feature,
-                       multidevice_setup::mojom::FeatureState state) {
+  void SetFeatureState(chromeos::multidevice_setup::mojom::Feature feature,
+                       chromeos::multidevice_setup::mojom::FeatureState state) {
     fake_multidevice_setup_client_.SetFeatureState(feature, state);
   }
 
@@ -177,25 +177,28 @@ TEST_F(OnboardingUiTrackerImplTest, HideUiWhenFeatureIsEnabled) {
 
   // Simulate feature disabled feature. Expect onboarding UI to still be
   // displayed.
-  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
-                  multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
+      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
   EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 1U);
   EXPECT_TRUE(ShouldShowOnboardingUi());
 
   // Toggle the feature to be enabled. Expect onboarding UI to no longer be
   // displayed.
-  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
-                  multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
+      chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
   EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 2U);
   EXPECT_FALSE(ShouldShowOnboardingUi());
 
   // Toggle the feature back to disabled. Expect onboarding UI to still be
   // hidden.
-  SetFeatureState(multidevice_setup::mojom::Feature::kPhoneHub,
-                  multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  SetFeatureState(
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHub,
+      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
   EXPECT_EQ(GetOnShouldShowOnboardingUiChangedCallCount(), 2U);
   EXPECT_FALSE(ShouldShowOnboardingUi());
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

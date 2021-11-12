@@ -13,8 +13,9 @@
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 std::string GetMessageTypeName(proto::MessageType message_type) {
@@ -126,4 +127,4 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -31,7 +31,7 @@
 namespace ash {
 
 PhoneConnectedView::PhoneConnectedView(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
 
   auto setup_layered_view = [](views::View* view) {

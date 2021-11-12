@@ -10,7 +10,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
@@ -136,4 +136,4 @@ int ConnectionSchedulerImpl::GetBackoffFailureCountForTesting() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

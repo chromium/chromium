@@ -9,20 +9,18 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
-namespace chromeos {
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
-}  // namespace chromeos
-
 namespace ash {
 
-struct LocaleInfo;
 class SystemTrayClient;
 enum class NotificationStyle;
-struct RelaunchNotificationState;
 enum class UpdateSeverity;
 enum class UpdateType;
+struct LocaleInfo;
+struct RelaunchNotificationState;
+
+namespace phonehub {
+class PhoneHubManager;
+}
 
 // Public interface to control the system tray bubble in ash.
 class ASH_PUBLIC_EXPORT SystemTray {
@@ -111,7 +109,7 @@ class ASH_PUBLIC_EXPORT SystemTray {
 
   // Provides Phone Hub functionality to the system tray.
   virtual void SetPhoneHubManager(
-      chromeos::phonehub::PhoneHubManager* phone_hub_manager) = 0;
+      phonehub::PhoneHubManager* phone_hub_manager) = 0;
 
  protected:
   SystemTray();

@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/phone_model.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 PhoneModel::PhoneModel() = default;
@@ -25,4 +25,4 @@ void PhoneModel::NotifyModelChanged() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

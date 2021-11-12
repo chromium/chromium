@@ -5,7 +5,7 @@
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 const size_t kMaxMostRecentApps = 5;
@@ -70,4 +70,4 @@ RecentAppsInteractionHandler::FetchRecentAppMetadataList() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

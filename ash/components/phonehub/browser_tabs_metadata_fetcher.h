@@ -15,7 +15,7 @@ namespace sync_sessions {
 struct SyncedSession;
 }  // namespace sync_sessions
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Used to collect the most recently visited tab metadata from a
@@ -44,13 +44,6 @@ class BrowserTabsMetadataFetcher {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::BrowserTabsMetadataFetcher;
-}
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_METADATA_FETCHER_H_

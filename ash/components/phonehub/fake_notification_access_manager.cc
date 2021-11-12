@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_notification_access_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeNotificationAccessManager::FakeNotificationAccessManager(
@@ -59,4 +59,4 @@ void FakeNotificationAccessManager::SetNotificationSetupOperationStatus(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

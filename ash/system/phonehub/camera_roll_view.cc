@@ -70,8 +70,8 @@ class HeaderView : public views::Label {
 }  // namespace
 
 CameraRollView::CameraRollView(
-    chromeos::phonehub::CameraRollManager* camera_roll_manager,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    phonehub::CameraRollManager* camera_roll_manager,
+    phonehub::UserActionRecorder* user_action_recorder)
     : camera_roll_manager_(camera_roll_manager),
       user_action_recorder_(user_action_recorder) {
   SetID(PhoneHubViewID::kCameraRollView);
@@ -168,24 +168,23 @@ void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
 
 void CameraRollView::Update() {
   items_view_->Reset();
-  chromeos::phonehub::CameraRollManager::CameraRollUiState current_ui_state =
+  phonehub::CameraRollManager::CameraRollUiState current_ui_state =
       camera_roll_manager_->ui_state();
 
   switch (current_ui_state) {
-    case chromeos::phonehub::CameraRollManager::CameraRollUiState::SHOULD_HIDE:
+    case phonehub::CameraRollManager::CameraRollUiState::SHOULD_HIDE:
       SetVisible(false);
       break;
-    case chromeos::phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:
+    case phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:
       opt_in_view_->SetVisible(true);
       items_view_->SetVisible(false);
       SetVisible(true);
       break;
-    case chromeos::phonehub::CameraRollManager::CameraRollUiState::
-        ITEMS_VISIBLE:
+    case phonehub::CameraRollManager::CameraRollUiState::ITEMS_VISIBLE:
       opt_in_view_->SetVisible(false);
       items_view_->SetVisible(true);
       SetVisible(true);
-      const std::vector<chromeos::phonehub::CameraRollItem> camera_roll_items =
+      const std::vector<phonehub::CameraRollItem> camera_roll_items =
           camera_roll_manager_->current_items();
       for (size_t index = 0; index < camera_roll_items.size(); index++) {
         CameraRollThumbnail* item_thumbnail = new CameraRollThumbnail(

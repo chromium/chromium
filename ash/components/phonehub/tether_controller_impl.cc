@@ -10,19 +10,21 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
-using multidevice_setup::MultiDeviceSetupClient;
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::MultiDeviceSetupClient;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
+using ::chromeos::network_config::mojom::FilterType;
+using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::StartConnectResult;
 
-using network_config::mojom::ConnectionStateType;
-using network_config::mojom::DeviceStatePropertiesPtr;
-using network_config::mojom::FilterType;
-using network_config::mojom::NetworkType;
-using network_config::mojom::StartConnectResult;
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace network_config = ::chromeos::network_config;
 
 }  // namespace
 
@@ -462,4 +464,4 @@ TetherController::Status TetherControllerImpl::ComputeStatus() const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

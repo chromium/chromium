@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 DoNotDisturbController::DoNotDisturbController() = default;
@@ -25,4 +25,4 @@ void DoNotDisturbController::NotifyDndStateChanged() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

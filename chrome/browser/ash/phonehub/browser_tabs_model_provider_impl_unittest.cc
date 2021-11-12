@@ -20,12 +20,6 @@ namespace phonehub {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
-// migrated.
-using ::chromeos::phonehub::CreateFakeBrowserTabMetadata;
-using ::chromeos::phonehub::FakeBrowserTabsMetadataFetcher;
-using ::chromeos::phonehub::MutablePhoneModel;
-
 using ::testing::_;
 
 const char kPhoneNameOne[] = "Pixel";

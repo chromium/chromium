@@ -32,30 +32,29 @@ class CameraRollViewTest : public AshTestBase {
     return camera_roll_view_.get();
   }
 
-  chromeos::phonehub::FakeCameraRollManager* fake_camera_roll_manager() {
+  phonehub::FakeCameraRollManager* fake_camera_roll_manager() {
     return fake_camera_roll_manager_.get();
   }
 
   void PresetCameraRollOptInState(bool has_been_dismissed,
                                   bool can_be_enabled) {
     fake_camera_roll_manager_ =
-        std::make_unique<chromeos::phonehub::FakeCameraRollManager>();
+        std::make_unique<phonehub::FakeCameraRollManager>();
     if (has_been_dismissed) {
       fake_camera_roll_manager_->OnCameraRollOnboardingUiDismissed();
     }
     fake_camera_roll_manager_->SetIsCameraRollAvailableToBeEnabled(
         can_be_enabled);
     fake_user_action_recorder_ =
-        std::make_unique<chromeos::phonehub::FakeUserActionRecorder>();
+        std::make_unique<phonehub::FakeUserActionRecorder>();
     camera_roll_view_ = std::make_unique<CameraRollView>(
         fake_camera_roll_manager_.get(), fake_user_action_recorder_.get());
   }
 
-  const std::vector<chromeos::phonehub::CameraRollItem> CreateFakeItems(
-      int num) {
-    std::vector<chromeos::phonehub::CameraRollItem> items;
+  const std::vector<phonehub::CameraRollItem> CreateFakeItems(int num) {
+    std::vector<phonehub::CameraRollItem> items;
     for (int i = num; i > 0; --i) {
-      chromeos::phonehub::proto::CameraRollItemMetadata metadata;
+      phonehub::proto::CameraRollItemMetadata metadata;
       metadata.set_key(base::NumberToString(i));
       metadata.set_mime_type("image/jpeg");
       metadata.set_last_modified_millis(1577865600 + i);
@@ -82,10 +81,8 @@ class CameraRollViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<CameraRollView> camera_roll_view_;
-  std::unique_ptr<chromeos::phonehub::FakeUserActionRecorder>
-      fake_user_action_recorder_;
-  std::unique_ptr<chromeos::phonehub::FakeCameraRollManager>
-      fake_camera_roll_manager_;
+  std::unique_ptr<phonehub::FakeUserActionRecorder> fake_user_action_recorder_;
+  std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
 };
 
 TEST_F(CameraRollViewTest, DisplayOptInView) {

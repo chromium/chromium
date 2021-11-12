@@ -11,7 +11,7 @@
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Model representing the phone used for Phone Hub. Provides getters which
@@ -61,6 +61,6 @@ class PhoneModel {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_MODEL_H_

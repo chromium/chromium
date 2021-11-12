@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
@@ -163,4 +163,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

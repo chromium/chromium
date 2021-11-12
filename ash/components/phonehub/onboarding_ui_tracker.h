@@ -8,7 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Tracks whether Phone Hub should show a UI to ask users to opt into the multi-
@@ -58,6 +58,13 @@ class OnboardingUiTracker {
 };
 
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::OnboardingUiTracker;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_ONBOARDING_UI_TRACKER_H_

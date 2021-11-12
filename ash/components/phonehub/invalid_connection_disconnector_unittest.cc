@@ -11,7 +11,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class InvalidConnectionDisconnectorTest : public testing::Test {
@@ -103,4 +103,4 @@ TEST_F(InvalidConnectionDisconnectorTest, DisconnectFlows) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

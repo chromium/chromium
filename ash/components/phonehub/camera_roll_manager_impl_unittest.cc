@@ -24,8 +24,9 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
@@ -213,12 +214,12 @@ class CameraRollManagerImplTest : public testing::Test {
   void SetCameraRollFeatureSettings(bool enabled) {
     if (enabled) {
       fake_multidevice_setup_client_->SetFeatureState(
-          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-          multidevice_setup::mojom::FeatureState::kEnabledByUser);
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
     } else {
       fake_multidevice_setup_client_->SetFeatureState(
-          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-          multidevice_setup::mojom::FeatureState::kDisabledByUser);
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+          chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
     }
   }
 
@@ -679,4 +680,4 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

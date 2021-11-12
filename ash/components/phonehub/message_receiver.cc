@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/message_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 MessageReceiver::MessageReceiver() = default;
@@ -43,4 +43,4 @@ void MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

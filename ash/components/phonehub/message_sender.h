@@ -10,7 +10,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Provides interface to send messages from the local device (this Chrome OS
@@ -69,6 +69,6 @@ class MessageSender {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_H_

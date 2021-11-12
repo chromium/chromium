@@ -14,8 +14,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 constexpr int64_t kNotificationIdA = 1;
@@ -559,4 +560,4 @@ TEST_F(NotificationProcessorTest, ActionIdMapPopulatedCorrectly) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

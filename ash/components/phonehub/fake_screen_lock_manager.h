@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/screen_lock_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // A fake versions of the core business logic of ScreenLockManager.
@@ -29,6 +29,6 @@ class FakeScreenLockManager : public ScreenLockManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_SCREEN_LOCK_MANAGER_H_

@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package chromeos.phonehub.proto;
+package ash.phonehub.proto;
 
 option optimize_for = LITE_RUNTIME;
 

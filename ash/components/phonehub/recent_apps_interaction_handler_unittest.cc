@@ -9,7 +9,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -176,4 +176,4 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -10,7 +10,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageSender;
@@ -40,10 +40,11 @@ class NotificationManagerImpl
   MessageSender* message_sender_;
   UserActionRecorder* user_action_recorder_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  multidevice_setup::mojom::FeatureState notifications_feature_status_;
+  chromeos::multidevice_setup::mojom::FeatureState
+      notifications_feature_status_;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_MANAGER_IMPL_H_

@@ -405,7 +405,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     auto* android_sms_service =
         ash::android_sms::AndroidSmsServiceFactory::GetForBrowserContext(
             profile);
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager =
+    ash::phonehub::PhoneHubManager* phone_hub_manager =
         ash::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
     ash::eche_app::EcheAppManager* eche_app_manager =
         chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);

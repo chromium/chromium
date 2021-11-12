@@ -13,7 +13,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeMessageSender : public MessageSender {
@@ -95,6 +95,6 @@ class FakeMessageSender : public MessageSender {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_MESSAGE_SENDER_H_

@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
@@ -23,7 +23,7 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
   // CameraRollDownloadManager:
   void CreatePayloadFiles(
       int64_t payload_id,
-      const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata,
+      const phonehub::proto::CameraRollItemMetadata& item_metadata,
       CreatePayloadFilesCallback payload_files_callback) override;
   void UpdateDownloadProgress(
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
@@ -49,6 +49,6 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_CAMERA_ROLL_DOWNLOAD_MANAGER_H_

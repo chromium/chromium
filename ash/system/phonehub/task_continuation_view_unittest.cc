@@ -17,9 +17,9 @@
 
 namespace ash {
 
-using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
-
 namespace {
+
+using BrowserTabsModel = phonehub::BrowserTabsModel;
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
@@ -62,13 +62,13 @@ class TaskContinuationViewTest : public AshTestBase {
 
  protected:
   TaskContinuationView* task_view() { return task_continuation_view_.get(); }
-  chromeos::phonehub::MutablePhoneModel* phone_model() { return &phone_model_; }
+  phonehub::MutablePhoneModel* phone_model() { return &phone_model_; }
   MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
  private:
   std::unique_ptr<TaskContinuationView> task_continuation_view_;
-  chromeos::phonehub::FakeUserActionRecorder fake_user_action_recorder_;
-  chromeos::phonehub::MutablePhoneModel phone_model_;
+  phonehub::FakeUserActionRecorder fake_user_action_recorder_;
+  phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   MockNewWindowDelegate* new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
@@ -87,7 +87,7 @@ TEST_F(TaskContinuationViewTest, TaskViewVisibility) {
   EXPECT_FALSE(task_view()->GetVisible());
 
   BrowserTabsModel::BrowserTabMetadata metadata =
-      chromeos::phonehub::CreateFakeBrowserTabMetadata();
+      phonehub::CreateFakeBrowserTabMetadata();
 
   std::vector<BrowserTabsModel::BrowserTabMetadata> tabs = {metadata};
 
@@ -103,7 +103,7 @@ TEST_F(TaskContinuationViewTest, TaskViewVisibility) {
 
 TEST_F(TaskContinuationViewTest, TaskChipsView) {
   BrowserTabsModel::BrowserTabMetadata metadata =
-      chromeos::phonehub::CreateFakeBrowserTabMetadata();
+      phonehub::CreateFakeBrowserTabMetadata();
 
   std::vector<BrowserTabsModel::BrowserTabMetadata> tabs = {metadata};
 

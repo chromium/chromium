@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 UserActionRecorderImpl::UserActionRecorderImpl(
@@ -57,4 +57,4 @@ void UserActionRecorderImpl::HandleUserAction(UserAction action) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -25,11 +25,6 @@ class DictionaryValue;
 }  // namespace base
 
 namespace chromeos {
-
-namespace phonehub {
-class NotificationAccessManager;
-}  // namespace phonehub
-
 namespace settings {
 
 // Chrome "Multidevice" (a.k.a. "Connected Devices") settings page UI handler.

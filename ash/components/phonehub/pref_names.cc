@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace prefs {
 
@@ -55,4 +55,4 @@ const char kScreenLockStatus[] = "cros.phonehub.screen_lock_status";
 
 }  // namespace prefs
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

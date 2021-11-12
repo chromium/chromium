@@ -12,29 +12,26 @@
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace phonehub {
 class UserActionRecorder;
-}  // namespace phonehub
-}  // namespace chromeos
-
-namespace ash {
+}
 
 // A view in Phone Hub bubble that allows user view and access recently taken
 // photos and videos from a connected device.
 // Contains the header and one or more lines of clickable thumbnails.
 // This view will automatically hide if no Camera Roll items are available.
-class ASH_EXPORT CameraRollView
-    : public views::View,
-      public chromeos::phonehub::CameraRollManager::Observer {
+class ASH_EXPORT CameraRollView : public views::View,
+                                  public phonehub::CameraRollManager::Observer {
  public:
-  CameraRollView(chromeos::phonehub::CameraRollManager* camera_roll_manager,
-                 chromeos::phonehub::UserActionRecorder* user_action_recorder);
+  CameraRollView(phonehub::CameraRollManager* camera_roll_manager,
+                 phonehub::UserActionRecorder* user_action_recorder);
   ~CameraRollView() override;
   CameraRollView(CameraRollView&) = delete;
   CameraRollView operator=(CameraRollView&) = delete;
 
-  // chromeos::phonehub::CameraRollManager::Observer:
+  // phonehub::CameraRollManager::Observer:
   void OnCameraRollViewUiStateUpdated() override;
 
   // views::View:
@@ -72,8 +69,8 @@ class ASH_EXPORT CameraRollView
   // Update the camera roll section to display the latest items.
   void Update();
 
-  chromeos::phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
-  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
+  phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
+  phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
   CameraRollOptInView* opt_in_view_ = nullptr;
   CameraRollItemsView* items_view_ = nullptr;
 };

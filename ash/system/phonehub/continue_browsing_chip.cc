@@ -41,10 +41,10 @@ constexpr int kTitleMaxLines = 2;
 }  // namespace
 
 ContinueBrowsingChip::ContinueBrowsingChip(
-    const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+    const phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
     int index,
     size_t total_count,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    phonehub::UserActionRecorder* user_action_recorder)
     : views::Button(base::BindRepeating(&ContinueBrowsingChip::ButtonPressed,
                                         base::Unretained(this))),
       url_(metadata.url),

@@ -17,7 +17,7 @@
 
 namespace ash {
 
-using PhoneStatusModel = chromeos::phonehub::PhoneStatusModel;
+using PhoneStatusModel = phonehub::PhoneStatusModel;
 
 class DummyEvent : public ui::Event {
  public:
@@ -57,7 +57,7 @@ class PhoneStatusViewTest : public AshTestBase,
  protected:
   std::unique_ptr<views::Widget> widget_;
   PhoneStatusView* status_view_ = nullptr;
-  chromeos::phonehub::MutablePhoneModel phone_model_;
+  phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   bool can_open_connected_device_settings_ = false;
   bool connected_device_settings_opened_ = false;

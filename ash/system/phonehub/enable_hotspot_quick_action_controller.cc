@@ -13,12 +13,12 @@
 
 namespace ash {
 
-using Status = chromeos::phonehub::TetherController::Status;
+using Status = phonehub::TetherController::Status;
 using phone_hub_metrics::LogQuickActionClick;
 using phone_hub_metrics::QuickAction;
 
 EnableHotspotQuickActionController::EnableHotspotQuickActionController(
-    chromeos::phonehub::TetherController* tether_controller)
+    phonehub::TetherController* tether_controller)
     : tether_controller_(tether_controller) {
   DCHECK(tether_controller_);
   tether_controller_->AddObserver(this);

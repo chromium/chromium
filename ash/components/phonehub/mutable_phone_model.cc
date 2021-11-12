@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/mutable_phone_model.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 MutablePhoneModel::MutablePhoneModel() = default;
@@ -39,4 +39,4 @@ void MutablePhoneModel::SetBrowserTabsModel(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

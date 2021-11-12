@@ -9,7 +9,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/notification_interaction_handler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class NotificationInteractionHandlerImpl
@@ -25,6 +25,6 @@ class NotificationInteractionHandlerImpl
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_INTERACTION_HANDLER_IMPL_H_

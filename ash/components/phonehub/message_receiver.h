@@ -11,7 +11,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 
 // Responsible for receiving message updates from the remote phone device.
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class MessageReceiver {
@@ -65,6 +65,6 @@ class MessageReceiver {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_H_

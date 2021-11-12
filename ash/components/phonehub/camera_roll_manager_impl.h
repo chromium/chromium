@@ -24,7 +24,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollDownloadManager;
@@ -80,7 +80,8 @@ class CameraRollManagerImpl
   void OnPayloadFilesCreated(
       const proto::FetchCameraRollItemDataResponse& response,
       CameraRollDownloadManager::CreatePayloadFilesResult result,
-      absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
+      absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+          payload_files);
   void OnPayloadFileRegistered(const proto::CameraRollItemMetadata& metadata,
                                int64_t payload_id,
                                bool success);
@@ -107,6 +108,6 @@ class CameraRollManagerImpl
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_IMPL_H_

@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollItem;
@@ -80,6 +80,6 @@ class CameraRollManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_H_

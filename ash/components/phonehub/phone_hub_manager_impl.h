@@ -9,25 +9,19 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "base/callback.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
 
-namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace multidevice_setup {
-class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
-namespace secure_channel {
-class ConnectionManager;
-class SecureChannelClient;
-}  // namespace secure_channel
-
+namespace ash {
 namespace phonehub {
 
 class BrowserTabsModelController;
@@ -36,8 +30,8 @@ class CameraRollDownloadManager;
 class CameraRollManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
-class MessageSender;
 class MessageReceiver;
+class MessageSender;
 class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
 class NotificationProcessor;
@@ -51,7 +45,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      chromeos::secure_channel::SecureChannelClient* secure_channel_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
       std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider,
       std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager,
       const base::RepeatingClosure& show_multidevice_setup_dialog_callback);
@@ -110,6 +104,6 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_IMPL_H_
