@@ -644,5 +644,44 @@ void ResolveTextValue(const TextValue& text_value,
   std::move(callback).Run(status, value);
 }
 
+Metrics::UserDataSelectionState GetNewSelectionState(
+    Metrics::UserDataSelectionState old_state,
+    UserDataEventType event_type) {
+  switch (event_type) {
+    case ENTRY_EDITED: {
+      switch (old_state) {
+        case Metrics::UserDataSelectionState::NO_CHANGE:
+          return Metrics::UserDataSelectionState::EDIT_PRESELECTED;
+        case Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY:
+          return Metrics::UserDataSelectionState::
+              SELECTED_DIFFERENT_AND_MODIFIED_ENTRY;
+        case Metrics::UserDataSelectionState::NEW_ENTRY:
+        case Metrics::UserDataSelectionState::
+            SELECTED_DIFFERENT_AND_MODIFIED_ENTRY:
+        case Metrics::UserDataSelectionState::EDIT_PRESELECTED:
+          return old_state;
+      }
+    }
+    case SELECTION_CHANGED: {
+      switch (old_state) {
+        case Metrics::UserDataSelectionState::NO_CHANGE:
+        case Metrics::UserDataSelectionState::EDIT_PRESELECTED:
+          return Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY;
+        case Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY:
+        case Metrics::UserDataSelectionState::NEW_ENTRY:
+        case Metrics::UserDataSelectionState::
+            SELECTED_DIFFERENT_AND_MODIFIED_ENTRY:
+          // We keep the state which represents the greater effort for the user.
+          return old_state;
+      }
+    }
+    case ENTRY_CREATED:
+      return Metrics::UserDataSelectionState::NEW_ENTRY;
+    case UNKNOWN:
+    case NO_NOTIFICATION:
+      return old_state;
+  }
+}
+
 }  // namespace user_data
 }  // namespace autofill_assistant

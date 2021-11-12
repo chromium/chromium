@@ -27,6 +27,12 @@ const char kTriggerScriptOnboardingEntry[] =
     "AutofillAssistant.LiteScriptOnboarding";
 const char kInChromeTriggeringEntry[] = "AutofillAssistant.InChromeTriggering";
 const char kAutofillAssistantTimingEntry[] = "AutofillAssistant.Timing";
+const char kAutofillAssistantCollectContact[] =
+    "AutofillAssistant.CollectContact";
+const char kAutofillAssistantCollectCreditCard[] =
+    "AutofillAssistant.CollectPayment";
+const char kAutofillAssistantCollectShippingAddress[] =
+    "AutofillAssistant.CollectShippingAddress";
 
 // The identifiers for all UKM metrics that we currently record/test.
 const char kTriggerUiType[] = "TriggerUIType";
@@ -36,6 +42,9 @@ const char kTriggerScriptFinished[] = "LiteScriptFinished";
 const char kTriggerScriptOnboarding[] = "LiteScriptOnboarding";
 const char kInChromeTriggerAction[] = "InChromeTriggerAction";
 const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
+const char kContactModified[] = "ContactModified";
+const char kCreditCardModified[] = "CreditCardModified";
+const char kShippingModified[] = "ShippingModified";
 
 // Convenience accessors for UKM metrics.
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -50,6 +59,12 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmTriggerConditionEvaluationTime(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCreditCardModified(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
 // Variant containing all UKM enums that we currently record/test.
 // NOTE: When adding entries, remember to also modify kUkmEnumMetricNames!
@@ -88,6 +103,11 @@ struct GenericConvertToInt64 {
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&
         metrics);
+
+ukm::TestUkmRecorder::HumanReadableUkmEntry ToHumanReadableEntry(
+    const ukm::SourceId& id,
+    const std::string& metric_identifier,
+    int64_t entry);
 
 }  // namespace autofill_assistant
 

@@ -27,11 +27,11 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
-#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -440,12 +440,32 @@ CollectUserDataAction::CollectUserDataAction(ActionDelegate* delegate,
 CollectUserDataAction::~CollectUserDataAction() {
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
-  // Report UMA histograms.
-  if (shown_to_user_) {
-    Metrics::RecordPaymentRequestPrefilledSuccess(initially_prefilled_,
-                                                  action_successful_);
-    Metrics::RecordPaymentRequestAutofillChanged(personal_data_changed_,
-                                                 action_successful_);
+  MaybeLogMetrics();
+}
+
+void CollectUserDataAction::MaybeLogMetrics() {
+  if (!shown_to_user_ || metrics_logged_)
+    return;
+
+  metrics_logged_ = true;
+  Metrics::RecordPaymentRequestPrefilledSuccess(initially_prefilled_,
+                                                action_successful_);
+  Metrics::RecordPaymentRequestAutofillChanged(personal_data_changed_,
+                                               action_successful_);
+
+  if (RequiresContact(*collect_user_data_options_)) {
+    Metrics::RecordContactMetrics(delegate_->GetUkmRecorder(), source_id_,
+                                  contact_selection_state_);
+  }
+
+  if (RequiresPaymentMethod(*collect_user_data_options_)) {
+    Metrics::RecordCreditCardMetrics(delegate_->GetUkmRecorder(), source_id_,
+                                     credit_card_selection_state_);
+  }
+
+  if (RequiresShipping(*collect_user_data_options_)) {
+    Metrics::RecordShippingMetrics(delegate_->GetUkmRecorder(), source_id_,
+                                   shipping_selection_state_);
   }
 }
 
@@ -483,6 +503,9 @@ void CollectUserDataAction::InternalProcessAction(
   collect_user_data_options_->terms_link_callback =
       base::BindOnce(&CollectUserDataAction::OnTermsAndConditionsLinkClicked,
                      weak_ptr_factory_.GetWeakPtr());
+  collect_user_data_options_->selected_user_data_changed_callback =
+      base::BindRepeating(&CollectUserDataAction::OnSelectionStateChanged,
+                          weak_ptr_factory_.GetWeakPtr());
   if (requests_pwm_logins) {
     delegate_->GetWebsiteLoginManager()->GetLoginsForUrl(
         delegate_->GetWebContents()->GetLastCommittedURL(),
@@ -499,6 +522,7 @@ void CollectUserDataAction::EndAction(const ClientStatus& status) {
   delegate_->CleanUpAfterPrompt();
   action_successful_ = status.ok();
   UpdateProcessedAction(status);
+  MaybeLogMetrics();
   if (action_successful_) {
     delegate_->SetLastSuccessfulUserDataOptions(
         std::move(collect_user_data_options_));
@@ -637,6 +661,8 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
   // Gather info for UMA histograms.
   if (!shown_to_user_) {
     shown_to_user_ = true;
+    source_id_ =
+        ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
     initially_prefilled_ = CheckInitialAutofillDataComplete(
         user_data->available_contacts_, user_data->available_addresses_,
         user_data->available_payment_instruments_);
@@ -696,6 +722,25 @@ void CollectUserDataAction::OnTermsAndConditionsLinkClicked(
       link);
   WriteProcessedAction(user_data, user_model);
   EndAction(ClientStatus(ACTION_APPLIED));
+}
+
+void CollectUserDataAction::OnSelectionStateChanged(
+    UserDataEventField field,
+    UserDataEventType event_type) {
+  switch (field) {
+    case CONTACT_EVENT:
+      contact_selection_state_ =
+          user_data::GetNewSelectionState(contact_selection_state_, event_type);
+      break;
+    case CREDIT_CARD_EVENT:
+      credit_card_selection_state_ = user_data::GetNewSelectionState(
+          credit_card_selection_state_, event_type);
+      break;
+    case SHIPPING_EVENT:
+      shipping_selection_state_ = user_data::GetNewSelectionState(
+          shipping_selection_state_, event_type);
+      break;
+  }
 }
 
 bool CollectUserDataAction::CreateOptionsFromProto() {

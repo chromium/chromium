@@ -978,6 +978,35 @@ TEST(UserDataUtilTest, CompleteCreditCardWithInvalidNumber) {
       IsEmpty());
 }
 
+TEST(UserDataUtilTest, GetNewSelectionState) {
+  EXPECT_EQ(Metrics::UserDataSelectionState::NO_CHANGE,
+            GetNewSelectionState(Metrics::UserDataSelectionState::NO_CHANGE,
+                                 NO_NOTIFICATION));
+  EXPECT_EQ(Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY,
+            GetNewSelectionState(Metrics::UserDataSelectionState::NO_CHANGE,
+                                 SELECTION_CHANGED));
+  EXPECT_EQ(Metrics::UserDataSelectionState::NEW_ENTRY,
+            GetNewSelectionState(Metrics::UserDataSelectionState::NO_CHANGE,
+                                 ENTRY_CREATED));
+
+  EXPECT_EQ(Metrics::UserDataSelectionState::EDIT_PRESELECTED,
+            GetNewSelectionState(Metrics::UserDataSelectionState::NO_CHANGE,
+                                 ENTRY_EDITED));
+  EXPECT_EQ(Metrics::UserDataSelectionState::NEW_ENTRY,
+            GetNewSelectionState(Metrics::UserDataSelectionState::NEW_ENTRY,
+                                 ENTRY_EDITED));
+  EXPECT_EQ(
+      Metrics::UserDataSelectionState::SELECTED_DIFFERENT_AND_MODIFIED_ENTRY,
+      GetNewSelectionState(
+          Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY,
+          ENTRY_EDITED));
+  EXPECT_EQ(
+      Metrics::UserDataSelectionState::SELECTED_DIFFERENT_AND_MODIFIED_ENTRY,
+      GetNewSelectionState(Metrics::UserDataSelectionState::
+                               SELECTED_DIFFERENT_AND_MODIFIED_ENTRY,
+                           SELECTION_CHANGED));
+}
+
 class UserDataUtilTextValueTest : public testing::Test {
  public:
   UserDataUtilTextValueTest() {}

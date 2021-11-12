@@ -16,15 +16,17 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
  */
 public interface AssistantCollectUserDataDelegate {
     /** The currently selected contact has changed. */
-    void onContactInfoChanged(@Nullable AssistantCollectUserDataModel.ContactModel contactModel);
+    void onContactInfoChanged(@Nullable AssistantCollectUserDataModel.ContactModel contactModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected shipping address has changed. */
-    void onShippingAddressChanged(
-            @Nullable AssistantCollectUserDataModel.AddressModel addressModel);
+    void onShippingAddressChanged(@Nullable AssistantCollectUserDataModel.AddressModel addressModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected payment method has changed. */
     void onPaymentMethodChanged(
-            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel);
+            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected terms & conditions state has changed. */
     void onTermsAndConditionsChanged(@AssistantTermsAndConditionsState int state);
@@ -34,7 +36,8 @@ public interface AssistantCollectUserDataDelegate {
 
     /** The currently selected login choice has changed. */
     void onLoginChoiceChanged(
-            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel);
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The start date of the date/time range has changed. */
     void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date);

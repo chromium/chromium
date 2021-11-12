@@ -4,8 +4,10 @@
 
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,9 +26,12 @@
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/test_util.h"
+#include "components/autofill_assistant/browser/ukm_test_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -115,6 +120,7 @@ using ::testing::_;
 using ::testing::AnyOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
@@ -138,6 +144,8 @@ class CollectUserDataActionTest : public testing::Test {
         &browser_context_, nullptr);
     content::WebContentsTester::For(web_contents_.get())
         ->SetLastCommittedURL(GURL(kFakeUrl));
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
+    source_id_ = ukm::GetSourceIdForWebContentsDocument(web_contents_.get());
 
     ON_CALL(mock_action_delegate_, GetPersonalDataManager)
         .WillByDefault(Return(&mock_personal_data_manager_));
@@ -168,6 +176,8 @@ class CollectUserDataActionTest : public testing::Test {
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
     ON_CALL(mock_action_delegate_, GetWebContents())
         .WillByDefault(Return(web_contents_.get()));
+    ON_CALL(mock_action_delegate_, GetUkmRecorder())
+        .WillByDefault(Return(&ukm_recorder_));
   }
 
   void ExpectSelectedProfileMatches(const std::string& profile_name,
@@ -205,6 +215,8 @@ class CollectUserDataActionTest : public testing::Test {
   NiceMock<MockPersonalDataManager> mock_personal_data_manager_;
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
   NiceMock<MockActionDelegate> mock_action_delegate_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+  ukm::SourceId source_id_;
   UserData user_data_;
   UserModel user_model_;
 };
@@ -3156,5 +3168,112 @@ TEST_F(CollectUserDataActionTest, LogsUMAAutofillNotChangedSuccess) {
       "Android.AutofillAssistant.PaymentRequest.AutofillChanged",
       Metrics::PaymentRequestAutofillInfoChanged::NOTCHANGED_SUCCESS, 1u);
 }
+
+TEST_F(CollectUserDataActionTest, LogsUkmSelectionStateUpdated) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->mutable_contact_details()->set_request_payer_name(
+      true);
+  collect_user_data_proto->mutable_contact_details()->set_contact_details_name(
+      "name");
+  collect_user_data_proto->set_request_payment_method(true);
+  collect_user_data_proto->set_billing_address_name("billing_address");
+  collect_user_data_proto->set_shipping_address_name("shipping");
+
+  autofill::AutofillProfile billing_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&billing_profile, "Marion", "Mitchell",
+                                 "Morrison", "marion@me.xyz", "Fox",
+                                 "123 Zoo St.", "unit 5", "Hollywood", "CA",
+                                 "91601", "US", "16505678910");
+
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050",
+                                    billing_profile.guid());
+
+  autofill::AutofillProfile shipping_address(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&shipping_address, "Marion", "Mitchell",
+                                 "Morrison", "marion@me.xyz", "Fox",
+                                 "123 Zoo St.", "unit 5", "Hollywood", "CA",
+                                 "91601", "US", "16505678910");
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        user_data_.terms_and_conditions_ = ACCEPTED;
+        collect_user_data_options->selected_user_data_changed_callback.Run(
+            CONTACT_EVENT, SELECTION_CHANGED);
+        collect_user_data_options->selected_user_data_changed_callback.Run(
+            CREDIT_CARD_EVENT, ENTRY_CREATED);
+        collect_user_data_options->selected_user_data_changed_callback.Run(
+            SHIPPING_EVENT, ENTRY_EDITED);
+        user_model_.SetSelectedCreditCard(
+            std::make_unique<autofill::CreditCard>(credit_card), &user_data_);
+        user_model_.SetSelectedAutofillProfile(
+            "billing_address",
+            std::make_unique<autofill::AutofillProfile>(billing_profile),
+            &user_data_);
+        user_model_.SetSelectedAutofillProfile(
+            "shipping",
+            std::make_unique<autofill::AutofillProfile>(shipping_address),
+            &user_data_);
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmContactModified(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kContactModified,
+          static_cast<int64_t>(
+              Metrics::UserDataSelectionState::SELECTED_DIFFERENT_ENTRY))}));
+  EXPECT_THAT(
+      GetUkmCreditCardModified(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kCreditCardModified,
+          static_cast<int64_t>(Metrics::UserDataSelectionState::NEW_ENTRY))}));
+  EXPECT_THAT(GetUkmShippingModified(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kShippingModified,
+                  static_cast<int64_t>(
+                      Metrics::UserDataSelectionState::EDIT_PRESELECTED))}));
+}
+
+TEST_F(CollectUserDataActionTest,
+       SelectionStateNotLoggedIfNoUserDataRequested) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(true);
+  collect_user_data_proto->set_accept_terms_and_conditions_text(
+      "terms and conditions");
+  collect_user_data_proto->set_show_terms_as_checkbox(false);
+  collect_user_data_proto->set_terms_require_review_text("terms review");
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        user_data_.terms_and_conditions_ = ACCEPTED;
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(GetUkmContactModified(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmCreditCardModified(ukm_recorder_), IsEmpty());
+  EXPECT_THAT(GetUkmShippingModified(ukm_recorder_), IsEmpty());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

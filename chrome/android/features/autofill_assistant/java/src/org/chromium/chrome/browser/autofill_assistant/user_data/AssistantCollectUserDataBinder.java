@@ -172,16 +172,16 @@ class AssistantCollectUserDataBinder
             view.mInfoSection.setListener(collectUserDataDelegate != null
                             ? collectUserDataDelegate::onTextLinkClicked
                             : null);
-            view.mContactDetailsSection.setListener(collectUserDataDelegate == null
+            view.mContactDetailsSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onContactInfoChanged);
-            view.mPaymentMethodSection.setListener(collectUserDataDelegate == null
+            view.mPaymentMethodSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onPaymentMethodChanged);
-            view.mShippingAddressSection.setListener(collectUserDataDelegate == null
+            view.mShippingAddressSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onShippingAddressChanged);
-            view.mLoginSection.setListener(collectUserDataDelegate == null
+            view.mLoginSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onLoginChoiceChanged);
             view.mDateRangeStartSection.setDelegate(dateStartDelegate);

@@ -30,6 +30,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1678,22 +1679,28 @@ void Controller::SetAdditionalValue(const std::string& client_memory_key,
 }
 
 void Controller::SetShippingAddress(
-    std::unique_ptr<autofill::AutofillProfile> address) {
+    std::unique_ptr<autofill::AutofillProfile> address,
+    UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
     return;
   }
 
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      SHIPPING_EVENT, event_type);
   DCHECK(!collect_user_data_options_->shipping_address_name.empty());
   SetProfile(collect_user_data_options_->shipping_address_name,
              UserData::FieldChange::SHIPPING_ADDRESS, std::move(address));
 }
 
 void Controller::SetContactInfo(
-    std::unique_ptr<autofill::AutofillProfile> profile) {
+    std::unique_ptr<autofill::AutofillProfile> profile,
+    UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
     return;
   }
 
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      CONTACT_EVENT, event_type);
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
   SetProfile(collect_user_data_options_->contact_details_name,
              UserData::FieldChange::CONTACT_PROFILE, std::move(profile));
@@ -1701,13 +1708,15 @@ void Controller::SetContactInfo(
 
 void Controller::SetCreditCard(
     std::unique_ptr<autofill::CreditCard> card,
-    std::unique_ptr<autofill::AutofillProfile> billing_profile) {
+    std::unique_ptr<autofill::AutofillProfile> billing_profile,
+    UserDataEventType event_type) {
   if (collect_user_data_options_ == nullptr) {
     return;
   }
 
+  collect_user_data_options_->selected_user_data_changed_callback.Run(
+      CREDIT_CARD_EVENT, event_type);
   DCHECK(!collect_user_data_options_->billing_address_name.empty());
-
   user_model_.SetSelectedCreditCard(std::move(card), &user_data_);
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_, UserData::FieldChange::CARD);

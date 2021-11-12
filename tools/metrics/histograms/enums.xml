@@ -5700,6 +5700,23 @@ others/histograms.xml -->
   <int value="12" label="(In-Chrome) Food ordering cart, returning user"/>
 </enum>
 
+<enum name="AutofillAssistantUserDataEntryCount">
+  <int value="0" label="Zero"/>
+  <int value="1" label="One"/>
+  <int value="2" label="Two"/>
+  <int value="3" label="Three"/>
+  <int value="4" label="Four"/>
+  <int value="5" label="Five"/>
+</enum>
+
+<enum name="AutofillAssistantUserDataSelectionState">
+  <int value="0" label="No change"/>
+  <int value="1" label="Edited preselected"/>
+  <int value="2" label="Selected a different entry"/>
+  <int value="3" label="Selected a different entry and edited it"/>
+  <int value="4" label="Created new entry"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>

@@ -50,6 +50,19 @@ enum AutofillContactField {
   PHONE_HOME_WHOLE_NUMBER = 14,
 };
 
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.autofill_assistant.user_data)
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantUserDataEventType
+enum UserDataEventType {
+  UNKNOWN,
+  NO_NOTIFICATION,
+  SELECTION_CHANGED,
+  ENTRY_EDITED,
+  ENTRY_CREATED
+};
+
+enum UserDataEventField { CONTACT_EVENT, CREDIT_CARD_EVENT, SHIPPING_EVENT };
+
 // Represents a concrete login choice in the UI, e.g., 'Guest checkout' or
 // a particular Chrome PWM login account.
 struct LoginChoice {
@@ -272,6 +285,9 @@ struct CollectUserDataOptions {
       additional_actions_callback;
   base::OnceCallback<void(int, UserData*, const UserModel*)>
       terms_link_callback;
+  // Called whenever there is a change to the selected user data.
+  base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>
+      selected_user_data_changed_callback;
 };
 
 }  // namespace autofill_assistant

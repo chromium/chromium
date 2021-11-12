@@ -44,6 +44,24 @@ GetUkmTriggerConditionEvaluationTime(
                                  {kTriggerConditionTimingMs});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
+                                 {kContactModified});
+}
+
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCreditCardModified(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectCreditCard,
+                                 {kCreditCardModified});
+}
+
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
+                                 {kShippingModified});
+}
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&
         input) {
@@ -61,6 +79,16 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
         return transformed_impression;
       });
   return output;
+}
+
+ukm::TestUkmRecorder::HumanReadableUkmEntry ToHumanReadableEntry(
+    const ukm::SourceId& id,
+    const std::string& metric_identifier,
+    int64_t entry) {
+  ukm::TestUkmRecorder::HumanReadableUkmEntry impression;
+  impression.source_id = id;
+  impression.metrics.emplace(metric_identifier, entry);
+  return impression;
 }
 
 }  // namespace autofill_assistant

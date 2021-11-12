@@ -2055,6 +2055,116 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.CollectContact">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's contact data.
+  </summary>
+  <metric name="CompleteContactProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's contact profiles which are considered complete
+      for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="ContactModified" enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the contact data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+  <metric name="IncompleteContactProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's contact profiles which are considered incomplete
+      for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialContactFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected contact profile.
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.CollectPayment">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's payment details.
+  </summary>
+  <metric name="CompleteCreditCardsCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's credit cards which are considered complete for
+      the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="CreditCardModified"
+      enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the payment data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+  <metric name="IncompleteCreditCardsCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's credit cards which are considered incomplete for
+      the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialBillingAddressFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      billing address of the preselected credit card.
+    </summary>
+  </metric>
+  <metric name="InitialCreditCardFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected credit card
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.CollectShippingAddress">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's shipping address.
+  </summary>
+  <metric name="CompleteShippingProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's shipping address profiles which are considered
+      complete for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="IncompleteShippingProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's shipping address profiles which are considered
+      incomplete for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialShippingFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected shipping address.
+    </summary>
+  </metric>
+  <metric name="ShippingModified"
+      enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the shipping data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.InChromeTriggering">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>

@@ -224,13 +224,13 @@ class Controller : public ScriptExecutorDelegate,
   std::string GetDebugContext() override;
   const CollectUserDataOptions* GetCollectUserDataOptions() const override;
   const UserData* GetUserData() const override;
-  void SetShippingAddress(
-      std::unique_ptr<autofill::AutofillProfile> address) override;
-  void SetContactInfo(
-      std::unique_ptr<autofill::AutofillProfile> profile) override;
-  void SetCreditCard(
-      std::unique_ptr<autofill::CreditCard> card,
-      std::unique_ptr<autofill::AutofillProfile> billing_profile) override;
+  void SetShippingAddress(std::unique_ptr<autofill::AutofillProfile> address,
+                          UserDataEventType event_type) override;
+  void SetContactInfo(std::unique_ptr<autofill::AutofillProfile> profile,
+                      UserDataEventType event_type) override;
+  void SetCreditCard(std::unique_ptr<autofill::CreditCard> card,
+                     std::unique_ptr<autofill::AutofillProfile> billing_profile,
+                     UserDataEventType event_type) override;
   void SetTermsAndConditions(
       TermsAndConditionsState terms_and_conditions) override;
   void SetLoginOption(const std::string& identifier) override;

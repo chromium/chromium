@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
@@ -133,6 +134,12 @@ void ResolveTextValue(
     const ElementFinder::Result& target_element,
     const ActionDelegate* action_delegate,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
+
+// Returns the next selection state for when an event of type |event_type|
+// happens while the current state is |old_state|.
+Metrics::UserDataSelectionState GetNewSelectionState(
+    Metrics::UserDataSelectionState old_state,
+    UserDataEventType event_type);
 
 }  // namespace user_data
 }  // namespace autofill_assistant

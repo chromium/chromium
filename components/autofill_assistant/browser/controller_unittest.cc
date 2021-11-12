@@ -86,6 +86,7 @@ struct MockCollectUserDataOptions : public CollectUserDataOptions {
     base::MockOnceCallback<void(int, UserData*, const UserModel*)>
         mock_terms_callback;
     terms_link_callback = mock_terms_callback.Get();
+    selected_user_data_changed_callback = base::DoNothing();
   }
 };
 
@@ -2037,7 +2038,7 @@ TEST_F(ControllerTest, UserDataFormContactInfo) {
   contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
                              u"+1 23 456 789 01");
   controller_->SetContactInfo(
-      std::make_unique<autofill::AutofillProfile>(contact_profile));
+      std::make_unique<autofill::AutofillProfile>(contact_profile), UNKNOWN);
   EXPECT_THAT(controller_->GetUserData()
                   ->selected_address("selected_profile")
                   ->Compare(contact_profile),
@@ -2071,7 +2072,7 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
       .Times(1);
   controller_->SetCreditCard(
       std::make_unique<autofill::CreditCard>(*credit_card),
-      /* billing_profile =*/nullptr);
+      /* billing_profile =*/nullptr, UNKNOWN);
 
   // Credit card with valid billing address is ok.
   auto billing_address = std::make_unique<autofill::AutofillProfile>(
@@ -2091,7 +2092,7 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
       .Times(1);
   controller_->SetCreditCard(
       std::make_unique<autofill::CreditCard>(*credit_card),
-      std::make_unique<autofill::AutofillProfile>(*billing_address));
+      std::make_unique<autofill::AutofillProfile>(*billing_address), UNKNOWN);
   EXPECT_THAT(GetUserData()->selected_card()->Compare(*credit_card), Eq(0));
   EXPECT_THAT(GetUserData()
                   ->selected_address("billing_address")
@@ -2128,7 +2129,7 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
   contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
                              u"+1 23 456 789 01");
   controller_->SetContactInfo(
-      std::make_unique<autofill::AutofillProfile>(contact_profile));
+      std::make_unique<autofill::AutofillProfile>(contact_profile), UNKNOWN);
   EXPECT_THAT(controller_->GetUserData()
                   ->selected_address("selected_profile")
                   ->Compare(contact_profile),
@@ -2218,7 +2219,7 @@ TEST_F(ControllerTest, SetShippingAddress) {
                                   Property(&UserAction::enabled, Eq(true)))))
       .Times(1);
   controller_->SetShippingAddress(
-      std::make_unique<autofill::AutofillProfile>(*shipping_address));
+      std::make_unique<autofill::AutofillProfile>(*shipping_address), UNKNOWN);
   EXPECT_THAT(GetUserData()
                   ->selected_address("shipping_address")
                   ->Compare(*shipping_address),

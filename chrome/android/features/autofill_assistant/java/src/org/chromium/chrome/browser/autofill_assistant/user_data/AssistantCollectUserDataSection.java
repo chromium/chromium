@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
@@ -32,6 +31,10 @@ import java.util.List;
  * such as |AutofillContact|, |AutofillPaymentMethod|, etc.
  */
 public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
+    interface Delegate<T> {
+        void onUserDataChanged(T item, @AssistantUserDataEventType int type);
+    }
+
     private class Item {
         View mFullView;
         T mOption;
@@ -54,7 +57,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
     protected T mSelectedOption;
 
     private boolean mIgnoreItemSelectedNotifications;
-    private Callback<T> mListener;
+    private Delegate<T> mDelegate;
     private int mTopPadding;
     private int mBottomPadding;
 
@@ -129,8 +132,8 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         mSectionExpander.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    void setListener(@Nullable Callback<T> listener) {
-        mListener = listener;
+    void setDelegate(@Nullable Delegate<T> delegate) {
+        mDelegate = delegate;
     }
 
     void setTitle(String title) {
@@ -160,7 +163,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         updateVisibility();
 
         if (initiallySelectedItem != null) {
-            selectItem(initiallySelectedItem, false);
+            selectItem(initiallySelectedItem, false, AssistantUserDataEventType.NO_NOTIFICATION);
         }
     }
 
@@ -211,15 +214,19 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
             }
         }
 
+        @AssistantUserDataEventType
+        int eventType;
         if (item == null) {
+            eventType = AssistantUserDataEventType.ENTRY_CREATED;
             item = createItem(option);
             addItem(item);
         } else {
+            eventType = AssistantUserDataEventType.ENTRY_EDITED;
             updateSummaryView(mSummaryView, item.mOption);
         }
 
         if (select) {
-            selectItem(item, notify);
+            selectItem(item, notify, eventType);
         }
     }
 
@@ -300,7 +307,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
                     if (mIgnoreItemSelectedNotifications || !selected) {
                         return;
                     }
-                    selectItem(item, /*notify=*/true);
+                    selectItem(item, /*notify=*/true, AssistantUserDataEventType.SELECTION_CHANGED);
                     if (item.mOption.mOption.isComplete()) {
                         // Workaround for Android bug: a layout transition may cause the newly
                         // checked radiobutton to not render properly.
@@ -316,7 +323,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         updateVisibility();
     }
 
-    private void selectItem(Item item, boolean notify) {
+    private void selectItem(Item item, boolean notify, @AssistantUserDataEventType int eventType) {
         mSelectedOption = item.mOption;
         mIgnoreItemSelectedNotifications = true;
         mItemsView.setCheckedItem(item.mFullView);
@@ -324,8 +331,8 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         updateSummaryView(mSummaryView, item.mOption);
         updateVisibility();
 
-        if (mListener != null && notify) {
-            mListener.onResult(item.mOption);
+        if (mDelegate != null && notify) {
+            mDelegate.onUserDataChanged(item.mOption, eventType);
         }
     }
 

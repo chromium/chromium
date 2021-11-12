@@ -1109,19 +1109,23 @@ UiControllerAndroid::GetCollectUserDataModel() {
 }
 
 void UiControllerAndroid::OnShippingAddressChanged(
-    std::unique_ptr<autofill::AutofillProfile> address) {
-  ui_delegate_->SetShippingAddress(std::move(address));
+    std::unique_ptr<autofill::AutofillProfile> address,
+    UserDataEventType event_type) {
+  ui_delegate_->SetShippingAddress(std::move(address), event_type);
 }
 
 void UiControllerAndroid::OnContactInfoChanged(
-    std::unique_ptr<autofill::AutofillProfile> profile) {
-  ui_delegate_->SetContactInfo(std::move(profile));
+    std::unique_ptr<autofill::AutofillProfile> profile,
+    UserDataEventType event_type) {
+  ui_delegate_->SetContactInfo(std::move(profile), event_type);
 }
 
 void UiControllerAndroid::OnCreditCardChanged(
     std::unique_ptr<autofill::CreditCard> card,
-    std::unique_ptr<autofill::AutofillProfile> billing_profile) {
-  ui_delegate_->SetCreditCard(std::move(card), std::move(billing_profile));
+    std::unique_ptr<autofill::AutofillProfile> billing_profile,
+    UserDataEventType event_type) {
+  ui_delegate_->SetCreditCard(std::move(card), std::move(billing_profile),
+                              event_type);
 }
 
 void UiControllerAndroid::OnTermsAndConditionsChanged(

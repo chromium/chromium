@@ -258,4 +258,28 @@ void Metrics::RecordDependenciesInvalidated(
                                 dependencies_invalidated);
 }
 
+void Metrics::RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
+                                   ukm::SourceId source_id,
+                                   UserDataSelectionState selection_state) {
+  ukm::builders::AutofillAssistant_CollectContact(source_id)
+      .SetContactModified(static_cast<int64_t>(selection_state))
+      .Record(ukm_recorder);
+}
+
+void Metrics::RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
+                                      ukm::SourceId source_id,
+                                      UserDataSelectionState selection_state) {
+  ukm::builders::AutofillAssistant_CollectPayment(source_id)
+      .SetCreditCardModified(static_cast<int64_t>(selection_state))
+      .Record(ukm_recorder);
+}
+
+void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
+                                    ukm::SourceId source_id,
+                                    UserDataSelectionState selection_state) {
+  ukm::builders::AutofillAssistant_CollectShippingAddress(source_id)
+      .SetShippingModified(static_cast<int64_t>(selection_state))
+      .Record(ukm_recorder);
+}
+
 }  // namespace autofill_assistant

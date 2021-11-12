@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
@@ -87,6 +88,10 @@ class CollectUserDataAction : public Action,
                                        UserData* user_data,
                                        const UserModel* user_model);
 
+  // Only used for logging purposes.
+  void OnSelectionStateChanged(UserDataEventField field,
+                               UserDataEventType event_type);
+
   void OnGetLogins(const LoginDetailsProto::LoginOptionProto& login_option,
                    std::vector<WebsiteLoginManager::Login> logins);
   void ShowToUser();
@@ -121,11 +126,20 @@ class CollectUserDataAction : public Action,
                                 UserData::FieldChange* field_change = nullptr);
   void UpdateDateTimeRangeEnd(UserData* user_data,
                               UserData::FieldChange* field_change = nullptr);
+  void MaybeLogMetrics();
 
   bool shown_to_user_ = false;
+  ukm::SourceId source_id_;
   bool initially_prefilled_ = false;
   bool personal_data_changed_ = false;
   bool action_successful_ = false;
+  bool metrics_logged_ = false;
+  Metrics::UserDataSelectionState contact_selection_state_ =
+      Metrics::UserDataSelectionState::NO_CHANGE;
+  Metrics::UserDataSelectionState credit_card_selection_state_ =
+      Metrics::UserDataSelectionState::NO_CHANGE;
+  Metrics::UserDataSelectionState shipping_selection_state_ =
+      Metrics::UserDataSelectionState::NO_CHANGE;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;
 

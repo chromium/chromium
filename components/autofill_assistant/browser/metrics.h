@@ -421,6 +421,50 @@ class Metrics {
     kMaxValue = DURING_FLOW
   };
 
+  // Used to track what action the user performed on the contact/shipping/card
+  // data. Only reported at the end of a CollectUserData action. Reported up to
+  // three times for each of contact/shipping/credit card and only if the given
+  // entry was requested at that step.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantUserDataSelectionState enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class UserDataSelectionState {
+    // The user kept the initial selection without modifications.
+    NO_CHANGE,
+    // The user kept the initial selection but edited it.
+    EDIT_PRESELECTED,
+    // The user changed the selected option.
+    SELECTED_DIFFERENT_ENTRY,
+    // The user changed the selected option and edited the newly selected entry.
+    SELECTED_DIFFERENT_AND_MODIFIED_ENTRY,
+    // The user added a new entry.
+    NEW_ENTRY,
+
+    kMaxValue = NEW_ENTRY
+  };
+
+  // Used to log the initial number of contact/shipping/card entries. Reported
+  // at the end of a CollectUserData action.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantUserDataEntryCount enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class UserDataEntryCount {
+    ZERO,
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE_OR_MORE,
+
+    kMaxValue = FIVE_OR_MORE
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -462,6 +506,15 @@ class Metrics {
       base::TimeDelta evaluation_time);
   static void RecordDependenciesInvalidated(
       DependenciesInvalidated dependencies_invalidated);
+  static void RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
+                                   ukm::SourceId source_id,
+                                   UserDataSelectionState selection_state);
+  static void RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
+                                      ukm::SourceId source_id,
+                                      UserDataSelectionState selection_state);
+  static void RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
+                                    ukm::SourceId source_id,
+                                    UserDataSelectionState selection_state);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
