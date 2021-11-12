@@ -11,23 +11,15 @@
 namespace content {
 
 MediaStreamWebContentsObserver::MediaStreamWebContentsObserver(
-    int render_process_id,
-    int render_frame_id)
-    : WebContentsObserver(WebContents::FromRenderFrameHost(
-          RenderFrameHost::FromID(render_process_id, render_frame_id))) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
-MediaStreamWebContentsObserver::~MediaStreamWebContentsObserver() = default;
-
-void MediaStreamWebContentsObserver::RegisterFocusCallback(
-    base::RepeatingClosure focus_callback) {
+    WebContents* web_contents,
+    base::RepeatingClosure focus_callback)
+    : WebContentsObserver(web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   on_focus_callback_ = std::move(focus_callback);
 }
 
-void MediaStreamWebContentsObserver::StopObserving() {
+MediaStreamWebContentsObserver::~MediaStreamWebContentsObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   on_focus_callback_.Reset();

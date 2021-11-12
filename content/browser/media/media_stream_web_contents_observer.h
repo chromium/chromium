@@ -13,11 +13,9 @@ namespace content {
 class CONTENT_EXPORT MediaStreamWebContentsObserver final
     : public WebContentsObserver {
  public:
-  MediaStreamWebContentsObserver(int render_process_id, int render_frame_id);
+  MediaStreamWebContentsObserver(WebContents* web_contents,
+                                 base::RepeatingClosure focus_callback);
   ~MediaStreamWebContentsObserver() override;
-
-  void RegisterFocusCallback(base::RepeatingClosure focus_callback);
-  void StopObserving();
 
   // WebContentsObserver implementation.
   void OnWebContentsFocused(RenderWidgetHost* render_widget_host) override;

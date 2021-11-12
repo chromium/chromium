@@ -59,7 +59,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
  private:
   friend class MockMediaStreamDispatcherHost;
 
-  class Broker;
   struct PendingAccessRequest;
   using RequestsQueue =
       base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
@@ -120,6 +119,10 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   void OnDeviceCaptureHandleChange(const std::string& label,
                                    const blink::MediaStreamDevice& device);
 
+  void OnHostDestroyedOrStopped();
+  void SetWebContentsObserver(
+      std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer);
+
   static int next_requester_id_;
 
   const int render_process_id_;
@@ -130,7 +133,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
 
-  scoped_refptr<Broker> broker_;
+  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 };

@@ -44,6 +44,23 @@ void BindMediaStreamDeviceObserverReceiver(
     render_frame_host->GetRemoteInterfaces()->GetInterface(std::move(receiver));
 }
 
+std::unique_ptr<MediaStreamWebContentsObserver> StartObservingWebContents(
+    int render_process_id,
+    int render_frame_id,
+    base::RepeatingClosure focus_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebContents* const web_contents = WebContents::FromRenderFrameHost(
+      RenderFrameHost::FromID(render_process_id, render_frame_id));
+  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer;
+  if (web_contents) {
+    web_contents_observer = std::make_unique<MediaStreamWebContentsObserver>(
+        web_contents, base::BindPostTask(GetIOThreadTaskRunner({}),
+                                         std::move(focus_callback)));
+  }
+  return web_contents_observer;
+}
+
 }  // namespace
 
 int MediaStreamDispatcherHost::next_requester_id_ = 0;
@@ -75,68 +92,6 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
   MediaDeviceSaltAndOrigin salt_and_origin;
 };
 
-// MediaStreamDispatcherHost::Broker runs on both the UI and IO thread. It
-// exists because it might need to outlive MediaStreamDispatcherHost while in a
-// posted task from the MediaStreamDispatcherHost.
-class MediaStreamDispatcherHost::Broker
-    : public base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker> {
- public:
-  explicit Broker(base::WeakPtr<MediaStreamDispatcherHost> host)
-      : host_(host) {}
-
- private:
-  friend class base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker>;
-  friend class MediaStreamDispatcherHost;
-
-  ~Broker() = default;
-
-  void OnHostDestroyedOrStopped();
-  void OnHostDestroyedOrStoppedOnUI();
-  void OnWebContentsFocused();
-  void StartObservingWebContents(int render_process_id, int render_frame_id);
-
-  // host_ should be accessed only on IO thread.
-  base::WeakPtr<MediaStreamDispatcherHost> host_;
-  // web_contents_observer_ should be accessed only on UI thread.
-  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
-};
-
-void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  base::OnceClosure stop_observing_cb = base::BindOnce(
-      &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI, this);
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(stop_observing_cb));
-}
-
-void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  web_contents_observer_->StopObserving();
-  web_contents_observer_.reset();
-}
-
-void MediaStreamDispatcherHost::Broker::OnWebContentsFocused() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!host_)
-    return;
-  host_->OnWebContentsFocused();
-}
-
-void MediaStreamDispatcherHost::Broker::StartObservingWebContents(
-    int render_process_id,
-    int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  web_contents_observer_ = std::make_unique<MediaStreamWebContentsObserver>(
-      render_process_id, render_frame_id);
-  web_contents_observer_->RegisterFocusCallback(base::BindPostTask(
-      GetIOThreadTaskRunner({}),
-      base::BindRepeating(
-          &MediaStreamDispatcherHost::Broker::OnWebContentsFocused, this)));
-}
-
 MediaStreamDispatcherHost::MediaStreamDispatcherHost(
     int render_process_id,
     int render_frame_id,
@@ -149,18 +104,22 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  broker_ = base::MakeRefCounted<MediaStreamDispatcherHost::Broker>(
-      weak_factory_.GetWeakPtr());
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MediaStreamDispatcherHost::Broker::StartObservingWebContents,
-          broker_, render_process_id_, render_frame_id_));
+  // TODO(crbug.com/1265369): Register focus_callback only when needed.
+  base::RepeatingClosure focus_callback =
+      base::BindRepeating(&MediaStreamDispatcherHost::OnWebContentsFocused,
+                          weak_factory_.GetWeakPtr());
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(&StartObservingWebContents, render_process_id_,
+                     render_frame_id_, std::move(focus_callback)),
+      base::BindOnce(&MediaStreamDispatcherHost::SetWebContentsObserver,
+                     weak_factory_.GetWeakPtr()));
 }
 
 MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  broker_->OnHostDestroyedOrStopped();
+
+  OnHostDestroyedOrStopped();
   CancelAllRequests();
 }
 
@@ -170,10 +129,18 @@ void MediaStreamDispatcherHost::Create(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaStreamDispatcherHost>(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));
+}
+
+void MediaStreamDispatcherHost::SetWebContentsObserver(
+    std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  web_contents_observer_ = std::move(web_contents_observer);
 }
 
 void MediaStreamDispatcherHost::OnDeviceStopped(
@@ -211,6 +178,19 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
   DCHECK(device.display_media_info.has_value());
 
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
+}
+
+void MediaStreamDispatcherHost::OnHostDestroyedOrStopped() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<MediaStreamWebContentsObserver>
+                            web_contents_observer) {
+                       // By allowing |web_contents_observer| to go out of scope
+                       // here, we trigger its destruction on the UI thread.
+                     },
+                     std::move(web_contents_observer_)));
 }
 
 void MediaStreamDispatcherHost::OnWebContentsFocused() {
@@ -314,6 +294,7 @@ void MediaStreamDispatcherHost::DoGenerateStream(
     GenerateStreamCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
     std::move(callback).Run(
@@ -379,6 +360,7 @@ void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
                                            blink::mojom::MediaStreamType type,
                                            OpenDeviceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   // OpenDevice is only supported for microphone or webcam capture.
   if (type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
@@ -403,6 +385,7 @@ void MediaStreamDispatcherHost::DoOpenDevice(
     OpenDeviceCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
     std::move(callback).Run(false /* success */, std::string(),
