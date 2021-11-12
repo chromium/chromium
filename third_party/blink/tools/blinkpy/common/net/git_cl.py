@@ -290,10 +290,12 @@ class GitCL(object):
             if cq_only and not (is_cq and not is_experimental):
                 continue
             build_number = build.get('number')
-            status = build['status']
+            status = build.get('status')
+            build_id = build.get('id')
             build_to_status[Build(
                 builder_name,
-                build_number)] = TryJobStatus.from_bb_status(status)
+                build_number,
+                build_id)] = TryJobStatus.from_bb_status(status)
         return build_to_status
 
     def fetch_raw_try_job_results(self, issue_number, patchset=None):
@@ -343,7 +345,7 @@ class GitCL(object):
                 }]
             },
             'fields':
-            'builds.*.builder.builder,builds.*.status,builds.*.tags,builds.*.number'
+            'builds.*.builder.builder,builds.*.status,builds.*.tags,builds.*.number,builds.*.id'
         }
         url = 'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/SearchBuilds'
         if six.PY3:
