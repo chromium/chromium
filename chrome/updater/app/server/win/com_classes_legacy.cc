@@ -37,12 +37,6 @@ const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
 
 HRESULT OpenCallerProcessHandle(DWORD proc_id,
                                 base::win::ScopedHandle& proc_handle) {
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-  base::ScopedClosureRunner co_revert_to_self(
-      base::BindOnce(base::IgnoreResult(&::CoRevertToSelf)));
-
   proc_handle.Set(::OpenProcess(PROCESS_DUP_HANDLE, false, proc_id));
   return proc_handle.IsValid() ? S_OK : updater::HRESULTFromLastError();
 }

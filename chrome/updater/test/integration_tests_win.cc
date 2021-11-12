@@ -703,20 +703,6 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   ULONG_PTR proc_handle = 0;
   DWORD caller_proc_id = ::GetCurrentProcessId();
 
-  // Returns ERROR_BAD_IMPERSONATION_LEVEL when explicit security blanket is not
-  // set.
-  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_BAD_IMPERSONATION_LEVEL),
-            process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
-                                                caller_proc_id, &proc_handle));
-  EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
-
-  // Sets a security blanket that will allow the server to impersonate the
-  // client.
-  EXPECT_HRESULT_SUCCEEDED(::CoSetProxyBlanket(
-      process_launcher.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
-      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_DEFAULT,
-      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DEFAULT));
-
   // Succeeds when the command is present in the registry.
   SetFcLaunchCmd(kAppId1);
   EXPECT_HRESULT_SUCCEEDED(process_launcher->LaunchCmdElevated(
