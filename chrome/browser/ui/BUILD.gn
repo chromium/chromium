@@ -3648,6 +3648,8 @@ static_library("ui") {
       "views/status_icons/status_icon_button_linux.h",
       "views/status_icons/status_icon_linux_wrapper.cc",
       "views/status_icons/status_icon_linux_wrapper.h",
+      "views/window_sizer_linux.cc",
+      "views/window_sizer_linux.h",
     ]
   }
 

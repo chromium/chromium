@@ -110,6 +110,9 @@ class WindowSizer {
       gfx::Rect* bounds,
       ui::WindowShowState* show_state);
 
+  // Adjusts the work area the platform-specific way.
+  virtual void AdjustWorkAreaForPlatform(gfx::Rect& work_area);
+
   // Gets the size and placement of the last active window. Returns true if this
   // data is valid, false if there is no last window and the application should
   // restore saved state from preferences using RestoreWindowPosition.

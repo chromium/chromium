@@ -165,6 +165,8 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
       browser, window_bounds, show_state);
 }
 
+#if !defined(OS_LINUX)
+// Linux has its own implementation, see WindowSizerLinux.
 // static
 void WindowSizer::GetBrowserWindowBoundsAndShowState(
     std::unique_ptr<StateProvider> state_provider,
@@ -184,6 +186,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
   *bounds = specified_bounds;
   sizer.DetermineWindowBoundsAndShowState(specified_bounds, bounds, show_state);
 }
+#endif  // !defined(OS_LINUX)
 
 void WindowSizer::DetermineWindowBoundsAndShowState(
     const gfx::Rect& specified_bounds,
@@ -211,9 +214,14 @@ void WindowSizer::DetermineWindowBoundsAndShowState(
   // is visible on the screen.
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayMatching(*bounds).work_area();
+
+  AdjustWorkAreaForPlatform(work_area);
+
   // Resize so that it fits.
   bounds->AdjustToFit(work_area);
 }
+
+void WindowSizer::AdjustWorkAreaForPlatform(gfx::Rect& work_area) {}
 
 bool WindowSizer::GetLastActiveWindowBounds(
     gfx::Rect* bounds,
