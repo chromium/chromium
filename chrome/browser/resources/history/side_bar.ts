@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+import './shared_icons.js';
 import './shared_style.js';
 import './strings.m.js';
 
@@ -174,8 +175,7 @@ export class HistorySideBarElement extends PolymerElement {
   }
 
   private getToggleHistoryClustersItemIcon_(): string {
-    return this.historyClustersVisible ? 'images/journeys_off.svg' :
-                                         'images/journeys.svg';
+    return `history:journeys-${this.historyClustersVisible ? 'off' : 'on'}`;
   }
 
   private getToggleHistoryClustersItemLabel_(): string {
