@@ -182,11 +182,6 @@ declare_args() {
 }
 
 declare_args() {
-  # C++11 may not be an option if Android test infrastructure is used.
-  use_cxx11_on_android = use_cxx11
-}
-
-declare_args() {
   # Set to true to use icf, Identical Code Folding.
   #
   # icf=all is broken in older golds, see
@@ -561,12 +556,6 @@ config("compiler") {
   # ---------------------------
   if (is_linux || is_chromeos || is_android || (is_nacl && is_clang) ||
       current_os == "aix") {
-    if (target_os == "android") {
-      cxx11_override = use_cxx11_on_android
-    } else {
-      cxx11_override = use_cxx11
-    }
-
     if (is_clang) {
       standard_prefix = "c"
 
@@ -590,29 +579,14 @@ config("compiler") {
     }
 
     cflags_c += [ "-std=${standard_prefix}11" ]
-    if (cxx11_override) {
-      # Override Chromium's default for projects that wish to stay on C++11.
-      cflags_cc += [ "-std=${standard_prefix}++11" ]
-    } else {
-      cflags_cc += [ "-std=${standard_prefix}++14" ]
-    }
+    cflags_cc += [ "-std=${standard_prefix}++14" ]
   } else if (!is_win && !is_nacl) {
-    if (target_os == "android") {
-      cxx11_override = use_cxx11_on_android
-    } else {
-      cxx11_override = use_cxx11
-    }
-
     # TODO(mcgrathr) - the NaCl GCC toolchain doesn't support either gnu11/gnu++11
     # or c11/c++11; we technically don't need this toolchain any more, but there
     # are still a few buildbots using it, so until those are turned off
     # we need the !is_nacl clause and the (is_nacl && is_clang) clause, above.
     cflags_c += [ "-std=c11" ]
-    if (cxx11_override) {
-      cflags_cc += [ "-std=c++11" ]
-    } else {
-      cflags_cc += [ "-std=c++14" ]
-    }
+    cflags_cc += [ "-std=c++14" ]
   }
 
   # C++17 removes trigraph support, so preemptively disable trigraphs. This is
