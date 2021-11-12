@@ -1,0 +1,4 @@
+UNKNOWN focusable
+++UNKNOWN
+++++LINK focusable label='normal link'
+++++++STATIC_TEXT label='normal link'
