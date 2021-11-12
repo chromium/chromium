@@ -60693,7 +60693,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Disconnected"/>
 </enum>
 
-<enum name="NetworkCellularESimInstallViaQrCodeResult">
+<enum name="NetworkCellularESimInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Inhibit failed"/>
   <int value="2" label="Hermes install failed"/>

@@ -17,6 +17,9 @@
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_ui_data.h"
+#include "chromeos/network/shill_property_util.h"
+#include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
@@ -67,11 +70,28 @@ void AppendRequiredCellularProperties(const dbus::ObjectPath& euicc_path,
         shill::kGuidProperty, profile_properties->iccid().value());
 }
 
+bool IsManagedNetwork(const base::Value& new_shill_properties) {
+  std::unique_ptr<NetworkUIData> ui_data =
+      shill_property_util::GetUIDataFromProperties(
+          base::Value::AsDictionaryValue(new_shill_properties));
+  return ui_data && (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
+                     ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
+}
+
 }  // namespace
 
 // static
-void CellularESimInstaller::RecordInstallProfileViaQrCodeResult(
-    InstallProfileViaQrCodeResult result) {
+void CellularESimInstaller::RecordInstallESimProfileResult(
+    InstallESimProfileResult result,
+    bool is_managed) {
+  base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallationResult",
+                                result);
+
+  if (is_managed) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.Policy.ESimInstall.OperationResult", result);
+    return;
+  }
   base::UmaHistogramEnumeration(
       "Network.Cellular.ESim.InstallViaQrCode.OperationResult", result);
 }
@@ -122,8 +142,8 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
-    RecordInstallProfileViaQrCodeResult(
-        InstallProfileViaQrCodeResult::kInhibitFailed);
+    RecordInstallESimProfileResult(InstallESimProfileResult::kInhibitFailed,
+                                   IsManagedNetwork(new_shill_properties));
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
                             /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
@@ -147,17 +167,19 @@ void CellularESimInstaller::OnProfileInstallResult(
     const dbus::ObjectPath* profile_path) {
   hermes_metrics::LogInstallViaQrCodeResult(status);
 
+  bool is_managed = IsManagedNetwork(new_shill_properties);
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status="
                    << static_cast<int>(status);
-    RecordInstallProfileViaQrCodeResult(
-        InstallProfileViaQrCodeResult::kHermesInstallFailed);
+    RecordInstallESimProfileResult(
+        InstallESimProfileResult::kHermesInstallFailed, is_managed);
     std::move(callback).Run(status, /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
     return;
   }
 
-  RecordInstallProfileViaQrCodeResult(InstallProfileViaQrCodeResult::kSuccess);
+  RecordInstallESimProfileResult(InstallESimProfileResult::kSuccess,
+                                 is_managed);
 
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(

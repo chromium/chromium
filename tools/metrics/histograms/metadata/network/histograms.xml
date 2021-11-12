@@ -168,6 +168,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.InstallationResult"
+    enum="NetworkCellularESimInstallResult" expires_after="2022-09-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the result of an attempt to install an eSIM profile either via a QR
+    code or via policy. This process includes both an attempt to inhibit modem
+    scans as well as a request to install the profile. The metric tracks
+    failures at each step of the process.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.InstallPendingProfile.Result"
     enum="HermesResponseStatus" expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>
@@ -186,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.InstallViaQrCode.OperationResult"
-    enum="NetworkCellularESimInstallViaQrCodeResult" expires_after="2022-09-01">
+    enum="NetworkCellularESimInstallResult" expires_after="2022-09-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -211,6 +226,21 @@ chromium-metrics-reviews@google.com.
     webcam or can enter the QR code's decoded contents into a text field
     manually. Once this occurs, the device contacts the cellular carrier and
     downloads a profile to the device.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.Policy.ESimInstall.OperationResult"
+    enum="NetworkCellularESimInstallResult" expires_after="2022-09-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the result of an attempt to install a managed eSIM profile via
+    policy. This process includes both an attempt to inhibit modem scans as well
+    as a request to install the profile. The metric tracks failures at each step
+    of the process.
 
     Emitted once the operation completes.
   </summary>

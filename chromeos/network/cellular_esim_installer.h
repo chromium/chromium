@@ -79,14 +79,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class InstallProfileViaQrCodeResult {
+  enum class InstallESimProfileResult {
     kSuccess = 0,
     kInhibitFailed = 1,
     kHermesInstallFailed = 2,
     kMaxValue = kHermesInstallFailed
   };
-  static void RecordInstallProfileViaQrCodeResult(
-      InstallProfileViaQrCodeResult result);
+  static void RecordInstallESimProfileResult(InstallESimProfileResult result,
+                                             bool is_managed);
 
   void PerformInstallProfileFromActivationCode(
       const std::string& activation_code,
