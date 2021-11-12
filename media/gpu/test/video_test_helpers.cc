@@ -245,34 +245,39 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     next_pos_to_decode_ = kIvfFileHeaderSize;  // Skip IVF header.
   }
 
-  // Group IVF data whose timestamps are the same. Spatial layers in a
-  // spatial-SVC stream may separately be stored in IVF data, where the
-  // timestamps of the IVF frame headers are the same. However, it is necessary
-  // for VD(A) to feed the spatial layers by a single DecoderBuffer. So this
-  // grouping is required.
   std::vector<IvfFrame> ivf_frames;
-  while (!ReachEndOfStream()) {
-    auto frame_header = GetNextIvfFrameHeader();
-    if (!frame_header)
-      return nullptr;
-
-    // Timestamp is different from the current one. The next IVF data must be
-    // grouped in the next group.
-    if (!ivf_frames.empty() &&
-        frame_header->timestamp != ivf_frames[0].header.timestamp) {
-      break;
-    }
-
-    auto frame_data = ReadNextIvfFrame();
-    if (!frame_data)
-      return nullptr;
-
-    ivf_frames.push_back(*frame_data);
-  }
-
-  if (ivf_frames.empty()) {
+  auto frame_data = ReadNextIvfFrame();
+  if (!frame_data) {
     LOG(ERROR) << "No IVF frame is available";
     return nullptr;
+  }
+  ivf_frames.push_back(*frame_data);
+
+  if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
+    // Group IVF data whose timestamps are the same in VP9 and AV1. Spatial
+    // layers in a spatial-SVC stream may separately be stored in IVF data,
+    // where the timestamps of the IVF frame headers are the same. However, it
+    // is necessary for VD(A) to feed the spatial layers by a single
+    // DecoderBuffer. So this grouping is required.
+    while (!ReachEndOfStream()) {
+      auto frame_header = GetNextIvfFrameHeader();
+      if (!frame_header) {
+        LOG(ERROR) << "No IVF frame header is available";
+        return nullptr;
+      }
+
+      // Timestamp is different from the current one. The next IVF data must be
+      // grouped in the next group.
+      if (frame_header->timestamp != ivf_frames[0].header.timestamp)
+        break;
+
+      frame_data = ReadNextIvfFrame();
+      if (!frame_data) {
+        LOG(ERROR) << "No IVF frame is available";
+        return nullptr;
+      }
+      ivf_frames.push_back(*frame_data);
+    }
   }
 
   // Standard stream case.
