@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -37,6 +36,20 @@ policy::DMToken GetDMToken(
 Profile* GetUserProfile() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return ProfileManager::GetActiveUserProfile();
+}
+
+// Processes retrieved DM token even if the retriever goes out of scope in the
+// caller.
+void OnDMTokenRetrieved(DMTokenRetriever::CompletionCallback completion_cb,
+                        const policy::DMToken& dm_token) {
+  // Return an error if DM token is invalid
+  if (!dm_token.is_valid()) {
+    std::move(completion_cb)
+        .Run(Status(error::UNKNOWN, "Invalid DM token received"));
+    return;
+  }
+
+  std::move(completion_cb).Run(dm_token.value());
 }
 
 }  // namespace
@@ -73,21 +86,7 @@ void UserDMTokenRetriever::RetrieveDMToken(
   // cache coherency.
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetDMToken, profile_retrieval_cb_),
-      base::BindOnce(&UserDMTokenRetriever::OnDMTokenRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(completion_cb)));
-}
-
-void UserDMTokenRetriever::OnDMTokenRetrieved(
-    DMTokenRetriever::CompletionCallback completion_cb,
-    const policy::DMToken& dm_token) {
-  // Return an error if DM token is invalid
-  if (!dm_token.is_valid()) {
-    std::move(completion_cb)
-        .Run(Status(error::UNKNOWN, "Invalid DM token received"));
-    return;
-  }
-
-  std::move(completion_cb).Run(dm_token.value());
+      base::BindOnce(&OnDMTokenRetrieved, std::move(completion_cb)));
 }
 
 }  // namespace reporting
