@@ -601,9 +601,9 @@ TEST_F(WebURLLoaderTest, SSLInfo) {
   WebURLResponse web_url_response;
   WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  const absl::optional<net::SSLInfo>& got_ssl_info =
+  const net::SSLInfo* got_ssl_info =
       web_url_response.ToResourceResponse().GetSSLInfo();
-  ASSERT_TRUE(got_ssl_info.has_value());
+  ASSERT_TRUE(got_ssl_info);
   EXPECT_EQ(ssl_info.connection_status, got_ssl_info->connection_status);
   EXPECT_TRUE(ssl_info.cert->EqualsIncludingChain(got_ssl_info->cert.get()));
 }

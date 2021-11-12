@@ -351,8 +351,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
       std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr),
       /*is_main_frame=*/true, &navigation_params);
-  EXPECT_TRUE(
-      navigation_params.response.ToResourceResponse().GetSSLInfo().has_value());
+  EXPECT_TRUE(navigation_params.response.ToResourceResponse().GetSSLInfo());
 }
 
 }  // namespace
