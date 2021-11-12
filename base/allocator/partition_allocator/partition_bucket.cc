@@ -626,15 +626,6 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
         PageReadWrite, PageUpdatePermissions);
   }
 
-  // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it
-  // uncommitted and let PartitionRoot::EnablePCScan commit it when needed.
-  if (root->IsQuarantineEnabled()) {
-    ScopedSyscallTimer<thread_safe> timer{root};
-    RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
-                        PageReadWrite, PageUpdatePermissions);
-    PCScan::RegisterNewSuperPage(root, reinterpret_cast<uintptr_t>(super_page));
-  }
-
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default
   // algorithm that isn't randomized. For example, most Linux
@@ -680,6 +671,21 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
     PA_DCHECK(ret > SuperPagesBeginFromExtent(current_extent) &&
               ret < SuperPagesEndFromExtent(current_extent));
   }
+
+  // If PCScan is used, commit the state bitmap. Otherwise, leave it uncommitted
+  // and let PartitionRoot::RegisterScannableRoot() commit it when needed. Make
+  // sure to register the super-page after it has been fully initialized.
+  // Otherwise, the concurrent scanner may try to access |extent->root| which
+  // could be not initialized yet.
+  if (root->IsQuarantineEnabled()) {
+    {
+      ScopedSyscallTimer<thread_safe> timer{root};
+      RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
+                          PageReadWrite, PageUpdatePermissions);
+    }
+    PCScan::RegisterNewSuperPage(root, reinterpret_cast<uintptr_t>(super_page));
+  }
+
   return ret;
 }
 
