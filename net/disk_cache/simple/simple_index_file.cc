@@ -105,7 +105,7 @@ class SimpleIndexPickle : public base::Pickle {
 bool WritePickleFile(base::Pickle* pickle, const base::FilePath& file_name) {
   base::File file(file_name, base::File::FLAG_CREATE_ALWAYS |
                                  base::File::FLAG_WRITE |
-                                 base::File::FLAG_SHARE_DELETE);
+                                 base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 
@@ -448,7 +448,7 @@ void SimpleIndexFile::SyncLoadFromDisk(net::CacheType cache_type,
 
   base::File file(index_filename, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_SHARE_DELETE |
+                                      base::File::FLAG_WIN_SHARE_DELETE |
                                       base::File::FLAG_SEQUENTIAL_SCAN);
   if (!file.IsValid())
     return;

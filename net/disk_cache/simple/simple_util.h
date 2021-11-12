@@ -80,9 +80,9 @@ NET_EXPORT_PRIVATE bool GetMTime(const base::FilePath& path,
                                  base::Time* out_mtime);
 
 // Deletes a file, insuring POSIX semantics. Provided that all open handles to
-// this file were opened with File::FLAG_SHARE_DELETE, it is possible to delete
-// an open file and continue to use that file. After deleting an open file, it
-// is possible to immediately create a new file with the same name.
+// this file were opened with File::FLAG_WIN_SHARE_DELETE, it is possible to
+// delete an open file and continue to use that file. After deleting an open
+// file, it is possible to immediately create a new file with the same name.
 NET_EXPORT_PRIVATE bool SimpleCacheDeleteFile(const base::FilePath& path);
 
 uint32_t Crc32(const char* data, int length);

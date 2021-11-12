@@ -748,7 +748,7 @@ bool BackendImpl::CreateExternalFile(Addr* address) {
     }
     base::FilePath name = GetFileName(file_address);
     int flags = base::File::FLAG_READ | base::File::FLAG_WRITE |
-                base::File::FLAG_CREATE | base::File::FLAG_EXCLUSIVE_WRITE;
+                base::File::FLAG_CREATE | base::File::FLAG_WIN_EXCLUSIVE_WRITE;
     base::File file(name, flags);
     if (!file.IsValid()) {
       base::File::Error error = file.error_details();
@@ -1409,7 +1409,8 @@ bool BackendImpl::InitBackingStore(bool* file_created) {
   base::FilePath index_name = path_.AppendASCII(kIndexName);
 
   int flags = base::File::FLAG_READ | base::File::FLAG_WRITE |
-              base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_EXCLUSIVE_WRITE;
+              base::File::FLAG_OPEN_ALWAYS |
+              base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   base::File base_file(index_name, flags);
   if (!base_file.IsValid())
     return false;

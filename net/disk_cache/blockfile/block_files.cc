@@ -413,7 +413,7 @@ bool BlockFiles::IsValid(Addr address) {
 bool BlockFiles::CreateBlockFile(int index, FileType file_type, bool force) {
   base::FilePath name = Name(index);
   int flags = force ? base::File::FLAG_CREATE_ALWAYS : base::File::FLAG_CREATE;
-  flags |= base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_WRITE;
+  flags |= base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_WRITE;
 
   scoped_refptr<File> file(new File(base::File(name, flags)));
   if (!file->IsValid())

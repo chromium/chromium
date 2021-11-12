@@ -78,7 +78,7 @@ bool CanOmitEmptyFile(int file_index) {
 bool TruncatePath(const FilePath& filename_to_truncate) {
   base::File file_to_truncate;
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   file_to_truncate.Initialize(filename_to_truncate, flags);
   if (!file_to_truncate.IsValid())
     return false;
@@ -1097,7 +1097,7 @@ bool SimpleSynchronousEntry::MaybeOpenFile(int file_index,
 
   FilePath filename = GetFilenameFromFileIndex(file_index);
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   std::unique_ptr<base::File> file =
       std::make_unique<base::File>(filename, flags);
   *out_error = file->error_details();
@@ -1128,7 +1128,7 @@ bool SimpleSynchronousEntry::MaybeCreateFile(int file_index,
 
   FilePath filename = GetFilenameFromFileIndex(file_index);
   int flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   std::unique_ptr<base::File> file =
       std::make_unique<base::File>(filename, flags);
 
@@ -1711,7 +1711,7 @@ bool SimpleSynchronousEntry::OpenSparseFileIfExists(
   FilePath filename =
       path_.AppendASCII(GetSparseFilenameFromEntryFileKey(entry_file_key_));
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   std::unique_ptr<base::File> sparse_file =
       std::make_unique<base::File>(filename, flags);
   if (!sparse_file->IsValid())
@@ -1733,7 +1733,7 @@ bool SimpleSynchronousEntry::CreateSparseFile() {
   FilePath filename =
       path_.AppendASCII(GetSparseFilenameFromEntryFileKey(entry_file_key_));
   int flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   std::unique_ptr<base::File> sparse_file =
       std::make_unique<base::File>(filename, flags);
   if (!sparse_file->IsValid())

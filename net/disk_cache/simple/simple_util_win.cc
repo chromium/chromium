@@ -17,7 +17,7 @@ namespace disk_cache {
 namespace simple_util {
 
 bool SimpleCacheDeleteFile(const base::FilePath& path) {
-  // Even if a file was opened with FLAG_SHARE_DELETE, it is not possible to
+  // Even if a file was opened with FLAG_WIN_SHARE_DELETE, it is not possible to
   // create a new file with the same name until the original file is actually
   // deleted. To allow new files to be created with the new name right away,
   // the file is renamed before it is deleted.
