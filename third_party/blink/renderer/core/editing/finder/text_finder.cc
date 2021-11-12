@@ -911,6 +911,11 @@ void TextFinder::FireBeforematchEvent(
     std::unique_ptr<AsyncScrollContext> context) {
   // During the async step, the match may have been removed from the dom.
   if (context->range->collapsed()) {
+    // Up-to-date, clean tree is required for finding text in page, since it
+    // relies on TextIterator to look over the text.
+    GetFrame()->GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kFindInPage);
+
     // If the range we were going to scroll to was removed, then we should
     // continue to search for the next match.
     // We don't need to worry about the case where another Find has already been
