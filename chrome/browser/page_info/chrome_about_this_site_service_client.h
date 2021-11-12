@@ -8,12 +8,16 @@
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/page_info/about_this_site_service.h"
 
+class PrefService;
+
 class ChromeAboutThisSiteServiceClient
     : public page_info::AboutThisSiteService::Client {
  public:
   // `optimization_guide_decider` may be nullptr.
   explicit ChromeAboutThisSiteServiceClient(
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      bool is_off_the_record,
+      PrefService* prefs);
   ~ChromeAboutThisSiteServiceClient() override;
 
   ChromeAboutThisSiteServiceClient(const ChromeAboutThisSiteServiceClient&) =
@@ -29,6 +33,8 @@ class ChromeAboutThisSiteServiceClient
  private:
   optimization_guide::OptimizationGuideDecider* const
       optimization_guide_decider_;
+  const bool is_off_the_record_;
+  PrefService* const prefs_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_INFO_CHROME_ABOUT_THIS_SITE_SERVICE_CLIENT_H_

@@ -31,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/about_this_site_validation.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
@@ -759,6 +760,11 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
+  }
+
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -872,4 +878,39 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
                               0);
   histograms.ExpectTotalCount(
       "Security.PageInfo.TimeOpen.AboutThisSiteNotShown", 1);
+}
+
+// Test that no info is shown and "kUnknown" is logged when hints fetching is
+// disabled.
+class PageInfoBubbleViewAboutThisSiteDisabledBrowserTest
+    : public PageInfoBubbleViewAboutThisSiteBrowserTest {
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    // Don't set the flag to enable hints fetching.
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
+                       AboutThisSiteWithoutOptin) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateValidSiteInfo());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  EXPECT_TRUE(page_info->GetViewByID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION));
+  EXPECT_FALSE(page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AboutThisSiteStatus::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
+      static_cast<int>(ProtoValidation::kUnknown));
 }
