@@ -5,20 +5,27 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BUILT_IN_BACKEND_TO_ANDROID_BACKEND_MIGRATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BUILT_IN_BACKEND_TO_ANDROID_BACKEND_MIGRATOR_H_
 
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 
 class PrefService;
 
 namespace password_manager {
+
+class PasswordStoreBackend;
+
 // Instantiate this object to migrate all password stored in the built-in
 // backend to the Android backend. Migration is potentially an expensive
 // operation and shouldn't start during the hot phase of Chrome start.
 class BuiltInBackendToAndroidBackendMigrator {
  public:
+  // |built_in_backend| and |android_backend| must not be null and must outlive
+  // the migrator.
   BuiltInBackendToAndroidBackendMigrator(
+      PasswordStoreBackend* built_in_backend,
+      PasswordStoreBackend* android_backend,
       PrefService* prefs,
       base::RepeatingCallback<bool()> is_syncing_passwords_callback);
+
   BuiltInBackendToAndroidBackendMigrator(
       const BuiltInBackendToAndroidBackendMigrator&) = delete;
   BuiltInBackendToAndroidBackendMigrator& operator=(
@@ -32,12 +39,27 @@ class BuiltInBackendToAndroidBackendMigrator {
   void StartMigrationIfNecessary();
 
  private:
-  // Saves current migration version in 'pref_'.
+  struct BackendAndLoginsResults;
+
+  // Saves current migration version in |prefs_|.
   void UpdateMigrationVersionInPref();
 
-  PrefService* prefs_ = nullptr;
+  // Schedules async calls to read of all passwords from both backends.
+  void PrepareForMigration();
+
+  // Migrates passwords from the |built_in_backend_| to the |android_backend|.
+  void StartBuiltInToAndroidBackendMigration(
+      std::vector<BackendAndLoginsResults> result);
+
+  PasswordStoreBackend* const built_in_backend_;
+  PasswordStoreBackend* const android_backend_;
+
+  PrefService* const prefs_ = nullptr;
 
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
+
+  base::WeakPtrFactory<BuiltInBackendToAndroidBackendMigrator>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -166,7 +166,8 @@ void PasswordStoreBackendMigrationDecorator::GetSyncStatus(
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
   migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
-      prefs_, is_syncing_passwords_callback_);
+      built_in_backend_.get(), android_backend_.get(), prefs_,
+      is_syncing_passwords_callback_);
   migrator_->StartMigrationIfNecessary();
 }
 

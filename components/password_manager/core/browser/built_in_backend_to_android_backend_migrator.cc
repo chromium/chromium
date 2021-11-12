@@ -3,17 +3,54 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
+
+#include "base/barrier_callback.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
+namespace {
+
+base::OnceCallback<void(const PasswordStoreChangeList&)>
+IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
+  return base::BindOnce(
+      [](base::OnceClosure callback, const PasswordStoreChangeList&) {
+        std::move(callback).Run();
+      },
+      std::move(callback));
+}
+
+}  // namespace
+
+struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
+  PasswordStoreBackend* backend;
+  LoginsResult logins_result;
+
+  BackendAndLoginsResults(PasswordStoreBackend* backend, LoginsResult logins)
+      : backend(backend), logins_result(std::move(logins)) {}
+  BackendAndLoginsResults(BackendAndLoginsResults&&) = default;
+  BackendAndLoginsResults& operator=(BackendAndLoginsResults&&) = default;
+  BackendAndLoginsResults(const BackendAndLoginsResults&) = delete;
+  BackendAndLoginsResults& operator=(const BackendAndLoginsResults&) = delete;
+  ~BackendAndLoginsResults() = default;
+};
+
 BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
+    PasswordStoreBackend* built_in_backend,
+    PasswordStoreBackend* android_backend,
     PrefService* prefs,
     base::RepeatingCallback<bool()> is_syncing_passwords_callback)
-    : prefs_(prefs),
+    : built_in_backend_(built_in_backend),
+      android_backend_(android_backend),
+      prefs_(prefs),
       is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+  DCHECK(built_in_backend_);
+  DCHECK(android_backend_);
 }
 
 BuiltInBackendToAndroidBackendMigrator::
@@ -23,14 +60,61 @@ void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
   if (features::kMigrationVersion.Get() >
       prefs_->GetInteger(
           prefs::kCurrentMigrationVersionToGoogleMobileServices)) {
-    // TODO:(crbug.com/1252443) Implement actual migration.
-    UpdateMigrationVersionInPref();
+    // TODO:(crbug.com/1252443) Check for the sync status.
+    PrepareForMigration();
   }
 }
 
 void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
   prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
                      features::kMigrationVersion.Get());
+}
+
+void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
+  auto barrier_callback = base::BarrierCallback<BackendAndLoginsResults>(
+      2, base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
+                            StartBuiltInToAndroidBackendMigration,
+                        weak_ptr_factory_.GetWeakPtr()));
+
+  auto bind_backend_to_logins = [](PasswordStoreBackend* backend,
+                                   LoginsResult logins) {
+    return BackendAndLoginsResults(backend, std::move(logins));
+  };
+
+  built_in_backend_->GetAllLoginsAsync(
+      base::BindOnce(bind_backend_to_logins,
+                     base::Unretained(built_in_backend_))
+          .Then(barrier_callback));
+  android_backend_->GetAllLoginsAsync(
+      base::BindOnce(bind_backend_to_logins, base::Unretained(android_backend_))
+          .Then(barrier_callback));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::
+    StartBuiltInToAndroidBackendMigration(
+        std::vector<BackendAndLoginsResults> results) {
+  DCHECK_EQ(2u, results.size());
+
+  LoginsResult local_logins = (results[0].backend == built_in_backend_)
+                                  ? std::move(results[0].logins_result)
+                                  : std::move(results[1].logins_result);
+
+  // After all operations are finished we should update prefs to mark the
+  // completion of the migration. Callbacks are chained in a LIFO way.
+  base::OnceClosure callbacks_chain = base::BindOnce(
+      &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
+      weak_ptr_factory_.GetWeakPtr());
+  for (const auto& login : local_logins) {
+    // Callbacks are chained by passing |callback_chain| as a completion to the
+    // current operation. Using base::Unretained is safe because backends will
+    // outlive migrator.
+    callbacks_chain = base::BindOnce(
+        &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
+        *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+    // TODO:(crbug.com/1252443) Implement merging logic.
+  }
+
+  std::move(callbacks_chain).Run();
 }
 
 }  // namespace password_manager
