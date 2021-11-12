@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/values.h"
 #include "components/sessions/ios/ios_live_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ios/chrome/browser/application_context.h"
@@ -65,7 +66,8 @@ IOSChromeTabRestoreServiceClient::CreateLiveTabContext(
     const gfx::Rect& /* bounds */,
     ui::WindowShowState /* show_state */,
     const std::string& /* workspace */,
-    const std::string& /* user_title */) {
+    const std::string& /* user_title */,
+    const std::map<std::string, base::Value>& /* extra_data */) {
   NOTREACHED() << "Tab restore service attempting to create a new window.";
   return nullptr;
 }

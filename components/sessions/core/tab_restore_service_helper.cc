@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,6 +25,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/values.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/live_tab_context.h"
@@ -138,6 +140,7 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
   window->show_state = context->GetRestoredState();
   window->workspace = context->GetWorkspace();
   window->user_title = context->GetUserTitle();
+  window->extra_data = context->GetExtraDataForWindow();
 
   base::flat_set<tab_groups::TabGroupId> seen_groups;
   for (int tab_index = 0; tab_index < context->GetTabCount(); ++tab_index) {
@@ -432,7 +435,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       if (entry_id_matches_restore_id) {
         context = client_->CreateLiveTabContext(
             window.app_name, window.bounds, window.show_state, window.workspace,
-            window.user_title);
+            window.user_title, window.extra_data);
 
         base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupId>
             new_group_ids;
@@ -465,7 +468,8 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
               tab.current_navigation_index, tab.extension_app_id, new_group,
               tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
               static_cast<int>(tab_i) == window.selected_tab_index, tab.pinned,
-              tab.platform_data.get(), tab.user_agent_override, nullptr);
+              tab.platform_data.get(), tab.user_agent_override, tab.extra_data,
+              nullptr);
           if (restored_tab) {
             client_->OnTabRestored(
                 tab.navigations.at(tab.current_navigation_index).virtual_url());
@@ -771,14 +775,12 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
   }
   if (actual_entry_count != max_entry_count)
     tab->navigations.resize(static_cast<int>(actual_entry_count));
+
   tab->timestamp = TimeNow();
   tab->current_navigation_index = current_navigation_index;
   tab->tabstrip_index = index;
-
   tab->extension_app_id = client_->GetExtensionAppIDForTab(live_tab);
-
   tab->user_agent_override = live_tab->GetUserAgentOverride();
-
   tab->platform_data = live_tab->GetPlatformSpecificTabData();
 
   // Delegate may be NULL during unit tests.
@@ -793,6 +795,7 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
                                                        ->GetVisualDataForGroup(
                                                            tab->group.value())}
             : absl::nullopt;
+    tab->extra_data = context->GetExtraDataForTab(tab->tabstrip_index);
   }
 }
 
@@ -805,7 +808,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
   if (disposition == WindowOpenDisposition::CURRENT_TAB && context) {
     restored_tab = context->ReplaceRestoredTab(
         tab.navigations, absl::nullopt, tab.current_navigation_index,
-        tab.extension_app_id, tab.platform_data.get(), tab.user_agent_override);
+        tab.extension_app_id, tab.platform_data.get(), tab.user_agent_override,
+        tab.extra_data);
   } else {
     // We only respect the tab's original browser if there's no disposition.
     if (disposition == WindowOpenDisposition::UNKNOWN) {
@@ -833,9 +837,9 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
     if (context && disposition != WindowOpenDisposition::NEW_WINDOW) {
       tab_index = tab.tabstrip_index;
     } else {
-      context = client_->CreateLiveTabContext(std::string(), gfx::Rect(),
-                                              ui::SHOW_STATE_NORMAL,
-                                              std::string(), std::string());
+      context = client_->CreateLiveTabContext(
+          std::string(), gfx::Rect(), ui::SHOW_STATE_NORMAL, std::string(),
+          std::string(), std::map<std::string, base::Value>());
       if (tab.browser_id)
         UpdateTabBrowserIDs(tab.browser_id, context->GetSessionID());
     }
@@ -852,8 +856,10 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTab(
         tab.extension_app_id, tab.group,
         tab.group_visual_data.value_or(tab_groups::TabGroupVisualData()),
         disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB, tab.pinned,
-        tab.platform_data.get(), tab.user_agent_override, &tab.id);
+        tab.platform_data.get(), tab.user_agent_override, tab.extra_data,
+        &tab.id);
   }
+
   client_->OnTabRestored(
       tab.navigations.at(tab.current_navigation_index).virtual_url());
   if (live_tab)

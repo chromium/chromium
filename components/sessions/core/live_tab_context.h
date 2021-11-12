@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_LIVE_TAB_CONTEXT_H_
 #define COMPONENTS_SESSIONS_CORE_LIVE_TAB_CONTEXT_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+
+namespace base {
+class Value;
+}
 
 namespace gfx {
 class Rect;
@@ -41,13 +46,16 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual std::string GetUserTitle() const = 0;
   virtual LiveTab* GetLiveTabAt(int index) const = 0;
   virtual LiveTab* GetActiveLiveTab() const = 0;
-  virtual bool IsTabPinned(int index) const = 0;
+  virtual std::map<std::string, base::Value> GetExtraDataForTab(
+      int index) const = 0;
+  virtual std::map<std::string, base::Value> GetExtraDataForWindow() const = 0;
   virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const = 0;
   // Should not be called for |group| unless GetTabGroupForTab() returned
   // |group|.
   virtual const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const = 0;
+  virtual bool IsTabPinned(int index) const = 0;
   // Update |group|'s metadata. Should only be called for |group| if a tab has
   // been restored in |group| via AddRestoredTab() or ReplaceRestoredTab().
   virtual void SetVisualDataForGroup(
@@ -73,6 +81,7 @@ class SESSIONS_EXPORT LiveTabContext {
       bool pin,
       const PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data,
       const SessionID* tab_id) = 0;
 
   // Note: |tab_platform_data| may be null (e.g., if restoring from last session
@@ -84,7 +93,8 @@ class SESSIONS_EXPORT LiveTabContext {
       int selected_navigation,
       const std::string& extension_app_id,
       const PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override) = 0;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data) = 0;
   virtual void CloseTab() = 0;
 
  protected:

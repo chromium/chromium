@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -65,9 +66,14 @@ sessions::LiveTab* LiveTabContextBrowserAgent::GetActiveLiveTab() const {
   return nullptr;
 }
 
-bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
-  // Not supported by iOS.
-  return false;
+std::map<std::string, base::Value>
+LiveTabContextBrowserAgent::GetExtraDataForTab(int index) const {
+  return std::map<std::string, base::Value>();
+}
+
+std::map<std::string, base::Value>
+LiveTabContextBrowserAgent::GetExtraDataForWindow() const {
+  return std::map<std::string, base::Value>();
 }
 
 absl::optional<tab_groups::TabGroupId>
@@ -83,6 +89,11 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
   // be called.
   NOTREACHED();
   return nullptr;
+}
+
+bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
+  // Not supported by iOS.
+  return false;
 }
 
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(
@@ -117,6 +128,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, base::Value>& extra_data,
     const SessionID* tab_id) {
   // TODO(crbug.com/661636): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
@@ -134,7 +146,8 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, base::Value>& extra_data) {
   web_state_list_->ReplaceWebStateAt(
       web_state_list_->active_index(),
       session_util::CreateWebStateWithNavigationEntries(

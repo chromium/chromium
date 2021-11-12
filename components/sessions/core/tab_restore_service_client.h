@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_CLIENT_H_
 #define COMPONENTS_SESSIONS_CORE_TAB_RESTORE_SERVICE_CLIENT_H_
 
+#include <map>
 #include <memory>
 
 #include "base/callback.h"
@@ -21,6 +22,10 @@ class Rect;
 
 namespace tab_groups {
 class TabGroupId;
+}
+
+namespace base {
+class Value;
 }
 
 namespace sessions {
@@ -49,7 +54,8 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,
       const std::string& workspace,
-      const std::string& user_title) = 0;
+      const std::string& user_title,
+      const std::map<std::string, base::Value>& extra_data) = 0;
 
   // Returns the LiveTabContext instance that is associated with
   // |tab|, or null if there is no such instance.

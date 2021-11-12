@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_TAB_MODEL_ANDROID_LIVE_TAB_CONTEXT_H_
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_ANDROID_LIVE_TAB_CONTEXT_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,10 @@
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+
+namespace base {
+class Value;
+}
 
 namespace content {
 class WebContents;
@@ -38,11 +43,14 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   std::string GetUserTitle() const override;
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
-  bool IsTabPinned(int index) const override;
+  std::map<std::string, base::Value> GetExtraDataForTab(
+      int index) const override;
+  std::map<std::string, base::Value> GetExtraDataForWindow() const override;
   absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
+  bool IsTabPinned(int index) const override;
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
@@ -60,6 +68,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
       bool pin,
       const sessions::PlatformSpecificTabData* storage_namespace,
       const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data,
       const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -67,8 +76,8 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
       int selected_navigation,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override)
-      override;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data) override;
   void CloseTab() override;
 
   static LiveTabContext* FindContextForWebContents(

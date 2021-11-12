@@ -3081,6 +3081,23 @@ void BrowserView::CloseTabSearchBubble() {
     tab_search_host->CloseTabSearchBubble();
 }
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+bool BrowserView::IsSideSearchPanelVisible() const {
+  if (side_search_controller_)
+    return side_search_controller_->GetSidePanelToggledOpen();
+
+  return false;
+}
+
+void BrowserView::MaybeRestoreSideSearchStatePerWindow(
+    const std::map<std::string, base::Value>& extra_data) {
+  if (side_search_controller_) {
+    side_search::MaybeRestoreSideSearchWindowState(
+        side_search_controller_.get(), extra_data);
+  }
+}
+#endif
+
 void BrowserView::RevealTabStripIfNeeded() {
   if (!immersive_mode_controller_->IsEnabled())
     return;

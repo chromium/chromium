@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_LIVE_TAB_CONTEXT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SESSIONS_LIVE_TAB_CONTEXT_BROWSER_AGENT_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,10 @@
 #include "components/sessions/core/live_tab_context.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
+
+namespace base {
+class Value;
+}
 
 class WebStateList;
 
@@ -36,11 +41,14 @@ class LiveTabContextBrowserAgent
   std::string GetUserTitle() const override;
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
-  bool IsTabPinned(int index) const override;
+  std::map<std::string, base::Value> GetExtraDataForTab(
+      int index) const override;
+  std::map<std::string, base::Value> GetExtraDataForWindow() const override;
   absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
+  bool IsTabPinned(int index) const override;
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
@@ -58,6 +66,7 @@ class LiveTabContextBrowserAgent
       bool pin,
       const sessions::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data,
       const SessionID* tab_id) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -65,8 +74,8 @@ class LiveTabContextBrowserAgent
       int selected_navigation,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
-      const sessions::SerializedUserAgentOverride& user_agent_override)
-      override;
+      const sessions::SerializedUserAgentOverride& user_agent_override,
+      const std::map<std::string, base::Value>& extra_data) override;
   void CloseTab() override;
 
  private:

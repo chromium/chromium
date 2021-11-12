@@ -45,6 +45,8 @@ class SideSearchTabContentsHelper
     // delegates that they should close the feature when something exceptional
     // has happened.
     virtual void SidePanelAvailabilityChanged(bool should_close) = 0;
+
+    virtual void OpenSidePanel() = 0;
   };
 
   ~SideSearchTabContentsHelper() override;
@@ -91,8 +93,9 @@ class SideSearchTabContentsHelper
     return side_panel_contents_.get();
   }
 
-  const absl::optional<GURL>& last_search_url_for_testing() {
-    return last_search_url_;
+  const absl::optional<GURL>& last_search_url() { return last_search_url_; }
+  void set_last_search_url(GURL url) {
+    last_search_url_ = absl::optional<GURL>({url});
   }
 
  private:

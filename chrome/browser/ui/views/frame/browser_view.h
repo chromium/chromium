@@ -698,6 +698,12 @@ class BrowserView : public BrowserWindow,
     return accessibility_focus_highlight_.get();
   }
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  bool IsSideSearchPanelVisible() const override;
+  void MaybeRestoreSideSearchStatePerWindow(
+      const std::map<std::string, base::Value>& extra_data) override;
+#endif
+
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
