@@ -40,8 +40,10 @@ namespace {
 
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
 
@@ -60,6 +62,10 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
   TestAttributionManagerObserver() = default;
   ~TestAttributionManagerObserver() override = default;
 
+  const std::vector<DeactivatedSource>& deactivated_sources() const {
+    return deactivated_sources_;
+  }
+
   const std::vector<SentReportInfo>& sent_reports() const {
     return sent_reports_;
   }
@@ -72,6 +78,10 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
  private:
   // AttributionManager::Observer:
 
+  void OnSourceDeactivated(const DeactivatedSource& source) override {
+    deactivated_sources_.push_back(source);
+  }
+
   void OnReportSent(const SentReportInfo& info) override {
     sent_reports_.push_back(info);
   }
@@ -81,6 +91,7 @@ class TestAttributionManagerObserver : public AttributionManager::Observer {
     dropped_reports_.push_back(result);
   }
 
+  std::vector<DeactivatedSource> deactivated_sources_;
   std::vector<SentReportInfo> sent_reports_;
   std::vector<AttributionStorage::CreateReportResult> dropped_reports_;
 };
@@ -921,6 +932,74 @@ TEST_F(AttributionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
       base::DoNothing());
 
   ExpectNumStoredReports(1u);
+}
+
+TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
+  TestAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  auto source1 = SourceBuilder(clock().Now())
+                     .SetExpiry(kImpressionExpiry)
+                     .SetSourceEventId(7)
+                     .Build();
+  attribution_manager_->HandleSource(source1);
+  ExpectNumStoredImpressions(1u);
+  EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  ExpectNumStoredReports(1u);
+  EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+
+  auto source2 = SourceBuilder(clock().Now())
+                     .SetExpiry(kImpressionExpiry)
+                     .SetSourceEventId(9)
+                     .Build();
+  attribution_manager_->HandleSource(source2);
+  ExpectNumStoredImpressions(1u);
+  EXPECT_THAT(observer.deactivated_sources(),
+              ElementsAre(DeactivatedSource{
+                  source1, DeactivatedSource::Reason::kReplacedByNewerSource}));
+}
+
+TEST_F(AttributionManagerImplTest, HandleTrigger_StoresDeactivatedSources) {
+  TestAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+
+  auto source1 = SourceBuilder(clock().Now())
+                     .SetExpiry(kImpressionExpiry)
+                     .SetSourceEventId(7)
+                     .Build();
+  attribution_manager_->HandleSource(source1);
+  ExpectNumStoredImpressions(1u);
+  EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+
+  // Store the maximum number of reports for the source.
+  for (size_t i = 1; i <= 3; i++) {
+    attribution_manager_->HandleTrigger(DefaultTrigger());
+    ExpectNumStoredReports(i);
+    EXPECT_THAT(observer.deactivated_sources(), IsEmpty());
+  }
+
+  // Simulate the reports being sent and removed from storage.
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kAttributionManagerQueueReportsInterval);
+  ExpectNumStoredReports(0u);
+
+  // The next report should cause the source to be deactivated; the report
+  // itself shouldn't be stored as we've already reached the maximum number of
+  // conversions per source.
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  ExpectNumStoredReports(0u);
+  EXPECT_THAT(
+      observer.deactivated_sources(),
+      ElementsAre(DeactivatedSource{
+          source1, DeactivatedSource::Reason::kReachedAttributionLimit}));
 }
 
 }  // namespace content

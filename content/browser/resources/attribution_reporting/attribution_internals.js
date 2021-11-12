@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.m.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource} from './attribution_internals.mojom-webui.js';
+import {AttributionInternalsHandler, AttributionInternalsHandlerRemote, AttributionInternalsObserverInterface, AttributionInternalsObserverReceiver, SourceType, WebUIAttributionReport, WebUIAttributionReport_Status, WebUIAttributionSource, WebUIAttributionSource_Attributability} from './attribution_internals.mojom-webui.js';
 
 /**
  * @template T
@@ -309,7 +309,7 @@ class Source {
     this.sourceType = SourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.dedupKeys = mojo.dedupKeys.join(', ');
-    this.status = mojo.reportable ? 'reportable' : 'unreportable';
+    this.status = AttributabilityToText(mojo.attributability);
   }
 }
 
@@ -331,20 +331,44 @@ class SourceTableModel extends TableModel {
       new Column('Status', (e) => e.status),
     ];
 
-    this.emptyRowText = 'No active sources.';
+    this.emptyRowText = 'No sources.';
+
+    // Sort by source registration time by default.
+    this.sortIdx = 4;
 
     /** @type {!Array<!Source>} */
-    this.rows = [];
+    this.deactivatedSources = [];
+
+    /** @type {!Array<!Source>} */
+    this.storedSources = [];
   }
 
   /** @override */
   getRows() {
-    return this.rows;
+    return this.deactivatedSources.concat(this.storedSources);
   }
 
-  /** @param {!Array<!Source>} rows */
-  setRows(rows) {
-    this.rows = rows;
+  /** @param {!Array<!Source>} storedSources */
+  setStoredSources(storedSources) {
+    this.storedSources = storedSources;
+    this.table.updateTbody();
+  }
+
+  /** @param {!Source} source */
+  addDeactivatedSource(source) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.deactivatedSources.length >= 1000) {
+      this.deactivatedSources = [];
+    }
+
+    this.deactivatedSources.push(source);
+    updatePageData();
+  }
+
+  clear() {
+    this.storedSources = [];
+    this.deactivatedSources = [];
     this.table.updateTbody();
   }
 }
@@ -494,7 +518,28 @@ function SourceTypeToText(sourceType) {
 }
 
 /**
- * Fetch all active sources, pending reports, and sent reports from the
+ * Converts a mojo Attributability into a user-readable string.
+ * @param {WebUIAttributionSource_Attributability} attributability
+ *     Attributability to convert
+ * @return {string}
+ */
+function AttributabilityToText(attributability) {
+  switch (attributability) {
+    case WebUIAttributionSource_Attributability.kAttributable:
+      return 'Attributable';
+    case WebUIAttributionSource_Attributability.kNoised:
+      return 'Unattributable: noised';
+    case WebUIAttributionSource_Attributability.kReplacedByNewerSource:
+      return 'Unattributable: replaced by newer source';
+    case WebUIAttributionSource_Attributability.kReachedAttributionLimit:
+      return 'Unattributable: reached attribution limit';
+    default:
+      return attributability.toString();
+  }
+}
+
+/**
+ * Fetch all sources, pending reports, and sent reports from the
  * backend and populate the tables. Also update measurement enabled status.
  */
 function updatePageData() {
@@ -514,7 +559,8 @@ function updatePageData() {
   });
 
   pageHandler.getActiveSources().then((response) => {
-    sourceTableModel.setRows(response.sources.map((mojo) => new Source(mojo)));
+    sourceTableModel.setStoredSources(
+        response.sources.map((mojo) => new Source(mojo)));
   });
 
   pageHandler.getReports().then((response) => {
@@ -553,6 +599,11 @@ function sendReports() {
 
 /** @implements {AttributionInternalsObserverInterface} */
 class Observer {
+  /** @override */
+  onSourceDeactivated(mojo) {
+    sourceTableModel.addDeactivatedSource(new Source(mojo));
+  }
+
   /** @override */
   onReportSent(mojo) {
     reportTableModel.addSentOrDroppedReport(new Report(mojo));

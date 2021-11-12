@@ -35,6 +35,7 @@ namespace {
 
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -242,8 +243,10 @@ TEST_F(AttributionStorageTest,
   }
 
   // No additional conversion reports should be created.
-  EXPECT_EQ(CreateReportStatus::kPriorityTooLow,
-            MaybeCreateAndStoreReport(DefaultTrigger()));
+  auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
+  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
+  EXPECT_TRUE(result.dropped_report().has_value());
+  EXPECT_EQ(absl::nullopt, result.GetDeactivatedSource());
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -1549,6 +1552,88 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
   EXPECT_EQ(1u, actual_reports.size());
   EXPECT_EQ(1, actual_reports[0].failed_send_attempts);
   EXPECT_EQ(new_report_time, actual_reports[0].report_time);
+}
+
+TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
+  auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(7).Build();
+  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+
+  clock()->Advance(base::Milliseconds(kReportTime));
+
+  // Set a dedup key to ensure that the return deactivated source contains it.
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(TriggerBuilder().SetDedupKey(13).Build()));
+  EXPECT_EQ(1u, storage()->GetAttributionsToReport(clock()->Now()).size());
+
+  auto source2 = SourceBuilder(clock()->Now()).SetSourceEventId(9).Build();
+
+  source1.SetDedupKeys({13});
+  EXPECT_THAT(storage()->StoreSource(source2),
+              ElementsAre(DeactivatedSource(
+                  source1, DeactivatedSource::Reason::kReplacedByNewerSource)));
+
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(source2));
+}
+
+TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
+  auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(1).Build();
+  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+
+  auto source2 = SourceBuilder(clock()->Now()).SetSourceEventId(2).Build();
+  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+
+  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+
+  clock()->Advance(base::Milliseconds(kReportTime));
+
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(DefaultTrigger()));
+  EXPECT_EQ(2u, storage()->GetAttributionsToReport(clock()->Now()).size());
+
+  // 2 sources are deactivated, but only 1 should be returned.
+  auto source3 = SourceBuilder(clock()->Now()).SetSourceEventId(3).Build();
+  EXPECT_THAT(
+      storage()->StoreSource(source3, /*deactivated_source_return_limit=*/1),
+      ElementsAre(DeactivatedSource(
+          source1, DeactivatedSource::Reason::kReplacedByNewerSource)));
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(source3));
+}
+
+TEST_F(AttributionStorageTest,
+       MaybeCreateAndStoreReport_ReturnsDeactivatedSources) {
+  auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(7).Build();
+  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+
+  // Store the maximum number of reports for the source.
+  for (size_t i = 1; i <= kMaxConversions; i++) {
+    EXPECT_EQ(CreateReportStatus::kSuccess,
+              MaybeCreateAndStoreReport(DefaultTrigger()));
+  }
+
+  clock()->Advance(base::Milliseconds(kReportTime));
+  auto reports = storage()->GetAttributionsToReport(clock()->Now());
+  EXPECT_EQ(3u, reports.size());
+
+  // Simulate the reports being sent and removed from storage.
+  for (const auto& report : reports) {
+    EXPECT_TRUE(storage()->DeleteReport(*report.conversion_id));
+  }
+
+  // The next report should cause the source to be deactivated; the report
+  // itself shouldn't be stored as we've already reached the maximum number of
+  // conversions per source.
+  auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
+  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
+  EXPECT_TRUE(result.dropped_report().has_value());
+  EXPECT_EQ(source1, result.dropped_report()->impression);
+  EXPECT_EQ(DeactivatedSource(
+                source1, DeactivatedSource::Reason::kReachedAttributionLimit),
+            result.GetDeactivatedSource());
 }
 
 }  // namespace content

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -31,6 +32,10 @@ namespace {
 
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+
+using Attributability =
+    ::content::mojom::WebUIAttributionSource::Attributability;
 
 mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
   switch (input) {
@@ -41,23 +46,41 @@ mojom::SourceType SourceTypeToMojoType(StorableSource::SourceType input) {
   }
 }
 
+mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
+    const StorableSource& source,
+    absl::optional<DeactivatedSource::Reason> deactivation_reason) {
+  auto attributability = Attributability::kAttributable;
+  if (source.attribution_logic() == StorableSource::AttributionLogic::kNever) {
+    attributability = Attributability::kNoised;
+  } else if (deactivation_reason.has_value()) {
+    switch (*deactivation_reason) {
+      case DeactivatedSource::Reason::kReplacedByNewerSource:
+        attributability = Attributability::kReplacedByNewerSource;
+        break;
+      case DeactivatedSource::Reason::kReachedAttributionLimit:
+        attributability = Attributability::kReachedAttributionLimit;
+        break;
+    }
+  }
+
+  return mojom::WebUIAttributionSource::New(
+      source.source_event_id(), source.impression_origin(),
+      source.ConversionDestination().Serialize(), source.reporting_origin(),
+      source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
+      SourceTypeToMojoType(source.source_type()), source.priority(),
+      source.dedup_keys(), attributability);
+}
+
 void ForwardSourcesToWebUI(
     mojom::AttributionInternalsHandler::GetActiveSourcesCallback
         web_ui_callback,
-    std::vector<StorableSource> stored_sources) {
+    std::vector<StorableSource> active_sources) {
   std::vector<mojom::WebUIAttributionSourcePtr> web_ui_sources;
-  web_ui_sources.reserve(stored_sources.size());
+  web_ui_sources.reserve(active_sources.size());
 
-  for (const StorableSource& impression : stored_sources) {
-    web_ui_sources.push_back(mojom::WebUIAttributionSource::New(
-        impression.source_event_id(), impression.impression_origin(),
-        impression.ConversionDestination().Serialize(),
-        impression.reporting_origin(), impression.impression_time().ToJsTime(),
-        impression.expiry_time().ToJsTime(),
-        SourceTypeToMojoType(impression.source_type()), impression.priority(),
-        impression.dedup_keys(),
-        /*reportable=*/impression.attribution_logic() ==
-            StorableSource::AttributionLogic::kTruthfully));
+  for (const StorableSource& source : active_sources) {
+    web_ui_sources.push_back(
+        WebUIAttributionSource(source, /*deactivation_reason=*/absl::nullopt));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -174,6 +197,16 @@ void AttributionInternalsHandlerImpl::AddObserver(
     std::move(callback).Run(true);
   } else {
     std::move(callback).Run(false);
+  }
+}
+
+void AttributionInternalsHandlerImpl::OnSourceDeactivated(
+    const AttributionStorage::DeactivatedSource& deactivated_source) {
+  auto source = WebUIAttributionSource(deactivated_source.source,
+                                       deactivated_source.reason);
+
+  for (auto& observer : observers_) {
+    observer->OnSourceDeactivated(source.Clone());
   }
 }
 

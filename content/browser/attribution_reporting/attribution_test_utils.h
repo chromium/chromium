@@ -187,6 +187,8 @@ class TestAttributionManager : public AttributionManager {
   void SetActiveSourcesForWebUI(std::vector<StorableSource> sources);
   void SetReportsForWebUI(std::vector<AttributionReport> reports);
 
+  void NotifySourceDeactivated(
+      const AttributionStorage::DeactivatedSource& source);
   void NotifyReportSent(const SentReportInfo& info);
   void NotifyReportDropped(
       const AttributionStorage::CreateReportResult& result);
@@ -325,8 +327,14 @@ bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
+bool operator==(const AttributionStorage::DeactivatedSource& a,
+                const AttributionStorage::DeactivatedSource& b);
+
 std::ostream& operator<<(std::ostream& out,
                          AttributionStorage::CreateReportResult::Status status);
+
+std::ostream& operator<<(std::ostream& out,
+                         AttributionStorage::DeactivatedSource::Reason reason);
 
 std::ostream& operator<<(std::ostream& out,
                          RateLimitTable::AttributionAllowedStatus status);
@@ -346,6 +354,10 @@ std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
 
 std::ostream& operator<<(std::ostream& out,
                          StorableSource::AttributionLogic attribution_logic);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionStorage::DeactivatedSource& deactivated_source);
 
 std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,

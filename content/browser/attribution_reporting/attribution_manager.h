@@ -52,6 +52,9 @@ class CONTENT_EXPORT AttributionManager {
    public:
     ~Observer() override = default;
 
+    virtual void OnSourceDeactivated(
+        const AttributionStorage::DeactivatedSource& source) {}
+
     virtual void OnReportSent(const SentReportInfo& info) {}
 
     virtual void OnReportDropped(

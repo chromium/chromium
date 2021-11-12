@@ -81,8 +81,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kIgnoreIfAbsent,
   };
 
-  // AttributionStorage
-  void StoreSource(const StorableSource& source) override;
+  // AttributionStorage:
+  std::vector<DeactivatedSource> StoreSource(
+      const StorableSource& source,
+      int deactivated_source_return_limit = -1) override;
   CreateReportResult MaybeCreateAndStoreReport(
       const StorableTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionsToReport(
@@ -97,10 +99,18 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time delete_end,
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
 
-  // Variants of ClearData that assume all Origins match the filter.
+  // Variants of `ClearData()` that assume all origins match the filter.
   void ClearAllDataInRange(base::Time delete_begin, base::Time delete_end)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Deactivates active, converted sources with the given conversion destination
+  // and reporting origin. Returns at most `limit` of those, or null on error.
+  absl::optional<std::vector<DeactivatedSource>> DeactivateSources(
+      const std::string& serialized_conversion_destination,
+      const std::string& serialized_reporting_origin,
+      int return_limit)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Returns false on failure.
   bool DeleteSources(const std::vector<StorableSource::Id>& source_ids)
@@ -145,6 +155,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
     kAddNewReport,
     kDropNewReport,
+    kDropNewReportSourceDeactivated,
     kReplaceOldReport,
   };
   MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
@@ -155,6 +166,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+
+  absl::optional<std::vector<int64_t>> ReadDedupKeys(
+      StorableSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // When storing an event source, deletes active event

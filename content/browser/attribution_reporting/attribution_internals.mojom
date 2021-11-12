@@ -49,11 +49,22 @@ struct WebUIAttributionSource {
   SourceType source_type;
   int64 priority;
   array<int64> dedup_keys;
-  bool reportable;
+
+  enum Attributability {
+    kAttributable,
+    // The source was dropped due to `StorableSource::AttributionLogic::kNever`.
+    kNoised,
+    kReplacedByNewerSource,
+    kReachedAttributionLimit,
+  };
+  Attributability attributability;
 };
 
 // Observer for events relevant to the attribution internals WebUI.
 interface AttributionInternalsObserver {
+  // Called when a source is deactivated.
+  OnSourceDeactivated(WebUIAttributionSource source);
+
   // Called when a report is sent, regardless of success.
   OnReportSent(WebUIAttributionReport report);
 

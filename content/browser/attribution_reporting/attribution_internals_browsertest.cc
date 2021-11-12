@@ -28,6 +28,7 @@ namespace {
 
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 const char kAttributionInternalsUrl[] = "chrome://conversion-internals/";
 
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText ===
-          "No active sources.") {
+          "No sources.") {
         document.title = $1;
       }
     });
@@ -184,26 +185,36 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithActiveImpression_ImpressionsDisplayed) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
+  OverrideWebUIAttributionManager();
+
+  const base::Time now = base::Time::Now();
+
   // We use the max values of `uint64_t` and `int64_t` here to ensure that they
   // are properly handled as `bigint` values in JS and don't run into issues
   // with `Number.MAX_SAFE_INTEGER`.
 
   manager_.SetActiveSourcesForWebUI(
-      {SourceBuilder(base::Time::Now())
+      {SourceBuilder(now)
            .SetSourceEventId(std::numeric_limits<uint64_t>::max())
            .SetAttributionLogic(StorableSource::AttributionLogic::kNever)
            .Build(),
-       SourceBuilder(base::Time::Now())
+       SourceBuilder(now + base::Hours(1))
            .SetSourceType(StorableSource::SourceType::kEvent)
            .SetPriority(std::numeric_limits<int64_t>::max())
            .SetDedupKeys({13, 17})
            .Build()});
-  OverrideWebUIAttributionManager();
+
+  manager_.NotifySourceDeactivated(
+      DeactivatedSource(SourceBuilder(now + base::Hours(2)).Build(),
+                        DeactivatedSource::Reason::kReplacedByNewerSource));
+  manager_.NotifySourceDeactivated(
+      DeactivatedSource(SourceBuilder(now + base::Hours(3)).Build(),
+                        DeactivatedSource::Reason::kReachedAttributionLimit));
 
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
     let obs = new MutationObserver(() => {
-      if (table.children.length === 2 &&
+      if (table.children.length === 4 &&
           table.children[0].children[0].innerText === $1 &&
           table.children[0].children[6].innerText === "Navigation" &&
           table.children[1].children[6].innerText === "Event" &&
@@ -211,8 +222,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[1].children[7].innerText === $2 &&
           table.children[0].children[8].innerText === "" &&
           table.children[1].children[8].innerText === "13, 17" &&
-          table.children[0].children[9].innerText === "unreportable" &&
-          table.children[1].children[9].innerText === "reportable") {
+          table.children[0].children[9].innerText === "Unattributable: noised" &&
+          table.children[1].children[9].innerText === "Attributable" &&
+          table.children[2].children[9].innerText === "Unattributable: replaced by newer source" &&
+          table.children[3].children[9].innerText === "Unattributable: reached attribution limit") {
         document.title = $3;
       }
     });
