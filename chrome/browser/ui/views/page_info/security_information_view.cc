@@ -154,8 +154,8 @@ void SecurityInformationView::AddResetDecisionsLabel(
   link_style.disable_line_wrapping = false;
 
   reset_cert_decisions_label->AddStyleRange(link_range, link_style);
-  // Fit the styled label to occupy available width.
-  reset_cert_decisions_label->SizeToFit(0);
+  // Adjust this label's width to the width of the label above.
+  reset_cert_decisions_label->SizeToFit(security_details_label_->width());
 
   // Now that it contains a label, the container needs padding at the top.
   const int between_paragraphs_distance =
