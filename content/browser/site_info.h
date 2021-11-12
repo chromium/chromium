@@ -124,13 +124,6 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
 
-  // This function returns a new SiteInfo which is equivalent to the original,
-  // except that (1) is_origin_keyed is false, and (2) the remaining SiteInfo
-  // state is used to compute a new SiteInfo from a UrlInfo reconstructed from
-  // the original SiteInfo, minus any OAC opt-in request.
-  SiteInfo GetNonOriginKeyedEquivalentForMetrics(
-      const IsolationContext& isolation_context) const;
-
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
   //

@@ -144,7 +144,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool IsGuest() override;
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
-  int EstimateOriginAgentClusterOverheadForMetrics() override;
 
   // Write a representation of this object into a trace.
   void WriteIntoTrace(

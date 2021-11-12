@@ -894,10 +894,6 @@ bool FrameHasSourceUrl(const GURL& url, RenderFrameHost* frame);
 // RenderFrameHost.  Returns nullptr if such child frame does not exist.
 RenderFrameHost* ChildFrameAt(const ToRenderFrameHost& adapter, size_t index);
 
-// Returns true if |frame| has origin-keyed process isolation due to the
-// OriginAgentCluster header.
-bool HasOriginKeyedProcess(RenderFrameHost* frame);
-
 // Returns the frames visited by |RenderFrameHost::ForEachRenderFrameHost| in
 // the same order.
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(

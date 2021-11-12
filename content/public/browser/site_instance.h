@@ -184,15 +184,6 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
-  // Estimates the overhead in terms of process count due to OriginAgentCluster
-  // (OAC) SiteInstances in the BrowsingInstance related to this SiteInstance.
-  // The estimate is based on counting SiteInstances where OAC is on, and
-  // subtracting from it the count of SiteInstances that would exist without
-  // OAC. If we assume that we don't coalesce SiteInstances from different
-  // BrowsingInstances into a single RenderProcess, this roughly corresponds to
-  // the number of renderer processes engendered by OAC.
-  virtual int EstimateOriginAgentClusterOverheadForMetrics() = 0;
-
   // Factory method to create a new SiteInstance.  This will create a new
   // BrowsingInstance, so it should only be used when creating a new tab from
   // scratch (or similar circumstances).

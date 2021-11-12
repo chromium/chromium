@@ -168,23 +168,21 @@ void MetricsMemoryDetails::UpdateHistograms() {
   }
 #endif
 
-  size_t initialized_and_not_dead_rphs;
-  size_t all_rphs;
-  CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
-  UpdateSiteIsolationMetrics(initialized_and_not_dead_rphs);
+  UpdateSiteIsolationMetrics();
 
   UMA_HISTOGRAM_COUNTS_100("Memory.ProcessCount",
                            static_cast<int>(browser.processes.size()));
   UMA_HISTOGRAM_COUNTS_100("Memory.RendererProcessCount", renderer_count);
 
+  size_t initialized_and_not_dead_rphs, all_rphs;
+  CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
   UMA_HISTOGRAM_COUNTS_100("Memory.RenderProcessHost.Count.All", all_rphs);
   UMA_HISTOGRAM_COUNTS_100(
       "Memory.RenderProcessHost.Count.InitializedAndNotDead",
       initialized_and_not_dead_rphs);
 }
 
-void MetricsMemoryDetails::UpdateSiteIsolationMetrics(
-    size_t live_process_count) {
+void MetricsMemoryDetails::UpdateSiteIsolationMetrics() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Track site data for predicting process counts with out-of-process iframes.
@@ -221,5 +219,5 @@ void MetricsMemoryDetails::UpdateSiteIsolationMetrics(
     SiteData& site_data = site_data_map[contents->GetBrowserContext()];
     SiteDetails::CollectSiteInfo(contents->GetPrimaryPage(), &site_data);
   }
-  SiteDetails::UpdateHistograms(site_data_map, live_process_count);
+  SiteDetails::UpdateHistograms(site_data_map);
 }

@@ -48,10 +48,6 @@ struct SiteData {
   // A count of all inner frame trees which are in a different RenderProcessHost
   // from their parents.
   int out_of_process_inner_frame_trees = 0;
-
-  // Estimated increase in process count due to OriginAgentCluster (OAC)
-  // SiteInstances over all elements in |browsing_instances|.
-  int oac_overhead;
 };
 
 // Maps a BrowserContext to information about the sites it contains.
@@ -66,14 +62,8 @@ class SiteDetails {
   // on the UI thread.
   static void CollectSiteInfo(content::Page& page, SiteData* site_data);
 
-  // Collect count of OriginAgentCluster SiteInstances, and compare to what we
-  // would expect with OAC off (and no coalescing different BrowsingInstances
-  // into shared RenderProcesses).
-  static int EstimateOriginAgentClusterOverhead(const SiteData& site_data);
-
   // Updates the global histograms for tracking memory usage.
-  static void UpdateHistograms(const BrowserContextSiteDataMap& site_data_map,
-                               size_t live_process_count);
+  static void UpdateHistograms(const BrowserContextSiteDataMap& site_data_map);
 
  private:
   // Only static methods - never needs to be constructed.
