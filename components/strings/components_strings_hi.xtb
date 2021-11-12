@@ -324,7 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{कुछ नहीं}=1{1 साइट}one{# साइट}other{# साइट}}</translation>
 <translation id="1923390796829649802">सुलभता सेटिंग के बटन को मैनेज करें, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं</translation>
 <translation id="1924727005275031552">नया</translation>
-<translation id="1927439593081478069">Chrome बटन की सुरक्षा जांच करें. Chrome की सेटिंग में, सुरक्षा जांच करने के लिए Enter दबाएं</translation>
+<translation id="1927439593081478069">'Chrome की सुरक्षा जांच करें' बटन. Chrome की सेटिंग में, सुरक्षा जांच करने के लिए Enter दबाएं</translation>
 <translation id="1939175642807587452">साइट, सूचनाएं भेजने की अनुमति मांग सकती है</translation>
 <translation id="1945968466830820669">आपके संगठन के खाते का एक्सेस खो सकता है या आपकी पहचान चोरी हो सकती है. Chromium आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="1947454675006758438">सबसे ऊपर दाईं ओर स्टेपल</translation>
@@ -344,7 +344,7 @@
 <translation id="2003709556000175978">अपना पासवर्ड अभी रीसेट करें</translation>
 <translation id="2003775180883135320">सबसे ऊपर क्वाड पंच</translation>
 <translation id="201174227998721785">Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियों को मैनेज करें</translation>
-<translation id="2019607688127825327">सुलभता सेटिंग बटन मैनेज करें. Chrome की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं</translation>
+<translation id="2019607688127825327">'सुलभता सेटिंग मैनेज करें' बटन. Chrome की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं</translation>
 <translation id="2025115093177348061">ऑगमेंटेड रिएलिटी (एआर)</translation>
 <translation id="2025186561304664664">प्रॉक्‍सी अपने-आप कॉन्‍फ़‍िगर पर सेट है.</translation>
 <translation id="2025891858974379949">असुरक्षित सामग्री</translation>
@@ -510,7 +510,7 @@
 <translation id="2556876185419854533">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="2570734079541893434">सेटिंग को प्रबंधित करें</translation>
 <translation id="257674075312929031">ग्रुप</translation>
-<translation id="2576880857912732701">सुरक्षा सेटिंग बटन मैनेज करें. Chrome की सेटिंग में सुरक्षित ब्राउज़िंग वगैरह को मैनेज करने के लिए, Enter दबाएं</translation>
+<translation id="2576880857912732701">'सुरक्षा की सेटिंग मैनेज करें' बटन. Chrome की सेटिंग में सुरक्षित ब्राउज़िंग वगैरह को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> की ओर से. यह और <ph name="OTHER_ARTICLE_COUNT" /> दूसरे समाचार पढ़ें.</translation>
 <translation id="2587841377698384444">निर्देशिका API (एपीआई) आईडी:</translation>
@@ -1630,7 +1630,7 @@
 <translation id="6279098320682980337">वर्चुअल कार्ड नंबर नहीं भरा गया? कार्ड का ब्यौरा कॉपी करने के लिए उस पर क्लिक करें</translation>
 <translation id="6280223929691119688">इस पते पर वितरित नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
 <translation id="6282194474023008486">पोस्टल कोड</translation>
-<translation id="6285507000506177184">Chrome बटन में डाउनलोड मैनेज करें. आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करने के लिए, Enter दबाएं</translation>
+<translation id="6285507000506177184">'Chrome में डाउनलोड मैनेज करें' बटन. आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="6289939620939689042">पेज का रंग</translation>
 <translation id="6290238015253830360">आपके सुझाए हुए लेख यहां दिखाई देते हैं</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1746,7 +1746,7 @@
 <translation id="6689249931105087298">ब्लैक पॉइंट कंप्रेशन से मिलता-जुलता</translation>
 <translation id="6689271823431384964">आपके साइन इन किए होने की वजह से, Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप 'सेटिंग' में जाकर इसे बदल सकते हैं. कार्डधारक का नाम आपके खाते से लिया जाता है.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google खाते में अपना डिवाइस ढूंढने के लिए, पहले Tab और फिर Enter दबाएं</translation>
-<translation id="6696588630955820014">इस टैब बटन को शेयर करें. लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए, Enter दबाएं</translation>
+<translation id="6696588630955820014">'इस टैब को शेयर करें' बटन. लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए, Enter दबाएं</translation>
 <translation id="6698381487523150993">निर्मित:</translation>
 <translation id="6702919718839027939">प्रज़ेंट</translation>
 <translation id="6710213216561001401">पिछला</translation>
@@ -2182,7 +2182,7 @@
 <translation id="810875025413331850">आस-पास का कोई ब्लूटूथ डिवाइस नहीं मिला.</translation>
 <translation id="8116925261070264013">आवाज़ बंद की गई</translation>
 <translation id="8118489163946903409">भुगतान का तरीका</translation>
-<translation id="8124639700796374294">Chrome बटन को पसंद के मुताबिक बनाएं. अपने ब्राउज़र के लुक को पसंद के मुताबिक बनाने के लिए, Enter दबाएं</translation>
+<translation id="8124639700796374294">'Chrome को पसंद के मुताबिक बनाएं' बटन. अपने ब्राउज़र के लुक को पसंद के मुताबिक बनाने के लिए, Enter दबाएं</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" आपके कंप्यूटर या नेटवर्क पर ठीक से इंस्टॉल नहीं हुआ था. अपने आईटी व्यवस्थापक से इस समस्या को ठीक करने के लिए कहें.</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
@@ -2379,7 +2379,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>
-<translation id="8834380158646307944">गुप्त विंडो बटन बंद करें. सभी खुली हुई गुप्त विंडो बंद करने के लिए, Enter दबाएं</translation>
+<translation id="8834380158646307944">'गुप्त विंडो बंद करें' बटन. सभी खुली हुई गुप्त विंडो बंद करने के लिए, Enter दबाएं</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>
 <translation id="884264119367021077">शिपिंग पता</translation>
 <translation id="884923133447025588">कोई निरस्तीकरण प्रक्रिया नहीं पाई गई.</translation>

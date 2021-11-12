@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Luôn yêu cầu trang web dành cho máy tính</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
 <translation id="2490684707762498678">Do <ph name="APP_NAME" /> quản lý</translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Thông tin về trang web</translation>
 <translation id="3333961966071413176">Tất cả người liên hệ</translation>
 <translation id="3386292677130313581">Hỏi trước khi cho phép các trang web biết vị trí của bạn (được đề xuất)</translation>
+<translation id="3517437118288792304">Luôn yêu cầu chế độ xem trên máy tính để bàn đối với một trang web cụ thể.</translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3551268116566418498">Thoát khỏi chế độ Ẩn danh?</translation>
 <translation id="3586500876634962664">Đang sử dụng máy ảnh và micrô</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">Một trang web đang phát nội dung đa phương tiện</translation>
 <translation id="42981349822642051">Mở rộng</translation>
 <translation id="4336434711095810371">Xóa tất cả dữ liệu</translation>
+<translation id="4353125860368453721">Luôn yêu cầu chế độ xem trên thiết bị di động đối với một trang web cụ thể.</translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="445467742685312942">Cho phép trang web phát nội dung được bảo vệ</translation>
@@ -300,6 +303,7 @@
 <translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie đang được sử dụng}other{# cookie đang được sử dụng}}</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
+<translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="857943718398505171">Được phép (được đề xuất)</translation>

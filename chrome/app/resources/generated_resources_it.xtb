@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Non consentire ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="1088654056000736875">Chrome sta rimuovendo software dannoso dal computer…</translation>
 <translation id="1088659085457112967">Avvia modalità Reader</translation>
+<translation id="1089606299949659462">Revisione completata.</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
 <translation id="1091767800771861448">Premi ESC per saltare (solo build non ufficiali).</translation>
@@ -1430,6 +1431,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2454247629720664989">Parola chiave</translation>
 <translation id="2454264884354864965">La fotocamera è spenta</translation>
+<translation id="2454524890947537054">Vuoi approvare la richiesta web?</translation>
 <translation id="245650153866130664">Per aggiornare automaticamente una richiesta, seleziona "Memorizza la password". La tua password verrà memorizzata solo sul tuo dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vorrebbe copiare file da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Canale corrente: <ph name="CHANNEL_NAME" /></translation>
@@ -1832,6 +1834,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2861301611394761800">Aggiornamento del sistema completato. Riavvia il sistema.</translation>
 <translation id="2861941300086904918">Gestione sicurezza Native Client</translation>
 <translation id="2862815659905780618">Rimuovi ambiente di sviluppo Linux</translation>
+<translation id="2864272167277395865">Seleziona un dispositivo:</translation>
 <translation id="2864601841139725659">Imposta l'immagine del profilo</translation>
 <translation id="2865919525181940183">Screenshot dei programmi attualmente sullo schermo</translation>
 <translation id="286674810810214575">Controllo delle fonti di alimentazione…</translation>
@@ -3241,6 +3244,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4366138410738374926">Stampa avviata</translation>
 <translation id="4369121877634339065">Trascina su un'immagine qualsiasi per cercare</translation>
+<translation id="4369215744064167350">Richiesta di accesso al sito web approvata</translation>
 <translation id="4370975561335139969">L'indirizzo email e la password non corrispondono</translation>
 <translation id="4373966964907728675">Trasmissione desktop</translation>
 <translation id="4374831787438678295">Programma di installazione di Linux</translation>
@@ -3932,6 +3936,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5117139026559873716">Disconnetti il telefono da <ph name="DEVICE_TYPE" />. I due dispositivi non si connetteranno più automaticamente.</translation>
 <translation id="5117930984404104619">Monitoraggio del comportamento di altre estensioni, compresi gli URL visitati</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Fai clic qui per visitare il sito <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Il sistema operativo nel tuo contenitore Linux non è più supportato. Smetterà di ricevere aggiornamenti della sicurezza e correzioni di bug e le funzionalità attive al momento potrebbero presentare problemi in modo inatteso. Esegui l'upgrade alla versione più recente per continuare a utilizzare Linux.</translation>
 <translation id="5121130586824819730">Il disco rigido è pieno. Salva in un'altra posizione o libera spazio sul disco rigido.</translation>
 <translation id="5123433949759960244">Basket</translation>
@@ -4040,6 +4045,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
 <translation id="5235750401727657667">Sostituzione della pagina visualizzata quando viene aperta una nuova scheda</translation>
 <translation id="5236374273162681467">Per usarle facilmente su tutti i tuoi dispositivi, puoi spostarle nel tuo Account Google</translation>
+<translation id="523862956770478816">Autorizzazioni siti</translation>
 <translation id="5242724311594467048">Attivare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Riprova tra qualche istante</translation>
 <translation id="5244474230056479698">Sincronizzazione con <ph name="EMAIL" /></translation>
@@ -5327,6 +5333,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6635674640674343739">Impossibile stabilire una connessione di rete. Controlla la connessione di rete e riprova.</translation>
 <translation id="6635944431854494329">Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.</translation>
 <translation id="6635956300022133031">Seleziona e personalizza le voci per la sintesi vocale</translation>
+<translation id="6636623428211296678">Esamina altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6640268266988685324">Scheda aperta</translation>
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
@@ -6603,6 +6610,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7946586320617670168">L'origine deve essere sicura</translation>
 <translation id="794676567536738329">Conferma autorizzazioni</translation>
 <translation id="7947962633355574091">C&amp;opia l'indirizzo del video</translation>
+<translation id="7948407723851303488">Tutte le pagine di <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Per aggiungere o gestire i metodi di pagamento di Google Pay, visita il tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">I siti possono chiedere di vedere testo e immagini negli appunti</translation>
 <translation id="795282463722894016">Ripristino completato</translation>
@@ -7668,6 +7676,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9053893665344928494">Memorizza la mia scelta</translation>
 <translation id="9055636786322918818">Applica la crittografia RC4. Se scegli di utilizzare quest'opzione vai incontro a un rischio maggiore, in quanto le crittografie RC4 non sono sicure.</translation>
 <translation id="9056810968620647706">Nessuna corrispondenza trovata.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> richiede l'accesso ai seguenti contenuti:</translation>
 <translation id="9057354806206861646">Aggiornamenti programmati</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>

@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Não permitir que os sites estabeleçam ligação a dispositivos MIDI</translation>
 <translation id="1088654056000736875">O Chrome está a remover software prejudicial do seu computador…</translation>
 <translation id="1088659085457112967">Entrar no modo de leitor</translation>
+<translation id="1089606299949659462">Revisão concluída!</translation>
 <translation id="1090126737595388931">Não há aplicações em execução em segundo plano</translation>
 <translation id="1090541560108055381">Antes de sincronizar, certifique-se de que este código é o mesmo em ambos os dispositivos</translation>
 <translation id="1091767800771861448">Prima ESCAPE para ignorar (apenas nas compilações não oficiais).</translation>
@@ -1430,6 +1431,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2453860139492968684">Concluir</translation>
 <translation id="2454247629720664989">Palavra-chave:</translation>
 <translation id="2454264884354864965">A câmara está desativada</translation>
+<translation id="2454524890947537054">Pretende aprovar o pedido da página Web?</translation>
 <translation id="245650153866130664">Para atualizar automaticamente uma permissão, selecione "Memorizar palavra-passe". A palavra-passe apenas será armazenada no seu dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> pretende copiar ficheiros de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Atualmente no canal <ph name="CHANNEL_NAME" /></translation>
@@ -1832,6 +1834,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2861301611394761800">Actualização do sistema concluída. Reinicie o sistema.</translation>
 <translation id="2861941300086904918">Gestor de segurança Native Client</translation>
 <translation id="2862815659905780618">Remover ambiente de programação do Linux</translation>
+<translation id="2864272167277395865">Selecione um dispositivo:</translation>
 <translation id="2864601841139725659">Definir a sua imagem do perfil</translation>
 <translation id="2865919525181940183">Captura de ecrã dos programas atualmente no ecrã</translation>
 <translation id="286674810810214575">A verificar as fontes alimentação…</translation>
@@ -3243,6 +3246,7 @@ Pretende pará-lo?</translation>
 <translation id="4364830672918311045">Apresentar notificações</translation>
 <translation id="4366138410738374926">Impressão iniciada</translation>
 <translation id="4369121877634339065">Arraste qualquer imagem para pesquisar</translation>
+<translation id="4369215744064167350">Pedido de Website aprovado</translation>
 <translation id="4370975561335139969">O email e a palavra-passe introduzidos não coincidem.</translation>
 <translation id="4373966964907728675">A transmitir ambiente de trabalho</translation>
 <translation id="4374831787438678295">Instalador para o Linux</translation>
@@ -3934,6 +3938,7 @@ Pretende pará-lo?</translation>
 <translation id="5117139026559873716">Desassocie o seu telemóvel do <ph name="DEVICE_TYPE" />. Deixarão de se ligar um ao outro automaticamente.</translation>
 <translation id="5117930984404104619">Monitorizar o comportamento de outras extensões, incluindo URLs visitados</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Clique aqui para visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">O sistema operativo no seu contentor do Linux já não é suportado. Deixará de receber atualizações de segurança e correções de erros e as funcionalidades que funcionam atualmente podem falhar de forma inesperada. Atualize para a versão mais recente para continuar a utilizar o Linux.</translation>
 <translation id="5121130586824819730">O seu disco rígido está cheio. Guarde noutra localização ou liberte espaço no disco rígido.</translation>
 <translation id="5123433949759960244">Bola de basquetebol</translation>
@@ -4042,6 +4047,7 @@ Pretende pará-lo?</translation>
 <translation id="523505283826916779">Definições de acessibilidade</translation>
 <translation id="5235750401727657667">Substituir a página visualizada ao abrir um novo separador</translation>
 <translation id="5236374273162681467">Para as utilizar facilmente em todos os seus dispositivos, pode movê-las para a sua Conta Google</translation>
+<translation id="523862956770478816">Autorizações do site</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tente novamente dentro de alguns momentos.</translation>
 <translation id="5244474230056479698">A sincronizar com <ph name="EMAIL" /></translation>
@@ -5332,6 +5338,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6635674640674343739">Não é possível estabelecer ligação à rede. Verifique a ligação de rede e tente novamente.</translation>
 <translation id="6635944431854494329">O proprietário pode controlar esta funcionalidade em Definições &gt; Avançadas &gt; Enviar automaticamente dados de diagnóstico e de utilização para a Google.</translation>
 <translation id="6635956300022133031">Selecionar e personalizar as vozes para a síntese de voz.</translation>
+<translation id="6636623428211296678">Explore mais definições abaixo ou conclua agora</translation>
 <translation id="6639554308659482635">Memória SQLite</translation>
 <translation id="6640268266988685324">Separador aberto</translation>
 <translation id="6642720633335369752">Para ver todas as janelas de apps abertas, deslize rapidamente para cima a partir da parte inferior e mantenha premido.</translation>
@@ -6609,6 +6616,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7946586320617670168">A origem tem de ser segura.</translation>
 <translation id="794676567536738329">Confirmar Permissões</translation>
 <translation id="7947962633355574091">C&amp;opiar Endereço do vídeo</translation>
+<translation id="7948407723851303488">Todas as páginas de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Para adicionar ou gerir métodos de pagamento do Google Pay, aceda à sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="7952708427581814389">Os sites podem solicitar a visualização de texto e imagens na sua área de transferência</translation>
 <translation id="795282463722894016">Restauro concluído</translation>
@@ -7674,6 +7682,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9053893665344928494">Memorizar a minha escolha</translation>
 <translation id="9055636786322918818">Aplicar a encriptação RC4. A utilização desta opção aumenta o seu risco, uma vez que as cifras RC4 são inseguras.</translation>
 <translation id="9056810968620647706">Não foram encontradas correspondências.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> pretende aceder ao seguinte conteúdo:</translation>
 <translation id="9057354806206861646">Programa de atualizações</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>

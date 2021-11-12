@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Tillad ikke, at websites opretter forbindelse til MIDI-enheder</translation>
 <translation id="1088654056000736875">Chrome fjerner skadelig software fra din computer...</translation>
 <translation id="1088659085457112967">Start Læser-tilstand</translation>
+<translation id="1089606299949659462">Gennemgangen er fuldført</translation>
 <translation id="1090126737595388931">Ingen apps kører i baggrunden</translation>
 <translation id="1090541560108055381">Inden du parrer, skal du sørge for, at koden er den samme på begge enheder</translation>
 <translation id="1091767800771861448">Tryk på ESC for at springe over (kun uofficielle builds).</translation>
@@ -1446,6 +1447,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2454247629720664989">Søgeord</translation>
 <translation id="2454264884354864965">Kameraet er slukket</translation>
+<translation id="2454524890947537054">Vil du godkende webanmodningen?</translation>
 <translation id="245650153866130664">Markér "Husk adgangskoden" for automatisk at opdatere en billet. Adgangskoden gemmes kun på din enhed.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> ønsker at kopiere filer fra <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">I øjeblikket på kanalen <ph name="CHANNEL_NAME" />.</translation>
@@ -1848,6 +1850,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2861301611394761800">Opdateringen af systemet er fuldført. Genstart systemet.</translation>
 <translation id="2861941300086904918">Sikkerhedsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-udviklingsmiljø</translation>
+<translation id="2864272167277395865">Vælg en enhed:</translation>
 <translation id="2864601841139725659">Vælg profilbillede</translation>
 <translation id="2865919525181940183">Screenshot af de programmer, der lige nu er på skærmen</translation>
 <translation id="286674810810214575">Tjekker strømkilder...</translation>
@@ -3258,6 +3261,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364830672918311045">Vis notifikationer</translation>
 <translation id="4366138410738374926">Udskriver</translation>
 <translation id="4369121877634339065">Træk over ethvert billede for at søge</translation>
+<translation id="4369215744064167350">Websiteanmodningen blev godkendt</translation>
 <translation id="4370975561335139969">Den mail og adgangskode, du indtastede, stemmer ikke overens</translation>
 <translation id="4373966964907728675">Caster skrivebord</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
@@ -3950,6 +3954,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5117139026559873716">Afbryd forbindelsen mellem din telefon og din <ph name="DEVICE_TYPE" />. Der oprettes ikke længere automatisk forbindelse.</translation>
 <translation id="5117930984404104619">Overvåge adfærden for andre udvidelser, herunder de webadresser, du har besøgt.</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Klik her for at besøge <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativsystemet i din Linux-container understøttes ikke længere. Det stopper med at modtage sikkerhedsopdateringer og fejlrettelser, og funktioner, der i øjeblikket fungerer, kan holde op med at fungere helt uventet. Opgrader til den nyeste version for at fortsætte med at bruge Linux.</translation>
 <translation id="5121130586824819730">Din harddisk er fuld. Gem på en anden placering, eller frigør mere plads på harddisken.</translation>
 <translation id="5123433949759960244">Basketball</translation>
@@ -4058,6 +4063,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="523505283826916779">Indstillinger for hjælpefunktioner</translation>
 <translation id="5235750401727657667">Skift den side, du får vist, når du åbner en ny fane</translation>
 <translation id="5236374273162681467">Du kan nemt bruge dem på alle dine enheder ved at flytte dem til din Google-konto</translation>
+<translation id="523862956770478816">Websitetilladelser</translation>
 <translation id="5242724311594467048">Skal "<ph name="EXTENSION_NAME" />" aktiveres?</translation>
 <translation id="5243522832766285132">Prøv igen om et øjeblik</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
@@ -5347,6 +5353,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6635674640674343739">Der kan ikke oprettes en netværksforbindelse. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="6635944431854494329">Ejeren kan styre denne funktion under &gt; Avanceret &gt; Send automatisk diagnostik og brugsdata til Google.</translation>
 <translation id="6635956300022133031">Vælg og tilpas oplæsningsstemmer</translation>
+<translation id="6636623428211296678">Find flere indstillinger nedenfor, eller afslut nu</translation>
 <translation id="6639554308659482635">SQLite-hukommelse</translation>
 <translation id="6640268266988685324">Åben fane</translation>
 <translation id="6642720633335369752">Hvis du vil se alle åbne appvinduer, skal du stryge opad fra bunden og holde fingeren nede.</translation>
@@ -6623,6 +6630,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7946586320617670168">Oprindelsen skal være sikker</translation>
 <translation id="794676567536738329">Bekræft tilladelser</translation>
 <translation id="7947962633355574091">K&amp;opiér webadressen til videoen</translation>
+<translation id="7948407723851303488">Alle sider på <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Gå til din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /> for at tilføje eller administrere Google Pay-betalingsmetoder</translation>
 <translation id="7952708427581814389">Websites kan anmode om tilladelse til at se tekst og billeder i din udklipsholder</translation>
 <translation id="795282463722894016">Gendannelsen blev fuldført</translation>
@@ -7690,6 +7698,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9053893665344928494">Husk mit valg</translation>
 <translation id="9055636786322918818">Gennemtving RC4-kryptering. Du løber en større risiko, hvis du vælger denne mulighed, da RC4-krypteringsalgoritmerne er usikre.</translation>
 <translation id="9056810968620647706">Der blev ikke fundet resultater.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> anmoder om adgang til følgende indhold:</translation>
 <translation id="9057354806206861646">Tidsplan for opdateringer</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>

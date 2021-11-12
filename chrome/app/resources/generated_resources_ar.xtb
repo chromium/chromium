@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">‏عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة MIDI</translation>
 <translation id="1088654056000736875">‏يزيل متصفِّح Chrome حاليًا البرامج الضارّة من جهاز الكمبيوتر...</translation>
 <translation id="1088659085457112967">الدخول إلى وضع القارئ</translation>
+<translation id="1089606299949659462">اكتملت المراجعة</translation>
 <translation id="1090126737595388931">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="1090541560108055381">يجب أن يكون الرمز متطابقًا على كلا الجهازين قبل الإقران.</translation>
 <translation id="1091767800771861448">‏اضغط على ESCAPE للتخطي (الإصدارات غير الرسمية فقط).</translation>
@@ -1434,6 +1435,7 @@
 <translation id="2453860139492968684">اكتمل</translation>
 <translation id="2454247629720664989">الكلمة المفتاحية</translation>
 <translation id="2454264884354864965">الكاميرا متوقِّفة</translation>
+<translation id="2454524890947537054">هل تريد الموافقة على طلب الوصول إلى صفحة الويب هذه؟</translation>
 <translation id="245650153866130664">لإعادة تحميل تذكرة تلقائيًا، ضع علامة في المربع "تذكُّر كلمة المرور". وسيتم تخزين كلمة مرورك على جهازك فقط.</translation>
 <translation id="2457246892030921239">يريد <ph name="APP_NAME" /> نسخ الملفات من <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">حاليًا على قناة <ph name="CHANNEL_NAME" /></translation>
@@ -1837,6 +1839,7 @@
 <translation id="2861301611394761800">اكتمل تحديث النظام. يُرجى إعادة تشغيل النظام.</translation>
 <translation id="2861941300086904918">‏إدارة الأمان لـ Native Client</translation>
 <translation id="2862815659905780618">‏إزالة بيئة تطوير نظام التشغيل Linux</translation>
+<translation id="2864272167277395865">اختيار جهاز:</translation>
 <translation id="2864601841139725659">تعيين صورة الملف الشخصي</translation>
 <translation id="2865919525181940183">لقطة شاشة للبرامج التي تظهر على الشاشة حاليًا</translation>
 <translation id="286674810810214575">جارٍ التحقق من مصادر الطاقة...</translation>
@@ -3245,6 +3248,7 @@
 <translation id="4364830672918311045">عرض الإشعارات</translation>
 <translation id="4366138410738374926">بدأت عملية الطباعة</translation>
 <translation id="4369121877634339065">اسحب الماوس فوق أي صورة للبحث عنها.</translation>
+<translation id="4369215744064167350">تمت الموافقة على طلب الوصول إلى الموقع الإلكتروني</translation>
 <translation id="4370975561335139969">البريد الإلكتروني وكلمة المرور اللذان أدخلتهما غير متطابقين</translation>
 <translation id="4373966964907728675">يتم الآن إرسال سطح المكتب</translation>
 <translation id="4374831787438678295">‏أداة تثبيت Linux</translation>
@@ -3936,6 +3940,7 @@
 <translation id="5117139026559873716">يمكنك إلغاء ربط هاتفك بجهاز <ph name="DEVICE_TYPE" />. لن يتم ربطهما تلقائيًا بعد الآن.</translation>
 <translation id="5117930984404104619">‏مراقبة سلوك الإضافات الأخرى، بما في ذلك عناوين URL التي تم الانتقال إليها</translation>
 <translation id="5119173345047096771">موزيلا فايرفوكس</translation>
+<translation id="5120886753782992638">يُرجى النقر هنا للانتقال إلى <ph name="APPROVED_URL" />.</translation>
 <translation id="5121052518313988218">‏لم يَعُد نظام التشغيل في حاوية Linux متوافقًا. وسيتوقف نظام التشغيل عن تلقّي تحديثات الأمان وإصلاحات الأخطاء، وقد تتوقّف بصورة غير متوقّعة الميزات التي تعمل حاليًا. يُرجى الترقية إلى أحدث إصدار من نظام التشغيل Linux لمواصلة استخدامه.</translation>
 <translation id="5121130586824819730">القرص الصلب ممتلئ. يُرجى الحفظ في مكان آخر أو توفير مساحة أكبر على القرص الصلب.</translation>
 <translation id="5123433949759960244">كرة السلة</translation>
@@ -4044,6 +4049,7 @@
 <translation id="523505283826916779">إعدادات إمكانية الدخول</translation>
 <translation id="5235750401727657667">استبدال الصفحة التي تشاهدها عند فتح علامة تبويب جديدة</translation>
 <translation id="5236374273162681467">‏لاستخدام كلمات المرور على كل أجهزتك بسهولة، يمكنك نقل هذه الكلمات إلى حسابك على Google.</translation>
+<translation id="523862956770478816">أذونات الموقع الإلكتروني</translation>
 <translation id="5242724311594467048">تفعيل "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="5243522832766285132">يُرجى إعادة المحاولة بعد بضع لحظات</translation>
 <translation id="5244474230056479698">المزامنة مع <ph name="EMAIL" /></translation>
@@ -5333,6 +5339,7 @@
 <translation id="6635674640674343739">تعذَّر إنشاء اتصال بالشبكة. يُرجى التحقُّق من اتصال الشبكة ثم إعادة المحاولة.</translation>
 <translation id="6635944431854494329">‏يمكن للمالك التحكّم بهذه الميزة من الإعدادات &gt; الإعدادات المتقدّمة &gt; إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا.</translation>
 <translation id="6635956300022133031">اختيار إعدادات الصوت في ميزة تحويل النص إلى كلام وتخصيصها</translation>
+<translation id="6636623428211296678">يمكنك التعرّف على المزيد من الإعدادات أدناه أو إنهاء المراجعة الآن.</translation>
 <translation id="6639554308659482635">‏ذاكرة SQLite</translation>
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
 <translation id="6642720633335369752">للاطّلاع على جميع نوافذ التطبيق المفتوحة، ما عليك سوى التمرير سريعًا من الأسفل إلى الأعلى مع الاستمرار.</translation>
@@ -6610,6 +6617,7 @@
 <translation id="7946586320617670168">يجب أن يكون الأصل آمنًا</translation>
 <translation id="794676567536738329">تأكيد الأذونات</translation>
 <translation id="7947962633355574091">نس&amp;خ عنوان الفيديو</translation>
+<translation id="7948407723851303488">جميع صفحات النطاق <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">‏لإضافة طرق الدفع في Google Pay أو إدارتها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">السماح للمواقع الإلكترونية بطلب الاطّلاع على النصوص والصور التي تم نسخها إلى الحافظة</translation>
 <translation id="795282463722894016">اكتملت عملية الاستعادة</translation>
@@ -7679,6 +7687,7 @@
 <translation id="9053893665344928494">تذكَّر اختياري</translation>
 <translation id="9055636786322918818">‏فرض ترميز RC4: يؤدي استخدام هذا الخيار إلى زيادة المخاطر، لأن رموز RC4 غير آمنة.</translation>
 <translation id="9056810968620647706">لم يتم العثور على نتائج مطابقة.</translation>
+<translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>
