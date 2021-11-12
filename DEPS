@@ -2871,6 +2871,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/third_party/android_deps/libs/com_google_flatbuffers_flatbuffers_java': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_deps/libs/com_google_flatbuffers_flatbuffers_java',
+              'version': 'version:2@2.0.3.cr0',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/android_deps/libs/com_google_googlejavaformat_google_java_format': {
       'packages': [
           {
