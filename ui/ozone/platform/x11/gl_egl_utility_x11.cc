@@ -71,4 +71,13 @@ bool GLEGLUtilityX11::HasVisualManager() {
   return true;
 }
 
+absl::optional<base::ScopedEnvironmentVariableOverride>
+GLEGLUtilityX11::MaybeGetScopedDisplayUnsetForVulkan() {
+  // Unset DISPLAY env, so the vulkan can be initialized successfully, if the
+  // X server doesn't support Vulkan surface.
+  if (!ui::IsVulkanSurfaceSupported())
+    return absl::optional<base::ScopedEnvironmentVariableOverride>("DISPLAY");
+  return absl::nullopt;
+}
+
 }  // namespace ui

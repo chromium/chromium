@@ -438,19 +438,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
   x11::VisualId transparent_visual_id_{};
 };
 
-class COMPONENT_EXPORT(UI_BASE_X) ScopedUnsetDisplay {
- public:
-  ScopedUnsetDisplay();
-
-  ScopedUnsetDisplay(const ScopedUnsetDisplay&) = delete;
-  ScopedUnsetDisplay& operator=(const ScopedUnsetDisplay&) = delete;
-
-  ~ScopedUnsetDisplay();
-
- private:
-  absl::optional<std::string> display_;
-};
-
 }  // namespace ui
 
 #endif  // UI_BASE_X_X11_UTIL_H_

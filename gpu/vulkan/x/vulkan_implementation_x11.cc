@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/scoped_environment_variable_override.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
@@ -49,9 +50,11 @@ bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
   using_surface_ = using_surface;
   // Unset DISPLAY env, so the vulkan can be initialized successfully, if the X
   // server doesn't support Vulkan surface.
-  absl::optional<ui::ScopedUnsetDisplay> unset_display;
-  if (!using_surface_)
-    unset_display.emplace();
+  absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
+  if (!using_surface_) {
+    unset_display =
+        absl::optional<base::ScopedEnvironmentVariableOverride>("DISPLAY");
+  }
 
   std::vector<const char*> required_extensions = {
       VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,

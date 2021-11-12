@@ -1137,18 +1137,4 @@ x11::ColorMap XVisualManager::XVisualData::GetColormap() {
   return colormap_;
 }
 
-ScopedUnsetDisplay::ScopedUnsetDisplay() {
-  const char* display = getenv("DISPLAY");
-  if (display) {
-    display_.emplace(display);
-    unsetenv("DISPLAY");
-  }
-}
-
-ScopedUnsetDisplay::~ScopedUnsetDisplay() {
-  if (display_) {
-    setenv("DISPLAY", display_->c_str(), 1);
-  }
-}
-
 }  // namespace ui
