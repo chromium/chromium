@@ -73,14 +73,12 @@ void BFCachePolicy::MaybeFlushBFCache(const PageNode* page_node) {
 void BFCachePolicy::MaybeFlushBFCacheLater(const PageNode* page_node) {
   // If |MaybeFlushBFCacheLater| is called while waiting for the timer,
   // |MaybeFlushBFCacheLater| will reset the timer.
-  if (base::Contains(page_to_flush_timer_, page_node)) {
-    page_to_flush_timer_[page_node].Reset();
-  } else {
-    page_to_flush_timer_[page_node].Start(
-        FROM_HERE, delay_to_flush_background_tab_,
-        base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
-                       weak_ptr_factory_.GetWeakPtr(), page_node));
-  }
+  // The use of base::Unretained(this) is safe here because |this| owns the
+  // timer.
+  page_to_flush_timer_[page_node].Start(
+      FROM_HERE, delay_to_flush_background_tab_,
+      base::BindOnce(&BFCachePolicy::MaybeFlushBFCache, base::Unretained(this),
+                     page_node));
 }
 
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {
