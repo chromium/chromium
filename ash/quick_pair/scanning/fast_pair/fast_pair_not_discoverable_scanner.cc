@@ -36,7 +36,40 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
 constexpr int kMaxParseAdvertisementRetryCount = 5;
+
+device::BluetoothDevice::BatteryInfo GetBatteryInfo(
+    const ash::quick_pair::BatteryInfo& battery_info,
+    const device::BluetoothDevice::BatteryType& battery_type) {
+  return device::BluetoothDevice::BatteryInfo(
+      battery_type, battery_info.percentage,
+      battery_info.is_charging
+          ? device::BluetoothDevice::BatteryInfo::ChargeState::kCharging
+          : device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging);
+}
+
+void SetBatteryInfo(
+    device::BluetoothDevice* device,
+    const ash::quick_pair::BatteryNotification& battery_notification) {
+  device::BluetoothDevice::BatteryInfo left_bud_info =
+      GetBatteryInfo(/*battery_info=*/battery_notification.left_bud_info,
+                     /*battery_type=*/device::BluetoothDevice::BatteryType::
+                         kLeftBudTrueWireless);
+  device->SetBatteryInfo(left_bud_info);
+
+  device::BluetoothDevice::BatteryInfo right_bud_info =
+      GetBatteryInfo(/*battery_info=*/battery_notification.right_bud_info,
+                     /*battery_type=*/device::BluetoothDevice::BatteryType::
+                         kRightBudTrueWireless);
+  device->SetBatteryInfo(right_bud_info);
+
+  device::BluetoothDevice::BatteryInfo case_info = GetBatteryInfo(
+      /*battery_info=*/battery_notification.case_info,
+      /*battery_type=*/device::BluetoothDevice::BatteryType::kCaseTrueWireless);
+  device->SetBatteryInfo(case_info);
+}
+
 }  // namespace
 
 namespace ash {
@@ -111,7 +144,15 @@ void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
 
   advertisement_parse_attempts_.erase(it);
 
-  if (!advertisement || !advertisement->show_ui)
+  if (!advertisement)
+    return;
+
+  // Set the battery notification if the advertisement contains battery
+  // notification information
+  if (advertisement->battery_notification)
+    SetBatteryInfo(device, advertisement->battery_notification.value());
+
+  if (!advertisement->show_ui)
     return;
 
   auto filter_iterator =

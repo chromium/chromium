@@ -34,14 +34,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 constexpr int kNotDiscoverableAdvHeader = 0b00000110;
 constexpr int kAccountKeyFilterHeader = 0b01100000;
 constexpr int kAccountKeyFilterNoNotificationHeader = 0b01100010;
+constexpr int kBatteryHeader = 0b00110011;
 constexpr int kSaltHeader = 0b00010001;
 constexpr long kModelIdLong = 7441431;
 const std::string kModelIdString = "718c17";
 const std::string kAccountKeyFilter = "112233445566";
 const std::string kSalt = "01";
+const std::string kBattery = "01048F";
+const std::string kModelId = "112233";
+
 }  // namespace
 
 namespace ash {
@@ -112,6 +117,20 @@ class FastPairNotDiscoverableScannerTest : public testing::Test {
         .AddExtraField(kAccountKeyFilter)
         .AddExtraFieldHeader(kSaltHeader)
         .AddExtraField(kSalt)
+        .Build()
+        ->CreateServiceData();
+  }
+
+  std::vector<uint8_t> GetAdvBatteryServicedata() {
+    return FastPairServiceDataCreator::Builder()
+        .SetHeader(kNotDiscoverableAdvHeader)
+        .SetModelId(kModelId)
+        .AddExtraFieldHeader(kAccountKeyFilterHeader)
+        .AddExtraField(kAccountKeyFilter)
+        .AddExtraFieldHeader(kSaltHeader)
+        .AddExtraField(kSalt)
+        .AddExtraFieldHeader(kBatteryHeader)
+        .AddExtraField(kBattery)
         .Build()
         ->CreateServiceData();
   }
@@ -221,6 +240,38 @@ TEST_F(FastPairNotDiscoverableScannerTest,
       GetInRangeDevice(std::vector<uint8_t>(), /*expect_call=*/false);
   scanner_->NotifyDeviceLost(device.get());
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotDiscoverableScannerTest, SetBatteryInfo) {
+  nearby::fastpair::GetObservedDeviceResponse response;
+  response.mutable_device()->set_id(kModelIdLong);
+  response.mutable_device()->set_trigger_distance(2);
+
+  auto device_metadata =
+      std::make_unique<DeviceMetadata>(std::move(response), gfx::Image());
+  PairingMetadata pairing_metadata(device_metadata.get(),
+                                   std::vector<uint8_t>());
+  repository_->SetCheckAccountKeysResult(pairing_metadata);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(1);
+
+  std::unique_ptr<device::BluetoothDevice> device =
+      GetInRangeDevice(GetAdvBatteryServicedata(),
+                       /*expect_call=*/true);
+  scanner_->NotifyDeviceFound(device.get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
+                               device::BluetoothDevice::BatteryType::kDefault));
+  EXPECT_NE(absl::nullopt,
+            device->GetBatteryInfo(
+                device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
+  EXPECT_NE(absl::nullopt,
+            device->GetBatteryInfo(
+                device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
+  EXPECT_NE(absl::nullopt,
+            device->GetBatteryInfo(
+                device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 }  // namespace quick_pair
