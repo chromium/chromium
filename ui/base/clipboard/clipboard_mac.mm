@@ -69,6 +69,20 @@ base::scoped_nsobject<NSImage> GetNSImage(NSPasteboard* pasteboard) {
   return image;
 }
 
+// Read raw PNG bytes from the clipboard.
+std::vector<uint8_t> GetPngFromPasteboard(NSPasteboard* pasteboard) {
+  if (!pasteboard)
+    return std::vector<uint8_t>();
+
+  NSData* data = [pasteboard dataForType:NSPasteboardTypePNG];
+  if (!data)
+    return std::vector<uint8_t>();
+
+  const uint8_t* bytes = static_cast<const uint8_t*>(data.bytes);
+  std::vector<uint8_t> png(bytes, bytes + data.length);
+  return png;
+}
+
 }  // namespace
 
 // Clipboard factory method.
@@ -475,6 +489,12 @@ std::vector<uint8_t> ClipboardMac::ReadPngInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
+  std::vector<uint8_t> png = GetPngFromPasteboard(pasteboard);
+  if (!png.empty())
+    return png;
+
+  // If we can’t read a PNG, try reading for an NSImage, and if successful,
+  // transcode it to PNG.
   base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
   if (!image)
     return std::vector<uint8_t>();
