@@ -65,6 +65,7 @@
     _textView.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _textView.backgroundColor = UIColor.clearColor;
 
     // Add subviews to View Hierarchy.
     [self.contentView addSubview:_textView];
