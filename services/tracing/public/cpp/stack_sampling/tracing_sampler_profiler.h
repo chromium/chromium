@@ -126,9 +126,18 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
     void WriteSampleToTrace(const BufferedSample& sample);
 
+    // TODO(ssid): Consider using an interning scheme to reduce memory usage
+    // and increase the sample size.
+#if defined(OS_ANDROID) || defined(OS_IOS)
     // We usually sample at 50ms, and expect that tracing should have started in
-    // 10s.
+    // 10s (5s for 2 threads). Approximately 100 frames and 200 samples would use
+    // 300KiB.
     constexpr static size_t kMaxBufferedSamples = 200;
+#else
+    // 2000 samples are enough to store samples for 100 seconds (50s for 2
+    // threads), and consumes about 3MiB of memory.
+    constexpr static size_t kMaxBufferedSamples = 2000;
+#endif
     std::vector<BufferedSample> buffered_samples_;
 
     base::ModuleCache module_cache_;
