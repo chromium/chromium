@@ -779,6 +779,15 @@ void DesktopSessionAgent::SetUpUrlForwarder() {
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  if (!desktop_session_event_handler_) {
+    // Callback passed to UrlForwarderConfiguratorWin::IsUrlForwarderSetUp()
+    // may be called after the configurator is deleted and the agent is
+    // stopped, so we need to null-check |desktop_session_event_handler_|.
+    //
+    // TODO(yuweih): Scope callback of IsUrlForwarderSetUp() to the lifetime of
+    //     the UrlForwarderConfiguratorWin instance.
+    return;
+  }
   desktop_session_event_handler_->OnUrlForwarderStateChange(
       is_set_up ? mojom::UrlForwarderState::kSetUp
                 : mojom::UrlForwarderState::kNotSetUp);
