@@ -83,7 +83,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516740043221086139">O modo Não incomodar está ativado.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}one{Show notification settings. Notifications are off for # apps}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
 <translation id="1536604384701784949">Para utilizar <ph name="USER_EMAIL_ADDRESS" />, primeiro, tem de terminar a sessão de todas as contas. Para terminar sessão, selecione Cancelar para retroceder. Em seguida, selecione a hora para abrir a área de estado e selecione Terminar sessão. Em seguida, volte a iniciar sessão com <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
@@ -289,7 +289,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3153444934357957346">Apenas pode ter, no máximo, <ph name="MULTI_PROFILE_USER_LIMIT" /> contas no início de sessão integrado.</translation>
 <translation id="3154351730702813399">O gestor do dispositivo pode monitorizar a sua atividade de navegação:</translation>
 <translation id="3181441307743005334">O reinício poderá demorar algum tempo</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}other{Ligado a # dispositivos}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ligado a um dispositivo}one{Connected to # devices}other{Ligado a # dispositivos}}</translation>
 <translation id="320207200541803018">Define um temporizador</translation>
 <translation id="3203405173652969239">Acesso por comutador ativado</translation>
 <translation id="3207953481422525583">Definições do utilizador</translation>
@@ -412,7 +412,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Está a partilhar o seu ecrã</translation>
 <translation id="4057003836560082631">Separador do navegador <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{Desa. p/ 1 ap.}other{Desa. p/ # ap.}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{Desa. p/ 1 ap.}one{Off for # apps}other{Desa. p/ # ap.}}</translation>
 <translation id="4066027111132117168">Ativado, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4095366824370681039">Caneta de tinta</translation>
@@ -469,7 +469,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4445159312344259901">Iniciar sessão p/ desbloquear</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificação importante}other{# notificações importantes}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificação importante}one{# notificação(ões) importante(s)}other{# notificações importantes}}</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4451374464530248585">O atalho de teclado Alt + seta para baixo foi alterado. Para utilizar a tecla Página para baixo, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para baixo.</translation>
 <translation id="445864333228800152">Boa noite,</translation>
@@ -577,7 +577,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5199367439331364630">Para iniciar sessão no Chromebook, introduza a palavra-passe</translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}other{Mais # notificações}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}one{Mais # notificação(ões)}other{Mais # notificações}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="5208059991603368177">Ativado</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
@@ -787,7 +787,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6850010208275816200">A sua app atual está em ecrã inteiro. Se a app solicitar a sua palavra-passe, saia primeiro do ecrã inteiro.</translation>
 <translation id="6852052252232534364">Clicar: ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}other{# dígitos restantes}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}one{# dígito(s) restante(s)}other{# dígitos restantes}}</translation>
 <translation id="6867938213751067702">Transferência de <ph name="FILENAME" /> colocada em pausa</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
 <translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
@@ -901,7 +901,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Adicionar nova rede móvel</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}other{# notificações}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notifications}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7745560842763881396">Mostrar apps na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
