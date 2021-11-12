@@ -4950,13 +4950,16 @@ if (enable_java_templates) {
         _module_build_config_target,
       ]
     }
-    if (defined(invoker.strip_unused_resources) &&
-        invoker.strip_unused_resources) {
+    _strip_unused_resources = defined(invoker.strip_unused_resources) &&
+                              invoker.strip_unused_resources
+    if (_strip_unused_resources) {
       # Resources only live in the base module so we define the unused resources
       # target only on the base module target.
       _unused_resources_target = "${_base_target_name}__unused_resources"
       _unused_resources_config =
           "${_base_target_gen_dir}/${_base_target_name}_unused_resources.config"
+      _unused_resources_r_txt_out =
+          "${_base_target_gen_dir}/${_base_target_name}_unused_resources.R.txt"
       unused_resources(_unused_resources_target) {
         deps = _all_module_unused_resources_deps
         all_module_build_configs = _all_module_build_configs
@@ -4965,6 +4968,7 @@ if (enable_java_templates) {
           proguard_mapping_path = _proguard_mapping_path
         }
         output_config = _unused_resources_config
+        output_r_txt = _unused_resources_r_txt_out
       }
     }
 
@@ -5026,11 +5030,21 @@ if (enable_java_templates) {
       }
 
       if (_enable_language_splits) {
-        args += [
-          "--base-allowlist-rtxt-path=@FileArg(" + "${_rebased_base_module_build_config}:deps_info:base_allowlist_rtxt_path)",
-          "--base-module-rtxt-path=@FileArg(" +
-              "${_rebased_base_module_build_config}:deps_info:r_text_path)",
-        ]
+        args += [ "--base-allowlist-rtxt-path=@FileArg(" + "${_rebased_base_module_build_config}:deps_info:base_allowlist_rtxt_path)" ]
+        if (_strip_unused_resources) {
+          # Use the stripped out rtxt file to set resources that are pinned to
+          # the default language split.
+          _rebased_unused_resources_r_txt_out =
+              rebase_path(_unused_resources_r_txt_out, root_build_dir)
+          inputs += [ _unused_resources_r_txt_out ]
+          deps += [ ":$_unused_resources_target" ]
+          args +=
+              [ "--base-module-rtxt-path=$_rebased_unused_resources_r_txt_out" ]
+        } else {
+          args +=
+              [ "--base-module-rtxt-path=@FileArg(" +
+                "${_rebased_base_module_build_config}:deps_info:r_text_path)" ]
+        }
       }
       if (defined(invoker.validate_services) && invoker.validate_services) {
         args += [ "--validate-services" ]
