@@ -44,42 +44,6 @@ void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
                                 event);
 }
 
-// Used to scope the posted navigation task to the lifetime of |web_contents|.
-// We can start a new navigation from inside the throttle using this class.
-class TypedNavigationUpgradeLifetimeHelper
-    : public content::WebContentsUserData<
-          TypedNavigationUpgradeLifetimeHelper> {
- public:
-  explicit TypedNavigationUpgradeLifetimeHelper(
-      content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  base::WeakPtr<TypedNavigationUpgradeLifetimeHelper> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void Navigate(const content::OpenURLParams& url_params,
-                bool stop_navigation) {
-    if (stop_navigation) {
-      // This deletes the NavigationThrottle and NavigationHandle.
-      web_contents_->Stop();
-    }
-    web_contents_->OpenURL(url_params);
-  }
-
- private:
-  friend class content::WebContentsUserData<
-      TypedNavigationUpgradeLifetimeHelper>;
-
-  content::WebContents* const web_contents_;
-  base::WeakPtrFactory<TypedNavigationUpgradeLifetimeHelper> weak_factory_{
-      this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TypedNavigationUpgradeLifetimeHelper);
-
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   DCHECK_EQ(url::kHttpsScheme, url.scheme());
   GURL::Replacements replacements;
@@ -256,19 +220,21 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
 
   // Post a task to navigate to the fallback URL. We don't navigate
   // synchronously here, as starting a navigation within a navigation is
-  // an antipattern. Use a helper object scoped to the WebContents lifetime to
-  // scope the navigation task to the WebContents lifetime.
-  // See PDFIFrameNavigationThrottle::LoadPlaceholderHTML() for another use of
-  // this pattern.
-  // CreateForWebContents is a no-op if there is already a helper.
-  TypedNavigationUpgradeLifetimeHelper::CreateForWebContents(web_contents);
-  TypedNavigationUpgradeLifetimeHelper* helper =
-      TypedNavigationUpgradeLifetimeHelper::FromWebContents(web_contents);
-
+  // an antipattern.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&TypedNavigationUpgradeLifetimeHelper::Navigate,
-                     helper->GetWeakPtr(), std::move(params), stop_navigation));
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             const content::OpenURLParams& url_params, bool stop_navigation) {
+            if (!web_contents)
+              return;
+            if (stop_navigation) {
+              // This deletes the NavigationThrottle and NavigationHandle.
+              web_contents->Stop();
+            }
+            web_contents->OpenURL(url_params);
+          },
+          web_contents->GetWeakPtr(), std::move(params), stop_navigation));
 
   // Once the fallback navigation starts, |this| will be deleted. Be careful
   // adding code here -- any async task posted hereafter may never run.
