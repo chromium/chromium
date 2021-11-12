@@ -169,7 +169,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     return false;
   }
 
-  key_pair_.emplace(std::move(new_key_pair), new_trust_level);
+  key_pair_ = std::make_unique<SigningKeyPair>(std::move(new_key_pair),
+                                               new_trust_level);
   RecordRotationStatus(nonce, RotationStatus::SUCCESS);
   return true;
 }

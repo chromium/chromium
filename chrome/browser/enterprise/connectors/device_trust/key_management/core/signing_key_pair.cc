@@ -14,7 +14,7 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 
 // static
-absl::optional<SigningKeyPair> SigningKeyPair::Create(
+std::unique_ptr<SigningKeyPair> SigningKeyPair::Create(
     KeyPersistenceDelegate* persistence_delegate) {
   DCHECK(persistence_delegate);
 
@@ -25,7 +25,7 @@ absl::optional<SigningKeyPair> SigningKeyPair::Create(
   if (wrapped.empty()) {
     // No persisted key pair with a known trust level found.  This is not an
     // error, it could be that no key has been created yet.
-    return absl::nullopt;
+    return nullptr;
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> key_pair;
@@ -44,13 +44,13 @@ absl::optional<SigningKeyPair> SigningKeyPair::Create(
     }
     case BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED:
       NOTREACHED();
-      return absl::nullopt;
+      return nullptr;
   }
 
   if (key_pair) {
-    return SigningKeyPair(std::move(key_pair), trust_level);
+    return std::make_unique<SigningKeyPair>(std::move(key_pair), trust_level);
   }
-  return absl::nullopt;
+  return nullptr;
 }
 
 SigningKeyPair::SigningKeyPair(
@@ -59,9 +59,6 @@ SigningKeyPair::SigningKeyPair(
     : key_pair_(std::move(key_pair)), trust_level_(trust_level) {
   DCHECK(key_pair_);
 }
-
-SigningKeyPair::SigningKeyPair(SigningKeyPair&& other) = default;
-SigningKeyPair& SigningKeyPair::operator=(SigningKeyPair&& other) = default;
 
 SigningKeyPair::~SigningKeyPair() = default;
 

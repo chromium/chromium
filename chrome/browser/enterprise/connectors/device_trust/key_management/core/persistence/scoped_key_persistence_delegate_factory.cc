@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 
 #include "base/check.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -16,17 +17,28 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 namespace test {
 
-ScopedKeyPersistenceDelegateFactory::ScopedKeyPersistenceDelegateFactory() {
-  // Generating and forcing the usage of a mocked TPM wrapped key to allow
-  // tests to skip having to rotate/store the key itself.
+namespace {
+
+std::vector<uint8_t> GenerateTpmWrapped() {
   auto provider = crypto::GetUnexportableKeyProvider();
   DCHECK(provider);
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      crypto::SignatureVerifier::ECDSA_SHA256};
-  auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
+  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto signing_key = provider->GenerateSigningKeySlowly(acceptable_algorithms);
   DCHECK(signing_key);
-  wrapped_key_ = signing_key->GetWrappedKey();
+  return signing_key->GetWrappedKey();
+}
 
+std::vector<uint8_t> GenerateECWrapped() {
+  ECSigningKeyProvider ec_key_provider;
+  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto signing_key =
+      ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
+  return signing_key->GetWrappedKey();
+}
+
+}  // namespace
+
+ScopedKeyPersistenceDelegateFactory::ScopedKeyPersistenceDelegateFactory() {
   KeyPersistenceDelegateFactory::SetInstanceForTesting(this);
 }
 
@@ -35,11 +47,15 @@ ScopedKeyPersistenceDelegateFactory::~ScopedKeyPersistenceDelegateFactory() {
 }
 
 std::unique_ptr<MockKeyPersistenceDelegate>
-ScopedKeyPersistenceDelegateFactory::CreateMockedDelegate() {
+ScopedKeyPersistenceDelegateFactory::CreateMockedTpmDelegate() {
+  if (tpm_wrapped_key_.empty()) {
+    tpm_wrapped_key_ = GenerateTpmWrapped();
+  }
+
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
       .WillByDefault(testing::Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_TPM_KEY, wrapped_key_)));
+          BPKUR::CHROME_BROWSER_TPM_KEY, tpm_wrapped_key_)));
   ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
       .WillByDefault(testing::Invoke([]() {
         // This is mocked via crypto::ScopedMockUnexportableKeyProvider.
@@ -48,9 +64,29 @@ ScopedKeyPersistenceDelegateFactory::CreateMockedDelegate() {
   return mocked_delegate;
 }
 
+std::unique_ptr<MockKeyPersistenceDelegate>
+ScopedKeyPersistenceDelegateFactory::CreateMockedECDelegate() {
+  if (ec_wrapped_key_.empty()) {
+    ec_wrapped_key_ = GenerateECWrapped();
+  }
+
+  auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
+  ON_CALL(*mocked_delegate.get(), LoadKeyPair)
+      .WillByDefault(testing::Return(KeyPersistenceDelegate::KeyInfo(
+          BPKUR::CHROME_BROWSER_OS_KEY, ec_wrapped_key_)));
+  ON_CALL(*mocked_delegate.get(), GetTpmBackedKeyProvider)
+      .WillByDefault(testing::Invoke([]() { return nullptr; }));
+  return mocked_delegate;
+}
+
 std::unique_ptr<KeyPersistenceDelegate>
 ScopedKeyPersistenceDelegateFactory::CreateKeyPersistenceDelegate() {
-  return CreateMockedDelegate();
+  if (next_instance_) {
+    return std::move(next_instance_);
+  }
+
+  // If no mock instance was set, simply default to a mocked TPM delegate.
+  return CreateMockedTpmDelegate();
 }
 
 }  // namespace test

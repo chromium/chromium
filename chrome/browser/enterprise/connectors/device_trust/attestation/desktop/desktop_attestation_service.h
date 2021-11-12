@@ -12,7 +12,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/google_keys.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -76,7 +75,7 @@ class DesktopAttestationService : public AttestationService {
 
   GoogleKeys google_keys_;
   std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate_;
-  absl::optional<SigningKeyPair> key_pair_;
+  std::unique_ptr<SigningKeyPair> key_pair_;
 
   base::WeakPtrFactory<DesktopAttestationService> weak_factory_{this};
 };

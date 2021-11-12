@@ -75,6 +75,8 @@ class KeyRotationManagerTest : public testing::Test,
                ? "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status"
                : "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.Status";
   }
+
+  test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
 };
 
 // Tests a success key rotation flow when a TPM key and TPM key provider are
@@ -83,9 +85,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake TPM keys.
-  test::ScopedKeyPersistenceDelegateFactory scoped_factory;
-  auto mock_persistence_delegate = scoped_factory.CreateMockedDelegate();
-  auto original_key_wrapped = scoped_factory.wrapped_key();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
+  auto original_key_wrapped = scoped_factory_.tpm_wrapped_key();
 
   // The mocked delegate is already set-up to return a working TPM key and
   // provider.
@@ -137,8 +138,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
   base::HistogramTester histogram_tester;
 
   // The factory creates instances backed by fake TPM keys.
-  test::ScopedKeyPersistenceDelegateFactory scoped_factory;
-  auto mock_persistence_delegate = scoped_factory.CreateMockedDelegate();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedTpmDelegate();
 
   // The mocked delegate is already set-up to return a working TPM key and
   // provider. Force it to not return a key.
@@ -206,15 +206,9 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
 TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, key->GetWrappedKey())));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, _))
@@ -245,16 +239,10 @@ TEST_P(KeyRotationManagerTest,
        RotateWithAdminRights_NoTpm_WithKey_StoreFailed) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  auto original_key_wrapped = key->GetWrappedKey();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, key->GetWrappedKey())));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -287,16 +275,10 @@ TEST_P(KeyRotationManagerTest,
        RotateWithAdminRights_NoTpm_WithKey_EventualNetworkSuccess) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  auto original_key_wrapped = key->GetWrappedKey();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, key->GetWrappedKey())));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -329,16 +311,10 @@ TEST_P(KeyRotationManagerTest,
        RotateWithAdminRights_NoTpm_WithKey_NetworkFails_RestoreFails) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  auto original_key_wrapped = key->GetWrappedKey();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, key->GetWrappedKey())));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -379,18 +355,12 @@ TEST_P(KeyRotationManagerTest,
        RotateWithAdminRights_NoTpm_WithKey_EventualNetworkFailure) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  auto original_key_wrapped = key->GetWrappedKey();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
   InSequence s;
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped)));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -431,18 +401,12 @@ TEST_P(KeyRotationManagerTest,
        RotateWithAdminRights_NoTpm_WithKey_ExhaustedNetworkFailure) {
   base::HistogramTester histogram_tester;
 
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
-  auto original_key_wrapped = key->GetWrappedKey();
+  auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
+  auto original_key_wrapped = scoped_factory_.ec_wrapped_key();
 
   InSequence s;
 
-  auto mock_persistence_delegate =
-      std::make_unique<MockKeyPersistenceDelegate>();
-  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair())
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped)));
+  EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
   EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
   EXPECT_CALL(
       *mock_persistence_delegate,

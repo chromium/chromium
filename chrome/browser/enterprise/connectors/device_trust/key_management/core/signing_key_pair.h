@@ -11,7 +11,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -27,16 +26,13 @@ class SigningKeyPair {
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
   // Uses `persistence_delegate` to create a SigningKeyPair instance based on
-  // a key that has already been persisted on the system. Returns absl::nullopt
+  // a key that has already been persisted on the system. Returns nullptr
   // if no key was found.
-  static absl::optional<SigningKeyPair> Create(
+  static std::unique_ptr<SigningKeyPair> Create(
       KeyPersistenceDelegate* persistence_delegate);
 
   SigningKeyPair(std::unique_ptr<crypto::UnexportableSigningKey> key_pair,
                  KeyTrustLevel trust_level);
-
-  SigningKeyPair(SigningKeyPair&& other);
-  SigningKeyPair& operator=(SigningKeyPair&& other);
 
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;

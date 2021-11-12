@@ -48,10 +48,9 @@ class DesktopAttestationServiceTest : public testing::Test {
     // ScopedKeyPersistenceDelegateFactory creates mocked persistence delegates
     // that already mimic the existence of a TPM key provider and stored key.
     auto mock_persistence_delegate =
-        persistence_delegate_factory_.CreateMockedDelegate();
-    mock_persistence_delegate_ = mock_persistence_delegate.get();
-    EXPECT_CALL(*mock_persistence_delegate_, LoadKeyPair());
-    EXPECT_CALL(*mock_persistence_delegate_, GetTpmBackedKeyProvider());
+        persistence_delegate_factory_.CreateMockedTpmDelegate();
+    EXPECT_CALL(*mock_persistence_delegate, LoadKeyPair());
+    EXPECT_CALL(*mock_persistence_delegate, GetTpmBackedKeyProvider());
 
     attestation_service_ = std::make_unique<DesktopAttestationService>(
         std::move(mock_persistence_delegate));
@@ -65,7 +64,6 @@ class DesktopAttestationServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DesktopAttestationService> attestation_service_;
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
-  test::MockKeyPersistenceDelegate* mock_persistence_delegate_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse) {

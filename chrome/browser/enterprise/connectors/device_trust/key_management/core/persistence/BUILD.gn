@@ -61,6 +61,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//crypto",
   ]
 }

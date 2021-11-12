@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 
@@ -25,20 +26,38 @@ class ScopedKeyPersistenceDelegateFactory
   ScopedKeyPersistenceDelegateFactory();
   ~ScopedKeyPersistenceDelegateFactory() override;
 
-  // Returns the TPM wrapped key.
-  const std::vector<uint8_t>& wrapped_key() { return wrapped_key_; }
+  const std::vector<uint8_t>& tpm_wrapped_key() { return tpm_wrapped_key_; }
+  const std::vector<uint8_t>& ec_wrapped_key() { return ec_wrapped_key_; }
 
   // Returns a mocked instance which is already setup to mimic a TPM-backed
   // persistence delegate (with a provider and valid key).
-  std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedDelegate();
+  std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedTpmDelegate();
+
+  // Returns a mocked instance which is already setup to mimic an EC-backed
+  // persistence delegate (with a provider and valid key).
+  std::unique_ptr<MockKeyPersistenceDelegate> CreateMockedECDelegate();
 
   // KeyPersistenceDelegateFactory:
   std::unique_ptr<KeyPersistenceDelegate> CreateKeyPersistenceDelegate()
       override;
 
+  // Function used to inject a mocked instance to dependencies using the
+  // factory statically. i.e. if the thing under test is calling:
+  // KeyPersistenceDelegateFactory::GetInstance()
+  //   ->CreateKeyPersistenceDelegate();
+  void set_next_instance(
+      std::unique_ptr<KeyPersistenceDelegate> next_instance) {
+    next_instance_ = std::move(next_instance);
+  }
+
  private:
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
-  std::vector<uint8_t> wrapped_key_;
+  std::vector<uint8_t> tpm_wrapped_key_;
+  std::vector<uint8_t> ec_wrapped_key_;
+
+  // Next instance to be returned by `CreateKeyPersistenceDelegate`. Typically
+  // set by tests to mock a persistence delegate fetched statically.
+  std::unique_ptr<KeyPersistenceDelegate> next_instance_;
 };
 
 }  // namespace test

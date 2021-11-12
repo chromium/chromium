@@ -11,7 +11,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -55,7 +54,7 @@ class KeyRotationManagerImpl : public KeyRotationManager {
 
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
-  absl::optional<SigningKeyPair> key_pair_;
+  std::unique_ptr<SigningKeyPair> key_pair_;
   bool sleep_during_backoff_;
 };
 
