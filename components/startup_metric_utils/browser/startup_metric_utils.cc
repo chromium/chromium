@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -244,18 +245,17 @@ void UmaHistogramWithTemperature(
 
 void UmaHistogramWithTraceAndTemperature(
     void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const std::string& histogram_basename,
+    const char* histogram_basename,
     base::TimeTicks begin_ticks,
     base::TimeTicks end_ticks) {
   UmaHistogramWithTemperature(histogram_function, histogram_basename,
                               end_ticks - begin_ticks);
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "startup", histogram_basename.c_str(),
-      TRACE_ID_WITH_SCOPE(histogram_basename.c_str(), 0), begin_ticks,
-      "Temperature", g_startup_temperature);
-  TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", histogram_basename.c_str(),
-      TRACE_ID_WITH_SCOPE(histogram_basename.c_str(), 0), end_ticks);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      begin_ticks, "Temperature", g_startup_temperature);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      end_ticks);
 }
 
 // Extension to the UmaHistogramWithTraceAndTemperature that records a
@@ -264,7 +264,7 @@ void UmaHistogramWithTraceAndTemperature(
 // |g_max_pressure_level_before_first_non_empty_paint| value.
 void UmaHistogramAndTraceWithTemperatureAndMaxPressure(
     void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const std::string& histogram_basename,
+    const char* histogram_basename,
     base::TimeTicks begin_ticks,
     base::TimeTicks end_ticks) {
   UmaHistogramWithTraceAndTemperature(histogram_function, histogram_basename,
@@ -273,17 +273,18 @@ void UmaHistogramAndTraceWithTemperatureAndMaxPressure(
   switch (g_max_pressure_level_before_first_non_empty_paint) {
     case base::MemoryPressureListener::MemoryPressureLevel::
         MEMORY_PRESSURE_LEVEL_NONE:
-      (*histogram_function)(histogram_basename + ".NoMemoryPressure", value);
+      (*histogram_function)(
+          base::StrCat({histogram_basename, ".NoMemoryPressure"}), value);
       break;
     case base::MemoryPressureListener::MemoryPressureLevel::
         MEMORY_PRESSURE_LEVEL_MODERATE:
-      (*histogram_function)(histogram_basename + ".ModerateMemoryPressure",
-                            value);
+      (*histogram_function)(
+          base::StrCat({histogram_basename, ".ModerateMemoryPressure"}), value);
       break;
     case base::MemoryPressureListener::MemoryPressureLevel::
         MEMORY_PRESSURE_LEVEL_CRITICAL:
-      (*histogram_function)(histogram_basename + ".CriticalMemoryPressure",
-                            value);
+      (*histogram_function)(
+          base::StrCat({histogram_basename, ".CriticalMemoryPressure"}), value);
       break;
     default:
       NOTREACHED();
@@ -594,7 +595,7 @@ base::TimeTicks MainEntryPointTicks() {
   return g_chrome_main_entry_ticks;
 }
 
-void RecordExternalStartupMetric(const std::string& histogram_name,
+void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed) {
   DCHECK(!g_application_start_ticks.is_null());
