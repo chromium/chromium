@@ -71,7 +71,7 @@ void Patch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
                         base::File::FLAG_OPEN | base::File::FLAG_READ);
   base::File output_file(output_path, base::File::FLAG_CREATE |
                                           base::File::FLAG_WRITE |
-                                          base::File::FLAG_EXCLUSIVE_WRITE);
+                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 
   if (!input_file.IsValid() || !patch_file.IsValid() ||
       !output_file.IsValid()) {
