@@ -10,6 +10,8 @@ assert(use_ozone)
 
 source_set("crosapi") {
   sources = [
+    "arc_ash.cc",
+    "arc_ash.h",
     "authentication_ash.cc",
     "authentication_ash.h",
     "automation_ash.cc",

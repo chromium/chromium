@@ -1,0 +1,100 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// These interfaces let Lacros-chrome handle ARC's right click and smart
+// selection.
+// TODO(crbug.com/1268687): It should be migrated to AppService in the future.
+
+// This struct reflects components/arc/mojom/intent_common.mojom.
+// Describes an activity.
+[Stable]
+struct ActivityName {
+  string package_name@0;
+
+  // may be null to indicate any activity within package
+  string? activity_name@1;
+};
+
+// This struct reflects components/arc/mojom/app.mojom
+// Describes the raw icon png data published by an Android application.
+[Stable]
+struct RawIconPngData {
+  // True if the icon is an adaptive icon, or false otherwise.
+  bool is_adaptive_icon@0;
+  // The raw icon for the non-adaptive icon, or the generated standard icon done
+  // by the ARC side for the adaptive icon.
+  array<uint8>? icon_png_data@1;
+  // The foreground image for the adaptive icon.
+  array<uint8>? foreground_icon_png_data@2;
+  // The background image for the adaptive icon.
+  array<uint8>? background_icon_png_data@3;
+};
+
+// This struct reflects components/arc/mojom/scale_factor.mojom.
+// Duplicates ui::ResourceScaleFactor enum in order to be accessible on
+// Lacros side.
+[Stable, Extensible]
+enum ScaleFactor {
+  // Some numbers are missing because we removed deprecated values.
+  SCALE_FACTOR_NONE = 0,
+  SCALE_FACTOR_100P = 1,
+  SCALE_FACTOR_200P = 7,
+  SCALE_FACTOR_300P = 9,
+};
+
+// This struct reflects components/arc/mojom/intent_helper.mojom
+// Describes an icon for the activity.
+[Stable]
+struct ActivityIcon {
+  ActivityName activity@0;
+  uint32 width@1;  // in px
+  uint32 height@2;  // in px
+  array<uint8> icon@3;  // in BGRA8888 format
+  RawIconPngData? icon_png_data@4;
+};
+
+// Describes a package that can handle an intent.
+// Removed unnecessary perameters for Lacros from IntentHandlerInfo declared in
+// components/arc/mojom/intent_helper.mojom.
+[Stable]
+struct IntentHandlerInfo {
+  string name@0;
+  string package_name@1;
+  string activity_name@2;  // A hint for retrieving the package's icon.
+};
+
+// Observe ARC.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="e0993657-e667-408c-9950-e08480fd8013"]
+interface ArcObserver {
+  // Notified when ARC does so via arc::mojom::IntentHelperHost.
+  OnIconInvalidated@0(string package_name);
+};
+
+// Interacts with ARC.
+// Next version: 1
+// Next method id: 3
+[Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
+interface Arc {
+  // Registers ArcObserver in Lacros-chrome to Ash-chrome
+  AddObserver@0(pending_remote<ArcObserver> observer);
+
+  // Requests 48dp * 48dp icons for the |activities| suitable for the
+  // |scale_factor| from Lacros-chrome to Ash-chrome. Ash-chrome will request
+  // icons to ARC and send back the result attained from ARC.
+  // An array of icon data will be returned.
+  RequestActivityIcons@1(array<ActivityName> activities,
+                         ScaleFactor scale_factor)
+                         => (array<ActivityIcon> icons);
+
+  // Requests a list of packages that can handle the URL from Lacros-chrome to
+  // Ash-chrome. Ash-chrome will request a handler list to ARC and send back
+  // the result attained from ARC.
+  // An array of IntentHandlerInfo will be returned.
+  RequestUrlHandlerList@2(string url)
+      => (array<IntentHandlerInfo> handlers);
+};

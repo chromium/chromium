@@ -23,6 +23,7 @@ class StableVideoDecoderFactoryService;
 
 namespace crosapi {
 
+class ArcAsh;
 class AuthenticationAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
@@ -89,6 +90,7 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
+  void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAuthentication(
       mojo::PendingReceiver<mojom::Authentication> receiver) override;
   void BindAutomationDeprecated(
@@ -265,6 +267,7 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
+  std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AuthenticationAsh> authentication_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;

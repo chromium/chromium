@@ -52,6 +52,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
+#include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "chromeos/crosapi/mojom/authentication.mojom.h"
 #include "chromeos/crosapi/mojom/automation.mojom.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
@@ -284,6 +285,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
 constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<chromeos::cdm::mojom::BrowserCdmFactory>(),
     MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Arc>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Authentication>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
@@ -418,7 +420,7 @@ Channel GetStatefulLacrosChannel() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 58,
+    crosapi::mojom::Crosapi::Version_ == 59,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

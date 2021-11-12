@@ -11,6 +11,7 @@ mojom("mojom") {
     "app_service.mojom",
     "app_service_types.mojom",
     "app_window_tracker.mojom",
+    "arc.mojom",
     "authentication.mojom",
     "automation.mojom",
     "bitmap.mojom",

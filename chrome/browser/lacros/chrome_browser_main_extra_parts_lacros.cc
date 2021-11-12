@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#include "chrome/browser/lacros/arc_icon_cache_lacros.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
@@ -56,6 +57,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     extension_apps_controller_->Initialize(
         extension_apps_publisher_->publisher());
   }
+
+  arc_icon_cache_ = std::make_unique<ArcIconCacheLacros>();
+  arc_icon_cache_->Start();
 
   // Start Lacros' drive mount point path caching, since it is available in Ash.
   drivefs_cache_ = std::make_unique<DriveFsCache>();

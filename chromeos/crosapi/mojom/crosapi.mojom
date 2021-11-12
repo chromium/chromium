@@ -8,6 +8,7 @@ import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/app_window_tracker.mojom";
+import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
 import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
@@ -84,8 +85,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 59
-// Next method id: 63
+// Next version: 60
+// Next method id: 64
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -116,6 +117,11 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=40]
   BindAppServiceProxy@45(pending_receiver<AppServiceProxy> receiver);
+
+  // Bind ARC.
+  // Added in M98.
+  [MinVersion=59]
+  BindArc@63(pending_receiver<Arc> receiver);
 
   // Added in M95.
   [MinVersion=50] BindBrowserAppInstanceRegistry@54(

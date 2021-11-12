@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_CROSAPI_ARC_ASH_H_
+#define CHROME_BROWSER_ASH_CROSAPI_ARC_ASH_H_
+
+#include <string>
+#include <vector>
+
+#include "chromeos/crosapi/mojom/arc.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace crosapi {
+
+// This class is the ash-chrome implementation of Arc interface. This claas must
+// only be used from the main thread.
+class ArcAsh : public mojom::Arc {
+ public:
+  ArcAsh();
+  ArcAsh(const ArcAsh&) = delete;
+  ArcAsh& operator=(const ArcAsh&) = delete;
+  ~ArcAsh() override;
+
+  void BindReceiver(mojo::PendingReceiver<mojom::Arc> receiver);
+
+  // crosapi::mojom::Arc:
+  void AddObserver(mojo::PendingRemote<mojom::ArcObserver> observer) override;
+  void RequestActivityIcons(std::vector<mojom::ActivityNamePtr> activities,
+                            mojom::ScaleFactor scale_factor,
+                            RequestActivityIconsCallback callback) override;
+  void RequestUrlHandlerList(const std::string& url,
+                             RequestUrlHandlerListCallback callback) override;
+
+ private:
+  // This class supports any number of connections.
+  mojo::ReceiverSet<mojom::Arc> receivers_;
+
+  // This class supports any number of observers.
+  mojo::RemoteSet<mojom::ArcObserver> observers_;
+};
+
+}  // namespace crosapi
+
+#endif  // CHROME_BROWSER_ASH_CROSAPI_ARC_ASH_H_

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+class ArcIconCacheLacros;
 class AutomationManagerLacros;
 class BrowserServiceLacros;
 class DriveFsCache;
@@ -42,6 +43,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
  private:
   // ChromeBrowserMainExtraParts:
   void PostBrowserStart() override;
+
+  // Receiver and cache of arc icon info updates.
+  std::unique_ptr<ArcIconCacheLacros> arc_icon_cache_;
 
   std::unique_ptr<AutomationManagerLacros> automation_manager_;
 
