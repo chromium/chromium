@@ -11,6 +11,8 @@
 
 namespace features {
 
+GIN_EXPORT extern const base::Feature kV8CompactCodeSpaceWithStack;
+GIN_EXPORT extern const base::Feature kV8CompactWithStack;
 GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
 GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 GIN_EXPORT extern const base::Feature kV8FlushBytecode;

@@ -7,6 +7,14 @@
 
 namespace features {
 
+// Enable code space compaction when finalizing a full GC with stack
+const base::Feature kV8CompactCodeSpaceWithStack{
+    "V8CompactCodeSpaceWithStack", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable compaction when finalizing a full GC with stack.
+const base::Feature kV8CompactWithStack{"V8CompactWithStack",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables optimization of JavaScript in V8.
 const base::Feature kV8OptimizeJavascript{"V8OptimizeJavascript",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

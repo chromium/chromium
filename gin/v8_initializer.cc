@@ -233,7 +233,12 @@ void SetV8FlagsIfOverridden(const base::Feature& feature,
 void SetFlags(IsolateHolder::ScriptMode mode,
               const std::string js_command_line_flags) {
   // We assume that all feature flag defaults correspond to the default
-  // values of the coresponding V8 flags.
+  // values of the corresponding V8 flags.
+  SetV8FlagsIfOverridden(features::kV8CompactCodeSpaceWithStack,
+                         "--compact-code-space-with-stack",
+                         "--no-compact-code-space-with-stack");
+  SetV8FlagsIfOverridden(features::kV8CompactWithStack, "--compact-with-stack",
+                         "--no-compact-with-stack");
   SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
   SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
                          "--no-flush-bytecode");
