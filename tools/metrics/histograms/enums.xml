@@ -49863,6 +49863,7 @@ from previous Chrome versions.
   <int value="-1074257709" label="ScalableAppList:enabled"/>
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
+  <int value="-1072337227" label="FilesArchivemount2:disabled"/>
   <int value="-1071043945" label="VerticalSnap:enabled"/>
   <int value="-1069628248" label="OmniboxZeroSuggestionsOnSERP:enabled"/>
   <int value="-1069453905" label="CCTModuleUseIntentExtras:disabled"/>
@@ -53078,6 +53079,7 @@ from previous Chrome versions.
   <int value="1377056573" label="browser-side-navigation:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>
+  <int value="1379287559" label="FilesArchivemount2:enabled"/>
   <int value="1379571437" label="ExoPointerLock:disabled"/>
   <int value="1379944457" label="EnableMessagesWebPush:disabled"/>
   <int value="1380367827" label="AllowDisableTouchpadHapticFeedback:enabled"/>

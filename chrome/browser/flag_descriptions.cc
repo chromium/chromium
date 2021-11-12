@@ -4654,9 +4654,14 @@ const char kDockedMagnifierResizingDescription[] =
     "Enable feature which adds ability for user to grab and resize divider of"
     "Docked Magnifier.";
 
-const char kFilesArchivemountName[] = "Archivemount in Files App";
+const char kFilesArchivemountName[] = "Archivemount in Files App (1st Tier)";
 const char kFilesArchivemountDescription[] =
     "Enable mounting various archive formats in File Manager.";
+
+const char kFilesArchivemount2Name[] = "Archivemount in Files App (2nd Tier)";
+const char kFilesArchivemount2Description[] =
+    "Enable mounting additional archive formats in File Manager. This has no "
+    "effect unless #files-archivemount is also enabled.";
 
 const char kFilesBannerFrameworkName[] =
     "Updated Banner framework in Files app";
