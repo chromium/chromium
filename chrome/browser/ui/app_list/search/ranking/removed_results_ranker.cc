@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
-#include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 
@@ -15,9 +14,9 @@ bool RemovedResultsRanker::ShouldDelegateToResult(ProviderType provider) {
   return provider == ash::AppListSearchResultType::kOmnibox;
 }
 
-RemovedResultsRanker::RemovedResultsRanker(Profile* profile) {
-  base::FilePath path =
-      RankerStateDirectory(profile).AppendASCII("removed_results_ranker.pb");
+RemovedResultsRanker::RemovedResultsRanker(const base::FilePath& path,
+                                           const base::TimeDelta write_delay)
+    : write_delay_(write_delay) {
   proto_.Init(path, write_delay_, base::DoNothing(), base::DoNothing());
 }
 
@@ -28,7 +27,7 @@ void RemovedResultsRanker::Rank(ResultsMap& results,
                                 ProviderType provider) {
   // Results with delegated removal are handled in
   // SearchController::InvokeResultAction().
-  if (!proto_.initialized() || ShouldDelegateToResult(provider))
+  if (!initialized() || ShouldDelegateToResult(provider))
     return;
 
   const auto it = results.find(provider);

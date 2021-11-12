@@ -68,7 +68,9 @@ void SearchControllerImplNew::InitializeRankers() {
   ranker_->AddRanker(std::make_unique<CategoryUsageRanker>(profile_));
   ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<FilteringRanker>());
-  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>(profile_));
+  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>(
+      RankerStateDirectory(profile_).AppendASCII("removed_results_ranker.pb"),
+      base::Seconds(30)));
 }
 
 void SearchControllerImplNew::Start(const std::u16string& query) {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
-#include "chrome/browser/profiles/profile.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/ranking/persistent_proto.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
@@ -20,7 +20,8 @@ namespace app_list {
 // On a call to Rank(), previously removed results are filtered out.
 class RemovedResultsRanker : public Ranker {
  public:
-  explicit RemovedResultsRanker(Profile* profile);
+  explicit RemovedResultsRanker(const base::FilePath& path,
+                                const base::TimeDelta write_delay);
   ~RemovedResultsRanker() override;
 
   RemovedResultsRanker(const RemovedResultsRanker&) = delete;
@@ -42,8 +43,13 @@ class RemovedResultsRanker : public Ranker {
   static bool ShouldDelegateToResult(ProviderType provider);
 
  private:
+  friend class RemovedResultsRankerTest;
+
+  // Whether the ranker has finished reading from disk.
+  bool initialized() const { return proto_.initialized(); }
+
   // How long to wait until writing any |proto_| updates to disk.
-  base::TimeDelta write_delay_ = base::Seconds(30);
+  base::TimeDelta write_delay_;
 
   PersistentProto<RemovedResultsProto> proto_;
 };
