@@ -15,10 +15,10 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/linux/drm_util_linux.h"
-#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
@@ -132,7 +132,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
-    auto display_infos = GetAvailableDisplayControllerInfos(drm->get_fd());
+    auto display_infos = GetDisplayInfosAndUpdateCrtcs(drm->get_fd());
     for (const auto& display_info : display_infos) {
       auto it = std::find_if(
           old_displays.begin(), old_displays.end(),
