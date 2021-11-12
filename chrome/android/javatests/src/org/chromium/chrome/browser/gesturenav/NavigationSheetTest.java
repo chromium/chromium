@@ -196,6 +196,21 @@ public class NavigationSheetTest {
     }
 
     @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testLongPressBackAfterActivityDestroy() {
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.onKeyDown(KeyEvent.KEYCODE_BACK, event);
+            // Simulate the Activity destruction after a runnable to display navigation
+            // sheet gets delay-posted.
+            activity.getRootUiCoordinatorForTesting().destroyActivityForTesting();
+        });
+        // Test should finish without crash.
+    }
+
+    @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testLongPressBackTriggering_Cancellation() throws ExecutionException {
