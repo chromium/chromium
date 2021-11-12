@@ -624,4 +624,12 @@ if (enable_extensions) {
       "//base",
     ]
   }
+
+  fuzzer_test("extension_url_pattern_fuzzer") {
+    sources = [ "url_pattern_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
 }  # enable_extensions
