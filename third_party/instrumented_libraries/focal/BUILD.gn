@@ -745,18 +745,12 @@ instrumented_library("nss") {
 }
 
 instrumented_library("pango1.0") {
+  build_method = "meson"
   extra_configure_flags = [
-    "--disable-static",
-
     # Avoid https://bugs.gentoo.org/show_bug.cgi?id=425620
-    "--enable-introspection=no",
-
-    # Pango is normally used with dynamically loaded modules. However,
-    # ensuring pango is able to find instrumented versions of those modules
-    # is a huge pain in the neck. Let's link them statically instead, and
-    # hope for the best.
-    "--with-included-modules=yes",
+    "-Dintrospection=false",
   ]
+  patches = [ "patches/pango1.0.diff" ]
 }
 
 instrumented_library("pulseaudio") {
