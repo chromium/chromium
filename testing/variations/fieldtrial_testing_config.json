@@ -8871,9 +8871,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Grouped_IphIntro",
+                    "name": "Enabled_Grouped_IphIntro_20210831",
                     "params": {
-                        "following_feed_content_order": "grouped",
                         "intro_style": "IPH"
                     },
                     "enable_features": [
