@@ -15,10 +15,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_capabilities.h"
-#include "sandbox/win/src/sid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -40,27 +41,28 @@ class AppContainerBase final : public AppContainer {
                    DWORD* granted_access,
                    BOOL* access_status) override;
   bool AddCapability(const wchar_t* capability_name) override;
-  bool AddCapability(WellKnownCapabilities capability) override;
+  bool AddCapability(base::win::WellKnownCapability capability) override;
   bool AddCapabilitySddl(const wchar_t* sddl_sid) override;
   bool AddImpersonationCapability(const wchar_t* capability_name) override;
-  bool AddImpersonationCapability(WellKnownCapabilities capability) override;
+  bool AddImpersonationCapability(
+      base::win::WellKnownCapability capability) override;
   bool AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) override;
   void SetEnableLowPrivilegeAppContainer(bool enable) override;
   bool GetEnableLowPrivilegeAppContainer() override;
   AppContainerType GetAppContainerType() override;
 
   // Get the package SID for this AC.
-  Sid GetPackageSid() const;
+  const base::win::Sid& GetPackageSid() const;
 
   // Get an allocated SecurityCapabilities object for this App Container.
   std::unique_ptr<SecurityCapabilities> GetSecurityCapabilities();
 
   // Get a vector of capabilities.
-  const std::vector<Sid>& GetCapabilities();
+  const std::vector<base::win::Sid>& GetCapabilities();
 
   // Get a vector of impersonation only capabilities. Used if the process needs
   // a more privileged token to start.
-  const std::vector<Sid>& GetImpersonationCapabilities();
+  const std::vector<base::win::Sid>& GetImpersonationCapabilities();
 
   // Creates a new AppContainer object. This will create a new profile
   // if it doesn't already exist. The profile must be deleted manually using
@@ -86,17 +88,18 @@ class AppContainerBase final : public AppContainer {
                               base::win::ScopedHandle* lockdown = nullptr);
 
  private:
-  AppContainerBase(const Sid& package_sid, AppContainerType type);
+  AppContainerBase(base::win::Sid& package_sid, AppContainerType type);
   ~AppContainerBase();
 
-  bool AddCapability(const Sid& capability_sid, bool impersonation_only);
+  bool AddCapability(const absl::optional<base::win::Sid>& capability_sid,
+                     bool impersonation_only);
 
   // Standard object-lifetime reference counter.
   volatile LONG ref_count_;
-  Sid package_sid_;
+  base::win::Sid package_sid_;
   bool enable_low_privilege_app_container_;
-  std::vector<Sid> capabilities_;
-  std::vector<Sid> impersonation_capabilities_;
+  std::vector<base::win::Sid> capabilities_;
+  std::vector<base::win::Sid> impersonation_capabilities_;
   AppContainerType type_;
   base::win::ScopedHandle lowbox_directory_;
 };

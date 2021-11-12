@@ -13,6 +13,7 @@
 #include <sddl.h>
 
 #include "base/win/atl.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -27,7 +28,7 @@ namespace {
 bool EqualSid(const absl::optional<Sid>& sid, const ATL::CSid& compare_sid) {
   if (!sid)
     return false;
-  return !!::EqualSid(sid->GetPSID(), const_cast<SID*>(compare_sid.GetPSID()));
+  return sid->Equal(const_cast<SID*>(compare_sid.GetPSID()));
 }
 
 bool EqualSid(const Sid& sid, const wchar_t* sddl_sid) {
@@ -35,7 +36,7 @@ bool EqualSid(const Sid& sid, const wchar_t* sddl_sid) {
   if (!::ConvertStringSidToSid(sddl_sid, &compare_sid))
     return false;
   auto sid_ptr = TakeLocalAlloc(compare_sid);
-  return !!::EqualSid(sid.GetPSID(), sid_ptr.get());
+  return sid.Equal(sid_ptr.get());
 }
 
 bool EqualSid(const absl::optional<Sid>& sid, const wchar_t* sddl_sid) {
@@ -48,7 +49,7 @@ bool EqualSid(const absl::optional<Sid>& sid,
               const absl::optional<Sid>& compare_sid) {
   if (!sid || !compare_sid)
     return false;
-  return !!::EqualSid(sid->GetPSID(), compare_sid->GetPSID());
+  return *sid == *compare_sid;
 }
 
 bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
@@ -59,7 +60,7 @@ bool EqualSid(const absl::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
   if (!::CreateWellKnownSid(known_sid, nullptr, known_sid_buffer, &size))
     return false;
 
-  return !!::EqualSid(sid->GetPSID(), known_sid_buffer);
+  return sid->Equal(known_sid_buffer);
 }
 
 bool TestSidVector(absl::optional<std::vector<Sid>> sids,
@@ -228,6 +229,18 @@ TEST(SidTest, RandomSid) {
   ASSERT_FALSE(EqualSid(sid1, sid2));
 }
 
+TEST(SidTest, FromToken) {
+  ASSERT_TRUE(::ImpersonateAnonymousToken(::GetCurrentThread()));
+  HANDLE token = nullptr;
+  BOOL result =
+      ::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE, &token);
+  ScopedHandle token_scoped(token);
+  ::RevertToSelf();
+  ASSERT_TRUE(result);
+  absl::optional<Sid> sid = Sid::FromToken(token);
+  EXPECT_TRUE(EqualSid(sid, L"S-1-5-7"));
+}
+
 TEST(SidTest, CurrentUser) {
   absl::optional<Sid> sid1 = Sid::CurrentUser();
   ASSERT_TRUE(sid1);
@@ -287,6 +300,64 @@ TEST(SidTest, FromNamedCapabilityVector) {
   ASSERT_FALSE(Sid::FromNamedCapabilityVector({L""}));
   ASSERT_FALSE(Sid::FromNamedCapabilityVector({L"abc", nullptr}));
   ASSERT_TRUE(Sid::FromNamedCapabilityVector({}));
+}
+
+TEST(SidTest, FromKnownCapabilityVector) {
+  ASSERT_TRUE(TestSidVector(
+      Sid::FromKnownCapabilityVector(
+          {WellKnownCapability::kInternetClient,
+           WellKnownCapability::kInternetClientServer,
+           WellKnownCapability::kPrivateNetworkClientServer,
+           WellKnownCapability::kPicturesLibrary,
+           WellKnownCapability::kVideosLibrary,
+           WellKnownCapability::kMusicLibrary,
+           WellKnownCapability::kDocumentsLibrary,
+           WellKnownCapability::kEnterpriseAuthentication,
+           WellKnownCapability::kSharedUserCertificates,
+           WellKnownCapability::kRemovableStorage,
+           WellKnownCapability::kAppointments, WellKnownCapability::kContacts}),
+      {L"S-1-15-3-1", L"S-1-15-3-2", L"S-1-15-3-3", L"S-1-15-3-4",
+       L"S-1-15-3-5", L"S-1-15-3-6", L"S-1-15-3-7", L"S-1-15-3-8",
+       L"S-1-15-3-9", L"S-1-15-3-10", L"S-1-15-3-11", L"S-1-15-3-12"}));
+
+  ASSERT_FALSE(TestSidVector(
+      Sid::FromKnownCapabilityVector({WellKnownCapability::kInternetClient}),
+      {L"S-1-1-0"}));
+}
+
+TEST(SidTest, FromKnownSidVector) {
+  ASSERT_TRUE(TestSidVector(
+      Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld}),
+      {L"S-1-0-0", L"S-1-1-0"}));
+
+  ASSERT_FALSE(TestSidVector(Sid::FromKnownSidVector({WellKnownSid::kNull}),
+                             {L"S-1-1-0"}));
+}
+
+TEST(SidTest, Equal) {
+  auto world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
+  ASSERT_TRUE(world_sid);
+  EXPECT_EQ(*world_sid, *world_sid);
+  auto world_sid_sddl = Sid::FromSddlString(L"S-1-1-0");
+  ASSERT_TRUE(world_sid_sddl);
+  EXPECT_EQ(world_sid, world_sid_sddl);
+  EXPECT_EQ(world_sid_sddl, world_sid);
+  EXPECT_TRUE(world_sid->Equal(world_sid_sddl->GetPSID()));
+  EXPECT_TRUE(world_sid_sddl->Equal(world_sid->GetPSID()));
+  auto null_sid = Sid::FromKnownSid(WellKnownSid::kNull);
+  ASSERT_TRUE(null_sid);
+  EXPECT_NE(*world_sid, *null_sid);
+  EXPECT_NE(*null_sid, *world_sid);
+  EXPECT_FALSE(world_sid->Equal(null_sid->GetPSID()));
+  EXPECT_FALSE(null_sid->Equal(world_sid->GetPSID()));
+}
+
+TEST(SidTest, Clone) {
+  auto world_sid = Sid::FromKnownSid(WellKnownSid::kWorld);
+  ASSERT_TRUE(world_sid);
+  auto world_sid_clone = world_sid->Clone();
+  EXPECT_NE(world_sid->GetPSID(), world_sid_clone.GetPSID());
+  EXPECT_EQ(*world_sid, world_sid_clone);
 }
 
 }  // namespace win

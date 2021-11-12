@@ -21,6 +21,8 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/policy/features.h"
@@ -244,10 +246,10 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
       command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
-  auto package_sid = Sid::FromSddlString(kPackageSid);
-  ASSERT_TRUE(package_sid.IsValid());
-  EXPECT_TRUE(
-      ::EqualSid(package_sid.GetPSID(), profile->GetPackageSid().GetPSID()));
+  absl::optional<base::win::Sid> package_sid =
+      base::win::Sid::FromSddlString(kPackageSid);
+  ASSERT_TRUE(package_sid);
+  EXPECT_EQ(package_sid, profile->GetPackageSid());
   EXPECT_TRUE(profile->GetEnableLowPrivilegeAppContainer());
   CheckCapabilities(profile.get(), {});
 }

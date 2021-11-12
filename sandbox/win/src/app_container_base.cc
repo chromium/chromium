@@ -90,16 +90,19 @@ AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
   if (!create_app_container_profile)
     return nullptr;
 
-  PSID package_sid = nullptr;
+  PSID package_sid_ptr = nullptr;
   HRESULT hr = create_app_container_profile(
-      package_name, display_name, description, nullptr, 0, &package_sid);
+      package_name, display_name, description, nullptr, 0, &package_sid_ptr);
   if (hr == HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS))
     return Open(package_name);
 
   if (FAILED(hr))
     return nullptr;
-  std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerBase(Sid(package_sid), AppContainerType::kProfile);
+  std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid_ptr);
+  auto package_sid = base::win::Sid::FromPSID(package_sid_ptr);
+  if (!package_sid)
+    return nullptr;
+  return new AppContainerBase(*package_sid, AppContainerType::kProfile);
 }
 
 // static
@@ -111,23 +114,25 @@ AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
   if (!derive_app_container_sid)
     return nullptr;
 
-  PSID package_sid = nullptr;
-  HRESULT hr = derive_app_container_sid(package_name, &package_sid);
+  PSID package_sid_ptr = nullptr;
+  HRESULT hr = derive_app_container_sid(package_name, &package_sid_ptr);
   if (FAILED(hr))
     return nullptr;
 
-  std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid);
-  return new AppContainerBase(Sid(package_sid), AppContainerType::kDerived);
+  std::unique_ptr<void, FreeSidDeleter> sid_deleter(package_sid_ptr);
+  auto package_sid = base::win::Sid::FromPSID(package_sid_ptr);
+  if (!package_sid)
+    return nullptr;
+  return new AppContainerBase(*package_sid, AppContainerType::kDerived);
 }
 
 // static
 AppContainerBase* AppContainerBase::CreateLowbox(const wchar_t* sid) {
-  PSID package_sid;
-  if (!ConvertStringSidToSid(sid, &package_sid))
+  auto package_sid = base::win::Sid::FromSddlString(sid);
+  if (!package_sid)
     return nullptr;
 
-  std::unique_ptr<void, LocalFreeDeleter> sid_deleter(package_sid);
-  return new AppContainerBase(Sid(package_sid), AppContainerType::kLowbox);
+  return new AppContainerBase(*package_sid, AppContainerType::kLowbox);
 }
 
 // static
@@ -141,10 +146,10 @@ bool AppContainerBase::Delete(const wchar_t* package_name) {
   return SUCCEEDED(delete_app_container_profile(package_name));
 }
 
-AppContainerBase::AppContainerBase(const Sid& package_sid,
+AppContainerBase::AppContainerBase(base::win::Sid& package_sid,
                                    AppContainerType type)
     : ref_count_(0),
-      package_sid_(package_sid),
+      package_sid_(std::move(package_sid)),
       enable_low_privilege_app_container_(false),
       type_(type) {}
 
@@ -190,11 +195,11 @@ bool AppContainerBase::GetFolderPath(base::FilePath* file_path) {
           GetModuleHandle(L"userenv"), "GetAppContainerFolderPath"));
   if (!get_app_container_folder_path)
     return false;
-  std::wstring sddl_str;
-  if (!package_sid_.ToSddlString(&sddl_str))
+  auto sddl_str = package_sid_.ToSddlString();
+  if (!sddl_str)
     return false;
   base::win::ScopedCoMem<wchar_t> path_str;
-  if (FAILED(get_app_container_folder_path(sddl_str.c_str(), &path_str)))
+  if (FAILED(get_app_container_folder_path(sddl_str->c_str(), &path_str)))
     return false;
   *file_path = base::FilePath(path_str.get());
   return true;
@@ -202,11 +207,11 @@ bool AppContainerBase::GetFolderPath(base::FilePath* file_path) {
 
 bool AppContainerBase::GetPipePath(const wchar_t* pipe_name,
                                    base::FilePath* pipe_path) {
-  std::wstring sddl_str;
-  if (!package_sid_.ToSddlString(&sddl_str))
+  auto sddl_str = package_sid_.ToSddlString();
+  if (!sddl_str)
     return false;
   *pipe_path = base::FilePath(base::StringPrintf(L"\\\\.\\pipe\\%ls\\%ls",
-                                                 sddl_str.c_str(), pipe_name));
+                                                 sddl_str->c_str(), pipe_name));
   return true;
 }
 
@@ -232,7 +237,8 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   std::unique_ptr<void, LocalFreeDeleter> sd_ptr(sd);
 
   if (enable_low_privilege_app_container_) {
-    Sid any_package_sid(::WinBuiltinAnyPackageSid);
+    base::win::Sid any_package_sid = *base::win::Sid::FromKnownSid(
+        base::win::WellKnownSid::kAllApplicationPackages);
     // We can't create a LPAC token directly, so modify the DACL to simulate it.
     // Set mask for ALL APPLICATION PACKAGE Sid to 0.
     for (WORD index = 0; index < dacl->AceCount; ++index) {
@@ -249,7 +255,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
       if (!::IsValidSid(&ace->SidStart)) {
         continue;
       }
-      if (::EqualSid(&ace->SidStart, any_package_sid.GetPSID())) {
+      if (any_package_sid.Equal(&ace->SidStart)) {
         ace->Mask = 0;
       }
     }
@@ -268,50 +274,55 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
 }
 
 bool AppContainerBase::AddCapability(const wchar_t* capability_name) {
-  return AddCapability(Sid::FromNamedCapability(capability_name), false);
+  return AddCapability(base::win::Sid::FromNamedCapability(capability_name),
+                       false);
 }
 
-bool AppContainerBase::AddCapability(WellKnownCapabilities capability) {
-  return AddCapability(Sid::FromKnownCapability(capability), false);
+bool AppContainerBase::AddCapability(
+    base::win::WellKnownCapability capability) {
+  return AddCapability(base::win::Sid::FromKnownCapability(capability), false);
 }
 
 bool AppContainerBase::AddCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(Sid::FromSddlString(sddl_sid), false);
+  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), false);
 }
 
-bool AppContainerBase::AddCapability(const Sid& capability_sid,
-                                     bool impersonation_only) {
-  if (!capability_sid.IsValid())
+bool AppContainerBase::AddCapability(
+    const absl::optional<base::win::Sid>& capability_sid,
+    bool impersonation_only) {
+  if (!capability_sid)
     return false;
   if (!impersonation_only)
-    capabilities_.push_back(capability_sid);
-  impersonation_capabilities_.push_back(capability_sid);
+    capabilities_.push_back(capability_sid->Clone());
+  impersonation_capabilities_.push_back(capability_sid->Clone());
   return true;
 }
 
 bool AppContainerBase::AddImpersonationCapability(
     const wchar_t* capability_name) {
-  return AddCapability(Sid::FromNamedCapability(capability_name), true);
+  return AddCapability(base::win::Sid::FromNamedCapability(capability_name),
+                       true);
 }
 
 bool AppContainerBase::AddImpersonationCapability(
-    WellKnownCapabilities capability) {
-  return AddCapability(Sid::FromKnownCapability(capability), true);
+    base::win::WellKnownCapability capability) {
+  return AddCapability(base::win::Sid::FromKnownCapability(capability), true);
 }
 
 bool AppContainerBase::AddImpersonationCapabilitySddl(const wchar_t* sddl_sid) {
-  return AddCapability(Sid::FromSddlString(sddl_sid), true);
+  return AddCapability(base::win::Sid::FromSddlString(sddl_sid), true);
 }
 
-const std::vector<Sid>& AppContainerBase::GetCapabilities() {
+const std::vector<base::win::Sid>& AppContainerBase::GetCapabilities() {
   return capabilities_;
 }
 
-const std::vector<Sid>& AppContainerBase::GetImpersonationCapabilities() {
+const std::vector<base::win::Sid>&
+AppContainerBase::GetImpersonationCapabilities() {
   return impersonation_capabilities_;
 }
 
-Sid AppContainerBase::GetPackageSid() const {
+const base::win::Sid& AppContainerBase::GetPackageSid() const {
   return package_sid_;
 }
 

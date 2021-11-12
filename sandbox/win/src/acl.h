@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/memory/free_deleter.h"
-#include "sandbox/win/src/sid.h"
+#include "base/win/sid.h"
 
 namespace sandbox {
 
@@ -23,7 +23,7 @@ bool GetDefaultDacl(
 // Appends an ACE represented by |sid|, |access_mode|, and |access| to
 // |old_dacl|. If the function succeeds, new_dacl contains the new dacl and
 // must be freed using LocalFree.
-bool AddSidToDacl(const Sid& sid,
+bool AddSidToDacl(const base::win::Sid& sid,
                   ACL* old_dacl,
                   ACCESS_MODE access_mode,
                   ACCESS_MASK access,
@@ -32,7 +32,14 @@ bool AddSidToDacl(const Sid& sid,
 // Adds an ACE represented by |sid| and |access| with |access_mode| to the
 // default dacl present in the token.
 bool AddSidToDefaultDacl(HANDLE token,
-                         const Sid& sid,
+                         const base::win::Sid& sid,
+                         ACCESS_MODE access_mode,
+                         ACCESS_MASK access);
+
+// Adds an ACE represented by |known_sid| and |access| with |access_mode| to the
+// default dacl present in the token.
+bool AddSidToDefaultDacl(HANDLE token,
+                         base::win::WellKnownSid known_sid,
                          ACCESS_MODE access_mode,
                          ACCESS_MASK access);
 
@@ -47,7 +54,15 @@ bool AddUserSidToDefaultDacl(HANDLE token, ACCESS_MASK access);
 // the dacl of the kernel object referenced by |object| and of |object_type|.
 bool AddKnownSidToObject(HANDLE object,
                          SE_OBJECT_TYPE object_type,
-                         const Sid& sid,
+                         base::win::WellKnownSid known_sid,
+                         ACCESS_MODE access_mode,
+                         ACCESS_MASK access);
+
+// Adds an ACE represented by |sid|, |access_mode|, and |access| to
+// the dacl of the kernel object referenced by |object| and of |object_type|.
+bool AddKnownSidToObject(HANDLE object,
+                         SE_OBJECT_TYPE object_type,
+                         const base::win::Sid& sid,
                          ACCESS_MODE access_mode,
                          ACCESS_MASK access);
 
@@ -56,7 +71,7 @@ bool AddKnownSidToObject(HANDLE object,
 // AppContainer.
 bool ReplacePackageSidInDacl(HANDLE object,
                              SE_OBJECT_TYPE object_type,
-                             const Sid& package_sid,
+                             const base::win::Sid& package_sid,
                              ACCESS_MASK access);
 
 }  // namespace sandbox

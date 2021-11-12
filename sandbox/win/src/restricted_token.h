@@ -14,9 +14,9 @@
 
 #include "base/macros.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
-#include "sandbox/win/src/sid.h"
 
 // Flags present in the Group SID list. These 2 flags are new in Windows Vista
 #ifndef SE_GROUP_INTEGRITY
@@ -87,21 +87,29 @@ class RestrictedToken {
   // the error.
   //
   // Sample usage:
-  //    std::vector<Sid> sid_exceptions;
+  //    std::vector<base::win::Sid> sid_exceptions;
   //    sid_exceptions.push_back(ATL::Sids::Users().GetPSID());
   //    sid_exceptions.push_back(ATL::Sids::World().GetPSID());
   //    restricted_token.AddAllSidsForDenyOnly(&sid_exceptions);
   // Note: A Sid marked for Deny Only in a token cannot be used to grant
   // access to any resource. It can only be used to deny access.
-  DWORD AddAllSidsForDenyOnly(std::vector<Sid>* exceptions);
+  DWORD AddAllSidsForDenyOnly(std::vector<base::win::Sid>* exceptions);
 
   // Adds a user or group SID for Deny Only in the restricted token.
   // Parameter: sid is the SID to add in the Deny Only list.
   // The return value is always ERROR_SUCCESS.
   //
   // Sample Usage:
-  //    restricted_token.AddSidForDenyOnly(ATL::Sids::Admins().GetPSID());
-  DWORD AddSidForDenyOnly(const Sid& sid);
+  //    restricted_token.AddSidForDenyOnly(sid);
+  DWORD AddSidForDenyOnly(const base::win::Sid& sid);
+
+  // Adds a known SID for Deny Only in the restricted token.
+  // Parameter: known_sid is the SID to add in the Deny Only list.
+  // The return value is always ERROR_SUCCESS.
+  //
+  // Sample Usage:
+  //    restricted_token.AddSidForDenyOnly(base::win::WellKnownSid::kWorld);
+  DWORD AddSidForDenyOnly(base::win::WellKnownSid known_sid);
 
   // Adds the user sid of the token for Deny Only in the restricted token.
   // If the function succeeds, the return value is ERROR_SUCCESS. If the
@@ -146,7 +154,19 @@ class RestrictedToken {
   // access checks twice. The first time using your user SID and your groups,
   // and the second time using your list of restricting sids. The access has
   // to be granted in both places to get access to the resource requested.
-  DWORD AddRestrictingSid(const Sid& sid);
+  DWORD AddRestrictingSid(const base::win::Sid& sid);
+
+  // Adds a known SID to the list of restricting sids in the restricted token.
+  // Parameter: known_sid is the sid to add to the list restricting sids.
+  // The return value is always ERROR_SUCCESS.
+  //
+  // Sample usage:
+  //    restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  // Note: The list of restricting is used to force Windows to perform all
+  // access checks twice. The first time using your user SID and your groups,
+  // and the second time using your list of restricting sids. The access has
+  // to be granted in both places to get access to the resource requested.
+  DWORD AddRestrictingSid(base::win::WellKnownSid known_sid);
 
   // Adds the logon sid of the token in the list of restricting sids for the
   // restricted token.
@@ -181,19 +201,26 @@ class RestrictedToken {
 
   // Add a SID to the default DACL. These SIDs are added regardless of the
   // SetLockdownDefaultDacl state.
-  DWORD AddDefaultDaclSid(const Sid& sid,
+  DWORD AddDefaultDaclSid(const base::win::Sid& sid,
+                          ACCESS_MODE access_mode,
+                          ACCESS_MASK access);
+
+  // Add a SID to the default DACL. These SIDs are added regardless of the
+  // SetLockdownDefaultDacl state.
+  DWORD AddDefaultDaclSid(base::win::WellKnownSid known_sid,
                           ACCESS_MODE access_mode,
                           ACCESS_MASK access);
 
  private:
   // The list of restricting sids in the restricted token.
-  std::vector<Sid> sids_to_restrict_;
+  std::vector<base::win::Sid> sids_to_restrict_;
   // The list of privileges to remove in the restricted token.
   std::vector<LUID> privileges_to_disable_;
   // The list of sids to mark as Deny Only in the restricted token.
-  std::vector<Sid> sids_for_deny_only_;
+  std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
-  std::vector<std::tuple<Sid, ACCESS_MODE, ACCESS_MASK>> sids_for_default_dacl_;
+  std::vector<std::tuple<base::win::Sid, ACCESS_MODE, ACCESS_MASK>>
+      sids_for_default_dacl_;
   // The token to restrict. Can only be set in a constructor.
   base::win::ScopedHandle effective_token_;
   // The token integrity level. Only valid on Vista.

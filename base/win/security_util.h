@@ -27,6 +27,13 @@ BASE_EXPORT bool GrantAccessToPath(const FilePath& path,
                                    DWORD inheritance,
                                    bool recursive = true);
 
+// Clone a vector of Sids.
+BASE_EXPORT std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids);
+
+// Append a vector of Sids to an existing vector.
+BASE_EXPORT void AppendSidVector(std::vector<Sid>& base_sids,
+                                 const std::vector<Sid>& append_sids);
+
 }  // namespace win
 }  // namespace base
 

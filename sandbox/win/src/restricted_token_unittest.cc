@@ -10,10 +10,10 @@
 
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/security_capabilities.h"
-#include "sandbox/win/src/sid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -28,14 +28,16 @@ void TestDefaultDalc(bool restricted_required, bool additional_sid_required) {
   ATL::CSid additional_sid = ATL::Sids::Guests();
   ATL::CSid additional_sid2 = ATL::Sids::Batch();
   if (additional_sid_required) {
-    token.AddDefaultDaclSid(Sid(additional_sid.GetPSID()), GRANT_ACCESS,
-                            READ_CONTROL);
-    token.AddDefaultDaclSid(Sid(additional_sid2.GetPSID()), DENY_ACCESS,
-                            GENERIC_ALL);
+    token.AddDefaultDaclSid(
+        *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid.GetPSID())),
+        GRANT_ACCESS, READ_CONTROL);
+    token.AddDefaultDaclSid(
+        *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid2.GetPSID())),
+        DENY_ACCESS, GENERIC_ALL);
   }
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
+            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
 
   base::win::ScopedHandle handle;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
@@ -124,10 +126,10 @@ void CheckDaclForPackageSid(const base::win::ScopedHandle& token,
   ATL::CDacl dacl;
   ASSERT_TRUE(token_sd.GetDacl(&dacl));
 
-  ATL::CSid package_sid(
-      static_cast<SID*>(security_capabilities->AppContainerSid));
-  ATL::CSid all_package_sid(
-      static_cast<SID*>(sandbox::Sid(::WinBuiltinAnyPackageSid).GetPSID()));
+  base::win::Sid package_sid =
+      *base::win::Sid::FromPSID(security_capabilities->AppContainerSid);
+  base::win::Sid all_package_sid = *base::win::Sid::FromKnownSid(
+      base::win::WellKnownSid::kAllApplicationPackages);
 
   unsigned int ace_count = dacl.GetAceCount();
   for (unsigned int i = 0; i < ace_count; ++i) {
@@ -137,9 +139,10 @@ void CheckDaclForPackageSid(const base::win::ScopedHandle& token,
     dacl.GetAclEntry(i, &sid, &mask, &type);
     if (mask != TOKEN_ALL_ACCESS || type != ACCESS_ALLOWED_ACE_TYPE)
       continue;
-    if (sid == package_sid)
+    PSID psid = const_cast<SID*>(sid.GetPSID());
+    if (package_sid.Equal(psid))
       EXPECT_TRUE(package_sid_required);
-    else if (sid == all_package_sid)
+    else if (all_package_sid.Equal(psid))
       EXPECT_FALSE(package_sid_required);
   }
 }
@@ -315,7 +318,7 @@ TEST(RestrictedTokenTest, ResultToken) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
+            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
 
   base::win::ScopedHandle restricted_token;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
@@ -371,7 +374,7 @@ TEST(RestrictedTokenTest, DenySid) {
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddSidForDenyOnly(Sid(WinWorldSid)));
+            token.AddSidForDenyOnly(base::win::WellKnownSid::kWorld));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -429,8 +432,9 @@ TEST(RestrictedTokenTest, DenySidsException) {
   RestrictedToken token;
   base::win::ScopedHandle token_handle;
 
-  std::vector<Sid> sids_exception;
-  sids_exception.push_back(Sid(WinWorldSid));
+  std::vector<base::win::Sid> sids_exception;
+  sids_exception.push_back(
+      *base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld));
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
@@ -620,7 +624,7 @@ TEST(RestrictedTokenTest, AddRestrictingSid) {
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
+            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -708,7 +712,7 @@ TEST(RestrictedTokenTest, AddMultipleRestrictingSids) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.AddRestrictingSidLogonSession());
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
+            token.AddRestrictingSid(base::win::WellKnownSid::kWorld));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -789,8 +793,9 @@ TEST(RestrictedTokenTest, LowBoxToken) {
     return;
   base::win::ScopedHandle token;
 
-  Sid package_sid = Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");
-  SecurityCapabilities caps_no_capabilities(package_sid);
+  auto package_sid = base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-7");
+  ASSERT_TRUE(package_sid);
+  SecurityCapabilities caps_no_capabilities(*package_sid);
 
   ASSERT_EQ(DWORD{ERROR_INVALID_PARAMETER},
             CreateLowBoxToken(nullptr, PRIMARY, &caps_no_capabilities, nullptr,
@@ -802,8 +807,7 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   CheckLowBoxToken(token, ::TokenPrimary, &caps_no_capabilities);
 
   ASSERT_TRUE(ReplacePackageSidInDacl(token.Get(), SE_KERNEL_OBJECT,
-                                      Sid(caps_no_capabilities.AppContainerSid),
-                                      TOKEN_ALL_ACCESS));
+                                      *package_sid, TOKEN_ALL_ACCESS));
   CheckDaclForPackageSid(token, &caps_no_capabilities, false);
 
   ASSERT_EQ(DWORD{ERROR_SUCCESS},
@@ -812,10 +816,11 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   ASSERT_TRUE(token.IsValid());
   CheckLowBoxToken(token, ::TokenImpersonation, &caps_no_capabilities);
 
-  std::vector<Sid> capabilities;
-  capabilities.push_back(Sid::FromKnownCapability(kInternetClient));
-  capabilities.push_back(Sid::FromKnownCapability(kPrivateNetworkClientServer));
-  SecurityCapabilities caps_with_capabilities(package_sid, capabilities);
+  auto capabilities = base::win::Sid::FromKnownCapabilityVector(
+      {base::win::WellKnownCapability::kInternetClient,
+       base::win::WellKnownCapability::kPrivateNetworkClientServer});
+  ASSERT_TRUE(capabilities);
+  SecurityCapabilities caps_with_capabilities(*package_sid, *capabilities);
   ASSERT_EQ(DWORD{ERROR_SUCCESS},
             CreateLowBoxToken(nullptr, PRIMARY, &caps_with_capabilities,
                               nullptr, 0, &token));
@@ -825,8 +830,8 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   RestrictedToken restricted_token;
   base::win::ScopedHandle token_handle;
   ASSERT_EQ(DWORD{ERROR_SUCCESS}, restricted_token.Init(nullptr));
-  ASSERT_EQ(DWORD{ERROR_SUCCESS},
-            restricted_token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
+  ASSERT_EQ(DWORD{ERROR_SUCCESS}, restricted_token.AddRestrictingSid(
+                                      base::win::WellKnownSid::kWorld));
   ASSERT_EQ(DWORD{ERROR_SUCCESS},
             restricted_token.GetRestrictedToken(&token_handle));
 
@@ -838,7 +843,7 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   CheckRestrictingSid(token.Get(), ATL::Sids::World(), 1);
 
   SecurityCapabilities caps_for_handles(
-      Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-8"));
+      *base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-8"));
   base::win::ScopedHandle object_handle;
   ASSERT_EQ(DWORD{ERROR_SUCCESS},
             CreateLowBoxObjectDirectory(caps_for_handles.AppContainerSid, true,

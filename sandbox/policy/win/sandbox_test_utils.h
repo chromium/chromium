@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/win/sid.h"
 #include "sandbox/win/src/app_container_base.h"
-#include "sandbox/win/src/sid.h"
 
 namespace sandbox {
 namespace policy {
@@ -17,13 +17,14 @@ namespace policy {
 constexpr wchar_t kChromeInstallFiles[] = L"chromeInstallFiles";
 constexpr wchar_t kLpacChromeInstallFiles[] = L"lpacChromeInstallFiles";
 
-std::vector<Sid> GetCapabilitySids(
+std::vector<base::win::Sid> GetCapabilitySids(
     const std::initializer_list<std::wstring>& capabilities);
 
 std::wstring GetAccessAllowedForCapabilities(
     const std::initializer_list<std::wstring>& capabilities);
 
-void EqualSidList(const std::vector<Sid>& left, const std::vector<Sid>& right);
+void EqualSidList(const std::vector<base::win::Sid>& left,
+                  const std::vector<base::win::Sid>& right);
 
 void CheckCapabilities(
     AppContainerBase* profile,
