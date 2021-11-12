@@ -64,6 +64,7 @@ class ScopedReservation {
   ~ScopedReservation();
 
   bool reserved() const;
+  bool Reduce(uint64_t new_size);
 
  private:
   ResourceInterface* const resource_interface_;

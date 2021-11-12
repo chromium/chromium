@@ -25,6 +25,18 @@ bool ScopedReservation::reserved() const {
   return size_.has_value();
 }
 
+bool ScopedReservation::Reduce(uint64_t new_size) {
+  if (!reserved()) {
+    return false;
+  }
+  if (new_size <= 0 || size_.value() < new_size) {
+    return false;
+  }
+  resource_interface_->Discard(size_.value() - new_size);
+  size_ = new_size;
+  return true;
+}
+
 ScopedReservation::~ScopedReservation() {
   if (reserved()) {
     resource_interface_->Discard(size_.value());
