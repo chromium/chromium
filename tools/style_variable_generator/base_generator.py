@@ -40,6 +40,12 @@ class VariableType:
     OPACITY = 'opacity'
     TYPOGRAPHY = 'typography'
     UNTYPED_CSS = 'untyped_css'
+    ALL = [
+        COLOR,
+        OPACITY,
+        TYPOGRAPHY,
+        UNTYPED_CSS,
+    ]
 
 
 class ModeKeyedModel(object):

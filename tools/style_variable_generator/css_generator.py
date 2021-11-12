@@ -64,10 +64,46 @@ class CSSStyleGenerator(BaseGenerator):
             Modes,
         }
 
+    def GetGeneratedVars(self, variable_type):
+        to_css_var_name_types = [
+            VariableType.COLOR,
+            VariableType.OPACITY,
+        ]
+
+        if variable_type in to_css_var_name_types:
+            generated = set(
+                map(self.ToCSSVarName, self.model[variable_type].keys()))
+        elif variable_type == VariableType.UNTYPED_CSS:
+            generated = set()
+            for category in self.model[VariableType.UNTYPED_CSS].values():
+                generated |= set(map(self.ToCSSVarName, category.keys()))
+        elif variable_type == VariableType.TYPOGRAPHY:
+            generated = set()
+            typography = self.model[VariableType.TYPOGRAPHY]
+            for t in typography.typefaces.keys():
+                var_name = self.ToCSSVarName(t)
+                generated.add(var_name + '-font')
+                generated.add(var_name + '-font-family')
+                generated.add(var_name + '-font-size')
+                generated.add(var_name + '-font-weight')
+                generated.add(var_name + '-line-height')
+            generated |= set(
+                map(self.ToCSSVarName, typography.font_families.keys()))
+        else:
+            raise ValueError("GetGeneratedVars() for '%s' not implemented")
+
+        return generated
+
     def GetCSSVarNames(self):
-        '''Returns generated CSS variable names (excluding the rgb versions)'''
-        return set(map(lambda n: self.ToCSSVarName(n),
-                       self.context_map.keys()))
+        '''Returns generated CSS variable names (excluding color rgb versions)
+        '''
+        var_names = set()
+        for vt in VariableType.ALL:
+            generated = self.GetGeneratedVars(vt)
+            assert not generated.intersection(var_names)
+            var_names |= generated
+
+        return var_names
 
     def ProcessSimpleRef(self, value):
         '''If |value| is a simple '$other_variable' reference, returns a
