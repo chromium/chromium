@@ -7253,9 +7253,6 @@ crbug.com/1265924 [ Fuchsia ] synthetic_gestures/smooth-scroll-tiny-delta.html [
 crbug.com/1257806 http/tests/devtools/console/console-external-array.js [ Skip ]
 crbug.com/1257806 http/tests/devtools/console/console-log-side-effects.js [ Skip ]
 
-# DevTools roll
-crbug.com/1127902 http/tests/devtools/components/flame-chart.js [ Skip ]
-
 # TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
 crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 
