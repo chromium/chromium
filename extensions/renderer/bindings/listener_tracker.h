@@ -28,8 +28,6 @@ struct EventFilteringInfo;
 // tracking when a new listener is added requires looking at more than a
 // single context.
 //
-// TODO(devlin): We should combine this with EventBookkeeper and use it with
-// both native and JS bindings.
 // TODO(devlin): We should incorporate the notifications for newly added/
 // removed listeners into this class, rather than having callers worry about
 // it based on return values.
