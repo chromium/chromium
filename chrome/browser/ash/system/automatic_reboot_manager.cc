@@ -169,6 +169,7 @@ AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
       ui::UserActivityDetector::Get()->AddObserver(this);
     session_manager_observation_.Observe(
         session_manager::SessionManager::Get());
+    VLOG(1) << "Enabling login screen idle timer";
     login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
     OnUserActivity(nullptr);
   }
@@ -207,6 +208,7 @@ bool AutomaticRebootManager::WaitForInitForTesting(
 }
 
 void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
+  VLOG(1) << "Attempting a reboot because device is unsuspended";
   MaybeReboot(true);
 }
 
@@ -215,6 +217,12 @@ void AutomaticRebootManager::UpdateStatusChanged(
   // Ignore repeated notifications that a reboot is necessary. This is important
   // so that only the time of the first notification is taken into account and
   // repeated notifications do not postpone the reboot request and grace period.
+  VLOG(1) << "UpdateStatusChanged called with operation "
+          << update_engine::Operation_Name(status.current_operation())
+          << ", boot_time_ is " << (boot_time_.has_value() ? "" : "not ")
+          << "present, update_reboot_needed_time_ is "
+          << (update_reboot_needed_time_.has_value() ? "" : "not ")
+          << "present";
   if (status.current_operation() !=
           update_engine::Operation::UPDATED_NEED_REBOOT ||
       !boot_time_ || update_reboot_needed_time_) {
@@ -239,6 +247,7 @@ void AutomaticRebootManager::OnUserActivity(const ui::Event* event) {
   // task with a delay of exactly |kLoginManagerIdleTimeoutMs|, ensuring that
   // the timer fires predictably in tests.
   login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
+  VLOG(1) << "Scheduling an attempt to reboot after user activity";
   login_screen_idle_timer_->Start(
       FROM_HERE, base::Milliseconds(kLoginManagerIdleTimeoutMs),
       base::BindOnce(&AutomaticRebootManager::MaybeReboot,
@@ -254,6 +263,7 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
   session_manager_observation_.Reset();
+  VLOG(1) << "Disabling login screen idle timer";
   login_screen_idle_timer_.reset();
 }
 
@@ -265,6 +275,7 @@ void AutomaticRebootManager::Observe(
   if (session_manager::SessionManager::Get()->IsSessionStarted()) {
     // The browser is terminating during a session, either because the session
     // is ending or because the browser is being restarted.
+    VLOG(1) << "Attempting a reboot since app is terminating";
     MaybeReboot(true);
   }
 }
@@ -293,6 +304,7 @@ void AutomaticRebootManager::Init(
         DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
   }
 
+  VLOG(1) << "Initialization finished";
   Reschedule();
 }
 
@@ -319,6 +331,11 @@ void AutomaticRebootManager::Reschedule() {
   // update has been applied, set the time at which a reboot should be
   // requested to the minimum of its current value and the time when the reboot
   // became necessary.
+  VLOG(1) << "Reboot after update is "
+          << (local_state_registrar_.prefs()->GetBoolean(
+                  prefs::kRebootAfterUpdate)
+                  ? "enabled"
+                  : "disabled");
   if (update_reboot_needed_time_ &&
       local_state_registrar_.prefs()->GetBoolean(prefs::kRebootAfterUpdate) &&
       (!have_reboot_request_time ||
@@ -373,6 +390,7 @@ void AutomaticRebootManager::RequestReboot() {
             reboot_reason_);
   for (auto& observer : observers_)
     observer.OnRebootRequested(reboot_reason_);
+  VLOG(1) << "Attempting a reboot after it has been requested";
   MaybeReboot(false);
 }
 
@@ -385,6 +403,19 @@ void AutomaticRebootManager::MaybeReboot(bool ignore_session) {
       (login_screen_idle_timer_ && login_screen_idle_timer_->IsRunning()) ||
       (!ignore_session &&
        session_manager::SessionManager::Get()->IsSessionStarted())) {
+    VLOG(1)
+        << "Skipping reboot: reboot is " << (reboot_requested_ ? "" : "not ")
+        << "requested, login screen idle timer is "
+        << (login_screen_idle_timer_
+                ? (login_screen_idle_timer_->IsRunning() ? "running"
+                                                         : "not running")
+                : "disabled")
+        << " and session is "
+        << (ignore_session
+                ? "ignored"
+                : (session_manager::SessionManager::Get()->IsSessionStarted()
+                       ? "started"
+                       : "not started"));
     return;
   }
 
