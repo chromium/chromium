@@ -157,5 +157,11 @@ export class SettingsSignoutDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-signout-dialog': SettingsSignoutDialogElement;
+  }
+}
+
 customElements.define(
     SettingsSignoutDialogElement.is, SettingsSignoutDialogElement);

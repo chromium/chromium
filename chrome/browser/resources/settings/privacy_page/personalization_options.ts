@@ -37,6 +37,7 @@ export interface SettingsPersonalizationOptionsElement {
     toast: CrToastElement,
     signinAllowedToggle: SettingsToggleButtonElement,
     metricsReportingControl: SettingsToggleButtonElement,
+    spellCheckControl: SettingsToggleButtonElement,
   };
 }
 
@@ -237,6 +238,12 @@ export class SettingsPersonalizationOptionsElement extends
   private onRestartTap_(e: Event) {
     e.stopPropagation();
     LifetimeBrowserProxyImpl.getInstance().restart();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-personalization-options': SettingsPersonalizationOptionsElement;
   }
 }
 

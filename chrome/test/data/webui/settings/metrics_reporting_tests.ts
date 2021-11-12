@@ -7,7 +7,9 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -15,16 +17,13 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 // clang-format on
 
 suite('metrics reporting', function() {
-  /** @type {TestPrivacyPageBrowserProxy} */
-  let testBrowserProxy;
-
-  /** @type {SettingsPrivacyPageElement} */
-  let page;
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let page: SettingsPersonalizationOptionsElement;
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     page = document.createElement('settings-personalization-options');
     document.body.appendChild(page);
   });
@@ -34,7 +33,7 @@ suite('metrics reporting', function() {
   });
 
   test('changes to whether metrics reporting is enabled/managed', function() {
-    let toggled;
+    let toggled: boolean;
     return testBrowserProxy.whenCalled('getMetricsReporting')
         .then(function() {
           return flushTasks();
@@ -45,7 +44,7 @@ suite('metrics reporting', function() {
               testBrowserProxy.metricsReporting.enabled, control.checked);
           assertEquals(
               testBrowserProxy.metricsReporting.managed,
-              !!control.pref.controlledBy);
+              !!control.pref!.controlledBy);
 
           const changedMetrics = {
             enabled: !testBrowserProxy.metricsReporting.enabled,
@@ -55,7 +54,7 @@ suite('metrics reporting', function() {
           flush();
 
           assertEquals(changedMetrics.enabled, control.checked);
-          assertEquals(changedMetrics.managed, !!control.pref.controlledBy);
+          assertEquals(changedMetrics.managed, !!control.pref!.controlledBy);
 
           toggled = !changedMetrics.enabled;
           control.checked = toggled;
@@ -73,7 +72,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Restart button should be hidden by default (in any state).
-      assertFalse(!!page.shadowRoot.querySelector('#restart'));
+      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
 
       // Simulate toggling via policy.
       webUIListenerCallback('metrics-reporting-change', {
@@ -82,7 +81,7 @@ suite('metrics reporting', function() {
       });
 
       // No restart button should show because the value is managed.
-      assertFalse(!!page.shadowRoot.querySelector('#restart'));
+      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
 
       webUIListenerCallback('metrics-reporting-change', {
         enabled: true,
@@ -92,7 +91,7 @@ suite('metrics reporting', function() {
 
       // Changes in policy should not show the restart button because the value
       // is still managed.
-      assertFalse(!!page.shadowRoot.querySelector('#restart'));
+      assertFalse(!!page.shadowRoot!.querySelector('#restart'));
 
       // Remove the policy and toggle the value.
       webUIListenerCallback('metrics-reporting-change', {
@@ -102,7 +101,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Now the restart button should be showing.
-      assertTrue(!!page.shadowRoot.querySelector('#restart'));
+      assertTrue(!!page.shadowRoot!.querySelector('#restart'));
 
       // Receiving the same values should have no effect.
       webUIListenerCallback('metrics-reporting-change', {
@@ -110,7 +109,7 @@ suite('metrics reporting', function() {
         managed: false,
       });
       flush();
-      assertTrue(!!page.shadowRoot.querySelector('#restart'));
+      assertTrue(!!page.shadowRoot!.querySelector('#restart'));
     });
   });
 });

@@ -102,6 +102,7 @@ export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_pag
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
+export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
 export {PrivacyReviewStep} from './privacy_page/privacy_review/constants.js';
 export {PrivacyReviewClearOnExitFragmentElement} from './privacy_page/privacy_review/privacy_review_clear_on_exit_fragment.js';
 export {PrivacyReviewDescriptionItemElement} from './privacy_page/privacy_review/privacy_review_description_item.js';
