@@ -65,7 +65,6 @@ class BASE_EXPORT WorkQueue {
   // Pushes the task onto the |tasks_| and if a fence hasn't been reached
   // it informs the WorkQueueSets if the head changed.
   void Push(Task task);
-  void Push(std::unique_ptr<Task> task);
 
   // RAII helper that helps efficiently push N Tasks to a WorkQueue.
   class BASE_EXPORT TaskPusher {
@@ -74,7 +73,7 @@ class BASE_EXPORT WorkQueue {
     TaskPusher(TaskPusher&& other);
     ~TaskPusher();
 
-    void Push(std::unique_ptr<Task> task);
+    void Push(Task task);
 
    private:
     friend class WorkQueue;
@@ -165,11 +164,6 @@ class BASE_EXPORT WorkQueue {
 
  private:
   bool InsertFenceImpl(EnqueueOrder fence);
-
-  // Pushes |task| onto the |tasks_|. If a fence hasn't been reached and
-  // |should_notify_work_queue_sets| is set, this informs the WorkQueueSets if
-  // the head changed.
-  void PushImpl(Task& task, bool should_notify_work_queue_sets);
 
   TaskQueueImpl::TaskDeque tasks_;
   WorkQueueSets* work_queue_sets_ = nullptr;  // NOT OWNED.

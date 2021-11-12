@@ -65,14 +65,6 @@ bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
 }
 
 void WorkQueue::Push(Task task) {
-  PushImpl(task, /*should_notify_work_queue_sets*/ true);
-}
-
-void WorkQueue::Push(std::unique_ptr<Task> task) {
-  PushImpl(*task, /*should_notify_work_queue_sets*/ true);
-}
-
-void WorkQueue::PushImpl(Task& task, bool should_notify_work_queue_sets) {
   bool was_empty = tasks_.empty();
 #ifndef NDEBUG
   DCHECK(task.enqueue_order_set());
@@ -84,7 +76,7 @@ void WorkQueue::PushImpl(Task& task, bool should_notify_work_queue_sets) {
   // Amortized O(1).
   tasks_.push_back(std::move(task));
 
-  if (!was_empty || !should_notify_work_queue_sets)
+  if (!was_empty)
     return;
 
   // If we hit the fence, pretend to WorkQueueSets that we're empty.
@@ -100,10 +92,19 @@ WorkQueue::TaskPusher::TaskPusher(TaskPusher&& other)
   other.work_queue_ = nullptr;
 }
 
-void WorkQueue::TaskPusher::Push(std::unique_ptr<Task> task) {
-  DCHECK(task);
+void WorkQueue::TaskPusher::Push(Task task) {
   DCHECK(work_queue_);
-  work_queue_->PushImpl(*task, /*should_notify_work_queue_sets*/ false);
+
+#ifndef NDEBUG
+  DCHECK(task.enqueue_order_set());
+#endif
+
+  // Make sure the |enqueue_order()| is monotonically increasing.
+  DCHECK(work_queue_->tasks_.empty() ||
+         work_queue_->tasks_.back().enqueue_order() < task.enqueue_order());
+
+  // Amortized O(1).
+  work_queue_->tasks_.push_back(std::move(task));
 }
 
 WorkQueue::TaskPusher::~TaskPusher() {
