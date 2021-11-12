@@ -1445,6 +1445,7 @@ bool X11Window::StartDrag(const OSExchangeData& data,
 
   drag_loop_.reset();
   drag_handler_delegate_ = nullptr;
+  drag_drop_client_->CleanupDrag();
   return dropped;
 }
 
