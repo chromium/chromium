@@ -311,7 +311,7 @@ void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
       .AddPaddingColumn(views::TableLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
-      .AddColumn(views::LayoutAlignment::kStart,
+      .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   auto* scroll_view = views::ScrollView::GetScrollViewForContents(this);
