@@ -7,6 +7,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/grpc_webui_controller_factory.h"
+#include "chromecast/common/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -72,6 +73,36 @@ GURL WebRuntimeApplication::InitializeAndGetInitialURL(
   SetApplicationStarted();
 
   return GURL(app_config().cast_web_app_config().url());
+}
+
+void WebRuntimeApplication::InnerContentsCreated(
+    mojo::PendingRemote<mojom::CastWebContents> pending_inner_contents) {
+  mojo::Remote<mojom::CastWebContents> inner_contents(
+      std::move(pending_inner_contents));
+  ConfigureInnerCastWebContents(inner_contents.get());
+}
+
+void WebRuntimeApplication::ConfigureInnerCastWebContents(
+    mojom::CastWebContents* web_contents) {
+  auto page_url = InitializeAndGetInitialURL(
+      core_app_stub_.get(), cast_web_view_->cast_web_contents());
+#if DCHECK_IS_ON()
+  base::Value features(base::Value::Type::DICTIONARY);
+  base::Value dev_mode_config(base::Value::Type::DICTIONARY);
+  dev_mode_config.SetKey(feature::kDevModeOrigin, base::Value(page_url.spec()));
+  features.SetKey(feature::kEnableDevMode, std::move(dev_mode_config));
+  web_contents->AddRendererFeatures(std::move(features));
+#endif
+  const std::vector<int32_t> feature_permissions;
+  const std::vector<std::string> additional_feature_permission_origins;
+
+  // Bind inner CastWebContents with the same session id and app id as the root
+  // CastWebContents so that the same url rewrites are applied.
+  cast_web_view_->cast_web_contents()->SetAppProperties(
+      app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
+      page_url, false /*enforce_feature_permissions*/, feature_permissions,
+      additional_feature_permission_origins);
+  Observe(web_contents);
 }
 
 }  // namespace chromecast

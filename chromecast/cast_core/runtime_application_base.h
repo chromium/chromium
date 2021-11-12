@@ -78,6 +78,11 @@ class RuntimeApplicationBase
       CoreApplicationServiceGrpc* grpc_stub,
       CastWebContents* cast_web_contents) = 0;
 
+  // The WebView associated with the window in which the Cast application is
+  // displayed.
+  CastWebView::Scoped cast_web_view_;
+  std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
+
  private:
   // RuntimeApplication implementation:
   bool Load(const cast::runtime::LoadApplicationRequest& request) final;
@@ -98,14 +103,10 @@ class RuntimeApplicationBase
   cast::v2::RuntimeApplicationService::AsyncService grpc_app_service_;
   cast::v2::RuntimeMessagePortApplicationService::AsyncService
       grpc_message_port_service_;
-  std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
 
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;
 
-  // The WebView associated with the window in which the Cast application is
-  // displayed.
-  CastWebView::Scoped cast_web_view_;
   std::unique_ptr<UrlRewriteRulesAdapter> url_rewrite_adapter_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

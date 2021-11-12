@@ -38,6 +38,15 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                               chromecast::mojom::IdentificationSettingsManager>
                               settings_manager) override;
 
+  // Callback to handle inner CastWebContents created by Cast apps that use
+  // WebUIs. Eg. Backdrop.
+  void InnerContentsCreated(mojo::PendingRemote<mojom::CastWebContents>
+                                pending_inner_contents) override;
+
+  // Sets the renderer features and app properties of CastWebContents
+  // of the inner render frame.
+  void ConfigureInnerCastWebContents(mojom::CastWebContents* web_contents);
+
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;
 };
 
