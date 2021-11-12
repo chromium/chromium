@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
+import android.view.MotionEvent;
 
 import androidx.test.filters.SmallTest;
 
@@ -222,6 +224,27 @@ public class NavigationHandlerTest {
         // page. Make sure this won't crash after the current tab is destroyed.
         Assert.assertFalse(TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mNavigationHandler.triggerUi(/*forward=*/false, 0, 0)));
+    }
+
+    @Test
+    @SmallTest
+    public void testSwipeAfterDestroyActivity_NativePage() {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        TestThreadUtils.runOnUiThreadBlocking(mActivityTestRule.getActivity()::finish);
+
+        // CompositorViewHolder dispatches motion events and invoke the handler's
+        // |handleTouchEvent| on native pages. Make sure this won't crash the app after
+        // the handler is destroyed.
+        long eventTime = SystemClock.uptimeMillis();
+        MotionEvent e = MotionEvent.obtain(
+                eventTime, eventTime, MotionEvent.ACTION_DOWN, /*x=*/10, /*y=*/100, 0);
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> mActivityTestRule.getActivity()
+                                   .getCompositorViewHolderForTesting()
+                                   .dispatchTouchEvent(e));
     }
 
     @Test
