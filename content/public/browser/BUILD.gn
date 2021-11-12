@@ -440,7 +440,6 @@ source_set("browser_sources") {
   }
 
   public_deps = [
-    "//base",
     "//build:chromecast_buildflags",
     "//components/download/public/common:public",
     "//components/services/storage/public/mojom",

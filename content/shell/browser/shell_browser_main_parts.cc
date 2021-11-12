@@ -110,7 +110,7 @@ scoped_refptr<base::RefCountedMemory> PlatformResourceProvider(int key) {
 }  // namespace
 
 ShellBrowserMainParts::ShellBrowserMainParts(MainFunctionParams parameters)
-    : parameters_(std::move(parameters)) {}
+    : parameters_(std::move(parameters)), run_message_loop_(true) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
@@ -185,12 +185,21 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   InitializeMessageLoopContext();
+
+  if (parameters_.ui_task) {
+    std::move(parameters_.ui_task).Run();
+    run_message_loop_ = false;
+  }
+
   return 0;
 }
 
 void ShellBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  Shell::SetMainMessageLoopQuitClosure(run_loop->QuitClosure());
+  if (run_message_loop_)
+    Shell::SetMainMessageLoopQuitClosure(run_loop->QuitClosure());
+  else
+    run_loop.reset();
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {

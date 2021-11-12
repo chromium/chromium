@@ -230,6 +230,9 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   if (parameters_.ui_task) {
     // Since the main loop won't run, there is nothing to quit.
     quit_closure_ = base::DoNothing();
+
+    std::move(parameters_.ui_task).Run();
+    run_message_loop_ = false;
   }
 
   return content::RESULT_CODE_NORMAL_EXIT;
@@ -237,7 +240,11 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
 void WebEngineBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  quit_closure_ = run_loop->QuitClosure();
+  if (run_message_loop_) {
+    quit_closure_ = run_loop->QuitClosure();
+  } else {
+    run_loop = nullptr;
+  }
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {

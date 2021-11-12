@@ -69,6 +69,7 @@ class ShellBrowserMainParts : public BrowserMainParts {
 
   // For running content_browsertests.
   MainFunctionParams parameters_;
+  bool run_message_loop_;
 
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;
