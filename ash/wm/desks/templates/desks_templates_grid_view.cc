@@ -95,6 +95,10 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
 void DesksTemplatesGridView::UpdateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
+  // Clear the layout manager before removing the child views to avoid
+  // use-after-free bugs due to `Layout()`s being triggered.
+  SetLayoutManager(nullptr);
+  layout_ = nullptr;
   RemoveAllChildViews();
   grid_items_.clear();
 
