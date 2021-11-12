@@ -2593,6 +2593,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.RenderProcessHost.Count.OriginAgentClusterOverhead"
+    units="processes" expires_after="2022-09-28">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    An estimate of additional processes created due to OriginAgentCluster (OAC).
+    Computed assuming no coalescing of multiple BrowsingInstances into a single
+    RenderProcess (including no subframe process reuse), and only when
+    cross-process origin isolation occurs due to the OAC header. Given this, the
+    count of additional SiteInstances corresponds exactly to the additional
+    number of RenderProcesses that OAC gives rise to, and therefore gives a
+    sense of how much process count overhead it creates. Recorded once per UMA
+    ping.
+  </summary>
+</histogram>
+
+<histogram name="Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead"
+    units="%" expires_after="2022-09-28">
+  <owner>wjmaclean@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    The percentage of the total renderer process count that is due to the
+    OriginAgentCluster (OAC) header, based on the overhead estimate from
+    Memory.RenderProcessHost.Count.OriginAgentClusterProcesses. That value is
+    computed assuming no coalescing of multiple BrowsingInstances into a single
+    RenderProcess (including no subframe process reuse), and only when
+    cross-process origin isolation occurs due to the OAC header. Given this, the
+    percentage of total SiteInstances due to the OAC header corresponds exactly
+    to the percentage of RenderProcesses that OAC gives rise to. Recorded once
+    per UMA ping.
+  </summary>
+</histogram>
+
 <histogram name="Memory.ShmemDir.AmountOfFreeSpace" units="MB"
     expires_after="M77">
   <owner>reveman@chromium.org</owner>

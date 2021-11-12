@@ -1905,6 +1905,13 @@ RenderFrameHost* ChildFrameAt(const ToRenderFrameHost& adapter, size_t index) {
   return rfh->frame_tree_node()->child_at(index)->current_frame_host();
 }
 
+bool HasOriginKeyedProcess(RenderFrameHost* frame) {
+  return static_cast<RenderFrameHostImpl*>(frame)
+      ->GetSiteInstance()
+      ->GetSiteInfo()
+      .is_origin_keyed();
+}
+
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh) {
   std::vector<RenderFrameHost*> visited_frames;

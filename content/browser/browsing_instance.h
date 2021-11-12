@@ -187,6 +187,10 @@ class CONTENT_EXPORT BrowsingInstance final
   // Note: This should not be used by code outside this class.
   SiteInfo ComputeSiteInfoForURL(const UrlInfo& url_info) const;
 
+  // Computes the number of extra SiteInstances for each site due to OAC's
+  // splitting a site into isolated origins.
+  int EstimateOriginAgentClusterOverhead();
+
   // Map of SiteInfo to SiteInstance, to ensure we only have one SiteInstance
   // per SiteInfo. See https://crbug.com/1085275#c2 for the rationale behind
   // why SiteInfo is the right class to key this on.

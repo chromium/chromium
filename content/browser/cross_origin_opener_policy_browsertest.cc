@@ -2301,6 +2301,25 @@ IN_PROC_BROWSER_TEST_P(VirtualBrowsingContextGroupTest,
   EXPECT_NE(group_4, group_1);
 }
 
+// A test to make sure that loading a page with COOP/COEP headers doesn't set
+// is_origin_keyed() on the SiteInstance's SiteInfo.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       CoopCoepNotOriginKeyed) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+  // Use of COOP/COEP headers should not cause SiteInfo::is_origin_keyed() to
+  // return true. The metrics that track OriginAgentCluster isolation expect
+  // is_origin_keyed() to refer only to the OriginAgentCluster header.
+  EXPECT_FALSE(current_si->GetSiteInfo().is_origin_keyed());
+}
+
 // This test is flaky on Win, Mac, Linux and ChromeOS: https://crbug.com/1125998
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
