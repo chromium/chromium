@@ -829,6 +829,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="V8.GCBackgroundScavenger" units="ms"
     expires_after="2021-12-19">
+  <obsolete>
+    Removed 11/2021. Superseded by V8.GC.Cycle.Young.
+  </obsolete>
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
