@@ -83509,6 +83509,19 @@
        {}
       ]
      ],
+     "at-media-003.html": [
+      "1b21765363387c3f53841a9aeef30980957987f4",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "at-media-content-001.html": [
       "8ad16b4f2ef2f009a5cc51537ee1949ce5815034",
       [
@@ -84172,6 +84185,19 @@
        {}
       ]
      ],
+     "at-supports-045.html": [
+      "8beeadf206ad46d417e1b7020784870f704dee4b",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "at-supports-content-001.html": [
       "19c99f504be7766978dc3816d186e7c2dabe126e",
       [
@@ -84213,6 +84239,32 @@
      ],
      "at-supports-content-004.html": [
       "c44184ba67b1e83291204ab47bf0a12f114d5fb0",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-supports-namespace-001.html": [
+      "07ec7552f378a1d7c66c4d3a65bf9308abc6e111",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-supports-namespace-002.html": [
+      "a8365f5fb258131b628d2b3637ddc3f10b36d505",
       [
        null,
        [
