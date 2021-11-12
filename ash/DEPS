@@ -115,12 +115,6 @@ specific_include_rules = {
   "shell.cc": [
     "+ash/host/ash_window_tree_host_init_params.h"
   ],
-  "shell_delegate.h": [
-    "+components/favicon_base/favicon_callback.h"
-  ],
-  "test_shell_delegate.h": [
-    "+components/favicon_base/favicon_callback.h"
-  ],
   "window_manager.cc": [
     "+ash/host/ash_window_tree_host.h"
   ],

@@ -30,8 +30,4 @@ int ShellDelegate::GetUiDevToolsPort() const {
   return -1;
 }
 
-desks_storage::DeskModel* ShellDelegate::GetDeskModel() {
-  return nullptr;
-}
-
 }  // namespace ash

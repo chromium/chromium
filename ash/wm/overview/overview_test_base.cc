@@ -5,6 +5,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 
 #include "ash/public/cpp/presentation_time_recorder.h"
+#include "ash/public/cpp/test/test_desks_templates_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -26,26 +27,6 @@
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
-
-namespace {
-
-class CustomTestShellDelegate : public TestShellDelegate {
- public:
-  explicit CustomTestShellDelegate(desks_storage::DeskModel* desk_model)
-      : desk_model_(desk_model) {}
-  CustomTestShellDelegate(const CustomTestShellDelegate&) = delete;
-  CustomTestShellDelegate& operator=(const CustomTestShellDelegate&) = delete;
-  ~CustomTestShellDelegate() override = default;
-
-  // TestShellDelegate:
-  desks_storage::DeskModel* GetDeskModel() override { return desk_model_; }
-
- private:
-  // The desk model for the desks templates feature.
-  desks_storage::DeskModel* const desk_model_;
-};
-
-}  // namespace
 
 OverviewTestBase::~OverviewTestBase() = default;
 
@@ -180,13 +161,16 @@ void OverviewTestBase::CheckWindowAndCloseButtonInScreen(
 }
 
 void OverviewTestBase::SetUp() {
+  AshTestBase::SetUp();
+
+  // Set the created model as the one shell will reference.
   EXPECT_TRUE(desk_model_temp_dir_.CreateUniqueTempDir());
   desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
       desk_model_temp_dir_.GetPath());
   desk_model_->EnsureCacheIsLoaded();
-
-  AshTestBase::SetUp(
-      std::make_unique<CustomTestShellDelegate>(desk_model_.get()));
+  static_cast<TestDesksTemplatesDelegate*>(
+      Shell::Get()->desks_templates_delegate())
+      ->set_desk_model(desk_model_.get());
 
   aura::Env::GetInstance()->set_throttle_input_on_resize_for_testing(false);
   shelf_view_test_api_ = std::make_unique<ShelfViewTestAPI>(

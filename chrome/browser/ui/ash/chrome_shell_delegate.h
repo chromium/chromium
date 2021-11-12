@@ -9,12 +9,6 @@
 
 #include "ash/shell_delegate.h"
 #include "base/callback_forward.h"
-#include "components/favicon_base/favicon_callback.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
-
-namespace base {
-class CancelableTaskTracker;
-}  // namespace base
 
 class ChromeShellDelegate : public ash::ShellDelegate {
  public:
@@ -33,6 +27,10 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::unique_ptr<ash::BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(
       ash::BackGestureContextualNudgeController* controller) override;
+  std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate(
+      ash::NearbyShareController* controller) const override;
+  std::unique_ptr<ash::DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+      const override;
   void OpenKeyboardShortcutHelpPage() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberEnabled(bool enabled) override;
@@ -50,8 +48,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
           chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
       override;
   media_session::MediaSessionService* GetMediaSessionService() override;
-  std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate(
-      ash::NearbyShareController* controller) const override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(bool locked) override;
   bool IsUiDevToolsStarted() const override;
@@ -61,21 +57,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override;
-  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
-      aura::Window* window) const override;
-  desks_storage::DeskModel* GetDeskModel() override;
-  void GetFaviconForUrl(const std::string& page_url,
-                        int desired_icon_size,
-                        favicon_base::FaviconRawBitmapCallback callback,
-                        base::CancelableTaskTracker* tracker) const override;
-  void GetIconForAppId(
-      const std::string& app_id,
-      int desired_icon_size,
-      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
-      const override;
-  void LaunchAppsFromTemplate(
-      std::unique_ptr<ash::DeskTemplate> desk_template) override;
-  bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
 };

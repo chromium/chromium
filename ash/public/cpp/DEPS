@@ -10,3 +10,12 @@ include_rules = [
   "+services/device/public",
   "+skia/public/mojom",
 ]
+
+specific_include_rules = {
+  "desks_templates_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
+  ],
+  "test_desks_templates_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
+  ],
+}

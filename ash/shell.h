@@ -151,6 +151,7 @@ class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class NearbyShareControllerImpl;
+class DesksTemplatesDelegate;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
 class OcclusionTrackerPauser;
@@ -364,6 +365,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   DesksController* desks_controller() { return desks_controller_.get(); }
   PersistentDesksBarController* persistent_desks_bar_controller() {
     return persistent_desks_bar_controller_.get();
+  }
+  DesksTemplatesDelegate* desks_templates_delegate() {
+    return desks_templates_delegate_.get();
   }
   DetachableBaseHandler* detachable_base_handler() {
     return detachable_base_handler_.get();
@@ -724,6 +728,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<DesksController> desks_controller_;
+  std::unique_ptr<DesksTemplatesDelegate> desks_templates_delegate_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
   std::unique_ptr<DetachableBaseNotificationController>
       detachable_base_notification_controller_;
@@ -732,7 +737,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DragDropController> drag_drop_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
-  std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
@@ -781,6 +785,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<TrayAction> tray_action_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
+  std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<OverviewController> overview_controller_;
   // Owned by |focus_controller_|.
   AshFocusRules* focus_rules_ = nullptr;

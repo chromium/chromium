@@ -5,10 +5,10 @@
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
@@ -39,7 +39,7 @@ constexpr char kMaximumDeskLaunchTemplateToastName[] =
 // usable desk model, either from chrome sync, or a local storage.
 // TODO(sammiequon): Investigate if we can cache this.
 desks_storage::DeskModel* GetDeskModel() {
-  auto* desk_model = Shell::Get()->shell_delegate()->GetDeskModel();
+  auto* desk_model = Shell::Get()->desks_templates_delegate()->GetDeskModel();
   DCHECK(desk_model);
   return desk_model;
 }
@@ -51,7 +51,7 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
   if (!on_create_activate_success)
     return;
 
-  Shell::Get()->shell_delegate()->LaunchAppsFromTemplate(
+  Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template));
 }
 

@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -872,17 +873,17 @@ void DesksController::CaptureActiveDeskAsTemplate(
   auto* shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* shell_delegate = shell->shell_delegate();
+  auto* delegate = shell->desks_templates_delegate();
   std::vector<aura::Window*> unsupported_apps;
   for (auto* window : mru_windows) {
-    if (!shell_delegate->IsWindowSupportedForDeskTemplate(window) &&
+    if (!delegate->IsWindowSupportedForDeskTemplate(window) &&
         !wm::GetTransientParent(window)) {
       unsupported_apps.push_back(window);
       continue;
     }
 
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
-        shell_delegate->GetAppLaunchDataForDeskTemplate(window);
+        delegate->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
       continue;
 

@@ -4,9 +4,9 @@
 
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,15 +76,15 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
                        .Build());
 
   GURL potential_url{icon_identifier_};
-  auto* shell_delegate = Shell::Get()->shell_delegate();
+  auto* delegate = Shell::Get()->desks_templates_delegate();
   if (potential_url.is_valid()) {
-    shell_delegate->GetFaviconForUrl(
+    delegate->GetFaviconForUrl(
         icon_identifier_, kIconSize,
         base::BindOnce(&DesksTemplatesIconView::OnFaviconLoaded,
                        weak_ptr_factory_.GetWeakPtr()),
         &cancelable_task_tracker_);
   } else {
-    shell_delegate->GetIconForAppId(
+    delegate->GetIconForAppId(
         icon_identifier_, kIconSize,
         base::BindOnce(&DesksTemplatesIconView::OnAppIconLoaded,
                        weak_ptr_factory_.GetWeakPtr()));

@@ -2048,6 +2048,8 @@ static_library("ui") {
       "ash/chrome_accessibility_delegate.h",
       "ash/chrome_browser_main_extra_parts_ash.cc",
       "ash/chrome_browser_main_extra_parts_ash.h",
+      "ash/chrome_desks_templates_delegate.cc",
+      "ash/chrome_desks_templates_delegate.h",
       "ash/chrome_new_window_client.cc",
       "ash/chrome_new_window_client.h",
       "ash/chrome_new_window_delegate_provider.cc",
