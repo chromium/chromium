@@ -16,15 +16,17 @@ namespace ash {
 
 // These values should match the param key values in the finch config file.
 // static
+const char HatsFinchHelper::kCustomClientDataParam[] = "custom_client_data";
+// static
 const char HatsFinchHelper::kProbabilityParam[] = "prob";
+// static
+const char HatsFinchHelper::kResetAllParam[] = "reset_all";
+// static
+const char HatsFinchHelper::kResetSurveyCycleParam[] = "reset_survey_cycle";
 // static
 const char HatsFinchHelper::kSurveyCycleLengthParam[] = "survey_cycle_length";
 // static
 const char HatsFinchHelper::kSurveyStartDateMsParam[] = "survey_start_date_ms";
-// static
-const char HatsFinchHelper::kResetSurveyCycleParam[] = "reset_survey_cycle";
-// static
-const char HatsFinchHelper::kResetAllParam[] = "reset_all";
 // static
 const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
 
@@ -32,6 +34,13 @@ std::string HatsFinchHelper::GetTriggerID(const HatsConfig& hats_config) {
   DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
   return base::GetFieldTrialParamValueByFeature(hats_config.feature,
                                                 kTriggerIdParam);
+}
+
+std::string HatsFinchHelper::GetCustomClientDataAsString(
+    const HatsConfig& hats_config) {
+  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  return base::GetFieldTrialParamValueByFeature(hats_config.feature,
+                                                kCustomClientDataParam);
 }
 
 HatsFinchHelper::HatsFinchHelper(Profile* profile,

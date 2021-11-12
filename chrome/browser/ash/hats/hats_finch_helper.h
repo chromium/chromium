@@ -22,6 +22,11 @@ class HatsFinchHelper {
  public:
   static std::string GetTriggerID(const HatsConfig& config);
 
+  // Returns a client-specific custom data as a string from the finch seed. If
+  // the config contains no data, then an empty string is returned. The data is
+  // provided as a param via the finch seed under the key "custom_client_data".
+  static std::string GetCustomClientDataAsString(const HatsConfig& config);
+
   explicit HatsFinchHelper(Profile* profile, const HatsConfig& config);
   ~HatsFinchHelper();
 
@@ -37,11 +42,12 @@ class HatsFinchHelper {
   FRIEND_TEST_ALL_PREFIXES(HatsFinchHelperTest, ResetSurveyCycle);
   FRIEND_TEST_ALL_PREFIXES(HatsFinchHelperTest, ResetHats);
 
+  static const char kCustomClientDataParam[];
   static const char kProbabilityParam[];
+  static const char kResetAllParam[];
+  static const char kResetSurveyCycleParam[];
   static const char kSurveyCycleLengthParam[];
   static const char kSurveyStartDateMsParam[];
-  static const char kResetSurveyCycleParam[];
-  static const char kResetAllParam[];
   static const char kTriggerIdParam[];
 
   // Loads all the param values from the finch seed and initializes the member
