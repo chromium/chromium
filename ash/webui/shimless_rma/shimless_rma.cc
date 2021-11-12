@@ -124,6 +124,14 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rsuHardwareIdText", IDS_SHIMLESS_RMA_RSU_HWID},
       {"rsuCodeLabelText", IDS_SHIMLESS_RMA_RSU_CODE_LABEL},
       {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
+      // Manual WP disable complete
+      {"wpDisableCompletePageTitleText",
+       IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE},
+      {"wpDisableSkippedText", IDS_SHIMLESS_RMA_WP_DISABLE_SKIPPED_MESSAGE},
+      {"wpDisableReassembleNowText",
+       IDS_SHIMLESS_RMA_WP_DISABLE_REASSEMBLE_NOW_MESSAGE},
+      {"wpDisableLeaveDisassembledText",
+       IDS_SHIMLESS_RMA_WP_DISABLE_LEAVE_DISASSEMBLED_MESSAGE},
       // Check calibration page
       {"checkCalibrationTitleText",
        IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE},
