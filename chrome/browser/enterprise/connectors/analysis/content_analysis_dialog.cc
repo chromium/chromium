@@ -38,10 +38,10 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout_view.h"
 
 // This should be after all other #includes.
 #if defined(_WINDOWS_)  // Detect whether windows.h was included.
@@ -268,76 +268,60 @@ bool ContentAnalysisDialog::ShouldShowCloseButton() const {
 
 views::View* ContentAnalysisDialog::GetContentsView() {
   if (!contents_view_) {
-    contents_view_ = new views::View();  // Owned by caller.
-
-    // Create layout
-    views::GridLayout* layout =
-        contents_view_->SetLayoutManager(std::make_unique<views::GridLayout>());
-    views::ColumnSet* columns = layout->AddColumnSet(0);
-    columns->AddColumn(
-        /*h_align=*/views::GridLayout::FILL,
-        /*v_align=*/views::GridLayout::FILL,
-        /*resize_percent=*/1.0,
-        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-        /*fixed_width=*/0,
-        /*min_width=*/0);
+    contents_view_ = new views::BoxLayoutView();  // Owned by caller.
+    contents_view_->SetOrientation(views::BoxLayout::Orientation::kVertical);
+    // Padding to distance the top image from the icon and message.
+    contents_view_->SetBetweenChildSpacing(16);
+    // padding to distance the message from the button(s).
+    contents_view_->SetInsideBorderInsets(gfx::Insets(0, 0, 10, 0));
 
     // Add the top image.
-    layout->StartRow(views::GridLayout::kFixedSize, 0);
-    image_ = layout->AddView(std::make_unique<DeepScanningTopImageView>(this));
+    image_ = contents_view_->AddChildView(
+        std::make_unique<DeepScanningTopImageView>(this));
 
-    // Add padding to distance the top image from the icon and message.
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, 16);
-
-    views::ColumnSet* message_columns = layout->AddColumnSet(1);
-    message_columns->AddPaddingColumn(0.0, kMessageAndIconRowLeadingPadding);
-    message_columns->AddColumn(
-        /*h_align=*/views::GridLayout::LEADING,
-        /*v_align=*/views::GridLayout::LEADING,
-        /*resize_percent=*/0.0,
-        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-        /*fixed_width=*/0,
-        /*min_width=*/0);
-    message_columns->AddPaddingColumn(0.0, kSideIconBetweenChildSpacing);
-    message_columns->AddColumn(
-        /*h_align=*/views::GridLayout::LEADING,
-        /*v_align=*/views::GridLayout::FILL,
-        /*resize_percent=*/1.0,
-        /*size_type=*/views::GridLayout::ColumnSize::kUsePreferred,
-        /*fixed_width=*/0,
-        /*min_width=*/0);
-    message_columns->AddPaddingColumn(0.0, kMessageAndIconRowTrailingPadding);
-
-    // Add the side icon and message row.
-    layout->StartRow(views::GridLayout::kFixedSize, 1);
+    // Create message area layout.
+    auto* message_container = contents_view_->AddChildView(
+        std::make_unique<views::TableLayoutView>());
+    message_container
+        ->AddPaddingColumn(views::TableLayout::kFixedSize,
+                           kMessageAndIconRowLeadingPadding)
+        .AddColumn(views::LayoutAlignment::kStart,
+                   views::LayoutAlignment::kStart,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize,
+                          kSideIconBetweenChildSpacing)
+        .AddColumn(views::LayoutAlignment::kStretch,
+                   views::LayoutAlignment::kStretch, 1.0f,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        .AddPaddingColumn(views::TableLayout::kFixedSize,
+                          kMessageAndIconRowTrailingPadding)
+        .AddRows(2, views::TableLayout::kFixedSize);
 
     // Add the side icon.
-    layout->AddView(CreateSideIcon());
+    message_container->AddChildView(CreateSideIcon());
 
     // Add the message.
-    auto label = std::make_unique<views::Label>();
-    label->SetText(GetDialogMessage());
-    label->SetLineHeight(kLineHeight);
-    label->SetMultiLine(true);
-    label->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    message_ = layout->AddView(std::move(label));
+    message_ =
+        message_container->AddChildView(std::make_unique<views::Label>());
+    message_->SetText(GetDialogMessage());
+    message_->SetLineHeight(kLineHeight);
+    message_->SetMultiLine(true);
+    message_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+    message_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-    layout->StartRow(views::GridLayout::kFixedSize, 1);
-    layout->SkipColumns(1);
     // Add the Learn More link but hide it so it can only be displayed when
     // required.
-    auto learn_more_link =
+    message_container->AddChildView(
+        std::make_unique<views::View>());  // Skip a column
+    learn_more_link_ = message_container->AddChildView(
         std::make_unique<views::Link>(l10n_util::GetStringUTF16(
-            IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK));
-    learn_more_link->SetCallback(base::BindRepeating(
+            IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE_LEARN_MORE_LINK)));
+    learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    learn_more_link_->SetCallback(base::BindRepeating(
         &ContentAnalysisDialog::LearnMoreLinkClickedCallback,
         base::Unretained(this)));
-    learn_more_link->SetVisible(false);
-    learn_more_link_ = layout->AddView(std::move(learn_more_link));
-
-    // Add padding to distance the message from the button(s).
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, 10);
+    learn_more_link_->SetVisible(false);
 
     // If the dialog was started in a state other than pending, setup the views
     // accordingly.

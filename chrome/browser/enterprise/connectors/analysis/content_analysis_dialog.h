@@ -25,6 +25,7 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace views {
+class BoxLayoutView;
 class ImageView;
 class Label;
 class Link;
@@ -231,7 +232,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   content::WebContents* web_contents_;
 
   // Views above the buttons. |contents_view_| owns every other view.
-  views::View* contents_view_ = nullptr;
+  views::BoxLayoutView* contents_view_ = nullptr;
   DeepScanningTopImageView* image_ = nullptr;
   DeepScanningSideIconImageView* side_icon_image_ = nullptr;
   DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;

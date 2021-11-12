@@ -14,6 +14,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -912,6 +913,35 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   dialog->CancelDialog();
   EXPECT_EQ(0, times_open_called_);
   EXPECT_EQ(1, times_discard_called_);
+}
+
+class ContentAnalysysDialogUiTest : public DialogBrowserTest {
+ public:
+  ContentAnalysysDialogUiTest() = default;
+  ContentAnalysysDialogUiTest(const ContentAnalysysDialogUiTest&) = delete;
+  ContentAnalysysDialogUiTest& operator=(const ContentAnalysysDialogUiTest&) =
+      delete;
+  ~ContentAnalysysDialogUiTest() override = default;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    auto delegate = std::make_unique<ContentAnalysisDownloadsDelegate>(
+        u"File Name", u"Admin comment", GURL("http://learn-more-url.com/"),
+        base::DoNothing(), base::DoNothing());
+
+    // This ctor ends up calling into constrained_window to show itself, in a
+    // way that relinquishes its ownership. Because of this, new it here and
+    // let it be deleted by the constrained_window code.
+    new ContentAnalysisDialog(
+        std::move(delegate),
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        safe_browsing::DeepScanAccessPoint::DOWNLOAD, 0,
+        ContentAnalysisDelegateBase::FinalResult::WARNING);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogUiTest, InvokeUi_default) {
+  ShowAndVerifyUi();
 }
 
 }  // namespace enterprise_connectors
