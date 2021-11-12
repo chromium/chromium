@@ -72,6 +72,12 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator = CSSStyleGenerator()
         self.generator.AddJSONFileToModel('typography_test.json5')
         expected_file_name = 'typography_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testSuppressSourcesComment(self):
+        self.generator.generator_options = {'suppress_sources_comment': 'true'}
+        expected_file_name = 'suppress_sources_comment_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 
 class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
@@ -103,6 +109,11 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator.AddJSONFileToModel('typography_test.json5')
         self.generator.AddJSONFileToModel('untyped_css_test.json5')
         self.generator.generator_options = {'include_style_sheet': 'true'}
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testSuppressSourcesComment(self):
+        self.generator.generator_options = {'suppress_sources_comment': 'true'}
+        expected_file_name = 'suppress_sources_comment_test_expected.ts'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 

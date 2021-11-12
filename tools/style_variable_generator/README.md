@@ -70,20 +70,6 @@ so all TS constants correctly resolve.
 
 ## Generator Options
 
-### TS
-
-**Include StyleSheet**
-
-`--generator-option 'include_style_sheet=true'`
-
-If true the generated ts file will also include a function called
-`initializeColors` which when called will attach all colors as css variables to
-the document root. Useful for cases where you don't want to include the colors
-as a css file. In these cases ensure that this is called before any usage of
-the ts constants, ideally before the root lit element of an app is rendered.
-
-Defaults to false.
-
 ### CSS
 
 **Prefix**
@@ -143,6 +129,30 @@ switches.
 
 Adds the given token to the CSS output. Chromium will overwrite this token with
 the debug color CSS when the file is served and debug colors are enabled.
+
+**Suppress Sources Comment**
+
+If true suppresses adding a comment to the generated output file with a list of all the sources used to generate the file.
+
+`--generator-option 'suppress_sources_comment=true'`
+
+Defaults to false.
+
+### TS
+
+The typescript generator _extends_ the CSS generator so additionally supports all the options from the CSS generator.
+
+**Include StyleSheet**
+
+`--generator-option 'include_style_sheet=true'`
+
+If true the generated ts file will also include a function called
+`initializeColors` which when called will attach all colors as css variables to
+the document root. Useful for cases where you don't want to include the colors
+as a css file. In these cases ensure that this is called before any usage of
+the ts constants, ideally before the root lit element of an app is rendered.
+
+Defaults to false.
 
 ### Proto
 
