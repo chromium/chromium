@@ -11,7 +11,6 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

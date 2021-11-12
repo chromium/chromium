@@ -11,7 +11,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"

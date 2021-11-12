@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"

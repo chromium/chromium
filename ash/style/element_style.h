@@ -15,6 +15,9 @@ class LabelButton;
 
 namespace ash {
 
+// IMPORTANT: This file will be removed soon, please stop calling the functions
+// inside or keep adding new functions. Use PillButton, CloseButton etc under
+// ash/style instead.
 // This file includes defined styles of the UI elements. For example, styles for
 // the button, which includes the button's size, icon size, border, color etc.
 namespace element_style {

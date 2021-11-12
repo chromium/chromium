@@ -15,7 +15,7 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"

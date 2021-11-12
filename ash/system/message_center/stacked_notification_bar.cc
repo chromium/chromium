@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"

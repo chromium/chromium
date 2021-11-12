@@ -32,7 +32,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/close_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
