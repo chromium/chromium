@@ -387,6 +387,12 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // Bound to a callback that will be called by the DLP manager to let us know
+  // whether a pending session initialization should `proceed` or abort due to
+  // some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+                                            bool proceed);
+
   // At the end of a video recording, the DLP manager is checked to see if there
   // were any restricted content of a warning level type during the recording
   // (warning-level restrictions do not result in interrupting the video
@@ -440,6 +446,10 @@ class ASH_EXPORT CaptureModeController
   // determine the message shown to the user in the video preview notification
   // to explain why the recording was ended, and is then reset back to false.
   bool low_disk_space_threshold_reached_ = false;
+
+  // Set to true when we're waiting for a callback from the DLP manager to check
+  // content restrictions that may block the session initialization.
+  bool pending_dlp_check_on_session_init_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;

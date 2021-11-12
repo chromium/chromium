@@ -186,6 +186,48 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+                       DlpWarningDialogOnSessionInitDismissed) {
+  ASSERT_TRUE(browser());
+
+  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  ash::CaptureModeTestApi test_api;
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  test_api.StartForFullscreen(/*for_video=*/false);
+  // A capture mode session doesn't start immediately. The controller should be
+  // in a pending state waiting for a reply from the DLP manager.
+  EXPECT_FALSE(test_api.IsSessionActive());
+  EXPECT_TRUE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // Dismiss the dialog by hitting the ESCAPE key. The session should be aborted
+  // and the pending state should end.
+  SendKeyEvent(browser(), ui::VKEY_ESCAPE);
+  EXPECT_FALSE(test_api.IsSessionActive());
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
+                       DlpWarningDialogOnSessionInitAccepted) {
+  ASSERT_TRUE(browser());
+
+  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  ash::CaptureModeTestApi test_api;
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  test_api.StartForFullscreen(/*for_video=*/true);
+  // A capture mode session doesn't start immediately. The controller should be
+  // in a pending state waiting for a reply from the DLP manager.
+  EXPECT_FALSE(test_api.IsSessionActive());
+  EXPECT_TRUE(test_api.IsPendingDlpCheckOnSessionInit());
+
+  // Accept the dialog by hitting the ENTER key. The session should start and
+  // the pending state should end.
+  SendKeyEvent(browser(), ui::VKEY_RETURN);
+  EXPECT_TRUE(test_api.IsSessionActive());
+  EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
+}
+
 class AdvancedSettingsCaptureModeBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:

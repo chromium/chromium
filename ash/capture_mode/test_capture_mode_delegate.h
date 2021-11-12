@@ -70,6 +70,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
   bool IsCaptureModeInitRestrictedByDlp() const override;
+  void CheckCaptureModeInitRestrictionByDlp(
+      OnCaptureModeDlpRestrictionChecked callback) override;
   bool IsCaptureAllowedByDlp(const aura::Window* window,
                              const gfx::Rect& bounds,
                              bool for_video) const override;

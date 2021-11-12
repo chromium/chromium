@@ -136,6 +136,12 @@ bool ChromeCaptureModeDelegate::IsCaptureModeInitRestrictedByDlp() const {
   return policy::DlpContentManager::Get()->IsCaptureModeInitRestricted();
 }
 
+void ChromeCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
+  policy::DlpContentManager::Get()->CheckCaptureModeInitRestriction(
+      std::move(callback));
+}
+
 bool ChromeCaptureModeDelegate::IsCaptureAllowedByDlp(
     const aura::Window* window,
     const gfx::Rect& bounds,

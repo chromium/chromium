@@ -497,51 +497,18 @@ void CaptureModeController::EnableAudioRecording(bool enable_audio_recording) {
 }
 
 void CaptureModeController::Start(CaptureModeEntryType entry_type) {
-  if (capture_mode_session_)
+  if (capture_mode_session_ || pending_dlp_check_on_session_init_)
     return;
 
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
     return;
   }
-  if (delegate_->IsCaptureModeInitRestrictedByDlp()) {
-    ShowDisabledNotification(CaptureAllowance::kDisallowedByDlp);
-    return;
-  }
 
-  // Starting capture mode from the Projector app will put it in a special mode
-  // where only video recording is allowed, with audio recording enabled.
-  bool for_projector = false;
-
-  // Before we start the session, if video recording is in progress, we need to
-  // set the current type to image, as we can't have more than one recording at
-  // a time. The video toggle button in the capture mode bar will be disabled.
-  if (is_recording_in_progress()) {
-    SetType(CaptureModeType::kImage);
-  } else if (entry_type == CaptureModeEntryType::kProjector) {
-    DCHECK(features::IsProjectorEnabled());
-    for_projector = true;
-    // TODO(afakhry): Discuss with PM whether we want this to affect the audio
-    // settings of future generic capture mode sessions.
-    enable_audio_recording_ = true;
-    SetType(CaptureModeType::kVideo);
-  }
-
-  RecordCaptureModeEntryType(entry_type);
-  // Reset the user capture region if enough time has passed as it can be
-  // annoying to still have the old capture region from the previous session
-  // long time ago.
-  if (!user_capture_region_.IsEmpty() &&
-      base::TimeTicks::Now() - last_capture_region_update_time_ >
-          kResetCaptureRegionDuration) {
-    SetUserCaptureRegion(gfx::Rect(), /*by_user=*/false);
-  }
-
-  delegate_->OnSessionStateChanged(/*started=*/true);
-
-  capture_mode_session_ =
-      std::make_unique<CaptureModeSession>(this, for_projector);
-  capture_mode_session_->Initialize();
+  pending_dlp_check_on_session_init_ = true;
+  delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
+      &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
+      weak_ptr_factory_.GetWeakPtr(), entry_type));
 }
 
 void CaptureModeController::Stop() {
@@ -1469,6 +1436,59 @@ void CaptureModeController::BeginVideoRecording(
 
 void CaptureModeController::InterruptVideoRecording() {
   EndVideoRecording(EndRecordingReason::kDlpInterruption);
+}
+
+void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
+    CaptureModeEntryType entry_type,
+    bool proceed) {
+  pending_dlp_check_on_session_init_ = false;
+
+  if (!proceed)
+    return;
+
+  DCHECK(!capture_mode_session_);
+
+  // Check policy again even though we checked in Start(), but due to the DLP
+  // warning dialog can be accepted after a long wait, maybe something changed
+  // in the middle.
+  if (!delegate_->IsCaptureAllowedByPolicy()) {
+    ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);
+    return;
+  }
+
+  // Starting capture mode from the Projector app will put it in a special mode
+  // where only video recording is allowed, with audio recording enabled.
+  bool for_projector = false;
+
+  // Before we start the session, if video recording is in progress, we need to
+  // set the current type to image, as we can't have more than one recording at
+  // a time. The video toggle button in the capture mode bar will be disabled.
+  if (is_recording_in_progress()) {
+    SetType(CaptureModeType::kImage);
+  } else if (entry_type == CaptureModeEntryType::kProjector) {
+    DCHECK(features::IsProjectorEnabled());
+    for_projector = true;
+    // TODO(afakhry): Discuss with PM whether we want this to affect the audio
+    // settings of future generic capture mode sessions.
+    enable_audio_recording_ = true;
+    SetType(CaptureModeType::kVideo);
+  }
+
+  RecordCaptureModeEntryType(entry_type);
+  // Reset the user capture region if enough time has passed as it can be
+  // annoying to still have the old capture region from the previous session
+  // long time ago.
+  if (!user_capture_region_.IsEmpty() &&
+      base::TimeTicks::Now() - last_capture_region_update_time_ >
+          kResetCaptureRegionDuration) {
+    SetUserCaptureRegion(gfx::Rect(), /*by_user=*/false);
+  }
+
+  delegate_->OnSessionStateChanged(/*started=*/true);
+
+  capture_mode_session_ =
+      std::make_unique<CaptureModeSession>(this, for_projector);
+  capture_mode_session_->Initialize();
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(

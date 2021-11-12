@@ -76,6 +76,14 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Leak Prevention applied to the currently visible content.
   virtual bool IsCaptureModeInitRestrictedByDlp() const = 0;
 
+  // Called when capture mode is being started to check if there are any content
+  // currently on the screen that are restricted by DLP. `callback` will be
+  // triggered by the DLP manager with `proceed` set to true if capture mode
+  // initialization is allowed to continue, or set to false if it should be
+  // aborted.
+  virtual void CheckCaptureModeInitRestrictionByDlp(
+      OnCaptureModeDlpRestrictionChecked callback) = 0;
+
   // Returns whether capture of the region defined by |window| and |bounds|
   // is currently allowed by Data Leak Prevention feature.
   virtual bool IsCaptureAllowedByDlp(const aura::Window* window,

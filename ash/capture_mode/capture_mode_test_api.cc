@@ -45,6 +45,10 @@ void CaptureModeTestApi::StartForRegion(bool for_video) {
   controller_->Start(CaptureModeEntryType::kQuickSettings);
 }
 
+bool CaptureModeTestApi::IsSessionActive() const {
+  return controller_->IsActive();
+}
+
 void CaptureModeTestApi::SetUserSelectedRegion(const gfx::Rect& region) {
   controller_->SetUserCaptureRegion(region, /*by_user=*/true);
 }
@@ -58,6 +62,10 @@ void CaptureModeTestApi::PerformCapture() {
 
 bool CaptureModeTestApi::IsVideoRecordingInProgress() const {
   return controller_->is_recording_in_progress();
+}
+
+bool CaptureModeTestApi::IsPendingDlpCheckOnSessionInit() const {
+  return controller_->pending_dlp_check_on_session_init_;
 }
 
 void CaptureModeTestApi::StopVideoRecording() {
