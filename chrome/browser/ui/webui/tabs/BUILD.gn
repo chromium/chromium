@@ -18,6 +18,10 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [ "tabs_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//chrome/browser/ui/tabs:tab_enums",
+      ]
     },
   ]
 }

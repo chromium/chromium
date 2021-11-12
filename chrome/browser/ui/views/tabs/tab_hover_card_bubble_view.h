@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"

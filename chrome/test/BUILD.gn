@@ -1085,6 +1085,7 @@ if (!is_android && !is_fuchsia) {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
       "//chrome/browser/sharing/proto",
+      "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/webui/federated_learning:mojo_bindings",
       "//chrome/browser/ui/webui/history_clusters:mojo_bindings",
       "//chrome/browser/web_applications:browser_tests",
@@ -7636,6 +7637,7 @@ test("unit_tests") {
   if (toolkit_views) {
     deps += [
       "//chrome:unit_tests_pak",
+      "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
       "//components/constrained_window",
       "//components/global_media_controls",

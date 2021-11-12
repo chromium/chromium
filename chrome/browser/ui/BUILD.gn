@@ -1725,6 +1725,7 @@ static_library("ui") {
     ]
     public_deps += [
       "//build:branding_buildflags",
+      "//chrome/browser/ui/tabs:tab_enums",
       "//ui/base/dragdrop/mojom:mojom_headers",
     ]
 

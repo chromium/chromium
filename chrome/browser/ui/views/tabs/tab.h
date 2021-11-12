@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/performance_manager/public/freezing/freezing.h"
