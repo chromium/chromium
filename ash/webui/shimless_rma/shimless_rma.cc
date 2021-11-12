@@ -127,6 +127,14 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Check calibration page
       {"checkCalibrationTitleText",
        IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE},
+      // Finalize device  page
+      {"finalizePageTitleText", IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE},
+      {"finalizePageProgressText", IDS_SHIMLESS_RMA_FINALIZE_PROGRESS},
+      {"finalizePageCompleteText", IDS_SHIMLESS_RMA_FINALIZE_COMPLETE},
+      {"finalizePageFailedBlockingText",
+       IDS_SHIMLESS_RMA_FINALIZE_FAILED_BLOCKING},
+      {"finalizePageFailedNonBlockingText",
+       IDS_SHIMLESS_RMA_FINALIZE_FAILED_NON_BLOCKING},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       // Manual disable wp page

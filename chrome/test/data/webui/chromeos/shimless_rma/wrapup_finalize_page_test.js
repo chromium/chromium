@@ -6,13 +6,13 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {FinalizationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
-import {WrapupFinalizePageElement} from 'chrome://shimless-rma/wrapup_finalize_page.js';
+import {WrapupFinalizePage} from 'chrome://shimless-rma/wrapup_finalize_page.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function wrapupFinalizePageTest() {
-  /** @type {?WrapupFinalizePageElement} */
+  /** @type {?WrapupFinalizePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -39,7 +39,7 @@ export function wrapupFinalizePageTest() {
   function initializeFinalizePage() {
     assertFalse(!!component);
 
-    component = /** @type {!WrapupFinalizePageElement} */ (
+    component = /** @type {!WrapupFinalizePage} */ (
         document.createElement('wrapup-finalize-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
