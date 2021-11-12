@@ -32,5 +32,5 @@ tell application "Safari"
     do JavaScript "b=document.getElementsByClassName('uArJ5e UQuaGc Y5sE8d uyXBBb xKiqt')[0];b.click();"
   end tell
 
-  delay 1800
+  delay {{ delay }}
 end tell
