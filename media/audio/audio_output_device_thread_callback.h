@@ -51,7 +51,10 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   media::AudioRendererSink::RenderCallback* render_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
-  uint64_t callback_num_;
+  uint64_t callback_num_ = 0;
+
+  // If set, used to record the startup duration UMA stat.
+  absl::optional<base::TimeTicks> first_play_start_time_;
 };
 
 }  // namespace media

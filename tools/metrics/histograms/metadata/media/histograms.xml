@@ -864,6 +864,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Render.OutputDeviceStartTime2" units="ms"
+    expires_after="2022-10-04">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    The time delta from an AudioOutputDevice sending its first PlayStream
+    message to it getting its first data callback.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Render.OutputDeviceStatus"
     enum="OutputDeviceStatus" expires_after="2022-04-17">
   <owner>dalecurtis@chromium.org</owner>

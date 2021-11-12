@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 
 namespace media {
@@ -21,8 +21,7 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
           ComputeAudioOutputBufferSize(audio_parameters),
           /*segment count*/ 1),
       shared_memory_region_(std::move(shared_memory_region)),
-      render_callback_(render_callback),
-      callback_num_(0) {
+      render_callback_(render_callback) {
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());
@@ -68,9 +67,14 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // When playback starts, we get an immediate callback to Process to make sure
   // that we have some data, we'll get another one after the device is awake and
   // ingesting data, which is what we want to track with this trace.
-  if (callback_num_ == 2)
+  if (callback_num_ == 2) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "StartingPlayback",
                                     TRACE_ID_LOCAL(this));
+    if (first_play_start_time_) {
+      UmaHistogramTimes("Media.Audio.Render.OutputDeviceStartTime2",
+                        base::TimeTicks::Now() - *first_play_start_time_);
+    }
+  }
 
   // Update the audio-delay measurement, inform about the number of skipped
   // frames, and ask client to render audio.  Since |output_bus_| is wrapping
@@ -94,6 +98,14 @@ bool AudioOutputDeviceThreadCallback::CurrentThreadIsAudioDeviceThread() {
   return thread_checker_.CalledOnValidThread();
 }
 
-void AudioOutputDeviceThreadCallback::InitializePlayStartTime() {}
+void AudioOutputDeviceThreadCallback::InitializePlayStartTime() {
+  if (first_play_start_time_)
+    return;
+
+  DCHECK(!callback_num_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "StartingPlayback",
+                                    TRACE_ID_LOCAL(this));
+  first_play_start_time_ = base::TimeTicks::Now();
+}
 
 }  // namespace media
