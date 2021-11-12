@@ -529,8 +529,8 @@ const base::Feature kContextMenuTranslateWithGoogleLens{
 const base::Feature kGoogleLensSdkIntent{"GoogleLensSdkIntent",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kLensCameraAssistedSearch{
-    "LensCameraAssistedSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLensCameraAssistedSearch{"LensCameraAssistedSearch",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

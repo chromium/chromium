@@ -5548,30 +5548,6 @@
             ]
         }
     ],
-    "OmniboxLensIntegration": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDefaultMicThenLensV1",
-                    "params": {
-                        "disableOnIncognito": "true",
-                        "enableCameraAssistedSearchOnLowEndDevice": "false",
-                        "enableCameraAssistedSearchOnTablet": "false",
-                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
-                        "searchBoxStartVariantForLensCameraAssistedSearch": "false",
-                        "skipAgsaVersionCheck": "false",
-                        "skipLensEligibilityChecks": "false"
-                    },
-                    "enable_features": [
-                        "LensCameraAssistedSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxOnDeviceHeadNonIncognitoTuningMobile": [
         {
             "platforms": [
