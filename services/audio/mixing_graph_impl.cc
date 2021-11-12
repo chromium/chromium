@@ -4,10 +4,10 @@
 
 #include "services/audio/mixing_graph_impl.h"
 
-#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
+#include "services/audio/sync_mixing_graph_input.h"
 
 namespace audio {
 namespace {
@@ -45,8 +45,7 @@ MixingGraphImpl::~MixingGraphImpl() {
 
 std::unique_ptr<MixingGraph::Input> MixingGraphImpl::CreateInput(
     const media::AudioParameters& params) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<SyncMixingGraphInput>(this, params);
 }
 
 media::LoopbackAudioConverter* MixingGraphImpl::FindOrAddConverter(
