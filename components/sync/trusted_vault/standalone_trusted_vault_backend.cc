@@ -125,6 +125,8 @@ StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
   data_ = ReadEncryptedFile(file_path_);
+  // TODO(crbug.com/1269325): restore the constant key if it was removed due to
+  // the bug when following key rotation.
 }
 
 void StandaloneTrustedVaultBackend::FetchKeys(
@@ -606,7 +608,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
 
 void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     TrustedVaultDownloadKeysStatus status,
-    const std::vector<std::vector<uint8_t>>& vault_keys,
+    const std::vector<std::vector<uint8_t>>& new_vault_keys,
     int last_vault_key_version) {
   DCHECK(primary_account_.has_value());
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
@@ -618,17 +620,24 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(ongoing_connection_request_);
   ongoing_connection_request_ = nullptr;
 
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  DCHECK(per_user_vault);
   switch (status) {
-    case TrustedVaultDownloadKeysStatus::kSuccess:
-      // TODO(crbug.com/1102340): consider keeping old keys as well.
+    case TrustedVaultDownloadKeysStatus::kSuccess: {
+      // Store all vault keys (including already known) as they required for
+      // adding recovery method and might still be useful for decryption (e.g.
+      // key rotation wasn't complete).
+      std::vector<std::vector<uint8_t>> vault_keys =
+          GetAllVaultKeys(*per_user_vault);
+      std::copy(new_vault_keys.begin(), new_vault_keys.end(),
+                std::back_inserter(vault_keys));
       StoreKeys(primary_account_->gaia, vault_keys, last_vault_key_version);
       break;
+    }
     case TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted:
     case TrustedVaultDownloadKeysStatus::kNoNewKeys:
     case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed: {
-      sync_pb::LocalTrustedVaultPerUser* per_user_vault =
-          FindUserVault(primary_account_->gaia);
-      DCHECK(per_user_vault);
       // Unable to download new keys due to known protocol errors. The only way
       // to go out of these states is to receive new vault keys through external
       // StoreKeys() call. It's safe to mark device as not registered regardless

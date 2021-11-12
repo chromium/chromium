@@ -144,7 +144,7 @@ class StandaloneTrustedVaultBackend
       const TrustedVaultKeyAndVersion& vault_key_and_version);
 
   void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& vault_keys,
+                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
