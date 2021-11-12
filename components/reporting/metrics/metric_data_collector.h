@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/metric_data.pb.h"
 
 namespace reporting {
@@ -23,7 +24,6 @@ class MetricRateController;
 class MetricReportQueue;
 class MetricReportingController;
 class ReportingSettings;
-class Sampler;
 
 // A base class for metric data collection and reporting.
 class CollectorBase {
@@ -124,6 +124,33 @@ class EventDetector {
                            MetricData* current_metric_data) = 0;
 };
 
+class AdditionalSamplersCollector {
+ public:
+  explicit AdditionalSamplersCollector(std::vector<Sampler*> samplers);
+
+  AdditionalSamplersCollector(const AdditionalSamplersCollector& other) =
+      delete;
+  AdditionalSamplersCollector& operator=(
+      const AdditionalSamplersCollector& other) = delete;
+
+  ~AdditionalSamplersCollector();
+
+  void CollectAll(MetricCallback on_all_collected_cb,
+                  MetricData metric_data) const;
+
+ private:
+  void CollectAdditionalMetricData(uint64_t sampler_index,
+                                   MetricCallback on_all_collected_cb,
+                                   MetricData metric_data,
+                                   MetricData new_metric_data) const;
+
+  const std::vector<Sampler*> samplers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<AdditionalSamplersCollector> weak_ptr_factory_{this};
+};
+
 // Class to collect metric data periodically, check the collected data for
 // events, and report metric and event data if an event is detecetd.
 class PeriodicEventCollector : public PeriodicCollector {
@@ -148,17 +175,14 @@ class PeriodicEventCollector : public PeriodicCollector {
   void OnMetricDataCollected(MetricData metric_data) override;
 
  private:
-  void CollectAdditionalMetricData(uint64_t sampler_index,
-                                   MetricData metric_data,
-                                   MetricData new_metric_data);
+  void OnAdditionalMetricDataCollected(MetricData metric_data);
 
-  std::vector<Sampler*> additional_samplers_;
+  const std::unique_ptr<EventDetector> event_detector_;
 
-  std::unique_ptr<EventDetector> event_detector_;
+  const std::unique_ptr<AdditionalSamplersCollector>
+      additional_samplers_collector_;
 
   MetricData last_collected_data_;
-
-  base::WeakPtrFactory<PeriodicEventCollector> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
