@@ -4115,6 +4115,81 @@ if (enable_java_templates) {
     }
   }
 
+  # Compile a flatbuffer to java.
+  #
+  # This generates java files from flat buffers and creates an Android library
+  # containing the classes.
+  #
+  # Variables
+  #   sources (required)
+  #       Paths to .fbs files to compile.
+  #
+  #   root_dir (required)
+  #       Root directory of .fbs files.
+  #
+  #   deps (optional)
+  #       Additional dependencies. Passed through to both the action and the
+  #       android_library targets.
+  #
+  #   flatc_include_dirs (optional)
+  #       A list of extra import directories to be passed to flatc compiler.
+  #
+  #
+  # Example:
+  #  flatbuffer_java_library("foo_flatbuffer_java") {
+  #    root_dir = "src/foo"
+  #    sources = [ "$proto_path/foo.fbs" ]
+  #  }
+  template("flatbuffer_java_library") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    _template_name = target_name
+    _flatc_dep = "//third_party/flatbuffers:flatc($host_toolchain)"
+    _flatc_out_dir = get_label_info(_flatc_dep, "root_out_dir")
+    _flatc_bin = "$_flatc_out_dir/flatc"
+
+    action_with_pydeps("${_template_name}__flatc_java") {
+      _srcjar_path = "$target_gen_dir/$target_name.srcjar"
+      script = "//build/android/gyp/flatc_java.py"
+
+      deps = [ _flatc_dep ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      inputs = [ _flatc_bin ]
+
+      sources = invoker.sources
+      outputs = [ _srcjar_path ]
+      args = [
+               "--flatc",
+               rebase_path(_flatc_bin, root_build_dir),
+               "--import-dir",
+               rebase_path(invoker.root_dir, root_build_dir),
+               "--srcjar",
+               rebase_path(_srcjar_path, root_build_dir),
+             ] + rebase_path(sources, root_build_dir)
+
+      if (defined(invoker.flatc_include_dirs)) {
+        foreach(_include_dir, invoker.flatc_include_dirs) {
+          args += [
+            "--import-dir",
+            rebase_path(_include_dir, root_build_dir),
+          ]
+        }
+      }
+    }
+
+    android_library(target_name) {
+      chromium_code = false
+      sources = []
+      srcjar_deps = [ ":${_template_name}__flatc_java" ]
+      deps = [ "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+    }
+  }
+
   # Declare an Android library target for a prebuilt AAR.
   #
   # This target creates an Android library containing java code and Android

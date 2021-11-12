@@ -1121,6 +1121,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/dexsplitter.pydeps',
     'build/android/gyp/dist_aar.pydeps',
     'build/android/gyp/filter_zip.pydeps',
+    'build/android/gyp/flatc_java.pydeps',
     'build/android/gyp/gcc_preprocess.pydeps',
     'build/android/gyp/generate_linker_version_script.pydeps',
     'build/android/gyp/ijar.pydeps',
