@@ -495,7 +495,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 throw new RuntimeException("Tab.loadUrl called when no native side exists");
             }
 
-            // Request desktop sites for large screen tablets.
+            // Request desktop sites for large screen tablets if necessary.
             params.setOverrideUserAgent(calculateUserAgentOverrideOption());
 
             @TabLoadStatus
@@ -1641,9 +1641,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // TODO(crbug.com/1251794): Desktop site setting in app menu does not persist after restart.
         if (!mUserForcedUserAgent
                 && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
-            // We only do the following logic to choose the desktop/mobile user agent if
-            // 1. User never manually made a choice in app menu for requesting desktop site.
-            // 2. User enabled request desktop site in site settings.
+            // We only do the following logic to choose the desktop/mobile user agent if:
+            // 1. User never manually made a choice in the app menu for requesting desktop site.
+            // 2. User-enabled request desktop site in site settings.
             Profile profile =
                     IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
             boolean shouldRequestDesktopSite = getWebContents() != null
