@@ -379,6 +379,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/services/bluetooth_config/bluetooth_power_controller_impl.h"
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
@@ -1012,6 +1013,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   ash::BrowserDataMigrator::RegisterLocalStatePrefs(registry);
+  chromeos::bluetooth_config::BluetoothPowerControllerImpl::
+      RegisterLocalStatePrefs(registry);
   chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
       registry);
   ash::DemoModeDetector::RegisterPrefs(registry);
@@ -1338,6 +1341,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);
   chromeos::assistant::prefs::RegisterProfilePrefs(registry);
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
+  chromeos::bluetooth_config::BluetoothPowerControllerImpl::
+      RegisterProfilePrefs(registry);
   ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);

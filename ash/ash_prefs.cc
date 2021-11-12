@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
@@ -66,7 +67,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AssistantControllerImpl::RegisterProfilePrefs(registry);
   AshColorProvider::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
-  BluetoothPowerController::RegisterProfilePrefs(registry);
+  if (!ash::features::IsBluetoothRevampEnabled())
+    BluetoothPowerController::RegisterProfilePrefs(registry);
   CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);
   CaptureModeController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);
@@ -123,7 +125,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterLocalStatePrefs(registry);
   WallpaperControllerImpl::RegisterLocalStatePrefs(registry);
-  BluetoothPowerController::RegisterLocalStatePrefs(registry);
+  if (!ash::features::IsBluetoothRevampEnabled())
+    BluetoothPowerController::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);
   PowerPrefs::RegisterLocalStatePrefs(registry);
   DisplayPrefs::RegisterLocalStatePrefs(registry);

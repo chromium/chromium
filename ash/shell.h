@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -350,6 +351,7 @@ class ASH_EXPORT Shell : public SessionObserver,
     return backlights_forced_off_setter_.get();
   }
   BluetoothPowerController* bluetooth_power_controller() {
+    DCHECK(!ash::features::IsBluetoothRevampEnabled());
     return bluetooth_power_controller_.get();
   }
   BrightnessControlDelegate* brightness_control_delegate() {

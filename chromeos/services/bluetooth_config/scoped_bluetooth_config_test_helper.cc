@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
+#include "chromeos/services/bluetooth_config/fake_bluetooth_power_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/fake_device_name_manager.h"
 #include "chromeos/services/bluetooth_config/fake_device_operation_handler.h"
@@ -41,6 +42,15 @@ ScopedBluetoothConfigTestHelper::CreateBluetoothDeviceStatusNotifier(
   fake_bluetooth_device_status_notifier_ =
       fake_bluetooth_device_status_notifier.get();
   return fake_bluetooth_device_status_notifier;
+}
+
+std::unique_ptr<BluetoothPowerController>
+ScopedBluetoothConfigTestHelper::CreateBluetoothPowerController(
+    AdapterStateController* adapter_state_controller) {
+  auto fake_bluetooth_power_controller =
+      std::make_unique<FakeBluetoothPowerController>(adapter_state_controller);
+  fake_bluetooth_power_controller_ = fake_bluetooth_power_controller.get();
+  return fake_bluetooth_power_controller;
 }
 
 std::unique_ptr<DeviceNameManager>

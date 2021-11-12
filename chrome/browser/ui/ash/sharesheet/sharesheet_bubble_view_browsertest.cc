@@ -35,9 +35,9 @@ class SharesheetBubbleViewBrowserTest
  public:
   SharesheetBubbleViewBrowserTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
+      scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kNearbySharing);
+      scoped_feature_list_.InitAndDisableFeature(::features::kNearbySharing);
     }
   }
 

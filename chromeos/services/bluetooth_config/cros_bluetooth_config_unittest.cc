@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/services/bluetooth_config/bluetooth_power_controller_impl.h"
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
@@ -16,6 +19,8 @@
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,8 +42,17 @@ class CrosBluetoothConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(ash::features::kBluetoothRevamp);
+
     DeviceNameManagerImpl::RegisterLocalStatePrefs(
         test_pref_service_.registry());
+    BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
+        test_pref_service_.registry());
+
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -63,6 +77,9 @@ class CrosBluetoothConfigTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  user_manager::FakeUserManager* fake_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<FakeFastPairDelegate> fake_fast_pair_delegate_;
@@ -81,6 +98,12 @@ TEST_F(CrosBluetoothConfigTest, CallApiFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   FakeSystemPropertiesObserver fake_observer;
   remote->ObserveSystemProperties(fake_observer.GeneratePendingRemote());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrosBluetoothConfigTest, CallPowerFunction) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  remote->SetBluetoothEnabledState(true);
   base::RunLoop().RunUntilIdle();
 }
 

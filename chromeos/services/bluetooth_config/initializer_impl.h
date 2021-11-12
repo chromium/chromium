@@ -24,6 +24,8 @@ class InitializerImpl : public Initializer {
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
   std::unique_ptr<BluetoothDeviceStatusNotifier>
   CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) override;
+  std::unique_ptr<BluetoothPowerController> CreateBluetoothPowerController(
+      AdapterStateController* adapter_state_controller) override;
   std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
   std::unique_ptr<DeviceCache> CreateDeviceCache(

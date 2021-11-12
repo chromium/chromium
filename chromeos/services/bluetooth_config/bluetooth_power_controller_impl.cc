@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/bluetooth_power_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -31,20 +32,30 @@ bool ShouldApplyUserBluetoothSetting(user_manager::UserType user_type) {
 // static
 void BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
-                                /*default_value=*/false);
+  // If this flag is off, this pref is registered by
+  // ash::BluetoothPowerController.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
+                                  /*default_value=*/false);
+  }
 }
 
 // static
 void BluetoothPowerControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
-                                /*default_value=*/false);
+  // If this flag is off, this pref is registered by
+  // ash::BluetoothPowerController.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
+                                  /*default_value=*/false);
+  }
 }
 
 BluetoothPowerControllerImpl::BluetoothPowerControllerImpl(
     AdapterStateController* adapter_state_controller)
-    : adapter_state_controller_(adapter_state_controller) {}
+    : adapter_state_controller_(adapter_state_controller) {
+  adapter_state_controller_observation_.Observe(adapter_state_controller_);
+}
 
 BluetoothPowerControllerImpl::~BluetoothPowerControllerImpl() = default;
 
@@ -72,6 +83,26 @@ void BluetoothPowerControllerImpl::SetPrefs(PrefService* primary_profile_prefs,
                                             PrefService* local_state) {
   InitLocalStatePrefService(local_state);
   InitPrimaryUserPrefService(primary_profile_prefs);
+}
+
+void BluetoothPowerControllerImpl::OnAdapterStateChanged() {
+  if (!pending_adapter_enabled_state_.has_value())
+    return;
+
+  if (adapter_state_controller_->GetAdapterState() ==
+      mojom::BluetoothSystemState::kUnavailable) {
+    return;
+  }
+
+  // Adapter is now available after being unavailable. Set adapter state to
+  // |pending_adapter_enabled_state_|.
+  bool enabled = pending_adapter_enabled_state_.value();
+  BLUETOOTH_LOG(EVENT) << "Adapter is now available after being unavailable, "
+                       << "setting adapter state to " << enabled;
+
+  pending_adapter_enabled_state_.reset();
+
+  SetAdapterState(enabled);
 }
 
 void BluetoothPowerControllerImpl::InitLocalStatePrefService(
@@ -169,6 +200,18 @@ void BluetoothPowerControllerImpl::ApplyBluetoothPrimaryUserPref() {
 void BluetoothPowerControllerImpl::SetAdapterState(bool enabled) {
   BLUETOOTH_LOG(EVENT) << "Setting adapter state to "
                        << (enabled ? "enabled " : "disabled");
+
+  // On device startup, the local prefs may attempted to be applied before the
+  // adapter is available. Cache the value so it can be set once the adapter
+  // is available in OnAdapterStateChanged().
+  if (adapter_state_controller_->GetAdapterState() ==
+      mojom::BluetoothSystemState::kUnavailable) {
+    BLUETOOTH_LOG(EVENT) << "Adapter is currently unavailable, setting "
+                         << "pending_adapter_enabled_state_ to " << enabled;
+    pending_adapter_enabled_state_ = enabled;
+    return;
+  }
+
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
 }
 

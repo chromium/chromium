@@ -896,7 +896,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
 
   // Only need to check SODA installation and locale preference if offline
   // dictation is enabled.
-  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
     // Show network dictation dialog if needed. Locale prefs are only used
     // when this feature is enabled, so passing the empty string is OK.
     if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog(""))
@@ -921,7 +921,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   }
 
   // If SODA isn't available on the device, no need to try to install it.
-  if (!features::IsDictationOfflineAvailableAndEnabled()) {
+  if (!::features::IsDictationOfflineAvailableAndEnabled()) {
     // Show network dictation dialog if needed. Locale doesn't matter as no
     // languages are supported by SODA.
     if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog(""))
@@ -1716,7 +1716,7 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
           ->extension_service()
           ->component_loader();
 
-  if (!features::IsEnhancedNetworkVoicesEnabled() ||
+  if (!::features::IsEnhancedNetworkVoicesEnabled() ||
       component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
     return;
 
@@ -2030,7 +2030,7 @@ bool AccessibilityManager::ShouldShowNetworkDictationDialog(
     return false;
   }
 
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return true;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2073,7 +2073,7 @@ void AccessibilityManager::OnNetworkDictationDialogDismissed() {
 }
 
 void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2118,7 +2118,7 @@ void AccessibilityManager::OnSodaInstallError(
 }
 
 void AccessibilityManager::OnSodaInstallUpdated(int progress) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2179,7 +2179,7 @@ void AccessibilityManager::OnSodaLanguagePackError(
 }
 
 bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {
-  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+  if (!::features::IsDictationOfflineAvailableAndEnabled() ||
       !dictation_triggered_by_user_ || !IsDictationEnabled()) {
     return false;
   }
@@ -2200,7 +2200,7 @@ bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {
 
 bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
     speech::LanguageCode language_code) {
-  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+  if (!::features::IsDictationOfflineAvailableAndEnabled() ||
       !dictation_triggered_by_user_ || !IsDictationEnabled()) {
     return false;
   }
@@ -2224,7 +2224,7 @@ bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
 
 void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
     bool succeeded) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   const std::string locale =

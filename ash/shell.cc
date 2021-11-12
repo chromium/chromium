@@ -33,7 +33,6 @@
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/dbus/ash_dbus_services.h"
 #include "ash/detachable_base/detachable_base_handler.h"
@@ -949,8 +948,10 @@ void Shell::Init(
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
-  bluetooth_power_controller_ =
-      std::make_unique<BluetoothPowerController>(local_state_);
+  if (!ash::features::IsBluetoothRevampEnabled()) {
+    bluetooth_power_controller_ =
+        std::make_unique<BluetoothPowerController>(local_state_);
+  }
   detachable_base_handler_ =
       std::make_unique<DetachableBaseHandler>(local_state_);
   detachable_base_notification_controller_ =

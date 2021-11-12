@@ -7,6 +7,7 @@
 
 #include "chromeos/services/bluetooth_config/bluetooth_power_controller.h"
 
+#include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "components/user_manager/user_type.h"
 
@@ -17,7 +18,8 @@ namespace bluetooth_config {
 
 // Concrete BluetoothPowerController implementation that uses prefs to save and
 // apply the Bluetooth power state.
-class BluetoothPowerControllerImpl : public BluetoothPowerController {
+class BluetoothPowerControllerImpl : public BluetoothPowerController,
+                                     public AdapterStateController::Observer {
  public:
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -31,6 +33,9 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController {
   void SetBluetoothEnabledState(bool enabled) override;
   void SetPrefs(PrefService* primary_profile_prefs,
                 PrefService* local_state) override;
+
+  // AdapterStateController::Observer:
+  void OnAdapterStateChanged() override;
 
   void InitLocalStatePrefService(PrefService* local_state);
 
@@ -56,10 +61,18 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController {
   // has been attempted to be applied.
   bool has_attempted_apply_primary_user_pref_ = false;
 
+  // The state the adapter should be set to once it is available. This is set if
+  // SetAdapterState() is called before the adapter is available.
+  absl::optional<bool> pending_adapter_enabled_state_;
+
   PrefService* primary_profile_prefs_ = nullptr;
   PrefService* local_state_ = nullptr;
 
   AdapterStateController* adapter_state_controller_;
+
+  base::ScopedObservation<AdapterStateController,
+                          AdapterStateController::Observer>
+      adapter_state_controller_observation_{this};
 };
 
 }  // namespace bluetooth_config

@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/adapter_state_controller_impl.h"
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
+#include "chromeos/services/bluetooth_config/bluetooth_power_controller_impl.h"
 #include "chromeos/services/bluetooth_config/device_cache_impl.h"
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler_impl.h"
@@ -29,6 +30,13 @@ std::unique_ptr<BluetoothDeviceStatusNotifier>
 InitializerImpl::CreateBluetoothDeviceStatusNotifier(
     DeviceCache* device_cache) {
   return std::make_unique<BluetoothDeviceStatusNotifierImpl>(device_cache);
+}
+
+std::unique_ptr<BluetoothPowerController>
+InitializerImpl::CreateBluetoothPowerController(
+    AdapterStateController* adapter_state_controller) {
+  return std::make_unique<BluetoothPowerControllerImpl>(
+      adapter_state_controller);
 }
 
 std::unique_ptr<DeviceNameManager> InitializerImpl::CreateDeviceNameManager(

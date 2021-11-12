@@ -18,6 +18,7 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class BluetoothDeviceStatusNotifier;
+class BluetoothPowerController;
 class DeviceCache;
 class DeviceNameManager;
 class DeviceOperationHandler;
@@ -35,6 +36,9 @@ class Initializer {
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<BluetoothDeviceStatusNotifier>
   CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) = 0;
+  virtual std::unique_ptr<BluetoothPowerController>
+  CreateBluetoothPowerController(
+      AdapterStateController* adapter_state_controller) = 0;
   virtual std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<DeviceCache> CreateDeviceCache(

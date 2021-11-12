@@ -14,6 +14,7 @@ namespace bluetooth_config {
 
 class FakeAdapterStateController;
 class FakeBluetoothDeviceStatusNotifier;
+class FakeBluetoothPowerController;
 class FakeDeviceCache;
 class FakeDeviceNameManager;
 class FakeDeviceOperationHandler;
@@ -37,6 +38,10 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
 
   FakeBluetoothDeviceStatusNotifier* fake_bluetooth_device_status_notifier() {
     return fake_bluetooth_device_status_notifier_;
+  }
+
+  FakeBluetoothPowerController* fake_bluetooth_power_controller() {
+    return fake_bluetooth_power_controller_;
   }
 
   FakeDeviceNameManager* fake_device_name_manager() {
@@ -63,6 +68,8 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
   std::unique_ptr<BluetoothDeviceStatusNotifier>
   CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) override;
+  std::unique_ptr<BluetoothPowerController> CreateBluetoothPowerController(
+      AdapterStateController* adapter_state_controller) override;
   std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
   std::unique_ptr<DeviceCache> CreateDeviceCache(
@@ -79,6 +86,7 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
 
   FakeAdapterStateController* fake_adapter_state_controller_;
   FakeBluetoothDeviceStatusNotifier* fake_bluetooth_device_status_notifier_;
+  FakeBluetoothPowerController* fake_bluetooth_power_controller_;
   FakeDeviceNameManager* fake_device_name_manager_;
   FakeDeviceCache* fake_device_cache_;
   FakeDiscoverySessionManager* fake_discovery_session_manager_;
