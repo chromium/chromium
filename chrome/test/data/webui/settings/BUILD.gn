@@ -77,7 +77,7 @@ non_preprocessed_files = [
   "prefs_tests.js",
   "pref_util_tests.js",
   "privacy_review_page_test.js",
-  "privacy_sandbox_test.js",
+  "privacy_sandbox_test.ts",
   "protocol_handlers_tests.js",
   "recent_site_permissions_test.js",
   "reset_page_test.js",

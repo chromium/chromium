@@ -353,4 +353,10 @@ export class SettingsPrefsElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-prefs': SettingsPrefsElement;
+  }
+}
+
 customElements.define(SettingsPrefsElement.is, SettingsPrefsElement);

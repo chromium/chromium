@@ -5,19 +5,19 @@
 import 'chrome://settings/privacy_sandbox/app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
-import {PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
-class TestPrivacySandboxBrowserProxy extends TestBrowserProxy {
+class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
+    PrivacySandboxBrowserProxy {
   constructor() {
     super(['getFlocId', 'resetFlocId']);
   }
@@ -38,20 +38,10 @@ class TestPrivacySandboxBrowserProxy extends TestBrowserProxy {
 }
 
 suite('PrivacySandbox', function() {
-  /** @type {!PrivacySandboxAppElement} */
-  let page;
-
-  /** @type {?TestBrowserProxy} */
-  let metricsBrowserProxy = null;
-
-  /** @type {!TestBrowserProxy} */
-  let testHatsBrowserProxy;
-
-  /**
-   * @implements {PrivacySandboxBrowserProxy}
-   * @extends {TestBrowserProxy}
-   */
-  let testPrivacySandboxBrowserProxy;
+  let page: PrivacySandboxAppElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
@@ -80,7 +70,8 @@ suite('PrivacySandbox', function() {
   });
 
   test('clickApiToggleTest', async function() {
-    const toggleButton = page.shadowRoot.querySelector('#apiToggleButton');
+    const toggleButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#apiToggleButton')!;
     for (const apisEnabledPrior of [true, false]) {
       page.prefs = {
         privacy_sandbox: {
@@ -103,7 +94,7 @@ suite('PrivacySandbox', function() {
   });
 
   test('viewedPref', async function() {
-    page.shadowRoot.querySelector('#prefs').initialize();
+    page.shadowRoot!.querySelector('settings-prefs')!.initialize();
     await CrSettingsPrefs.initialized;
     assertTrue(!!page.getPref('privacy_sandbox.page_viewed').value);
   });
@@ -119,15 +110,10 @@ suite('PrivacySandbox', function() {
     // The page should automatically retrieve the FLoC state when it is attached
     // to the document.
     await testPrivacySandboxBrowserProxy.whenCalled('getFlocId');
-    assertEquals(
-        'test-trial-status',
-        page.shadowRoot.querySelector('#flocStatus').textContent.trim());
-    assertEquals(
-        'test-id', page.shadowRoot.querySelector('#flocId').textContent.trim());
-    assertEquals(
-        'test-time',
-        page.shadowRoot.querySelector('#flocUpdatedOn').textContent.trim());
-    assertFalse(page.shadowRoot.querySelector('#resetFlocIdButton').disabled);
+    assertEquals('test-trial-status', page.$.flocStatus.textContent!.trim());
+    assertEquals('test-id', page.$.flocId.textContent!.trim());
+    assertEquals('test-time', page.$.flocUpdatedOn!.textContent!.trim());
+    assertFalse(page.$.resetFlocIdButton.disabled);
 
     // The page should listen for changes via a WebUI listener.
     webUIListenerCallback('floc-id-changed', {
@@ -139,19 +125,14 @@ suite('PrivacySandbox', function() {
 
     await flushTasks();
     assertEquals(
-        'new-test-trial-status',
-        page.shadowRoot.querySelector('#flocStatus').textContent.trim());
-    assertEquals(
-        'new-test-id',
-        page.shadowRoot.querySelector('#flocId').textContent.trim());
-    assertEquals(
-        'new-test-time',
-        page.shadowRoot.querySelector('#flocUpdatedOn').textContent.trim());
-    assertTrue(page.shadowRoot.querySelector('#resetFlocIdButton').disabled);
+        'new-test-trial-status', page.$.flocStatus.textContent!.trim());
+    assertEquals('new-test-id', page.$.flocId.textContent!.trim());
+    assertEquals('new-test-time', page.$.flocUpdatedOn!.textContent!.trim());
+    assertTrue(page.$.resetFlocIdButton.disabled);
   });
 
   test('resetFlocId', function() {
-    page.shadowRoot.querySelector('#resetFlocIdButton').click();
+    page.$.resetFlocIdButton.click();
     return testPrivacySandboxBrowserProxy.whenCalled('resetFlocId');
   });
 
@@ -167,13 +148,13 @@ suite('PrivacySandbox', function() {
   });
 
   test('userActions', async function() {
-    page.shadowRoot.querySelector('#flocToggleButton').click();
+    page.$.flocToggleButton.click();
     assertEquals(
         'Settings.PrivacySandbox.FlocDisabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
 
-    page.shadowRoot.querySelector('#flocToggleButton').click();
+    page.$.flocToggleButton.click();
     assertEquals(
         'Settings.PrivacySandbox.FlocEnabled',
         await metricsBrowserProxy.whenCalled('recordAction'));

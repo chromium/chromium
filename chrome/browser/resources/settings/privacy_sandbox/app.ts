@@ -12,9 +12,19 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
+import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
+
+export interface PrivacySandboxAppElement {
+  $: {
+    flocId: HTMLElement,
+    flocStatus: HTMLElement,
+    flocToggleButton: SettingsToggleButtonElement,
+    flocUpdatedOn: HTMLElement,
+    resetFlocIdButton: CrButtonElement,
+  };
+}
 
 const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
 
@@ -99,6 +109,12 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.metricsBrowserProxy_.recordAction(
         flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
                       'Settings.PrivacySandbox.FlocDisabled');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-sandbox-app': PrivacySandboxAppElement;
   }
 }
 
