@@ -58,6 +58,10 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/base/window_properties.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/env.h"                            // nogncheck
 #include "ui/aura/window.h"                         // nogncheck
@@ -145,7 +149,7 @@ bool ShouldAttachOnEnd(TabDragContext* target_context) {
 // into another eligible browser window's context.
 bool CanDetachFromTabStrip(TabDragContext* context) {
   return context && GetWindowForTabDraggingProperties(context)->GetProperty(
-                        ash::kCanAttachToAnotherWindowKey);
+                        chromeos::kCanAttachToAnotherWindowKey);
 }
 
 #else

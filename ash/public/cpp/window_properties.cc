@@ -30,7 +30,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ArcResizeLockType,
                              kArcResizeLockTypeKey,
                              ArcResizeLockType::NONE)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowBackdrop, kWindowBackdropKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanAttachToAnotherWindowKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanConsumeSystemKeysKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeInMruKey, false)

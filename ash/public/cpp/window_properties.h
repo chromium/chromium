@@ -56,10 +56,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<ArcResizeLockType>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowBackdrop*>* const
     kWindowBackdropKey;
 
-// If true, the window can attach into another window.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kCanAttachToAnotherWindowKey;
-
 // If true, will send system keys to the window for dispatch.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kCanConsumeSystemKeysKey;

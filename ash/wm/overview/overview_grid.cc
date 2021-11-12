@@ -64,6 +64,7 @@
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
@@ -2194,7 +2195,7 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
     // into another window when changing the dragged window's bounds, so
     // that the dragged window doesn't merge into another window because of
     // its changed bounds.
-    dragged_window->SetProperty(kCanAttachToAnotherWindowKey, false);
+    dragged_window->SetProperty(chromeos::kCanAttachToAnotherWindowKey, false);
     TabletModeWindowState::UpdateWindowPosition(
         WindowState::Get(dragged_window), /*animate=*/false);
     const gfx::Rect new_bounds = dragged_window->bounds();
@@ -2204,7 +2205,7 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
           gfx::RectF(new_bounds), gfx::RectF(old_bounds));
       dragged_window->SetTransform(transform);
     }
-    dragged_window->ClearProperty(kCanAttachToAnotherWindowKey);
+    dragged_window->ClearProperty(chromeos::kCanAttachToAnotherWindowKey);
   }
 
   overview_session_->AddItemInMruOrder(dragged_window, /*reposition=*/false,
