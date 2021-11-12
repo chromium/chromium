@@ -102,7 +102,7 @@ public class DirectActionsIntegrationTest {
             mDirectActionHandler = AutofillAssistantFacade.createDirectActionHandler(
                     mTestRule.getActivity(), mAssistantDependencies.getBottomSheetController(),
                     mAssistantDependencies.getBrowserControls(),
-                    mAssistantDependencies.getCompositorViewHolder(),
+                    mAssistantDependencies.getRootView(),
                     mAssistantDependencies.getActivityTabProvider());
         });
     }

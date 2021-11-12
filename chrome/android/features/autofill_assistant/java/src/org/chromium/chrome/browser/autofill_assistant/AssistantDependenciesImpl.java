@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
+import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoord
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -40,7 +39,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     private final ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final ApplicationViewportInsetSupplier mBottomInsetProvider;
     private final ActivityTabProvider mActivityTabProvider;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final View mRootView;
 
     // Dependencies tied to the web_contents.
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
@@ -56,13 +55,12 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     private @Nullable AssistantOverlayCoordinator mOnboardingOverlayCoordinator;
 
     AssistantDependenciesImpl(BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            Context context, @NonNull WebContents webContents,
-            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            BrowserControlsStateProvider browserControls, View rootView, Context context,
+            WebContents webContents, ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider) {
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(
-                context, bottomSheetController, browserControls, compositorViewHolder);
+                context, bottomSheetController, browserControls, rootView);
         mContext = context;
         mWebContents = webContents;
         mBottomSheetController = bottomSheetController;
@@ -70,7 +68,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mBottomInsetProvider = bottomInsetProvider;
         mActivityTabProvider = activityTabProvider;
-        mCompositorViewHolder = compositorViewHolder;
+        mRootView = rootView;
         mTriggerScriptBridge = new AssistantTriggerScriptBridge(this);
     }
 
@@ -145,7 +143,7 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     public ActivityTabProvider getActivityTabProvider() {
         return mActivityTabProvider;
     }
-    public CompositorViewHolder getCompositorViewHolder() {
-        return mCompositorViewHolder;
+    public View getRootView() {
+        return mRootView;
     }
 }

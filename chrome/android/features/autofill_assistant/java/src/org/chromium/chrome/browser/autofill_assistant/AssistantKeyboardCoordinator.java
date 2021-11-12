@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -19,7 +19,7 @@ import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 class AssistantKeyboardCoordinator {
     private final Activity mActivity;
     private final ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final View mRootView;
     private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             this::onKeyboardVisibilityChanged;
     private boolean mAllowShowingSoftKeyboard = true;
@@ -32,12 +32,11 @@ class AssistantKeyboardCoordinator {
 
     // TODO(b/173103628): refactor and inject the keyboard delegate directly.
     AssistantKeyboardCoordinator(Activity activity,
-            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            CompositorViewHolder compositorViewHolder, AssistantModel model, Delegate delegate,
-            BottomSheetController controller) {
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate, View rootView,
+            AssistantModel model, Delegate delegate, BottomSheetController controller) {
         mActivity = activity;
         mKeyboardDelegate = keyboardVisibilityDelegate;
-        mCompositorViewHolder = compositorViewHolder;
+        mRootView = rootView;
         mDelegate = delegate;
         mBottomSheetController = controller;
 
@@ -56,7 +55,7 @@ class AssistantKeyboardCoordinator {
 
     /** Returns whether the keyboard is currently shown. */
     boolean isKeyboardShown() {
-        return mKeyboardDelegate.isKeyboardShowing(mActivity, mCompositorViewHolder);
+        return mKeyboardDelegate.isKeyboardShowing(mActivity, mRootView);
     }
 
     /** Returns whether the BottomSheet is currently shown. */
@@ -66,7 +65,7 @@ class AssistantKeyboardCoordinator {
 
     /** Hides the keyboard. */
     void hideKeyboard() {
-        mKeyboardDelegate.hideKeyboard(mCompositorViewHolder);
+        mKeyboardDelegate.hideKeyboard(mRootView);
     }
 
     /** Hides the keyboard after a delay if the focus is not on a TextView */

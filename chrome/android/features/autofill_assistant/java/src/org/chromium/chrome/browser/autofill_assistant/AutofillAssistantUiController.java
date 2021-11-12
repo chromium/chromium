@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.Nullable;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -135,10 +135,10 @@ public class AutofillAssistantUiController {
             long nativeUiController, @Nullable AssistantOverlayCoordinator overlayCoordinator) {
         mNativeUiController = nativeUiController;
         mActivity = activity;
-        Supplier<CompositorViewHolder> cvh = activity.getCompositorViewHolderSupplier();
+        Supplier<View> rootView = activity.getCompositorViewHolderSupplier();
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
-                activity.getWindowAndroid().getKeyboardDelegate(), cvh.get(),
+                activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
                 activity.getActivityTabProvider(), activity.getBrowserControlsManager(),
                 activity.getWindowAndroid().getApplicationBottomInsetProvider());
         mActivityTabObserver =

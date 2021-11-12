@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -124,10 +124,10 @@ public class AutofillAssistantFacade {
             Activity activity, AutofillAssistantModuleEntry module) {
         assert activity instanceof ChromeActivity;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
-        Supplier<CompositorViewHolder> cvh = chromeActivity.getCompositorViewHolderSupplier();
+        Supplier<View> rootView = chromeActivity.getCompositorViewHolderSupplier();
         return module.createDependencies(
                 BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                chromeActivity.getBrowserControlsManager(), cvh.get(), chromeActivity,
+                chromeActivity.getBrowserControlsManager(), rootView.get(), chromeActivity,
                 chromeActivity.getCurrentWebContents(),
                 chromeActivity.getWindowAndroid().getKeyboardDelegate(),
                 chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider(),
@@ -153,10 +153,10 @@ public class AutofillAssistantFacade {
      */
     public static DirectActionHandler createDirectActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider) {
         return new AutofillAssistantDirectActionHandler(context, bottomSheetController,
-                browserControls, compositorViewHolder, activityTabProvider,
+                browserControls, rootView, activityTabProvider,
                 AutofillAssistantModuleEntryProvider.INSTANCE);
     }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -13,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Definition;
@@ -39,7 +39,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControls;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final View mRootView;
     private final ActivityTabProvider mActivityTabProvider;
     private final AutofillAssistantModuleEntryProvider mModuleEntryProvider;
 
@@ -48,13 +48,13 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
 
     AutofillAssistantDirectActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider,
             AutofillAssistantModuleEntryProvider moduleEntryProvider) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mBrowserControls = browserControls;
-        mCompositorViewHolder = compositorViewHolder;
+        mRootView = rootView;
         mActivityTabProvider = activityTabProvider;
         mModuleEntryProvider = moduleEntryProvider;
     }
@@ -267,6 +267,6 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
         if (entry == null) return null;
 
         return entry.createActionHandler(mContext, mBottomSheetController, mBrowserControls,
-                mCompositorViewHolder, mActivityTabProvider);
+                mRootView, mActivityTabProvider);
     }
 }

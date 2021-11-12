@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -43,8 +43,7 @@ public class AssistantCoordinator {
             TabObscuringHandler tabObscuringHandler,
             @Nullable AssistantOverlayCoordinator overlayCoordinator,
             AssistantKeyboardCoordinator.Delegate keyboardCoordinatorDelegate,
-            @NonNull ActivityKeyboardVisibilityDelegate keyboardDelegate,
-            @NonNull CompositorViewHolder compositorViewHolder,
+            @NonNull ActivityKeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider) {
@@ -57,15 +56,14 @@ public class AssistantCoordinator {
         } else {
             mModel = new AssistantModel();
             mOverlayCoordinator = new AssistantOverlayCoordinator(activity, browserControlsManager,
-                    compositorViewHolder, controller.getScrimCoordinator(),
-                    mModel.getOverlayModel());
+                    rootView, controller.getScrimCoordinator(), mModel.getOverlayModel());
         }
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider,
                 tabObscuringHandler, browserControlsManager);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
-                compositorViewHolder, mModel, keyboardCoordinatorDelegate, controller);
+                rootView, mModel, keyboardCoordinatorDelegate, controller);
     }
 
     /** Detaches and destroys the view. */

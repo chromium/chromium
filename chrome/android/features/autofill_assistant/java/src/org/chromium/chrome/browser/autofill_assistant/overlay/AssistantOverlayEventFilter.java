@@ -52,7 +52,7 @@ class AssistantOverlayEventFilter
 
     private AssistantOverlayDelegate mDelegate;
     private final BrowserControlsStateProvider mBrowserControls;
-    private final View mCompositorView;
+    private final View mRootView;
 
     /**
      * Complain after there's been {@link #mTapTrackingCount} taps within
@@ -119,11 +119,11 @@ class AssistantOverlayEventFilter
     private final List<Long> mUnexpectedTapTimes = new ArrayList<>();
 
     AssistantOverlayEventFilter(
-            Context context, BrowserControlsStateProvider browserControls, View compositorView) {
+            Context context, BrowserControlsStateProvider browserControls, View rootView) {
         super(context, new SimpleOnGestureListener());
 
         mBrowserControls = browserControls;
-        mCompositorView = compositorView;
+        mRootView = rootView;
 
         mTapDetector = new GestureDetector(context, new SimpleOnGestureListener() {
             @Override
@@ -226,7 +226,7 @@ class AssistantOverlayEventFilter
      * <p>If the event starts a gesture, with ACTION_DOWN, within a touchable area, let the event
      * through.
      *
-     * <p>If the event starts a gesture outside a touchable area, forward it to the compositor once
+     * <p>If the event starts a gesture outside a touchable area, forward it to the root view once
      * it's clear that it's a scroll, fling or multi-touch event - and not a tap event.
      *
      * @return true if the event was handled by this view, as defined for {@link
@@ -273,7 +273,7 @@ class AssistantOverlayEventFilter
                         return true;
 
                     case GestureMode.FORWARDING:
-                        mCompositorView.dispatchTouchEvent(event);
+                        mRootView.dispatchTouchEvent(event);
                         return true;
 
                     default:
@@ -289,7 +289,7 @@ class AssistantOverlayEventFilter
                         return true;
 
                     case GestureMode.FORWARDING:
-                        mCompositorView.dispatchTouchEvent(event);
+                        mRootView.dispatchTouchEvent(event);
                         return true;
 
                     default:
@@ -307,7 +307,7 @@ class AssistantOverlayEventFilter
                         return true;
 
                     case GestureMode.FORWARDING:
-                        mCompositorView.dispatchTouchEvent(event);
+                        mRootView.dispatchTouchEvent(event);
                         resetCurrentGesture();
                         return true;
 
@@ -338,10 +338,10 @@ class AssistantOverlayEventFilter
     private void startForwardingGesture(MotionEvent currentEvent) {
         mCurrentGestureMode = GestureMode.FORWARDING;
         for (MotionEvent event : mCurrentGestureBuffer) {
-            mCompositorView.dispatchTouchEvent(event);
+            mRootView.dispatchTouchEvent(event);
         }
         cleanupCurrentGestureBuffer();
-        mCompositorView.dispatchTouchEvent(currentEvent);
+        mRootView.dispatchTouchEvent(currentEvent);
     }
 
     /**

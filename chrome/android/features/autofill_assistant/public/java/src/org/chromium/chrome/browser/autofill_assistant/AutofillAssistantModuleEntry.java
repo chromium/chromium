@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 import org.chromium.content_public.browser.WebContents;
@@ -28,8 +28,8 @@ public interface AutofillAssistantModuleEntry {
      * outside of the module.
      */
     AssistantDependencies createDependencies(BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            Context context, @NonNull WebContents webContents,
+            BrowserControlsStateProvider browserControls, View rootView, Context context,
+            @NonNull WebContents webContents,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider);
@@ -41,11 +41,11 @@ public interface AutofillAssistantModuleEntry {
      * @param context activity context
      * @param bottomSheetController bottom sheet controller instance of the activity
      * @param browserControls provider of browser controls state
-     * @param compositorViewHolder compositor view holder of the activity
+     * @param rootView root view of the activity
      * @param activityTabProvider activity tab provider
      */
     AutofillAssistantActionHandler createActionHandler(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
+            BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider);
 }

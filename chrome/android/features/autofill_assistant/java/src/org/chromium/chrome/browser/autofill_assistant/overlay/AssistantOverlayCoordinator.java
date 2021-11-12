@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.autofill_assistant.overlay;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.view.View;
 
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -26,19 +26,18 @@ public class AssistantOverlayCoordinator {
     private final AssistantOverlayModel mModel;
     private final AssistantOverlayEventFilter mEventFilter;
     private final AssistantOverlayDrawable mDrawable;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final View mRootView;
     private final ScrimCoordinator mScrim;
     private boolean mScrimEnabled;
     private boolean mScrimSuppressed;
 
     public AssistantOverlayCoordinator(Context context,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            ScrimCoordinator scrim, AssistantOverlayModel model) {
+            BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim,
+            AssistantOverlayModel model) {
         mModel = model;
-        mCompositorViewHolder = compositorViewHolder;
+        mRootView = rootView;
         mScrim = scrim;
-        mEventFilter =
-                new AssistantOverlayEventFilter(context, browserControls, compositorViewHolder);
+        mEventFilter = new AssistantOverlayEventFilter(context, browserControls, rootView);
         mDrawable = new AssistantOverlayDrawable(context, browserControls);
 
         // Listen for changes in the state.
@@ -147,7 +146,7 @@ public class AssistantOverlayCoordinator {
             PropertyModel params = new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                                            .with(ScrimProperties.TOP_MARGIN, 0)
                                            .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
-                                           .with(ScrimProperties.ANCHOR_VIEW, mCompositorViewHolder)
+                                           .with(ScrimProperties.ANCHOR_VIEW, mRootView)
                                            .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
                                            .with(ScrimProperties.VISIBILITY_CALLBACK, null)
                                            .with(ScrimProperties.CLICK_DELEGATE, null)

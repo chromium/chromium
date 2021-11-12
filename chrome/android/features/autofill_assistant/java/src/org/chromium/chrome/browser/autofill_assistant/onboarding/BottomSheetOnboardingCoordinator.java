@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant.onboarding;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCo
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -44,7 +44,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     private BottomSheetObserver mBottomSheetObserver;
     private final BottomSheetController mController;
     private final BrowserControlsStateProvider mBrowserControls;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final View mRootView;
     private final ScrimCoordinator mScrimCoordinator;
 
     @Nullable
@@ -52,12 +52,11 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
 
     BottomSheetOnboardingCoordinator(String experimentIds, Map<String, String> parameters,
             Context context, BottomSheetController controller,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            ScrimCoordinator scrim) {
+            BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim) {
         super(experimentIds, parameters, context);
         this.mController = controller;
         this.mBrowserControls = browserControls;
-        this.mCompositorViewHolder = compositorViewHolder;
+        this.mRootView = rootView;
         this.mScrimCoordinator = scrim;
     }
 
@@ -95,8 +94,8 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     void initViewImpl(Callback<Integer> callback) {
         // If there's a tab, cover it with an overlay.
         AssistantOverlayModel overlayModel = new AssistantOverlayModel();
-        mOverlayCoordinator = new AssistantOverlayCoordinator(getContext(), mBrowserControls,
-                mCompositorViewHolder, mScrimCoordinator, overlayModel);
+        mOverlayCoordinator = new AssistantOverlayCoordinator(
+                getContext(), mBrowserControls, mRootView, mScrimCoordinator, overlayModel);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {

@@ -6,20 +6,24 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementOnScreen;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getBitmapFromView;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
@@ -307,6 +311,55 @@ public class AutofillAssistantOverlayIntegrationTest {
         tapElement(mTestRule, "iframe", "touch_area_4");
         assertThat(
                 checkElementExists(mTestRule.getWebContents(), "iframe", "touch_area_4"), is(true));
+    }
+
+    /**
+     * Tests that three taps on the scrim removes the scrim and hides the Autofill Assistant.
+     */
+    @Test
+    @MediumTest
+    public void testThreeClicksHideAssistant() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(
+                                 PromptProto.newBuilder()
+                                         .setMessage("Overlay present")
+                                         .addChoices(Choice.newBuilder().setChip(
+                                                 ChipProto.newBuilder()
+                                                         .setType(org.chromium.chrome.browser
+                                                                          .autofill_assistant.proto
+                                                                          .ChipType.DONE_ACTION)
+                                                         .setText("Hide"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+        runScript(script);
+
+        waitUntil(() -> checkElementOnScreen(mTestRule, "touch_area_one"));
+        waitUntilViewMatchesCondition(withText("Overlay present"), isCompletelyDisplayed());
+
+        // Tapping the scrim three times should hide the scrim and the Autofill Assistant.
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
+        tapElement(mTestRule, "touch_area_four");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
+        tapElement(mTestRule, "touch_area_four");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
+        tapElement(mTestRule, "touch_area_four");
+
+        // Afterwards the scrim and Autofill Assistant are removed.
+        waitUntil(()
+                          -> mTestRule.getActivity()
+                                     .getRootUiCoordinatorForTesting()
+                                     .getScrimCoordinator()
+                                     .getViewForTesting()
+                        == null);
+        waitUntilViewAssertionTrue(
+                withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }
 
     /**
