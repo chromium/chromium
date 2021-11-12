@@ -119,14 +119,14 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
-  auto successful_upload_cb = base::BindOnce(
+  auto successful_upload_cb = base::BindRepeating(
       &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_cb =
-      base::BindOnce(&TestEncryptionKeyAttached::Call,
-                     base::Unretained(&encryption_key_attached));
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
@@ -172,14 +172,14 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
-  auto successful_upload_cb = base::BindOnce(
+  auto successful_upload_cb = base::BindRepeating(
       &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_cb =
-      base::BindOnce(&TestEncryptionKeyAttached::Call,
-                     base::Unretained(&encryption_key_attached));
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
@@ -204,13 +204,13 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
-  auto successful_upload_cb = base::BindOnce(
+  auto successful_upload_cb = base::BindRepeating(
       &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
   auto encryption_key_attached_cb =
-      base::BindOnce(&TestEncryptionKeyAttached::Call,
-                     base::Unretained(&encryption_key_attached));
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
@@ -236,13 +236,13 @@ TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
 
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
-  auto successful_upload_cb = base::BindOnce(
+  auto successful_upload_cb = base::BindRepeating(
       &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
   auto encryption_key_attached_cb =
-      base::BindOnce(&TestEncryptionKeyAttached::Call,
-                     base::Unretained(&encryption_key_attached));
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
@@ -259,14 +259,14 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
   StrictMock<TestSuccessfulUpload> successful_upload;
   EXPECT_CALL(successful_upload, Call(_, _))
       .Times(need_encryption_key() ? 1 : 0);
-  auto successful_upload_cb = base::BindOnce(
+  auto successful_upload_cb = base::BindRepeating(
       &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_cb =
-      base::BindOnce(&TestEncryptionKeyAttached::Call,
-                     base::Unretained(&encryption_key_attached));
+      base::BindRepeating(&TestEncryptionKeyAttached::Call,
+                          base::Unretained(&encryption_key_attached));
 
   const bool force_confirm_flag = force_confirm();
   if (need_encryption_key()) {

@@ -101,8 +101,12 @@ class TestEncryptedReportingUploadProvider
     : public EncryptedReportingUploadProvider {
  public:
   explicit TestEncryptedReportingUploadProvider(
+      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
+      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
       policy::CloudPolicyClient* cloud_policy_client)
       : EncryptedReportingUploadProvider(
+            report_successful_upload_cb,
+            encryption_key_attached_cb,
             /*build_cloud_policy_client_cb=*/
             base::BindRepeating(
                 [](policy::CloudPolicyClient* cloud_policy_client,
@@ -111,12 +115,13 @@ class TestEncryptedReportingUploadProvider
                 },
                 base::Unretained(cloud_policy_client)),
             /*upload_client_builder_cb=*/
-            base::BindRepeating([](policy::CloudPolicyClient* client,
-                                   reporting::UploadClient::CreatedCallback
-                                       update_upload_client_cb) {
-              reporting::FakeUploadClient::Create(
-                  client, std::move(update_upload_client_cb));
-            })) {}
+            base::BindRepeating(
+                [](policy::CloudPolicyClient* cloud_policy_client,
+                   reporting::UploadClient::CreatedCallback
+                       update_upload_client_cb) {
+                  reporting::FakeUploadClient::Create(
+                      cloud_policy_client, std::move(update_upload_client_cb));
+                })) {}
 };
 
 class EncryptedReportingUploadProviderTest : public ::testing::Test {
@@ -135,6 +140,12 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
     cloud_policy_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
+        base::BindRepeating(
+            &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
+            base::Unretained(this)),
         &cloud_policy_client_);
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
@@ -148,17 +159,9 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   Status CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records) {
-    auto report_upload_success_cb = base::BindOnce(
-        &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
-        base::Unretained(this));
-    auto encryption_key_attached_cb = base::BindOnce(
-        &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
-        base::Unretained(this));
     test::TestEvent<Status> result;
     service_provider_->RequestUploadEncryptedRecords(
-        need_encryption_key, std::move(records),
-        std::move(report_upload_success_cb),
-        std::move(encryption_key_attached_cb), result.cb());
+        need_encryption_key, std::move(records), result.cb());
     return result.result();
   }
 
@@ -172,9 +175,11 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 };
 
 TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
-  EXPECT_CALL(*this, ReportSuccessfulUpload(
-                         EqualsProto(record_.sequence_information()), _))
-      .Times(1);
+  test::TestMultiEvent<SequenceInformation, bool /*force*/> uploaded_event;
+  EXPECT_CALL(*this, ReportSuccessfulUpload(_, _))
+      .WillOnce([&uploaded_event](SequenceInformation seq_info, bool force) {
+        std::move(uploaded_event.cb()).Run(std::move(seq_info), force);
+      });
   EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([](base::Value request,
@@ -189,6 +194,10 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
   const auto status = CallRequestUploadEncryptedRecord(
       /*need_encryption_key=*/false, std::move(records));
   EXPECT_OK(status) << status;
+  auto uploaded_result = uploaded_event.result();
+  EXPECT_THAT(std::get<0>(uploaded_result),
+              EqualsProto(record_.sequence_information()));
+  EXPECT_FALSE(std::get<1>(uploaded_result));  // !force
 }
 
 }  // namespace

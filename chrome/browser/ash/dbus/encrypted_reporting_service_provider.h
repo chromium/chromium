@@ -59,11 +59,10 @@ class EncryptedReportingServiceProvider
                   const std::string& method_name,
                   bool success);
 
-  // Generators of callbacks referring to MissivedClient by default.
-  // Can be overridden for testing purposes.
-  virtual ::reporting::UploadClient::ReportSuccessfulUploadCallback
+  // Callbacks referring to MissivedClient.
+  static ::reporting::UploadClient::ReportSuccessfulUploadCallback
   GetReportSuccessUploadCallback();
-  virtual ::reporting::UploadClient::EncryptionKeyAttachedCallback
+  static ::reporting::UploadClient::EncryptionKeyAttachedCallback
   GetEncryptionKeyAttachedCallback();
 
   // Returns true if called on the origin thread.
