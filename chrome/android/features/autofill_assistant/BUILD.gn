@@ -21,7 +21,6 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
