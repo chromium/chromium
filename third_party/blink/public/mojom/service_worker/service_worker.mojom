@@ -149,7 +149,7 @@ const int32 kServiceWorkerDefaultIdleDelayInSeconds = 30;
 // An interface for talking to a running service worker thread. The browser
 // process uses this interface to request the renderer to do things like
 // dispatch events to the service worker. This interface is bound on the
-// service worker thread and is implemented by ServiceWorkerContextClient.
+// service worker thread and is implemented by ServiceWorkerGlobalScope.
 //
 // This is the master interface for the Mojo message pipe between the browser
 // process and the service worker thread in the renderer process. Other service
