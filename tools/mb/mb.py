@@ -630,8 +630,7 @@ class MetaBuildWrapper(object):
     if self.args.swarmed:
       cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
       return self._RunUnderSwarming(self.args.path, self.args.target, cmd)
-    else:
-      return self._RunLocallyIsolated(self.args.path, self.args.target)
+    return self._RunLocallyIsolated(self.args.path, self.args.target)
 
   def CmdZip(self):
     ret = self.CmdIsolate()
@@ -647,7 +646,9 @@ class MetaBuildWrapper(object):
           self.PathJoin(self.args.path, self.args.target + '.isolate'),
           '-outdir', zip_dir
       ]
-      self.Run(remap_cmd)
+      ret, _, _ = self.Run(remap_cmd)
+      if ret:
+        return ret
 
       zip_path = self.args.zip_path
       with zipfile.ZipFile(
@@ -656,6 +657,7 @@ class MetaBuildWrapper(object):
           for filename in files:
             path = self.PathJoin(root, filename)
             fp.write(path, self.RelPath(path, zip_dir))
+      return 0
     finally:
       if zip_dir:
         self.RemoveDirectory(zip_dir)
@@ -1171,7 +1173,7 @@ class MetaBuildWrapper(object):
     # Create a reverse map from isolate label to isolate dict.
     isolate_map = self.ReadIsolateMap()
     isolate_dict_map = {}
-    for key, isolate_dict in isolate_map.iteritems():
+    for key, isolate_dict in isolate_map.items():
       isolate_dict_map[isolate_dict['label']] = isolate_dict
       isolate_dict_map[isolate_dict['label']]['isolate_key'] = key
 
@@ -1407,7 +1409,7 @@ class MetaBuildWrapper(object):
         # shouldn't generate isolates for them.
         raise MBErr('Cannot generate isolate for %s since it is an '
                     'additional_compile_target.' % target)
-      elif fuchsia or ios or target_type == 'generated_script':
+      if fuchsia or ios or target_type == 'generated_script':
         # iOS and Fuchsia targets end up as groups.
         # generated_script targets are always actions.
         rpaths = [stamp_runtime_deps]

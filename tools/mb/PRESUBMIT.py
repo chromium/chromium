@@ -9,7 +9,18 @@ def _CommonChecks(input_api, output_api):
   results = []
 
   # Run Pylint over the files in the directory.
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      version='2.7',
+      # Disabling certain python3-specific warnings until the conversion
+      # is complete.
+      disabled_warnings=[
+          'super-with-arguments',
+          'raise-missing-from',
+          'useless-object-inheritance',
+      ],
+  )
   results.extend(input_api.RunTests(pylint_checks))
 
   # Run the MB unittests.
