@@ -304,8 +304,10 @@ void HitTestResult::SetInnerNode(Node* n) {
   }
 
   if (RuntimeEnabledFeatures::InertAttributeEnabled()) {
+    // TODO(crbug.com/692360): Remove inert retargeting, and instead use
+    // 'pointer-events: none'.
     if (GetHitTestRequest().RetargetForInert()) {
-      if (n->IsInert()) {
+      if (n->IsInert() && n != n->GetDocument().documentElement()) {
         if (!inert_node_)
           inert_node_ = n;
 

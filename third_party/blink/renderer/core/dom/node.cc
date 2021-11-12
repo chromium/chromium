@@ -1363,12 +1363,13 @@ bool Node::ShouldHaveFocusAppearance() const {
   return true;
 }
 
+// TODO(crbug.com/692360): Remove this method.
 bool Node::IsInert() const {
   DCHECK(!IsShadowRoot());
   if (!isConnected())
     return true;
 
-  if (this != GetDocument() && this != GetDocument().documentElement()) {
+  if (this != GetDocument()) {
     const Element* modal_element = GetDocument().ActiveModalDialog();
     if (!modal_element)
       modal_element = Fullscreen::FullscreenElementFrom(GetDocument());
