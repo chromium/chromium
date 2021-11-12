@@ -903,7 +903,7 @@ void CastWebContentsImpl::InnerWebContentsCreated(
       inner_web_contents, std::move(params)));
   for (auto& observer : observers_) {
     mojo::PendingRemote<mojom::CastWebContents> pending_remote;
-    result.first->get()->BindReceiver(
+    result.first->get()->BindSharedReceiver(
         pending_remote.InitWithNewPipeAndPassReceiver());
     observer->InnerContentsCreated(std::move(pending_remote));
   }
