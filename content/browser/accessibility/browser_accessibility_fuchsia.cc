@@ -338,13 +338,13 @@ ui::AXNodeID BrowserAccessibilityFuchsia::GetOffsetContainerOrRootNodeID()
 }
 
 void BrowserAccessibilityFuchsia::UpdateNode() {
-  if (!GetAccessibilityBridge() || ax_node_id_ == ui::kInvalidAXNodeID)
+  if (!GetAccessibilityBridge())
     return;
 
   ui::AXTreeID ax_tree_id = manager()->ax_tree_id();
 
   ui::AXNodeUpdateFuchsia update;
-  update.node_id = ui::AXNodeDescriptorFuchsia(ax_tree_id, ax_node_id_);
+  update.node_id = ui::AXNodeDescriptorFuchsia(ax_tree_id, GetId());
   update.node_data = ToFuchsiaNodeData();
 
   for (const auto* child : node()->children()) {
@@ -356,14 +356,13 @@ void BrowserAccessibilityFuchsia::UpdateNode() {
                                      GetOffsetContainerOrRootNodeID());
 
   BrowserAccessibility* root = manager()->GetRoot();
-  update.is_root =
-      manager()->IsRootTree() && root && root->GetId() == ax_node_id_;
+  update.is_root = manager()->IsRootTree() && root && root->GetId() == GetId();
 
   GetAccessibilityBridge()->UpdateNode(std::move(update));
 }
 
 void BrowserAccessibilityFuchsia::DeleteNode() {
-  if (!GetAccessibilityBridge() || ax_node_id_ == ui::kInvalidAXNodeID)
+  if (!GetAccessibilityBridge())
     return;
 
   GetAccessibilityBridge()->DeleteNode(

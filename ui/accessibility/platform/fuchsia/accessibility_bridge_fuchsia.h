@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/fuchsia/fuchsia_types.h"
 
@@ -27,6 +28,13 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
   // Translates |node_id| to a fuchsia node ID, and sends the deletion to
   // fuchsia.
   virtual void DeleteNode(AXNodeDescriptorFuchsia node_id) = 0;
+
+  // Sets has_input_focus to true for the fuchsia node specified by |new_focus|.
+  virtual void FocusNode(AXNodeDescriptorFuchsia new_focus) = 0;
+
+  // Sets has_input_focus to false for the fuchsia node specified by
+  // |old_focus|.
+  virtual void UnfocusNode(AXNodeDescriptorFuchsia old_focus) = 0;
 
   // Method to notify the accessibility bridge when a hit test result is
   // received. The accessibility bridge will convert |result| to a fuchsia node

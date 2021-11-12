@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_FUCHSIA_H_
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 
 namespace content {
 
@@ -28,6 +29,10 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
 
   // BrowserAccessibilityManager overrides.
   void FireFocusEvent(BrowserAccessibility* node) override;
+
+ private:
+  // Returns the accessibility bridge instance for this manager's WebContents.
+  ui::AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
 };
 
 }  // namespace content

@@ -33,6 +33,14 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     node_deletions_.push_back(node_id);
   }
 
+  void FocusNode(ui::AXNodeDescriptorFuchsia new_focus) override {
+    new_focus_.emplace(std::move(new_focus));
+  }
+
+  void UnfocusNode(ui::AXNodeDescriptorFuchsia old_focus) override {
+    old_focus_.emplace(std::move(old_focus));
+  }
+
   void OnAccessibilityHitTestResult(
       int hit_test_request_id,
       ui::AXNodeDescriptorFuchsia result) override {
@@ -49,12 +57,28 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     return hit_test_results_;
   }
 
+  const absl::optional<ui::AXNodeDescriptorFuchsia>& old_focus() {
+    return old_focus_;
+  }
+
+  const absl::optional<ui::AXNodeDescriptorFuchsia>& new_focus() {
+    return new_focus_;
+  }
+
+  void reset() {
+    node_updates_.clear();
+    node_deletions_.clear();
+    hit_test_results_.clear();
+  }
+
  private:
   std::vector<ui::AXNodeUpdateFuchsia> node_updates_;
   std::vector<ui::AXNodeDescriptorFuchsia> node_deletions_;
   std::map<int /* hit test request id */,
            ui::AXNodeDescriptorFuchsia /* hit test result */>
       hit_test_results_;
+  absl::optional<ui::AXNodeDescriptorFuchsia> old_focus_;
+  absl::optional<ui::AXNodeDescriptorFuchsia> new_focus_;
 };
 
 class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
@@ -218,6 +242,70 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
     EXPECT_EQ(location.max.x, 4);
     EXPECT_EQ(location.max.y, 6);
   }
+}
+
+TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
+  // We need to specify that this is the root frame; otherwise, no focus events
+  // will be fired. Likewise, we need to ensure that events are not suppressed.
+  test_browser_accessibility_delegate_->is_root_frame_ = true;
+  BrowserAccessibilityManager::NeverSuppressOrDelayEventsForTesting();
+
+  ui::AXTreeUpdate initial_state;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.tree_id = tree_id;
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.loaded = true;
+  initial_state.tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].child_ids.push_back(2);
+  initial_state.nodes[1].id = 2;
+
+  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
+  registry->RegisterAccessibilityBridge(tree_id,
+                                        mock_accessibility_bridge_.get());
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_state, test_browser_accessibility_delegate_.get()));
+  ASSERT_TRUE(manager);
+
+  // Set focus to node 1, and check that the focus was updated from null to
+  // node 1.
+  {
+    AXEventNotificationDetails event;
+    ui::AXTreeUpdate updated_state;
+    updated_state.tree_data.tree_id = tree_id;
+    updated_state.has_tree_data = true;
+    updated_state.tree_data.focused_tree_id = tree_id;
+    updated_state.tree_data.focus_id = 1;
+    event.ax_tree_id = tree_id;
+    event.updates.push_back(std::move(updated_state));
+    EXPECT_TRUE(manager->OnAccessibilityEvents(event));
+  }
+
+  ASSERT_FALSE(mock_accessibility_bridge_->old_focus());
+  ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
+  EXPECT_EQ(mock_accessibility_bridge_->new_focus()->node_id, 1);
+
+  // Set focus to node 2, and check that focus was updated from node 1 to node
+  // 2.
+  {
+    AXEventNotificationDetails event;
+    ui::AXTreeUpdate updated_state;
+    updated_state.tree_data.tree_id = tree_id;
+    updated_state.has_tree_data = true;
+    updated_state.tree_data.focused_tree_id = tree_id;
+    updated_state.tree_data.focus_id = 2;
+    event.ax_tree_id = tree_id;
+    event.updates.push_back(std::move(updated_state));
+    EXPECT_TRUE(manager->OnAccessibilityEvents(event));
+  }
+
+  ASSERT_TRUE(mock_accessibility_bridge_->old_focus());
+  EXPECT_EQ(mock_accessibility_bridge_->old_focus()->node_id, 1);
+  ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
+  EXPECT_EQ(mock_accessibility_bridge_->new_focus()->node_id, 2);
 }
 
 }  // namespace
