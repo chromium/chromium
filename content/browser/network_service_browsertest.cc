@@ -1038,8 +1038,8 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file = base::File(
           tempdir_two.Append(kNetworkSubpath).Append(kCookieDatabaseName),
           base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-              base::File::FLAG_EXCLUSIVE_WRITE |
-              base::File::FLAG_EXCLUSIVE_READ);
+              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+              base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
     case FailureType::kSourceCookieFileIsLocked:
@@ -1050,8 +1050,8 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file =
           base::File(tempdir_two.Append(kCookieDatabaseName),
                      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-                         base::File::FLAG_EXCLUSIVE_WRITE |
-                         base::File::FLAG_EXCLUSIVE_READ);
+                         base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                         base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
 #endif  // defined(OS_WIN)
