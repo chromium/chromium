@@ -60780,6 +60780,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Unknown"/>
 </enum>
 
+<enum name="NetworkCellularResetEuiccResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Inhibit failed"/>
+  <int value="2" label="Hermes reset failed"/>
+</enum>
+
 <enum name="NetworkCellularTechnology">
   <int value="0" label="1XRTT"/>
   <int value="1" label="EDGE"/>

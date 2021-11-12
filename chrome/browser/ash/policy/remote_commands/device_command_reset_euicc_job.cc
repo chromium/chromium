@@ -10,8 +10,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -35,6 +38,12 @@ constexpr char kNotifierESimPolicy[] = "policy.esim-policy";
 const char DeviceCommandResetEuiccJob::kResetEuiccNotificationId[] =
     "cros_reset_euicc";
 
+void DeviceCommandResetEuiccJob::RecordResetEuiccResult(
+    ResetEuiccResult result) {
+  base::UmaHistogramEnumeration(
+      "Network.Cellular.ESim.Policy.ResetEuicc.Result", result);
+}
+
 DeviceCommandResetEuiccJob::DeviceCommandResetEuiccJob()
     : DeviceCommandResetEuiccJob(
           chromeos::NetworkHandler::Get()->cellular_inhibitor()) {}
@@ -57,6 +66,20 @@ enterprise_management::RemoteCommand_Type DeviceCommandResetEuiccJob::GetType()
   return enterprise_management::RemoteCommand_Type_DEVICE_RESET_EUICC;
 }
 
+DeviceCommandResetEuiccJob::CallbackWithResult
+DeviceCommandResetEuiccJob::CreateTimedResetMemorySuccessCallback(
+    CallbackWithResult success_callback) {
+  return base::BindOnce(
+      [](CallbackWithResult success_callback, base::Time reset_euicc_start_time,
+         std::unique_ptr<ResultPayload> result_pay_load) -> void {
+        std::move(success_callback).Run(std::move(result_pay_load));
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Network.Cellular.ESim.Policy.ResetEuicc.Duration",
+            base::Time::Now() - reset_euicc_start_time);
+      },
+      std::move(success_callback), base::Time::Now());
+}
+
 void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
                                          CallbackWithResult failed_callback) {
   absl::optional<dbus::ObjectPath> euicc_path = chromeos::GetCurrentEuiccPath();
@@ -70,10 +93,11 @@ void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
   SYSLOG(INFO) << "Executing EUICC reset memory remote command";
   cellular_inhibitor_->InhibitCellularScanning(
       chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory,
-      base::BindOnce(&DeviceCommandResetEuiccJob::PerformResetEuicc,
-                     weak_ptr_factory_.GetWeakPtr(), *euicc_path,
-                     std::move(succeeded_callback),
-                     std::move(failed_callback)));
+      base::BindOnce(
+          &DeviceCommandResetEuiccJob::PerformResetEuicc,
+          weak_ptr_factory_.GetWeakPtr(), *euicc_path,
+          CreateTimedResetMemorySuccessCallback(std::move(succeeded_callback)),
+          std::move(failed_callback)));
 }
 
 void DeviceCommandResetEuiccJob::PerformResetEuicc(
@@ -83,6 +107,7 @@ void DeviceCommandResetEuiccJob::PerformResetEuicc(
     std::unique_ptr<chromeos::CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     SYSLOG(ERROR) << "Unable to reset EUICC. Could not get inhibit lock";
+    RecordResetEuiccResult(ResetEuiccResult::kInhibitFailed);
     RunResultCallback(std::move(failed_callback));
     return;
   }
@@ -103,11 +128,13 @@ void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
   if (status != chromeos::HermesResponseStatus::kSuccess) {
     SYSLOG(ERROR) << "Euicc reset failed. status = "
                   << static_cast<int>(status);
+    RecordResetEuiccResult(ResetEuiccResult::kHermesResetFailed);
     RunResultCallback(std::move(failed_callback));
     return;
   }
 
   SYSLOG(INFO) << "Successfully cleared EUICC";
+  RecordResetEuiccResult(ResetEuiccResult::kSuccess);
   RunResultCallback(std::move(succeeded_callback));
 
   // inhibit_lock is automatically released when destroyed.

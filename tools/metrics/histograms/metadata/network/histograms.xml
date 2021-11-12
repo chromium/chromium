@@ -246,6 +246,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.Policy.ResetEuicc.Duration" units="ms"
+    expires_after="2022-09-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the amount of time taken to complete reset euicc operation.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.Policy.ResetEuicc.Result"
+    enum="NetworkCellularResetEuiccResult" expires_after="2022-09-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks the result of an attempt to reset euicc. This process includes both
+    an attempt to inhibit modem scans as well as a request to reset EUICC. The
+    metric tracks failures at each step of the process. Emitted once the
+    operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.ProfileDiscovery.Latency" units="ms"
     expires_after="2022-05-01">
   <owner>azeemarshad@chromium.org</owner>
