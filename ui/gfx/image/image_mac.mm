@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 #include <stddef.h>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,9 +35,16 @@ NSImage* GetErrorNSImage() {
 
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage) {
+  // TODO(crbug.com/1253882): Remove this once the root cause has been found.
+  CHECK(nsimage);
   CGImageRef cg_image = [nsimage CGImageForProposedRect:NULL
                                                 context:nil
                                                   hints:nil];
+  // TODO(crbug.com/1253882): Remove this once the root cause has been found.
+  if (!cg_image) {
+    base::debug::DumpWithoutCrashing();
+    return scoped_refptr<base::RefCountedMemory>();
+  }
   base::scoped_nsobject<NSBitmapImageRep> ns_bitmap(
       [[NSBitmapImageRep alloc] initWithCGImage:cg_image]);
   NSData* ns_data = [ns_bitmap representationUsingType:NSPNGFileType
