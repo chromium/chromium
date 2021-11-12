@@ -63,6 +63,8 @@ class VideoFrameFileWriter : public VideoFrameProcessor {
   // Initialize the video frame file writer.
   bool Initialize();
 
+  void CleanUpOnWriterThread();
+
   // Writes the specified video frame to file on the |file_writer_thread_|.
   void ProcessVideoFrameTask(scoped_refptr<const VideoFrame> video_frame,
                              size_t frame_index);
