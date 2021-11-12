@@ -258,6 +258,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
 <translation id="2561519700418191927">Pregledi videozapisa</translation>
 <translation id="2567385386134582609">SLIKA</translation>
+<translation id="2567545343356994513">Brža, proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima Google Prevodiocu</translation>
 <translation id="2581165646603367611">Na ovaj način će se obrisati kolačići, keš memorija i drugi podaci s web lokacija za koje Chrome smatra da su nebitne.</translation>
 <translation id="2587052924345400782">Dostupna je nova verzija</translation>
@@ -485,6 +486,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="395377504920307820">Koristite bez računa</translation>
 <translation id="3958287878205277013">Da s uređaja obrišete historiju pregledanja u anonimnom načinu rada, zatvorite sve anonimne kartice.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati vašu stranicu kada bude spreman}one{Chrome će učitati vaše stranice kada bude spreman}few{Chrome će učitati vaše stranice kada bude spreman}other{Chrome će učitati vaše stranice kada bude spreman}}</translation>
+<translation id="3962119236270174787">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne</translation>
 <translation id="3962957115499249330">Vidjet ćete obavještenje kada ovo preuzimanje započne na WiFi mreži.</translation>
 <translation id="3963007978381181125">Šifrovanje pristupnim izrazom ne uključuje načine plaćanja i adrese iz Google Paya. Samo neko ko ima vaš pristupni izraz može čitati šifrirane podatke. Pristupni izraz se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite svoj pristupni izraz ili želite izmijeniti ovu postavku, trebat ćete poništiti sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne može provjeriti vaše lozinke</translation>
@@ -949,6 +951,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6627583120233659107">Uredi folder</translation>
 <translation id="6633067410344541938">Otključaj anonimni način rada</translation>
 <translation id="663674369910034433">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka možete pronaći u odjeljcima <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Googleove usluge<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Blokiraj sve vrijeme</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6643649862576733715">Sortiraj po iznosu sačuvanih podataka</translation>
 <translation id="6648459603387803038">Vaš administrator može promijeniti postavke preglednika daljinskim putem. Aktivnostima na ovom uređaju se može upravljati i van Chromea.</translation>
@@ -1075,6 +1078,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava iz Chromea</translation>
 <translation id="7438641746574390233">Kada je uključen Jednostavni način rada, Chrome koristi Googleove servere da bi se stranice brže učitavale. Jednostavni način rada ponovo ispisuje izuzetno spore stranice da bi se učitao samo ključni sadržaj. Jednostavni način rada se ne primjenjuje na anonimne kartice.</translation>
+<translation id="7443901082822119557">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, npr. radi personaliziranja oglasa. Moguće je da će funkcije na nekim web lokacijama prestati s radom.</translation>
 <translation id="7444811645081526538">Više kategorija</translation>
 <translation id="7453467225369441013">Odjavljuje vas s većine stranica Nećete biti odjavljeni s Google računa.</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
@@ -1182,6 +1186,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="799576009106109668">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>
 <translation id="7998918019931843664">Ponovono otvaranje zatvorenih kartica</translation>
 <translation id="8004582292198964060">Preglednik</translation>
+<translation id="8006818846907410687">Blokiraj prilikom korištenja anonimnog načina rada</translation>
 <translation id="8013372441983637696">Također obriši Chrome podatke s ovog uređaja</translation>
 <translation id="8015452622527143194">Sve što je na stranici vratiti na zadanu veličinu</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
@@ -1229,6 +1234,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8223642481677794647">Meni kartice za sažetak sadržaja</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica koristi previše memorije te je Chrome uklonio neki sadržaj.</translation>
+<translation id="8255617931166444521">Web lokacije mogu koristiti vaše kolačiće isključivo da vide vašu aktivnost pregledanja samo na svojoj web lokaciji</translation>
 <translation id="8260126382462817229">Pokušajte se ponovo prijaviti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Prikaži druge kartice</translation>

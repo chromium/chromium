@@ -35,6 +35,7 @@
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1197267115302279827">Move bookmarks</translation>
 <translation id="1201402288615127009">Next</translation>
+<translation id="1202892408424955784">Tracked products</translation>
 <translation id="1204037785786432551">Download link</translation>
 <translation id="1206892813135768548">Copy link text</translation>
 <translation id="1208340532756947324">To sync and personalise across devices, turn on sync</translation>
@@ -81,6 +82,7 @@
 <translation id="1414981605391750300">Contacting Google. This may take a minute…</translation>
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
 <translation id="147113415845704694">Try 'What’s the weather today?'</translation>
@@ -133,6 +135,7 @@
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1894023287452300670">Track price here</translation>
 <translation id="1905320231301365059">Files that you download in Incognito mode are still visible to anyone who uses this device.</translation>
 <translation id="1910950723001426294">List of sharing options is closed.</translation>
 <translation id="1918175104945982129">Assistant voice search consent UI opened at half height</translation>
@@ -344,6 +347,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3029704984691124060">Passphrases do not match</translation>
 <translation id="3031225630520268969">Assistant voice search consent UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3046945242843292318">Get to this site quicker next time</translation>
 <translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
@@ -502,6 +506,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4045764304651014138">Usage data</translation>
+<translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Options available near the top of the screen</translation>
 <translation id="4062305924942672200">Legal information</translation>
@@ -555,6 +560,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4409271659088619928">Your search engine is <ph name="DSE" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="4411535500181276704">Lite mode</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
+<translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4450672886426705087">Search results from Google.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
@@ -752,6 +758,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="555816257274242153">Stopped tracking price</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
 <translation id="55737423895878184">Location and notifications are allowed</translation>
@@ -802,9 +809,11 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
 <translation id="5839058148541733625">Chrome dino</translation>
+<translation id="5842437907245493289">Organise your tracked products in Bookmarks from the folder icon</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Something went wrong. Couldn’t update track price.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862731021271217234">To get your tabs from your other devices, turn on sync</translation>
@@ -860,6 +869,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6140912465461743537">Country/Region</translation>
 <translation id="6141988275892716286">Confirm download</translation>
 <translation id="614940544461990577">Try:</translation>
+<translation id="6150320133806434356">Bookmark saved</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> data savings</translation>
 <translation id="6159729262978459665">Clears history from all synced devices.</translation>
@@ -874,6 +884,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
+<translation id="6277722725779679269">Couldn’t update track price</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6292420053234093573">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">You can send tabs between devices that are signed in with the same Google Account</translation>
@@ -907,6 +918,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6411219469806822692">Can\u2019t go higher. Try starting from further up the page.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="641643625718530986">Print…</translation>
+<translation id="6422857128426228781">You’ll find your tracked products here</translation>
 <translation id="6433501201775827830">Choose your search engine</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6437478888915024427">Page info</translation>
@@ -984,6 +996,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6817747507826986771">Quickly share this page. To edit this shortcut, touch and hold.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> tab, selected</translation>
+<translation id="6828070228333235514">Stop tracking price</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>
@@ -1300,6 +1313,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8572344201470131220">Image copied</translation>
 <translation id="8583805026567836021">Clearing account data</translation>
+<translation id="859046281437143747">Track price from the 'More options' button</translation>
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8602358303461588329">Sign in to Chrome, closed.</translation>
 <translation id="860282621117673749">Price drop alerts</translation>

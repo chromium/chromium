@@ -42,7 +42,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2535480412977113886">Hindi ma-sync ng Chromium OS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="2560420686485554789">Kailangan ng Chromium ang access sa storage upang maka-download ng mga file</translation>
 <translation id="2572494885440352020">Helper ng Chromium</translation>
-<translation id="2577788541081224677">Para ma-access ang iyong mga bagay sa Chromium sa lahat ng device mo, mag-sign in para ma-on mo ang pag-sync.</translation>
 <translation id="2583187216237139145">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chromium na nabuo sa panahon ng paggamit ng profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Kailangang ma-restart ang Chromium OS upang mailapat ang update.</translation>
 <translation id="2614883797045469742">Gumagana ang mga default na setting para sa karamihan ng tao, pero puwede mong i-customize ang mga ito para tumugma kung paano mo gustong gamitin ang Chromium</translation>
@@ -250,7 +249,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7937630085815544518">Naka-sign in ka sa Chromium bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
 <translation id="7975919845073681630">Pangalawang pag-install ito ng Chromium at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="8013436988911883588">Kapag mayroon nang access ang Chromium, makakahingi na ang mga website ng access sa iyo.</translation>
-<translation id="8045118833343856403">Hindi naka-sign in sa anumang profile sa Chromium ang mga sumusunod na account. Kung gusto mong gumamit ng account sa ibang profile, alisin muna ang profile na iyon.</translation>
 <translation id="8105840573057009683">Kailangan ng Chromium ng pahintulot sa lokasyon para sa site na ito</translation>
 <translation id="81770708095080097">Mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>

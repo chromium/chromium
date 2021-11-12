@@ -185,6 +185,7 @@
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="4111761024568264522">‏لوحة لمس USB</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
+<translation id="4140251671072434548">‏إجراء عملية فتح قفل لخادم RMA</translation>
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
@@ -262,6 +263,7 @@
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
 <translation id="5050042263972837708">اسم المجموعة</translation>
 <translation id="5051044138948155788">هذه هي الصفحة الوحيدة وستؤدي إزالتها إلى نقلك إلى شاشة بدء المسح الضوئي.</translation>
+<translation id="5061169534910302641">تحديث الإصدار ثم إعادة التشغيل</translation>
 <translation id="5088172560898466307">اسم مضيف الخادم</translation>
 <translation id="5089810972385038852">الولاية</translation>
 <translation id="5142961317498132443">المصادقة</translation>
@@ -475,6 +477,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">إدخال رمز فتح القفل:</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>

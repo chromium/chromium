@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites Sie um Zugriff bitten.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In Ihrer Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
 <translation id="4633000520311261472">Um Chrome sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne Ihr Wissen hinzugefügt wurden.</translation>
-<translation id="4666328473657283332">Wenn Sie auf allen Ihren Geräten auf Ihre Chrome-Inhalte zugreifen möchten, melden Sie sich an, damit Sie die Synchronisierung aktivieren können.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließen Sie es und versuchen Sie es erneut.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Diese Datei ist eventuell schädlich und wurde von Chrome blockiert.</translation>
@@ -263,7 +262,6 @@
 <translation id="8008534537613507642">Chrome erneut installieren</translation>
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für Sie zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
-<translation id="822971176939352383">Folgende Konten sind nicht in einem Chrome-Profil angemeldet. Wenn Sie ein Konto in einem anderen Profil verwenden möchten, entfernen Sie zuerst dieses Profil.</translation>
 <translation id="8255190535488645436">Google Chrome verwendet Ihre Kamera und Ihr Mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome möchte Passwörter anzeigen. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="828798499196665338">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Aktivieren dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>

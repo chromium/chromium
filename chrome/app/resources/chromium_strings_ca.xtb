@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Chromium OS no ha pogut sincronitzar les vostres dades perquè la informació d'inici de sessió del vostre compte no està actualitzada.</translation>
 <translation id="2560420686485554789">Chromium necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="2572494885440352020">Aplicació d'ajuda de Chromium</translation>
-<translation id="2577788541081224677">Per accedir a les teves coses de Chromium des de tots els teus dispositius, inicia la sessió per poder activar la sincronització.</translation>
 <translation id="2583187216237139145">L'administrador del perfil de treball pot suprimir qualsevol dada de Chromium que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Cal reiniciar Chromium OS per aplicar l'actualització.</translation>
 <translation id="2614883797045469742">La configuració predeterminada funciona per a la majoria de persones, però la pots personalitzar perquè s'ajusti a la teva manera d'utilitzar Chromium.</translation>
@@ -247,7 +246,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
-<translation id="8045118833343856403">Els següents comptes no tenen la sessió iniciada en cap perfil de Chromium. Si vols utilitzar un compte en un altre perfil, primer has de suprimir aquest perfil.</translation>
 <translation id="8105840573057009683">Chromium necessita permís d'accés a la ubicació per a aquest lloc web</translation>
 <translation id="81770708095080097">Chromium ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8248265253516264921">Si una imatge no té una descripció útil, Chromium provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>

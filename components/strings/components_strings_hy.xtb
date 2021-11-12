@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">Կարող է հայցել մոտակա Bluetooth սարքերը հայտնաբերելու թույլտվություն</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="1428146450423315676">Շեղջիչ 7</translation>
+<translation id="142858679511221695">Ամպի օգտատեր</translation>
 <translation id="1428729058023778569">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">Հագեցում</translation>
 <translation id="3333762389743153920">Չի համապատասխանում վիրտուալ քարտի համար</translation>
 <translation id="3338095232262050444">Անվտանգ է</translation>
+<translation id="3339446062576134663">Ամպ (Ash)</translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
 <translation id="3360103848165129075">Վճարման մշակման թերթ</translation>
 <translation id="3361596688432910856">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
@@ -742,6 +744,7 @@
 <translation id="3380365263193509176">Անհայտ սխալ</translation>
 <translation id="3380864720620200369">Սպասառուի ID`</translation>
 <translation id="3381668585148405088">Հաստատեք ձեր գնումը</translation>
+<translation id="3383566085871012386">Կարևորության ընթացիկ հերթականություն</translation>
 <translation id="3387261909427947069">Վճարման եղանակներ</translation>
 <translation id="3391030046425686457">Առաքման հասցեն</translation>
 <translation id="3391482648489541560">ֆայլի փոփոխում</translation>
@@ -1411,6 +1414,7 @@
 <translation id="5478437291406423475">B6/C4 (ծրար)</translation>
 <translation id="5481076368049295676">Այս բովանդակությունը կարող է փորձել ձեր սարքում վնասարար ծրագիր տեղադրել, որը գողանում կամ ջնջում է ձեր տեղեկությունները։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Ավելացրեք վավեր հասցե</translation>
+<translation id="5485973315555778056">Ամպի սարք</translation>
 <translation id="5490432419156082418">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="5492298309214877701">Այս կայքը ընկերության, կազմակերպության կամ դպրոցի ինտրանետում որպես արտաքին վեբկայք ունի միևնույն URL-ը:
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@
 <translation id="5571083550517324815">Տվյալ հասցեից առաքման ընդունում հնարավոր չէ: Ընտրեք այլ հասցե:</translation>
 <translation id="5580958916614886209">Ստուգեք սպառման ամիսը և նորից փորձեք</translation>
 <translation id="5586446728396275693">Պահված հասցեներ չկան</translation>
+<translation id="5587987780934666589">Հարթակի օգտատեր</translation>
 <translation id="5593349413089863479">Կապը լիովին պաշտպանված չէ</translation>
 <translation id="5595485650161345191">Փոխել հասցեն</translation>
 <translation id="5598944008576757369">Ընտրեք վճարման եղանակը</translation>
@@ -2128,6 +2133,7 @@
 <translation id="7953569069500808819">Եզրակար վերևում</translation>
 <translation id="7956713633345437162">Բջջային էջանիշներ</translation>
 <translation id="7961015016161918242">Երբեք</translation>
+<translation id="7962467575542381659">Հարթակի սարք</translation>
 <translation id="7966803981046576691">Առաջադրանքի հաշվի տեսակը</translation>
 <translation id="79682505114836835">«<ph name="VALUE" />» արժեքը անվավեր HEX գույն է։</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>

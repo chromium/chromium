@@ -4760,6 +4760,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6023643151125006053">Toto zařízení (sériové číslo: <ph name="SERIAL_NUMBER" />) uzamkl administrátor domény <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Trasování zásobníku</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – připojeno k zařízení USB</translation>
+<translation id="6027945736510816438">Měli jste na mysli <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Přidat otisk prstu</translation>
 <translation id="6031600495088157824">Možnosti zadávání na liště</translation>
 <translation id="6032091552407840792">Tato zkušební funkce je k dispozici pouze v <ph name="BEGIN_LINK" />některých oblastech<ph name="END_LINK" />.</translation>
@@ -5512,6 +5513,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6833479554815567477">Karta byla odstraněna ze skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Přejděte na chytrý a zabezpečený prohlížeč</translation>
+<translation id="6833996806551876956">Testování izolovaného prostoru ochrany soukromí</translation>
 <translation id="6834652994408928492">Tmavý režim se zapne automaticky za soumraku</translation>
 <translation id="6835762382653651563">Chcete-li zařízení <ph name="DEVICE_TYPE" /> aktualizovat, připojte se k internetu.</translation>
 <translation id="6838034009068684089">Zeptat se, když chce web otevřít okna a umístit je na obrazovky (doporučeno)</translation>

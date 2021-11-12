@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">您的帐号登录详细信息已过期，Chromium操作系统无法同步您的数据。</translation>
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>
 <translation id="2572494885440352020">Chromium 帮助程序</translation>
-<translation id="2577788541081224677">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号以便开启同步功能。</translation>
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="2614883797045469742">默认的设置适用于大多数用户，但您可自定义这些设置以契合您偏好的 Chromium 使用方式</translation>
@@ -247,7 +246,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="8013436988911883588">一旦 Chromium 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
-<translation id="8045118833343856403">以下帐号未登录任何 Chromium 个人资料。如果您要使用某个帐号登录另一份个人资料，请先移除这份个人资料。</translation>
 <translation id="8105840573057009683">Chromium 需要为此网站授予位置信息权限</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="8248265253516264921">如果图片缺少有用的说明，则 Chromium 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。您可以随时在“设置”中关闭此功能。</translation>

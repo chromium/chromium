@@ -186,6 +186,7 @@
 <translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
 <translation id="4111761024568264522">USB სენსორული პანელი</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
+<translation id="4140251671072434548">RMA სერვერის განბლოკვა</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
@@ -471,6 +472,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">შეიყვანეთ განბლოკვის კოდი:</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8217675307824400706">დაამყარეთ კავშირი</translation>

@@ -4771,6 +4771,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SB: <ph name="SERIAL_NUMBER" />) je zaključao administrator domena <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Stanje niza</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB uređaj je povezan</translation>
+<translation id="6027945736510816438">Da li ste mislili <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodaj otisak prsta</translation>
 <translation id="6031600495088157824">Opcije unosa na traci sa alatkama</translation>
 <translation id="6032091552407840792">Ova proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regionima<ph name="END_LINK" />.</translation>
@@ -5525,6 +5526,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Pređite na pametan i bezbedan pregledač</translation>
+<translation id="6833996806551876956">Proba Zaštićenog okruženja privatnosti</translation>
 <translation id="6834652994408928492">Tamni režim se automatski uključuje kada sunce zađe</translation>
 <translation id="6835762382653651563">Povežite se na internet da biste ažurirali <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Pitaj kada sajt želi da otvara i postavlja prozore na ekrane (preporučeno)</translation>

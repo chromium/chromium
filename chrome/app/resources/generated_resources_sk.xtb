@@ -598,6 +598,7 @@
 <translation id="161042844686301425">Azúrová</translation>
 <translation id="1611432201750675208">Vaše zariadenie je uzamknuté</translation>
 <translation id="1612019740169791082">Váš kontajner nie je nakonfigurovaný na podporu zmien veľkosti disku. Ak chcete upraviť priestor, ktorý bol rezervovaný pre systém Linux, vytvorte zálohu a potom ju obnovte do nového kontajnera.</translation>
+<translation id="1613019471223620622">Zobraziť heslo používateľa <ph name="USERNAME" /> v doméne <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Možno ste dosiahli povolený limit mobilných dát. Ďalšie dáta si môžete zakúpiť na aktivačnom portáli <ph name="NAME" /></translation>
 <translation id="161460670679785907">Telefón sa nedarí nájsť</translation>
 <translation id="1615337439947999338">Uložiť v účte Google (<ph name="EMAIL" />)</translation>
@@ -1205,6 +1206,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2220529011494928058">Nahlásiť problém</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Nepomenovaný mediálny zdroj</translation>
 <translation id="2224444042887712269">Nastavenie patrí používateľovi <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Je potrebné vybrať aspoň jeden album z umeleckej galérie</translation>
 <translation id="2224551243087462610">Upraviť názov priečinka</translation>
@@ -3326,6 +3328,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4444304522807523469">Mať prístup ku skenerom dokumentov pripojeným cez USB alebo v miestnej sieti</translation>
 <translation id="4444512841222467874">Ak nie je dostatok miesta, môže dôjsť k automatickému odstráneniu používateľov a dát.</translation>
 <translation id="4446933390699670756">Zrkadlené</translation>
+<translation id="4448914100439890108">Skryť heslo používateľa <ph name="USERNAME" /> v doméne <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Vaše používateľské meno patrí do pracovného účtu vašej organizácie. Ak chcete do tohto účtu zaregistrovať zariadenia, najprv overte vlastníctvo domény v Správcovskej konzole. Na overenie budete potrebovať správcovské oprávnenia pre daný účet.</translation>
 <translation id="4449996769074858870">Táto karta prehráva zvuk.</translation>
 <translation id="4450274068924249931">Zobrazte fotky, čas, počasie a informácie o médiách, keď je obrazovka nečinná. Keď zapnete šetrič obrazovky, displej zostane počas nabíjania zapnutý.</translation>
@@ -3849,6 +3852,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5009463889040999939">Profil sa premenúva. Môže to trvať niekoľko minút.</translation>
 <translation id="5010043101506446253">Certifikačná autorita</translation>
 <translation id="5015344424288992913">Určenie proxy...</translation>
+<translation id="5016491575926936899">Môžete odosielať textové správy z počítača, zdieľať internetové pripojenie, odpovedať na upozornenia na konverzácie a odomykať telefónom zariadenie <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Stránkami môžete prechádzať pomocou textového kurzora. Túto funkciu vypnete stlačením skratky Ctrl + Hľadať + 7.</translation>
 <translation id="5017828934289857214">Pripomenúť neskôr</translation>
 <translation id="5018207570537526145">Otvoriť web rozšírenia</translation>
@@ -4438,6 +4442,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5638309510554459422">Nájdite rozšírenia a motívy v <ph name="BEGIN_LINK" />Internetovom obchode Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Načítať túto stránku, ďalšie možnosti zobrazíte podržaním</translation>
 <translation id="5640133431808313291">Správa bezpečnostných kľúčov</translation>
+<translation id="5641608986289282154">Začnite pomocou systému <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Podpisovateľ CRL</translation>
 <translation id="5643321261065707929">Meraná sieť</translation>
 <translation id="5643620609347735571">Vymazať a pokračovať</translation>
@@ -4777,6 +4782,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6023643151125006053">Toto zariadenie (sériové číslo: <ph name="SERIAL_NUMBER" />) uzamkol správca domény <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Správa Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – Bolo pripojené zariadenie USB</translation>
+<translation id="6027945736510816438">Mysleli ste <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Pridať odtlačok</translation>
 <translation id="6031600495088157824">Možnosti vstupu na paneli s nástrojmi</translation>
 <translation id="6032091552407840792">Skúšobné obdobie je aktívne iba v <ph name="BEGIN_LINK" />niektorých oblastiach<ph name="END_LINK" />.</translation>
@@ -5531,6 +5537,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6833479554815567477">Karta bola odstránená zo skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prepnite na inteligentný a bezpečný prehliadač</translation>
+<translation id="6833996806551876956">Skúšobné obdobie karantény ochrany súkromia</translation>
 <translation id="6834652994408928492">Tmavý režim sa automaticky zapne pri západe slnka</translation>
 <translation id="6835762382653651563">Ak chcete aktualizovať zariadenie <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="6838034009068684089">Opýtať sa, keď chce web otvárať a umiestňovať okná na vaše obrazovky (odporúčané)</translation>

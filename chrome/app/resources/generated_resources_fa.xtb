@@ -1149,7 +1149,7 @@
 <translation id="2157474325782140681">‏برای دریافت ویژگی‌های اضافی، از ایستگاه پایه اتصال Dell که برای کار با این Chromebook طراحی شده است، استفاده کنید.</translation>
 <translation id="215753907730220065">خروج از حالت تمام صفحه</translation>
 <translation id="2157875535253991059">این صفحه اکنون در حالت تمام صفحه است.</translation>
-<translation id="2158475082070321257">کپی کردن پیوند به مورد برجسته</translation>
+<translation id="2158475082070321257">کپی کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏افزودن Wi-Fi…</translation>
 <translation id="2162155940152307086">از صفحه تنظیمات همگام‌سازی که خارج شوید، همگام‌سازی شروع می‌شود</translation>
@@ -2942,7 +2942,7 @@
 <translation id="3984135167056005094">بدون درج نشانی ایمیل</translation>
 <translation id="3984159763196946143">حالت نمایشی شروع نشد</translation>
 <translation id="3984431586879874039">به این سایت اجازه می‌دهید کلید امنیتی‌تان را ببیند؟</translation>
-<translation id="398477389655464998">کپی کردن پیوند به مورد برجسته</translation>
+<translation id="398477389655464998">کپی کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="3984862166739904574">تعریف «پاسخ‌های سریع»</translation>
 <translation id="3987544746655539083">دسترسی این سایت به مکان شما همچنان مسدود شود</translation>
 <translation id="3987938432087324095">متأسفم، متوجه نشدم.</translation>
@@ -4775,6 +4775,7 @@
 <translation id="6023643151125006053">سرپرست دامنه <ph name="SAML_DOMAIN" /> این دستگاه (شماره سریال: <ph name="SERIAL_NUMBER" />) را قفل کرده است.</translation>
 <translation id="6025215716629925253">ردیابی پشته‌ای</translation>
 <translation id="6026819612896463875">‏<ph name="WINDOW_TITLE" /> - دستگاه USB متصل است</translation>
+<translation id="6027945736510816438">منظورتان <ph name="WEBSITE" /> بود؟</translation>
 <translation id="6028117231645531007">افزودن اثر انگشت</translation>
 <translation id="6031600495088157824">گزینه‌های ورودی در نوارابزار</translation>
 <translation id="6032091552407840792">این دوره آزمایشی فقط در <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
@@ -5526,6 +5527,7 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">به مرورگری هوشمند و ایمن جابه‌جا شوید</translation>
+<translation id="6833996806551876956">دوره آزمایشی «جعبه ایمنی حریم‌خصوصی»</translation>
 <translation id="6834652994408928492">«حالت تاریک» هنگام غروب آفتاب به‌طور خودکار روشن خواهد شد</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="6838034009068684089">وقتی سایتی می‌خواهد پنجره‌ها را باز کند و در صفحه جای‌گذاری کند سؤال شود (توصیه می‌شود)</translation>

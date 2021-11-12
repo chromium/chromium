@@ -42,7 +42,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2535480412977113886">Chromium OS kan je gegevens niet synchroniseren omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="2560420686485554789">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Als je toegang tot je Chromium-gegevens wilt, log je in zodat je synchronisatie kunt aanzetten.</translation>
 <translation id="2583187216237139145">Alle Chromium-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS moet opnieuw worden gestart om de update uit te voeren.</translation>
 <translation id="2614883797045469742">Voor de meeste mensen werken de standaardinstellingen, maar je kunt ze aanpassen aan de manier waarop je Chromium wilt gebruiken.</translation>
@@ -248,7 +247,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
-<translation id="8045118833343856403">De volgende accounts zijn niet ingelogd bij Chromium-profielen. Als je een account wilt gebruiken in een ander profiel, verwijder je eerst dat profiel.</translation>
 <translation id="8105840573057009683">Chromium heeft locatierechten nodig voor deze site</translation>
 <translation id="81770708095080097">Dit bestand is gevaarlijk en is daarom door Chromium geblokkeerd.</translation>
 <translation id="8248265253516264921">Als een afbeelding geen nuttige beschrijving bevat, probeert Chromium je er een te geven. Afbeeldingen worden naar Google gestuurd om beschrijvingen te maken. Je kunt dit op elk gewenst moment uitzetten in Instellingen.</translation>

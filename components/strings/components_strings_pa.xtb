@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
 <translation id="1428146450423315676">ਸਟੈਕਰ 7</translation>
+<translation id="142858679511221695">ਕਲਾਊਡ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1428729058023778569">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਸ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ। <ph name="BEGIN_LEARN_MORE_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1432581352905426595">ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -713,6 +714,7 @@
 <translation id="3329013043687509092">ਸੰਤ੍ਰਿਪਤੀ</translation>
 <translation id="3333762389743153920">ਆਭਾਸੀ ਕਾਰਡ ਲਈ ਯੋਗ ਨਹੀਂ</translation>
 <translation id="3338095232262050444">ਸੁਰੱਖਿਅਤ</translation>
+<translation id="3339446062576134663">ਕਲਾਊਡ (ਐਸ਼)</translation>
 <translation id="3355823806454867987">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਬਦਲੋ...</translation>
 <translation id="3360103848165129075">ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸ਼ੀਟ</translation>
 <translation id="3361596688432910856">Chrome ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ <ph name="BEGIN_EMPHASIS" />ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
@@ -736,6 +738,7 @@
 <translation id="3380365263193509176">ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3380864720620200369">ਕਲਾਇੰਟ ਆਈਡੀ:</translation>
 <translation id="3381668585148405088">ਆਪਣੀ ਖਰੀਦ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="3383566085871012386">ਮੌਜੂਦਾ ਤਰਜੀਹ ਕ੍ਰਮ</translation>
 <translation id="3387261909427947069">ਭੁਗਤਾਨ ਵਿਧੀਆਂ</translation>
 <translation id="3391030046425686457">ਡਿਲੀਵਰੀ ਪਤਾ</translation>
 <translation id="3391482648489541560">ਫ਼ਾਈਲ ਸੰਪਾਦਨ</translation>
@@ -1399,6 +1402,7 @@
 <translation id="5478437291406423475">B6/C4 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="5481076368049295676">ਇਹ ਸਮੱਗਰੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਅਜਿਹਾ ਖਤਰਨਾਕ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੀ ਹੈ ਜੋ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ ਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦਾ ਹੈ ਜਾਂ ਮਿਟਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">ਵੈਧ ਪਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="5485973315555778056">ਕਲਾਊਡ ਮਸ਼ੀਨ</translation>
 <translation id="5490432419156082418">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
 <translation id="5492298309214877701">ਕੰਪਨੀ, ਸੰਸਥਾ ਜਾਂ ਸਕੂਲ ਇੰਟਰਾਨੈੱਟ 'ਤੇ ਇਸ ਸਾਈਟ ਦੀ URL ਇੱਕ ਬਾਹਰੀ ਵੈੱਬਸਾਈਟ ਵਰਗੀ ਹੈ।
     <ph name="LINE_BREAK" />
@@ -1428,6 +1432,7 @@
 <translation id="5571083550517324815">ਇਸ ਪਤੇ ਤੋਂ ਪਿੱਕਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਸੇ ਵੱਖਰੇ ਪਤੇ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="5580958916614886209">ਆਪਣੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੇ ਮਹੀਨੇ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5586446728396275693">ਕੋਈ ਰੱਖਿਅਤ ਪਤੇ ਨਹੀਂ ਹਨ</translation>
+<translation id="5587987780934666589">ਪਲੇਟਫਾਰਮ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="5593349413089863479">ਕਨੈਕਸ਼ਨ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5595485650161345191">ਪਤਾ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="5598944008576757369">ਭੁਗਤਾਨ ਵਿਧੀ ਚੁਣੋ</translation>
@@ -2115,6 +2120,7 @@
 <translation id="7953569069500808819">ਉੱਪਰ ਕਿਨਾਰੇ ਤੋਂ ਸਿਲਾਈ</translation>
 <translation id="7956713633345437162">ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਸ</translation>
 <translation id="7961015016161918242">ਕਦੇ ਨਹੀਂ</translation>
+<translation id="7962467575542381659">ਪਲੇਟਫਾਰਮ ਮਸ਼ੀਨ</translation>
 <translation id="7966803981046576691">ਕਾਰਵਾਈ ਖਾਤੇ ਦੀ ਕਿਸਮ</translation>
 <translation id="79682505114836835">ਮੁੱਲ "<ph name="VALUE" />" ਇੱਕ ਅਵੈਧ ਹੈਕਸ ਰੰਗ ਹੈ।</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>

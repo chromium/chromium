@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Når Chrome har adgang, kan websites bede dig om adgang.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke opdateres til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
 <translation id="4633000520311261472">For at gøre Chrome sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
-<translation id="4666328473657283332">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chrome-ting på alle dine enheder.</translation>
 <translation id="4728575227883772061">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Google Chrome kører, bedes du lukke programmet og prøve igen.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Denne fil kan være farlig, så Chrome har blokeret den.</translation>
@@ -264,7 +263,6 @@
 <translation id="8008534537613507642">Geninstaller Chrome</translation>
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
-<translation id="822971176939352383">Følgende konti er ikke logget ind på nogen Chrome-profiler. Hvis du vil bruge en konto på en anden profil, skal du først fjerne den pågældende profil.</translation>
 <translation id="8255190535488645436">Google Chrome bruger dit kamera og din mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="828798499196665338">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

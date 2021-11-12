@@ -155,6 +155,8 @@
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
 <translation id="3583278742022654445">Slabý signál. Skúste sa priblížiť k zdroju signálu Wi-Fi.</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
+<translation id="360089215033199597">Odporúčame pripojiť sa k sieti Wi-Fi, čím sa proces opravy zjednoduší.
+        Vaša sieť bude uložená.</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latencia na weboch HTTPS</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -183,6 +185,7 @@
 <translation id="409427325554347132">Uložiť podrobnosti o teste</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
+<translation id="4140251671072434548">Odblokujte server povolení na vrátenie tovaru</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
@@ -469,8 +472,10 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požiadať o údaje počítadiel návštevnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Zadajte kód na odblokovanie:</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
+<translation id="8217675307824400706">Pripojte sa</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
 <translation id="8286154143153872371">Pripojte sa k sieti a opätovným načítaním stránky zobrazte tapetu.</translation>

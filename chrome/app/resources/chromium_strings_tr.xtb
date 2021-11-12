@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Hesap oturum açma ayrıntılarınız güncel olmadığından Chromium OS, verilerinizi senkronize edemedi.</translation>
 <translation id="2560420686485554789">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="2572494885440352020">Chromium Yardımcısı</translation>
-<translation id="2577788541081224677">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açarak senkronizasyonu etkinleştirebilirsiniz.</translation>
 <translation id="2583187216237139145">Bu profil kullanılırken oluşturulan tüm Chromium verileri (yer işaretleri, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Güncellemenin uygulanması için Chromium OS yeniden başlatılmalıdır.</translation>
 <translation id="2614883797045469742">Varsayılan ayarlar çoğu kullanıcı için uygundur ancak bu ayarları Chromium'u nasıl kullanmak istediğinize göre özelleştirebilirsiniz</translation>
@@ -245,7 +244,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
-<translation id="8045118833343856403">Aşağıdaki hesaplar hiçbir Chromium profilinde oturum açmamış. Başka profildeki bir hesabı kullanmak istiyorsanız önce bu profili kaldırın.</translation>
 <translation id="8105840573057009683">Bu site için Chromium'un konum iznine ihtiyacı var</translation>
 <translation id="81770708095080097">Bu dosya tehlikeli olduğu için Chromium tarafından engellendi.</translation>
 <translation id="8248265253516264921">Bir resmin işe yarar bir açıklaması yoksa, Chromium sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>

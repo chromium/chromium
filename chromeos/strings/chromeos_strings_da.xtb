@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annullerer scanning</translation>
 <translation id="1851218745569890714">Videomøder</translation>
+<translation id="1857850044054738019">Vælg denne mulighed, hvis enheden sendes tilbage til lageret eller renoveres med henblik på
+        distribution til en ny kunde.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
@@ -195,6 +197,7 @@
 <translation id="4244962993387259361">Du skal have mindst 500 MB ledig hukommelse for at køre en hukommelsestest. Du kan frigøre plads ved at gå til Indstillinger &gt; Administration af lagerplads.</translation>
 <translation id="4258281355379922695">HTTP-forsinkelse</translation>
 <translation id="4271957103967917607">Se i fuld skærm</translation>
+<translation id="4275799948641988986">Hvem kommer til at bruge enheden efter reparationen?</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="4378373042927530923">Kørte ikke</translation>
@@ -259,6 +262,7 @@
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
+<translation id="5061169534910302641">Opdater version, og genstart</translation>
 <translation id="5088172560898466307">Serverens hostname</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
@@ -409,6 +413,7 @@
 <translation id="7297226631177386107">Der kan ikke oprettes forbindelse gennem firewallen til HTTPS-websites</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Enheden overdrages til en anden ejer</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7359657277149375382">Filtype</translation>
@@ -416,6 +421,9 @@
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
+<translation id="7451112128070628323">Vælg denne mulighed, hvis ejerskabet over enheden ikke ændres.
+        Det kan f.eks. være, hvis enheden overdrages til en anden person
+        inden for organisationen.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
@@ -540,6 +548,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
+<translation id="9095415590198785865">Enheden bliver hos den samme ejer</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>

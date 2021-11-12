@@ -157,6 +157,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1422930527989633628">Websitet kan anmode om tilladelse til at søge efter Bluetooth-enheder i nærheden</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Stabler 7</translation>
+<translation id="142858679511221695">Skybruger</translation>
 <translation id="1428729058023778569">Du får vist denne advarsel, fordi dette website ikke understøtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
@@ -719,6 +720,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3329013043687509092">Mætning</translation>
 <translation id="3333762389743153920">Ikke kvalificeret til virtuelt kort</translation>
 <translation id="3338095232262050444">Sikker</translation>
+<translation id="3339446062576134663">Skyen (Ash)</translation>
 <translation id="3355823806454867987">Skift indstillinger for proxy...</translation>
 <translation id="3360103848165129075">Regneark for betalingshandler</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" /> følgende oplysninger:
@@ -742,6 +744,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3380365263193509176">Ukendt fejl</translation>
 <translation id="3380864720620200369">Klient-id:</translation>
 <translation id="3381668585148405088">Bekræft dit køb</translation>
+<translation id="3383566085871012386">Aktuel rangfølge</translation>
 <translation id="3387261909427947069">Betalingsmetoder</translation>
 <translation id="3391030046425686457">Leveringsadresse</translation>
 <translation id="3391482648489541560">filredigering</translation>
@@ -1411,6 +1414,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Dette indhold forsøger muligvis at installere farlig software på din enhed, der kan stjæle eller slette dine oplysninger. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Tilføj gyldig adresse</translation>
+<translation id="5485973315555778056">Maskine i skyen</translation>
 <translation id="5490432419156082418">Adresser m.m.</translation>
 <translation id="5492298309214877701">Dette website på virksomhedens, organisationens eller skolens intranet har samme webadresse som et eksternt website.
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5571083550517324815">Der kan ikke afhentes på denne adresse. Vælg en anden adresse.</translation>
 <translation id="5580958916614886209">Kontrollér, om udløbsmåneden er korrekt, og prøv igen.</translation>
 <translation id="5586446728396275693">Der er ikke nogen gemte adresser</translation>
+<translation id="5587987780934666589">Platformsbruger</translation>
 <translation id="5593349413089863479">Forbindelsen er ikke helt sikker</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5598944008576757369">Vælg betalingsmetode</translation>
@@ -2128,6 +2133,7 @@ Yderligere oplysninger:
 <translation id="7953569069500808819">Kanthæftning øverst</translation>
 <translation id="7956713633345437162">Bogmærker på mobil</translation>
 <translation id="7961015016161918242">Aldrig</translation>
+<translation id="7962467575542381659">Platformsmaskine</translation>
 <translation id="7966803981046576691">Jobkontotype</translation>
 <translation id="79682505114836835">Værdien "<ph name="VALUE" />" er en ugyldig hex-farve.</translation>
 <translation id="7968982339740310781">Se info</translation>

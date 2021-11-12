@@ -154,7 +154,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="459622048091363950">Kada Chrome dobije pristup, veb-sajtovi će moći da zatraže pristup.</translation>
 <translation id="4600710005438004015">Chrome nije uspeo da se ažurira na najnoviju verziju, pa propuštate nove funkcije i bezbednosne ispravke.</translation>
 <translation id="4633000520311261472">Da bismo učinili Chrome bezbednijim, onemogućili smo neke dodatke koje ne navodi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koji su možda dodati bez vašeg znanja.</translation>
-<translation id="4666328473657283332">Da biste pristupali Chrome sadržaju na svim uređajima, prijavite se da biste mogli da uključite sinhronizaciju.</translation>
 <translation id="4728575227883772061">Instalacija nije uspela zbog neodređene greške. Ako je Google Chrome trenutno otvoren, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ova datoteka može da bude opasna, pa ju je Chrome blokirao.</translation>
@@ -272,7 +271,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>
-<translation id="822971176939352383">Sledeći nalozi nisu prijavljeni ni na jedan Chrome profil. Ako želite da koristite nalog na drugom profilu, uklonite prvo taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome koristi kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="828798499196665338">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>

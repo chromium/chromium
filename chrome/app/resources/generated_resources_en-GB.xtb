@@ -598,6 +598,7 @@
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Your device is locked</translation>
 <translation id="1612019740169791082">Your container is not configured to support disk resizes. To adjust the amount of space that is reserved for Linux, back up and then restore into a new container.</translation>
+<translation id="1613019471223620622">Show password for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">You may have used up your mobile data allowance. Visit the <ph name="NAME" /> activation portal to buy more data</translation>
 <translation id="161460670679785907">Unable to detect your phone</translation>
 <translation id="1615337439947999338">Save in your Google Account (<ph name="EMAIL" />)</translation>
@@ -1213,6 +1214,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Unnamed media source</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">A minimum of one Art gallery album needs to be selected</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
@@ -3329,6 +3331,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
 <translation id="4444512841222467874">If space isn’t made available, users and data may be automatically removed.</translation>
 <translation id="4446933390699670756">Mirrored</translation>
+<translation id="4448914100439890108">Hide password for <ph name="USERNAME" /> on <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Your username belongs to your organisation's enterprise account. To enrol devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.</translation>
 <translation id="4449996769074858870">This tab is playing audio.</translation>
 <translation id="4450274068924249931">When your screen is idle, show photos, time, weather and media info. Enabling screen saver will keep your display on while charging.</translation>
@@ -3853,6 +3856,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
 <translation id="5010043101506446253">Certificate authority</translation>
 <translation id="5015344424288992913">Resolving proxy...</translation>
+<translation id="5016491575926936899">You can text from your computer, share your Internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE" /> with your phone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">You can navigate pages with a text cursor. Press Ctrl+Search+7 to turn off.</translation>
 <translation id="5017828934289857214">Remind me later</translation>
 <translation id="5018207570537526145">Open extension website</translation>
@@ -4438,6 +4442,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5638309510554459422">Find extensions and themes in the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reload this page, hold to see more options</translation>
 <translation id="5640133431808313291">Manage security keys</translation>
+<translation id="5641608986289282154">Start using <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL Signer</translation>
 <translation id="5643321261065707929">Metered network</translation>
 <translation id="5643620609347735571">Clear and continue</translation>
@@ -4775,6 +4780,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6023643151125006053">This device (SN: <ph name="SERIAL_NUMBER" />) was locked by the <ph name="SAML_DOMAIN" /> administrator.</translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB device connected</translation>
+<translation id="6027945736510816438">Did you mean <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Add fingerprint</translation>
 <translation id="6031600495088157824">Input options in toolbar</translation>
 <translation id="6032091552407840792">This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
@@ -5526,6 +5532,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
+<translation id="6833996806551876956">Privacy sandbox trial</translation>
 <translation id="6834652994408928492">Dark mode will turn on automatically at sunset</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>

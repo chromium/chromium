@@ -42,7 +42,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2535480412977113886">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2560420686485554789">Chromium needs storage access to download files</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">To access your Chromium stuff across all your devices, sign in so that you can turn on sync.</translation>
 <translation id="2583187216237139145">Any Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS needs to be restarted to apply the update.</translation>
 <translation id="2614883797045469742">The default settings work for most people, but you can customise them to fit how you like to use Chromium</translation>
@@ -249,7 +248,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="8013436988911883588">Once Chromium has access, websites will be able to ask you for access.</translation>
-<translation id="8045118833343856403">The following accounts are not signed into any Chromium profiles. If you want to use an account in another profile, remove that profile first.</translation>
 <translation id="8105840573057009683">Chromium needs location permission for this site</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>

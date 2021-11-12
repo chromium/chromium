@@ -153,7 +153,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="459622048091363950">Pasi Chrome të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="4600710005438004015">Chrome nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
-<translation id="4666328473657283332">Për t'u qasur te gjërat e Chrome nëpër të gjitha pajisjet, identifikohu që të mund të aktivizosh sinkronizimin.</translation>
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ky skedar mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
@@ -270,7 +269,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8008534537613507642">Instalo përsëri Chrome</translation>
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8129812357326543296">Informacion rreth &amp;Google Chrome</translation>
-<translation id="822971176939352383">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chrome. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="828798499196665338">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

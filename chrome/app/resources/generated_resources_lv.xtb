@@ -4761,6 +4761,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6023643151125006053">Šo ierīci (sērijas numurs: <ph name="SERIAL_NUMBER" />) bloķēja vietnes <ph name="SAML_DOMAIN" /> administrators.</translation>
 <translation id="6025215716629925253">Steka izsekošana</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> — pievienota USB ierīce</translation>
+<translation id="6027945736510816438">Vai domājāt <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Pievienot pirksta nospiedumu</translation>
 <translation id="6031600495088157824">Ievades iespējas rīkjoslā</translation>
 <translation id="6032091552407840792">Šī izmēģinājuma versija ir aktīva tikai <ph name="BEGIN_LINK" />dažos reģionos<ph name="END_LINK" />.</translation>
@@ -5512,6 +5513,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6831043979455480757">Tulkot</translation>
 <translation id="6833479554815567477">Cilne tika noņemta no grupas “<ph name="GROUP_NAME" />” — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Pāreja uz viedu un drošu pārlūku</translation>
+<translation id="6833996806551876956">Privacy Sandbox izmēģinājuma periods</translation>
 <translation id="6834652994408928492">Tumšais režīms tiks automātiski ieslēgts saulrietā</translation>
 <translation id="6835762382653651563">Lai atjauninātu savu <ph name="DEVICE_TYPE" /> ierīci, lūdzu, izveidojiet savienojumu ar internetu.</translation>
 <translation id="6838034009068684089">Vaicāt, ja vietne pieprasa atvērt un izvietot logus jūsu ekrānos (ieteicams)</translation>

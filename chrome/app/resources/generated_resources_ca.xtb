@@ -4776,6 +4776,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6023643151125006053">L'administrador del domini <ph name="SAML_DOMAIN" /> ha bloquejat aquest dispositiu (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Traça de la pila</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: hi ha un dispositiu USB connectat</translation>
+<translation id="6027945736510816438">Volies dir <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Afegeix una empremta digital</translation>
 <translation id="6031600495088157824">Opcions d'introducció de text a la barra d'eines</translation>
 <translation id="6032091552407840792">Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
@@ -5531,6 +5532,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Canvia a un navegador intel·ligent i segur</translation>
+<translation id="6833996806551876956">Prova de la zona de proves de privadesa</translation>
 <translation id="6834652994408928492">El mode fosc s'activarà automàticament al vespre</translation>
 <translation id="6835762382653651563">Connecteu-vos a Internet per actualitzar el dispositiu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Pregunta'm quan un lloc web vulgui obrir i col·locar finestres a les pantalles (opció recomanada)</translation>

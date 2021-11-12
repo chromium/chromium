@@ -260,6 +260,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2561519700418191927">Video eskizlar</translation>
 <translation id="2567385386134582609">TASVIR</translation>
+<translation id="2567545343356994513">Zararli sayt, yuklanma va kengaytmalarga qarshi tez va mustahkam himoya</translation>
 <translation id="2571711316400087311">Boshqa tildagi sahifalarni Google Tarjimonga yuborish taklif qilinsin</translation>
 <translation id="2581165646603367611">Chrome muhim emas deb hisoblaydigan cookie-fayllar, kesh va boshqa sayt ma’lumotlari o‘chiriladi.</translation>
 <translation id="2587052924345400782">Yangi versiyasi chiqdi.</translation>
@@ -487,6 +488,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="395377504920307820">Hisobsiz foydalanish</translation>
 <translation id="3958287878205277013">Qurilmadan Inkognito sahifalar tarixini tozalash uchun barcha Inkognito varaqlarni yoping</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sahifani tayyor boʻlishi bilan ochadi}other{Chrome sahifalarni tayyor boʻlishi bilan ochadi}}</translation>
+<translation id="3962119236270174787">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="3962957115499249330">Wi-Fi orqali yuklab olish boshlanganda bildirishnoma olasiz.</translation>
 <translation id="3963007978381181125">Kodli ibora yordamida shifrlaganda Google Pay manzillari va toʻlov usullari shifrlanmaydi. Shifrlangan maʼlumotlaringizni faqat kodli iborani biladiganlar koʻra oladi. Bu iborani Google bilmaydi va serverlarida saqlamaydi. Agar kodli iborani unutsangiz, sinxronizatsiya sozlamalarini qayta tiklash kerak bo‘ladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome parollaringizni tekshira olmadi</translation>
@@ -952,6 +954,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6627583120233659107">Jildni tahrirlash</translation>
 <translation id="6633067410344541938">Inkognito qulfini ochish</translation>
 <translation id="663674369910034433">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK1" />Sinxronlash<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />Google xizmatlari<ph name="END_LINK2" /> bilan tanishing</translation>
+<translation id="6640207029842583248">Doim bloklash</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6643649862576733715">Tejalgan trafik asosida saralash</translation>
 <translation id="6648459603387803038">Adminitratoringiz brauzerni masofadan sozlashi mumkin. Bu qurilmadagi amallar Chrome tashqarisidan boshqarilishi mumkin.</translation>
@@ -1078,6 +1081,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7435356471928173109">Administrator tomonidan faolsizlantirilgan</translation>
 <translation id="7437998757836447326">Chrome’dan chiqish</translation>
 <translation id="7438641746574390233">Lite rejimi yoniqligida, Chrome sahifalarni tezroq yuklash uchun Google serverlaridan foydalanadi. Lite rejimi eng asosiy kontentni yuklash uchun eng sekin sahifalarni qaytadan yozib chiqadi. Lite rejimi inkognito sahifalarda ishlamaydi.</translation>
+<translation id="7443901082822119557">Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="7444811645081526538">Boshqa turkumlar</translation>
 <translation id="7453467225369441013">Bir nechta saytdagi hisobingizdan chiqasiz, lekin Google hisobingizdan emas.</translation>
 <translation id="7454641608352164238">Joy yetarli emas</translation>
@@ -1185,6 +1189,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="799576009106109668">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
 <translation id="7998918019931843664">Yopiq ichki oynani qayta ochish</translation>
 <translation id="8004582292198964060">Brauzer</translation>
+<translation id="8006818846907410687">Inkognito rejimida bloklash</translation>
 <translation id="8013372441983637696">Chrome axborotlari ham bu qurilmadan tozalansinmi?</translation>
 <translation id="8015452622527143194">Sahifadagi barcha narsani standart hajmga qaytarish</translation>
 <translation id="8026334261755873520">Brauzer tarixini tozalash</translation>
@@ -1232,6 +1237,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
 <translation id="825412236959742607">Bu sahifa juda ko‘p xotira ishlatishi sababli Chrome bu kontentni olib tashladi.</translation>
+<translation id="8255617931166444521">Saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi</translation>
 <translation id="8260126382462817229">Qaytadan kirib ko‘ring</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="82619448491672958">Boshqa varaqlar</translation>

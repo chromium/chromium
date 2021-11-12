@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Ava rühmas uuel vahelehel</translation>
 <translation id="1103142993930332957">Kas soovite aidata Chrome'i täiustada?</translation>
 <translation id="1105960400813249514">Kuva jäädvustamine</translation>
+<translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
 <translation id="1110914759170138831">Esiletõstu lühendati</translation>
 <translation id="1111673857033749125">Siin kuvatakse teie teistes seadmetes salvestatud järjehoidjad.</translation>
 <translation id="1113597929977215864">Kuva lihtsustatud vaade</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Saadab teie vaikeotsingumootorile mõned küpsisefailid ja otsingud teie aadressiribalt ning otsingukastist</translation>
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fail}other{# faili}}</translation>
+<translation id="2020309681647789787">Teie ajalugu on saadaval kõigis sünkroonitud seadmetes, et saaksite pooleli jäänud toiminguid jätkata</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
 <translation id="204321170514947529">Rakendusel <ph name="APP_NAME" /> on samuti Chrome’i andmeid</translation>
@@ -847,6 +849,7 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="6070730414166672373">Pangaga ühenduse võtmine \u2026</translation>
 <translation id="6085886413119427067">Määrab, kuidas veebisaitidega turvaline ühendus luua</translation>
 <translation id="60923314841986378">Jäänud on <ph name="HOURS" /> tundi</translation>
+<translation id="6095578583683628124">Kui Google on ka teie vaikeotsingumootor, näete paremaid, konteksti suhtes asjakohaseid soovitusi</translation>
 <translation id="6108923351542677676">Seadistamine on pooleli ...</translation>
 <translation id="6111020039983847643">kasutatud andmemaht</translation>
 <translation id="6112702117600201073">Lehe värskendamine</translation>
@@ -1391,6 +1394,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9155898266292537608">Otsimiseks võite ka kiirelt sõna puudutada</translation>
 <translation id="9158770349521403363">Jagatakse vaid sisu</translation>
+<translation id="916446198114569890">Teie külastatavad URL-id salvestatakse teie Google'i kontole</translation>
 <translation id="9169507124922466868">Navigeerimisajalugu on pooleldi avatud</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolliti 1 minut tagasi}other{Kontrolliti # minutit tagasi}}</translation>
 <translation id="9204836675896933765">Üks fail on jäänud</translation>

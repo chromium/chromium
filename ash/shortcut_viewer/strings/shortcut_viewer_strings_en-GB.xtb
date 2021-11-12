@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 to 8</translation>
 <translation id="3837047332182291558">Make keyboard brighter (for backlit keyboards only)</translation>
 <translation id="3949671998904569433">comma</translation>
+<translation id="3976707995992061296">Toggle whether the active window is assigned to all desks</translation>
 <translation id="3976863468609830880">Click the last icon on your shelf</translation>
 <translation id="3994783594793697310">Reset display zoom level</translation>
 <translation id="4026843240379844265">Move active window between displays</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Display zoom in</translation>
 <translation id="634687982629734605">Switch focus between: status area (where your account picture appears), Launcher, address bar, bookmarks bar (if visible), the web page that's open and downloads bar (if visible). If a focusable dialogue is displayed, move focus there instead.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Activate the first to eighth desk.</translation>
 <translation id="6395172954772765143">Select text to the end of the line</translation>
 <translation id="6425378783626925378">Click icons 1-8 on your shelf</translation>
 <translation id="6435207348963613811">Highlight the previous item on your shelf</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Display hidden files in the Files app</translation>
 <translation id="8717459106217102612">Select previous word or letter</translation>
 <translation id="8727232706774971183">See your notifications</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 to 8</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8881584919399569791">Move active window to the desk on the left</translation>
 <translation id="88986195241502842">Page down</translation>

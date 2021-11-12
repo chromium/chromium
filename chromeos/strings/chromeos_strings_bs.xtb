@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1851218745569890714">Videokonferencija</translation>
+<translation id="1857850044054738019">Izaberite ovu opciju ako se obnavljaju zalihe uređaja ili ako se uređaj reparira za distribuciju novom klijentu.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
+<translation id="4140251671072434548">Izvršite otključavanje RMA servera</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem mreže ili direktne veze</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Morate imati slobodno najmanje 500 MB da pokrenete test memorije. Da oslobodite prostor, idite u Postavke &gt; Upravljanje pohranom.</translation>
 <translation id="4258281355379922695">HTTP latentnost</translation>
 <translation id="4271957103967917607">Prikaz preko cijelog ekrana</translation>
+<translation id="4275799948641988986">Ko će koristiti uređaj nakon popravke?</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slike/a</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
@@ -411,6 +414,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7297226631177386107">Nije se moguće povezati putem zaštitnog zida s HTTPS web lokacijama</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Uređaj će preći na drugog vlasnika</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
@@ -418,6 +422,8 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7451112128070628323">Izaberite ovu opciju ako se vlasništvo nad uređajem ne mijenja.
+        Naprimjer, uređaj se preusmjerava na drugu osobu unutar organizacije.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
@@ -469,6 +475,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Unesite kôd za otključavanje:</translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Privilegije</translation>
 <translation id="8230672074305416752">Provjera pingom zadanog mrežnog pristupnika nije uspjela</translation>
@@ -542,6 +549,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutno korištenje</translation>
+<translation id="9095415590198785865">Uređaj će preći na istog vlasnika</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenira se stranica broj <ph name="PAGE_NUMBER" /></translation>

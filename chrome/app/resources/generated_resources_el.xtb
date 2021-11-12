@@ -4793,6 +4793,7 @@
 <translation id="6023643151125006053">Αυτή η συσκευή (σειριακός αριθμός: <ph name="SERIAL_NUMBER" />) κλειδώθηκε από τον διαχειριστή του τομέα <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Ανίχνευση στοίβας</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Συνδέθηκε συσκευή USB</translation>
+<translation id="6027945736510816438">Μήπως εννοούσατε <ph name="WEBSITE" />;</translation>
 <translation id="6028117231645531007">Προσθήκη δακτυλικού αποτυπώματος</translation>
 <translation id="6031600495088157824">Επιλογές εισόδου στη γραμμή εργαλείων</translation>
 <translation id="6032091552407840792">Αυτή η δοκιμή είναι ενεργή μόνο σε <ph name="BEGIN_LINK" />ορισμένες περιοχές<ph name="END_LINK" />.</translation>
@@ -5548,6 +5549,7 @@
 <translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6833479554815567477">Η καρτέλα καταργήθηκε από την ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Κάντε εναλλαγή σε ένα έξυπνο και ασφαλές πρόγραμμα περιήγησης</translation>
+<translation id="6833996806551876956">Δοκιμή Πλαίσιο ιδιωτικότητας</translation>
 <translation id="6834652994408928492">Η Λειτουργία χαμηλού φωτισμού θα ενεργοποιείται αυτόματα κατά τη δύση του ηλίου</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να ανοίξει και να τοποθετήσει παράθυρα στις οθόνες σας (συνιστάται)</translation>

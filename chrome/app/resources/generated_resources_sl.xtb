@@ -4797,6 +4797,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6023643151125006053">To napravo (serijska številka: <ph name="SERIAL_NUMBER" />) je zaklenil skrbnik domene <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Sledenje sklada</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – naprava USB povezana</translation>
+<translation id="6027945736510816438">Ali ste mislili <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodaj prstni odtis</translation>
 <translation id="6031600495088157824">Možnosti vnosa v orodni vrstici</translation>
 <translation id="6032091552407840792">Ta preizkus je aktiven samo v <ph name="BEGIN_LINK" />nekaterih regijah<ph name="END_LINK" />.</translation>
@@ -5552,6 +5553,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6833479554815567477">Zavihek je odstranjen iz skupine <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="683373380308365518">Preklop na pametni in varni brskalnik</translation>
+<translation id="6833996806551876956">Preizkus za Privacy Sandbox</translation>
 <translation id="6834652994408928492">Temni način se bo samodejno vklopil ob sončnem zahodu.</translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>
 <translation id="6838034009068684089">Vprašaj, ko želi spletno mesto odpreti okna in jih postaviti na zaslone (priporočljivo)</translation>

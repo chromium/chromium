@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2560420686485554789">Chromium skal have lageradgang for at downloade filer</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="2583187216237139145">Alle Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af arbejdsprofilens administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="2614883797045469742">De fleste brugere er tilfredse med standardindstillingerne, men du kan tilpasse indstillingerne, så de passer til den måde, du vil bruge Chromium på</translation>
@@ -248,7 +247,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
 <translation id="8013436988911883588">Når Chromium har adgang, kan websites bede dig om adgang.</translation>
-<translation id="8045118833343856403">Følgende konti er ikke logget ind på nogen Chromium-profiler. Hvis du vil bruge en konto på en anden profil, skal du først fjerne den pågældende profil.</translation>
 <translation id="8105840573057009683">Chromium skal have adgangstilladelse til lokation for at bruge dette website</translation>
 <translation id="81770708095080097">Denne fil er farlig, så Chromium har blokeret den.</translation>
 <translation id="8248265253516264921">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chromium at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>

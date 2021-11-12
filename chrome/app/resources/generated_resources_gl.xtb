@@ -4770,6 +4770,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6023643151125006053">O administrador de <ph name="SAML_DOMAIN" /> bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Seguimento da pilla</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: conectouse a un dispositivo USB</translation>
+<translation id="6027945736510816438">Querías dicir "<ph name="WEBSITE" />"?</translation>
 <translation id="6028117231645531007">Engadir impresión dixital</translation>
 <translation id="6031600495088157824">Opcións de entrada na barra de ferramentas</translation>
 <translation id="6032091552407840792">A proba está dispoñible só <ph name="BEGIN_LINK" />nalgunhas rexións<ph name="END_LINK" />.</translation>
@@ -5524,6 +5525,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Cambiar a un navegador intelixente e seguro</translation>
+<translation id="6833996806551876956">Proba de Privacy Sandbox</translation>
 <translation id="6834652994408928492">O modo escuro activarase automaticamente ao anoitecer</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Preguntar cando un sitio queira abrir e colocar ventás nas túas pantallas (recomendado)</translation>

@@ -42,7 +42,6 @@
 <translation id="2535480412977113886">계정의 로그인 세부정보가 오래되어 Chromium OS에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="2560420686485554789">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="2572494885440352020">Chromium 도우미</translation>
-<translation id="2577788541081224677">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인하여 동기화하세요.</translation>
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">업데이트를 적용하려면 Chromium OS를 다시 시작해야 합니다.</translation>
 <translation id="2614883797045469742">사용자 대부분에게는 기본 설정이 적합하지만 사용자는 자신의 Chromium 이용 방식에 따라 설정을 맞춤설정할 수 있습니다</translation>
@@ -250,7 +249,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7975919845073681630">Chromium의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="8013436988911883588">Chromium에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
-<translation id="8045118833343856403">다음 계정은 어느 Chromium 프로필에도 로그인하지 않았습니다. 다른 프로필에서 계정을 사용하려면 먼저 프로필을 삭제하세요</translation>
 <translation id="8105840573057009683">Chromium에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="81770708095080097">이 파일은 위험하므로 Chromium에서 차단했습니다.</translation>
 <translation id="8248265253516264921">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>

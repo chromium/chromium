@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">O SO Chromium não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="2560420686485554789">O Chromium necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="2572494885440352020">Ajuda do Chromium</translation>
-<translation id="2577788541081224677">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão para ativar a sincronização.</translation>
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">O SO Chromium tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="2614883797045469742">As predefinições funcionam para a maioria das pessoas, mas pode personalizá-las segundo a sua utilização preferida do Chromium</translation>
@@ -248,7 +247,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7937630085815544518">Iniciou sessão no Chromium com a conta <ph name="USER_EMAIL_ADDRESS" />. Utilize a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7975919845073681630">Esta é uma instalação secundária do Chromium, pelo que não pode tornar-se o navegador predefinido.</translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os Websites poderão solicitar-lhe o acesso.</translation>
-<translation id="8045118833343856403">As seguintes contas não têm sessão iniciada em perfis do Chromium. Se pretender utilizar uma conta noutro perfil, remova esse perfil primeiro.</translation>
 <translation id="8105840573057009683">O Chromium necessita da autorização de acesso à localização para este site</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso. Como tal, o Chromium bloqueou-o.</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>

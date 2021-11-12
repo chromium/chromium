@@ -157,6 +157,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1422930527989633628">Može tražiti da otkriva Bluetooth uređaje u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Slagač 7</translation>
+<translation id="142858679511221695">Korisnik usluge u oblaku</translation>
 <translation id="1428729058023778569">Ovo upozorenje vam se prikazuje jer ova web lokacija ne podržava HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1432581352905426595">Upravljaj pretraživačima</translation>
@@ -719,6 +720,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3329013043687509092">Zasićenje</translation>
 <translation id="3333762389743153920">Ne ispunjava uslove za virtuelnu karticu</translation>
 <translation id="3338095232262050444">Sigurno</translation>
+<translation id="3339446062576134663">Oblak (Ash)</translation>
 <translation id="3355823806454867987">Promijeni postavke proksi servera...</translation>
 <translation id="3360103848165129075">Stranica obrađivača uplate</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />neće sačuvati<ph name="END_EMPHASIS" /> sljedeće informacije:
@@ -742,6 +744,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3380365263193509176">Nepoznata greška</translation>
 <translation id="3380864720620200369">ID klijenta:</translation>
 <translation id="3381668585148405088">Potvrdite kupovinu</translation>
+<translation id="3383566085871012386">Trenutni redoslijed prioriteta</translation>
 <translation id="3387261909427947069">Načini plaćanja</translation>
 <translation id="3391030046425686457">Adresa isporuke</translation>
 <translation id="3391482648489541560">uređivanje fajla</translation>
@@ -1411,6 +1414,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5478437291406423475">B6/C4 (koverta)</translation>
 <translation id="5481076368049295676">Ovaj sadržaj može pokušati na vaš uređaj instalirati opasan softver koji krade ili briše podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Dodajte važeću adresu</translation>
+<translation id="5485973315555778056">Mašina u oblaku</translation>
 <translation id="5490432419156082418">Adrese i još mnogo toga</translation>
 <translation id="5492298309214877701">Ova web lokacija intraneta kompanije, organizacije ili škole ima isti URL kao i vanjska web lokacija.
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5571083550517324815">Nije moguće preuzeti s ove adrese. Odaberite drugu adresu.</translation>
 <translation id="5580958916614886209">Provjerite mjesec isteka i pokušajte ponovo.</translation>
 <translation id="5586446728396275693">Nije pronađena nijedna adresa</translation>
+<translation id="5587987780934666589">Korisnik platforme</translation>
 <translation id="5593349413089863479">Veza nije u potpunosti sigurna</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
 <translation id="5598944008576757369">Odaberite način plaćanja</translation>
@@ -2128,6 +2133,7 @@ Dodatni detalji:
 <translation id="7953569069500808819">Uvez gornjeg ruba</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7961015016161918242">Nikada</translation>
+<translation id="7962467575542381659">Mašina platforme</translation>
 <translation id="7966803981046576691">Vrsta računa za posao</translation>
 <translation id="79682505114836835">Vrijednost "<ph name="VALUE" />" je nevažeći kôd heksadecimalne boje.</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
@@ -2282,6 +2288,7 @@ Dodatni detalji:
 <translation id="8438476240229491014">Zapamti ovu postavku</translation>
 <translation id="8438786541497918448">Koristiti kameru i mikrofon?</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
+<translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8461694314515752532">Šifrirajte sinhronizirane podatke svojim pristupnim izrazom</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>

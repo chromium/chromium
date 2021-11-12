@@ -3829,6 +3829,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="5620392548325769024">Attiva la visualizzazione della pagina di benvenuto al primo avvio del browser successivo all'upgrade del sistema operativo</translation>
 <translation id="5622924058222112599">Viene attivata la procedura di lancio predefinita di CECPQ2</translation>
+<translation id="5623304306796942802">Mostra richiesta in caso di più certificati corrispondenti</translation>
 <translation id="5625771176514429288">Sarà consentita l'esecuzione delle app di Chrome su queste piattaforme</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>

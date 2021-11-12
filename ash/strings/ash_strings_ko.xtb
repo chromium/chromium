@@ -621,6 +621,7 @@
 <translation id="5308380583665731573">연결</translation>
 <translation id="5313326810920013265">블루투스 설정</translation>
 <translation id="5314219114274263156">화면 녹화됨</translation>
+<translation id="5317780077021120954">저장</translation>
 <translation id="5319712128756744240">새 기기와 페어링</translation>
 <translation id="5322611492012084517">휴대전화를 찾을 수 없음</translation>
 <translation id="5327248766486351172">이름</translation>
@@ -1033,6 +1034,7 @@
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8433977262951327081">실행기에서 입력 옵션 메뉴 도움말 풍선을 표시하는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> 데스크가 활성화되었습니다.</translation>
+<translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
 <translation id="847056008324733326">배율 설정 표시</translation>

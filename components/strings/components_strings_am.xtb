@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">በአቅራቢያ ያሉ የብሉቱዝ መሣሪያዎችን ለማግኘት መጠየቅ ይችላል</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1428146450423315676">ቁልል 7</translation>
+<translation id="142858679511221695">የደመና ተጠቃሚ</translation>
 <translation id="1428729058023778569">ይህ ጣቢያ ኤችቲቲፒኤስ ስለማይደግፍ ይህን ማስጠንቀቂያ እያዩ ነው። <ph name="BEGIN_LEARN_MORE_LINK" />የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1432581352905426595">የፍለጋ ፕሮግራሞችን ያቀናብሩ</translation>
@@ -714,6 +715,7 @@
 <translation id="3329013043687509092">የቀለም ሙሌት</translation>
 <translation id="3333762389743153920">ለምናባዊ ካርድ ብቁ አይደለም</translation>
 <translation id="3338095232262050444">ደህንነቱ የተጠበቀ ነው</translation>
+<translation id="3339446062576134663">ደመና (Ash)</translation>
 <translation id="3355823806454867987">የተኪ ቅንብሮችን በመቀየር ላይ...</translation>
 <translation id="3360103848165129075">የክፍያ ተቆጣጣሪ ሉህ</translation>
 <translation id="3361596688432910856">Chrome የሚከተሉትን መረጃዎች <ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
@@ -737,6 +739,7 @@
 <translation id="3380365263193509176">ያልታወቀ ስህተት</translation>
 <translation id="3380864720620200369">የደንበኛ መታወቂያ፦</translation>
 <translation id="3381668585148405088">ግዢዎን ያረጋግጡ</translation>
+<translation id="3383566085871012386">የአሁኑ ቀዳሚ ትዕዛዝ</translation>
 <translation id="3387261909427947069">የመክፈያ ዘዴዎች</translation>
 <translation id="3391030046425686457">የመላኪያ አድራሻ</translation>
 <translation id="3391482648489541560">የፋይል አርትዖት አደራረግ</translation>
@@ -1403,6 +1406,7 @@
 <translation id="5478437291406423475">B6/C4 (የደብዳቤ ፖስታ)</translation>
 <translation id="5481076368049295676">ይህ ይዘት በእርስዎ መሣሪያ ላይ መረጃዎን የሚሰርቅ ወይም የሚሰርዝ አደገኛ ሶፍትዌርን ለመጫን ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">የሚሰራ አድራሻ ያስገቡ</translation>
+<translation id="5485973315555778056">የደመና ማሽን</translation>
 <translation id="5490432419156082418">አድራሻዎች እና ተጨማሪ</translation>
 <translation id="5492298309214877701">በኩባንያ፣ በድርጅት ወይም በትምህርት ቤት ውስጠ መረብ ውስጥ ያለው ይህ ጣቢያ እንደ ውጫዊ የድር ጣቢያ ተመሳሳይ ዩአርኤል አለው።
     <ph name="LINE_BREAK" />
@@ -1432,6 +1436,7 @@
 <translation id="5571083550517324815">ከዚህ አድራሻ ላይ መውሰድ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="5580958916614886209">የእርስዎን የአገልግሎት ማብቂያ ወር ይመልከቱ እና እንደገና ይሞክሩ</translation>
 <translation id="5586446728396275693">ምንም የተቀመጡ አድራሻዎች የሉም</translation>
+<translation id="5587987780934666589">የመሠረተ ሥርዓት ተጠቃሚ</translation>
 <translation id="5593349413089863479">ግንኙነት ሙሉ በሙሉ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
 <translation id="5598944008576757369">የመክፈያ ዘዴ ይምረጡ</translation>
@@ -2120,6 +2125,7 @@
 <translation id="7953569069500808819">ከላይ ጫፍን ስፋ</translation>
 <translation id="7956713633345437162">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
+<translation id="7962467575542381659">የመሠረተ ሥርዓት ማሽን</translation>
 <translation id="7966803981046576691">የስራ መለያ አይነት</translation>
 <translation id="79682505114836835">እሴት «<ph name="VALUE" />» ልክ ያልሆነ የአስራስድስትዮሽ ቀለም ነው።</translation>
 <translation id="7968982339740310781">ዝርዝሮችን ይመልከቱ</translation>
@@ -2274,6 +2280,7 @@
 <translation id="8438476240229491014">ይህን ቅንብር አስታውስ</translation>
 <translation id="8438786541497918448">ካሜራ እና ማይክሮፎን ይጠቀም?</translation>
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
+<translation id="8449836157089738489">ሁሉንም በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
 <translation id="8457125768502047971">ያልተወሰነ</translation>
 <translation id="8461694314515752532">የሰመረ ውሂብ በራስዎ የስምረት ይለፍ ሐረግ ያመሣጥሩ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ክሬዲት ካርድ}one{# ክሬዲት ካርዶች}other{# ክሬዲት ካርዶች}}</translation>

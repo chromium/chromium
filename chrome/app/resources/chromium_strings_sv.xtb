@@ -42,7 +42,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2535480412977113886">Det gick inte att synkronisera data med Chromium eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
-<translation id="2577788541081224677">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="2614883797045469742">Standardinställningarna passar de flesta, men du kan anpassa dem efter hur du använder Chromium</translation>
@@ -250,7 +249,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="8013436988911883588">När du har gett Chromium åtkomst kan webbplatser begära att få åtkomst.</translation>
-<translation id="8045118833343856403">Följande konton är inte inloggade i någon Chromium-profil. Om du vill använda ett konto som finns i en annan profil tar du bort den profilen först.</translation>
 <translation id="8105840573057009683">Du behöver ge Chromium platsbehörighet för den här webbplatsen</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
 <translation id="8248265253516264921">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>

@@ -153,7 +153,6 @@
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
 <translation id="4633000520311261472">Para que Chrome resulte máis seguro, desactivamos algunhas extensións que non están enumeradas en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
-<translation id="4666328473657283332">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión para poder activar a sincronización.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Este ficheiro pode ser perigoso, así que Chrome bloqueouno.</translation>
@@ -271,7 +270,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
-<translation id="822971176939352383">As seguintes contas non teñen a sesión iniciada en ningún perfil de Chrome. Se queres usar unha conta noutro perfil, primeiro elimina ese perfil.</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="828798499196665338">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non está permitido activar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

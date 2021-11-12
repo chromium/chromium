@@ -42,7 +42,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2535480412977113886">Systému OS Chromium sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2560420686485554789">Chromium potrebuje na sťahovanie súborov prístup k úložisku</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Ak chcete získať prístup k obsahu prehliadača Chromium vo všetkých svojich zariadeniach, prihláste sa, aby ste mohli zapnúť synchronizáciu.</translation>
 <translation id="2583187216237139145">Všetky údaje prehliadača Chromium vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Ak chcete uplatniť aktualizáciu, musíte reštartovať systém Chromium OS.</translation>
 <translation id="2614883797045469742">Predvolené nastavenia vyhovujú väčšine ľudí, ale môžete si ich prispôsobiť podľa toho, ako chcete používať Chromium</translation>
@@ -249,7 +248,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7937630085815544518">Do prehliadača Chromium ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
 <translation id="7975919845073681630">Toto je sekundárna inštalácia prehliadača Chromium – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="8013436988911883588">Keď Chromium získa prístup, weby vás budú môcť žiadať o prístup.</translation>
-<translation id="8045118833343856403">Nasledujúce účtu nie sú prihlásené do žiadneho profilu prehliadača Chromium. Ak chcete používať účet v inom profile, najprv daný profil odstráňte.</translation>
 <translation id="8105840573057009683">Chromium vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="81770708095080097">Tento súbor je nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
 <translation id="8248265253516264921">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>

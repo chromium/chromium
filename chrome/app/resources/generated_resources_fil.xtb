@@ -4792,6 +4792,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6023643151125006053">Na-lock ng administrator ng <ph name="SAML_DOMAIN" /> ang device na ito (SN: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - May nakakonektang USB device</translation>
+<translation id="6027945736510816438">Ang ibig mo bang sabihin ay <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Magdagdag ng fingerprint</translation>
 <translation id="6031600495088157824">Mga opsyon sa pag-input sa toolbar</translation>
 <translation id="6032091552407840792">Aktibo lang ang trial na ito sa <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
@@ -5546,6 +5547,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6833479554815567477">Inalis ang tab sa grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Lumipat sa isang mahusay at ligtas na browser</translation>
+<translation id="6833996806551876956">Trial ng Privacy Sandbox</translation>
 <translation id="6834652994408928492">Awtomatikong mag-o-on ang dark mode sa paglubog ng araw</translation>
 <translation id="6835762382653651563">Mangyaring kumonekta sa Internet upang ma-update ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Magtanong kapag gusto ng isang site na magbukas at maglagay ng mga window sa iyong mga screen (inirerekomenda)</translation>

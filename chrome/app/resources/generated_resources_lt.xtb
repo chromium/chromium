@@ -4782,6 +4782,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6023643151125006053">Šį įrenginį (serijos Nr. <ph name="SERIAL_NUMBER" />) užrakino <ph name="SAML_DOMAIN" /> administratorius.</translation>
 <translation id="6025215716629925253">Dėklo pėdsakas</translation>
 <translation id="6026819612896463875">„<ph name="WINDOW_TITLE" />“ – USB įrenginys prijungtas</translation>
+<translation id="6027945736510816438">Turėjote omenyje <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Pridėti piršto antspaudą</translation>
 <translation id="6031600495088157824">Įvesties parinktys įrankių juostoje</translation>
 <translation id="6032091552407840792">Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
@@ -5533,6 +5534,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6833479554815567477">Skirtukas pašalintas iš grupės „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Perjunkite į išmanią ir saugią naršyklę</translation>
+<translation id="6833996806551876956">„Privacy Sandbox“ bandomasis laikotarpis</translation>
 <translation id="6834652994408928492">Tamsus režimas automatiškai įsijungs saulei leidžiantis</translation>
 <translation id="6835762382653651563">Prisijunkite prie interneto, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6838034009068684089">Klausti, kai svetainė nori atidaryti ir įdėti langų jūsų ekranuose (rekomenduojama)</translation>

@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Luôn yêu cầu trang web dành cho máy tính</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
 <translation id="2490684707762498678">Do <ph name="APP_NAME" /> quản lý</translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie đang được sử dụng}other{# cookie đang được sử dụng}}</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
+<translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="857943718398505171">Được phép (được đề xuất)</translation>

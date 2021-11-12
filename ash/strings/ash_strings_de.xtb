@@ -200,6 +200,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2352467521400612932">Eingabestift-Einstellungen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> wird aktiviert</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="2360625459710946148">Neu ordnen nach</translation>
 <translation id="2367186422933365202">Anmeldung auf dem Chromebook nicht möglich</translation>
 <translation id="2369165858548251131">"Hallo" auf Chinesisch</translation>
 <translation id="2390318262976603432">Spracheinstellungen</translation>
@@ -621,6 +622,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5308380583665731573">Verbinden</translation>
 <translation id="5313326810920013265">Bluetooth-Einstellungen</translation>
 <translation id="5314219114274263156">Bildschirmaufzeichnung aufgenommen</translation>
+<translation id="5317780077021120954">Speichern</translation>
 <translation id="5319712128756744240">Neues Gerät koppeln</translation>
 <translation id="5322611492012084517">Ihr Smartphone wurde nicht gefunden</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -706,6 +708,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5977415296283489383">Kopfhörer</translation>
 <translation id="5978382165065462689">Sie teilen sich die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
+<translation id="598407983968395253">Vorlage verwenden</translation>
 <translation id="598882571027504733">Sie können das Update vornehmen, indem Sie Ihr Chromebook mit angeschlossener Tastatur neu starten.</translation>
 <translation id="5992218262414051481">Modus mit hohem Kontrast aktiviert. Drücken Sie Strg + Suche + H, um ihn zu deaktivieren.</translation>
 <translation id="6018164090099858612">Spiegelungsmodus wird beendet</translation>
@@ -1033,6 +1036,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8433977262951327081">Die Tastenkombination zum Aufrufen des Infofelds für die Eingabeoptionen in der Ablage hat sich geändert. Bitte drücken Sie <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desktop <ph name="DESK_TITILE" /> aktiviert</translation>
+<translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Vorlesen schließen</translation>
 <translation id="847056008324733326">Einstellungen für Displaymaßstab</translation>

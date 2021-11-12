@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">አልታወቀም</translation>
 <translation id="1746730358044914197">የግቤት ስልቶች በእርስዎ አስተዳዳሪ ይዋቀራሉ።</translation>
 <translation id="1747827819627189109">በማያ ገጽ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
+<translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> ዴስኮች ብቻ ተፈቅደዋል። አዲስ ለመክፈት ዴስክን ያስወግዱ።</translation>
 <translation id="1761222317188459878">የአውታረ መረብ ግንኙነትን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + የጊዜ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። አስገባ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + ቀያይር + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
@@ -200,6 +201,7 @@
 <translation id="2352467521400612932">የስቲለስ ቅንብሮች</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ን በማግበር ላይ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
+<translation id="2360625459710946148">ዳግም ይዘዙ በ</translation>
 <translation id="2367186422933365202">ወደ የእርስዎ Chromebook መግባት አልተቻለም</translation>
 <translation id="2369165858548251131">«Hello» በቻይንኛ</translation>
 <translation id="2390318262976603432">የቋንቋ ቅንብሮች</translation>
@@ -621,6 +623,7 @@
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5313326810920013265">የብሉቱዝ ቅንብሮች</translation>
 <translation id="5314219114274263156">የማያ ገጽ ቀረጻ ተቀድቷል</translation>
+<translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319712128756744240">አዲስ መሣሪያ ያጣምሩ</translation>
 <translation id="5322611492012084517">የእርስዎን ስልክ ማግኘት አልተቻለም</translation>
 <translation id="5327248766486351172">ስም</translation>
@@ -706,6 +709,7 @@
 <translation id="5977415296283489383">ጆሮ ማዳጀጫ</translation>
 <translation id="5978382165065462689">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል በማጋራት ላይ።</translation>
 <translation id="5980301590375426705">ከእንግዳ ውጣ</translation>
+<translation id="598407983968395253">ቅንብር ደንብን ተጠቀም</translation>
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
 <translation id="5992218262414051481">ባለከፍተኛ ንፅፅር ሁነታ ነቅቷል። እሱን ለማጥፋት እንደገና Ctrl+Search+H ይጫኑ።</translation>
 <translation id="6018164090099858612">ከመስታወት ሁነታ በመውጣት ላይ</translation>
@@ -1033,6 +1037,7 @@
 <translation id="8433186206711564395">የአውታረ መረብ ቅንብሮች</translation>
 <translation id="8433977262951327081">በመደርደሪያው ውስጥ የግቤት አማራጮች ምናሌ አረፋን ለማሳየት የሚሆነው አቋራጭ ተለውጧል። እባክዎ በ<ph name="OLD_SHORTCUT" /> ምትክ <ph name="NEW_SHORTCUT" />ን ይጠቀሙ።</translation>
 <translation id="8444246603146515890">ዴስክ <ph name="DESK_TITILE" /> ገቢር ተደርጓል</translation>
+<translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ለመናገር ምረጥን ይዝጉ</translation>
 <translation id="847056008324733326">የልኬት ቅንብሮችን አሳይ</translation>

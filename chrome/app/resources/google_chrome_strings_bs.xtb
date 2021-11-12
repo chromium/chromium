@@ -154,7 +154,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="459622048091363950">Kada Chrome dobije pristup, web lokacije će od vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="4633000520311261472">Kako bi Chrome bio sigurniji, onemogućili smo neke ekstenzije koje nisu navedene u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koje su možda dodane bez vašeg znanja.</translation>
-<translation id="4666328473657283332">Prijavite se da možete uključiti sinhronizaciju i pristupiti svojim Chrome stvarima na svim svojim uređajima.</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ovaj fajl može biti opasan pa ga je Chrome blokirao.</translation>
@@ -270,7 +269,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
 <translation id="8013993649590906847">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
-<translation id="822971176939352383">Sljedeći računi nisu prijavljeni na Chrome profile. Ako želite koristiti račun na drugom profilu, prvo uklonite taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="828798499196665338">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>

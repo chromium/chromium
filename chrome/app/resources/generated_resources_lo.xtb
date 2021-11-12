@@ -4787,6 +4787,7 @@
 <translation id="6023643151125006053">ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">ຮ່ອງຮອຍການກອງ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - ເຊື່ອມຕໍ່ກັບອຸປະກອນ USB ແລ້ວ</translation>
+<translation id="6027945736510816438">ທ່ານໝາຍເຖິງ <ph name="WEBSITE" /> ບໍ?</translation>
 <translation id="6028117231645531007">ເພີ່ມລາຍນີ້ວມື</translation>
 <translation id="6031600495088157824">ຕົວເລືອກການປ້ອນຂໍ້ມູນໃນແຖບເຄື່ອງມື</translation>
 <translation id="6032091552407840792">ການທົດລອງໃຊ້ນີ້ແມ່ນໃຊ້ໄດ້ສະເພາະໃນ <ph name="BEGIN_LINK" />ບາງພາກພື້ນ<ph name="END_LINK" /> ເທົ່ານັ້ນ.</translation>
@@ -5541,6 +5542,7 @@
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="6833479554815567477">ລຶບແຖບອອກຈາກກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="683373380308365518">ປ່ຽນເປັນໂປຣແກຣມທ່ອງເວັບທີ່ສະຫຼາດ ແລະ ປອດໄພ</translation>
+<translation id="6833996806551876956">ການທົດລອງໃຊ້ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="6834652994408928492">ໂໝດມືດຈະເປີດອັດຕະໂນມັດເມື່ອຕາເວັນຕົກ</translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="6838034009068684089">ຖາມເມື່ອເວັບໄຊຕ້ອງການເປີດ ແລະ ວາງໜ້າຈໍໃສ່ໃນໜ້າຈໍຂອງທ່ານ (ແນະນຳ)</translation>

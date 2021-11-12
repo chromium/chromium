@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">sao chép</translation>
 <translation id="135978014023467274">Bạn đã cập nhật lên ChromeVox 63!</translation>
 <translation id="1360699455582016846">Hãy nhấp vào mục bên dưới phím định tuyến <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">chuyển đến ký tự tiếp theo</translation>
 <translation id="1377925789329510816">Đây là tiêu đề cuối cùng. Nhấn Search+H để bao gồm tiêu đề đầu tiên hoặc Search+Shift+H để chuyển tới tiêu đề thứ hai trên trang này.</translation>
 <translation id="138218114945450791">Xanh lam nhạt</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Hộp kiểm</translation>
 <translation id="2461822463642141190">Hiện tại</translation>
 <translation id="2462626033734746142">Nhóm nút radio</translation>
+<translation id="2467741090055146971">bỏ chọn</translation>
 <translation id="2471138580042810658">Tiêu đề 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{dấu hoa thị}other{# dấu hoa thị}}</translation>
 <translation id="2490721194269245365">Màu nâu ánh hồng</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Không có tiện ích nghe nhìn nào trước đó</translation>
 <translation id="4855927945655956315">Các phím cơ bản: Control</translation>
 <translation id="4862744964787595316">Không in đậm</translation>
+<translation id="4865995900839719272">chuyển về dòng trước</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Bật ghi nhật ký TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, thẻ</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5310788376443009632">đã xóa:</translation>
+<translation id="5316825363044614340">chuyển đến dòng tiếp theo</translation>
 <translation id="5320727453979144100">Đã bật chế độ phím dính</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{dấu phẩy}other{# dấu phẩy}}</translation>
 <translation id="532485153932049746">Định dạng văn bản
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Không có trường biểu mẫu nào trước đó</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">trợ giúp</translation>
 <translation id="7317017974771324508">đã chọn một phần</translation>
 <translation id="7322442671176251901">Khám phá bằng cách chạm</translation>
 <translation id="7344012264516629579">Các lệnh chuyển bổ sung gồm có thao tác chuyển bằng đường liên kết, nút và hộp đánh dấu chẳng hạn. Toàn bộ danh sách lệnh chuyển có trong các trình đơn của ChromeVox. Bạn có thể mở các trình đơn này bằng cách nhấn tổ hợp phím Tìm kiếm + Dấu chấm.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Hướng dẫn về ChromeVox</translation>
 <translation id="9040132695316389094">Tiêu đề 1</translation>
 <translation id="9061884144798498064">Chọn bảng chữ nổi 8 chấm:</translation>
+<translation id="9063946545000394379">chuyển về ký tự trước</translation>
 <translation id="9065283790526219006">+cửa sổ bật lên</translation>
 <translation id="9065912140022662363">Không có nút radio nào tiếp theo</translation>
 <translation id="9067522039955793016">Ngắt trang</translation>

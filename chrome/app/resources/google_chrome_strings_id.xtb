@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="4600710005438004015">Chrome tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
 <translation id="4633000520311261472">Agar Chrome lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum pada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
-<translation id="4666328473657283332">Untuk mengakses aktivitas Chrome di semua perangkat, login agar Anda dapat mengaktifkan sinkronisasi.</translation>
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">File ini mungkin berbahaya, jadi Chrome telah memblokirnya.</translation>
@@ -264,7 +263,6 @@
 <translation id="8008534537613507642">Instal Ulang Chrome</translation>
 <translation id="8013993649590906847">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
-<translation id="822971176939352383">Akun berikut tidak login ke profil Chrome mana pun. Jika Anda ingin menggunakan akun di profil lain, hapus profil tersebut terlebih dahulu.</translation>
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon Anda.</translation>
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="828798499196665338">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>

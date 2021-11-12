@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">အနီးရှိ ဘလူးတုသ်သုံးစက်များ ရှာဖွေရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1428146450423315676">စီထည့်သည့်ပုံး ၇</translation>
+<translation id="142858679511221695">Cloud အသုံးပြုသူ</translation>
 <translation id="1428729058023778569">ဤဝဘ်ဆိုက်သည် HTTPS မပံ့ပိုးသည့်အတွက် ဤသတိပေးချက်ကို မြင်နေရခြင်းဖြစ်သည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1432581352905426595">ရှာဖွေမှုအင်ဂျင်များကို စီမံခန့်ခွဲရန်</translation>
@@ -721,6 +722,7 @@
 <translation id="3329013043687509092">စိုရွှဲမှု</translation>
 <translation id="3333762389743153920">ပကတိအသွင်ကတ်အတွက် သတ်မှတ်ချက်မပြည့်မီပါ</translation>
 <translation id="3338095232262050444">လုံခြုံမှုရှိသည်</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">ပရောက်စီ ဆက်တင်များ ပြောင်းရန်...</translation>
 <translation id="3360103848165129075">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာ</translation>
 <translation id="3361596688432910856">Chrome သည် အောက်ပါ အချက်အလက်များကို <ph name="BEGIN_EMPHASIS" />သိမ်းဆည်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />−
@@ -744,6 +746,7 @@
 <translation id="3380365263193509176">မသိရ အမှား</translation>
 <translation id="3380864720620200369">အသုံးပြုသူ၏ID:</translation>
 <translation id="3381668585148405088">ဝယ်ယူမှုကို အတည်ပြုရန် စစ်ဆေးပါ</translation>
+<translation id="3383566085871012386">လက်ရှိဦးစားပေး စီစဉ်မှု</translation>
 <translation id="3387261909427947069">ငွေပေးချေ နည်းလမ်းများ</translation>
 <translation id="3391030046425686457">ပို့ဆောင်ရန် လိပ်စာ</translation>
 <translation id="3391482648489541560">ဖိုင်တည်းဖြတ်ခြင်း</translation>
@@ -1412,6 +1415,7 @@
 <translation id="5478437291406423475">B6/C4 (စာအိတ်)</translation>
 <translation id="5481076368049295676">ဤအရာသည် သင်၏စက်ပစ္စည်းပေါ်တွင် အန္တရာယ်ရှိသော ဆော့ဖ်ဝဲကို ထည့်သွင်းနိုင်ပြီး ယင်းက သင်၏အချက်အလက်များကို ခိုးယူခြင်း သို့မဟုတ် ဖျက်ဆီးခြင်းတို့ ပြုလုပ်နိုင်ပါသည်။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြသရန်<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">မှန်ကန်သည့် လိပ်စာကို ထည့်ပါ</translation>
+<translation id="5485973315555778056">Cloud စက်ပစ္စည်း</translation>
 <translation id="5490432419156082418">လိပ်စာများနှင့် အခြားအရာများ</translation>
 <translation id="5492298309214877701">ကုမ္ပဏီ၊ အဖွဲ့အစည်း သို့မဟုတ် က​ျောင်းအင်ထရာနက်ပေါ်က ဤဆိုက်၏ URL သည်ပြင်ပဝဘ်ဆိုက်နှင့် အတူတူပင်ဖြစ်ပါသည်။
     <ph name="LINE_BREAK" />
@@ -1441,6 +1445,7 @@
 <translation id="5571083550517324815">ဤလိပ်စာမှ ပစ္စည်းထုတ်ယူ၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="5580958916614886209">သင့်ကုန်ဆုံးမည့်လကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
 <translation id="5586446728396275693">သိမ်းဆည်းထားသည့် လိပ်စာများ မရှိပါ</translation>
+<translation id="5587987780934666589">စနစ်အသုံးပြုသူ</translation>
 <translation id="5593349413089863479">ချိတ်ဆက်မှုသည် အပြည့်အဝမလုံခြုံပါ</translation>
 <translation id="5595485650161345191">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="5598944008576757369">ငွေပေးချေနည်းလမ်း ရွေးရန်</translation>
@@ -2129,6 +2134,7 @@
 <translation id="7953569069500808819">ထိပ်အစွန်းတွင် အပ်ချည်ဖြင့်ချုပ်ရန်</translation>
 <translation id="7956713633345437162">မိုဘိုင်း စာညှပ်များ</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>
+<translation id="7962467575542381659">စနစ်စက်ပစ္စည်း</translation>
 <translation id="7966803981046576691">အလုပ် အကောင့်အမျိုးအစား</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" တန်ဖိုးသည် မှန်ကန်သော hex အရောင် မဟုတ်ပါ။</translation>
 <translation id="7968982339740310781">အသေးစိတ်များ ကြည့်ရှုရန်</translation>

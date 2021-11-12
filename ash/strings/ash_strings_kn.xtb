@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">ಸ್ಟೈಲಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
+<translation id="2360625459710946148">ಈ ಪ್ರಕಾರ ಮರುಆಯೋಜಿಸಿ</translation>
 <translation id="2367186422933365202">ನಿಮ್ಮ Chromebook ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="2369165858548251131">ಚೈನಿಸ್ ಭಾಷೆಯಲ್ಲಿ "ನಮಸ್ಕಾರ"</translation>
 <translation id="2390318262976603432">ಸ್ಥಳೀಯ ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -621,6 +622,7 @@
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5313326810920013265">ಬ್ಲೂಟೂತ್‌‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5314219114274263156">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
+<translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5319712128756744240">ಹೊಸ ಸಾಧನವನ್ನು ಜೋಡಿಸಿ</translation>
 <translation id="5322611492012084517">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5327248766486351172">ಹೆಸರು</translation>
@@ -706,6 +708,7 @@
 <translation id="5977415296283489383">ಹೆಡ್‌ಫೋನ್</translation>
 <translation id="5978382165065462689">ರಿಮೋಟ್ ಸಹಾಯಕದ ಮೂಲಕ ನಿಮ್ಮ ಪರದೆಯ ಹಂಚಿಕೆಯ ನಿಯಂತ್ರಣ</translation>
 <translation id="5980301590375426705">ಅತಿಥಿ ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="598407983968395253">ಟೆಂಪ್ಲೇಟ್‌ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="598882571027504733">ಅಪ್‌ಡೇಟ್‌ ಪಡೆಯಲು, ಕೀಬೋರ್ಡ್ ಲಗತ್ತಿನೊಂದಿಗೆ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="5992218262414051481">ಹೆಚ್ಚು ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಅದನ್ನು ಟಾಗಲ್‌ ಆಫ್‌ ಮಾಡಲು ಪುನಃ
 Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -1034,6 +1037,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8433186206711564395">ನೆಟ್‌ವರ್ಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8433977262951327081">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಇನ್‌ಪುಟ್ ಆಯ್ಕೆಗಳ ಮೆನು ಬಬಲ್ ತೋರಿಸುವ ಶಾರ್ಟ್‌ಕಟ್ ಬದಲಾಗಿದೆ. <ph name="OLD_SHORTCUT" /> ಬದಲಿಗೆ <ph name="NEW_SHORTCUT" /> ಬಳಸಿ.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="8446884382197647889">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="847056008324733326">ಮಾಪಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>

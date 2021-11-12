@@ -4775,6 +4775,7 @@
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> 관리자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6025215716629925253">스택 추적</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB 기기 연결됨</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
 <translation id="6028117231645531007">지문 추가</translation>
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
 <translation id="6032091552407840792">이 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
@@ -5526,6 +5527,7 @@
 <translation id="6831043979455480757">번역</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">편리하고 안전한 브라우저로 전환</translation>
+<translation id="6833996806551876956">개인정보 보호 샌드박스 무료 체험</translation>
 <translation id="6834652994408928492">일몰 시 어두운 모드가 자동으로 켜짐</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6838034009068684089">사이트에서 창을 열 때 확인하고 화면에 창 배치(권장)</translation>

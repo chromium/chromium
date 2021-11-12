@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Abrir num novo sep. no grupo</translation>
 <translation id="1103142993930332957">Quer ajudar a melhorar o Chrome?</translation>
 <translation id="1105960400813249514">Ecrã a ser capturado...</translation>
+<translation id="1108938384783527433">Sincronização do histórico</translation>
 <translation id="1110914759170138831">O destaque foi abreviado</translation>
 <translation id="1111673857033749125">Os marcadores guardados nos seus outros dispositivos são apresentados aqui.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="200114059308480249">Pretende incluir o texto circundante nas pesquisas no Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
+<translation id="2020309681647789787">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
 <translation id="2038563949887743358">Ativar Pedir site para computador</translation>
 <translation id="204321170514947529">A aplicação <ph name="APP_NAME" /> também tem dados no Chrome</translation>
@@ -849,6 +851,7 @@ As avaliações da Privacy Sandbox ainda estão em desenvolvimento e estão disp
 <translation id="6070730414166672373">A contactar o seu banco\u2026</translation>
 <translation id="6085886413119427067">Determina como associar a Websites através de uma ligação segura.</translation>
 <translation id="60923314841986378">Faltam <ph name="HOURS" /> horas</translation>
+<translation id="6095578583683628124">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>
 <translation id="6108923351542677676">Configuração em curso…</translation>
 <translation id="6111020039983847643">dados utilizados</translation>
 <translation id="6112702117600201073">A atualizar a página</translation>
@@ -1397,6 +1400,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9155898266292537608">Também pode pesquisar ao tocar rapidamente numa palavra.</translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
+<translation id="916446198114569890">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Última verificação há 1 minuto}other{Última verificação há # minutos}}</translation>
 <translation id="9204836675896933765">Falta 1 ficheiro</translation>

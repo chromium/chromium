@@ -4771,6 +4771,7 @@
 <translation id="6023643151125006053">此设备（序列号：<ph name="SERIAL_NUMBER" />）已被 <ph name="SAML_DOMAIN" /> 管理员锁定。</translation>
 <translation id="6025215716629925253">堆叠追踪</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已连接 USB 设备</translation>
+<translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
 <translation id="6028117231645531007">添加指纹</translation>
 <translation id="6031600495088157824">在工具栏中显示输入选项</translation>
 <translation id="6032091552407840792">这项试用版功能仅在<ph name="BEGIN_LINK" />部分区域<ph name="END_LINK" />有效。</translation>
@@ -5526,6 +5527,7 @@
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
+<translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6834652994408928492">深色模式将在日落时自动开启</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在网站想在您的屏幕上打开和放置窗口时询问您（推荐）</translation>

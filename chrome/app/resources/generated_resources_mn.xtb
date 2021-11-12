@@ -4773,6 +4773,7 @@
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> админ энэ төхөөрөмжийг (SN: <ph name="SERIAL_NUMBER" />) түгжсэн байна.</translation>
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB төхөөрөмжийг холбосон</translation>
+<translation id="6027945736510816438">Та <ph name="WEBSITE" />-г хэлж байна уу?</translation>
 <translation id="6028117231645531007">Хурууны хээ нэмэх</translation>
 <translation id="6031600495088157824">Самбар дээрх оролтын сонголт</translation>
 <translation id="6032091552407840792">Энэ туршилт зөвхөн <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
@@ -5524,6 +5525,7 @@
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6833479554815567477">Табыг <ph name="GROUP_NAME" /> бүлгээс хассан - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ухаалаг, аюулгүй хөтөч рүү сэлгэх</translation>
+<translation id="6833996806551876956">Нууцлалын sandbox-н туршилт</translation>
 <translation id="6834652994408928492">Нар жаргах үед бараан горим автоматаар асна</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="6838034009068684089">Сайтыг таны дэлгэц дээр цонх нээх болон байрлуулахыг хүсэх үед асуух (санал болгосон)</translation>

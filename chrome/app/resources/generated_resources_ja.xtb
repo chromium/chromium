@@ -4753,6 +4753,7 @@
 <translation id="6023643151125006053">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は <ph name="SAML_DOMAIN" /> の管理者によってロックされています。</translation>
 <translation id="6025215716629925253">スタック トレース</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB デバイスに接続されています</translation>
+<translation id="6027945736510816438">もしかして: <ph name="WEBSITE" /></translation>
 <translation id="6028117231645531007">指紋を追加</translation>
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
 <translation id="6032091552407840792">この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
@@ -5504,6 +5505,7 @@
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">スマートで安全なブラウザをぜひご利用ください</translation>
+<translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
 <translation id="6834652994408928492">ダークモードは日の入り時刻に自動的にオンになります</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838034009068684089">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する（推奨）</translation>

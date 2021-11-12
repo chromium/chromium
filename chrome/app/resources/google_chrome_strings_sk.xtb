@@ -152,7 +152,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
 <translation id="4633000520311261472">Z dôvodu vyššej bezpečnosti prehliadača Chrome sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>
-<translation id="4666328473657283332">Ak chcete získať prístup k obsahu Chromu vo všetkých svojich zariadeniach, prihláste sa, aby ste mohli zapnúť synchronizáciu.</translation>
 <translation id="4728575227883772061">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Google Chrome momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Tento súbor môže byť nebezpečný, a preto ho Chrome zablokoval.</translation>
@@ -201,6 +200,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Prehliadač Chrome bol práve vylepšený</translation>
 <translation id="6145313976051292476">Otvoriť súbory PDF v Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -269,7 +269,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8008534537613507642">Preinštalovať prehliadač Chrome</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8129812357326543296">Informácie o prehliadači &amp;Google Chrome</translation>
-<translation id="822971176939352383">Nasledujúce účty nie sú prihlásené do žiadneho profilu Chromu. Ak chcete používať účet v inom profile, najprv daný profil odstráňte.</translation>
 <translation id="8255190535488645436">Google Chrome používa vašu kameru a mikrofón.</translation>
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="828798499196665338">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>

@@ -258,6 +258,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
 <translation id="2561519700418191927">Náhledy videí</translation>
 <translation id="2567385386134582609">OBRÁZEK</translation>
+<translation id="2567545343356994513">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
 <translation id="2571711316400087311">Nabízet odeslání stránek v jiných jazycích do Překladače Google</translation>
 <translation id="2581165646603367611">Tímto vymažete soubory cookie, mezipaměť a další data webů, která Chrome považuje za nedůležitá.</translation>
 <translation id="2587052924345400782">Je dostupná novější verze</translation>
@@ -485,6 +486,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="395377504920307820">Používat bez účtu</translation>
 <translation id="3958287878205277013">Pokud ze zařízení chcete vymazat historii anonymního prohlížení, zavřete všechny anonymní karty.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načte, až bude připraven}few{Chrome stránky načte, až bude připraven}many{Chrome stránky načte, až bude připraven}other{Chrome stránky načte, až bude připraven}}</translation>
+<translation id="3962119236270174787">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné</translation>
 <translation id="3962957115499249330">Až stahování začne (přes Wi-Fi), zobrazí se oznámení.</translation>
 <translation id="3963007978381181125">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay. Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud ji zapomenete nebo toto nastavení budete chtít změnit, bude nutné synchronizaci resetovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nemůže zkontrolovat vaše hesla</translation>
@@ -949,6 +951,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6627583120233659107">Upravit složku</translation>
 <translation id="6633067410344541938">Odemknout anonymní karty</translation>
 <translation id="663674369910034433">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v částech <ph name="BEGIN_LINK1" />Synchronizace<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />Služby Google<ph name="END_LINK2" />.</translation>
+<translation id="6640207029842583248">Blokovat vždy</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6643649862576733715">Seřadit podle množství uspořených dat</translation>
 <translation id="6648459603387803038">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chrome.</translation>
@@ -1075,6 +1078,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7435356471928173109">Vypnuto administrátorem</translation>
 <translation id="7437998757836447326">Odhlášení z Chromu</translation>
 <translation id="7438641746574390233">Když je zapnutý zjednodušený režim, Chrome načítání stránek urychluje pomocí serverů Google. Ve zjednodušeném režimu se velmi pomalé stránky přepisují tak, aby se načítal jen nezbytný obsah. Zjednodušený režim se nepoužívá pro anonymní karty.</translation>
+<translation id="7443901082822119557">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="7444811645081526538">Další kategorie</translation>
 <translation id="7453467225369441013">Odhlásí vás z většiny webů. Z účtu Google odhlášeni nebudete.</translation>
 <translation id="7454641608352164238">Nedostatek místa</translation>
@@ -1182,6 +1186,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="799576009106109668">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
 <translation id="7998918019931843664">Znovu otevřít zavřenou kartu</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
+<translation id="8006818846907410687">Blokovat v anonymním režimu</translation>
 <translation id="8013372441983637696">Vymazat data prohlížeče Chrome také z tohoto zařízení</translation>
 <translation id="8015452622527143194">Vrátit veškerý obsah stránky na původní velikost</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>
@@ -1229,6 +1234,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="825412236959742607">Tato stránka využívá příliš mnoho paměti, Chrome proto odstranil část obsahu.</translation>
+<translation id="8255617931166444521">Weby mohou pomocí souborů cookie sledovat aktivitu prohlížení pouze na svém vlastním webu</translation>
 <translation id="8260126382462817229">Zkuste se přihlásit znovu.</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="82619448491672958">Zobrazit další karty</translation>

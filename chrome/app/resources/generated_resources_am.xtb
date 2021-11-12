@@ -596,6 +596,7 @@
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611432201750675208">የእርስዎ መሣሪያ ተቆልፏል</translation>
 <translation id="1612019740169791082">የእርስዎ መያዣ የዲስክ መጠንን መቀየር ለመደገፍ እንዲችል አልተዋቀረም። ለLinux የተያዘለትን የቦታ መጠን ለማስተካከል ምትኬ ያስቀምጡና ከዚያ በአዲስ መያዣ ላይ ወደነበረበት ይመልሱ።</translation>
+<translation id="1613019471223620622">የይለፍ ቃል ለ<ph name="USERNAME" /> በ<ph name="DOMAIN" /> ላይ አሳይ</translation>
 <translation id="1614511179807650956">የተሰጠዎት ሞባይል ውሂብ ጨርሰው ሊሆኑ ይችላሉ። ተጨማሪ ውሂብ ለመግዛት የ<ph name="NAME" /> ማስገበሪያ መግቢያ ይጎብኙ።</translation>
 <translation id="161460670679785907">ስልክዎን ማግኘት አልተቻለም</translation>
 <translation id="1615337439947999338">በGoogle መለያዎ ውስጥ ያስቀምጡ (<ph name="EMAIL" />)</translation>
@@ -1209,6 +1210,7 @@
 <translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">ያልተሰየመ የሚዲያ ምንጭ</translation>
 <translation id="2224444042887712269">ይህ ቅንብር የ<ph name="OWNER_EMAIL" /> ነው።</translation>
 <translation id="222447520299472966">ቢያንስ አንድ የስነ-ጥበብ ማዕከለ ሥዕላት አልበም መመረጥ አለበት</translation>
 <translation id="2224551243087462610">የአቃፊ ስም አርትዕ</translation>
@@ -3322,6 +3324,7 @@
 <translation id="4444304522807523469">በዩ.ኤስ.ቢ ወይም በአካባቢ አውታረ መረብ በኩል የተያያዙ የሰነድ ቃኚዎችን ይድረስባቸው</translation>
 <translation id="4444512841222467874">ቦታ ካልተገኘ ተጠቃሚዎች እና ውሂብ በራስ-ሰር ሊወገዱ ይችላሉ።</translation>
 <translation id="4446933390699670756">ተንጸባርቋል</translation>
+<translation id="4448914100439890108">የይለፍ ቃል ለ<ph name="USERNAME" /> በ<ph name="DOMAIN" /> ላይ ደብቅ</translation>
 <translation id="4449948729197510913">የእርስዎ የተጠቃሚ ስም የእርስዎ ድርጅት የድርጅት መለያ ንብረት ነው። መሣሪያዎችን ወደ መለያው ለማስመዝገብ በመጀመሪያ የጎራ ባለቤትነትን በአስተዳዳሪ መሥሪያ ውስጥ ያረጋግጡ። በመለያው ላይ ለማረጋገጥ የአስተዳደር ልዩ መብቶች ያስፈልገዎታል።</translation>
 <translation id="4449996769074858870">ይህ ትር ድምጽ እያጫወተ ነው።</translation>
 <translation id="4450274068924249931">የእርስዎ ማያ ገጽ ሲቦዝን ፎቶዎች፣ ሰዓት፣ የአየር ትንበያ እና የሚዲያ መረጃ አሳይ። የማያ ገጽ ቆጣቢን ማንቃት ኃይል በሚሞላበት ጊዜ ማሳያዎን እንዳበራ ያቆየዋል።</translation>
@@ -3845,6 +3848,7 @@
 <translation id="5009463889040999939">መገለጫውን እንደገና በመሰየም ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="5010043101506446253">የእውቅና ማረጋገጫ ባለስልጣን</translation>
 <translation id="5015344424288992913">ለproxy መፍትሄ በመፈለግ ላይ…</translation>
+<translation id="5016491575926936899">ከኮምፒዩተርዎ ሆነው መልዕክትን መላክ፣ የበይነመረብ ግንኙነትዎን ማጋራት፣ ለውይይት ማሳወቂያዎች መልስ መስጠት እና የእርስዎን <ph name="DEVICE_TYPE" /> በስልክዎ መክፈት ይችላሉ።<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">ገጾችን በጽሑፍ ጠቋሚ አማካኝነት ማሰስ ይችላሉ። ለማጥፋት Ctrl+Search+7ን ይጫኑ።</translation>
 <translation id="5017828934289857214">በኋላ አስታውሰኝ</translation>
 <translation id="5018207570537526145">የቅጥያ ድር ጣቢያን ክፈት</translation>
@@ -4431,6 +4435,7 @@
 <translation id="5638309510554459422">ቅጥያዎችን እና ገጽታዎችን በ<ph name="BEGIN_LINK" />Chrome ድር መደብር<ph name="END_LINK" /> ላይ ያግኙ</translation>
 <translation id="5639549361331209298">ይህን ገጽ ዳግም ይጫኑ፣ ተጨማሪ አማራጮችን ለማየት ይያዙት</translation>
 <translation id="5640133431808313291">የደህንነት ቁልፎችን ያቀናብሩ</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" />ን መጠቀም ይጀምሩ</translation>
 <translation id="5642508497713047">CRL ፈራሚ</translation>
 <translation id="5643321261065707929">የሚለካ አውታረ መረብ</translation>
 <translation id="5643620609347735571">አጽዳ እና ቀጥል</translation>
@@ -4769,6 +4774,7 @@
 <translation id="6023643151125006053">ይህ መሣሪያ (SN፦ <ph name="SERIAL_NUMBER" />) በ<ph name="SAML_DOMAIN" /> አስተዳዳሪ ተቆልፎ ነበር።</translation>
 <translation id="6025215716629925253">የቁልል መከታተያ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - ዩኤስቢ መሣሪያ ተገናኝቷል</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> ለማለት ፈልገው ነው?</translation>
 <translation id="6028117231645531007">የጣት አሻራን አክል</translation>
 <translation id="6031600495088157824">በመሣሪያ አሞሌ ላይ የግቤት አማራጮች</translation>
 <translation id="6032091552407840792">ይህ ሙከራ ንቁ የሆነው <ph name="BEGIN_LINK" />በአንዳንድ ክልሎች<ph name="END_LINK" /> ውስጥ ብቻ ነው።</translation>
@@ -5520,6 +5526,7 @@
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6833479554815567477">ትር ከቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ተወግዷል</translation>
 <translation id="683373380308365518">ወደ ዘመናዊ እና ደህንነቱ የተጠበቀ አሳሽ ይቀይሩ</translation>
+<translation id="6833996806551876956">የግላዊነት Sandbox ሙከራ</translation>
 <translation id="6834652994408928492">የጨለማ ሁነታ ፀሐይ ስትጠልቅ በራስ-ሰር ይበራል</translation>
 <translation id="6835762382653651563">የእርስዎን <ph name="DEVICE_TYPE" /> ለማዘመን እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
 <translation id="6838034009068684089">አንድ ጣቢያ መስኮቶችን መክፈትና በማያ ገጾችዎ ላይ ሊያስቀምጣቸው ሲፈልግ ጠይቅ (የሚመከር)</translation>

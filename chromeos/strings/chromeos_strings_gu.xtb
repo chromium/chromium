@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ</translation>
 <translation id="1851218745569890714">વીડિયો કૉન્ફરન્સિંગ</translation>
+<translation id="1857850044054738019">જો ડિવાઇસ રિસ્ટોક કરવામાં અથવા નવા ગ્રાહકને વિતરણ માટે નવીનીકૃત કરવામાં
+        આવી રહ્યું હોય, તો આ વિકલ્પ પસંદ કરો.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">હાર્ડવેર પુનરાવર્તન</translation>
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
@@ -184,6 +186,7 @@
 <translation id="409427325554347132">પરીક્ષણની વિગતો સાચવો</translation>
 <translation id="4111761024568264522">USB ટચપૅડ</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
+<translation id="4140251671072434548">RMA સર્વર અનલૉક કરો</translation>
 <translation id="4145784616224233563">HTTP ફાયરવૉલ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ખાતરી કરો કે સ્કૅનર ચાલુ કરેલું છે અને તમારા નેટવર્ક અથવા સીધા જોડાણ મારફતે ઉપલબ્ધ છે</translation>
@@ -196,6 +199,7 @@
 <translation id="4244962993387259361">મેમરીનું પરીક્ષણ કરવા માટે તમારી પાસે ઓછામાં ઓછી 500 MB સ્પેસ હોવી જરૂરી છે. સ્પેસ ખાલી કરવા માટે, સેટિંગ &gt; સ્ટોરેજ મેનેજમેન્ટ પર જાઓ.</translation>
 <translation id="4258281355379922695">HTTPની વિલંબતા</translation>
 <translation id="4271957103967917607">પૂર્ણ સ્ક્રીન જુઓ</translation>
+<translation id="4275799948641988986">રિપેર કરાયા પછી, આ ડિવાઇસનો ઉપયોગ કોણ કરશે?</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> છબીઓ</translation>
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
@@ -411,6 +415,7 @@
 <translation id="7297226631177386107">ફાયરવૉલ મારફતે HTTPS વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ડિવાઇસ કોઈ અન્યની માલિકીનું હશે</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
@@ -418,6 +423,9 @@
 <translation id="7415801143053185905">HTTPની અતિ ઉચ્ચ વિલંબતા</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{સ્કૅન કરવાનું પૂર્ણ થયું. 1 પેજ સ્કૅન કર્યું}one{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યું}other{સ્કૅન કરવાનું પૂર્ણ થયું. {NUMBER_OF_PAGES} પેજ સ્કૅન કર્યા}}</translation>
+<translation id="7451112128070628323">જો ડિવાઇસની માલિકી બદલાતી ન હોય, તો આ વિકલ્પ પસંદ કરો.
+        ઉદાહરણ તરીકે, ડિવાઇસ સંસ્થામાં અન્ય વ્યક્તિને ટ્રાન્સફર
+        કરવામાં આવી રહ્યું છે.</translation>
 <translation id="7469648432129124067">પોર્ટલની જાણકારી મળી</translation>
 <translation id="7487067081878637334">તકનીક</translation>
 <translation id="7490813197707563893">MAC ઍડ્રેસ</translation>
@@ -469,6 +477,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ટ્રાફિક કાઉન્ટરની વિનંતી કરો</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">અનલૉક કરવાનો કોડ દાખલ કરો:</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -542,6 +551,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
+<translation id="9095415590198785865">ડિવાઇસના માલિક એના એ જ રહેશે</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>

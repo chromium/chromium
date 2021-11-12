@@ -622,6 +622,7 @@
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
+<translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5322611492012084517">找不到您的手机</translation>
 <translation id="5327248766486351172">名称</translation>
@@ -1035,6 +1036,7 @@
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433977262951327081">用于在任务栏中显示输入法选项菜单气泡的快捷键已更改。请使用<ph name="NEW_SHORTCUT" />（而不是 <ph name="OLD_SHORTCUT" />）。</translation>
 <translation id="8444246603146515890">桌面 <ph name="DESK_TITILE" /> 已激活</translation>
+<translation id="8446884382197647889">了解详情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="847056008324733326">显示比例设置</translation>

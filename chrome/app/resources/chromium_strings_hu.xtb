@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">A Chromium OS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="2560420686485554789">A Chromiumnak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, hogy bekapcsolhassa a szinkronizálást.</translation>
 <translation id="2583187216237139145">A profil használata során generált összes Chromium-adatot (pl. könyvjelzőket, előzményeket, jelszavakat és egyéb beállításokat) eltávolíthatja a munkaprofil rendszergazdája. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">A frissítés alkalmazásához újra kell indítani a Chromium OS-t.</translation>
 <translation id="2614883797045469742">Az alapértelmezett beállítások megfelelőnek bizonyulnak a felhasználók többsége számára, de személyre is szabhatja őket, hogy tetszés szerint használhassa a Chromiumot.</translation>
@@ -245,7 +244,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7975919845073681630">Ez a Chromium második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="8013436988911883588">Miután hozzáférést biztosított a Chromiumnak, a webhelyek is hozzáférést kérhetnek.</translation>
-<translation id="8045118833343856403">A következő fiókok nincsenek egyetlen Chromium-profilba sem bejelentkezve. Ha másik profilban szeretné használni az adott fiókot, előbb távolítsa el a szóban forgó profilt.</translation>
 <translation id="8105840573057009683">A Chromiumnak helymeghatározási jogosultságra van szüksége ehhez a webhelyhez</translation>
 <translation id="81770708095080097">Ez a fájl veszélyes, ezért a Chromium letiltotta.</translation>
 <translation id="8248265253516264921">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chromium igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket. A funkciót a beállítások között bármikor kikapcsolhatja.</translation>

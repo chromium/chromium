@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Åbn i en ny fane i en gruppe</translation>
 <translation id="1103142993930332957">Vil du hjælpe med at forbedre Chrome?</translation>
 <translation id="1105960400813249514">Screenshot</translation>
+<translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1110914759170138831">Fremhævningen er forkortet</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
 <translation id="1113597929977215864">Se enkel visning</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}one{# fil}other{# filer}}</translation>
+<translation id="2020309681647789787">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
@@ -847,6 +849,7 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 <translation id="6070730414166672373">Kontakter din bank\u2026</translation>
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>
+<translation id="6095578583683628124">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>
 <translation id="6111020039983847643">dataforbrug</translation>
 <translation id="6112702117600201073">Opdaterer siden</translation>
@@ -1391,6 +1394,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9155898266292537608">Du kan også søge med et hurtigt tryk på et ord</translation>
 <translation id="9158770349521403363">Del kun indhold</translation>
+<translation id="916446198114569890">De webadresser, du besøger, gemmes på din Google-konto</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>

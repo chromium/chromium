@@ -4779,6 +4779,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6023643151125006053">Bu qurilma (seriya raqami: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> administratori tomonidan qulflangan.</translation>
 <translation id="6025215716629925253">To‘plam trassirovkasi</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB qurilma ulandi</translation>
+<translation id="6027945736510816438">Buni nazarda tutdingizmi: <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Barmoq izi qo‘shish</translation>
 <translation id="6031600495088157824">Asboblar panelida kiritish sozlamalarini chiqarish</translation>
 <translation id="6032091552407840792">Bu tajribaviy funksiya faqatgina <ph name="BEGIN_LINK" />ayrim mamlakatlarda<ph name="END_LINK" /> ishlaydi.</translation>
@@ -5535,6 +5536,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6833479554815567477">Varaq <ph name="GROUP_NAME" /> guruhidan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Qulay va xavfsiz brauzerdan foydalaning</translation>
+<translation id="6833996806551876956">Privacy Sandbox sinov versiyasi</translation>
 <translation id="6834652994408928492">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="6838034009068684089">Saytlar ekranlarda oynalar ochish va joylashtirishdan oldin ruxsat olsin (tavsiya etiladi)</translation>

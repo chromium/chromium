@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
 <translation id="1851218745569890714">Bideo-konferentziak</translation>
+<translation id="1857850044054738019">Hautatu aukera hau gailua guztiz eraberritu behar bada beste bezero batek bana dezan.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarearen berrikuspena</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
@@ -195,6 +196,7 @@
 <translation id="4244962993387259361">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Tokia egiteko, joan Ezarpenak &gt; Biltegi-kudeatzailea atalera.</translation>
 <translation id="4258281355379922695">HTTP eskaeren latentzia</translation>
 <translation id="4271957103967917607">Ikusi pantaila osoan</translation>
+<translation id="4275799948641988986">Konpodu ondoren, nork erabiliko du gailu hau?</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="4378373042927530923">Ez da exekutatu</translation>
@@ -410,6 +412,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7297226631177386107">Ezin da konektatu HTTPS darabilten webguneetara suebakiaren bidez</translation>
 <translation id="7302860742311162920">ICCIDa</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Gailuaren jabea aldatu egingo da</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
@@ -417,6 +420,8 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
+<translation id="7451112128070628323">Hautatu aukera hau gailuak jabe bera izaten jarraituko badu.
+        Esate baterako, hemendik uarrera erakunde bereko beste norbaitek erabili behar badu.</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>
@@ -541,6 +546,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth-a</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
+<translation id="9095415590198785865">Gailuak jabe bera izaten jarraituko du</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Freskatu <ph name="PRINCIPAL_NAME" /> erabiltzailearen zerbitzu-eskaera</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. orria eskaneatzen</translation>

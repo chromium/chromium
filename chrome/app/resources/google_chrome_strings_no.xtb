@@ -149,7 +149,6 @@
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>
 <translation id="4633000520311261472">For å gjøre Chrome tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
-<translation id="4666328473657283332">For å få tilgang til Chrome-tingene dine på alle enhetene dine, logg på slik at du kan slå på synkronisering.</translation>
 <translation id="4728575227883772061">Installeringen mislyktes på grunn av en uspesifisert feil. Lukk Google Chrome hvis det kjører, og prøv på nytt.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-Inn)</translation>
 <translation id="4771048833395599659">Denne filen kan være farlig, så Chrome har blokkert den.</translation>
@@ -262,7 +261,6 @@
 <translation id="8008534537613507642">Installer Chrome på nytt</translation>
 <translation id="8013993649590906847">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
-<translation id="822971176939352383">Disse kontoene er ikke logget på noen Chrome-profiler. Hvis du vil bruke en konto på en annen profil, fjerner du den profilen først.</translation>
 <translation id="8255190535488645436">Google Chrome bruker kameraet og mikrofonen din.</translation>
 <translation id="8286862437124483331">Google Chrome forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="828798499196665338">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

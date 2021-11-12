@@ -156,6 +156,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1422930527989633628">Může žádat o objevování zařízení Bluetooth v okolí</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1428146450423315676">Stohovač 7</translation>
+<translation id="142858679511221695">Uživatel cloudu</translation>
 <translation id="1428729058023778569">Toto varování se vám zobrazuje, protože tento web nepodporuje protokol HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
@@ -705,6 +706,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3329013043687509092">Sytost</translation>
 <translation id="3333762389743153920">Není vhodné pro virtuální kartu</translation>
 <translation id="3338095232262050444">Zabezpečeno</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Změna nastavení proxy...</translation>
 <translation id="3360103848165129075">List obslužného nástroje pro platby</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" /> následující informace:
@@ -727,6 +729,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3380365263193509176">Neznámá chyba</translation>
 <translation id="3380864720620200369">Číslo klienta:</translation>
 <translation id="3381668585148405088">Ověření nákupu</translation>
+<translation id="3383566085871012386">Aktuální pořadí precedence</translation>
 <translation id="3387261909427947069">Platební metody</translation>
 <translation id="3391030046425686457">Adresa doručení</translation>
 <translation id="3391482648489541560">úprava souborů</translation>
@@ -1388,6 +1391,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5478437291406423475">B6/C4 (obálka)</translation>
 <translation id="5481076368049295676">Tento obsah by vám do zařízení mohl zkusit nainstalovat nebezpečný software, který odcizuje nebo maže informace. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Přidejte platnou adresu</translation>
+<translation id="5485973315555778056">Cloudové zařízení</translation>
 <translation id="5490432419156082418">Adresy a další</translation>
 <translation id="5492298309214877701">Tato stránka v intranetu společnosti, organizace nebo školy má stejnou adresu URL jako externí web.
 <ph name="LINE_BREAK" />
@@ -1417,6 +1421,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5571083550517324815">Vyzvednutí na této adrese není možné. Vyberte jinou adresu.</translation>
 <translation id="5580958916614886209">Zkontrolujte měsíc vypršení platnosti a zkuste to znovu.</translation>
 <translation id="5586446728396275693">Žádné uložené adresy</translation>
+<translation id="5587987780934666589">Uživatel platformy</translation>
 <translation id="5593349413089863479">Připojení není plně zabezpečené</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="5598944008576757369">Vybrat platební metodu</translation>
@@ -2099,6 +2104,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7953569069500808819">Sešití na horním okraji</translation>
 <translation id="7956713633345437162">Mobilní záložky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
+<translation id="7962467575542381659">Zařízení platformy</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
 <translation id="79682505114836835">„<ph name="VALUE" />“ není platná hexadecimální hodnota barvy.</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
@@ -2252,6 +2258,7 @@ Další podrobnosti:
 <translation id="8438476240229491014">Zapamatovat toto nastavení</translation>
 <translation id="8438786541497918448">Použít kameru a mikrofon?</translation>
 <translation id="8446884382197647889">Další informace</translation>
+<translation id="8449836157089738489">Otevřít vše v nové skupině karet</translation>
 <translation id="8457125768502047971">Bez časového omezení</translation>
 <translation id="8461694314515752532">Šifrovat synchronizovaná data pomocí vlastní heslové fráze pro synchronizaci</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 platební karta}few{# platební karty}many{# platební karty}other{# platebních karet}}</translation>

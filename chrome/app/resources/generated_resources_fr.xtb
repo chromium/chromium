@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Ne pas autoriser les sites à se connecter à des appareils MIDI</translation>
 <translation id="1088654056000736875">Chrome supprime des logiciels malveillants de votre ordinateur…</translation>
 <translation id="1088659085457112967">Accéder au mode Lecteur</translation>
+<translation id="1089606299949659462">Examen terminé</translation>
 <translation id="1090126737595388931">Aucune application active en arrière plan</translation>
 <translation id="1090541560108055381">Avant d'associer les appareils, assurez-vous que ce code est le même sur les deux</translation>
 <translation id="1091767800771861448">Appuyez sur ECHAP pour ignorer (versions non officielles uniquement).</translation>
@@ -806,6 +807,7 @@
     <ph name="LINE_BREAKS2" />
     En revanche, cette opération n'a pas d'incidence sur les applications ou le contenu figurant sur d'autres appareils.</translation>
 <translation id="1809734401532861917">Ajouter mes favoris, mon historique, mes mots de passe et d'autres paramètres au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1810366086647840386">Serveur d'image</translation>
 <translation id="1813278315230285598">Services</translation>
 <translation id="18139523105317219">Nom de partie EDI</translation>
 <translation id="1815083418640426271">Coller en tant que texte brut</translation>
@@ -1374,6 +1376,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2381499968174336913">Aperçu de l'onglet partagé</translation>
 <translation id="2381756643783702095">Demander l'autorisation avant d'envoyer (recommandé)</translation>
 <translation id="2387052489799050037">Revenir à l'accueil</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Impossible de se connecter au proxy, veuillez vous connecter de nouveau</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
 <translation id="2391419135980381625">Police standard</translation>
@@ -1431,6 +1434,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2453860139492968684">Terminer</translation>
 <translation id="2454247629720664989">Mot clé</translation>
 <translation id="2454264884354864965">La caméra est désactivée</translation>
+<translation id="2454524890947537054">Approuver la demande Web ?</translation>
 <translation id="245650153866130664">Pour actualiser automatiquement un ticket, cochez l'option "Mémoriser le mot de passe". Votre mot de passe n'est enregistré que sur votre appareil.</translation>
 <translation id="2457246892030921239">"<ph name="APP_NAME" />" souhaite copier des fichiers depuis "<ph name="VOLUME_NAME" />".</translation>
 <translation id="2457842160081795172">Actuellement sur la chaîne <ph name="CHANNEL_NAME" /></translation>
@@ -1748,6 +1752,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2773802008104670137">Ce fichier risque d'endommager votre ordinateur.</translation>
 <translation id="2775104091073479743">Modifier les empreintes digitales</translation>
 <translation id="2776560192867872731">Modifier le nom de l'appareil <ph name="DEVICE_NAME" /></translation>
+<translation id="2777251078198759550">Supprimer ce conteneur</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Erreur pendant l'installation de l'application Linux</translation>
 <translation id="2783298271312924866">Téléchargé</translation>
@@ -1829,10 +1834,12 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="2851728849045278002">Un problème est survenu. Cliquez ici pour en savoir plus.</translation>
 <translation id="285241945869362924">Crée automatiquement des sous-titres pour les contenus audio et vidéo. Les contenus audio et les sous-titres ne quittent pas votre appareil.</translation>
 <translation id="2854896010770911740">Supprimer les cookies tiers</translation>
+<translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2858138569776157458">Sites populaires</translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861941300086904918">Gestionnaire de sécurité Native Client</translation>
 <translation id="2862815659905780618">Supprimer l'environnement de développement Linux</translation>
+<translation id="2864272167277395865">Sélectionnez un appareil :</translation>
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
 <translation id="2865919525181940183">Captures d'écran des programmes actuellement à l'écran</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation…</translation>
@@ -2398,6 +2405,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3458794975359644386">Échec de l'annulation du partage</translation>
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3459697287128633276">Pour accéder au Google Play Store avec votre compte, authentifiez-vous à l'aide de votre fournisseur d'identité.</translation>
+<translation id="3461766685318630278">Créez et supprimez des conteneurs supplémentaires.</translation>
 <translation id="3462311546193741693">Cette option vous déconnecte de la plupart des sites. Vous restez cependant connecté à votre compte Google afin que vos données synchronisées puissent être effacées.</translation>
 <translation id="3462413494201477527">Annuler la configuration du compte ?</translation>
 <translation id="346298925039590474">Ce réseau mobile sera accessible à tous les utilisateurs de cet appareil</translation>
@@ -3241,6 +3249,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
 <translation id="4369121877634339065">Faites glisser une image pour rechercher</translation>
+<translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4373966964907728675">Diffusion du Bureau en cours…</translation>
 <translation id="4374831787438678295">Programme d'installation de Linux</translation>
@@ -3932,6 +3941,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5117139026559873716">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" />. Ils ne se connecteront plus automatiquement.</translation>
 <translation id="5117930984404104619">Surveiller le comportement des autres extensions, y compris des URL consultées</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Clique ici pour consulter <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Le système d'exploitation de votre conteneur Linux n'est pas à jour. Il ne recevra plus les mises à jour de sécurité ni les corrections de bugs, et les fonctionnalités actuellement exécutées risquent de s'arrêter de façon inattendue. Veuillez installer la dernière version pour continuer d'utiliser Linux.</translation>
 <translation id="5121130586824819730">Votre disque dur est saturé. Veuillez enregistrer à un autre emplacement ou libérer de l'espace sur le disque dur.</translation>
 <translation id="5123433949759960244">Basket-ball</translation>
@@ -4040,6 +4050,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235750401727657667">Remplace la page qui s'affiche lorsque vous ouvrez un nouvel onglet</translation>
 <translation id="5236374273162681467">Pour les utiliser facilement sur tous vos appareils, vous pouvez les transférer vers votre compte Google</translation>
+<translation id="523862956770478816">Autorisations liées aux sites</translation>
 <translation id="5242724311594467048">Activer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
 <translation id="5244474230056479698">Synchronisation avec <ph name="EMAIL" />…</translation>
@@ -4314,6 +4325,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5526745900034778153">Connectez-vous de nouveau à votre compte pour reprendre la synchronisation</translation>
 <translation id="5527463195266282916">Tentative d'installation d'une version antérieure de l'extension.</translation>
 <translation id="5527474464531963247">Vous pouvez également sélectionner un autre réseau.</translation>
+<translation id="5528295196101251711">Nom de la VM</translation>
 <translation id="5532223876348815659">Raccourcis globaux</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
 <translation id="5534304873398226603">Supprimer la photo ou la vidéo</translation>
@@ -4668,6 +4680,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
     <ph name="LINE_BREAK" />
     Cette photo s'affichera sur l'écran de connexion et l'écran de verrouillage du Chromebook.</translation>
 <translation id="5925147183566400388">Pointeur de la déclaration CPS (Certification Practice Statement)</translation>
+<translation id="592740088639760830">Arrêter ce conteneur</translation>
 <translation id="592880897588170157">Télécharger les fichiers PDF au lieu de les ouvrir automatiquement dans Chrome</translation>
 <translation id="592919310198008711">Quand je clique sur l'extension</translation>
 <translation id="5932124097031739492">Linux a bien été mis à niveau.</translation>
@@ -4761,6 +4774,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6023643151125006053">L'administrateur de <ph name="SAML_DOMAIN" /> a verrouillé cet appareil (n° de série : <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Trace de la pile</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> –  Appareil USB connecté</translation>
+<translation id="6027945736510816438">Vous vouliez dire <ph name="WEBSITE" /> ?</translation>
 <translation id="6028117231645531007">Ajouter une empreinte digitale</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032091552407840792">Cet essai n'est actif que dans <ph name="BEGIN_LINK" />certaines régions<ph name="END_LINK" />.</translation>
@@ -5205,6 +5219,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
 <translation id="6499143127267478107">Résolution de l'hôte du script de proxy…</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> veut ouvrir ce fichier :</translation>
+<translation id="6501957628055559556">Tous les conteneurs</translation>
 <translation id="650266656685499220">Pour créer des albums, accédez à Google Photos</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="650457560773015827">Bouton gauche</translation>
@@ -5318,6 +5333,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6619243162837544323">État du réseau</translation>
 <translation id="6619801788773578757">Ajouter une application kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre code.</translation>
+<translation id="6620254580880484313">Nom du conteneur</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, appuyez sur le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle barre d'onglets qui affiche une vignette de chaque onglet.</translation>
 <translation id="6624535038674360844">Le contenu du fichier "<ph name="FILE_NAME" />" est sensible ou dangereux. Demandez à son propriétaire de résoudre ce problème.</translation>
@@ -5328,6 +5344,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6635674640674343739">Impossible d'établir la connexion au réseau. Vérifiez votre connexion réseau et réessayez.</translation>
 <translation id="6635944431854494329">Le propriétaire peut contrôler cette fonctionnalité dans Paramètres &gt; Paramètres avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.</translation>
 <translation id="6635956300022133031">Sélectionner et personnaliser les voix de la synthèse vocale</translation>
+<translation id="6636623428211296678">Découvrez d'autres paramètres ci-dessous ou terminez maintenant</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>
 <translation id="6642720633335369752">Pour afficher toutes les fenêtres d'application ouvertes, balayez l'écran de bas en haut sans retirer votre doigt.</translation>
@@ -5512,6 +5529,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6833479554815567477">Onglet supprimé du groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passez à un navigateur intelligent et sécurisé</translation>
+<translation id="6833996806551876956">Essai de Privacy Sandbox</translation>
 <translation id="6834652994408928492">Le mode sombre sera activé automatiquement au coucher du soleil</translation>
 <translation id="6835762382653651563">Connectez-vous à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Vous demander votre avis lorsqu'un site souhaite ouvrir et placer des fenêtres sur vos écrans (recommandé)</translation>
@@ -6089,6 +6107,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7450761244949417357">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> maintenant</translation>
 <translation id="7453008956351770337">En sélectionnant cette imprimante, vous autorisez l'extension suivante à y accéder :</translation>
 <translation id="7454548535253569100">Portail : <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">Gérer les conteneurs supplémentaires</translation>
 <translation id="7456142309650173560">développeur</translation>
 <translation id="7456847797759667638">Ouvrir une adresse</translation>
 <translation id="7457384018036134905">Gérer les langues dans les paramètres de Chrome OS</translation>
@@ -6604,6 +6623,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7946586320617670168">L'origine doit être sûre</translation>
 <translation id="794676567536738329">Confirmer les autorisations</translation>
 <translation id="7947962633355574091">C&amp;opier l'adresse vidéo</translation>
+<translation id="7948407723851303488">Toutes les pages de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Pour ajouter ou gérer des modes de paiement Google Pay, accédez à votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images du presse-papiers</translation>
 <translation id="795282463722894016">Restauration terminée</translation>
@@ -7670,6 +7690,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9053893665344928494">Mémoriser mon choix</translation>
 <translation id="9055636786322918818">Appliquez le chiffrement RC4. L'activation de cette option est risquée, car les algorithmes de chiffrement RC4 ne sont pas sécurisés.</translation>
 <translation id="9056810968620647706">Aucune correspondance trouvée</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> veut accéder au contenu suivant :</translation>
 <translation id="9057354806206861646">Calendrier des mises à jour</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>
@@ -7757,6 +7778,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9139258866388561662">Se connecter à <ph name="WEB_DRIVE" /> pour terminer le téléchargement</translation>
 <translation id="9139988741193276691">Configuration de Linux</translation>
 <translation id="9140067245205650184">Vous utilisez un indicateur de fonctionnalité non pris en charge : <ph name="BAD_FLAG" />. La stabilité et la sécurité en seront affectées.</translation>
+<translation id="9142637293078737510">Alias d'image</translation>
 <translation id="9143298529634201539">Supprimer la suggestion ?</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Quitter</translation>

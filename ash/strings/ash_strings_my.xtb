@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">စတိုင်လပ်စ်ခဲတံ ဆက်တင်များ</translation>
 <translation id="2354174487190027830"><ph name="NAME" />ကို ဖွင့်သုံးနေ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
+<translation id="2360625459710946148">၎င်းအလိုက် ပြန်စီစဉ်ခြင်း</translation>
 <translation id="2367186422933365202">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
 <translation id="2369165858548251131">"Hello" ကို တရုတ်လို ဘယ်လိုပြောလဲ</translation>
 <translation id="2390318262976603432">ဘာသာစကား ဆက်တင်များ</translation>
@@ -621,6 +622,7 @@
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
 <translation id="5313326810920013265">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="5314219114274263156">ဖန်သားပြင်ရိုက်ကူးနေသည်</translation>
+<translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5319712128756744240">စက်အသစ် တွဲချိတ်ရန်</translation>
 <translation id="5322611492012084517">သင့်ဖုန်းကို ရှာမတွေ့ပါ</translation>
 <translation id="5327248766486351172">အမည်</translation>
@@ -706,6 +708,7 @@
 <translation id="5977415296283489383">နားကြပ်</translation>
 <translation id="5978382165065462689">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အားမျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="5980301590375426705">ဧည့်သည် ထွက်ရန်</translation>
+<translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="5992218262414051481">ခြားနားမှုမြင့်သည့်မုဒ်ကို ဖွင့်ထားပါသည်။ ၎င်းကို ပိတ်ရန် Ctrl+Search+H ကို ထပ်မံနှိပ်ပါ။</translation>
 <translation id="6018164090099858612">ကြေးမုံရိပ်မုဒ်မှ ထွက်နေသည်</translation>
@@ -1033,6 +1036,7 @@
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>
 <translation id="8433977262951327081">စင်ပေါ်တွင် စာရိုက်စနစ်ရွေးချယ်စရာ မီနူးစာသားအကွက်ကို ပြသရန် ဖြတ်လမ်းလင့်ခ် ပြောင်းသွားပါပြီ။ <ph name="NEW_SHORTCUT" /> ကို <ph name="OLD_SHORTCUT" /> အစား သုံးပေးပါ။</translation>
 <translation id="8444246603146515890">မြင်ကွင်း <ph name="DESK_TITILE" /> စတင်ထားသည်</translation>
+<translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'စကားပြော ရွေးရန်' ကို ပိတ်ရန်</translation>
 <translation id="847056008324733326">မြင်ကွင်းစကေး ဆက်တင်များ</translation>

@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Apri in nuova scheda in gruppo</translation>
 <translation id="1103142993930332957">Vuoi contribuire a migliorare Chrome?</translation>
 <translation id="1105960400813249514">Acquisizione schermo</translation>
+<translation id="1108938384783527433">Sincronizzazione della cronologia</translation>
 <translation id="1110914759170138831">Testo del contenuto in evidenza abbreviato</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
 <translation id="1113597929977215864">Mostra in visualizzazione semplificata</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
+<translation id="2020309681647789787">La tua cronologia sarà disponibile su tutti i dispositivi sincronizzati, quindi potrai continuare ciò che stavi facendo</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
 <translation id="204321170514947529">Anche <ph name="APP_NAME" /> presenta dati in Chrome</translation>
@@ -847,6 +849,7 @@ Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono dispon
 <translation id="6070730414166672373">Contatto la tua banca…</translation>
 <translation id="6085886413119427067">Consente di stabilire come connettersi ai siti web tramite una connessione sicura</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rimanenti</translation>
+<translation id="6095578583683628124">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="6108923351542677676">Configurazione in corso…</translation>
 <translation id="6111020039983847643">di dati utilizzati</translation>
 <translation id="6112702117600201073">Aggiornamento della pagina in corso</translation>
@@ -1391,6 +1394,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9155898266292537608">Per eseguire una ricerca, basta un rapido tocco su una parola</translation>
 <translation id="9158770349521403363">Condividi solo contenuti</translation>
+<translation id="916446198114569890">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>

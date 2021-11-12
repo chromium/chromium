@@ -42,7 +42,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2535480412977113886">Chromium OS gat ekki samstillt gögnin því vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="2560420686485554789">Chromium þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="2572494885440352020">Hjálparforrit Chromium</translation>
-<translation id="2577788541081224677">Til að fá aðgang að Chromium efninu þínu í öllum tækjunum þínum skaltu skrá þig inn til að geta kveikt á samstillingu.</translation>
 <translation id="2583187216237139145">Stjórnandi vinnuprófíla getur fjarlægt öll Chromium gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Endurræsa þarf Chromium OS til að nota uppfærsluna.</translation>
 <translation id="2614883797045469742">Sjálfgefnu stillingarnar henta flestum en þú getur sérsniðið stillingarnar í takt við notkun þína á Chromium</translation>
@@ -250,7 +249,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7937630085815544518">Þú varst skráð(ur) inn í Chromium sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7975919845073681630">Þetta er aukaleg uppsetning á Chromium sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
 <translation id="8013436988911883588">Þegar Chromium hefur aðgang munu vefsvæði geta beðið þig um aðgang.</translation>
-<translation id="8045118833343856403">Eftirfarandi reikningar eru ekki skráðir inn á Chromium prófíla. Ef þú vilt nota reikning á öðrum prófíl skaltu byrja á að fjarlægja viðkomandi prófíl.</translation>
 <translation id="8105840573057009683">Chromium verður að fá staðsetningarheimild fyrir þetta vefsvæði</translation>
 <translation id="81770708095080097">Þessi skrá er hættuleg og þess vegna útilokaði Chromium hana.</translation>
 <translation id="8248265253516264921">Ef gagnlega lýsingu vantar við mynd reynir Chromium að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>

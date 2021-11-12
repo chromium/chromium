@@ -4792,6 +4792,7 @@
 <translation id="6023643151125006053">ਇਹ ਡੀਵਾਈਸ (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਕ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="6025215716629925253">ਸਟੈਕ ਟ੍ਰੇਸ</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
+<translation id="6027945736510816438">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="WEBSITE" /> ਸੀ?</translation>
 <translation id="6028117231645531007">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6031600495088157824">ਟੂਲਬਾਰ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ</translation>
 <translation id="6032091552407840792">ਇਹ ਪਰਖ ਸਿਰਫ਼ <ph name="BEGIN_LINK" />ਕੁਝ ਖੇਤਰਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਹੀ ਕਿਰਿਆਸ਼ੀਲ ਹੈ।</translation>
@@ -5548,6 +5549,7 @@
 <translation id="6831043979455480757">ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="6833479554815567477">ਟੈਬ ਨੂੰ <ph name="GROUP_NAME" /> ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">ਸਮਾਰਟ ਅਤੇ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
+<translation id="6833996806551876956">ਪਰਦੇਦਾਰੀ ਸੈਂਡਬਾਕਸ ਪਰਖ</translation>
 <translation id="6834652994408928492">ਸੂਰਜ ਡੁੱਬਣ ਵੇਲੇ ਗੂੜ੍ਹਾ ਮੋਡ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਆਪਣੇ ਆਪ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="6835762382653651563">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਇੰਟਰਨੈਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="6838034009068684089">ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਵਿੰਡੋ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਉਸਨੂੰ ਰੱਖਣ ਦੌਰਾਨ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>

@@ -4780,6 +4780,7 @@
 <translation id="6023643151125006053">Այս սարքը (սերիական համար՝ <ph name="SERIAL_NUMBER" />) արգելափակվել է <ph name="SAML_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից:</translation>
 <translation id="6025215716629925253">Սթեքի ժամանակագրություն</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB սարքը միացված է</translation>
+<translation id="6027945736510816438">Արդյո՞ք նկատի ունեիք <ph name="WEBSITE" /></translation>
 <translation id="6028117231645531007">Ավելացնել մատնահետք</translation>
 <translation id="6031600495088157824">Ներածման ընտրանքները գործիքագոտում</translation>
 <translation id="6032091552407840792">Այս փորձնական գործառույթը հասանելի է միայն <ph name="BEGIN_LINK" />որոշ տարածաշրջաններում<ph name="END_LINK" />։</translation>
@@ -5535,6 +5536,7 @@
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6833479554815567477">Ներդիրը հեռացվեց «<ph name="GROUP_NAME" />» խմբից – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ընտրեք խելացի ու անվտանգ դիտարկիչ</translation>
+<translation id="6833996806551876956">Privacy Sandbox-ի փորձաշրջան</translation>
 <translation id="6834652994408928492">Մութն ընկնելուն պես մուգ ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
 <translation id="6838034009068684089">Հարցնել, երբ կայքն ուզում է բացել և տեղակայել պատուհաններ ձեր էկրաններին (խորհուրդ է տրվում)</translation>

@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">ਸਟਾਈਲਸ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ਨੂੰ ਐਕਟੀਵੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2360625459710946148">ਇਸ ਮੁਤਾਬਕ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
 <translation id="2367186422933365202">ਤੁਹਾਡੀ Chromebook ਵਿੱਚ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2369165858548251131">ਚੀਨੀ ਭਾਸ਼ਾ ਵਿੱਚ "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</translation>
 <translation id="2390318262976603432">ਲੋਕੇਲ ਸੈਟਿੰਗਾਂ</translation>
@@ -621,6 +622,7 @@
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5314219114274263156">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
+<translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319712128756744240">ਨਵਾਂ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
 <translation id="5322611492012084517">ਤੁਹਾਡਾ ਫ਼ੋਨ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5327248766486351172">ਨਾਮ</translation>
@@ -706,6 +708,7 @@
 <translation id="5977415296283489383">ਹੈਡਫੋਨ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="598407983968395253">ਟੈਮਪਲੇਟ ਵਰਤੋ</translation>
 <translation id="598882571027504733">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromebook ਨੂੰ ਨਾਲ ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਰਾਹੀਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="5992218262414051481">ਉੱਚ ਵਖਰੇਵਾਂ ਮੋਡ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ। ਇਸਨੂੰ ਬੰਦ 'ਤੇ ਟੌਗਲ ਕਰਨ ਲਈ ਦੁਬਾਰਾ Ctrl+Search+H ਦਬਾਓ।</translation>
 <translation id="6018164090099858612">"ਮਿਰਰ ਮੋਡ" ਤੋਂ ਬਾਹਰ ਨਿਕਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -1033,6 +1036,7 @@
 <translation id="8433186206711564395">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8433977262951327081">ਸ਼ੈਲਫ਼ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ ਮੀਨੂ ਬੁਲਬੁਲੇ ਨੂੰ ਦਿਖਾਉਣ ਵਾਲਾ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ <ph name="OLD_SHORTCUT" /> ਦੀ ਬਜਾਏ <ph name="NEW_SHORTCUT" /> ਵਰਤੋ।</translation>
 <translation id="8444246603146515890">ਡੈਸਕ <ph name="DESK_TITILE" /> ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="847056008324733326">ਡਿਸਪਲੇ ਸਕੇਲ ਸੈਟਿੰਗਾਂ</translation>

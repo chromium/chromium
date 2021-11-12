@@ -82,6 +82,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1243027604378859286">Tác giả:</translation>
 <translation id="1246424317317450637">In đậm</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần Cài đặt của Chrome OS</translation>
 <translation id="1250759482327835220">Để thanh toán nhanh hơn vào lần tới, hãy lưu địa chỉ thanh toán, tên và thẻ vào Tài khoản Google của bạn.</translation>
 <translation id="1252799212227771492">Nút tạo trang tính, nhấn phím Enter để tạo nhanh một trang tính mới trong Google Trang tính</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (được đồng bộ hóa)</translation>
@@ -322,6 +323,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="192020519938775529">{COUNT,plural, =0{Không có}=1{1 trang web}other{# trang web}}</translation>
 <translation id="1923390796829649802">Nút quản lý chế độ cài đặt hỗ trợ tiếp cận, nhấn phím Enter để cá nhân hóa các công cụ hỗ trợ tiếp cận của bạn trong phần cài đặt Chrome OS</translation>
 <translation id="1924727005275031552">Mới</translation>
+<translation id="1927439593081478069">Nút chạy quy trình kiểm tra an toàn trên Chrome, nhấn phím Enter để chạy quy trình kiểm tra an toàn trong phần Cài đặt của Chrome</translation>
 <translation id="1939175642807587452">Trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="1945968466830820669">Bạn có thể mất quyền truy cập vào tài khoản của tổ chức mình hoặc bị đánh cắp danh tính. Chromium khuyên bạn nên thay đổi mật khẩu ngay bây giờ.</translation>
 <translation id="1947454675006758438">Dập ghim trên cùng bên phải</translation>
@@ -341,6 +343,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2003709556000175978">Đặt lại mật khẩu của bạn ngay bây giờ</translation>
 <translation id="2003775180883135320">Đục 4 lỗ trên cùng</translation>
 <translation id="201174227998721785">Quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
+<translation id="2019607688127825327">Nút quản lý chế độ cài đặt hỗ trợ tiếp cận, nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần Cài đặt của Chrome</translation>
 <translation id="2025115093177348061">Thực tế tăng cường</translation>
 <translation id="2025186561304664664">Proxy được đặt thành định cấu hình tự động.</translation>
 <translation id="2025891858974379949">Nội dung không an toàn</translation>
@@ -506,6 +509,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2556876185419854533">&amp;Hoàn tác chỉnh sửa</translation>
 <translation id="2570734079541893434">Quản lý chế độ cài đặt</translation>
 <translation id="257674075312929031">Nhóm</translation>
+<translation id="2576880857912732701">Nút quản lý chế độ cài đặt bảo mật, nhấn phím Enter để quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2587730715158995865">Từ <ph name="ARTICLE_PUBLISHER" />. Đọc tin bài này và <ph name="OTHER_ARTICLE_COUNT" /> tin bài khác.</translation>
 <translation id="2587841377698384444">ID API thư mục:</translation>
@@ -550,6 +554,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để quản lý thông tin thanh toán và thẻ tín dụng trong phần cài đặt của Chrome</translation>
 <translation id="2721148159707890343">Yêu cầu đã thành công</translation>
+<translation id="2723669454293168317">Chạy quy trình kiểm tra an toàn trong phần Cài đặt của Chrome</translation>
 <translation id="2726001110728089263">Khay bên</translation>
 <translation id="2728127805433021124">Chứng chỉ của máy chủ đã được ký bằng thuật toán chữ ký yếu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Chạy Chẩn đoán kết nối<ph name="END_LINK" /></translation>
@@ -580,6 +585,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2859806420264540918">Trang web này hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="287596039013813457">Thân thiện</translation>
 <translation id="2876489322757410363">Đang thoát khỏi chế độ Ẩn danh để thanh toán qua một ứng dụng bên ngoài. Bạn muốn tiếp tục?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="2878197950673342043">Gấp kiểu áp phích</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Vị trí cửa sổ</translation>
@@ -685,6 +691,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3229041911291329567">Thông tin phiên bản về thiết bị và trình duyệt của bạn</translation>
 <translation id="323107829343500871">Nhập CVC cho <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Luôn luôn phát hiện nội dung quan trọng trên trang web này</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="3240791268468473923">Đã mở thông tin xác thực thanh toán an toàn không khớp với bảng thông tin xác thực</translation>
 <translation id="3249845759089040423">Sành điệu</translation>
 <translation id="3252266817569339921">Tiếng Pháp</translation>
@@ -728,6 +735,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
       • Tạo bản đồ 3D về các khu vực xung quanh và theo dõi thông tin vị trí của máy ảnh
       • Dùng máy ảnh của bạn</translation>
 <translation id="337363190475750230">Đã hủy cấp phép</translation>
+<translation id="3375754925484257129">Chạy quy trình kiểm tra an toàn trên Chrome</translation>
 <translation id="3377144306166885718">Máy chủ sử dụng phiên bản TLS lỗi thời.</translation>
 <translation id="3377188786107721145">Lỗi phân tích cú pháp chính sách</translation>
 <translation id="3377736046129930310">Dùng phương thức khóa màn hình để xác nhận các thẻ nhanh hơn</translation>
@@ -768,6 +776,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3462200631372590220">Ẩn chi tiết</translation>
 <translation id="3467763166455606212">Yêu cầu tên chủ thẻ</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> hiện đang mở, nhấn phím Tab rồi nhấn phím Enter để chuyển sang thẻ đang mở</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3484560055331845446">Bạn có thể mất quyền truy cập vào Tài khoản Google của mình. Chrome khuyên bạn nên đổi mật khẩu ngay bây giờ. Bạn sẽ được yêu cầu đăng nhập.</translation>
 <translation id="3487845404393360112">Khay 4</translation>
@@ -806,6 +815,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3611395257124510155">Thẻ ảo cho <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Kích thước 2</translation>
 <translation id="361438452008624280">Mục nhập danh sách "<ph name="LANGUAGE_ID" />": Ngôn ngữ không xác định hoặc không được hỗ trợ.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để chạy quy trình kiểm tra an toàn trong phần Cài đặt của Chrome</translation>
 <translation id="3615877443314183785">Nhập ngày hết hạn hợp lệ</translation>
 <translation id="36224234498066874">Xóa DL duyệt web</translation>
 <translation id="362276910939193118">Hiển thị Toàn bộ Lịch sử</translation>
@@ -1601,6 +1611,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6218753634732582820">Bạn muốn xóa địa chỉ khỏi Chromium?</translation>
 <translation id="622039917539443112">Gấp kiểu song song</translation>
 <translation id="6221345481584921695">Duyệt web an toàn của Google gần đây <ph name="BEGIN_LINK" />đã phát hiện phần mềm độc hại<ph name="END_LINK" /> trên <ph name="SITE" />. Các trang web thường được coi là an toàn đôi khi vẫn bị nhiễm phần mềm độc hại. Nội dung độc hại xuất phát từ <ph name="SUBRESOURCE_HOST" />, một nguồn phát tán phần mềm độc hại đã xác định.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần Cài đặt của Chrome</translation>
 <translation id="6234122620015464377">Cắt bỏ sau mỗi tài liệu</translation>
 <translation id="6240447795304464094">Biểu trưng của Google Pay</translation>
 <translation id="6241121617266208201">Ẩn các nội dung đề xuất</translation>
@@ -1619,6 +1630,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6279098320682980337">Bạn chưa điền số thẻ ảo? Nhấp vào mục thông tin chi tiết của thẻ để sao chép</translation>
 <translation id="6280223929691119688">Không thể phân phối đến địa chỉ này. Chọn một địa chỉ khác.</translation>
 <translation id="6282194474023008486">Mã bưu chính</translation>
+<translation id="6285507000506177184">Nút quản lý tệp đã tải xuống trong Chrome, nhấn phím Enter để quản lý các tệp bạn đã tải xuống trong Chrome</translation>
 <translation id="6289939620939689042">Màu trang</translation>
 <translation id="6290238015253830360">Bài viết đề xuất cho bạn sẽ xuất hiện ở đây</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1734,6 +1746,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6689249931105087298">Tương đối có nén điểm đen</translation>
 <translation id="6689271823431384964">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hoạt động này trong phần cài đặt. Tên chủ thẻ được lấy từ tài khoản của bạn.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để Tìm thiết bị của bạn trong Tài khoản Google</translation>
+<translation id="6696588630955820014">Nút chia sẻ thẻ này, nhấn phím Enter để chia sẻ thẻ này bằng cách chia sẻ đường liên kết, tạo mã QR, truyền và nhiều cách khác</translation>
 <translation id="6698381487523150993">Tạo:</translation>
 <translation id="6702919718839027939">Thuyết trình</translation>
 <translation id="6710213216561001401">Trước</translation>
@@ -1939,6 +1952,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7392089738299859607">Cập nhật địa chỉ</translation>
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Chia sẻ thẻ này bằng cách chia sẻ đường liên kết, tạo mã QR, truyền và nhiều cách khác</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> của bạn được quản lý</translation>
 <translation id="7407424307057130981">&lt;p&gt;Bạn sẽ thấy lỗi này nếu bạn có phần mềm Superfish trên máy tính chạy Windows.&lt;/p&gt;
       &lt;p&gt;Hãy làm theo các bước sau để tạm thời tắt phần mềm này nhằm giúp bạn có thể truy cập vào web. Bạn cần phải có đặc quyền của quản trị viên.&lt;/p&gt;
@@ -2168,6 +2182,7 @@ Thông tin chi tiết bổ sung:
 <translation id="810875025413331850">Không tìm thấy thiết bị lân cận.</translation>
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="8118489163946903409">Phương thức thanh toán</translation>
+<translation id="8124639700796374294">Nút tuỳ chỉnh Chrome, nhấn phím Enter để tuỳ chỉnh giao diện trình duyệt của bạn</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" đã được cài đặt không đúng trên máy tính hoặc mạng của bạn. Hãy yêu cầu quản trị viên CNTT của bạn giải quyết vấn đề này.</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8148608574971654810">Phiên bản PDF:</translation>
@@ -2350,6 +2365,7 @@ Thông tin chi tiết bổ sung:
 <translation id="87601671197631245">Trang web này dùng cấu hình bảo mật lỗi thời nên có thể làm lộ thông tin của bạn (chẳng hạn như mật khẩu, thư hoặc thẻ tín dụng) trong quá trình gửi các thông tin này đến trang web này.</translation>
 <translation id="8761567432415473239">Gần đây, Duyệt web an toàn của Google <ph name="BEGIN_LINK" />tìm thấy chương trình độc hại<ph name="END_LINK" /> trên trang <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Thiết bị USB</translation>
+<translation id="8763986294015493060">Đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="8766943070169463815">Đã mở bảng xác thực thông tin thanh toán an toàn</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Làm lại xóa</translation>
@@ -2363,6 +2379,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để cập nhật Chrome trong phần cài đặt của Chrome</translation>
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="882338992931677877">Khe thủ công</translation>
+<translation id="8834380158646307944">Nút đóng cửa sổ ẩn danh, nhấn phím Enter để đóng tất cả cửa sổ ẩn danh đang mở</translation>
 <translation id="883848425547221593">Dấu trang Khác</translation>
 <translation id="884264119367021077">Ðịa chỉ giao hàng</translation>
 <translation id="884923133447025588">Không tìm thấy cơ chế thu hồi.</translation>
@@ -2416,6 +2433,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9020200922353704812">Yêu cầu địa chỉ thanh toán của thẻ</translation>
 <translation id="9020542370529661692">Trang này đã được dịch sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để chia sẻ thẻ này bằng cách chia sẻ đường liên kết, tạo mã QR, truyền và nhiều cách khác</translation>
 <translation id="9025348182339809926">(Không hợp lệ)</translation>
 <translation id="9030265603405983977">Đơn sắc</translation>
 <translation id="9035022520814077154">Lỗi bảo mật</translation>

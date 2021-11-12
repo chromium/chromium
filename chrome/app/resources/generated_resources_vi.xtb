@@ -2401,6 +2401,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3449393517661170867">Cửa sổ mới dạng thẻ</translation>
 <translation id="3449839693241009168">Bấm <ph name="SEARCH_KEY" /> để gửi lệnh đến <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Phần trăm sử dụng ở trạng thái không hoạt động</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống.</translation>
 <translation id="3451753556629288767">Được phép mở các loại tệp</translation>
 <translation id="3452999110156026232">Phiên truy cập của cha mẹ</translation>
 <translation id="3453612417627951340">Cần cấp phép</translation>
@@ -4263,6 +4264,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5472627187093107397">Lưu mật khẩu cho trang web này</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Mã PIN phải có ít nhất 1 ký tự}other{Mã PIN phải có ít nhất # ký tự}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống, hoặc tải xuống từ đường kết nối có đo lượng dữ liệu (bạn có thể mất phí).</translation>
 <translation id="5481273127572794904">Không được phép tự động tải nhiều tệp xuống</translation>
 <translation id="5481941284378890518">Thêm máy in lân cận</translation>
 <translation id="5483785310822538350">Thu hồi quyền truy cập vào tệp và thiết bị</translation>
@@ -4685,6 +4687,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="592880897588170157">Tải tệp PDF xuống thay vì tự động mở trong Chrome</translation>
 <translation id="592919310198008711">Khi tôi nhấp vào tiện ích</translation>
 <translation id="5932124097031739492">Đã nâng cấp Linux thành công.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> yêu cầu bạn cập nhật ngay <ph name="DEVICE_TYPE" /> của mình.</translation>
 <translation id="5932224571077948991">Trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="59324397759951282">Thiết bị USB của <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Bạn hiện không có đủ giấy phép để đăng ký thiết bị Google Meet này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm giấy phép. Nếu bạn nhận được thông báo này do nhầm lẫn, hãy liên hệ với nhóm hỗ trợ.</translation>
@@ -4775,6 +4778,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6023643151125006053">Thiết bị này (Số sê-ri: <ph name="SERIAL_NUMBER" />) đã bị quản trị viên <ph name="SAML_DOMAIN" /> khóa.</translation>
 <translation id="6025215716629925253">Dấu vết ngăn xếp</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Đã kết nối thiết bị USB</translation>
+<translation id="6027945736510816438">Ý của bạn là <ph name="WEBSITE" /> phải không?</translation>
 <translation id="6028117231645531007">Thêm vân tay</translation>
 <translation id="6031600495088157824">Các tùy chọn phương thức nhập trên thanh công cụ</translation>
 <translation id="6032091552407840792">Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
@@ -5526,6 +5530,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Chuyển sang trình duyệt an toàn và thông minh</translation>
+<translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
 <translation id="6834652994408928492">Chế độ tối sẽ tự động bật vào buổi tối</translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6838034009068684089">Hỏi khi có một trang web muốn mở và đặt các cửa sổ trên màn hình của bạn (khuyên dùng)</translation>

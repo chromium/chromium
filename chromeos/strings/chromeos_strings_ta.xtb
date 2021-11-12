@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ஸ்கேன் செய்வதை ரத்துசெய்கிறது</translation>
 <translation id="1851218745569890714">வீடியோ கான்ஃபிரன்ஸ்</translation>
+<translation id="1857850044054738019">புதிய வாடிக்கையாளருக்கு வழங்குவதற்காக இந்தச் சாதனம் மீண்டும் இருப்பில் சேர்க்கப்படுகிறது அல்லது புதுப்பிக்கப்படுகிறது என்றால்
+        இந்த விருப்பத்தேர்வைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">வன்பொருள் பதிப்பு</translation>
 <translation id="1905710495812624430">அனுமதிக்கப்பட்ட அதிகபட்ச முயற்சிகளைக் கடந்துவிட்டீர்கள்.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">நினைவகச் சோதனையை இயக்க, குறைந்தது 500 MB சேமிப்பிடம் காலியாக இருக்க வேண்டும். சேமிப்பிடத்தைக் காலியாக்க 'அமைப்புகள் &gt; சேமிப்பக நிர்வாகி' என்பதற்குச் செல்லவும்.</translation>
 <translation id="4258281355379922695">HTTP தாமதம்</translation>
 <translation id="4271957103967917607">முழுத்திரையில் காட்டும்</translation>
+<translation id="4275799948641988986">பழுது நீக்கியபிறகு, இந்தச் சாதனத்தை யார் பயன்படுத்துவார்கள்?</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
@@ -412,6 +415,7 @@
 <translation id="7297226631177386107">HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">வேறொரு உரிமையாளர் சாதனத்தைப் பயன்படுத்துவார்</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">நெட்வொர்க் சாதனங்கள்</translation>
 <translation id="7359657277149375382">ஃபைல் வகை</translation>
@@ -419,6 +423,9 @@
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
+<translation id="7451112128070628323">சாதனத்தின் உரிமையாளர் மாறவில்லை எனில் இந்த விருப்பத்தேர்வைத் தேர்ந்தேடுக்கவும்.
+        உதாரணமாக, ஒரு நிறுவனத்திற்குள்ளாகவே வேறொருவருக்குச்
+        சாதனம் மாற்றப்படும்போது.</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>
@@ -543,6 +550,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
+<translation id="9095415590198785865">அதே உரிமையாளர் சாதனத்தைப் பயன்படுத்துவார்</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>

@@ -4775,6 +4775,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6023643151125006053">Kerfisstjóri <ph name="SAML_DOMAIN" /> læsti þessu tæki (raðnúmer: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Staflarakning</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-tæki er tengt</translation>
+<translation id="6027945736510816438">Áttirðu við <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Bæta fingrafari við</translation>
 <translation id="6031600495088157824">Innsláttarvalkostir á tækjastiku</translation>
 <translation id="6032091552407840792">Þessi prufuútgáfa er aðeins virk á <ph name="BEGIN_LINK" />sumum svæðum<ph name="END_LINK" />.</translation>
@@ -5526,6 +5527,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6833479554815567477">Flipi fjarlægður úr hópnum <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skipta yfir í öruggan og snjallan vafra</translation>
+<translation id="6833996806551876956">Prufuútgáfa persónuverndarafmörkunar</translation>
 <translation id="6834652994408928492">Sjálfkrafa kviknar á dökkri stillingu við sólsetur</translation>
 <translation id="6835762382653651563">Tengstu internetinu til að uppfæra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spyrja þegar vefsvæði vill opna og birta glugga á skjánum (ráðlagt)</translation>

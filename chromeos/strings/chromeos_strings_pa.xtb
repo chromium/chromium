@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1851218745569890714">ਵੀਡੀਓ ਕਾਨਫਰੰਸਿੰਗ</translation>
+<translation id="1857850044054738019">ਜੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸਟਾਕ ਵਿੱਚ ਲਿਆਂਦਾ ਜਾ ਰਿਹਾ ਹੈ ਜਾਂ ਨਵੇਂ ਗਾਹਕ ਨੂੰ ਵੰਡਣ ਲਈ ਠੀਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, ਤਾਂ ਇਸ ਵਿਕਲਪ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ਹਾਰਡਵੇਅਰ ਸੰਸ਼ੋਧਨ</translation>
 <translation id="1905710495812624430">ਅਧਿਕਤਮ ਮਨਜ਼ੂਰ ਕੀਤੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਵਧੀਆਂ।</translation>
@@ -197,6 +198,7 @@
 <translation id="4244962993387259361">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ 500 MB ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ &gt; ਸਟੋਰੇਜ ਪ੍ਰਬੰਧਨ 'ਤੇ ਜਾਓ।</translation>
 <translation id="4258281355379922695">HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="4271957103967917607">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇਖੋ</translation>
+<translation id="4275799948641988986">ਮੁਰੰਮਤ ਤੋਂ ਬਾਅਦ, ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕੌਣ ਕਰੇਗਾ?</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ਚਿੱਤਰ</translation>
 <translation id="4378373042927530923">ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਨਹੀਂ ਚੱਲੀ</translation>
@@ -412,6 +414,7 @@
 <translation id="7297226631177386107">ਫ਼ਾਇਰਵਾਲ ਰਾਹੀਂ HTTPS ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਕਿਸੇ ਹੋਰ ਵਿਅਕਤੀ ਨੂੰ ਦਿੱਤੀ ਜਾਵੇਗੀ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ਨੈੱਟਵਰਕ ਡੀਵਾਈਸ</translation>
 <translation id="7359657277149375382">ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
@@ -419,6 +422,8 @@
 <translation id="7415801143053185905">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। 1 ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}one{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕੀਤਾ ਗਿਆ}other{ਸਕੈਨਿੰਗ ਪੂਰੀ ਹੋਈ। {NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕੀਤੇ ਗਏ}}</translation>
+<translation id="7451112128070628323">ਜੇ ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਨਹੀਂ ਬਦਲ ਰਹੀ, ਤਾਂ ਇਹ ਵਿਕਲਪ ਚੁਣੋ।
+        ਉਦਾਹਰਨ ਲਈ, ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਸੰਸਥਾ ਦੇ ਵਿਚਲੇ ਕਿਸੇ ਹੋਰ ਵਿਅਕਤੀ ਨੂੰ ਟ੍ਰਾਂਸਫਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="7487067081878637334">ਤਕਨਾਲੋਜੀ</translation>
 <translation id="7490813197707563893">MAC ਪਤਾ</translation>
@@ -544,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
 <translation id="9088306295921699330">ਮੌਜੂਦਾ ਵਰਤੋਂ</translation>
+<translation id="9095415590198785865">ਡੀਵਾਈਸ ਦੀ ਮਲਕੀਅਤ ਉਸੇ ਵਿਅਕਤੀ ਨੂੰ ਦਿੱਤੀ ਜਾਵੇਗੀ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ਦੀ ਟਿਕਟ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="9106415115617144481">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>

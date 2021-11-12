@@ -4772,6 +4772,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6023643151125006053">Bu cihaz (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> yöneticisi tarafından kilitlendi.</translation>
 <translation id="6025215716629925253">Yığın İzleme</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB cihazı bağlandı</translation>
+<translation id="6027945736510816438">Şunu mu demek istediniz: <ph name="WEBSITE" /></translation>
 <translation id="6028117231645531007">Parmak izi ekle</translation>
 <translation id="6031600495088157824">Araç çubuğunda giriş seçenekleri</translation>
 <translation id="6032091552407840792">Bu deneme yalnızca <ph name="BEGIN_LINK" />bazı bölgelerde<ph name="END_LINK" /> etkindir.</translation>
@@ -5527,6 +5528,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Akıllı ve güvenli bir tarayıcıya geç</translation>
+<translation id="6833996806551876956">Privacy Sandbox denemesi</translation>
 <translation id="6834652994408928492">Koyu mod, güneş battığında otomatik olarak açılır</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6838034009068684089">Bir site ekranlarımda pencereler açıp yerleştirmek istediğinde sor (önerilir)</translation>

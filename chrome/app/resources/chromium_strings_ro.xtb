@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul dvs. nu sunt actualizate.</translation>
 <translation id="2560420686485554789">Pentru a descărca fișiere, Chromium necesită acces la stocare</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te ca să poți activa sincronizarea.</translation>
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
 <translation id="2614883797045469742">Setările prestabilite se potrivesc celor mai mulți utilizatori, dar le poți personaliza pentru a le adapta modului în care vrei să folosești Chromium</translation>
@@ -247,7 +246,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7937630085815544518">Ați fost conectat(ă) la Chromium ca <ph name="USER_EMAIL_ADDRESS" />. Utilizați același cont pentru a vă conecta din nou.</translation>
 <translation id="7975919845073681630">Aceasta este o instalare secundară a browserului Chromium și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="8013436988911883588">Odată ce Chromium are acces, site-urile web îți vor putea solicita accesul.</translation>
-<translation id="8045118833343856403">Următoarele conturi nu sunt conectate la niciun profil Chromium. Dacă vrei să folosești un cont într-un alt profil, mai întâi elimină profilul respectiv.</translation>
 <translation id="8105840573057009683">Chromium necesită permisiuni pentru locație pentru acest site</translation>
 <translation id="81770708095080097">Fișierul este periculos, așadar Chromium l-a blocat.</translation>
 <translation id="8248265253516264921">Dacă o imagine nu are o descriere utilă, Chromium va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>

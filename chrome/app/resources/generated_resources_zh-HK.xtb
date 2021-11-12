@@ -4792,6 +4792,7 @@
 <translation id="6023643151125006053">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被 <ph name="SAML_DOMAIN" /> 的管理員上鎖。</translation>
 <translation id="6025215716629925253">堆疊追蹤</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - 已連接 USB 裝置</translation>
+<translation id="6027945736510816438">您是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6028117231645531007">新增指紋</translation>
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032091552407840792">此試用功能只會在<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />啟用。</translation>
@@ -5547,6 +5548,7 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
+<translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6834652994408928492">「暗光模式」將會在日落時自動開啟</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>

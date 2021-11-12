@@ -42,7 +42,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2535480412977113886">Chromium OS nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="2560420686485554789">Aby bylo možné stahovat soubory, potřebuje Chromium přístup k úložišti</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se, abyste mohli zapnout synchronizaci.</translation>
 <translation id="2583187216237139145">Veškerá data prohlížeče Chromium vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Aktualizace se použije po restartování systému Chromium OS.</translation>
 <translation id="2614883797045469742">Výchozí nastavení je vhodné pro většinu lidí. Můžete si ho však upravit podle toho, jak Chromium používáte</translation>
@@ -249,7 +248,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7937630085815544518">K prohlížeči Chromium jste byli přihlášeni s účtem <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7975919845073681630">Toto je druhá instalace prohlížeče Chromium. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="8013436988911883588">Až bude mít Chromium přístup, budou vás weby moci požádat o přístup.</translation>
-<translation id="8045118833343856403">Následující účty nejsou přihlášeny do žádných profilů Chromium. Pokud účet chcete použít v jiném profilu, nejdříve příslušný profil odstraňte.</translation>
 <translation id="8105840573057009683">Chromium pro tento web potřebuje přístup k poloze</translation>
 <translation id="81770708095080097">Tento soubor je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>

@@ -4755,6 +4755,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6023643151125006053">To urządzenie (nr seryjny: <ph name="SERIAL_NUMBER" />) zostało zablokowane przez administratora domeny <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Zrzut stosu</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem USB</translation>
+<translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodaj odcisk palca</translation>
 <translation id="6031600495088157824">Opcje wprowadzania na pasku narzędzi</translation>
 <translation id="6032091552407840792">Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
@@ -5506,6 +5507,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Przejdź na inteligentną i bezpieczną przeglądarkę</translation>
+<translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
 <translation id="6834652994408928492">Tryb ciemny włączy się automatycznie o zachodzie słońca</translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
 <translation id="6838034009068684089">Pytaj, gdy strona chce otwierać i umieszczać okna na Twoich ekranach (zalecane)</translation>

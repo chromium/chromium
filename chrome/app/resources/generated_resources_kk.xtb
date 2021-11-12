@@ -4755,6 +4755,7 @@
 <translation id="6023643151125006053">Бұл құрылғыны (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> әкімшісі құлыптады.</translation>
 <translation id="6025215716629925253">Стекті бақылау</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB құрылғысы қосылды</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> сайтын меңзедіңіз бе?</translation>
 <translation id="6028117231645531007">Саусақ ізін енгізу</translation>
 <translation id="6031600495088157824">Құралдар тақтасындағы енгізу опциялары</translation>
 <translation id="6032091552407840792">Бұл сынақ нұсқасы <ph name="BEGIN_LINK" />кейбір аймақта<ph name="END_LINK" /> ғана қолжетімді.</translation>
@@ -5506,6 +5507,7 @@
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
 <translation id="683373380308365518">Зерделі және қауіпсіз браузерге ауысыңыз</translation>
+<translation id="6833996806551876956">Privacy Sandbox сынақ мерзімі</translation>
 <translation id="6834652994408928492">Күн батқанда, қараңғы режим автоматты түрде қосылады.</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
 <translation id="6838034009068684089">Сайт терезелерді ашып, экрандарға орналастырғысы келгенде сұрау (ұсынылады)</translation>

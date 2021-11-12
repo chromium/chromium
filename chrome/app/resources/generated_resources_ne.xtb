@@ -4772,6 +4772,7 @@
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> को प्रबन्धकले यो डिभाइस (SN: <ph name="SERIAL_NUMBER" /> ) लक गर्नुभएको हो।</translation>
 <translation id="6025215716629925253">स्ट्याक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB यन्त्र जडान गरिएको छ</translation>
+<translation id="6027945736510816438">तपाईंले <ph name="WEBSITE" /> लेख्न खोज्नुभएको हो?</translation>
 <translation id="6028117231645531007">फिंगरप्रिन्ट हाल्नुहोस्</translation>
 <translation id="6031600495088157824">टुलबारमा इनपुटका विकल्पहरू देखाइयोस्</translation>
 <translation id="6032091552407840792">यो ट्रायल सुविधा <ph name="BEGIN_LINK" />केही क्षेत्र<ph name="END_LINK" />मा मात्र सक्रिय छ।</translation>
@@ -5527,6 +5528,7 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
+<translation id="6833996806551876956">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="6834652994408928492">अँध्यारो मोड सूर्यास्तको बेला स्वतः अफ हुने छ</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="6838034009068684089">कुनै साइटले मेरा स्क्रिनहरूमा विन्डो राख्न र त्यहाँ भएका विन्डो खोल्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस् (सिफारिस गरिएको)</translation>

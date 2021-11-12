@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">નજીકના બ્લૂટૂથ ડિવાઇસને શોધવાનું પૂછી શકે છે</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="1428146450423315676">સ્ટૅકર 7</translation>
+<translation id="142858679511221695">ક્લાઉડ વપરાશકર્તા</translation>
 <translation id="1428729058023778569">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">સંતૃપ્તતા</translation>
 <translation id="3333762389743153920">વર્ચ્યુઅલ કાર્ડ તરીકે ઉપયોગ માટેની યોગ્યતા ધરાવતો નથી</translation>
 <translation id="3338095232262050444">સુરક્ષિત</translation>
+<translation id="3339446062576134663">ક્લાઉડ (ઍશ)</translation>
 <translation id="3355823806454867987">પ્રૉક્સી સેટિંગ બદલો...</translation>
 <translation id="3360103848165129075">ચુકવણી માટેની હૅન્ડલર શીટ</translation>
 <translation id="3361596688432910856">Chrome નિમ્નલિખિત માહિતી <ph name="BEGIN_EMPHASIS" />સાચવશે નહીં<ph name="END_EMPHASIS" />:
@@ -741,6 +743,7 @@
 <translation id="3380365263193509176">અજ્ઞાત ભૂલ</translation>
 <translation id="3380864720620200369">ક્લાઇન્ટ ID:</translation>
 <translation id="3381668585148405088">તમારી ખરીદી ચકાસો</translation>
+<translation id="3383566085871012386">વર્તમાન પ્રાધાન્યતા ક્રમ</translation>
 <translation id="3387261909427947069">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="3391030046425686457">વિતરણ માટેનું સરનામું</translation>
 <translation id="3391482648489541560">ફાઇલમાં ફેરફાર</translation>
@@ -1410,6 +1413,7 @@
 <translation id="5478437291406423475">B6/C4 (એન્વલપ)</translation>
 <translation id="5481076368049295676">આ કન્ટેન્ટ કદાચ તમારા ડિવાઇસ પર જોખમકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરી શકે છે કે જે તમારી માહિતીની ચોરી કરે અથવા કાઢી નાખે છે. <ph name="BEGIN_LINK" />છતાં પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">માન્ય સરનામું ઉમેરો</translation>
+<translation id="5485973315555778056">ક્લાઉડ મશીન</translation>
 <translation id="5490432419156082418">સરનામા અને વધુ</translation>
 <translation id="5492298309214877701">કંપની, સંસ્થા અથવા શાળા ઇન્ટ્રાનેટ પર આ સાઇટ બાહ્ય વેબસાઇટ જેવું જ URL ધરાવે છે.
     <ph name="LINE_BREAK" />
@@ -1439,6 +1443,7 @@
 <translation id="5571083550517324815">આ સરનામેથી પિકઅપ કરી શકતા નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="5580958916614886209">તમારો સમાપ્તિ મહિનો તપાસો અને ફરી પ્રયાસ કરો</translation>
 <translation id="5586446728396275693">કોઈ સાચવેલ ઍડ્રેસ નથી</translation>
+<translation id="5587987780934666589">પ્લૅટફૉર્મ વપરાશકર્તા</translation>
 <translation id="5593349413089863479">કનેક્શન સંપૂર્ણ રીતે સુરક્ષિત નથી</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="5598944008576757369">ચુકવણીની પદ્ધતિ પસંદ કરો</translation>
@@ -2127,6 +2132,7 @@
 <translation id="7953569069500808819">ઉપર કિનારી જોડવી</translation>
 <translation id="7956713633345437162">મોબાઇલ બુકમાર્ક્સ</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
+<translation id="7962467575542381659">પ્લૅટફૉર્મ મશીન</translation>
 <translation id="7966803981046576691">જોબ એકાઉન્ટનો પ્રકાર</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" મૂલ્ય એ એક અમાન્ય હેક્સ રંગ છે.</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
@@ -2281,6 +2287,7 @@
 <translation id="8438476240229491014">આ સેટિંગ યાદ રાખો</translation>
 <translation id="8438786541497918448">કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
+<translation id="8449836157089738489">બધા નવી ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="8457125768502047971">અનિશ્ચિત</translation>
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ક્રેડિટ કાર્ડ}one{# ક્રેડિટ કાર્ડ}other{# ક્રેડિટ કાર્ડ}}</translation>

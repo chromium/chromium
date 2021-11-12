@@ -157,6 +157,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1422930527989633628">Inguruko Bluetooth bidezko gailuak bilatzea eska dezake</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1428146450423315676">7. pilatzailea</translation>
+<translation id="142858679511221695">Hodeiko erabiltzailea</translation>
 <translation id="1428729058023778569">Webgunea HTTPS protokoloarekin bateragarria ez delako erakutsi dizugu abisu hau. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
@@ -712,6 +713,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3329013043687509092">Asetasuna</translation>
 <translation id="3333762389743153920">Ez da egokia txartel birtuala izateko</translation>
 <translation id="3338095232262050444">Segurua da</translation>
+<translation id="3339446062576134663">Hodeia (Ash)</translation>
 <translation id="3355823806454867987">Aldatu proxy-ezarpenak…</translation>
 <translation id="3360103848165129075">Ordainketa kudeatzeko orria</translation>
 <translation id="3361596688432910856">Chrome-k <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
@@ -735,6 +737,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3380365263193509176">Errore ezezaguna</translation>
 <translation id="3380864720620200369">Bezeroaren IDa:</translation>
 <translation id="3381668585148405088">Egiaztatu erosketa</translation>
+<translation id="3383566085871012386">Oraingo lehentasunen ordena</translation>
 <translation id="3387261909427947069">Ordainketa-metodoak</translation>
 <translation id="3391030046425686457">Entrega-helbidea</translation>
 <translation id="3391482648489541560">fitxategiak editatzeko aukera</translation>
@@ -1398,6 +1401,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5478437291406423475">B6/C4 (gutun-azala)</translation>
 <translation id="5481076368049295676">Baliteke edukiak software kaltegarria instalatzen saiatzea zure informazioa lapurtu edo ezabatzeko. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Gehitu balio duen helbide bat</translation>
+<translation id="5485973315555778056">Hodeiko makina</translation>
 <translation id="5490432419156082418">Helbideak eta beste</translation>
 <translation id="5492298309214877701">Enpresako, erakundeko edo ikastetxeko intraneteko webgune honek kanpoko webgune baten URL bera du.
     <ph name="LINE_BREAK" />
@@ -1427,6 +1431,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5571083550517324815">Ezin da jaso helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="5580958916614886209">Egiaztatu iraungitze-hilabetea eta saiatu berriro</translation>
 <translation id="5586446728396275693">Ez dago helbiderik gordeta</translation>
+<translation id="5587987780934666589">Plataformako erabiltzailea</translation>
 <translation id="5593349413089863479">Konexioa ez da guztiz segurua</translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
 <translation id="5598944008576757369">Aukeratu ordainketa-metodoa</translation>
@@ -2114,6 +2119,7 @@ Xehetasun gehiago:
 <translation id="7953569069500808819">Goiko ertza josita</translation>
 <translation id="7956713633345437162">Mugikorreko laster-markak</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
+<translation id="7962467575542381659">Plataformako makina</translation>
 <translation id="7966803981046576691">Laneko kontu mota</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" kolore hamaseitar baliogabea da.</translation>
 <translation id="7968982339740310781">Ikusi xehetasunak</translation>

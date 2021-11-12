@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">你的帳戶登入詳細資料尚未更新，因此 Chromium 作業系統無法同步處理你的資料。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">如要透過所有裝置存取你的 Chromium 資料，請先登入，這樣才能開啟同步處理功能。</translation>
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium 作業系統必須重新啟動，才能套用更新。</translation>
 <translation id="2614883797045469742">預設設定適用於大多數使用者，但你也可以根據自己習慣使用 Chromium 的方式自訂設定</translation>
@@ -247,7 +246,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7937630085815544518">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並存形式安裝的次要 Chromium，無法設為您的預設瀏覽器。</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
-<translation id="8045118833343856403">下列帳戶未登入任何 Chromium 設定檔。如要將帳戶用於其他設定檔，請先移除該設定檔。</translation>
 <translation id="8105840573057009683">Chromium 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="81770708095080097">這個檔案並不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>

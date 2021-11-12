@@ -200,6 +200,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2360625459710946148">Canvia l'ordre per</translation>
 <translation id="2367186422933365202">No es pot iniciar la sessió al Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2390318262976603432">Configuració regional</translation>
@@ -621,6 +622,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
 <translation id="5322611492012084517">No es troba el telèfon</translation>
 <translation id="5327248766486351172">Nom</translation>
@@ -706,6 +708,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5977415296283489383">Auricular</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
+<translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5992218262414051481">El mode d'alt contrast està activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="6018164090099858612">S'està sortint del mode de projecció</translation>
@@ -1033,6 +1036,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
+<translation id="8446884382197647889">Més informació</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">Tanca Escolta la selecció</translation>
 <translation id="847056008324733326">Configuració de l'escala de visualització</translation>

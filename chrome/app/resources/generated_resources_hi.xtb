@@ -4791,6 +4791,7 @@
 <translation id="6023643151125006053">इस डिवाइस (क्रमांक: <ph name="SERIAL_NUMBER" />) को <ph name="SAML_DOMAIN" /> के एडमिन ने लॉक कर दिया था.</translation>
 <translation id="6025215716629925253">स्टैक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिवाइस कनेक्ट है</translation>
+<translation id="6027945736510816438">क्या आपका मतलब <ph name="WEBSITE" /> से है?</translation>
 <translation id="6028117231645531007">फ़िंगरप्रिंट जोड़ें</translation>
 <translation id="6031600495088157824">टूलबार में इनपुट के विकल्प</translation>
 <translation id="6032091552407840792">मुफ़्त में आज़माने की यह सुविधा सिर्फ़ <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
@@ -5546,6 +5547,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">किसी स्मार्ट और सुरक्षित ब्राउज़र पर जाएं</translation>
+<translation id="6833996806551876956">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="6834652994408928492">सूर्यास्त होने पर, 'गहरे रंग वाला मोड' अपने-आप चालू हो जाएगा</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
 <translation id="6838034009068684089">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>

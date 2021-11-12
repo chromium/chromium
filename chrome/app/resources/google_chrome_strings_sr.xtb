@@ -154,7 +154,6 @@
 <translation id="459622048091363950">Када Chrome добије приступ, веб-сајтови ће моћи да затраже приступ.</translation>
 <translation id="4600710005438004015">Chrome није успео да се ажурира на најновију верзију, па пропуштате нове функције и безбедносне исправке.</translation>
 <translation id="4633000520311261472">Да бисмо учинили Chrome безбеднијим, онемогућили смо неке додатке које не наводи <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и који су можда додати без вашег знања.</translation>
-<translation id="4666328473657283332">Да бисте приступали Chrome садржају на свим уређајима, пријавите се да бисте могли да укључите синхронизацију.</translation>
 <translation id="4728575227883772061">Инсталација није успела због неодређене грешке. Ако је Google Chrome тренутно отворен, затворите га и покушајте поново.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ова датотека може да буде опасна, па ју је Chrome блокирао.</translation>
@@ -272,7 +271,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8008534537613507642">Поново инсталирај Chrome</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
-<translation id="822971176939352383">Следећи налози нису пријављени ни на један Chrome профил. Ако желите да користите налог на другом профилу, уклоните прво тај профил.</translation>
 <translation id="8255190535488645436">Google Chrome користи камеру и микрофон.</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="828798499196665338">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>

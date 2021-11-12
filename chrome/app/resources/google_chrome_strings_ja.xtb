@@ -149,7 +149,6 @@
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="4633000520311261472">Chrome をより安全にご利用いただくため、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない一部の拡張機能を無効にしました。これらは知らないうちに追加された可能性があります。</translation>
-<translation id="4666328473657283332">お使いのすべてのデバイスで Chrome の設定やデータを使用するには、ログインしてください。ログインすると同期を有効にできます。</translation>
 <translation id="4728575227883772061">原因不明のエラーによりインストールが失敗しました。実行中の Google Chrome を終了してからやり直してください。</translation>
 <translation id="4754614261631455953">Google Chrome Canary（mDNS インバウンド）</translation>
 <translation id="4771048833395599659">このファイルは危険なファイルの可能性があるため、Chrome でブロックしました。</translation>
@@ -263,7 +262,6 @@
 <translation id="8008534537613507642">Chrome を再インストール</translation>
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
 <translation id="8129812357326543296">Google Chrome について(&amp;G)</translation>
-<translation id="822971176939352383">以下のアカウントは Chrome プロファイルにログインしていません。別のプロファイルでアカウントを使用する場合は、最初にそのプロファイルを削除してください。</translation>
 <translation id="8255190535488645436">Google Chrome がカメラとマイクを使用しています。</translation>
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="828798499196665338">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>

@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">سائٹ قریبی بلوٹوتھ آلات کو دریافت کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="1428146450423315676">اسٹیکر 7</translation>
+<translation id="142858679511221695">کلاؤڈ صارف</translation>
 <translation id="1428729058023778569">‏آپ یہ وارننگ اس لیے دیکھ رہے ہیں کیونکہ یہ سائٹ HTTPS کو سپورٹ نہیں کرتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1432581352905426595">سرچ انجنز کا نظم کریں</translation>
@@ -720,6 +721,7 @@
 <translation id="3329013043687509092">سیرابی</translation>
 <translation id="3333762389743153920">کارڈ نمبر ورچوئل کارڈ کیلئے اہل نہیں ہے</translation>
 <translation id="3338095232262050444">محفوظ</translation>
+<translation id="3339446062576134663">کلاؤڈ (راکھ)</translation>
 <translation id="3355823806454867987">پراکسی ترتیبات تبدیل کریں…</translation>
 <translation id="3360103848165129075">ادائیگی ہینڈلر کی شیٹ</translation>
 <translation id="3361596688432910856">‏Chrome مندرجہ ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
@@ -743,6 +745,7 @@
 <translation id="3380365263193509176">نامعلوم خرابی</translation>
 <translation id="3380864720620200369">‏کلائنٹ ID:</translation>
 <translation id="3381668585148405088">اپنی خریداری کی توثیق کریں</translation>
+<translation id="3383566085871012386">موجودہ ترجیحی ترتیب</translation>
 <translation id="3387261909427947069">ادائیگی کے طریقے</translation>
 <translation id="3391030046425686457">ڈیلیوری پتہ</translation>
 <translation id="3391482648489541560">فائل میں ترمیم کرنا</translation>
@@ -1412,6 +1415,7 @@
 <translation id="5478437291406423475">B6/C4 ‎(Envelope‎)‎</translation>
 <translation id="5481076368049295676">یہ مواد آپ کے آلہ پر آپ کی معلومات چوری کرنے والا یا اس کو حذف کرنے والا خطرناک سافٹ ویئر انسٹال کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">درست پتہ شامل کریں</translation>
+<translation id="5485973315555778056">کلاؤڈ مشین</translation>
 <translation id="5490432419156082418">پتے وغیرہ</translation>
 <translation id="5492298309214877701">‏کمپنی، تنظیم یا اسکول کے انٹرانیٹ پر موجود اس سائٹ کا URL خارجی ویب سائٹ کی طرح ہے۔
 <ph name="LINE_BREAK" />
@@ -1441,6 +1445,7 @@
 <translation id="5571083550517324815">اس پتے سے پِک اپ نہیں کر سکتے۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="5580958916614886209">اپنا اختتامی مہینہ چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="5586446728396275693">کوئي پتہ محفوظ نہیں ہے</translation>
+<translation id="5587987780934666589">پلیٹ فارم صارف</translation>
 <translation id="5593349413089863479">کنکشن مکمل طور پر محفوظ نہیں ہے</translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
 <translation id="5598944008576757369">ادائیگی کا طریقہ منتخب کریں</translation>
@@ -2130,6 +2135,7 @@
 <translation id="7953569069500808819">اوپر کنارے کی سلائی</translation>
 <translation id="7956713633345437162">موبائل بُک مارکس</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
+<translation id="7962467575542381659">پلیٹ فارم مشین</translation>
 <translation id="7966803981046576691">جاب اکاؤنٹ کی قسم</translation>
 <translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>

@@ -153,7 +153,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="459622048091363950">Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
 <translation id="4633000520311261472">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
-<translation id="4666328473657283332">Pour retrouver vos réglages Chrome sur tous vos appareils, connectez-vous afin d'activer la synchronisation.</translation>
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, fermez-le puis réessayez.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Chrome a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
@@ -270,7 +269,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8008534537613507642">Réinstaller Chrome</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
-<translation id="822971176939352383">Les comptes suivants ne sont connectés à aucun profil Chrome. Si vous souhaitez utiliser un compte pour un autre profil, supprimez d'abord le profil.</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="828798499196665338">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

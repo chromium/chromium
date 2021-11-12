@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Kada Chrome dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="4633000520311261472">Kako bismo Chrome učinili sigurnijim, onemogućili smo neka proširenja koja nisu navedena u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda su dodana bez vašeg znanja.</translation>
-<translation id="4666328473657283332">Da biste pristupili svojim sadržajima u Chromeu na svim svojim uređajima, prijavite se kako biste mogli uključiti sinkronizaciju.</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog nepoznate pogreške. Ako je program Google Chrome trenutno otvoren, zatvorite ga i pokušajte ponovno.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Datoteka je možda opasna i Chrome ju je blokirao.</translation>
@@ -264,7 +263,6 @@
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
 <translation id="8129812357326543296">O programu Google Chrome</translation>
-<translation id="822971176939352383">Računi u nastavku nisu prijavljeni ni na jedan Chrome profil. Ako želite koristiti račun na drugom profilu, prvo uklonite taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome upotrebljava vašu kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="828798499196665338">Tvoj je roditelj isključio "Dopuštenja za web-lokacije, aplikacije i proširenja" za Chrome. Nije dopušteno omogućiti <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

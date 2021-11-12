@@ -149,7 +149,6 @@
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
 <translation id="4600710005438004015">Chrome nu s-a putut actualiza la cea mai recentă versiune. Astfel, pierzi noi funcții și remedieri de securitate.</translation>
 <translation id="4633000520311261472">Pentru ca browserul Chrome să fie mai sigur, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
-<translation id="4666328473657283332">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te ca să poți activa sincronizarea.</translation>
 <translation id="4728575227883772061">Instalarea nu a reușit din cauza unei erori necunoscute. Dacă Google Chrome rulează în acest moment, închide-l și încearcă din nou.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Este posibil ca fișierul să fie periculos, așadar Chrome l-a blocat.</translation>
@@ -263,7 +262,6 @@
 <translation id="8008534537613507642">Reinstalați Chrome</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
-<translation id="822971176939352383">Următoarele conturi nu sunt conectate la niciun profil Chrome. Dacă vrei să folosești un cont într-un alt profil, mai întâi elimină profilul respectiv.</translation>
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="828798499196665338">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chrome. Activarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>

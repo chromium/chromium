@@ -157,6 +157,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1422930527989633628">Darf nachfragen, wenn sie nach Bluetooth-Geräten in der Nähe suchen möchte</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Stapelfach 7</translation>
+<translation id="142858679511221695">Cloud-Nutzer</translation>
 <translation id="1428729058023778569">Sie sehen diese Warnung, weil diese Website kein HTTPS unterstützt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
@@ -715,6 +716,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3329013043687509092">Sättigung</translation>
 <translation id="3333762389743153920">Virtuelle Karte wird nicht unterstützt</translation>
 <translation id="3338095232262050444">Sicher</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="3360103848165129075">Dokument zur Zahlungsabwicklung</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />speichert die folgenden Daten nicht<ph name="END_EMPHASIS" />:
@@ -738,6 +740,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3380365263193509176">Unbekannter Fehler</translation>
 <translation id="3380864720620200369">Client-ID: </translation>
 <translation id="3381668585148405088">Ihren Einkauf bestätigen</translation>
+<translation id="3383566085871012386">Aktuelle Rangfolge</translation>
 <translation id="3387261909427947069">Zahlungsmethoden</translation>
 <translation id="3391030046425686457">Lieferadresse</translation>
 <translation id="3391482648489541560">Dateibearbeitung</translation>
@@ -1400,6 +1403,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5478437291406423475">B6/C4 (Umschlag)</translation>
 <translation id="5481076368049295676">Diese Inhalte versuchen möglicherweise, gefährliche Software auf Ihrem Gerät zu installieren, durch die Ihre Informationen gestohlen oder gelöscht werden. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Gültige Adresse hinzufügen</translation>
+<translation id="5485973315555778056">Cloudgerät</translation>
 <translation id="5490432419156082418">Adressen</translation>
 <translation id="5492298309214877701">Diese Website im Intranet des Unternehmens, der Organisation oder der Schule hat die gleiche URL wie eine externe Website.
     <ph name="LINE_BREAK" />
@@ -1429,6 +1433,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5571083550517324815">Diese Abholadresse wird nicht unterstützt. Bitte wählen Sie eine andere Adresse aus.</translation>
 <translation id="5580958916614886209">Prüfen Sie Ihren Ablaufmonat und versuchen Sie es dann erneut</translation>
 <translation id="5586446728396275693">Keine gespeicherten Adressen</translation>
+<translation id="5587987780934666589">Plattformnutzer</translation>
 <translation id="5593349413089863479">Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5598944008576757369">Zahlungsmethode auswählen</translation>
@@ -2117,6 +2122,7 @@ Weitere Details:
 <translation id="7953569069500808819">Mehrere Heftklammern oben</translation>
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
 <translation id="7961015016161918242">Nie</translation>
+<translation id="7962467575542381659">Plattformgerät</translation>
 <translation id="7966803981046576691">Kontotyp des Auftrags</translation>
 <translation id="79682505114836835">Der Wert „<ph name="VALUE" />“ ist kein gültiger Hex-Farbcode.</translation>
 <translation id="7968982339740310781">Details ansehen</translation>

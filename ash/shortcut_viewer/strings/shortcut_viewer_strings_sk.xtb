@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 až 8</translation>
 <translation id="3837047332182291558">Zvýšenie jasu klávesnice (iba v prípade podsvietených klávesníc)</translation>
 <translation id="3949671998904569433">čiarka</translation>
+<translation id="3976707995992061296">Prepnite, či sa má aktívne okno prideliť všetkým plochám</translation>
 <translation id="3976863468609830880">Kliknutie na poslednú ikonu na poličke</translation>
 <translation id="3994783594793697310">Resetovať na obrazovke úroveň lupy</translation>
 <translation id="4026843240379844265">Presun aktívneho okna medzi obrazovkami</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Priblíženie zobrazenia</translation>
 <translation id="634687982629734605">Prepínanie označenia medzi týmito položkami: stavová oblasť (kde sa zobrazuje vaša fotka účtu), Spúšťač, panel s adresou, panel so záložkami (ak je viditeľný), webová stránka, ktorá je otvorená, a panel so stiahnutými (ak je viditeľný). Ak sa zobrazuje označiteľné dialógové okno, presuňte označenie naň.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Aktivujte prvú až ôsmu plochu.</translation>
 <translation id="6395172954772765143">Výber textu do konca riadka</translation>
 <translation id="6425378783626925378">Kliknutie na ikony 1 až 8 na poličke</translation>
 <translation id="6435207348963613811">Zvýraznenie predchádzajúcej položky na poličke</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Zobrazenie skrytých súborov v aplikácii Súbory</translation>
 <translation id="8717459106217102612">Výber predchádzajúceho slova alebo písmena</translation>
 <translation id="8727232706774971183">Zobrazenie upozornení</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 až 8</translation>
 <translation id="8855885154700222542">Kláves celej obrazovky</translation>
 <translation id="8881584919399569791">Presunúť aktívne okno na plochu vľavo</translation>
 <translation id="88986195241502842">Posunúť stránku nadol</translation>

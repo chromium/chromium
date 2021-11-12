@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
 <translation id="1851218745569890714">የቪዲዮ ጉባዔ</translation>
+<translation id="1857850044054738019">መሣሪያው ወደ አዲስ ደንበኛ ለማሰራጨት
+        ዳግም እየተከማቸ ወይም እየታደሰ ከሆነ ይህንን አማራጭ ይምረጡ።</translation>
 <translation id="1874612839560830905">ኤምቲዩ</translation>
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
@@ -155,6 +157,8 @@
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="3583278742022654445">ደካማ የሲግናል ጥንካሬ። ወደ Wi-Fi ሲግናል ምንጭ ለመቅረብ ይሞክሩ።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
+<translation id="360089215033199597">የጥገና ሂደቱን ቀላል ለማድረግ ከWi-Fi ጋር መገናኘት ይመከራል።
+        አውታረ መረብዎ ይቀመጣል።</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3606583719724308068">ለኤችቲቲፒኤስ ድር ጣቢያዎች ከፍተኛ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="3689839747745352263">የ<ph name="TEST_NAME" /> ሙከራ</translation>
@@ -183,6 +187,7 @@
 <translation id="409427325554347132">የሙከራ ዝርዝሮችን አስቀምጥ</translation>
 <translation id="4111761024568264522">የዩኤስቢ መዳሰሻ ሰሌዳ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
+<translation id="4140251671072434548">የአርኤምኤ አገልጋይ ክፈትን ያከናውኑ</translation>
 <translation id="4145784616224233563">የHTTP ኬላ</translation>
 <translation id="4147897805161313378">Google ፎቶዎች</translation>
 <translation id="4155551848414053977">ቃኚው መብራቱን እና በእርስዎ አውታረ መረብ ወይም በቀጥታ ግንኙነት በኩል የሚገኝ መሆኑን ያረጋግጡ</translation>
@@ -195,6 +200,7 @@
 <translation id="4244962993387259361">የማህደረ ትውስታ ሙከራን ለማካሄድ ቢያንስ 500 ሜባ ነፃ ያስፈልገዎታል። ቦታን ለማስለቀቅ ወደ ቅንብሮች &gt; የማከማቻ አቀናባሪ ይሂዱ።</translation>
 <translation id="4258281355379922695">የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="4271957103967917607">ሙሉ ማያ ገጽ ይመልከቱ</translation>
+<translation id="4275799948641988986">ከጥገና በኋላ መሳሪያውን ማን ይጠቀማል?</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
 <translation id="4378373042927530923">አታሂድ</translation>
@@ -410,6 +416,7 @@
 <translation id="7297226631177386107">በኬላ በኩል ወደ ኤችቲቲፒኤስ ድር ጣቢያዎች መገናኘት አልተቻለም</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
+<translation id="7309920310754476121">መሣሪያው ወደ ሌላ ባለቤት ይሄዳል</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7359657277149375382">የፋይል አይነት</translation>
@@ -417,6 +424,9 @@
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
+<translation id="7451112128070628323">የመሳሪያው ባለቤትነት ካልተቀየረ ይህን አማራጭ ይምረጡ።
+        ለምሳሌ፣ መሣሪያው በድርጅቱ ውስጥ
+        ወደ ሌላ ሰው እየተላለፈ ነው።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7487067081878637334">ቴክኖሎጂ</translation>
 <translation id="7490813197707563893">የማክ አድራሻ</translation>
@@ -468,8 +478,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° ሴ</translation>
 <translation id="8132480444149501833">የትራፊክ ቆጣሪዎችን ጠይቅ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">የመክፈቻ ኮዱን ያስገቡ፡-</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
+<translation id="8217675307824400706">ይገናኙ</translation>
 <translation id="8230672074305416752">ነባሪ የሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="8246209727385807362">የማይታወቅ አገልግሎት አቅራቢ</translation>
 <translation id="8286154143153872371">ልጣፍን ለማየት እባክዎን ከአውታረ መረብ ጋር ይገናኙ እና ገጹን እንደገና ይጫኑ።</translation>
@@ -541,6 +553,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
+<translation id="9095415590198785865">መሣሪያው ወደ ተመሳሳይ ባለቤት ይሄዳል</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">የ<ph name="PRINCIPAL_NAME" /> ቲኬትን ያድሱ</translation>
 <translation id="9106415115617144481">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ</translation>

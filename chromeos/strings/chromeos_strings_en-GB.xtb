@@ -157,6 +157,8 @@
 <translation id="357889014807611375">metered Wi-Fi</translation>
 <translation id="3583278742022654445">Weak signal strength. Try moving closer to the Wi-Fi signal source.</translation>
 <translation id="3595596368722241419">Battery full</translation>
+<translation id="360089215033199597">Connecting to Wi-Fi is recommended to make the repair process easier.
+        Your network will be saved.</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
@@ -478,6 +480,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="816013303019725643">Enter the unlock code:</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
+<translation id="8217675307824400706">Get connected</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
 <translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>

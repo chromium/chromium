@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Chromium OS tidak dapat menyinkronkan data karena detail ID masuk Anda belum diperbarui.</translation>
 <translation id="2560420686485554789">Chromium memerlukan akses penyimpanan untuk mendownload file</translation>
 <translation id="2572494885440352020">Pembantu Chromium</translation>
-<translation id="2577788541081224677">Untuk mengakses aktivitas Chromium di semua perangkat, login agar Anda dapat mengaktifkan sinkronisasi.</translation>
 <translation id="2583187216237139145">Data Chromium yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS harus dimulai ulang untuk menerapkan pembaruan.</translation>
 <translation id="2614883797045469742">Setelan default berfungsi untuk sebagian besar pengguna, tetapi Anda dapat menyesuaikannya dengan cara yang Anda inginkan untuk menggunakan Chromium</translation>
@@ -248,7 +247,6 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7937630085815544518">Anda telah masuk ke Chromium sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7975919845073681630">Ini adalah pemasangan Chromium sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
 <translation id="8013436988911883588">Setelah Chromium memiliki akses, situs dapat meminta akses dari Anda.</translation>
-<translation id="8045118833343856403">Akun berikut tidak login ke profil Chromium mana pun. Jika Anda ingin menggunakan akun di profil lain, hapus profil tersebut terlebih dahulu.</translation>
 <translation id="8105840573057009683">Chromium memerlukan izin akses lokasi untuk situs ini</translation>
 <translation id="81770708095080097">File ini berbahaya, jadi Chromium telah memblokirnya.</translation>
 <translation id="8248265253516264921">Jika gambar tidak memiliki deskripsi yang berguna, Chromium akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>

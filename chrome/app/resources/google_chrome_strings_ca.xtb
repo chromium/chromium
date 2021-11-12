@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Un cop Chrome tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="4600710005438004015">Chrome no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les funcions noves ni de les correccions de seguretat.</translation>
 <translation id="4633000520311261472">Perquè Chrome sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
-<translation id="4666328473657283332">Per accedir a les teves coses de Chrome des de tots els teus dispositius, inicia la sessió per poder activar la sincronització.</translation>
 <translation id="4728575227883772061">S'ha produït un error no especificat durant la instal·lació. Si Google Chrome s'està executant en aquests moments, tanca'l i torna-ho a provar.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Chrome ha bloquejat aquest fitxer perquè pot ser perillós.</translation>
@@ -263,7 +262,6 @@
 <translation id="8008534537613507642">Torna a instal·lar Chrome</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
-<translation id="822971176939352383">Els següents comptes no tenen la sessió iniciada en cap perfil de Chrome. Si vols utilitzar un compte en un altre perfil, primer has de suprimir aquest perfil.</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="828798499196665338">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chrome. No es permet activar aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2560420686485554789">Chromium deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="2572494885440352020">Supporto Chromium</translation>
-<translation id="2577788541081224677">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi per poter attivare la sincronizzazione.</translation>
 <translation id="2583187216237139145">Tutti i dati di Chromium generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Per applicare l'aggiornamento è necessario riavviare Chromium OS.</translation>
 <translation id="2614883797045469742">Le impostazioni predefinite sono adatte alla maggior parte delle persone, ma puoi personalizzarle in base a come preferisci usare Chromium</translation>
@@ -246,7 +245,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
-<translation id="8045118833343856403">I seguenti account non hanno effettuato l'accesso a nessun profilo Chromium. Se vuoi usare un account in un altro profilo, rimuovi per prima cosa questo profilo.</translation>
 <translation id="8105840573057009683">Chromium deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>

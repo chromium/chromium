@@ -4771,6 +4771,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6023643151125006053">Dieses Gerät (SN: <ph name="SERIAL_NUMBER" />) wurde durch den Administrator von <ph name="SAML_DOMAIN" /> gesperrt.</translation>
 <translation id="6025215716629925253">Stacktrace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-Gerät verbunden</translation>
+<translation id="6027945736510816438">Meinten Sie <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Fingerabdruck hinzufügen</translation>
 <translation id="6031600495088157824">Eingabeoptionen in Symbolleiste</translation>
 <translation id="6032091552407840792">Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
@@ -5526,6 +5527,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Steigen Sie auf einen intelligenten und sicheren Browser um</translation>
+<translation id="6833996806551876956">Privacy Sandbox-Testmodus</translation>
 <translation id="6834652994408928492">Dunkler Modus wird bei Sonnenuntergang automatisch aktiviert</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6838034009068684089">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte (empfohlen)</translation>

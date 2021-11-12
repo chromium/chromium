@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1851218745569890714">ವೀಡಿಯೊ ಕಾನ್ಫರೆನ್ಸಿಂಗ್</translation>
+<translation id="1857850044054738019">ಹೊಸ ಗ್ರಾಹಕರಿಗೆ ವಿತರಣೆಗಾಗಿ ಸಾಧನವನ್ನು ಮರಳಿ ಸ್ಟಾಕ್ ಮಾಡಿದ್ದರೆ ಅಥವಾ
+        ನವೀಕರಿಸಲಾಗುತ್ತಿದ್ದರೆ ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ಹಾರ್ಡ್‌ವೇರ್ ಪರಿಷ್ಕರಣೆ</translation>
 <translation id="1905710495812624430">ಅನುಮತಿಸಲಾದ ಗರಿಷ್ಟ ಪ್ರಯತ್ನಗಳು ಮೀರಿವೆ.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">ಮೆಮೊರಿ ಪರೀಕ್ಷೆಯನ್ನು ನಡೆಸಲು ನಿಮಗೆ ಕನಿಷ್ಠ 500 MB ಉಚಿತವಾಗಿರಬೇಕು. ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಸಂಗ್ರಹಣೆ ನಿರ್ವಾಹಕಕ್ಕೆ ಹೋಗಿ.</translation>
 <translation id="4258281355379922695">HTTP ವಿಳಂಬ</translation>
 <translation id="4271957103967917607">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ವೀಕ್ಷಣೆ</translation>
+<translation id="4275799948641988986">ರಿಪೇರಿಯ ನಂತರ, ಯಾರು ಸಾಧನವನ್ನು ಬಳಸುತ್ತಾರೆ?</translation>
 <translation id="4297501883039923494">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ಚಿತ್ರಗಳು</translation>
 <translation id="4378373042927530923">ರನ್ ಆಗಲಿಲ್ಲ</translation>
@@ -411,6 +414,7 @@
 <translation id="7297226631177386107">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ಸಾಧನವು ಬೇರೆ ಮಾಲೀಕರಿಗೆ ಹೋಗುತ್ತದೆ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7359657277149375382">ಫೈಲ್ ಪ್ರಕಾರ</translation>
@@ -418,6 +422,9 @@
 <translation id="7415801143053185905">ಅತ್ಯಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7451112128070628323">ಸಾಧನದ ಮಾಲೀಕತ್ವವು ಬದಲಾಗದಿದ್ದರೆ ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ.
+        ಉದಾಹರಣೆಗೆ, ಸಾಧನವನ್ನು ಸಂಸ್ಥೆಯೊಳಗಿನ ಬೇರೆ
+        ವ್ಯಕ್ತಿಗೆ ವರ್ಗಾಯಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7487067081878637334">ತಂತ್ರಜ್ಞಾನ</translation>
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
@@ -542,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9088306295921699330">ಪ್ರಸ್ತುತ ಬಳಕೆ</translation>
+<translation id="9095415590198785865">ಸಾಧನವು ಅದೇ ಮಾಲೀಕರಿಗೆ ಹೋಗುತ್ತದೆ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="9106415115617144481">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>

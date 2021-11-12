@@ -150,7 +150,6 @@
 <translation id="459622048091363950">‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="4600710005438004015">‏עדכון Chrome לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
 <translation id="4633000520311261472">‏כדי לשפר את האבטחה של Chrome, השבתנו חלק מהתוספים שלא רשומים ב<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוספו ללא ידיעתך.</translation>
-<translation id="4666328473657283332">‏לקבלת גישה לפריטים שלך ב-Chrome בכל המכשירים שלך, יש להיכנס לחשבון כדי שניתן יהיה להפעיל את הסנכרון.</translation>
 <translation id="4728575227883772061">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Google Chrome פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4754614261631455953">‏גרסה ניסיונית של Google Chrome‏ (mDNS-In)</translation>
 <translation id="4771048833395599659">‏Chrome‏ חסם את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>
@@ -264,7 +263,6 @@
 <translation id="8008534537613507642">‏התקנת Chrome מחדש</translation>
 <translation id="8013993649590906847">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
 <translation id="8129812357326543296">‏מידע על Google Chrome&amp;</translation>
-<translation id="822971176939352383">‏החשבונות הבאים לא נכנסו לאף פרופיל Chrome. אם ברצונך להשתמש בחשבון בפרופיל אחר, תחילה עליך להסיר את אותו פרופיל.</translation>
 <translation id="8255190535488645436">‏Google Chrome משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="8286862437124483331">‏Google Chrome מנסה להציג סיסמאות. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="828798499196665338">‏אחד מההורים השבית ב-Chrome את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

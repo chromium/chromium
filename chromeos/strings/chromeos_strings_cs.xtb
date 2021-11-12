@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Rušení skenování</translation>
 <translation id="1851218745569890714">Videokonference</translation>
+<translation id="1857850044054738019">Tuto možnost vyberte, pokud toto zařízení bude znovu nabídnuto k prodeji nebo je repasováno k distribuci novému zákazníkovi.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revize hardwaru</translation>
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">Uložit podrobnosti testu</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Černobíle</translation>
+<translation id="4140251671072434548">Odemkněte server pomocí čísla RMA</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Ke spuštění testu paměti potřebujete minimálně 500 MB volného místa. Pokud chcete místo uvolnit, přejděte do Nastavení &gt; Správa úložiště.</translation>
 <translation id="4258281355379922695">Latence požadavků HTTP</translation>
 <translation id="4271957103967917607">Zobrazit na celé obrazovce</translation>
+<translation id="4275799948641988986">Kdo toto zařízení po opravě bude používat?</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
@@ -411,6 +414,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7297226631177386107">Přes firewall se nelze připojit k webům HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Zařízení přejde na jiného vlastníka</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
@@ -418,6 +422,8 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
+<translation id="7451112128070628323">Tuto možnost vyberte v případě, že se nemění vlastník zařízení.
+        Jako příklad lze uvést předání jiné osobě v rámci organizace.</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -469,6 +475,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Zadejte kód pro odemknutí:</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
@@ -542,6 +549,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Současné využití</translation>
+<translation id="9095415590198785865">Zařízení zůstane stejnému vlastníkovi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>

@@ -150,7 +150,6 @@
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
 <translation id="4633000520311261472">Para que Chrome sea más seguro, inhabilitamos algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
-<translation id="4666328473657283332">A fin ver tu contenido de Chrome en todos tus dispositivos, accede a tu cuenta para poder activar la sincronización.</translation>
 <translation id="4728575227883772061">No se pudo completar la instalación debido a un error no identificado. Si Google Chrome se está ejecutando en este momento, ciérrelo e intente nuevamente.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
 <translation id="4771048833395599659">Chrome bloqueó este archivo porque podría ser peligroso.</translation>
@@ -264,7 +263,6 @@
 <translation id="8008534537613507642">Reinstalar Chrome</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
-<translation id="822971176939352383">No se accedió a ningún perfil de Chrome con las siguientes cuentas. Si quieres usar una cuenta en otro perfil, primero quita ese perfil.</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="828798499196665338">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome. No se permite habilitar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

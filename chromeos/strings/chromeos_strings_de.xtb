@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen wird abgebrochen</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
+<translation id="1857850044054738019">Wählen Sie diese Option aus, wenn das Gerät in den Lagerbestand zurückkehrt oder aufgearbeitet wird,
+        damit es an einen neuen Kunden weitergegeben werden kann.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardware-Version</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Unter „Einstellungen“ &gt; „Speicherplatzverwaltung“ können Sie Speicherplatz freigeben.</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
 <translation id="4271957103967917607">Vollbildmodus aufrufen</translation>
+<translation id="4275799948641988986">Wer wird das Gerät nach der Reparatur nutzen?</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
@@ -412,6 +415,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7297226631177386107">Eine Verbindung zu HTTPS-Websites durch eine Firewall ist nicht möglich</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Eigentümer des Geräts ändert sich</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
@@ -419,6 +423,9 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7415801143053185905">Sehr hohe HTTP-Latenz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scan abgeschlossen. 1 Seite gescannt.}other{Scan abgeschlossen. {NUMBER_OF_PAGES} Seiten gescannt.}}</translation>
+<translation id="7451112128070628323">Wählen Sie diese Option aus, wenn der Eigentümer des Geräts gleich bleibt.
+        Beispielsweise, wenn das Gerät an eine andere Person
+        innerhalb desselben Unternehmens weitergegeben wird.</translation>
 <translation id="7469648432129124067">Portal erkannt</translation>
 <translation id="7487067081878637334">Technik</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>
@@ -543,6 +550,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuelle Nutzung</translation>
+<translation id="9095415590198785865">Eigentümer des Geräts ändert sich nicht</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="910415269708673980">Aktualisieren Sie das Ticket für <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>

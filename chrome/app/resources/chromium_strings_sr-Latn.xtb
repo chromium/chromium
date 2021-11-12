@@ -42,7 +42,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2535480412977113886">Chromium OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="2560420686485554789">Chromium traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="2572494885440352020">Chromium pomagač</translation>
-<translation id="2577788541081224677">Da biste pristupali Chromium sadržaju na svim uređajima, prijavite se da biste mogli da uključite sinhronizaciju.</translation>
 <translation id="2583187216237139145">Administrator poslovnog profila može da ukloni sve podatke Chromium-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Treba da restartujete Chromium OS da biste primenili ažuriranje.</translation>
 <translation id="2614883797045469742">Podrazumevana podešavanja odgovaraju mnogim ljudima, ali možete da ih prilagodite da bi se uklopila u vaš način korišćenja Chromium-a</translation>
@@ -250,7 +249,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromium-a pa ne možete da ga podesite kao podrazumevani pregledač.</translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, veb-sajtovi će moći da zatraže pristup.</translation>
-<translation id="8045118833343856403">Sledeći nalozi nisu prijavljeni ni na jedan Chromium profil. Ako želite da koristite nalog na drugom profilu, uklonite prvo taj profil.</translation>
 <translation id="8105840573057009683">Chromium-u treba dozvola za lokaciju za ovaj sajt</translation>
 <translation id="81770708095080097">Ova datoteka je opasna, pa ju je Chromium blokirao.</translation>
 <translation id="8248265253516264921">Ako slika nema koristan opis, Chromium će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa. To možete da isključite u podešavanjima u svakom trenutku.</translation>

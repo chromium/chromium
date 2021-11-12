@@ -42,7 +42,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2535480412977113886">Chromium OS nuk mundi të sinkronizonte të dhënat e tua, sepse detajet e llogarisë tënde të identifikimit janë të vjetruara.</translation>
 <translation id="2560420686485554789">Chromium ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="2572494885440352020">Ndihmuesi i Chromium</translation>
-<translation id="2577788541081224677">Për t'u qasur te gjërat e Chromium nëpër të gjitha pajisjet, identifikohu që të mund të aktivizosh sinkronizimin.</translation>
 <translation id="2583187216237139145">Çdo e dhënë e Chromium që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="2614883797045469742">Cilësimet e parazgjedhura funksionojnë për shumicën e njerëzve, por mund t'i personalizosh ato për t'u përshtatur me mënyrën që dëshiron të përdorësh Chromium</translation>
@@ -247,7 +246,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
-<translation id="8045118833343856403">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chromium. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
 <translation id="8105840573057009683">Chromium ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>
 <translation id="81770708095080097">Ky skedar është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="8248265253516264921">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>

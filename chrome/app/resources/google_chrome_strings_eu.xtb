@@ -153,7 +153,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="459622048091363950">Chrome-k sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
 <translation id="4600710005438004015">Ezin izan da eguneratu Chrome azken bertsiora; beraz, ez dituzu erabilgarri eginbide berriak eta segurtasun-konponketak.</translation>
 <translation id="4633000520311261472">Chrome seguruagoa izan dadin, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan ez dauden luzapen batzuk desgaitu ditugu; horiek agian zuk jakin gabe zeuden gehituta.</translation>
-<translation id="4666328473657283332">Chrome-ko gauzak gailu guztietan atzitze aldera, hasi saioa sinkronizazioa aktibatzeko.</translation>
 <translation id="4728575227883772061">Instalazioak huts egin du zehaztu gabeko errore batengatik. Google Chrome abian bada, itxi ezazu eta saiatu berriro.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Baliteke fitxategia arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
@@ -271,7 +270,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8008534537613507642">Berrinstalatu Chrome</translation>
 <translation id="8013993649590906847">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome arakatzaileari buruz</translation>
-<translation id="822971176939352383">Kontu hauek ez dute hasi saioa Chrome-ko inongo profiletan. Beste profil bateko kontu bat erabili nahi baduzu, kendu lehenik profil hori.</translation>
 <translation id="8255190535488645436">Google Chrome zure mikrofonoa eta kamera erabiltzen ari da.</translation>
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="828798499196665338">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gaitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

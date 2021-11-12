@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
+<translation id="1857850044054738019">اگر آلہ کو نئے کسٹمر میں تقسیم کے لیے دوبارہ اسٹاک کیا جا رہا ہے یا اس کے لیے
+        استعمال کیا جا رہا ہے تو اس اختیار کو منتخب کریں۔</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ہارڈ ویئر سے متعلق نظر ثانی</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
 <translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
 <translation id="4271957103967917607">فُل اسکرین میں دیکھیں</translation>
+<translation id="4275799948641988986">مرمت کے بعد، کون آلہ استعمال کرے گا؟</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
@@ -411,6 +414,7 @@
 <translation id="7297226631177386107">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">آلہ کسی دوسرے مالک کے پاس جائے گا</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
@@ -418,6 +422,9 @@
 <translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
+<translation id="7451112128070628323">اگر آلہ کی ملکیت تبدیل نہیں ہو رہی ہے تو اس اختیار کو منتخب کریں۔
+        مثال کے طور پر، آلہ تنظیم کے اندر موجود
+        کسی دوسرے شخص کو منتقل کیا جا رہا ہے۔</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
 <translation id="7487067081878637334">ٹیکنالوجی</translation>
 <translation id="7490813197707563893">‏MAC پتہ</translation>
@@ -542,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
+<translation id="9095415590198785865">آلہ اسی مالک کے پاس جائے گا</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>

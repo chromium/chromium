@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
+<translation id="1857850044054738019">ဝယ်ယူသူအသစ်ထံသို့ ပေးပို့ရန်အတွက် စက်ကို ပစ္စည်းပြန်ဖြည့်နေပါက (သို့) ပြန်မွမ်းမံနေပါက
+        ၎င်းကို ရွေးပါ။</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">စက်ပစ္စည်း စိစစ်သုံးသပ်ခြင်း</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">မှတ်ဉာဏ်စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ နေရာလွတ်ပြုလုပ်ရန် ဆက်တင်များ &gt; ‘သိုလှောင်ခန်းစီမံခန့်ခွဲမှုစနစ်’ သို့ သွားပါ။</translation>
 <translation id="4258281355379922695">HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="4271957103967917607">‘ဖန်သားပြင်အပြည့်’ ကြည့်ရန်</translation>
+<translation id="4275799948641988986">ပြုပြင်ပြီးနောက် ဤစက်ကို မည်သူသုံးမလဲ။</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
@@ -411,6 +414,7 @@
 <translation id="7297226631177386107">HTTPS ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">အခြားပိုင်ရှင်ထံသို့ စက် ရောက်ရှိသွားမည်</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ကွန်ရက်ရှိ စက်များ</translation>
 <translation id="7359657277149375382">ဖိုင်အမျိုးအစား</translation>
@@ -418,6 +422,9 @@
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
+<translation id="7451112128070628323">စက်ပိုင်ဆိုင်မှု ပြောင်းလဲခြင်းမရှိပါက ၎င်းကိုရွေးပါ။
+        ဥပမာအားဖြင့် စက်ကို အဖွဲ့အစည်းအတွင်းရှိ အခြားပုဂ္ဂိုလ်ထံသို့
+        လွှဲပြောင်းခြင်း။</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7487067081878637334">နည်းပညာ</translation>
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>
@@ -542,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>
+<translation id="9095415590198785865">လက်ရှိပိုင်ရှင်သို့ စက် ရောက်ရှိသွားမည်</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>

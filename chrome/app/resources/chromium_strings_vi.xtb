@@ -40,7 +40,6 @@
 <translation id="2535480412977113886">Chromium OS không thể đồng bộ hóa dữ liệu của bạn vì chi tiết đăng nhập tài khoản của bạn đã lỗi thời.</translation>
 <translation id="2560420686485554789">Chromium cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="2572494885440352020">Trình trợ giúp của Chromium</translation>
-<translation id="2577788541081224677">Để truy cập vào nội dung của bạn trên Chromium bằng mọi thiết bị, hãy đăng nhập rồi bật tính năng đồng bộ hóa.</translation>
 <translation id="2583187216237139145">Quản trị viên hồ sơ công việc có thể xóa mọi dữ liệu trên Chromium được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS cần được khởi động lại để áp dụng bản cập nhật.</translation>
 <translation id="2614883797045469742">Chế độ cài đặt mặc định phù hợp với hầu hết mọi người, nhưng bạn có thể tuỳ chỉnh các chế độ này để phù hợp với cách bạn muốn dùng Chromium</translation>
@@ -248,7 +247,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7937630085815544518">Bạn đã đăng nhập vào Chromium là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7975919845073681630">Đây là cài đặt thứ cấp của Chromium và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="8013436988911883588">Sau khi Chromium có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
-<translation id="8045118833343856403">Các tài khoản sau không được đăng nhập vào bất kỳ hồ sơ nào trên Chromium. Nếu bạn muốn dùng tài khoản trong một hồ sơ khác, hãy xóa hồ sơ đó trước.</translation>
 <translation id="8105840573057009683">Chromium cần có quyền truy cập thông tin vị trí đối với trang web này</translation>
 <translation id="81770708095080097">Tệp này nguy hiểm, do đó Chromium đã chặn tệp.</translation>
 <translation id="8248265253516264921">Chromium sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google. Bạn có thể tắt dịch vụ này trong phần cài đặt bất kỳ lúc nào.</translation>

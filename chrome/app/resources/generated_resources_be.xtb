@@ -4759,6 +4759,7 @@
 <translation id="6023643151125006053">Гэта прылада (серыйны нумар: <ph name="SERIAL_NUMBER" />) заблакіравана адміністратарам дамена <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6025215716629925253">Аналіз стэка</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – падключана прылада USB</translation>
+<translation id="6027945736510816438">Ці мелі вы на ўвазе <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Дадайце адбітак пальца</translation>
 <translation id="6031600495088157824">Параметры ўводу ў панэлі</translation>
 <translation id="6032091552407840792">Гэта пробная функцыя дзейнічае толькі ў <ph name="BEGIN_LINK" />некаторых рэгіёнах<ph name="END_LINK" />.</translation>
@@ -5510,6 +5511,7 @@
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6833479554815567477">Укладка выдалена з групы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Пераходзьце на разумны і бяспечны браўзер</translation>
+<translation id="6833996806551876956">Пробны перыяд Privacy Sandbox</translation>
 <translation id="6834652994408928492">Цёмны рэжым уключыцца аўтаматычна пасля захаду сонца</translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="6838034009068684089">Пытацца, калі сайт запытвае дазвол адкрываць і размяшчаць вокны на экранах (рэкамендуецца)</translation>

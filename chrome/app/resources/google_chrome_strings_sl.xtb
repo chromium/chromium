@@ -154,7 +154,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
 <translation id="4633000520311261472">Zaradi večje varnosti smo v Chromu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
-<translation id="4666328473657283332">Če želite do stvari v Chromu dostopati v vseh svojih napravah, se prijavite, da boste lahko vklopili sinhronizacijo.</translation>
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ta datoteka je morda nevarna, zato jo je Chrome blokiral.</translation>
@@ -272,7 +271,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8008534537613507642">Vnovična namestitev Chroma</translation>
 <translation id="8013993649590906847">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
-<translation id="822971176939352383">Naslednji računi niso prijavljeni v noben profil v Chromu. Če želite uporabiti račun v drugem profilu, najprej odstranite ta profil.</translation>
 <translation id="8255190535488645436">Google Chrome uporablja vašo kamero in mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="828798499196665338">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

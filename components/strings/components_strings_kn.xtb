@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
 <translation id="1428146450423315676">ಸ್ಟ್ಯಾಕರ್ 7</translation>
+<translation id="142858679511221695">ಕ್ಲೌಡ್ ಬಳಕೆದಾರರು</translation>
 <translation id="1428729058023778569">ಈ ಸೈಟ್ HTTPS ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ, ನೀವು ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ನೋಡುತ್ತಿದ್ದೀರಿ. <ph name="BEGIN_LEARN_MORE_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
 <translation id="1432581352905426595">ಹುಡುಕಾಟದ ಇಂಜಿನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -715,6 +716,7 @@
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
 <translation id="3333762389743153920">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗೆ ಅರ್ಹವಾಗಿಲ್ಲ</translation>
 <translation id="3338095232262050444">ಸುರಕ್ಷಿತ</translation>
+<translation id="3339446062576134663">ಕ್ಲೌಡ್ (ಆ್ಯಶ್)</translation>
 <translation id="3355823806454867987">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ...</translation>
 <translation id="3360103848165129075">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್</translation>
 <translation id="3361596688432910856">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಉಳಿಸುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
@@ -738,6 +740,7 @@
 <translation id="3380365263193509176">ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3380864720620200369">ಕ್ಲೈಂಟ್ ID:</translation>
 <translation id="3381668585148405088">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
+<translation id="3383566085871012386">ಪ್ರಸ್ತುತ ಆದ್ಯತೆಯ ಕ್ರಮ</translation>
 <translation id="3387261909427947069">ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="3391030046425686457">ವಿತರಣೆಯ ವಿಳಾಸಗಳು</translation>
 <translation id="3391482648489541560">ಫೈಲ್ ಎಡಿಟ್ ಮಾಡುವಿಕೆ</translation>
@@ -1401,6 +1404,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">ಈ ಕಂಟೆಂಟ್‌ ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿರುವ ಮಾಹಿತಿಯನ್ನು ಕದಿಯುವ ಅಥವಾ ಅಳಿಸುವ ಅಪಾಯಕಾರಿ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು. <ph name="BEGIN_LINK" />ಹೇಗಿದ್ದರೂ ತೋರಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">ಮಾನ್ಯವಾದ ವಿಳಾಸ ಸೇರಿಸಿ</translation>
+<translation id="5485973315555778056">ಕ್ಲೌಡ್ ಮಷೀನ್</translation>
 <translation id="5490432419156082418">ವಿಳಾಸಗಳು ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="5492298309214877701">ಬಾಹ್ಯ ವೆಬ್‌ಸೈಟ್‌‌ನ URL ಅನ್ನೇ ಕಂಪನಿ, ಸಂಸ್ಥೆ ಅಥವಾ ಶಾಲೆಯ ಇಂಟ್ರಾನೆಟ್‌ನಲ್ಲಿನ ಈ ಸೈಟ್ ಹೊಂದಿದೆ.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1434,7 @@
 <translation id="5571083550517324815">ಈ ವಿಳಾಸದಿಂದ ಪಿಕಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="5580958916614886209">ನಿಮ್ಮ ಮುಕ್ತಾಯ ತಿಂಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="5586446728396275693">ಯಾವುದೇ ಉಳಿಸಲಾದ ವಿಳಾಸಗಳಿಲ್ಲ</translation>
+<translation id="5587987780934666589">ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್ ಬಳಕೆದಾರರು</translation>
 <translation id="5593349413089863479">ಕನೆಕ್ಷನ್ ಸಂಪೂರ್ಣವಾಗಿ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5595485650161345191">ವಿಳಾಸ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5598944008576757369">ಪಾವತಿ ವಿಧಾನವನ್ನು ಆರಿಸಿ</translation>
@@ -2116,6 +2121,7 @@
 <translation id="7953569069500808819">ಮೇಲ್ಭಾಗದ ಅಂಚನ್ನು ಹೊಲಿಯಿರಿ</translation>
 <translation id="7956713633345437162">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>
+<translation id="7962467575542381659">ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್ ಮಷೀನ್</translation>
 <translation id="7966803981046576691">ಕೆಲಸದ ಖಾತೆ ಪ್ರಕಾರ</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" ಮೌಲ್ಯವು ಅಮಾನ್ಯವಾದ ಹೆಕ್ಸ್ ಬಣ್ಣವಾಗಿದೆ.</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>

@@ -119,6 +119,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
+<translation id="1750088060796401187">Only <ph name="MAX_DESK_LIMIT" /> desks allowed. Remove a desk to open a new one.</translation>
 <translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">The <ph name="LAUNCHER_KEY_NAME" /> + full stop keyboard shortcut has changed. To use the insert key, press the <ph name="LAUNCHER_KEY_NAME" /> key + shift + backspace.</translation>
 <translation id="1771761307086386028">Scroll right</translation>
@@ -620,6 +621,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5313326810920013265">Bluetooth settings</translation>
 <translation id="5314219114274263156">Screen recording taken</translation>
+<translation id="5317780077021120954">Save</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5322611492012084517">Can't find your phone</translation>
 <translation id="5327248766486351172">Name</translation>
@@ -1031,6 +1033,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8433186206711564395">Network settings</translation>
 <translation id="8433977262951327081">The shortcut to show the input options menu bubble in the shelf has changed. Please use <ph name="NEW_SHORTCUT" /> instead of <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Desk <ph name="DESK_TITILE" /> activated</translation>
+<translation id="8446884382197647889">Learn More</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Close Select to Speak</translation>
 <translation id="847056008324733326">Display scale settings</translation>

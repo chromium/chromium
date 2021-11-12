@@ -4781,6 +4781,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6023643151125006053">මෙම උපාංගය (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> පරිපාලක විසින් අගුලු දමා ඇත.</translation>
 <translation id="6025215716629925253">ඇහිරුම් හඹා යෑම</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB උපාංගය සම්බන්ධයි</translation>
+<translation id="6027945736510816438">ඔබ අදහස් කළේ <ph name="WEBSITE" /> ද?</translation>
 <translation id="6028117231645531007">ඇඟිලි සලකුණ එක් කරන්න</translation>
 <translation id="6031600495088157824">ආදාන විකල්ප මෙවලම් තීරුව</translation>
 <translation id="6032091552407840792">මෙම අත්හදා බැලීම <ph name="BEGIN_LINK" />සමහර කලාප<ph name="END_LINK" /> තුළ පමණක් සක්‍රියයි.</translation>
@@ -5534,6 +5535,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6833479554815567477">ටැබය <ph name="GROUP_NAME" /> සමූහය වෙතින් ගෙන යන ලදි - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">බුද්ධිමත් සහ සුරක්ෂිත බ්‍රව්සරයකට මාරු වන්න</translation>
+<translation id="6833996806551876956">රහස්‍යතා සෑන්ඩ්බොක්ස් අත්හදා බැලීම</translation>
 <translation id="6834652994408928492">හිරු බැසීමේදී අඳුරු ප්‍රකාරය ස්වයංක්‍රියව ක්‍රියාවිරහිත කරනු ඇත</translation>
 <translation id="6835762382653651563">ඔබේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීමට කරුණාකර අන්තර්ජාලය වෙත සබඳින්න.</translation>
 <translation id="6838034009068684089">අඩවියකට ඔබේ තිර මත windows විවෘත කිරීමට සහ තැබීමට අවශ්‍ය වූ විට අසන්න (නිර්දේශිතයි)</translation>
