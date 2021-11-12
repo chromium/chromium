@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Telemetry Services are available on Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
 
 source_set("telemetry_services") {
   sources = [

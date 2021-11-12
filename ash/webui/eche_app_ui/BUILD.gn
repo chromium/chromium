@@ -8,7 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos, "Eche App is Chrome OS only")
+assert(is_chromeos_ash, "Eche App is ash-chrome only")
 
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_folder = "preprocessed"

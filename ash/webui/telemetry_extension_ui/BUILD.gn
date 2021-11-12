@@ -4,32 +4,30 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos, "Telemetry Extension is Chrome OS only")
+assert(is_chromeos_ash, "Telemety Extension is ash-chrome only")
 assert(!is_official_build,
        "Telemetry Extension is only built for unofficial builds")
 
-if (is_chromeos_ash) {
-  source_set("telemetry_extension_ui") {
-    sources = [
-      "telemetry_extension_ui.cc",
-      "telemetry_extension_ui.h",
-      "telemetry_extension_untrusted_ui.cc",
-      "telemetry_extension_untrusted_ui.h",
-      "url_constants.cc",
-      "url_constants.h",
-    ]
+source_set("telemetry_extension_ui") {
+  sources = [
+    "telemetry_extension_ui.cc",
+    "telemetry_extension_ui.h",
+    "telemetry_extension_untrusted_ui.cc",
+    "telemetry_extension_untrusted_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
 
-    deps = [
-      "services:telemetry_services",
-      "//ash/constants",
-      "//ash/webui/resources:telemetry_extension_resources",
-      "//ash/webui/telemetry_extension_ui/mojom",
-      "//base",
-      "//content/public/browser",
-      "//mojo/public/js:resources",
-      "//ui/webui",
-    ]
-  }
+  deps = [
+    "services:telemetry_services",
+    "//ash/constants",
+    "//ash/webui/resources:telemetry_extension_resources",
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/js:resources",
+    "//ui/webui",
+  ]
 }
 
 source_set("unit_tests") {
@@ -37,12 +35,10 @@ source_set("unit_tests") {
   deps = [ "services:unit_tests" ]
 }
 
-if (is_chromeos_ash) {
-  group("closure_compile") {
-    testonly = true
-    deps = [
-      "resources:closure_compile",
-      "test:closure_compile",
-    ]
-  }
+group("closure_compile") {
+  testonly = true
+  deps = [
+    "resources:closure_compile",
+    "test:closure_compile",
+  ]
 }

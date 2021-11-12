@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Network Health is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Network Health is ash-chrome only")
 
 source_set("network_diagnostics_resource_provider") {
   sources = [

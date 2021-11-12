@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Shortcut Customization App is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Shortcut Customization App is ash-chrome only")
 
 static_library("shortcut_customization_ui") {
   sources = [
