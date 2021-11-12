@@ -487,7 +487,7 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
   EXPECT_FALSE(representation->IsCleared());
 }
 
-TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DValidateColorFormat) {
+TEST_F(RasterDecoderOOPTest, DISABLED_CopyTexSubImage2DValidateColorFormat) {
   // Recreate |client_texture_mailbox_| as a cleared mailbox.
   client_texture_mailbox_ =
       CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
