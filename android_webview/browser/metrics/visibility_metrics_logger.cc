@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -305,7 +306,7 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
 }
 
 void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
-  for (int i = 0; i < static_cast<int>(WebViewOpenWebScreenPortion::kMaxValue);
+  for (size_t i = 0; i < base::size(open_web_screen_portion_tracked_duration_);
        i++) {
     int32_t elapsed_seconds =
         open_web_screen_portion_tracked_duration_[i].InSeconds();
