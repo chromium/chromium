@@ -37,6 +37,7 @@
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -1512,7 +1513,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
     SCOPED_TRACE("Verifies onBlur event");
     ExtensionTestMessageListener blur_listener("onBlur", false);
 
-    ui::DummyTextInputClient dtic;
+    ui::FakeTextInputClient dtic(ui::TEXT_INPUT_TYPE_TEXT);
     im->SetFocusedTextInputClient(&dtic);
 
     ASSERT_TRUE(blur_listener.WaitUntilSatisfied());

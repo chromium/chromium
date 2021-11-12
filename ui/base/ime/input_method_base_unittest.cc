@@ -11,7 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event.h"
 
@@ -185,8 +185,8 @@ void SetFocusedTextInputClient(InputMethod* input_method,
 }
 
 TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
-  DummyTextInputClient text_input_client_1st;
-  DummyTextInputClient text_input_client_2nd;
+  FakeTextInputClient text_input_client_1st(TEXT_INPUT_TYPE_TEXT);
+  FakeTextInputClient text_input_client_2nd(TEXT_INPUT_TYPE_TEXT);
 
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
@@ -244,8 +244,8 @@ TEST_F(InputMethodBaseTest, SetFocusedTextInputClient) {
 }
 
 TEST_F(InputMethodBaseTest, DetachTextInputClient) {
-  DummyTextInputClient text_input_client;
-  DummyTextInputClient text_input_client_the_other;
+  FakeTextInputClient text_input_client(TEXT_INPUT_TYPE_TEXT);
+  FakeTextInputClient text_input_client_the_other(TEXT_INPUT_TYPE_TEXT);
 
   ClientChangeVerifier verifier;
   MockInputMethodBase input_method(&verifier);
