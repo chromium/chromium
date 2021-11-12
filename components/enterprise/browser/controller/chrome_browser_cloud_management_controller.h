@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -134,6 +135,10 @@ class ChromeBrowserCloudManagementController
     virtual std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
     GetReportingDelegateFactory() = 0;
 
+    // Creates a platform-specific DeviceTrustKeyManager instance.
+    virtual std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+    CreateDeviceTrustKeyManager();
+
     // Sets the SharedURLLoaderFactory that this object will use to make
     // requests to GAIA.
     virtual void SetGaiaURLLoaderFactory(
@@ -238,6 +243,10 @@ class ChromeBrowserCloudManagementController
   // Early cleanup during browser shutdown process
   void ShutDown();
 
+  // Returns the device trust key manager. Returns nullptr if the Device Trust
+  // feature flag isn't enabled.
+  enterprise_connectors::DeviceTrustKeyManager* GetDeviceTrustKeyManager();
+
   // Sets the SharedURLLoaderFactory that this will be used to make requests to
   // GAIA.
   void SetGaiaURLLoaderFactory(
@@ -294,6 +303,9 @@ class ChromeBrowserCloudManagementController
   // This allows creation to be deferred on platforms in which the enrollment
   // token may not be immediately available (e.g. Android).
   base::OnceClosure create_cloud_policy_manager_callback_;
+
+  std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+      device_trust_key_manager_;
 
   base::WeakPtrFactory<ChromeBrowserCloudManagementController> weak_factory_{
       this};

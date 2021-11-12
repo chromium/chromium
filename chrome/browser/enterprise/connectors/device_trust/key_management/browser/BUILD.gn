@@ -3,22 +3,29 @@
 # found in the LICENSE file.
 
 source_set("browser") {
-  public = [ "key_rotation_launcher.h" ]
+  public = [
+    "device_trust_key_manager_impl.h",
+    "key_rotation_launcher.h",
+  ]
 
   sources = [
+    "device_trust_key_manager_impl.cc",
     "key_rotation_launcher.cc",
     "key_rotation_launcher_impl.cc",
     "key_rotation_launcher_impl.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/enterprise",
+  ]
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
-    "//components/enterprise",
     "//components/policy/core/common",
     "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 

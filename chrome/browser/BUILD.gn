@@ -5965,6 +5965,8 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector_impl.cc",
       "upgrade_detector/upgrade_detector_impl.h",
     ]
+
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/browser" ]
   }
 
   if (is_android || is_chromeos || is_win) {
