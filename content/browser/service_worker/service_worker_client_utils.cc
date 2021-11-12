@@ -141,7 +141,7 @@ blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
   bool page_hidden = visibility != PageVisibilityState::kVisible;
   return blink::mojom::ServiceWorkerClientInfo::New(
       render_frame_host->GetLastCommittedURL(),
-      render_frame_host->GetParent()
+      render_frame_host->GetParent() && !render_frame_host->IsFencedFrameRoot()
           ? blink::mojom::RequestContextFrameType::kNested
           : blink::mojom::RequestContextFrameType::kTopLevel,
       client_uuid, blink::mojom::ServiceWorkerClientType::kWindow, page_hidden,
