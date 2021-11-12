@@ -22,7 +22,7 @@
 <translation id="1123070903960493543">A forma como interage com o Chrome, as definições que selecionou, os detalhes das falhas do Chrome.</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 transferência pendente.}other{# transferências pendentes.}}</translation>
+<translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 transferência pendente.}one{# downloads pending.}other{# transferências pendentes.}}</translation>
 <translation id="1142732900304639782">Não se disponibilizar para traduzir estes sites</translation>
 <translation id="1145536944570833626">Eliminar dados existentes.</translation>
 <translation id="1146678959555564648">Entrar na RV</translation>
@@ -99,7 +99,7 @@
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
-<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}other{Remover # itens selecionados}}</translation>
+<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Remover 1 item selecionado}one{Remove # selected items}other{Remover # itens selecionados}}</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="164269334534774161">Está a visualizar uma cópia offline desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -156,7 +156,7 @@
 <translation id="1987739130650180037">Botão <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para o motor de pesquisa predefinido.</translation>
 <translation id="200114059308480249">Pretende incluir o texto circundante nas pesquisas no Google?</translation>
-<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
+<translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}one{# ficheiro(s)}other{# ficheiros}}</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
 <translation id="2038563949887743358">Ativar Pedir site para computador</translation>
 <translation id="204321170514947529">A aplicação <ph name="APP_NAME" /> também tem dados no Chrome</translation>
@@ -164,7 +164,7 @@
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">Pesquise na Internet</translation>
 <translation id="2056878612599315956">Site em pausa</translation>
-<translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}other{# transferências falhadas}}</translation>
+<translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}one{# downloads failed}other{# transferências falhadas}}</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
 <translation id="2074143993849053708">IU de consentimento da pesquisa por voz do Assistente fechada</translation>
@@ -271,7 +271,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2647434099613338025">Adicionar idioma</translation>
 <translation id="2649068648233607930">O navegador é gerido por <ph name="DOMAIN" /></translation>
 <translation id="2650751991977523696">Pretende transferir o ficheiro novamente?</translation>
-<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de áudio}other{# ficheiros de áudio}}</translation>
+<translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de áudio}one{# ficheiro(s) de áudio}other{# ficheiros de áudio}}</translation>
 <translation id="2656405586795711023">Apps para a Web</translation>
 <translation id="2689830683995595741">Ao utilizar o Chrome, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de Privacidade para Contas Google geridas com o Family Link<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="2702516483241149200">Novo: partilhe um link que se desloca para este texto</translation>
@@ -301,8 +301,8 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2827278682606527653">O menu do cartão do feed a meia altura.</translation>
 <translation id="2830783625999891985">Conteúdos de Copiar e colar ocultos</translation>
 <translation id="2839327205551510876">Deixou de seguir o site <ph name="SITE_NAME" /></translation>
-<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima será fechado}other{<ph name="TAB_COUNT_MANY" /> separadores de navegação anónima serão fechados}}</translation>
-<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Última verificação há 1 dia}other{Última verificação há # dias}}</translation>
+<translation id="2840810876587895427">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima será fechado}one{<ph name="TAB_COUNT_MANY" /> separador(es) de navegação anónima será(ão) fechado(s)}other{<ph name="TAB_COUNT_MANY" /> separadores de navegação anónima serão fechados}}</translation>
+<translation id="2841216154655874070">{NUM_DAYS,plural, =1{Última verificação há 1 dia}one{Última verificação há # dia(s)}other{Última verificação há # dias}}</translation>
 <translation id="2842985007712546952">Pasta superior</translation>
 <translation id="2856503607207334158">Falha ao iniciar sessão</translation>
 <translation id="2860954141821109167">Certifique-se de que uma aplicação de telefone está ativada neste dispositivo.</translation>
@@ -325,7 +325,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2946420957526726953">A atualizar o Chrome para ligar a outros dispositivos</translation>
 <translation id="2951071800649516099">Adicione páginas à sua lista de leitura para ler mais tarde</translation>
 <translation id="2956410042958133412">Esta conta é gerida por <ph name="PARENT_NAME_1" /> e por <ph name="PARENT_NAME_2" />.</translation>
-<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
+<translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> página(s) não lida(s)}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="2979025552038692506">Separador de navegação anónima selecionado</translation>
 <translation id="2979448359891869301">Não é possível estender a captura de ecrã. Tente novamente quando o telemóvel não estiver ocupado.</translation>
@@ -347,7 +347,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3037517125981011456">Mostra pedidos para iniciar sessão no Chrome</translation>
 <translation id="3046945242843292318">Aceda a este site mais rapidamente da próxima vez</translation>
 <translation id="305593374596241526">A localização está desativada. Ative-a nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
-<translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
+<translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}one{<ph name="BOOKMARKS_COUNT_MANY" /> marcador(es)}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos acerca dos seus interesses no Chrome.</translation>
 <translation id="3066573403916685335">Mover para baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
@@ -412,7 +412,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3440975416244667276">Toque sem soltar para obter informações mais relevantes.</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
 <translation id="3444179773590444986">Pretende partilhar feedback sobre o tema escuro para os sites?</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 transferência programada}other{# transferências programadas}}</translation>
+<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 transferência programada}one{# transferência(s) programada(s)}other{# transferências programadas}}</translation>
 <translation id="3478363558367712427">Pode escolher o seu motor de pesquisa.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> acerca do conteúdo sugerido</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -461,7 +461,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3773856050682458546">Os dados básicos e as informações acerca dos Websites que visita e as apps que utiliza.</translation>
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3778956594442850293">Adicionado ao ecrã principal</translation>
-<translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 separador}other{# separadores}}</translation>
+<translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 separador}one{# separador(es)}other{# separadores}}</translation>
 <translation id="3803783897442799486">Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização<ph name="END_LINK1" />.\nPara ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_LINK2" />Faça a gestão<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Faça a gestão da reprodução automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>
@@ -485,7 +485,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="393697183122708255">Nenhuma pesq. por voz ativada disponível</translation>
 <translation id="395377504920307820">Utilizar sem uma conta</translation>
 <translation id="3958287878205277013">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima.</translation>
-<translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{O Chrome irá carregar a página quando estiver pronta.}other{O Chrome irá carregar as páginas quando estiverem prontas.}}</translation>
+<translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{O Chrome irá carregar a página quando estiver pronta.}one{O Chrome irá carregar a(s) página(s) quando estiver(em) pronta(s).}other{O Chrome irá carregar as páginas quando estiverem prontas.}}</translation>
 <translation id="3962957115499249330">Verá uma notificação quando esta transferência for iniciada através de Wi-Fi.</translation>
 <translation id="3963007978381181125">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">O Chrome não consegue verificar as suas palavras-passe.</translation>
@@ -499,7 +499,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3988466920954086464">Veja resultados da pesquisa instantâneos neste painel.</translation>
 <translation id="4000212216660919741">Em casa offline</translation>
 <translation id="4016425174436051808">Não é possível seguir. Algo correu mal.</translation>
-<translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
+<translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# hrs}other{# h}}</translation>
 <translation id="4045764304651014138">Dados de utilização</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4060598801229743805">Opções disponíveis junto à parte superior do ecrã</translation>
@@ -567,14 +567,14 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4504667196171871375">Com Wi-Fi e dados móveis</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4508642716788467538">Selecione o seu idioma</translation>
-<translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}other{Há # dias}}</translation>
+<translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}one{# days ago}other{Há # dias}}</translation>
 <translation id="451872707440238414">Pesquisar os marcadores</translation>
 <translation id="4521489764227272523">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados.
 
 A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
 <translation id="4538018662093857852">Ativar o Modo Lite</translation>
-<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}other{<ph name="TAB_COUNT_MANY" /> separadores, <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}}</translation>
+<translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador}one{<ph name="TAB_COUNT_MANY" /> separador(es), <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}other{<ph name="TAB_COUNT_MANY" /> separadores, <ph name="TAB_COUNT_INCOGNITO" /> de navegação anónima}}</translation>
 <translation id="4550003330909367850">Para ver ou copiar a sua palavra-passe aqui, defina o bloqueio de ecrã neste dispositivo.</translation>
 <translation id="4554077758708533499">Ligado com cabo USB</translation>
 <translation id="4557685098773234337">Adicione esta página ao ecrã principal para aceder à mesma mais rapidamente.</translation>
@@ -586,13 +586,13 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4572422548854449519">Iniciar sessão na conta gerida</translation>
 <translation id="4576892426230499203">Experimente outra opção de validação</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
-<translation id="4583164079174244168">{MINUTES,plural, =1{Há # minuto}other{Há # minutos}}</translation>
+<translation id="4583164079174244168">{MINUTES,plural, =1{Há # minuto}one{# minutes ago}other{Há # minutos}}</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">Esta página foi criada a <ph name="CREATION_TIME" /> e pode ser diferente da versão online.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4634124774493850572">Utilizar palavra-passe</translation>
-<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 palavra-passe comprometida.}other{# palavras-passe comprometidas.}}</translation>
+<translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 palavra-passe comprometida.}one{# palavra(s)-passe comprometida(s).}other{# palavras-passe comprometidas.}}</translation>
 <translation id="4650364565596261010">Predefinição do sistema</translation>
 <translation id="465657074423018424">A Navegação segura protege contra Websites fraudulentos. Se a desativar, tenha um cuidado adicional ao navegar, especialmente antes de introduzir palavras-passe.</translation>
 <translation id="4662373422909645029">A alcunha n/ pode ter núm.</translation>
@@ -601,7 +601,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4668347365065281350">Todos os dados armazenados pelos sites, incluindo cookies e outros dados armazenados localmente.</translation>
 <translation id="4678082183394354975">O tema escuro para os sites está ativado no Chrome</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
-<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Envie uma mensagem de texto para os seus dispositivos</translation>
 <translation id="4699172675775169585">Imagens e ficheiros em cache</translation>
 <translation id="4714588616299687897">Poupe até 60% dos seus dados</translation>
@@ -617,9 +617,9 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4758061975920522644">Apenas partilhar imagem</translation>
 <translation id="4759238208242260848">Transferências</translation>
 <translation id="4763480195061959176">vídeo</translation>
-<translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 transferência concluída.}other{# transferências concluídas.}}</translation>
+<translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 transferência concluída.}one{# downloads complete.}other{# transferências concluídas.}}</translation>
 <translation id="4766678251456904326">Adicionar conta ao dispositivo</translation>
-<translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 transferência programada.}other{# transferências programadas.}}</translation>
+<translation id="4767937498890654900">{FILE_COUNT,plural, =1{1 transferência programada.}one{# transferência(s) programada(s).}other{# transferências programadas.}}</translation>
 <translation id="4791358705705538979">Ajuda a concluir tarefas, como pagamentos, na Web.</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay.
@@ -650,7 +650,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4912413785358399818">Mover separador</translation>
 <translation id="4913161338056004800">Repor estatísticas</translation>
 <translation id="4913169188695071480">Parar a atualização</translation>
-<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# página}other{# páginas}}</translation>
+<translation id="4921180162323349895">{FILE_COUNT,plural, =1{# página}one{# página(s)}other{# páginas}}</translation>
 <translation id="4925120120285606924">Captura de ecrã <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">As suas palavras-passe serão exportadas e transferidas como um ficheiro de texto. Serão visíveis para qualquer pessoa e qualquer app com acesso à pasta de destino.</translation>
 <translation id="4932247056774066048">Uma vez que está a terminar sessão numa conta gerida pelo domínio <ph name="DOMAIN_NAME" />, os dados do Chrome serão eliminados deste dispositivo. Estes irão permanecer na sua Conta Google.</translation>
@@ -686,7 +686,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5142281402488957685">Puxe para baixo para atualizar e obter novas notícias</translation>
 <translation id="5152843274749979095">Nenhuma aplicação compatível instalada</translation>
 <translation id="5161254044473106830">Título obrigatório</translation>
-<translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 transferência com falha.}other{# transferências com falha.}}</translation>
+<translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 transferência com falha.}one{# downloads failed.}other{# transferências com falha.}}</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5171045022955879922">Pesquise ou escreva URL</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
@@ -696,7 +696,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5199929503336119739">Perfil de trabalho</translation>
 <translation id="5201464744567315552">Verá uma notificação quando esta transferência for iniciada à(s) <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Introduzir palavra-passe</translation>
-<translation id="5206168361184759344">{FILE_COUNT,plural, =1{A transferir o ficheiro…}other{A transferir # ficheiros…}}</translation>
+<translation id="5206168361184759344">{FILE_COUNT,plural, =1{A transferir o ficheiro…}one{A transferir # ficheiro(s)…}other{A transferir # ficheiros…}}</translation>
 <translation id="5210286577605176222">Ir para o separador anterior</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5213672942202814946">Utilize a pesquisa por voz</translation>
@@ -719,7 +719,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
 <translation id="5342314432463739672">Pedidos de autorização</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
-<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> separador aberto, toque para alternar entre separadores}other{<ph name="OPEN_TABS_MANY" /> separadores abertos, toque para alternar entre separadores}}</translation>
+<translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> separador aberto, toque para alternar entre separadores}one{<ph name="OPEN_TABS_MANY" /> separador(es) aberto(s), toque para alternar entre separadores}other{<ph name="OPEN_TABS_MANY" /> separadores abertos, toque para alternar entre separadores}}</translation>
 <translation id="5375577065097716013">Pesquisar c/ Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir apenas determinados sites</translation>
 <translation id="5409881200985013443">Enviar <ph name="ONE_TIME_CODE" /> no dispositivo <ph name="CLIENT_NAME" />?</translation>
@@ -791,7 +791,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5780792035410621042">Para copiar palavras-passe, defina primeiro um bloqueio de ecrã no dispositivo.</translation>
 <translation id="5793665092639000975">A utilizar <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5795872532621730126">Pesquisar e procurar</translation>
-<translation id="5809361687334836369">{HOURS,plural, =1{Há # hora}other{Há # horas}}</translation>
+<translation id="5809361687334836369">{HOURS,plural, =1{Há # hora}one{# hours ago}other{Há # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="5810864297166300463">Assistência Web</translation>
 <translation id="5814131985548525293">Escreva aqui ou toque no ícone de voz para começar.</translation>
@@ -888,7 +888,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6337234675334993532">Encriptação</translation>
 <translation id="6341580099087024258">Perguntar onde guardar os ficheiros</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
-<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
+<translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marcar como lido</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, valide a sua identidade</translation>
 <translation id="6364438453358674297">Remover a sugestão do histórico?</translation>
@@ -909,7 +909,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6434309073475700221">Rejeitar</translation>
 <translation id="6437478888915024427">Informações da página</translation>
 <translation id="6441734959916820584">O nome é demasiado longo</translation>
-<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imagem}other{# imagens}}</translation>
+<translation id="6444421004082850253">{FILE_COUNT,plural, =1{# imagem}one{# imagem(ns)}other{# imagens}}</translation>
 <translation id="6447558397796644647">Não é possível encontrar esse marcador. Verifique a ortografia ou adicione um novo marcador.</translation>
 <translation id="6459045781120991510">Inquéritos</translation>
 <translation id="6461962085415701688">Não é possível abrir o ficheiro</translation>
@@ -920,16 +920,16 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6482749332252372425">A transferência de <ph name="FILE_NAME" /> falhou devido à falta de espaço de armazenamento.</translation>
 <translation id="6489610539826642779">Lista de leitura <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6496823230996795692">Para utilizar a aplicação <ph name="APP_NAME" /> pela primeira vez, ligue-se à Internet.</translation>
-<translation id="650224091954855786">{FILE_COUNT,plural, =1{Ficheiro transferido}other{# transferências concluídas}}</translation>
+<translation id="650224091954855786">{FILE_COUNT,plural, =1{Ficheiro transferido}one{# transferência(s) concluída(s)}other{# transferências concluídas}}</translation>
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6532866250404780454">Os sites que visitar no Chrome não serão apresentados. Todos os temporizadores do site serão eliminados.</translation>
 <translation id="6534565668554028783">A Google demorou demasiado tempo a responder</translation>
 <translation id="6539092367496845964">Ocorreu um erro. Tente novamente mais tarde.</translation>
-<translation id="6541983376925655882">{NUM_HOURS,plural, =1{Última verificação há 1 hora}other{Última verificação há # horas}}</translation>
+<translation id="6541983376925655882">{NUM_HOURS,plural, =1{Última verificação há 1 hora}one{Última verificação há # hora(s)}other{Última verificação há # horas}}</translation>
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O ficheiro pode ser prejudicial</translation>
-<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
+<translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}one{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_MANY" /> separador(es) serão fechados}other{<ph name="TAB_TITLE" /> e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
 <translation id="6560414384669816528">Pesquisar com o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6565959834589222080">O Wi-Fi é utilizado quando estiver disponível.</translation>
@@ -952,7 +952,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6643649862576733715">Ordenar por quantidade de dados poupados</translation>
 <translation id="6648459603387803038">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chrome.</translation>
-<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
+<translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Pré-visualizar imagem <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659594942844771486">Separador</translation>
@@ -1038,7 +1038,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="718926126787620637">Lista de pastas de marcadores aberta à altura total</translation>
 <translation id="7191430249889272776">Separador aberto em segundo plano.</translation>
-<translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
+<translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}one{# downloads pending}other{# transferências pendentes}}</translation>
 <translation id="7242755609445462077">Realce estilizado a <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Certifique-se de que o <ph name="TARGET_DEVICE_NAME" /> tem a sincronização ativada no Chrome.</translation>
 <translation id="7252076891734325316">Aproxime o telemóvel do computador</translation>
@@ -1060,7 +1060,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7352339641508007922">Arraste para tirar uma captura de ecrã longa</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
-<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partilhar 1 item selecionado}other{Partilhar # itens selecionados}}</translation>
+<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partilhar 1 item selecionado}one{Share # selected items}other{Partilhar # itens selecionados}}</translation>
 <translation id="7359002509206457351">Aceder aos métodos de pagamento</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Ao incluir mais texto de uma página, poderá ver melhores resultados quando utilizar a funcionalidade Tocar para pesquisar. Pode sempre visitar as <ph name="BEGIN_LINK" />definições<ph name="END_LINK" /> para alterar esta opção.</translation>
@@ -1103,7 +1103,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7562080006725997899">A limpar dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome limpos</translation>
 <translation id="7577900504646297215">Gerir interesses</translation>
-<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ficheiro transferido}other{<ph name="FILES_DOWNLOADED_MANY" /> ficheiros transferidos}}</translation>
+<translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ficheiro transferido}one{<ph name="FILES_DOWNLOADED_MANY" /> ficheiro(s) transferido(s)}other{<ph name="FILES_DOWNLOADED_MANY" /> ficheiros transferidos}}</translation>
 <translation id="7581273696622423628">Participar no inquérito</translation>
 <translation id="7583262514280211622">A sua lista de leitura será apresentada aqui.</translation>
 <translation id="7588219262685291874">Ativar o tema escuro quando a Poupança de bateria do dispositivo estiver ativada.</translation>
@@ -1135,7 +1135,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772375229873196092">Fechar <ph name="APP_NAME" /></translation>
-<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
+<translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Volte mais tarde para obter notícias novas.</translation>
 <translation id="7786595606756654269">O Assistente Google proporciona uma melhor experiência de voz para pesquisar na Web e interagir com sites que abriu. O Assistente Google vai receber o URL e o conteúdo dos sites com os quais o utiliza.</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -1157,13 +1157,13 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="78707286264420418">O <ph name="PRODUCT_NAME" /> necessita da autorização Dispositivos próximos para estabelecer ligação ao seu dispositivo</translation>
 <translation id="7875915731392087153">Criar email</translation>
 <translation id="7876243839304621966">Remover tudo</translation>
-<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página não lida.}other{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas não lidas.}}</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> página não lida.}one{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> página(s) não lida(s).}other{Tem <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> páginas não lidas.}}</translation>
 <translation id="7882131421121961860">Nenhum histórico encontrado</translation>
 <translation id="7886917304091689118">Em execução no Chrome.</translation>
 <translation id="789763218334337857">Como utilizar o Chrome</translation>
 <translation id="7903184275147100332">Pode demorar alguns minutos.</translation>
 <translation id="7919123827536834358">Traduza automaticamente estes idiomas</translation>
-<translation id="7925590027513907933">{FILE_COUNT,plural, =1{A transferir o ficheiro…}other{A transferir # ficheiros…}}</translation>
+<translation id="7925590027513907933">{FILE_COUNT,plural, =1{A transferir o ficheiro…}one{Downloading # files.}other{A transferir # ficheiros…}}</translation>
 <translation id="7926975587469166629">Alcunha do cartão</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930998711684428189">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
@@ -1192,7 +1192,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8037801708772278989">Última verificação agora mesmo</translation>
 <translation id="8040831032425909005">Ícone do widget de Pesquisa das Ações rápidas</translation>
 <translation id="804335162455518893">Cartão SD não encontrado.</translation>
-<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima}other{<ph name="TAB_COUNT_NORMAL" /> separadores de navegação anónima}}</translation>
+<translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima}one{<ph name="TAB_COUNT_NORMAL" /> separador(es) de navegação anónima}other{<ph name="TAB_COUNT_NORMAL" /> separadores de navegação anónima}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058746566562539958">Abrir num novo sep. do Chrome</translation>
@@ -1355,7 +1355,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8965591936373831584">pendente</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>
-<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
+<translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}one{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separador(es) serão fechados}other{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8972098258593396643">Pretende transferir para a pasta predefinida?</translation>
 <translation id="8987641763863173640">Faça a gestão das definições de pré-visualização de vídeo</translation>
@@ -1365,7 +1365,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9022774213089566801">Visitados frequentemente</translation>
 <translation id="9028914725102941583">Ative a sincronização para partilhar entre dispositivos</translation>
 <translation id="9040142327097499898">As notificações são permitidas. A localização está desativada para este dispositivo.</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>
+<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}one{# vídeo(s)}other{# vídeos}}</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
 <translation id="9063523880881406963">Desativar Pedir site para computador</translation>
@@ -1393,7 +1393,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="9155898266292537608">Também pode pesquisar ao tocar rapidamente numa palavra.</translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>
-<translation id="9199368092038462496">{NUM_MINS,plural, =1{Última verificação há 1 minuto}other{Última verificação há # minutos}}</translation>
+<translation id="9199368092038462496">{NUM_MINS,plural, =1{Última verificação há 1 minuto}one{Última verificação há # minuto(s)}other{Última verificação há # minutos}}</translation>
 <translation id="9204836675896933765">Falta 1 ficheiro</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Não é possível efetuar chamadas</translation>

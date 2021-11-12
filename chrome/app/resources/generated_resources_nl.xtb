@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Niet toestaan dat sites verbinding maken met MIDI-apparaten</translation>
 <translation id="1088654056000736875">Chrome verwijdert schadelijke software van je computer…</translation>
 <translation id="1088659085457112967">Lezermodus aanzetten</translation>
+<translation id="1089606299949659462">Beoordeling voltooid</translation>
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
@@ -1430,6 +1431,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2454247629720664989">Zoekwoord</translation>
 <translation id="2454264884354864965">Camera staat uit</translation>
+<translation id="2454524890947537054">Webverzoek goedkeuren?</translation>
 <translation id="245650153866130664">Als je een ticket automatisch wilt vernieuwen, vink je 'Wachtwoord onthouden' aan. Het wachtwoord wordt alleen opgeslagen op je apparaat.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil bestanden van <ph name="VOLUME_NAME" /> kopiëren.</translation>
 <translation id="2457842160081795172">Momenteel op het kanaal <ph name="CHANNEL_NAME" /></translation>
@@ -1831,6 +1833,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2861301611394761800">Het systeem is geüpdatet. Start het systeem opnieuw op.</translation>
 <translation id="2861941300086904918">Beveiligingsbeheerder voor Native Client</translation>
 <translation id="2862815659905780618">Linux-ontwikkelomgeving verwijderen</translation>
+<translation id="2864272167277395865">Selecteer een apparaat:</translation>
 <translation id="2864601841139725659">Je profielfoto instellen</translation>
 <translation id="2865919525181940183">Screenshot van programma's die momenteel op het scherm staan</translation>
 <translation id="286674810810214575">Voedingsbronnen controleren…</translation>
@@ -3241,6 +3244,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4366138410738374926">Afdrukken gestart</translation>
 <translation id="4369121877634339065">Sleep over een afbeelding om te zoeken</translation>
+<translation id="4369215744064167350">Websiteverzoek goedgekeurd</translation>
 <translation id="4370975561335139969">Het opgegeven e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="4373966964907728675">Bureaublad casten</translation>
 <translation id="4374831787438678295">Linux-installatieprogramma</translation>
@@ -3930,6 +3934,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5117139026559873716">Ontkoppel je telefoon van je <ph name="DEVICE_TYPE" />. Je apparaten maken dan niet meer automatisch verbinding.</translation>
 <translation id="5117930984404104619">Het gedrag van andere extensies controleren, waaronder bezochte URL's</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Klik hier om naar <ph name="APPROVED_URL" /> te gaan</translation>
 <translation id="5121052518313988218">Het besturingssysteem in je Linux-container wordt niet meer ondersteund. Het besturingssysteem krijgt geen beveiligingsupdates en bugfixes meer, en functies die nu nog werken kunnen onverwacht stoppen met werken. Upgrade naar de nieuwste versie om Linux te blijven gebruiken.</translation>
 <translation id="5121130586824819730">Je vaste schijf is vol. Sla op een andere locatie op of maak ruimte vrij op de vaste schijf.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
@@ -4038,6 +4043,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235750401727657667">De pagina vervangen die je ziet als je een nieuw tabblad opent</translation>
 <translation id="5236374273162681467">Je kunt ze naar je Google-account verplaatsen zodat je ze makkelijk kunt gebruiken op al je apparaten</translation>
+<translation id="523862956770478816">Siterechten</translation>
 <translation id="5242724311594467048"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="5243522832766285132">Probeer het over enige tijd opnieuw</translation>
 <translation id="5244474230056479698">Synchroniseren met <ph name="EMAIL" /></translation>
@@ -5327,6 +5333,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6635674640674343739">Netwerkverbinding kan niet tot stand worden gebracht. Check je netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="6635944431854494329">De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.</translation>
 <translation id="6635956300022133031">Stemmen voor tekst-naar-spraak selecteren en aanpassen</translation>
+<translation id="6636623428211296678">Bekijk hieronder meer instellingen of rond nu af</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
 <translation id="6640268266988685324">Geopend tabblad</translation>
 <translation id="6642720633335369752">Als je alle geopende app-vensters wilt bekijken, swipe je omhoog vanaf de onderkant en houd je het scherm vast.</translation>
@@ -6601,6 +6608,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7946586320617670168">Herkomst moet zijn beveiligd</translation>
 <translation id="794676567536738329">Rechten bevestigen</translation>
 <translation id="7947962633355574091">Adres van video k&amp;opiëren</translation>
+<translation id="7948407723851303488">Alle pagina's van <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Ga voor het toevoegen of beheren van Google Pay-betaalmethoden naar je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="795282463722894016">Herstellen voltooid</translation>
@@ -7667,6 +7675,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="9053893665344928494">Mijn keuze onthouden</translation>
 <translation id="9055636786322918818">RC4-versleuteling afdwingen. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
 <translation id="9056810968620647706">Geen overeenkomsten gevonden.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wil toegang tot de volgende content:</translation>
 <translation id="9057354806206861646">Updateplanning</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fout van regel <ph name="ERROR_LINE_START" /> tot en met <ph name="ERROR_LINE_END" /></translation>

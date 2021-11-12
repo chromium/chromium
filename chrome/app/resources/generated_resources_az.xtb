@@ -89,6 +89,7 @@
 <translation id="1087965115100412394">Saytlara MIDI cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="1088654056000736875">Chrome zərərli proqram təminatını kompüterinizdən silir...</translation>
 <translation id="1088659085457112967">Oxucu Rejiminə daxil olun</translation>
+<translation id="1089606299949659462">Nəzərdən keçirmə tamamlandı!</translation>
 <translation id="1090126737595388931">Axra fonda tətbiq işləmir</translation>
 <translation id="1090541560108055381">Birləşdirməzdən əvvəl, bu kodun hər iki cihazda eyni olduğuna əmin olun</translation>
 <translation id="1091767800771861448">Atlamaq üçün Esc basın.</translation>
@@ -1429,6 +1430,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2453860139492968684">Son</translation>
 <translation id="2454247629720664989">Açar söz</translation>
 <translation id="2454264884354864965">Kamera deaktivdir</translation>
+<translation id="2454524890947537054">Veb sorğu təsdiq edilsin?</translation>
 <translation id="245650153866130664">Bileti avtomatik yeniləmək üçün "Parolu yadda saxlayın"ı yoxlayın Parol yalnız Sizin cihazda saxlanılacaq.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> cildindən faylları kopyalamaq istəyir.</translation>
 <translation id="2457842160081795172">Hazırda <ph name="CHANNEL_NAME" /> kanalında</translation>
@@ -1830,6 +1832,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2861301611394761800">Sistem güncəlləməsi tamamdır. Lütfən, sistemi yenidən başladın.</translation>
 <translation id="2861941300086904918">Doğma Klient təhlükəsizlik meneceri</translation>
 <translation id="2862815659905780618">Linux tərtibat mühitini silin</translation>
+<translation id="2864272167277395865">Cihaz seçin:</translation>
 <translation id="2864601841139725659">Profil şəkli ayarlayın</translation>
 <translation id="2865919525181940183">Hazırda ekranda olan proqramların ekran şəkli</translation>
 <translation id="286674810810214575">Enerji mənbələri yoxlanılır...</translation>
@@ -3238,6 +3241,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4364830672918311045">Bildirişləri görüntüləyin</translation>
 <translation id="4366138410738374926">Çap başladılıb</translation>
 <translation id="4369121877634339065">Axtarış üçün hər hansı bir şəklin üzərində sürüşdürün</translation>
+<translation id="4369215744064167350">Veb sayt sorğusu təsdiq edildi</translation>
 <translation id="4370975561335139969">Daxil etdiyiniz e-poçt və parol uyğun gəlmir</translation>
 <translation id="4373966964907728675">Dekstop yayımlanır</translation>
 <translation id="4374831787438678295">Linux quraşdırıcısı</translation>
@@ -3929,6 +3933,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5117139026559873716">Telefonu <ph name="DEVICE_TYPE" /> cihazından ayırın. Onlar artıq avtomatik qoşulmayacaqlar.</translation>
 <translation id="5117930984404104619">Ziyarət edilmiş URL-lər daxil olmaqla, digər artırmaların davranışlarını nəzərdən keçirin</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" /> ünvanına baxış üçün bura klikləyin</translation>
 <translation id="5121052518313988218">Linux konteynerinizdəki əməliyyat sistemi artıq dəstəklənmir. Təhlükəsizlik güncəlləmələrini və baq düzəlişlərini almağı dayandıracaq və hazırda işləyən funksiyalar gözlənilmədən dayana bilər. Linux'dan istifadə etməyə davam etmək üçün ən son versiyaya təkmilləşdirin.</translation>
 <translation id="5121130586824819730">Sərt diskiniz doludur. Lütfən, başqa yerdə saxlayın və ya sərt diskdə daha çox boş yer saxlayın.</translation>
 <translation id="5123433949759960244">Basketbol</translation>
@@ -4037,6 +4042,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="523505283826916779">Əlçatımlılıq ayarları</translation>
 <translation id="5235750401727657667">Yeni tab açarkən baxdığınız səhifəni dəyişin</translation>
 <translation id="5236374273162681467">Bunları bütün cihazlarınızda asanlıqla istifadə etmək üçün Google Hesabınıza köçürə bilərsiniz</translation>
+<translation id="523862956770478816">Sayt icazələri</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" aktiv edilsin?</translation>
 <translation id="5243522832766285132">Qısa zaman ərzində yenidən cəhd edin.</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> e-poçtuna sinxronizasiya olunur</translation>
@@ -5324,6 +5330,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6635674640674343739">Şəbəkə bağlantısı yaradıla bilmədi. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
 <translation id="6635944431854494329">Sahib bu xüsusiyyəti Ayarlar &gt; Qabaqcıl &gt; Diaqnostika və istifadə datasını avtomatik Google'a göndərin bölməsində idarə edə bilər.</translation>
 <translation id="6635956300022133031">Mətndən-nitqə səslərini seçin və fərdiləşdirin</translation>
+<translation id="6636623428211296678">Aşağıda digər ayarları araşdırın və ya indi bitirin</translation>
 <translation id="6639554308659482635">SQLite yaddaş</translation>
 <translation id="6640268266988685324">Açıq Tab</translation>
 <translation id="6642720633335369752">Bütün açıq tətbiq pəncərələrini görmək üçün aşağıdan yuxarıya sürüşdürüb saxlayın.</translation>
@@ -6600,6 +6607,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7946586320617670168">Mənbə təhlükəsiz olmalıdır</translation>
 <translation id="794676567536738329">İcazələri təsdiq edin</translation>
 <translation id="7947962633355574091">Video ünvanını kopyalayın</translation>
+<translation id="7948407723851303488">Bütün <ph name="DOMAIN_NAME" /> səhifələri</translation>
 <translation id="7951265006188088697">Google Pay ödəniş metodlarını əlavə etmək və idarə etmək üçün <ph name="BEGIN_LINK" />Google Hesabına<ph name="END_LINK" /> daxil olun</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
 <translation id="795282463722894016">Bərpa tamamlandı</translation>
@@ -7662,6 +7670,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9053893665344928494">Seçimi yadda saxlayın</translation>
 <translation id="9055636786322918818">RC4 şifrələməsini tətbiq edin. RC4 şifrələri təhlükəli olduğu üçün bu seçimdən istifadə etmək riski artırır.</translation>
 <translation id="9056810968620647706">Heç bir uyğunluq tapılmadı.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> aşağıdakı məzmuna giriş etmək istəyir:</translation>
 <translation id="9057354806206861646">Cədvəli güncəlləyin</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> üzrə xəta baş verdi</translation>

@@ -2387,6 +2387,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3449393517661170867">Nové okno na kartě</translation>
 <translation id="3449839693241009168">Stiskem klávesy <ph name="SEARCH_KEY" /> odešlete příkazy pro rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Procentuální zastoupení stavu nečinnosti</translation>
+<translation id="3450180775417907283">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci.</translation>
 <translation id="3451753556629288767">Povolení otevírat typy souborů</translation>
 <translation id="3452999110156026232">Rodičovský přístup</translation>
 <translation id="3453612417627951340">Vyžaduje oprávnění</translation>
@@ -4249,6 +4250,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5472627187093107397">Ukládat hesla pro tento web</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí obsahovat nejméně 1 znak}few{PIN musí obsahovat nejméně # znaky}many{PIN musí obsahovat nejméně # znaku}other{PIN musí obsahovat nejméně # znaků}}</translation>
+<translation id="5474859849784484111">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).</translation>
 <translation id="5481273127572794904">Zákaz stahovat automaticky několik souborů</translation>
 <translation id="5481941284378890518">Přidat tiskárny v okolí</translation>
 <translation id="5483785310822538350">Zrušit přístup k souborům a zařízení</translation>
@@ -4671,6 +4673,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="592880897588170157">Namísto automatického otevírání souborů PDF v Chromu je stahovat</translation>
 <translation id="592919310198008711">Když na rozšíření kliknu</translation>
 <translation id="5932124097031739492">Linux byl úspěšně upgradován.</translation>
+<translation id="5932209916647644605">Doména <ph name="MANAGER" /> vyžaduje, abyste okamžitě aktualizovali zařízení <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Web zobrazuje rušivé nebo zavádějící reklamy</translation>
 <translation id="59324397759951282">Zařízení USB od výrobce <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nemáte dostatečný počet licencí k registraci tohoto hardwarového zařízení Google Meet. Kontaktujte oddělení prodeje a zakupte další. Pokud se domníváte, že se jedná o chybu, kontaktujte podporu.</translation>

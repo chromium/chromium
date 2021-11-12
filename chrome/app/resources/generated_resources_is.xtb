@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Ekki leyfa vefsvæðum að tengjast MIDI-tækjum</translation>
 <translation id="1088654056000736875">Chrome er að fjarlægja skaðlegan hugbúnað úr tölvunni...</translation>
 <translation id="1088659085457112967">Opna lesstillingu</translation>
+<translation id="1089606299949659462">Yfirferð lokið!</translation>
 <translation id="1090126737595388931">Engin bakgrunnsforrit í gangi</translation>
 <translation id="1090541560108055381">Gakktu úr skugga um að þessi kóði birtist í báðum tækjunum áður en þú parar</translation>
 <translation id="1091767800771861448">Ýttu á Esc til að sleppa þessu (ekki fyrir opinbera smíði).</translation>
@@ -1446,6 +1447,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2453860139492968684">Ljúka</translation>
 <translation id="2454247629720664989">Leitarorð</translation>
 <translation id="2454264884354864965">Slökkt er á myndavélinni</translation>
+<translation id="2454524890947537054">Samþykkja vefbeiðni?</translation>
 <translation id="245650153866130664">Til að uppfæra miða sjálfkrafa skaltu merkja við „Muna aðgangsorð“. Aðgangsorðið þitt verður eingöngu vistað í tækinu þínu.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vill fá að afrita skrár af <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Á rásinni <ph name="CHANNEL_NAME" /> sem stendur</translation>
@@ -1847,6 +1849,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2861301611394761800">Kerfisuppfærslu lokið. Endurræstu kerfið.</translation>
 <translation id="2861941300086904918">Öryggisstjórnun sérhannaðs biðlara</translation>
 <translation id="2862815659905780618">Fjarlægja Linux-forritunarumhverfi</translation>
+<translation id="2864272167277395865">Veldu tæki:</translation>
 <translation id="2864601841139725659">Veldu prófílmynd</translation>
 <translation id="2865919525181940183">Skjámynd af forritum sem eru á skjánum núna</translation>
 <translation id="286674810810214575">Athugar aflgjafa...</translation>
@@ -3256,6 +3259,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4364830672918311045">Birta tilkynningar</translation>
 <translation id="4366138410738374926">Prentun hafin</translation>
 <translation id="4369121877634339065">Dragðu yfir hvaða mynd sem er til að leita</translation>
+<translation id="4369215744064167350">Beiðni um vefsvæði samþykkt</translation>
 <translation id="4370975561335139969">Netfangið og aðgangsorðið sem þú slóst inn passa ekki saman</translation>
 <translation id="4373966964907728675">Sendir skjáborð út</translation>
 <translation id="4374831787438678295">Linux-uppsetningarforrit</translation>
@@ -3948,6 +3952,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5117139026559873716">Aftengdu símann frá <ph name="DEVICE_TYPE" />. Tækin munu ekki lengur tengjast sjálfkrafa.</translation>
 <translation id="5117930984404104619">Fylgjast með hegðun annarra viðbóta, þ. á m. heimsóttum vefslóðum</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Smelltu hér til að opna <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Stýrikerfi Linux-geymisins er ekki lengur stutt. Stýrikerfið fær ekki lengur öryggisuppfærslur og villuleiðréttingar og eiginleikar sem virka núna kunna óvænt að bila. Uppfærðu í nýjustu útgáfuna til að halda áfram að nota Linux.</translation>
 <translation id="5121130586824819730">Harði diskurinn er fullur. Vistaðu á öðrum stað eða búðu til pláss á harða diskinum.</translation>
 <translation id="5123433949759960244">Körfubolti</translation>
@@ -4056,6 +4061,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="523505283826916779">Aðgengisstillingar</translation>
 <translation id="5235750401727657667">Skipta út síðunni sem þú sérð þegar nýr flipi er opnaður</translation>
 <translation id="5236374273162681467">Þú getur flutt þau yfir á Google reikninginn svo þú getir notað þau í öllum tækjum</translation>
+<translation id="523862956770478816">Heimildir vefsvæðis</translation>
 <translation id="5242724311594467048">Kveikja á „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Reyndu aftur eftir smástund</translation>
 <translation id="5244474230056479698">Samstillir við <ph name="EMAIL" /></translation>
@@ -5343,6 +5349,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6635674640674343739">Ekki er hægt að koma á nettengingu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="6635944431854494329">Eigandinn getur stjórnað þessum eiginleika í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
 <translation id="6635956300022133031">Velja og sérstilla raddir talgervla</translation>
+<translation id="6636623428211296678">Skoðaðu fleiri stillingar hér að neðan eða ljúktu þessu núna</translation>
 <translation id="6639554308659482635">SQLite-minni</translation>
 <translation id="6640268266988685324">Opna flipa</translation>
 <translation id="6642720633335369752">Strjúktu upp frá neðsta hluta skjásins og haltu fingrinum niðri til að sjá alla opna forritaglugga.</translation>
@@ -6620,6 +6627,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7946586320617670168">Uppruni verður að vera öruggur</translation>
 <translation id="794676567536738329">Staðfestu heimildir</translation>
 <translation id="7947962633355574091">A&amp;frita slóð myndskeiðs</translation>
+<translation id="7948407723851303488">Allar síður <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Til að bæta við eða hafa umsjón með greiðslumátum í Google Pay skaltu fara á <ph name="BEGIN_LINK" />Google reikninginn<ph name="END_LINK" /> þinn</translation>
 <translation id="7952708427581814389">Vefsvæði geta beðið um að sjá texta og myndir á klippiborðinu</translation>
 <translation id="795282463722894016">Endurheimt lokið</translation>
@@ -7685,6 +7693,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9053893665344928494">Muna hvað ég valdi</translation>
 <translation id="9055636786322918818">Þvinga RC4-dulkóðun. Þessi valkostur felur í sér meiri áhættu, þar sem RC4-dulmálslyklar eru óöruggir.</translation>
 <translation id="9056810968620647706">Engar samsvaranir fundust.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vill fá aðgang að eftirfarandi efni:</translation>
 <translation id="9057354806206861646">Uppfæra áætlun</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Villa frá línu <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>
