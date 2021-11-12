@@ -1,16 +1,3 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-/**
- * @fileoverview Common styles for polymer components in both trusted and
- * untrusted code. Polymer must be imported before this file. This file cannot
- * import Polymer itself because trusted and untrusted code access polymer at
- * different paths.
- */
-const styles = document.createElement('dom-module');
-
-styles.innerHTML = `
 <template>
   <style>
     :host {
@@ -60,8 +47,8 @@ styles.innerHTML = `
     .photo-inner-container {
       align-items: center;
       border-radius: var(--personalization-app-grid-item-border-radius);
-      display: flex;
       cursor: pointer;
+      display: flex;
       height: 100%;
       justify-content: center;
       overflow: hidden;
@@ -119,9 +106,9 @@ styles.innerHTML = `
       width: 100%;
     }
     .photo-images-container.photo-images-container-0 {
+      align-items: flex-start;
       background-color: var(--cros-highlight-color);
       justify-content: center;
-      align-items: flex-start;
     }
     .photo-images-container img {
       flex: 1 1 0;
@@ -134,12 +121,12 @@ styles.innerHTML = `
       height: 50%;
     }
     .photo-images-container.photo-images-container-0 img {
-      object-fit: scale-down;
       flex: 0 1 0;
       height: initial;
-      width: initial;
-      min-width: initial;
       margin: 12px;
+      min-width: initial;
+      object-fit: scale-down;
+      width: initial;
     }
     @keyframes scale-up {
       from {
@@ -152,12 +139,12 @@ styles.innerHTML = `
     .photo-container iron-icon[icon='personalization:checkmark'] {
       --iron-icon-height: 20px;
       --iron-icon-width: 20px;
+      animation-duration: 200ms;
+      animation-name: scale-up;
+      animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
       left: 8px;
       position: absolute;
       top: 8px;
-      animation-name: scale-up;
-      animation-duration: 200ms;
-      animation-timing-functino: cubic-bezier(0.40, 0.00, 0.20, 1.00);
     }
     .photo-inner-container:not([aria-selected='true'])
     iron-icon[icon='personalization:checkmark'] {
@@ -175,9 +162,9 @@ styles.innerHTML = `
       }
     }
     .photo-inner-container[aria-selected='true'] .photo-images-container {
-      animation-name: resize;
       animation-duration: 200ms;
       animation-fill-mode: forwards;
+      animation-name: resize;
       animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
     }
     .photo-inner-container:focus-visible:not([aria-selected='true'])
@@ -186,8 +173,8 @@ styles.innerHTML = `
       width: calc(100% - 4px);
     }
     .photo-text-container {
-      box-sizing: border-box;
       bottom: 8px;
+      box-sizing: border-box;
       position: absolute;
       width: 100%;
       z-index: 2;
@@ -211,17 +198,15 @@ styles.innerHTML = `
       text-shadow: none;
     }
     .photo-gradient-mask {
+      background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
+          rgba(var(--google-grey-900-rgb), 55%));
       border-radius: 12px;
+      height: 50%;
+      left: 0;
       position: absolute;
       top: 50%;
-      left: 0;
       width: 100%;
-      height: 50%;
       z-index: 1;
-      background: linear-gradient(rgba(var(--google-grey-900-rgb), 0%),
-          rgba(var(--google-grey-900-rgb), 55%));
     }
   </style>
-</template>`;
-
-styles.register('common-style');
+</template>

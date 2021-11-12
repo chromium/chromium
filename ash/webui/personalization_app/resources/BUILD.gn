@@ -16,9 +16,7 @@ preprocess_folder = "preprocessed"
 # `static_resource_files` are non-js files, e.g. image, html, css
 static_js_files = [
   "common/constants.ts",
-  "common/icons.ts",
   "common/iframe_api.js",
-  "common/styles.ts",
   "common/utils.js",
 
   "trusted/mojo_interface_provider.js",
@@ -29,19 +27,21 @@ static_js_files = [
   "trusted/personalization_reducers.js",
   "trusted/personalization_store.js",
   "trusted/personalization_test_api.js",
-  "trusted/styles.js",
   "trusted/utils.js",
 
   "untrusted/setup.js",
-  "untrusted/styles.ts",
 ]
 
 polymer_js_files = [
+  "common/icons.js",
+  "common/styles.js",
+
   "trusted/google_photos_element.js",
   "trusted/local_images_element.js",
   "trusted/personalization_grid_item_element.js",
   "trusted/personalization_router_element.js",
   "trusted/personalization_toast_element.js",
+  "trusted/styles.ts",
   "trusted/wallpaper_breadcrumb_element.js",
   "trusted/wallpaper_collections_element.js",
   "trusted/wallpaper_error_element.js",
@@ -51,6 +51,7 @@ polymer_js_files = [
 
   "untrusted/collections_grid.js",
   "untrusted/images_grid.js",
+  "untrusted/styles.ts",
 ]
 
 static_resource_files = [
