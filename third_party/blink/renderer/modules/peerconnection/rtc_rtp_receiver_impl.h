@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

@@ -12,7 +12,6 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"

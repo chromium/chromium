@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "content/public/browser/browser_thread.h"

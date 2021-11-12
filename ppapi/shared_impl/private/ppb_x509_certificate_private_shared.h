@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "ppapi/c/private/ppb_x509_certificate_private.h"
 #include "ppapi/shared_impl/resource.h"

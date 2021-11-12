@@ -8,7 +8,6 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tree_host_observer.h"

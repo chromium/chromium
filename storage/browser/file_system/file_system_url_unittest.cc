@@ -10,7 +10,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

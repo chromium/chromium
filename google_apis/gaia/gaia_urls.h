@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "url/gurl.h"
 

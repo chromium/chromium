@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/ipc_tags.h"

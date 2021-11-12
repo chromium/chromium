@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"

@@ -5,7 +5,6 @@
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_EXECUTABLE_SERVICE_EXECUTABLE_ENVIRONMENT_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_EXECUTABLE_SERVICE_EXECUTABLE_ENVIRONMENT_H_
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

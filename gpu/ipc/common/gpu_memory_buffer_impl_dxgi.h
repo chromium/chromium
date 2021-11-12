@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/unguessable_token.h"

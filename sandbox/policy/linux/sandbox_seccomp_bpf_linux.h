@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"

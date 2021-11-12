@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_ZOOM_REQUEST_CLIENT_H_
 #define EXTENSIONS_BROWSER_EXTENSION_ZOOM_REQUEST_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/common/extension.h"
 

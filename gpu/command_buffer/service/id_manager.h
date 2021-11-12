@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/gpu_gles2_export.h"
 

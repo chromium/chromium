@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_MANAGER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_delegation.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

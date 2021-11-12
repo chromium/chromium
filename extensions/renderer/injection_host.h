@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_INJECTION_HOST_H_
 #define EXTENSIONS_RENDERER_INJECTION_HOST_H_
 
-#include "base/macros.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"

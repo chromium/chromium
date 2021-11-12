@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_NET_NETWORK_CHANGE_NOTIFIER_FACTORY_FUCHSIA_H_
 #define CHROMECAST_NET_NETWORK_CHANGE_NOTIFIER_FACTORY_FUCHSIA_H_
 
-#include "base/macros.h"
 #include "net/base/network_change_notifier_factory.h"
 
 namespace chromecast {

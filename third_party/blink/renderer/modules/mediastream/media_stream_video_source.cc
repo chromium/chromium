@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"

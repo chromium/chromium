@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_SOCKET_MOJO_DATA_PUMP_H_
 #define EXTENSIONS_BROWSER_API_SOCKET_MOJO_DATA_PUMP_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "mojo/public/cpp/system/data_pipe.h"

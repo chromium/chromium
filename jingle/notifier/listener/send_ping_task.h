@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {

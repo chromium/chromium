@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/common/cast_content_client.h"
 #include "content/public/app/content_main_delegate.h"

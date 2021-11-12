@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/fuchsia/process_lifecycle.h"
-#include "base/macros.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "fuchsia/engine/browser/context_impl.h"

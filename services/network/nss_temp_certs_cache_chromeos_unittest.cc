@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parse_certificate.h"

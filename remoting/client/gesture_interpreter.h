@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/input/touch_input_strategy.h"
 #include "remoting/client/ui/desktop_viewport.h"

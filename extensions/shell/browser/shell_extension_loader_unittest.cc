@@ -8,7 +8,6 @@
 #include <string>
 
 #include "apps/app_lifetime_monitor_factory.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"

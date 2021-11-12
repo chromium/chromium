@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"

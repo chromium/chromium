@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if !defined(NDEBUG)

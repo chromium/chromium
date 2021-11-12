@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 
 namespace gcm {

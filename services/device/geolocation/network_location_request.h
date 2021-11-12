@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"

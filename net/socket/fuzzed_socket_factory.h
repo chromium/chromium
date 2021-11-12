@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/socket/client_socket_factory.h"
 
 class FuzzedDataProvider;

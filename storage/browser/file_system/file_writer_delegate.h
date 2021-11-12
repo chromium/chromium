@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"

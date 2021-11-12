@@ -4,7 +4,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/der/input.h"
 #include "testing/gtest/include/gtest/gtest.h"

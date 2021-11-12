@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 
 namespace net {

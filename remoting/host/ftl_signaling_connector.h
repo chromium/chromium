@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_FTL_SIGNALING_CONNECTOR_H_
 #define REMOTING_HOST_FTL_SIGNALING_CONNECTOR_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"

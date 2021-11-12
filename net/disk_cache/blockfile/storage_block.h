@@ -10,7 +10,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 

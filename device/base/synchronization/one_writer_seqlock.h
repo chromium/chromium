@@ -9,7 +9,6 @@
 
 #include "base/atomicops.h"
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace device {
 

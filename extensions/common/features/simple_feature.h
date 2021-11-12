@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"

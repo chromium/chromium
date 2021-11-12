@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verifier.h"
 

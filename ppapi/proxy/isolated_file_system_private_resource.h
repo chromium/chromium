@@ -23,7 +23,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"

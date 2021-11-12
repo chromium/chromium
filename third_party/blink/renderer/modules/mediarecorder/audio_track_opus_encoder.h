@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_fifo.h"

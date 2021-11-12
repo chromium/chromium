@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_FLASH_FULLSCREEN_RESOURCE_H_
 #define PPAPI_PROXY_FLASH_FULLSCREEN_RESOURCE_H_
 
-#include "base/macros.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/thunk/ppb_flash_fullscreen_api.h"

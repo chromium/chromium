@@ -18,7 +18,6 @@
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 

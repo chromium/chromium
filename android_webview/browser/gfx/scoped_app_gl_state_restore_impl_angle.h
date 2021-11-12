@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 
 namespace android_webview {
 namespace internal {

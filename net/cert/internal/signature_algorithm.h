@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

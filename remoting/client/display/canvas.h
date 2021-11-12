@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace remoting {

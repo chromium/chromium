@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_
 #define EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_
 
-#include "base/macros.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/renderer/injection_host.h"
 

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #import "ios/web/public/web_client.h"
 
 // Chrome implementation of WebClient.

@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"

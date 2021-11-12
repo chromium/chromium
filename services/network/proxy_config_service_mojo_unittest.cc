@@ -4,7 +4,6 @@
 
 #include "services/network/proxy_config_service_mojo.h"
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"

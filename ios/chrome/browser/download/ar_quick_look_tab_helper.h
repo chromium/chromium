@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_user_data.h"

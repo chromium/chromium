@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/no_destructor.h"

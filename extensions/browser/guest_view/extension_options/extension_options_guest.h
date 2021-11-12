@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
 #include "url/gurl.h"

@@ -5,7 +5,6 @@
 #ifndef MOJO_CORE_PLATFORM_HANDLE_IN_TRANSIT_H_
 #define MOJO_CORE_PLATFORM_HANDLE_IN_TRANSIT_H_
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_handle.h"

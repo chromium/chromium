@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
 // The WebUI handler for chrome://terms.

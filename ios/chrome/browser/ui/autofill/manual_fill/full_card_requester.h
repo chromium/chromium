@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"

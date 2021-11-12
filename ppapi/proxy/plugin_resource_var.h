@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_
 #define PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/resource.h"

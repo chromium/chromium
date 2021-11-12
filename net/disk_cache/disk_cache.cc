@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

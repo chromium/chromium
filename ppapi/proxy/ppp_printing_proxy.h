@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/proxy/interface_proxy.h"
 

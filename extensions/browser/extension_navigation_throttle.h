@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_NAVIGATION_THROTTLE_H_
 #define EXTENSIONS_BROWSER_EXTENSION_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

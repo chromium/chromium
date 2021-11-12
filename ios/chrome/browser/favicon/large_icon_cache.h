@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;

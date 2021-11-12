@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/ios/password_manager_driver_bridge.h"
 

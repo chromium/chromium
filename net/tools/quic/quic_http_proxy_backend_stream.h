@@ -24,7 +24,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_data_stream.h"
 #include "net/url_request/url_request.h"

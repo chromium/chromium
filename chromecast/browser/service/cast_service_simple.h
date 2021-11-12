@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_view.h"

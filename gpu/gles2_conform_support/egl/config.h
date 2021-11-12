@@ -7,8 +7,6 @@
 
 #include <EGL/egl.h>
 
-#include "base/macros.h"
-
 namespace gles2_conform_support {
 namespace egl {
 

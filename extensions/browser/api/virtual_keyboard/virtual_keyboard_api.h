@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_VIRTUAL_KEYBOARD_API_H_
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_VIRTUAL_KEYBOARD_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/virtual_keyboard.h"
 

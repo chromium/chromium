@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 
 namespace weblayer {

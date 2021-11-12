@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/protocol/errors.h"
 

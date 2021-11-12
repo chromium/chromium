@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
 
 namespace device {

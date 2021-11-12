@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/renderer/v8_schema_registry.h"
 

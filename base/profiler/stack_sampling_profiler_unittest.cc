@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/profiler/profiler_buildflags.h"

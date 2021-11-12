@@ -5,8 +5,6 @@
 #ifndef DEVICE_FIDO_MAC_OPERATION_H_
 #define DEVICE_FIDO_MAC_OPERATION_H_
 
-#include "base/macros.h"
-
 namespace device {
 namespace fido {
 namespace mac {

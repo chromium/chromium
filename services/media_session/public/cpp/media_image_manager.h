@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

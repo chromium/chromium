@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/negotiating_authenticator_base.h"

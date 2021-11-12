@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {

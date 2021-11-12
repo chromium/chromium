@@ -12,7 +12,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace device {

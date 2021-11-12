@@ -5,7 +5,6 @@
 #ifndef NET_NQE_PEER_TO_PEER_CONNECTIONS_COUNT_OBSERVER_H_
 #define NET_NQE_PEER_TO_PEER_CONNECTIONS_COUNT_OBSERVER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

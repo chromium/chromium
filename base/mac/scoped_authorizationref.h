@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 // ScopedAuthorizationRef maintains ownership of an AuthorizationRef.  It is
 // patterned after the unique_ptr interface.

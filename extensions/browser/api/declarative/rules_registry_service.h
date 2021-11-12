@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"

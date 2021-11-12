@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/download_manager_delegate.h"
 

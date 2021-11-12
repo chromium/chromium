@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/http/transport_security_state_source.h"
 
 namespace net {

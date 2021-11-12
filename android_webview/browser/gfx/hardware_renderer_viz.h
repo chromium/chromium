@@ -10,7 +10,6 @@
 #include "android_webview/browser/gfx/hardware_renderer.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 

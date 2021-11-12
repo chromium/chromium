@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_input_ipc.h"

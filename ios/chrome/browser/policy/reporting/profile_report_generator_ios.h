@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 

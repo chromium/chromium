@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"

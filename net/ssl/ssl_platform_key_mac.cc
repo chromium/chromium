@@ -22,7 +22,6 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"

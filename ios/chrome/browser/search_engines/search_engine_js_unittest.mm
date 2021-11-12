@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"

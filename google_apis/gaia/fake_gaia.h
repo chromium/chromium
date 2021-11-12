@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"

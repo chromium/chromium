@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/sandbox_types.h"

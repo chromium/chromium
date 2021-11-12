@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "rlz/lib/rlz_value_store.h"
 
 @class NSDictionary;

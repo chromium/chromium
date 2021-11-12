@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

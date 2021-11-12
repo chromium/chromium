@@ -5,7 +5,6 @@
 #ifndef REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 #define REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/protocol/connection_to_host.h"

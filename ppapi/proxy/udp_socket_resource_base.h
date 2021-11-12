@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/ppb_udp_socket.h"
 #include "ppapi/c/private/ppb_net_address_private.h"

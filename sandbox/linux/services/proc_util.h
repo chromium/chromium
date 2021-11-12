@@ -6,7 +6,6 @@
 #define SANDBOX_LINUX_SERVICES_PROC_UTIL_H_
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {

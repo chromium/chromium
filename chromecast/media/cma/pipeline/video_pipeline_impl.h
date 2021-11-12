@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_impl.h"
 #include "chromecast/media/cma/pipeline/video_pipeline_client.h"

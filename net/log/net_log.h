@@ -12,7 +12,6 @@
 
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_VERSION_HANDLER_H_
 
-#include "base/macros.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace base {

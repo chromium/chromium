@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
 // Objective-C protocol equivalent of the sessions::TabRestoreServiceObserver

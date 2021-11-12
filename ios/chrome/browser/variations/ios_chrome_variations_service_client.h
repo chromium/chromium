@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SERVICE_CLIENT_H_
 #define IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SERVICE_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 

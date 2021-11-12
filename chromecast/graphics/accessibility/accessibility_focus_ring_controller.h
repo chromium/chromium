@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring.h"
 #include "chromecast/graphics/accessibility/accessibility_layer.h"

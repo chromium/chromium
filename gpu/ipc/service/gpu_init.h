@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_SERVICE_GPU_INIT_H_
 #define GPU_IPC_SERVICE_GPU_INIT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_feature_info.h"

@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_IPC_ACTION_EXECUTOR_H_
 #define REMOTING_HOST_IPC_ACTION_EXECUTOR_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/proto/action.pb.h"

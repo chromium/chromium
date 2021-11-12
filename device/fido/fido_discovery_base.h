@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/fido/fido_transport_protocol.h"
 
 namespace device {

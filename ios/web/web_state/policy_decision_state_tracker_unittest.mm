@@ -5,7 +5,6 @@
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

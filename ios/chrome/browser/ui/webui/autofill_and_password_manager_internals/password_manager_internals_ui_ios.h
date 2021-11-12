@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #import "ios/web/public/webui/web_ui_ios_controller.h"
 
 // The implementation for the chrome://password-manager-internals page.

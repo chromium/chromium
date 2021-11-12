@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ios/chrome/browser/voice/speech_input_locale.h"
 
 namespace voice {

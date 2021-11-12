@@ -5,7 +5,6 @@
 #ifndef REMOTING_CLIENT_DISPLAY_GL_HELPERS_H_
 #define REMOTING_CLIENT_DISPLAY_GL_HELPERS_H_
 
-#include "base/macros.h"
 #include "remoting/client/display/sys_opengl.h"
 
 namespace remoting {

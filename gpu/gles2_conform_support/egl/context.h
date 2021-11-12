@@ -8,7 +8,6 @@
 #include <memory>
 
 #include <EGL/egl.h>
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gpu_control.h"

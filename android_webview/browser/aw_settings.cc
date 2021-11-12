@@ -15,7 +15,6 @@
 #include "android_webview/common/aw_content_client.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"

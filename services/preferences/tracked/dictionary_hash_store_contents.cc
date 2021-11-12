@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"

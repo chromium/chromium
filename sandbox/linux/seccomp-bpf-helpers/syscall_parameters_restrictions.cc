@@ -19,7 +19,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"

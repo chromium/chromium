@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ipc/ipc_channel_factory.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"

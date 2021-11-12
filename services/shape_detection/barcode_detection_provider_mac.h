@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/shape_detection/barcode_detection_impl_mac_vision_api.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"

@@ -5,7 +5,6 @@
 #ifndef SANDBOX_POLICY_LINUX_BPF_RENDERER_POLICY_LINUX_H_
 #define SANDBOX_POLICY_LINUX_BPF_RENDERER_POLICY_LINUX_H_
 
-#include "base/macros.h"
 #include "sandbox/policy/linux/bpf_base_policy_linux.h"
 
 namespace sandbox {

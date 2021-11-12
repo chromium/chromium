@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_BROWSER_FONT_SINGLETON_RESOURCE_H_
 #define PPAPI_PROXY_BROWSER_FONT_SINGLETON_RESOURCE_H_
 
-#include "base/macros.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/thunk/ppb_browser_font_singleton_api.h"

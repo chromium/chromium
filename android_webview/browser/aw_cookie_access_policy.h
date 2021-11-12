@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_COOKIE_ACCESS_POLICY_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_COOKIE_ACCESS_POLICY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 

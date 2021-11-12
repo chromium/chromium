@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // An interface for accessing the keyboard and changing the keyboard layout.

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/eme_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

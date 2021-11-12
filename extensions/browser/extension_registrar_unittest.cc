@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_notification_tracker.h"

@@ -10,7 +10,6 @@
 #ifndef REMOTING_PROTOCOL_CLIENT_STUB_H_
 #define REMOTING_PROTOCOL_CLIENT_STUB_H_
 
-#include "base/macros.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 #include "remoting/protocol/keyboard_layout_stub.h"

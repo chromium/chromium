@@ -9,7 +9,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 

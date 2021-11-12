@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_request_info.h"

@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"

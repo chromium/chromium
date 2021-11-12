@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

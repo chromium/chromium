@@ -5,7 +5,6 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_TEST_HELPERS_H_
 #define DEVICE_GAMEPAD_GAMEPAD_TEST_HELPERS_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"

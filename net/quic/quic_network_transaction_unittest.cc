@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

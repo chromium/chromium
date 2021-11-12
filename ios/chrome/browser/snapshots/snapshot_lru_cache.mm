@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

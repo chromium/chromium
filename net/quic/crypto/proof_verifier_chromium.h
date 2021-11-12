@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verify_result.h"

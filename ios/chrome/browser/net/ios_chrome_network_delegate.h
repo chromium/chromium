@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/base/network_delegate_impl.h"

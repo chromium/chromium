@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_SYSTEM_HANDLE_SIGNAL_TRACKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"

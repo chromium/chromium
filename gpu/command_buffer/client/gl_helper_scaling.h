@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/vector2d.h"

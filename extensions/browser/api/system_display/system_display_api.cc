@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"

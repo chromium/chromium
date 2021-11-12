@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/time/time.h"

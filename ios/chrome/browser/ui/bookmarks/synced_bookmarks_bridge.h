@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 
 class ChromeBrowserState;

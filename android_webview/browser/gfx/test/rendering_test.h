@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/gfx/browser_view_renderer_client.h"
 #include "android_webview/browser/gfx/test/fake_window.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_id.h"

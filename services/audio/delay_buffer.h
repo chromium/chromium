@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 
 namespace media {
 class AudioBus;

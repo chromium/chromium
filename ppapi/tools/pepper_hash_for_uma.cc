@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/macros.h"
 
 int main(int argc, char **argv) {
   if (argc < 2) {

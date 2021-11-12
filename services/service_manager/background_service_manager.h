@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "services/service_manager/public/cpp/manifest.h"

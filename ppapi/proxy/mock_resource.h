@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_MOCK_RESOURCE_H_
 #define PPAPI_PROXY_MOCK_RESOURCE_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/resource.h"
 

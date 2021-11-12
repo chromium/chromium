@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"

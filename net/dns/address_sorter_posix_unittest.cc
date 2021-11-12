@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"

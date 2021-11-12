@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/net_export.h"

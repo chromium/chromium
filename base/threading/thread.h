@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"

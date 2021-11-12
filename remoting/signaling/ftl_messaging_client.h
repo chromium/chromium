@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"

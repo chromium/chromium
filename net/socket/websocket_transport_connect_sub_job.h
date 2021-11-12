@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/address_list.h"
 #include "net/base/load_states.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"

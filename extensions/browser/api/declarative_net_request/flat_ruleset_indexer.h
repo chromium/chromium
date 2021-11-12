@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/common/api/declarative_net_request.h"

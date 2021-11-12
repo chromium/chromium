@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_WEB_SUB_THREAD_H_
 #define IOS_WEB_WEB_SUB_THREAD_H_
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "ios/web/public/thread/web_thread.h"

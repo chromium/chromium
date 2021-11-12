@@ -7,8 +7,6 @@
 
 #include <objc/runtime.h>
 
-#include "base/macros.h"
-
 // Helper class that replaces a method implementation with a given block.
 // ScopedBlockSwizzler automatically swizzles when it is constructed and
 // reinstalls the original method implementation when it goes out of scope.

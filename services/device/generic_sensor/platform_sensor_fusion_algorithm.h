@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 

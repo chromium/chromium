@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"

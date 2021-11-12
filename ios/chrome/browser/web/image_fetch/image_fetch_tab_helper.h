@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 #include "ios/web/public/web_state_observer.h"

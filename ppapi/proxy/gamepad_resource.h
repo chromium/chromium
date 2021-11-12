@@ -6,7 +6,6 @@
 #define PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "ppapi/c/ppb_gamepad.h"

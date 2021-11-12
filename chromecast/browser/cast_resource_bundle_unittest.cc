@@ -4,7 +4,6 @@
 
 #include "ui/base/resource/resource_bundle.h"
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

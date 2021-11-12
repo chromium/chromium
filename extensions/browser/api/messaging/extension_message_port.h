@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "extensions/browser/api/messaging/message_port.h"

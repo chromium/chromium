@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

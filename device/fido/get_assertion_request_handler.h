@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/auth_token_requester.h"
 #include "device/fido/authenticator_get_assertion_response.h"

@@ -11,7 +11,6 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/nqe/network_quality_estimator_params.h"

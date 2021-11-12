@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"

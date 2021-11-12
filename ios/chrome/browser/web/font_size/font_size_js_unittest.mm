@@ -6,7 +6,6 @@
 #include <stddef.h>
 
 #include "base/ios/ios_util.h"
-#include "base/macros.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"

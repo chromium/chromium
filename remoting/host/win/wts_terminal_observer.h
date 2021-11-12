@@ -8,8 +8,6 @@
 #include <windows.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Provides callbacks for monitoring events on a WTS terminal.

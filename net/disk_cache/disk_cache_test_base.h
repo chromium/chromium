@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/disk_cache.h"

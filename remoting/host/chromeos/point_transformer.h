@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_CHROMEOS_POINT_TRANSFORMER_H_
 #define REMOTING_HOST_CHROMEOS_POINT_TRANSFORMER_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"

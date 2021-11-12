@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #import "ios/web/public/test/http_server/data_response_provider.h"
 
 namespace web {

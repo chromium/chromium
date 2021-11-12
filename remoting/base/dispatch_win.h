@@ -11,7 +11,6 @@
 
 #include <oaidl.h>
 
-#include "base/macros.h"
 #include "base/template_util.h"
 #include "base/win/scoped_variant.h"
 

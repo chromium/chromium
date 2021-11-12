@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"

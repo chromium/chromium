@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/base/slew_volume.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 

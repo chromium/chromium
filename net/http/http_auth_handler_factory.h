@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"

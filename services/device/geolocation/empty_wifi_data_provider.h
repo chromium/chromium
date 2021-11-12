@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_EMPTY_WIFI_DATA_PROVIDER_H_
 #define SERVICES_DEVICE_GEOLOCATION_EMPTY_WIFI_DATA_PROVIDER_H_
 
-#include "base/macros.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 
 namespace device {

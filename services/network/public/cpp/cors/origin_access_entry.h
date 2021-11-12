@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-shared.h"

@@ -6,7 +6,6 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_STANDALONE_CONNECTOR_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

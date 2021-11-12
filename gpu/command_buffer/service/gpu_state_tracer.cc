@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "context_state.h"

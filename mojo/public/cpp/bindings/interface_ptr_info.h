@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 

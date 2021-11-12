@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
 
-#include "base/macros.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"

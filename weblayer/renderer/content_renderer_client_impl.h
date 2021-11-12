@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_RENDERER_CONTENT_RENDERER_CLIENT_IMPL_H_
 #define WEBLAYER_RENDERER_CONTENT_RENDERER_CLIENT_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/telemetry_log_writer.h"

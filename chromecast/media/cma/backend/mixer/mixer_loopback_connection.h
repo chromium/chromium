@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/public/media/decoder_config.h"

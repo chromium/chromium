@@ -13,7 +13,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 // TODO(crbug.com/1196525): Remove once Chromecast calls are checking results.

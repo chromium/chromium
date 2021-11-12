@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/preload_check.h"
 
 namespace content {

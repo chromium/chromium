@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "extensions/renderer/module_system.h"

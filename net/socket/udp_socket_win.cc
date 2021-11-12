@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"

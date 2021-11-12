@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/x509_util.h"

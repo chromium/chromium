@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace extensions {
 namespace {

@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_collision_warner.h"

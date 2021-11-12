@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"

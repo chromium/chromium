@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <winsock2.h>
 
-#include "base/macros.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/interception.h"

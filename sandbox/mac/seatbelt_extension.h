@@ -5,7 +5,6 @@
 #ifndef SANDBOX_MAC_SEATBELT_EXTENSION_H_
 #define SANDBOX_MAC_SEATBELT_EXTENSION_H_
 
-#include "base/macros.h"
 #include "sandbox/mac/seatbelt_export.h"
 
 #include <stddef.h>

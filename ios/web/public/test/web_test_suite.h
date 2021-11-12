@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_TEST_WEB_TEST_SUITE_H_
 #define IOS_WEB_PUBLIC_TEST_WEB_TEST_SUITE_H_
 
-#include "base/macros.h"
 #include "base/test/test_suite.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
 

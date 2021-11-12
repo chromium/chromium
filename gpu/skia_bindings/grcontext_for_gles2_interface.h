@@ -5,7 +5,6 @@
 #ifndef GPU_SKIA_BINDINGS_GRCONTEXT_FOR_GLES2_INTERFACE_H_
 #define GPU_SKIA_BINDINGS_GRCONTEXT_FOR_GLES2_INTERFACE_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 

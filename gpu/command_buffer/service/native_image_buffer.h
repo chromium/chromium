@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_NATIVE_IMAGE_BUFFER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_NATIVE_IMAGE_BUFFER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 

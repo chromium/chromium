@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

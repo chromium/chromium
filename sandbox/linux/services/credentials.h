@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "sandbox/linux/system_headers/capability.h"
 #include "sandbox/sandbox_export.h"
 

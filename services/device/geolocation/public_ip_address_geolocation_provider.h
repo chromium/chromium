@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

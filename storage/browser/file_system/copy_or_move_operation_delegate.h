@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"

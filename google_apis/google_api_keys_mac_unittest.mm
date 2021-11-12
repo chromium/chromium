@@ -13,7 +13,6 @@
 #include "google_apis/google_api_keys_unittest.h"
 
 #include "base/mac/bundle_locations.h"
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_switches.h"

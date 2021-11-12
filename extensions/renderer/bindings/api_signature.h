@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "remoting/codec/encoder_bitrate_filter.h"

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 
 namespace device {
 

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "device/vr/vr_device_base.h"
 #include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"

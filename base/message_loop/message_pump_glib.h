@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"

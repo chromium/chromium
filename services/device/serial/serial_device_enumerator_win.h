@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_SERIAL_SERIAL_DEVICE_ENUMERATOR_WIN_H_
 #define SERVICES_DEVICE_SERIAL_SERIAL_DEVICE_ENUMERATOR_WIN_H_
 
-#include "base/macros.h"
 #include "base/win/windows_types.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/serial/serial_device_enumerator.h"

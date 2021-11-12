@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"

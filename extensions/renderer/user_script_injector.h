@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"

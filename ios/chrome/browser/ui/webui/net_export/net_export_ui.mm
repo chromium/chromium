@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"

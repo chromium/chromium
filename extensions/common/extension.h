@@ -14,7 +14,6 @@
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/version.h"

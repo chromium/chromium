@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"

@@ -10,7 +10,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {

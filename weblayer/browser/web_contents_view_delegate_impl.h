@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_WEB_CONTENTS_VIEW_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_WEB_CONTENTS_VIEW_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 namespace content {

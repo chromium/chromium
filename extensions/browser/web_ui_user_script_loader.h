@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 

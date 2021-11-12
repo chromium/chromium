@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "crypto/sha2.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"

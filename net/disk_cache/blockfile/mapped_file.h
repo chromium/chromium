@@ -9,7 +9,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/file.h"

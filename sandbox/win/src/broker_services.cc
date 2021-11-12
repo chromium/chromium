@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"

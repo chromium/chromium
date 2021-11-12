@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #import "ios/web/download/download_task_impl.h"

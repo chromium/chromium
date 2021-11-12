@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_RENDERER_MEDIA_MEDIA_CAPS_OBSERVER_IMPL_H_
 #define CHROMECAST_RENDERER_MEDIA_MEDIA_CAPS_OBSERVER_IMPL_H_
 
-#include "base/macros.h"
 #include "chromecast/common/mojom/media_caps.mojom.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

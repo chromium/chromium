@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/updater/extension_cache.h"
 
 namespace extensions {

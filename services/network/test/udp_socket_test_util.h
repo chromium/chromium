@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"

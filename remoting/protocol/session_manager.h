@@ -56,7 +56,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "remoting/protocol/session.h"
 
 namespace remoting {

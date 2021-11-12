@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/http/http_basic_state.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"

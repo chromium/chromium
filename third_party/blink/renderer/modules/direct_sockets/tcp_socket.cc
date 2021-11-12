@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

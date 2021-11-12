@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
-#include "base/macros.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "ios/web/public/test/web_test.h"

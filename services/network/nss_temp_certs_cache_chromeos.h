@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 

@@ -4,7 +4,6 @@
 
 #include "remoting/protocol/stun_tcp_packet_processor.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"

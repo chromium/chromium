@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_NETWORK_SERVICE_NETWORK_DELEGATE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"

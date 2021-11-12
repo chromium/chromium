@@ -7,8 +7,6 @@
 
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 
-#include "base/macros.h"
-
 class TestUserFeedbackProvider : public UserFeedbackProvider {
  public:
   TestUserFeedbackProvider();

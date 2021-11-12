@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"

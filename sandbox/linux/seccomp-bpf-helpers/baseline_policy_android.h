@@ -7,7 +7,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy.h"
 #include "sandbox/sandbox_export.h"
 

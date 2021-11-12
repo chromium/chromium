@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/display/sys_opengl.h"

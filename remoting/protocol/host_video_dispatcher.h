@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_HOST_VIDEO_DISPATCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/video_stub.h"
 

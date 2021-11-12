@@ -14,7 +14,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 

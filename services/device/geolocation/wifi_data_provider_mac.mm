@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"

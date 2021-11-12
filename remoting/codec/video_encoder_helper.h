@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
 namespace webrtc {

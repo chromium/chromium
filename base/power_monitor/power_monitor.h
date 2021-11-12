@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/observer_list_threadsafe.h"

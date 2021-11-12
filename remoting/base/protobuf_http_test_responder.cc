@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"

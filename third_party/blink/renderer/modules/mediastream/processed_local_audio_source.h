@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/audio_capturer_source.h"

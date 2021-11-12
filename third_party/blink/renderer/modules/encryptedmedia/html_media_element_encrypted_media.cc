@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
 
-#include "base/macros.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

@@ -76,7 +76,6 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"

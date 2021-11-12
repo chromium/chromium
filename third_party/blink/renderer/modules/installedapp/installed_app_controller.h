@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-blink.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom-blink-forward.h"

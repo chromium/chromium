@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_WEBGPU_DECODER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_DECODER_H_
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"

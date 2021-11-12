@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/common/features/feature.h"

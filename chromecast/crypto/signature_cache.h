@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 
 namespace chromecast {

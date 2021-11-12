@@ -4,7 +4,6 @@
 
 #include "net/reporting/reporting_network_change_observer.h"
 
-#include "base/macros.h"
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"

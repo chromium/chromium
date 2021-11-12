@@ -6,7 +6,6 @@
 #define SERVICES_TRACING_PUBLIC_CPP_BACKGROUND_TRACING_BACKGROUND_TRACING_AGENT_PROVIDER_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"

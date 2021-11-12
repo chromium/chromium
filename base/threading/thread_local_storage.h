@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

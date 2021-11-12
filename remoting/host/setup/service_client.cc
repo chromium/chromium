@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"

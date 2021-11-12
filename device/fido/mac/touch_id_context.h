@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace device {

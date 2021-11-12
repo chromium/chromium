@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"

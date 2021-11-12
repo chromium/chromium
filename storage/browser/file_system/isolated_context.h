@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "storage/browser/file_system/mount_points.h"

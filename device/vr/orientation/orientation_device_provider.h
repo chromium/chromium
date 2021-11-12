@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/vr/orientation/orientation_device.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

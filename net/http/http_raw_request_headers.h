@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 

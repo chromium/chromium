@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 
 namespace extensions {

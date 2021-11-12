@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"

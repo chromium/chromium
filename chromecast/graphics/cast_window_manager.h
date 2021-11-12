@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/ui/mojom/ui_service.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 

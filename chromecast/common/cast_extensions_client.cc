@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chromecast/common/cast_extensions_api_provider.h"

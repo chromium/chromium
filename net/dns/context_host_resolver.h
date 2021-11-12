@@ -9,7 +9,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"

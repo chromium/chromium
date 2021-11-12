@@ -5,7 +5,6 @@
 #ifndef MOJO_CORE_WATCH_H_
 #define MOJO_CORE_WATCH_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/atomic_flag.h"

@@ -5,7 +5,6 @@
 #ifndef NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 #define NET_CERT_DO_NOTHING_CT_VERIFIER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/ct_verifier.h"
 

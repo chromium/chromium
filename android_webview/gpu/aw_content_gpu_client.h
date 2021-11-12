@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_GPU_AW_CONTENT_GPU_CLIENT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/gpu/content_gpu_client.h"
 
 namespace android_webview {

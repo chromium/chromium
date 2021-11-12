@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/threading/sequenced_task_runner_handle.h"

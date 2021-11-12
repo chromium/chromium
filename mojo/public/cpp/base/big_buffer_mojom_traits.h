@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "mojo/public/cpp/system/buffer.h"

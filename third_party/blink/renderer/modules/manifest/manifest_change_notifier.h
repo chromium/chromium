@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_MANIFEST_CHANGE_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_MANIFEST_CHANGE_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/manifest/manifest_observer.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"

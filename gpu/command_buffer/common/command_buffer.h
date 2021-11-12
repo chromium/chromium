@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"

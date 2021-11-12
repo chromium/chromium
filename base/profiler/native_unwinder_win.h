@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/profiler/unwinder.h"
 
 namespace base {

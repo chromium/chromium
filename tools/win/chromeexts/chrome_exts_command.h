@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 
 namespace tools {

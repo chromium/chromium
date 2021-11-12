@@ -6,7 +6,6 @@
 #define MOJO_CORE_ATOMIC_FLAG_H_
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 
 namespace mojo {
 namespace core {

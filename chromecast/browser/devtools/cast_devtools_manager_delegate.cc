@@ -4,7 +4,6 @@
 
 #include "chromecast/browser/devtools/cast_devtools_manager_delegate.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/app/grit/shell_resources.h"
 #include "content/public/browser/devtools_agent_host.h"

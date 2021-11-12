@@ -12,7 +12,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

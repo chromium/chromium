@@ -6,7 +6,6 @@
 #define NET_QUIC_PLATFORM_IMPL_QUIC_EPOLL_CLOCK_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/third_party/quiche/src/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 

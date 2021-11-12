@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_NET_CHROME_COOKIE_STORE_IOS_CLIENT_H_
 #define IOS_CHROME_BROWSER_NET_CHROME_COOKIE_STORE_IOS_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 

@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/test_completion_callback.h"

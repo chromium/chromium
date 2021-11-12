@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_MEMORY_PRESSURE_CONTROLLER_IMPL_H_
 #define CHROMECAST_BROWSER_MEMORY_PRESSURE_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "chromecast/common/mojom/memory_pressure.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

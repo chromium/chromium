@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "remoting/host/logging.h"
 
 namespace remoting {

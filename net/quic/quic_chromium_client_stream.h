@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"

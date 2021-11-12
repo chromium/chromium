@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 #define WEBLAYER_BROWSER_STATEFUL_SSL_HOST_STATE_DELEGATE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"

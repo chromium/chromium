@@ -8,7 +8,6 @@
 #ifndef JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
 #define JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "jingle/glue/task_pump.h"
 

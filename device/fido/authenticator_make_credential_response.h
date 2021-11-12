@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"

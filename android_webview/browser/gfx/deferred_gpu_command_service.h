@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_DEFERRED_GPU_COMMAND_SERVICE_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_DEFERRED_GPU_COMMAND_SERVICE_H_
 
-#include "base/macros.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 
 namespace gl {

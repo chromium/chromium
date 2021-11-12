@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_GRAPHICS_GESTURES_CAST_SYSTEM_GESTURE_EVENT_HANDLER_H_
 #define CHROMECAST_GRAPHICS_GESTURES_CAST_SYSTEM_GESTURE_EVENT_HANDLER_H_
 
-#include "base/macros.h"
 #include "chromecast/graphics/gestures/cast_system_gesture_dispatcher.h"
 #include "ui/events/event_handler.h"
 

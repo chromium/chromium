@@ -9,7 +9,6 @@
 #include <android/sensor.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 extern "C" {

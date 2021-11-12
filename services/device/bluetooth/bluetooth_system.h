@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"

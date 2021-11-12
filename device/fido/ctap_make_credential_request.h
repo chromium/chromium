@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"

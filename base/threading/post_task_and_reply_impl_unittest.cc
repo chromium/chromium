@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"

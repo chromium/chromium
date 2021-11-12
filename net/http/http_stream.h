@@ -16,7 +16,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"

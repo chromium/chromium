@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

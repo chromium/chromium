@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "url/gurl.h"

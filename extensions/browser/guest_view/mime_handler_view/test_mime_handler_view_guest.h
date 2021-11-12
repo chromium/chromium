@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_TEST_MIME_HANDLER_VIEW_GUEST_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_TEST_MIME_HANDLER_VIEW_GUEST_H_
 
-#include "base/macros.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 
 using guest_view::GuestViewBase;

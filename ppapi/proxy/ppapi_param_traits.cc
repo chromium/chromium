@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>  // For memcpy
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_messages.h"

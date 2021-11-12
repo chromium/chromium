@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_TEST_TEST_API_H_
 #define EXTENSIONS_BROWSER_API_TEST_TEST_API_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
 

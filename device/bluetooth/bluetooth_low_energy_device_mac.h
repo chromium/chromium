@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_device_mac.h"

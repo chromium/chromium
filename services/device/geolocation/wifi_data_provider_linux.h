@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 
 namespace dbus {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 #include "weblayer/public/main.h"

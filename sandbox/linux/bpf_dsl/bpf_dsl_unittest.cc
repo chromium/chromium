@@ -18,7 +18,6 @@
 
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"

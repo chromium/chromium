@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_writer.h"
 

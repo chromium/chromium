@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_WEBUI_CAST_WEBUI_CONTROLLER_FACTORY_H_
 #define CHROMECAST_BROWSER_WEBUI_CAST_WEBUI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

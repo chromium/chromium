@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {

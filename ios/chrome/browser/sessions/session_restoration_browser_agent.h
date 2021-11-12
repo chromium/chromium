@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"

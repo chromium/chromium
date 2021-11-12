@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_CONTROLLER_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace android_webview {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

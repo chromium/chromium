@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_provider_impl.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace cr_fuchsia {

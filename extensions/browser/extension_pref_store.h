@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 

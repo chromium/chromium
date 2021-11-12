@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"

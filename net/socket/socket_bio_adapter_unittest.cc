@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"

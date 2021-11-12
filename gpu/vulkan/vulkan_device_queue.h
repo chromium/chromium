@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_instance.h"

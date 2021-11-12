@@ -12,7 +12,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"

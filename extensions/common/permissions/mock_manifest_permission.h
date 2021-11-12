@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/permissions/manifest_permission.h"
 
 namespace base {

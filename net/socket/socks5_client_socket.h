@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"

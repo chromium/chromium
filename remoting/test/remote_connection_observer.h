@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/errors.h"

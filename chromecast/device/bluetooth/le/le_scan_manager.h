@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 #include "chromecast/device/bluetooth/le/scan_filter.h"

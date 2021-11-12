@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 

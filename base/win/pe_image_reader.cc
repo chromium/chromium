@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 
 namespace base {

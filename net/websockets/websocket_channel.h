@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"  // for WARN_UNUSED_RESULT
 #include "base/containers/queue.h"
 #include "base/i18n/streaming_utf8_validator.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

@@ -8,7 +8,6 @@
 #include <list>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/datagram_channel_factory.h"

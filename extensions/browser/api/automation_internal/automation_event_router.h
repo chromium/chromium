@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"

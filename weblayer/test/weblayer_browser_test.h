@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_H_
 #define WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_H_
 
-#include "base/macros.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 

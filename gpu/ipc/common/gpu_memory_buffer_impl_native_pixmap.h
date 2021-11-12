@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 

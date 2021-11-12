@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

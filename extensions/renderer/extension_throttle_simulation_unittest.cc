@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"

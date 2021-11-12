@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"

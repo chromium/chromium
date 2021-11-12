@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/process/process.h"

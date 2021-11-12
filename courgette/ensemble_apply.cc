@@ -16,7 +16,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "courgette/crc.h"
 #include "courgette/patcher_x86_32.h"
 #include "courgette/region.h"

@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_BLUETOOTH_BLUETOOTH_SYSTEM_FACTORY_H_
 #define SERVICES_DEVICE_BLUETOOTH_BLUETOOTH_SYSTEM_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"

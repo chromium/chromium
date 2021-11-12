@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace android_webview {

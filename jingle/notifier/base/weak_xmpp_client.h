@@ -10,7 +10,6 @@
 #define JINGLE_NOTIFIER_BASE_WEAK_XMPP_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "third_party/libjingle_xmpp/xmpp/xmppclient.h"

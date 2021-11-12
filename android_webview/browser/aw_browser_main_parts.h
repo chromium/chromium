@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "content/public/browser/browser_main_parts.h"
 

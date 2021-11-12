@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"

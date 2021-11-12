@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_DOWNLOAD_IMPL_H_
 #define WEBLAYER_BROWSER_DOWNLOAD_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"

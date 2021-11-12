@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/time_smoother.h"
 #import "ios/web/public/navigation/navigation_manager.h"

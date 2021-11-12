@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromecast/browser/ui/aura/accessibility/ax_tree_source_aura.h"
 #include "ui/accessibility/ax_action_handler.h"

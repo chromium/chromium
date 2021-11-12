@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/system/system_monitor.h"
 #include "base/task/deferred_sequenced_task_runner.h"

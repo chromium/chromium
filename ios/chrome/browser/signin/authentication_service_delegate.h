@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_DELEGATE_H_
 
 #import "base/ios/block_types.h"
-#include "base/macros.h"
 
 // Delegate for AuthenticationService.
 class AuthenticationServiceDelegate {

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"

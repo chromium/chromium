@@ -10,7 +10,6 @@
 #include <stddef.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 

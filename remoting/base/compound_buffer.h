@@ -22,7 +22,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 

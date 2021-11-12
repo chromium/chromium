@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/reporting/reporting_cache.h"

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/sandbox_export.h"

@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"

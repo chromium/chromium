@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 
 namespace chromecast {

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/host/security_key/security_key_message.h"

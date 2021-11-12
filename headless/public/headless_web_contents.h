@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"

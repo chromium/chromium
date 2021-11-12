@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/resolver.h"
 #include "sandbox/win/src/sandbox_utils.h"

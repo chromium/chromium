@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/input_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"

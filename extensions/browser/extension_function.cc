@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

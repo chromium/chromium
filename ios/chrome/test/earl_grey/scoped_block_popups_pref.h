@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_TEST_EARL_GREY_SCOPED_BLOCK_POPUPS_PREF_H_
 #define IOS_CHROME_TEST_EARL_GREY_SCOPED_BLOCK_POPUPS_PREF_H_
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 // ScopedBlockPopupsPref modifies the block popups preference for the original

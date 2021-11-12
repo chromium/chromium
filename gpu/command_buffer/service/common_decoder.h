@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/service/async_api_interface.h"

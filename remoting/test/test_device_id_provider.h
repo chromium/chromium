@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 
 namespace remoting {

@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

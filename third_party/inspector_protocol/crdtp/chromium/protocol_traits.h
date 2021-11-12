@@ -8,8 +8,6 @@
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
 
-#include "base/macros.h"
-
 namespace base {
 class Value;
 }

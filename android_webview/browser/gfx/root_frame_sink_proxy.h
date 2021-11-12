@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_ROOT_FRAME_SINK_PROXY_H_
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 

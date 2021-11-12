@@ -8,7 +8,6 @@
 #ifndef CHROMECAST_GRAPHICS_ACCESSIBILITY_FOCUS_RING_LAYER_H_
 #define CHROMECAST_GRAPHICS_ACCESSIBILITY_FOCUS_RING_LAYER_H_
 
-#include "base/macros.h"
 #include "chromecast/graphics/accessibility/accessibility_layer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/proxy/media_stream_track_resource_base.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"

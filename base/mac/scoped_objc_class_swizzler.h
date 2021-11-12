@@ -8,7 +8,6 @@
 #import <objc/runtime.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 namespace base {
 namespace mac {

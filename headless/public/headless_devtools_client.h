@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_export.h"
 

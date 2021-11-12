@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/workers/worklet.h"
 #include "third_party/blink/renderer/modules/csspaint/document_paint_definition.h"

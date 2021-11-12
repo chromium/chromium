@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"

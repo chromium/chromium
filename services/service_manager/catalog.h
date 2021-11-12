@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "services/service_manager/public/cpp/manifest.h"
 
 namespace service_manager {

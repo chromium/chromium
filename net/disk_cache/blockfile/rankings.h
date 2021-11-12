@@ -10,7 +10,6 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "net/disk_cache/blockfile/storage_block.h"

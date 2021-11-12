@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "extensions/common/api/bluetooth_private.h"
 

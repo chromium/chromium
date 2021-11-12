@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "mojo/core/ports/port_ref.h"
 
 namespace mojo {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_WEB_REQUEST_PERMISSION_HELPER_H_
 #define EXTENSIONS_BROWSER_API_WEB_REQUEST_PERMISSION_HELPER_H_
 
-#include "base/macros.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 
 namespace extensions {

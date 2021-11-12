@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "testing/gtest/include/gtest/gtest.h"

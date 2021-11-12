@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SYNC_CALL_RESTRICTIONS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 

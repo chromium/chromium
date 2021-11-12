@@ -7,8 +7,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
-
 namespace sandbox {
 
 // This class provide small helpers to help writing tests.

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"

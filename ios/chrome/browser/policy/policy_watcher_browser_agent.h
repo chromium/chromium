@@ -7,7 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "components/prefs/pref_change_registrar.h"

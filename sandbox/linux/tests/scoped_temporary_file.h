@@ -5,8 +5,6 @@
 #ifndef SANDBOX_LINUX_TESTS_SCOPED_TEMPORARY_FILE_H_
 #define SANDBOX_LINUX_TESTS_SCOPED_TEMPORARY_FILE_H_
 
-#include "base/macros.h"
-
 namespace sandbox {
 // Creates and open a temporary file on creation and closes
 // and removes it on destruction.

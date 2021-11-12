@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "device/fido/mac/keychain.h"
 
 namespace device {

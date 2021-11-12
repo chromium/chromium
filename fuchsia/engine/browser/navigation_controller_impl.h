@@ -8,7 +8,6 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"

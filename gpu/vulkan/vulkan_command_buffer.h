@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 
 namespace gpu {

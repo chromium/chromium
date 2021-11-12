@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
-#include "base/macros.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"

@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/win/pe_image_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/log/net_log_with_source.h"

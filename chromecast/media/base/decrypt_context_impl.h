@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromecast/public/media/cast_key_system.h"
 #include "chromecast/public/media/decrypt_context.h"
 

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/buffer.h"

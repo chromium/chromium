@@ -7,7 +7,6 @@
 
 #include <Security/Security.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 

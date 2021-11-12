@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 

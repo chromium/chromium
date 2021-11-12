@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_AUDIO_CAPTURER_LINUX_H_
 #define REMOTING_HOST_AUDIO_CAPTURER_LINUX_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/audio_capturer.h"

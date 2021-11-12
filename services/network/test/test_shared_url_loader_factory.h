@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_TEST_TEST_SHARED_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_TEST_TEST_SHARED_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -8,7 +8,6 @@
 #include <vulkan/vulkan_core.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/extension_set.h"

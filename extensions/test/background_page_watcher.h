@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/browser/process_manager_observer.h"
 
 namespace extensions {

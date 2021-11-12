@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"

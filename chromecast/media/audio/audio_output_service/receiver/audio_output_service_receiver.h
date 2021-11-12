@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/receiver/receiver.h"

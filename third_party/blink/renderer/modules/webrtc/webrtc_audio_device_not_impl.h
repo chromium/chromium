@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/webrtc/modules/audio_device/include/audio_device.h"

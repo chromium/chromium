@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"

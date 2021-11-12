@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_ORDER_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_ORDER_CONTROLLER_H_
 
-#include "base/macros.h"
-
 class WebStateList;
 
 namespace web {

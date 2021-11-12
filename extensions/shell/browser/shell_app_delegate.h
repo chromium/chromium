@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_APP_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_APP_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_delegate.h"
 

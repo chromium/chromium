@@ -12,7 +12,6 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"

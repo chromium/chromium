@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {

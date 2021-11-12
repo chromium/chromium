@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {

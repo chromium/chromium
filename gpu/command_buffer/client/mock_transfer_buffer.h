@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 

@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"

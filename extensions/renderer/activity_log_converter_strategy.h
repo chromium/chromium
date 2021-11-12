@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_ACTIVITY_LOG_CONVERTER_STRATEGY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "v8/include/v8-forward.h"
 

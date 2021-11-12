@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

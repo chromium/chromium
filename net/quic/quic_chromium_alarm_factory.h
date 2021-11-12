@@ -8,7 +8,6 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 #define NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quic/core/quic_alarm_factory.h"
 #include "net/third_party/quiche/src/quic/core/quic_clock.h"

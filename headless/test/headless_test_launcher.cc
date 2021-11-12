@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"

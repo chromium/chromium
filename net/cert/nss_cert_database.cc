@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

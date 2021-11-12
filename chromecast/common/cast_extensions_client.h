@@ -6,7 +6,6 @@
 #define CHROMECAST_COMMON_CAST_EXTENSIONS_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"
 

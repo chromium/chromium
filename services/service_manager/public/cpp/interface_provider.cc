@@ -4,8 +4,6 @@
 
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#include "base/macros.h"
-
 namespace service_manager {
 
 InterfaceProvider::InterfaceProvider(

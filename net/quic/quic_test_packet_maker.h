@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/request_priority.h"
 #include "net/third_party/quiche/src/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quic/core/qpack/qpack_encoder.h"

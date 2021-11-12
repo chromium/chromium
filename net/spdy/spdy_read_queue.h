@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_AUTOFILL_CLIENT_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"

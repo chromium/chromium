@@ -11,8 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace device {
 
 class FakeDeviceInformationPairingWinrt

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_local.h"  // For testing purposes only.
 #include "ppapi/c/pp_instance.h"

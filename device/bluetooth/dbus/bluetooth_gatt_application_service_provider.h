@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"

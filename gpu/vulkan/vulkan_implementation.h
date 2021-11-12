@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "ui/gfx/buffer_types.h"

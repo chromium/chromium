@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Scoper for a pair of window station and desktop handles. Both handles are

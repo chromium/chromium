@@ -6,7 +6,6 @@
 #define BASE_PROCESS_PROCESS_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"

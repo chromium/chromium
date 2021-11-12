@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {

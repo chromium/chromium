@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"

@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"

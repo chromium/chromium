@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"

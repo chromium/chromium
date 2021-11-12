@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 

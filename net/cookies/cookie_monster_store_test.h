@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/log/net_log_with_source.h"

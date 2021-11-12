@@ -8,7 +8,6 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {

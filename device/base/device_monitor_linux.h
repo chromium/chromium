@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "device/base/device_base_export.h"

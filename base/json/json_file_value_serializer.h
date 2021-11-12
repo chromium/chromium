@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 
 class BASE_EXPORT JSONFileValueSerializer : public base::ValueSerializer {

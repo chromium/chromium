@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_FEATURE_MANAGER_H_
 #define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_FEATURE_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {

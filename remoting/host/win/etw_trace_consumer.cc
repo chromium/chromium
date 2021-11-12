@@ -10,7 +10,6 @@
 
 #include "base/logging.h"
 #include "base/logging_win.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/event_trace_consumer.h"
 #include "base/win/event_trace_controller.h"

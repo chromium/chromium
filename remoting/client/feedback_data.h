@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/base/chromoting_event.h"
 
 namespace remoting {

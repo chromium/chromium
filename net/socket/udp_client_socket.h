@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/udp_socket.h"

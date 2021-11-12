@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/core/watch.h"
 

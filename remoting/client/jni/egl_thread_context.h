@@ -7,7 +7,6 @@
 
 #include <EGL/egl.h>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 
 namespace remoting {

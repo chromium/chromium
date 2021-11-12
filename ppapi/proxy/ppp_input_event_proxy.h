@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_PPP_INPUT_EVENT_PROXY_H_
 #define PPAPI_PROXY_PPP_INPUT_EVENT_PROXY_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppp_input_event.h"
 #include "ppapi/proxy/interface_proxy.h"

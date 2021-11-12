@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"

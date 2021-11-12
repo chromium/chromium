@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"

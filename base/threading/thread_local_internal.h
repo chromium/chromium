@@ -11,7 +11,6 @@
 #include <memory>
 #include <ostream>
 
-#include "base/macros.h"
 #include "base/threading/thread_local_storage.h"
 
 namespace base {

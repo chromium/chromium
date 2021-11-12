@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_PERMISSION_HELPER_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_PERMISSION_HELPER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"

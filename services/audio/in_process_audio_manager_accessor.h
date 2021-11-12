@@ -5,7 +5,6 @@
 #ifndef SERVICES_AUDIO_IN_PROCESS_AUDIO_MANAGER_ACCESSOR_H_
 #define SERVICES_AUDIO_IN_PROCESS_AUDIO_MANAGER_ACCESSOR_H_
 
-#include "base/macros.h"
 #include "services/audio/service.h"
 
 namespace media {

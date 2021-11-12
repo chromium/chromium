@@ -6,7 +6,6 @@
 #define MOJO_CORE_WATCHER_SET_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"

@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
 

@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/sandbox_export.h"

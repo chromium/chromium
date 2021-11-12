@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_pending_task.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 

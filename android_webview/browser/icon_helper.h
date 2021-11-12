@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"

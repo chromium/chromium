@@ -11,7 +11,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {

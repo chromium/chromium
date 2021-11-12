@@ -26,7 +26,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"

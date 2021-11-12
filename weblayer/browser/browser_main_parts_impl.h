@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"

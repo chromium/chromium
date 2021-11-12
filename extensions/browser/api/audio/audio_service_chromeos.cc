@@ -11,7 +11,6 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_thread.h"

@@ -11,7 +11,6 @@
 #include <tuple>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/cors/preflight_result.h"

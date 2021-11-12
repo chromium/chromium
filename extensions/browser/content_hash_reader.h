@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "extensions/browser/computed_hashes.h"

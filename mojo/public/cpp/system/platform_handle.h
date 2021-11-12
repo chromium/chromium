@@ -14,7 +14,6 @@
 #include <stdint.h>
 
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"

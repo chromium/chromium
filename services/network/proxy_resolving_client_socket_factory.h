@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/socket/connect_job_factory.h"
 #include "net/ssl/ssl_config.h"

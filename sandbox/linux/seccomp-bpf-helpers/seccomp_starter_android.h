@@ -5,7 +5,6 @@
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SECCOMP_STARTER_ANDROID_H_
 
-#include "base/macros.h"
 #include "sandbox/sandbox_buildflags.h"
 #include "sandbox/sandbox_export.h"
 

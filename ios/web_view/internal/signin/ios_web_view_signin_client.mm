@@ -4,7 +4,6 @@
 
 #include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
-#include "base/macros.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
 #include "ios/web_view/internal/signin/web_view_gaia_auth_fetcher.h"
 #include "ios/web_view/internal/web_view_browser_state.h"

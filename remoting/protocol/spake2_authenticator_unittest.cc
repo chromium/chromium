@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/authenticator_test_base.h"

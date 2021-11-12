@@ -9,8 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 namespace net {
 
 namespace huffman_trie {

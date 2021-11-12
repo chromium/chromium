@@ -6,7 +6,6 @@
 #define NET_NQE_EFFECTIVE_CONNECTION_TYPE_OBSERVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/nqe/effective_connection_type.h"
 

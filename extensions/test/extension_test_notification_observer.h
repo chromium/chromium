@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "sql/meta_table.h"

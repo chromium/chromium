@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"

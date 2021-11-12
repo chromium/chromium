@@ -7,7 +7,6 @@
 
 #include "remoting/host/linux/x11_keyboard.h"
 
-#include "base/macros.h"
 #include "ui/gfx/x/connection.h"
 
 namespace remoting {

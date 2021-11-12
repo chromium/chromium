@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/linux/tests/sandbox_test_runner.h"
 
 namespace sandbox {

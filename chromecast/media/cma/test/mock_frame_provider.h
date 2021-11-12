@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/cma/base/coded_frame_provider.h"
 
 namespace chromecast {

@@ -12,7 +12,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
 

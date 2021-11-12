@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
 #define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
 
-#include "base/macros.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @class NSString;

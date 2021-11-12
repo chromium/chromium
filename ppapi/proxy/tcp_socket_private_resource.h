@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/tcp_socket_resource_base.h"
 #include "ppapi/thunk/ppb_tcp_socket_private_api.h"
 

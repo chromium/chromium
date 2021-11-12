@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"

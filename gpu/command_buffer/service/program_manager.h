@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/gl_utils.h"

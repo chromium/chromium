@@ -7,7 +7,6 @@
 
 #include <EGL/egl.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 namespace gl {
 class GLSurface;

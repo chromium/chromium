@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/network_change_notifier.h"

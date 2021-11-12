@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_BLUEZ_DBUS_CLIENT_H_
 #define DEVICE_BLUETOOTH_DBUS_BLUEZ_DBUS_CLIENT_H_
 
-#include "base/macros.h"
-
 namespace dbus {
 class Bus;
 }  // namespace dbus

@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"

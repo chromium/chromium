@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

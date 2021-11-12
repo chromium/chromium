@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace base {
 
 // Sets the given |locale| on construction, and restores the previous locale

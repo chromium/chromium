@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/win/message_window.h"
 #include "services/device/battery/battery_status_manager.h"
 

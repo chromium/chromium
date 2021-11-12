@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

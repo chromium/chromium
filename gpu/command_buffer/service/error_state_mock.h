@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/error_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

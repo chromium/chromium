@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "jingle/notifier/listener/push_client.h"
 #include "jingle/notifier/listener/push_client_observer.h"

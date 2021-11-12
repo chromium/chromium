@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"

@@ -19,7 +19,6 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

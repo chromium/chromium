@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 

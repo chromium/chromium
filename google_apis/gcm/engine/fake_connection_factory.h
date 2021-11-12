@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
 namespace gcm {

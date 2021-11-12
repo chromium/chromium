@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"

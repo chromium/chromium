@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {

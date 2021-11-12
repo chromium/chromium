@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/message.h"

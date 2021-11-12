@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/platform_handle.h"
 

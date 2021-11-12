@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/av_sync.h"

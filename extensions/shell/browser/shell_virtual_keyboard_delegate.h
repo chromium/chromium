@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/common/api/virtual_keyboard.h"
 

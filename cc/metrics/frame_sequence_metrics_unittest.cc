@@ -4,7 +4,6 @@
 
 #include "cc/metrics/frame_sequence_tracker.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
 #include "cc/trees/ukm_manager.h"

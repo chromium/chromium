@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_WEBUI_WEB_UI_CONTROLLER_FACTORY_H_
 #define WEBLAYER_BROWSER_WEBUI_WEB_UI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 

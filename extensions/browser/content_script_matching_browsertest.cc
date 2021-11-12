@@ -4,7 +4,6 @@
 
 #include "extensions/browser/content_script_tracker.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"

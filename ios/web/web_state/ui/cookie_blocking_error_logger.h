@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_WEB_STATE_UI_COOKIE_BLOCKING_ERROR_LOGGER_H_
 #define IOS_WEB_WEB_STATE_UI_COOKIE_BLOCKING_ERROR_LOGGER_H_
 
-#include "base/macros.h"
 #import "ios/web/public/web_state.h"
 
 class GURL;

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_store.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"

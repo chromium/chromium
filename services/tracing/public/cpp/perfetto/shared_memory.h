@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory.h"
 

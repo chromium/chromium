@@ -8,7 +8,6 @@
 #include "ui/touch_selection/touch_handle.h"
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 
 namespace android_webview {
 

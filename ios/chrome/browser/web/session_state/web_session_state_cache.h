@@ -7,9 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;

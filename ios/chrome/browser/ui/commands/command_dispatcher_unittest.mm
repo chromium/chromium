@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"

@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"

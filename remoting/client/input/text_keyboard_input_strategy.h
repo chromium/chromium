@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/macros.h"
 #include "remoting/client/input/keyboard_input_strategy.h"
 
 namespace remoting {

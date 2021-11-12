@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "courgette/courgette.h"
 #include "courgette/region.h"
 #include "courgette/streams.h"

@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_sandbox_config.h"

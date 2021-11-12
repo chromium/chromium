@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #import "ios/chrome/browser/snapshots/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"

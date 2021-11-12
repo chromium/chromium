@@ -5,7 +5,6 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_H_
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_REQUEST_INFO_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/http/http_request_headers.h"

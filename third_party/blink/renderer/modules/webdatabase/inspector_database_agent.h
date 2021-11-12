@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_INSPECTOR_DATABASE_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

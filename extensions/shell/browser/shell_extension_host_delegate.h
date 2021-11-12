@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_HOST_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_EXTENSION_HOST_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_host_delegate.h"
 
 namespace extensions {

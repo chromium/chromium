@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "weblayer/public/error_page_delegate.h"
 
 namespace weblayer {

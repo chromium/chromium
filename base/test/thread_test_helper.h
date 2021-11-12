@@ -6,7 +6,6 @@
 #define BASE_TEST_THREAD_TEST_HELPER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/size.h"

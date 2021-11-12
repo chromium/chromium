@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 

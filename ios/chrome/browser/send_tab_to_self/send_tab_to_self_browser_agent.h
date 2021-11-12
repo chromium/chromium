@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"

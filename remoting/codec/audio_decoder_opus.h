@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "remoting/codec/audio_decoder.h"
 
 struct OpusDecoder;

@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/synchronization/lock.h"

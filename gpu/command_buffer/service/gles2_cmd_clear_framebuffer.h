@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_CLEAR_FRAMEBUFFER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_CLEAR_FRAMEBUFFER_H_
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/gpu_gles2_export.h"
 

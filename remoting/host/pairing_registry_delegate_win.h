@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/win/registry.h"
 #include "remoting/protocol/pairing_registry.h"
 

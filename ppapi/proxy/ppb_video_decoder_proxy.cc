@@ -5,7 +5,6 @@
 #include "ppapi/proxy/ppb_video_decoder_proxy.h"
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "ppapi/proxy/enter_proxy.h"

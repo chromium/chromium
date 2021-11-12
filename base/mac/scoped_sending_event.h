@@ -6,7 +6,6 @@
 #define BASE_MAC_SCOPED_SENDING_EVENT_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_mac.h"
 
 // Nested event loops can pump IPC messages, including

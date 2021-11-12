@@ -6,7 +6,6 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_BUFFER_ANDROID_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_data_type_android.h"
 
 namespace tracing {

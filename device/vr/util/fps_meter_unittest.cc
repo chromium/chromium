@@ -4,7 +4,6 @@
 
 #include "device/vr/util/fps_meter.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {

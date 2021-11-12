@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

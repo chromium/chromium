@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromecast/media/audio/fake_external_audio_pipeline_support.h"
 #include "chromecast/public/cast_media_shlib.h"

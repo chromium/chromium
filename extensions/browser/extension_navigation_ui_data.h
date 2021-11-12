@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 

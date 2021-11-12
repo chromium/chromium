@@ -6,7 +6,6 @@
 #define BASE_SYNCHRONIZATION_WAITABLE_EVENT_WATCHER_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 

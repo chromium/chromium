@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"

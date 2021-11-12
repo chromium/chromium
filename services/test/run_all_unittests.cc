@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/i18n/icu_util.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"

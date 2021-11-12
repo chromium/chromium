@@ -3985,7 +3985,6 @@ void RasterDecoderImpl::RestoreStateForAttrib(GLuint attrib_index,
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/raster_decoder_autogen.h"
 

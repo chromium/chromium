@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"

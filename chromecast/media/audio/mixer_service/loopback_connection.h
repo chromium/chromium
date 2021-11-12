@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/loopback_interrupt_reason.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"

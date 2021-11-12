@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chromecast/base/pref_names.h"

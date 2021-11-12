@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "crypto/secure_hash.h"

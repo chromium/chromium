@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {

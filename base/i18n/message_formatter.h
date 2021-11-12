@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "chromecast/media/base/slew_volume.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"

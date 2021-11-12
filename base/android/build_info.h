@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 
 namespace base {

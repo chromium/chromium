@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/linux/x_server_clipboard.h"
 #include "testing/gtest/include/gtest/gtest.h"

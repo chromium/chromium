@@ -9,7 +9,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/test/spawned_test_server/base_test_server.h"

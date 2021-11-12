@@ -6,7 +6,6 @@
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_STORE_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "services/preferences/tracked/pref_hash_calculator.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 

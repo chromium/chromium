@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ipc/ipc_platform_file.h"

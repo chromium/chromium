@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"

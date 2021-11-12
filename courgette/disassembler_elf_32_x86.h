@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "courgette/disassembler_elf_32.h"
 #include "courgette/types_elf.h"
 

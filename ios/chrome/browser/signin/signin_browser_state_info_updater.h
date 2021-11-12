@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_SIGNIN_SIGNIN_BROWSER_STATE_INFO_UPDATER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"

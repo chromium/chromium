@@ -10,7 +10,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "ios/chrome/browser/notification_promo.h"
 #include "url/gurl.h"
 

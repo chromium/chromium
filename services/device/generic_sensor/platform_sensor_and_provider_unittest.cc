@@ -5,7 +5,6 @@
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/fake_platform_sensor_and_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"

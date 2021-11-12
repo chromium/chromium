@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_COMMON_DEVTOOLS_INSTRUMENTATION_H_
 #define ANDROID_WEBVIEW_COMMON_DEVTOOLS_INSTRUMENTATION_H_
 
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 
 namespace android_webview {

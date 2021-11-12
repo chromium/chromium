@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"

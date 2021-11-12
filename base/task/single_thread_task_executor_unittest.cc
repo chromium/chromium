@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"

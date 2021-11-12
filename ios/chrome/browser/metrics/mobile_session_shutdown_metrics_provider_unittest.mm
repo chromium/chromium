@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/metrics_pref_names.h"

@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_co_mem.h"

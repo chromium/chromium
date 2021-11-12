@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromecast/public/media/audio_post_processor_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 

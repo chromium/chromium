@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_WEB_CONTENTS_CAPTURE_CLIENT_H_
 #define EXTENSIONS_BROWSER_API_WEB_CONTENTS_CAPTURE_CLIENT_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/extension_types.h"
 

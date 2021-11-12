@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_channel_mac.h"
 
 @class BluetoothL2capChannelDelegate;

@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"

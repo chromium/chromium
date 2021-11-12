@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "crypto/ec_signature_creator.h"
 
 namespace crypto {

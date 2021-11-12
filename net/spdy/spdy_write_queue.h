@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"

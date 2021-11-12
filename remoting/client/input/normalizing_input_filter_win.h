@@ -5,7 +5,6 @@
 #ifndef REMOTING_CLIENT_INPUT_NORMALIZING_INPUT_FILTER_WIN_H_
 #define REMOTING_CLIENT_INPUT_NORMALIZING_INPUT_FILTER_WIN_H_
 
-#include "base/macros.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/input_filter.h"
 

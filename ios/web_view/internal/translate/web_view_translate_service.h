@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_TRANSLATE_WEB_VIEW_TRANSLATE_SERVICE_H_
 #define IOS_WEB_VIEW_INTERNAL_TRANSLATE_WEB_VIEW_TRANSLATE_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"

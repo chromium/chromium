@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 #define EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

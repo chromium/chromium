@@ -4,8 +4,6 @@
 
 #include "remoting/base/scoped_protobuf_http_request.h"
 
-#include "base/macros.h"
-
 namespace remoting {
 
 ScopedProtobufHttpRequest::ScopedProtobufHttpRequest(

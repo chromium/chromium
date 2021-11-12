@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"

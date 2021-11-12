@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_DEVTOOLS_MANAGER_DELEGATE_ANDROID_H_
 #define WEBLAYER_BROWSER_DEVTOOLS_MANAGER_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace weblayer {

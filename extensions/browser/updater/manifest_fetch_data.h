@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/version.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"

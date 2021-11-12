@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/device_enumeration_resource_helper.h"

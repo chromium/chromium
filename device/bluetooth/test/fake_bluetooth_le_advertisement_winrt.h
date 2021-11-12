@@ -13,7 +13,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

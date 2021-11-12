@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

@@ -7,7 +7,6 @@
 
 #include <sys/syscall.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/tests/sandbox_test_runner_function_pointer.h"
 #include "testing/gtest/include/gtest/gtest.h"

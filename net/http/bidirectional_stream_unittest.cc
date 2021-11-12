@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"

@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_CLIPBOARD_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

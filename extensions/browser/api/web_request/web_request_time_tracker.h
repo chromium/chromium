@@ -11,7 +11,6 @@
 #include <map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 // This class monitors how much delay extensions add to network requests

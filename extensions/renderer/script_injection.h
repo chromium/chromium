@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"

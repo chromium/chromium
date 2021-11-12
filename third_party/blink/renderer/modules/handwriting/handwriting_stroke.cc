@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/handwriting/handwriting_stroke.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_point.h"
 

@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/gtest_util.h"

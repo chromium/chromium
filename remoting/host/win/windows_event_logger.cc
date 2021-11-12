@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/host/win/remoting_host_messages.h"
 

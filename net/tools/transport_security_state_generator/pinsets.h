@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/cert_util.h"
 #include "net/tools/transport_security_state_generator/pinset.h"

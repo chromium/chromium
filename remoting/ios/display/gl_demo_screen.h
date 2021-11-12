@@ -5,7 +5,6 @@
 #ifndef REMOTING_IOS_DISPLAY_GL_DEMO_SCREEN_H_
 #define REMOTING_IOS_DISPLAY_GL_DEMO_SCREEN_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/display/drawable.h"
 #include "remoting/client/display/sys_opengl.h"

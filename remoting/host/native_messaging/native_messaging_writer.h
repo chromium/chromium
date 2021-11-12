@@ -6,7 +6,6 @@
 #define REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_WRITER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 
 namespace base {
 class Value;

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/tracked_preference.h"
 #include "services/preferences/tracked/tracked_preference_helper.h"

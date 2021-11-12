@@ -32,7 +32,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"

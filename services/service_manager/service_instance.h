@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"

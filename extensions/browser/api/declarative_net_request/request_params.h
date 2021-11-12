@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/url_pattern_index/url_pattern_index.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"

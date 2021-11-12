@@ -14,7 +14,6 @@
 #define JINGLE_NOTIFIER_LISTENER_PUSH_NOTIFICATIONS_LISTEN_TASK_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

@@ -6,7 +6,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "crypto/openssl_util.h"

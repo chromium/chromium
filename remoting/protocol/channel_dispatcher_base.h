@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/message_pipe.h"
 

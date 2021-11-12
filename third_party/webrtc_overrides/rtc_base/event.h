@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_EVENT_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_EVENT_H_
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"

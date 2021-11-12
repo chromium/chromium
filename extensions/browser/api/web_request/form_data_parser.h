@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 // Cannot forward declare StringPiece because it is a typedef.
 #include "base/strings/string_piece.h"
 #include "base/values.h"

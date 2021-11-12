@@ -10,7 +10,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"

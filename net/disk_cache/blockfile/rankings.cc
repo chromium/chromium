@@ -9,7 +9,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"

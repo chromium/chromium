@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_IPC_MESSAGE_SENDER_H_
 #define EXTENSIONS_RENDERER_IPC_MESSAGE_SENDER_H_
 
-#include "base/macros.h"
-
 #include <memory>
 #include <string>
 

@@ -5,7 +5,6 @@
 #ifndef CODELABS_CPP101_SERVICES_MATH_MATH_SERVICE_H_
 #define CODELABS_CPP101_SERVICES_MATH_MATH_SERVICE_H_
 
-#include "base/macros.h"
 #include "codelabs/cpp101/services/math/public/mojom/math_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

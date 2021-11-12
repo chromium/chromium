@@ -11,7 +11,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"

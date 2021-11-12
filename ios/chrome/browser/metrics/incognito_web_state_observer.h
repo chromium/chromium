@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class AllWebStateListObservationRegistrar;

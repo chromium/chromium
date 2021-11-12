@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromecast/browser/accessibility/accessibility_sound_player.h"

@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace google_breakpad {
 class LibcurlWrapper;
 }

@@ -5,7 +5,6 @@
 #ifndef SERVICES_AUDIO_SERVICE_METRICS_H_
 #define SERVICES_AUDIO_SERVICE_METRICS_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {

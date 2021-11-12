@@ -9,7 +9,6 @@
 
 #include "base/atomicops.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"

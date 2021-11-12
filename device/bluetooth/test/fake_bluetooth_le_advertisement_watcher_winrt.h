@@ -11,7 +11,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {

@@ -5,7 +5,6 @@
 #ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
 #define GPU_GLES2_CONFORM_SUPPORT_EGL_THREAD_STATE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include <EGL/egl.h>
 

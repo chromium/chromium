@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 
 namespace chromecast {

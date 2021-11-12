@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "base/macros.h"
 #include "base/threading/simple_thread.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"

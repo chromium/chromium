@@ -6,7 +6,6 @@
 #define MOJO_CORE_REQUEST_CONTEXT_H_
 
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"

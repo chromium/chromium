@@ -6,7 +6,6 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/macros.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/js_features/context_menu/context_menu_constants.h"

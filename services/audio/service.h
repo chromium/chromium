@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"

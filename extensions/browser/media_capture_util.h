@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_MEDIA_CAPTURE_UTIL_H_
 #define EXTENSIONS_BROWSER_MEDIA_CAPTURE_UTIL_H_
 
-#include "base/macros.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 

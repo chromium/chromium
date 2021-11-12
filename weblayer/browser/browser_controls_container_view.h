@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_BROWSER_CONTROLS_CONTAINER_VIEW_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"

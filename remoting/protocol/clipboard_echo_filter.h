@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting {

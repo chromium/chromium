@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/browsing_history_service.h"

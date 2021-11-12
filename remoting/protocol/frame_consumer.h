@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace webrtc {
 class DesktopFrame;

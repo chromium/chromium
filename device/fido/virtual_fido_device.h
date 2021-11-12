@@ -15,7 +15,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"

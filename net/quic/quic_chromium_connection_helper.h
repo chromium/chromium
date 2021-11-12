@@ -8,7 +8,6 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_CONNECTION_HELPER_H_
 #define NET_QUIC_QUIC_CHROMIUM_CONNECTION_HELPER_H_
 
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"

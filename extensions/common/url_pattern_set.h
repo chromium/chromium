@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "extensions/common/url_pattern.h"
 
 class GURL;

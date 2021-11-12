@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 
 namespace base {
 namespace internal {

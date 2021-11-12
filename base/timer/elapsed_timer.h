@@ -6,7 +6,6 @@
 #define BASE_TIMER_ELAPSED_TIMER_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {

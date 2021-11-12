@@ -10,7 +10,6 @@
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"

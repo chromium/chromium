@@ -10,8 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace autofill {
 
 // A test sutie for ::i18n::addressinput::Storage.

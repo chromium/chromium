@@ -6,7 +6,6 @@
 #define COURGETTE_PATCH_GENERATOR_X86_32_H_
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "courgette/courgette_flow.h"
 #include "courgette/ensemble.h"
 #include "courgette/patcher_x86_32.h"

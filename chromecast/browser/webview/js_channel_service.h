@@ -6,7 +6,6 @@
 #define CHROMECAST_BROWSER_WEBVIEW_JS_CHANNEL_SERVICE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chromecast/common/mojom/js_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_MEDIA_BASE_VIDEO_RESOLUTION_POLICY_H_
 #define CHROMECAST_MEDIA_BASE_VIDEO_RESOLUTION_POLICY_H_
 
-#include "base/macros.h"
-
 namespace gfx {
 class Size;
 }  // namespace gfx

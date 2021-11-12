@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 

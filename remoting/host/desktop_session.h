@@ -6,7 +6,6 @@
 #define REMOTING_HOST_DESKTOP_SESSION_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace remoting {
 

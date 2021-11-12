@@ -8,7 +8,6 @@
 #include <atomic>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

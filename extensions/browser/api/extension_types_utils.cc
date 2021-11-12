@@ -4,8 +4,6 @@
 
 #include "extensions/browser/api/extension_types_utils.h"
 
-#include "base/macros.h"
-
 namespace extensions {
 
 mojom::RunLocation ConvertRunLocation(api::extension_types::RunAt run_at) {

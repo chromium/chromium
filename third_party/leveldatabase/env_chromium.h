@@ -16,7 +16,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "build/build_config.h"
 #include "leveldb/cache.h"

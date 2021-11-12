@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

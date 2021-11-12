@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/blockfile/bitmap.h"
 #include "net/disk_cache/blockfile/disk_format.h"

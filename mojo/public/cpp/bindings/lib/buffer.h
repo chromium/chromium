@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/message.h"
 

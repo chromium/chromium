@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"

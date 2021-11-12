@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider_base.h"
 

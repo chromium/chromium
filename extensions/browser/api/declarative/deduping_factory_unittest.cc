@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

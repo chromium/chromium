@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"

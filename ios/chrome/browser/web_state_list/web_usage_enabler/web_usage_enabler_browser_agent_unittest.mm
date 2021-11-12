@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"

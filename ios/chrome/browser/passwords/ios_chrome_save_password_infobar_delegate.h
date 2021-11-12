@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_manager_infobar_delegate.h"
 

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 

@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"

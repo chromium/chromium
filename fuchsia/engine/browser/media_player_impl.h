@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

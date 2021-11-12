@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/ppb_tcp_socket.h"
 #include "ppapi/c/private/ppb_net_address_private.h"

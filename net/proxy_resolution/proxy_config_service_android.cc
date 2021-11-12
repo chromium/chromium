@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/strings/string_tokenizer.h"

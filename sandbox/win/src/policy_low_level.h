@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"

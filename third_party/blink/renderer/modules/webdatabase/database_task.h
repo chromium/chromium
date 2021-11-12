@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_TASK_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"

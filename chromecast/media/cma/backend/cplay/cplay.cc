@@ -19,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chromecast/media/audio/wav_header.h"

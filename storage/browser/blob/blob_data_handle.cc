@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"

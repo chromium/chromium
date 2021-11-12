@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/environment.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

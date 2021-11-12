@@ -9,7 +9,6 @@
 #include <process.h>
 #endif
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"

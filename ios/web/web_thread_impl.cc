@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"

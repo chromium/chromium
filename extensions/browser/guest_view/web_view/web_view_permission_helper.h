@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/media_stream_request.h"

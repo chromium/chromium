@@ -4,7 +4,6 @@
 
 #include "base/threading/thread_local.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"

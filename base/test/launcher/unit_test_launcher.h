@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 

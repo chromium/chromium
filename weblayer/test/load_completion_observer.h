@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 #define WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "weblayer/public/navigation_observer.h"
 

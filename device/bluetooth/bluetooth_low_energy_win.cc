@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"

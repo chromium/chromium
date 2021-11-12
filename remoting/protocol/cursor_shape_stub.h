@@ -7,8 +7,6 @@
 #ifndef REMOTING_PROTOCOL_CURSOR_SHAPE_STUB_H_
 #define REMOTING_PROTOCOL_CURSOR_SHAPE_STUB_H_
 
-#include "base/macros.h"
-
 namespace remoting {
 namespace protocol {
 

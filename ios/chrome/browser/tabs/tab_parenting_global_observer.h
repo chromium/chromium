@@ -5,9 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TABS_TAB_PARENTING_GLOBAL_OBSERVER_H_
 #define IOS_CHROME_BROWSER_TABS_TAB_PARENTING_GLOBAL_OBSERVER_H_
 
-
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 namespace web {

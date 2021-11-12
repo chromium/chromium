@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"

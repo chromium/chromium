@@ -6,7 +6,6 @@
 #define DEVICE_FIDO_AUTHENTICATOR_SUPPORTED_OPTIONS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 

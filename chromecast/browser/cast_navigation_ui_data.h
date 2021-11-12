@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_ui_data.h"
 
 namespace content {

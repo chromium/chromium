@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"

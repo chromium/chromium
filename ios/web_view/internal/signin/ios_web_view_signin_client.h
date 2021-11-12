@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/signin/ios/browser/wait_for_network_callback_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

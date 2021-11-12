@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/buffered_socket_writer.h"

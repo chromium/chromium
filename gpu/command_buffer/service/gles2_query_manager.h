@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/query_manager.h"

@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"

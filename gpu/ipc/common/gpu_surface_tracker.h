@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"

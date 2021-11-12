@@ -6,7 +6,6 @@
 #define NET_SSL_CLIENT_CERT_STORE_NSS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/ssl/client_cert_store.h"
 

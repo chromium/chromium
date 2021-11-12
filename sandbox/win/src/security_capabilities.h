@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/win/src/sid.h"
 
 namespace sandbox {

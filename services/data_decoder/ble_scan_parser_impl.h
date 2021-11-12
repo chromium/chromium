@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "device/bluetooth/public/mojom/uuid.mojom.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/drive_api_url_generator.h"

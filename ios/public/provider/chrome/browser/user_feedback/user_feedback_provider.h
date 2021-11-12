@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 @protocol ApplicationCommands;

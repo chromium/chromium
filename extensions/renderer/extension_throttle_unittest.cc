@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "extensions/renderer/extension_throttle_entry.h"

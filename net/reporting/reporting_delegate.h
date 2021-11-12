@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 class GURL;

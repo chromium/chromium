@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/bindings/tests/test_native_types.h"
 
-#include "base/macros.h"
 #include "ipc/ipc_mojo_message_helper.h"
 
 namespace mojo {

@@ -5,7 +5,6 @@
 #ifndef REMOTING_TEST_FAKE_ICE_CONNECTION_H_
 #define REMOTING_TEST_FAKE_ICE_CONNECTION_H_
 
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/ice_transport.h"
 

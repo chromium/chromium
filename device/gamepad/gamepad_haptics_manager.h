@@ -5,7 +5,6 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_HAPTICS_MANAGER_H_
 #define DEVICE_GAMEPAD_GAMEPAD_HAPTICS_MANAGER_H_
 
-#include "base/macros.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 

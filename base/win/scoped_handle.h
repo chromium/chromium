@@ -13,7 +13,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 // TODO(rvargas): remove this with the rest of the verifier.

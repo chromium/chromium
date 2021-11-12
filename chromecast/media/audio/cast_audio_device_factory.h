@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_DEVICE_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"

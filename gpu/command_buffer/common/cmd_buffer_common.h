@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {

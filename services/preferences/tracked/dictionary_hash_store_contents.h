@@ -5,7 +5,6 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 #define SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_
 
-#include "base/macros.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
 namespace base {

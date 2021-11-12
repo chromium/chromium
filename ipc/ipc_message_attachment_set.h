@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_support_export.h"

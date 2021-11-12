@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"

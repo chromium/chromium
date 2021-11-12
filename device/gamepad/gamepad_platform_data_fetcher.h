@@ -9,7 +9,6 @@
 #define DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"

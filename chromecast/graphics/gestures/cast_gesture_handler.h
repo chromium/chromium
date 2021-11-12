@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_
 #define CHROMECAST_GRAPHICS_GESTURES_CAST_GESTURE_HANDLER_H_
 
-#include "base/macros.h"
-
 namespace gfx {
 class Point;
 }  // namespace gfx

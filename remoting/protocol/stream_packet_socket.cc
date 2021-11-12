@@ -5,7 +5,6 @@
 #include "remoting/protocol/stream_packet_socket.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "jingle/glue/utils.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"

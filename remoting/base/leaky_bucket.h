@@ -5,7 +5,6 @@
 #ifndef REMOTING_BASE_LEAKY_BUCKET_H_
 #define REMOTING_BASE_LEAKY_BUCKET_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace remoting {

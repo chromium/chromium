@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
-
 class ChromeBrowserState;
 @class ChromeIdentity;
 

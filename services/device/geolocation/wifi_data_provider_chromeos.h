@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
 

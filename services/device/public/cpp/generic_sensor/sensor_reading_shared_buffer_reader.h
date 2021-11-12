@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/system/buffer.h"
 
 namespace device {

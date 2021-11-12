@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/power_monitor/power_observer.h"
 #include "build/build_config.h"

@@ -9,7 +9,6 @@
 
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"

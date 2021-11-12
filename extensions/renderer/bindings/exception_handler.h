@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
 

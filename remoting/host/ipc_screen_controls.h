@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_IPC_SCREEN_CONTROLS_H_
 #define REMOTING_HOST_IPC_SCREEN_CONTROLS_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/screen_controls.h"
 

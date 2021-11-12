@@ -6,7 +6,6 @@
 #define BASE_TEST_SCOPED_PATH_OVERRIDE_H_
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

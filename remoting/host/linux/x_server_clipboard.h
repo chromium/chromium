@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xfixes.h"

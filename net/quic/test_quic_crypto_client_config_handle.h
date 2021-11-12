@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_TEST_QUIC_CRYPTO_CLIENT_CONFIG_HANDLE_H_
 #define NET_QUIC_TEST_QUIC_CRYPTO_CLIENT_CONFIG_HANDLE_H_
 
-#include "base/macros.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 
 namespace quic {

@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"

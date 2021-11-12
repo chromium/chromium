@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/ukm/ukm_service.h"

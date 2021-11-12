@@ -11,7 +11,6 @@
 #include <windows.h>
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/process/process_info.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"

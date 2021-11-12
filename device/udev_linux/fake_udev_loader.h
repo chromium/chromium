@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "device/udev_linux/udev_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

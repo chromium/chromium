@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_CAST_CORE_GRPC_RESOURCE_DATA_SOURCE_H_
 #define CHROMECAST_CAST_CORE_GRPC_RESOURCE_DATA_SOURCE_H_
 
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/url_data_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

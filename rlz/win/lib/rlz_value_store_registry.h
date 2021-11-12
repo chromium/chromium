@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "rlz/lib/rlz_value_store.h"
 
 namespace rlz_lib {

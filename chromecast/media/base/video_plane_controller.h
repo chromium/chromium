@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_BASE_VIDEO_PLANE_CONTROLLER_H_
 #define CHROMECAST_MEDIA_BASE_VIDEO_PLANE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread_checker.h"

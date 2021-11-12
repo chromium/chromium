@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/common/buffer.h"

@@ -9,7 +9,6 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "remoting/client/audio/async_audio_data_supplier.h"
 
 namespace remoting {

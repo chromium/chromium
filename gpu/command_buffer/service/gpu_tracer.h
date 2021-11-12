@@ -14,7 +14,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "gpu/gpu_gles2_export.h"
 

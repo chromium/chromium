@@ -15,7 +15,6 @@
 #include "base/atomicops.h"
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"

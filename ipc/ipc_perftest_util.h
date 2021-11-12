@@ -12,7 +12,6 @@
 #endif
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_metrics.h"
 #include "base/task/single_thread_task_executor.h"

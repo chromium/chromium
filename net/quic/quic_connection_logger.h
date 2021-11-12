@@ -9,7 +9,6 @@
 
 #include <bitset>
 
-#include "base/macros.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/web/public/init/web_main_delegate.h"
 
 namespace web {

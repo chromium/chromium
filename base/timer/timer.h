@@ -65,7 +65,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"

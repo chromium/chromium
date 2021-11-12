@@ -8,7 +8,6 @@
 #include <cstddef>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_stub.h"

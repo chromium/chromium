@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source.h"

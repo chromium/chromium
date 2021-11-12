@@ -9,7 +9,6 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"

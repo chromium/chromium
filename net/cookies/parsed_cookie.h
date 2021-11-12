@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 

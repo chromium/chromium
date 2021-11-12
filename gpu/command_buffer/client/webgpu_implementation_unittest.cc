@@ -124,7 +124,6 @@ class WebGPUImplementationTest : public testing::Test {
   Capabilities capabilities_;
 };
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/webgpu_implementation_unittest_autogen.h"
 
 }  // namespace webgpu

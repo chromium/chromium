@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/cast_application_media_info_manager.mojom.h"

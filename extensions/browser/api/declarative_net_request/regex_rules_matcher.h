@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/url_matcher/substring_set_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher_base.h"
 #include "third_party/re2/src/re2/filtered_re2.h"

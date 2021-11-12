@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_util.h"

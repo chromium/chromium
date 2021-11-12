@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"

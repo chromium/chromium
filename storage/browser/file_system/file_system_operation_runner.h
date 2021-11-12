@@ -14,7 +14,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"

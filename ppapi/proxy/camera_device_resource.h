@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_size.h"
 #include "ppapi/c/private/pp_video_capture_format.h"
 #include "ppapi/proxy/connection.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "jingle/notifier/base/xmpp_connection.h"
 #include "jingle/notifier/communicator/connection_settings.h"
 #include "jingle/notifier/communicator/login_settings.h"

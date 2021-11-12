@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PERSONAL_DATA_MANAGER_FINISHED_PROFILE_TASKS_WAITER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 

@@ -8,7 +8,6 @@
 #ifndef REMOTING_PROTOCOL_CLIPBOARD_THREAD_PROXY_H_
 #define REMOTING_PROTOCOL_CLIPBOARD_THREAD_PROXY_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "remoting/protocol/clipboard_stub.h"

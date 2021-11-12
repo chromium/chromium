@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/x11_util.h"

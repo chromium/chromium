@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "net/tools/huffman_trie/huffman/huffman_builder.h"
 
 namespace net {

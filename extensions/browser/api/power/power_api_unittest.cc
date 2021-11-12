@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/api_test_utils.h"

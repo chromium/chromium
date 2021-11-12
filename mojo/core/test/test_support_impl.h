@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 
-#include "base/macros.h"
 #include "mojo/public/tests/test_support_private.h"
 
 namespace mojo {

@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"

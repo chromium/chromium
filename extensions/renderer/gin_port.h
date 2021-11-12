@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/renderer/bindings/api_binding_util.h"

@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_DEFAULT_SHELL_BROWSER_MAIN_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/shell/browser/shell_browser_main_delegate.h"
 
 namespace extensions {

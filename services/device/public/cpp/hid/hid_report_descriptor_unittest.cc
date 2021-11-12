@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/macros.h"
 #include "services/device/hid/test_report_descriptors.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/hid/hid_usage_and_page.h"

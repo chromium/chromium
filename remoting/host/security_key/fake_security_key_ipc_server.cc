@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"

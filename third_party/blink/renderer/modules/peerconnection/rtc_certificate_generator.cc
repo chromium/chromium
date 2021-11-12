@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"

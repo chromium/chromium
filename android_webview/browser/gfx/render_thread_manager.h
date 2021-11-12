@@ -12,7 +12,6 @@
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"

@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_TAB_HELPER_H_
 #define WEBLAYER_BROWSER_NO_STATE_PREFETCH_PRERENDER_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

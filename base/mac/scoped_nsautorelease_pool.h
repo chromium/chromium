@@ -6,7 +6,6 @@
 #define BASE_MAC_SCOPED_NSAUTORELEASE_POOL_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 #if defined(__OBJC__)
 @class NSAutoreleasePool;

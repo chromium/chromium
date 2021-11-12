@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 

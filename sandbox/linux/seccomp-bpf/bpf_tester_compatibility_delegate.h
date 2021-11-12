@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf_test_runner.h"
 
 namespace sandbox {

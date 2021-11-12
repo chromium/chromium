@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "remoting/base/rate_counter.h"
 #include "remoting/base/running_samples.h"

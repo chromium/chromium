@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_PAGE_LOAD_METRICS_AW_PAGE_LOAD_METRICS_PROVIDER_H_
 #define ANDROID_WEBVIEW_BROWSER_PAGE_LOAD_METRICS_AW_PAGE_LOAD_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace android_webview {

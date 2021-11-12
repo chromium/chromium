@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_QUOTA_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_QUOTA_TRACKER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"

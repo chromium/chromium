@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"

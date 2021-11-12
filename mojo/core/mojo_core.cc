@@ -11,7 +11,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"

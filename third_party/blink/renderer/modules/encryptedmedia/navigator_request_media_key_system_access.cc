@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_encrypted_media_client.h"

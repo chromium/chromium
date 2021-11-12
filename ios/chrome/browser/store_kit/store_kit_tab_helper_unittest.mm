@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 
-#include "base/macros.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

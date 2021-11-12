@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_INPUT_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/input_stub.h"
 
 namespace remoting {

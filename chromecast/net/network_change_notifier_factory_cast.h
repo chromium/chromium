@@ -6,7 +6,6 @@
 #define CHROMECAST_NET_NETWORK_CHANGE_NOTIFIER_FACTORY_CAST_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/network_change_notifier_factory.h"
 
 namespace chromecast {

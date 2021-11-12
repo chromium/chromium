@@ -14,7 +14,6 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 

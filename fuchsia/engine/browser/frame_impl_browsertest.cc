@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"

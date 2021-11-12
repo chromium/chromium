@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-
 namespace mojo {
 
 class CopyableType {

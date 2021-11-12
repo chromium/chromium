@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {

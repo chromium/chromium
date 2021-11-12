@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/perf_time_logger.h"
 #include "base/threading/thread.h"

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 

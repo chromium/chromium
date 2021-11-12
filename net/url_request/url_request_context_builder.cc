@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"

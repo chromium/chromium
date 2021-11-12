@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_transport_protocol.h"

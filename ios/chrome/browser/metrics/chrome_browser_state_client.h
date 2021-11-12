@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_CHROME_BROWSER_STATE_CLIENT_H_
 #define IOS_CHROME_BROWSER_METRICS_CHROME_BROWSER_STATE_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 
 namespace metrics {

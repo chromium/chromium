@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/simple_watcher.h"

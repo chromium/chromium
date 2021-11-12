@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/libjingle_xmpp/task_runner/task.h"
 #include "third_party/libjingle_xmpp/task_runner/taskparent.h"
 #include "third_party/libjingle_xmpp/xmpp/xmppengine.h"

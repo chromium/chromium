@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace bluez {

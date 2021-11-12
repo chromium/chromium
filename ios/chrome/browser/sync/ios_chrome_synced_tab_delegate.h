@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #import "ios/web/public/web_state_user_data.h"

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/host/ppapi_host_export.h"

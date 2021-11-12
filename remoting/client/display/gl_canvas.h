@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/display/canvas.h"
 #include "remoting/client/display/sys_opengl.h"

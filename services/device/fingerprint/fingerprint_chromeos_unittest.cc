@@ -5,7 +5,6 @@
 #include "services/device/fingerprint/fingerprint_chromeos.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

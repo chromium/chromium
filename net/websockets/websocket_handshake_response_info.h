@@ -5,7 +5,6 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_RESPONSE_INFO_H_
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_RESPONSE_INFO_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"

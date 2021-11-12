@@ -5,7 +5,6 @@
 #ifndef NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 #define NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_log.h"
 #include "net/base/net_export.h"

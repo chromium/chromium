@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/test/test_token_storage.h"
 
 namespace remoting {

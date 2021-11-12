@@ -5,7 +5,6 @@
 #ifndef PPAPI_PROXY_LOCKING_RESOURCE_RELEASER_H_
 #define PPAPI_PROXY_LOCKING_RESOURCE_RELEASER_H_
 
-#include "base/macros.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/resource_tracker.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"

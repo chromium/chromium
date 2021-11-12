@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_device_ref_api.h"
 

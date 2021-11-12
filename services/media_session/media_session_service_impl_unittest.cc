@@ -4,7 +4,6 @@
 
 #include "services/media_session/media_session_service_impl.h"
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

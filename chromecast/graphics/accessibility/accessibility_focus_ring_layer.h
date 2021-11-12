@@ -11,8 +11,6 @@
 #include "chromecast/graphics/accessibility/accessibility_focus_ring.h"
 #include "chromecast/graphics/accessibility/focus_ring_layer.h"
 
-#include "base/macros.h"
-
 namespace chromecast {
 
 // A subclass of FocusRingLayer intended for use by ChromeVox; it supports

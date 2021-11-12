@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/bind_to_current_loop.h"

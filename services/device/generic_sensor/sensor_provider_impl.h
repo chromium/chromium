@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_PROVIDER_IMPL_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_PROVIDER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

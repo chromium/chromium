@@ -9,7 +9,6 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_SERVICE_MANAGER_CONTEXT_H_
 #define CHROMECAST_BROWSER_SERVICE_MANAGER_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_RENDERER_JS_CHANNEL_BINDINGS_H_
 #define CHROMECAST_RENDERER_JS_CHANNEL_BINDINGS_H_
 
-#include "base/macros.h"
 #include "chromecast/common/mojom/js_channel.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 

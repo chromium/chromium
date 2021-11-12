@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {

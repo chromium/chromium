@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/target_process.h"

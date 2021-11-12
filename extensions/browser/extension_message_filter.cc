@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_message_filter.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"

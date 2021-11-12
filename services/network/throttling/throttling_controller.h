@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"

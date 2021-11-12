@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "extensions/browser/guest_view/web_view/javascript_dialog_helper.h"

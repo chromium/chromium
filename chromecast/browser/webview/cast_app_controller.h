@@ -7,8 +7,6 @@
 
 #include "chromecast/browser/webview/web_content_controller.h"
 
-#include "base/macros.h"
-
 namespace chromecast {
 
 class CastAppController : public WebContentController {

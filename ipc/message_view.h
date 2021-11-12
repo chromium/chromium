@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

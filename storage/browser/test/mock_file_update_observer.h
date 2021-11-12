@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"

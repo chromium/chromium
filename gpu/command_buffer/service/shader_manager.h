@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shader_translator.h"

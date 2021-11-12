@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/dns/host_cache.h"

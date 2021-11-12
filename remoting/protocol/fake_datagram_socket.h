@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_repeating_callback.h"
 #include "remoting/protocol/datagram_channel_factory.h"

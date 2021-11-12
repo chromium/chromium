@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"

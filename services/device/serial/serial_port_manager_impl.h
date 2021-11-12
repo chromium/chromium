@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

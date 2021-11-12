@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"

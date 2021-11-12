@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/sandbox_export.h"
 

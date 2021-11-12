@@ -24,7 +24,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/upload_data_stream.h"
 #include "services/network/throttling/throttling_network_interceptor.h"

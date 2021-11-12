@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_RETURNS_ASYNC_BUILDER_H_
 #define EXTENSIONS_RENDERER_BINDINGS_RETURNS_ASYNC_BUILDER_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/argument_spec.h"

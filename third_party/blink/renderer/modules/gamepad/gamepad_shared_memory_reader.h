@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_SHARED_MEMORY_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_SHARED_MEMORY_READER_H_
 
-#include "base/macros.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "mojo/public/cpp/system/buffer.h"

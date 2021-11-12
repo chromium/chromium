@@ -7,7 +7,6 @@
 
 #include "base/android/android_image_reader_abi.h"
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 namespace base {

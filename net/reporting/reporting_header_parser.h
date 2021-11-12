@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

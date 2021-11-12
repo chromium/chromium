@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/fido_ble_connection.h"

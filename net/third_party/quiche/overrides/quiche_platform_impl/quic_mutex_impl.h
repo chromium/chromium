@@ -5,7 +5,6 @@
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"

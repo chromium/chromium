@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"

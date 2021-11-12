@@ -8,7 +8,6 @@
 #include <mach/mach.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"

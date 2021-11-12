@@ -5,7 +5,6 @@
 #ifndef PPAPI_HOST_RESOURCE_MESSAGE_FILTER_H_
 #define PPAPI_HOST_RESOURCE_MESSAGE_FILTER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/host/host_message_context.h"

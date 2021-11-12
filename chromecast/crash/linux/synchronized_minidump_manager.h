@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromecast/crash/linux/dump_info.h"
 

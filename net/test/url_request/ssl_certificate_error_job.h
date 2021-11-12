@@ -5,7 +5,6 @@
 #ifndef NET_TEST_URL_REQUEST_SSL_CERTIFICATE_ERROR_JOB_H_
 #define NET_TEST_URL_REQUEST_SSL_CERTIFICATE_ERROR_JOB_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/url_request/url_request_job.h"
 #include "url/gurl.h"

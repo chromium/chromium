@@ -6,7 +6,6 @@
 #define DEVICE_VR_UTIL_FPS_METER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "device/vr/util/sample_queue.h"
 

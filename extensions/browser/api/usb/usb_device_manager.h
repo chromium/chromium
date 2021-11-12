@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

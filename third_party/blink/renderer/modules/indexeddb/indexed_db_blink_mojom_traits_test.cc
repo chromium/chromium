@@ -7,7 +7,6 @@
 #include <random>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"

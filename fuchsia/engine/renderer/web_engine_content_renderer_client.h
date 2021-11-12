@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"

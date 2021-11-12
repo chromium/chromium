@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {

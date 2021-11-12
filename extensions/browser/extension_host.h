@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"

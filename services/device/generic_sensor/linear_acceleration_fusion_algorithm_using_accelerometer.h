@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_LINEAR_ACCELERATION_FUSION_ALGORITHM_USING_ACCELEROMETER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_LINEAR_ACCELERATION_FUSION_ALGORITHM_USING_ACCELEROMETER_H_
 
-#include "base/macros.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 
 namespace device {

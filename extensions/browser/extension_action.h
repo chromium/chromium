@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_input_helper.h"

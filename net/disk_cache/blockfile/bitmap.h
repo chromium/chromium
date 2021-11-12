@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace disk_cache {

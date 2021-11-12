@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_OZONE_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"

@@ -5,8 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_DEVTOOLS_SERVER_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_DEVTOOLS_SERVER_H_
 
-#include "base/macros.h"
-
 namespace android_webview {
 
 // This class controls WebView-specific Developer Tools remote debugging server.

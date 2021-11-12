@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 
-#include "base/macros.h"
 #include "components/variations/platform_field_trials.h"
 
 // Responsible for setting up field trials specific to WebView. Currently all

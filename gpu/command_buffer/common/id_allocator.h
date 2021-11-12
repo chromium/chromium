@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {

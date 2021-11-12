@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chromecast/browser/cast_content_window.h"
 
 namespace content {

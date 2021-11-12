@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "extensions/browser/extension_error.h"
 
 namespace extensions {

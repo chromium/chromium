@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -5,7 +5,6 @@
 #ifndef NET_REPORTING_REPORTING_CACHE_OBSERVER_H_
 #define NET_REPORTING_REPORTING_CACHE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

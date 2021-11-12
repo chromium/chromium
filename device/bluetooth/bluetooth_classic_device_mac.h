@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

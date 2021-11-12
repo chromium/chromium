@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 

@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GPU_COMMAND_BUFFER_MEMORY_TRACKER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GPU_COMMAND_BUFFER_MEMORY_TRACKER_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"

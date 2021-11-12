@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_URL_LOADER_THROTTLE_PROVIDER_H_
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_URL_LOADER_THROTTLE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 

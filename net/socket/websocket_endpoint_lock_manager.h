@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"

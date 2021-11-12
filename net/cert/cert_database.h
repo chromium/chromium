@@ -5,7 +5,6 @@
 #ifndef NET_CERT_CERT_DATABASE_H_
 #define NET_CERT_CERT_DATABASE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"

@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wm_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

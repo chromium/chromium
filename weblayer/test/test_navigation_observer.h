@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 #define WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

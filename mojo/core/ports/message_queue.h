@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/core/ports/event.h"
 
 namespace mojo {

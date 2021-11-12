@@ -6,7 +6,6 @@
 #define REMOTING_HOST_REMOTING_REGISTER_SUPPORT_HOST_REQUEST_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/signaling/signal_strategy.h"

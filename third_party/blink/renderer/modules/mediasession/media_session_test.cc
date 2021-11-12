@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/mediasession/media_session.h"
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

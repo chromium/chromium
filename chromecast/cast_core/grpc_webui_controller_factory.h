@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_CAST_CORE_GRPC_WEBUI_CONTROLLER_FACTORY_H_
 #define CHROMECAST_CAST_CORE_GRPC_WEBUI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
 

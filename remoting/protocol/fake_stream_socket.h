@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/p2p_stream_socket.h"

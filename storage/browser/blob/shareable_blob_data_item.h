@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/blob/blob_memory_controller.h"
 

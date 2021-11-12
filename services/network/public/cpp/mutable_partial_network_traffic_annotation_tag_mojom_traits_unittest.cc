@@ -5,7 +5,6 @@
 #include "services/network/public/cpp/mutable_partial_network_traffic_annotation_tag_mojom_traits.h"
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "services/network/public/mojom/mutable_partial_network_traffic_annotation_tag.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_AURA_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_AURA_H_
 
-#include "base/macros.h"
 #include "extensions/shell/browser/shell_native_app_window.h"
 
 namespace extensions {

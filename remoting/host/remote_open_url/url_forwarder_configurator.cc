@@ -4,7 +4,6 @@
 
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace remoting {

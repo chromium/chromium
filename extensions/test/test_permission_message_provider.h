@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_TEST_TEST_PERMISSION_MESSAGE_PROVIDER_H_
 #define EXTENSIONS_TEST_TEST_PERMISSION_MESSAGE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 
 namespace extensions {

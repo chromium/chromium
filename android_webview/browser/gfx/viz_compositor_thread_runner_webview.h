@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_VIZ_COMPOSITOR_THREAD_RUNNER_WEBVIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"

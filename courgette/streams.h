@@ -20,7 +20,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "courgette/memory_allocator.h"
 #include "courgette/region.h"
 

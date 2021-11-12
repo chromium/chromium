@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/public/volume_control.h"
 
 namespace chromecast {

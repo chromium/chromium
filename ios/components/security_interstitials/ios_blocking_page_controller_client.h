@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "ios/web/public/web_state_observer.h"

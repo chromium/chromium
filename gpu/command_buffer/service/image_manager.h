@@ -9,7 +9,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/gpu_export.h"
 

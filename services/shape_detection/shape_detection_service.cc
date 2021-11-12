@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #if defined(OS_WIN)

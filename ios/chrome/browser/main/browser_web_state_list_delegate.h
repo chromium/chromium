@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 
 // WebStateList delegate for the old architecture.

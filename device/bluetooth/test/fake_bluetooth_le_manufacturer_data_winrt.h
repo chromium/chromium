@@ -13,8 +13,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
-
 namespace device {
 
 class FakeBluetoothLEManufacturerData

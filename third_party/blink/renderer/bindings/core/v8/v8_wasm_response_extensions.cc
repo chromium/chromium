@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"

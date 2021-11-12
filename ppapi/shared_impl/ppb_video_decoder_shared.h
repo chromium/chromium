@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/tracked_callback.h"

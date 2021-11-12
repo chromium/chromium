@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "url/gurl.h"

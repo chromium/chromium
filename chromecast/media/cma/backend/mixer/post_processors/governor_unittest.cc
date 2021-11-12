@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chromecast/media/base/aligned_buffer.h"
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_unittest.h"

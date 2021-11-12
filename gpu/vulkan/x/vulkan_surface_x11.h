@@ -7,7 +7,6 @@
 
 #include <vulkan/vulkan.h>
 
-#include "base/macros.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"

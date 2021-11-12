@@ -6,7 +6,6 @@
 #define SERVICES_AUDIO_LOCAL_MUTER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"

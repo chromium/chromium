@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"

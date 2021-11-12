@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/log/net_log.h"

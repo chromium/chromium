@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 

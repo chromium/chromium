@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "apps/app_lifetime_monitor_factory.h"
-#include "base/macros.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/disable_reason.h"

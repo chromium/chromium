@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/rsa_key_pair.h"

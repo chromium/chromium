@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"

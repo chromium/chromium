@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"

@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 

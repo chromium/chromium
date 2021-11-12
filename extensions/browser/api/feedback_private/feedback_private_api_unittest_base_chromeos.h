@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/api_unittest.h"
 
 namespace extensions {

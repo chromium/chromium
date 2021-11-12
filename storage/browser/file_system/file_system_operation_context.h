@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"

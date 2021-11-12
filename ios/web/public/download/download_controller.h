@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;

@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/public/media/mixer_output_stream.h"
 
 namespace chromecast {

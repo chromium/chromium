@@ -9,7 +9,6 @@
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"

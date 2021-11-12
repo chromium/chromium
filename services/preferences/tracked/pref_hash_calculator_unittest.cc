@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "v8/include/v8.h"
 

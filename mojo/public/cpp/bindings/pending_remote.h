@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"

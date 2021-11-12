@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

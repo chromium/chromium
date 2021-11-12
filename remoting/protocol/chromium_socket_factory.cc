@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "jingle/glue/utils.h"

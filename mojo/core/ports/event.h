@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/core/ports/name.h"
 #include "mojo/core/ports/user_message.h"

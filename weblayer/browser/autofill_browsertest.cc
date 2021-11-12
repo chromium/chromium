@@ -4,7 +4,6 @@
 
 #include "weblayer/test/weblayer_browser_test.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"

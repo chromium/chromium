@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 

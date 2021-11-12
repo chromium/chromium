@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"

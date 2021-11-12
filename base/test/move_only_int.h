@@ -5,8 +5,6 @@
 #ifndef BASE_TEST_MOVE_ONLY_INT_H_
 #define BASE_TEST_MOVE_ONLY_INT_H_
 
-#include "base/macros.h"
-
 namespace base {
 
 // A move-only class that holds an integer. This is designed for testing

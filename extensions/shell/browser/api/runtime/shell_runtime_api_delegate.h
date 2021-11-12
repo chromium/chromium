@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_API_RUNTIME_SHELL_RUNTIME_API_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_API_RUNTIME_SHELL_RUNTIME_API_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 
 namespace content {

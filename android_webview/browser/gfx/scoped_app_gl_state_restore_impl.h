@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace android_webview {

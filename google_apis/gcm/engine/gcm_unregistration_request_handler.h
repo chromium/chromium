@@ -5,7 +5,6 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_GCM_UNREGISTRATION_REQUEST_HANDLER_H_
 #define GOOGLE_APIS_GCM_ENGINE_GCM_UNREGISTRATION_REQUEST_HANDLER_H_
 
-#include "base/macros.h"
 #include "google_apis/gcm/engine/unregistration_request.h"
 
 namespace gcm {

@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

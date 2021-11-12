@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
 namespace device {

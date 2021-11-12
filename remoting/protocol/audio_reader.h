@@ -6,7 +6,6 @@
 #define REMOTING_PROTOCOL_AUDIO_READER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
 namespace remoting {

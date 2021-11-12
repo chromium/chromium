@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ui_metrics/canonical_url_share_metrics_types.h"

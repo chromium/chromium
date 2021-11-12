@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"

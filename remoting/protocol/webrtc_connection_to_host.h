@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/clipboard_filter.h"

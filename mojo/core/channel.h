@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"

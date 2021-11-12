@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_EXTENSION_CREATOR_FILTER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace extensions {

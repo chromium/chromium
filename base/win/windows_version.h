@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/version.h"
 
 using HANDLE = void*;

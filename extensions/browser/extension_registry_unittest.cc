@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"

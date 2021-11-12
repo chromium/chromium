@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace breadcrumbs {

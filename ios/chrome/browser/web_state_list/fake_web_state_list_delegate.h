@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_FAKE_WEB_STATE_LIST_DELEGATE_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_FAKE_WEB_STATE_LIST_DELEGATE_H_
 
-#include "base/macros.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 
 // Fake WebStateList delegate for tests.

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"

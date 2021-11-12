@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 
 // Interface of a OAuth2 access token fetcher.

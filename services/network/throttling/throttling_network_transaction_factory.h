@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_transaction_factory.h"
 

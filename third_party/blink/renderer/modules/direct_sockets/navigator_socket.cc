@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/navigator_socket.h"
 
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"

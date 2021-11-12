@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_ACTIVE_WEB_STATE_OBSERVATION_FORWARDER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"

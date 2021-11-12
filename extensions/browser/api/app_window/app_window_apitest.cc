@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"

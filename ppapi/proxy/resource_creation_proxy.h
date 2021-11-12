@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ppapi/c/pp_bool.h"

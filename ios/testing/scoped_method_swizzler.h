@@ -7,8 +7,6 @@
 
 #include <objc/runtime.h>
 
-#include "base/macros.h"
-
 class ScopedMethodSwizzler {
  public:
   // Constructs a new ScopedMethodSwizzler object and replaces the

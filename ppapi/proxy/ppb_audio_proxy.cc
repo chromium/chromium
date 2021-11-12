@@ -5,7 +5,6 @@
 #include "ppapi/proxy/ppb_audio_proxy.h"
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_errors.h"

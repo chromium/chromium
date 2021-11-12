@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/renderer/source_map.h"
 #include "v8/include/v8-forward.h"
 

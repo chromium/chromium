@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/modules/mediastream/secure_display_link_tracker.h"

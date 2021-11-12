@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

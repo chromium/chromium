@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

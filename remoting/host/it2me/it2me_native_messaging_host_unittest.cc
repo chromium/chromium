@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"

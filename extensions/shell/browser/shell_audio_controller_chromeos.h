@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 
 namespace extensions {
 

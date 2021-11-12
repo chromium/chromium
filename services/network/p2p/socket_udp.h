@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

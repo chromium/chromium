@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_CAST_EXTENSION_SYSTEM_FACTORY_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_CAST_EXTENSION_SYSTEM_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "extensions/browser/extension_system_provider.h"
 

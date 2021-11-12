@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 

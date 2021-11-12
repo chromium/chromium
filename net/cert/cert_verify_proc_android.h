@@ -5,7 +5,6 @@
 #ifndef NET_CERT_CERT_VERIFY_PROC_ANDROID_H_
 #define NET_CERT_CERT_VERIFY_PROC_ANDROID_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verify_proc.h"
 

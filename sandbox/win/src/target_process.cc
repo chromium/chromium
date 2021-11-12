@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/startup_information.h"

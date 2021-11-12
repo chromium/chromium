@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 // A fake Frame implementation that manages its own lifetime.
 class FakeFrame : public fuchsia::web::testing::Frame_TestBase {

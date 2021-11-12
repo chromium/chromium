@@ -4577,7 +4577,6 @@ TEST_F(GLES2ImplementationTest, DeleteZero) {
   EXPECT_EQ(GL_NO_ERROR, CheckError());
 }
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h"
 
 }  // namespace gles2

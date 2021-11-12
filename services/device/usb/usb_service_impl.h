@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "services/device/usb/scoped_libusb_device_ref.h"

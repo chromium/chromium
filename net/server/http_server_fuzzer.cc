@@ -5,7 +5,6 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"

@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_crash_keys.h"

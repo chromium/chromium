@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"

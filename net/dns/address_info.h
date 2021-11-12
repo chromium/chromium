@@ -9,7 +9,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"

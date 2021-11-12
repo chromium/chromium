@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/http/transport_security_state.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

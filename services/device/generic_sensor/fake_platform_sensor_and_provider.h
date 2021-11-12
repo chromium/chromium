@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"

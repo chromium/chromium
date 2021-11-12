@@ -11,8 +11,6 @@
 #include <wrl/implements.h>
 #include <memory>
 
-#include "base/macros.h"
-
 namespace device {
 
 struct FakeGeocoordinateData;

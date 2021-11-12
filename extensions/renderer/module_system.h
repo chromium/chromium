@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_injection_callback.h"

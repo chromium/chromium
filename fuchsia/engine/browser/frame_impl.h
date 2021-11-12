@@ -23,7 +23,6 @@
 
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"

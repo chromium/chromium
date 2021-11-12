@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/networking_private/networking_private_event_router.h"
 
-#include "base/macros.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"

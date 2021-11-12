@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"

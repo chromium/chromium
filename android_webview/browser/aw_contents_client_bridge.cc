@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
 #include "content/public/browser/browser_thread.h"

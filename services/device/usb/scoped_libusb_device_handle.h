@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_USB_SCOPED_LIBUSB_DEVICE_HANDLE_H_
 #define SERVICES_DEVICE_USB_SCOPED_LIBUSB_DEVICE_HANDLE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
 struct libusb_device_handle;

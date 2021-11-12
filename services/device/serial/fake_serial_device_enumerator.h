@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "services/device/serial/serial_device_enumerator.h"
 
 namespace device {

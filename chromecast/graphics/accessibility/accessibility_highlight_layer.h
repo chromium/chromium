@@ -12,7 +12,6 @@
 
 #include "chromecast/graphics/accessibility/accessibility_layer.h"
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 

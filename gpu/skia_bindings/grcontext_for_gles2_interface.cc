@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/gles2_interface.h"

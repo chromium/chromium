@@ -10,7 +10,6 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"

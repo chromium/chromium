@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <io.h>
 
-#include "base/macros.h"
-
 // Class to convert a HANDLE to a FILE *. The FILE * is closed when the
 // object goes out of scope
 class HandleToFile {

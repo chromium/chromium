@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"

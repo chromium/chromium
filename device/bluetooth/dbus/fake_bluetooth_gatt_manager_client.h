@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"

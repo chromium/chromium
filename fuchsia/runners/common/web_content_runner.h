@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 
 namespace cr_fuchsia {
 class WebInstanceHost;

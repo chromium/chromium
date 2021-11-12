@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_handler.h"

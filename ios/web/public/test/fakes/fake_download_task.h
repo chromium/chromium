@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/download/download_task.h"
 #include "url/gurl.h"

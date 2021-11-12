@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/run_loop.h"

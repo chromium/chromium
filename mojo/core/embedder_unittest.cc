@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"

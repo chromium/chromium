@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"

@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"

@@ -897,7 +897,6 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
   EXPECT_TRUE(NoCommandsWritten());
 }
 
-#include "base/macros.h"
 #include "gpu/command_buffer/client/raster_implementation_unittest_autogen.h"
 
 }  // namespace raster

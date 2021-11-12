@@ -15,7 +15,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/task_util.h"

@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_BATTERY_BATTERY_MONITOR_IMPL_H_
 #define SERVICES_DEVICE_BATTERY_BATTERY_MONITOR_IMPL_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/battery/battery_status_service.h"

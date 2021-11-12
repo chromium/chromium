@@ -53,7 +53,6 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 

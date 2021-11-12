@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_ALSA_ALSA_WRAPPER_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_ALSA_ALSA_WRAPPER_H_
 
-#include "base/macros.h"
 #include "media/audio/alsa/alsa_wrapper.h"
 
 namespace chromecast {

@@ -13,7 +13,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

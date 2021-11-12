@@ -5,7 +5,6 @@
 #ifndef NET_HTTP_MOCK_ALLOW_HTTP_AUTH_PREFERENCES_H_
 #define NET_HTTP_MOCK_ALLOW_HTTP_AUTH_PREFERENCES_H_
 
-#include "base/macros.h"
 #include "net/http/http_auth_preferences.h"
 
 namespace net {

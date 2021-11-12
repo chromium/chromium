@@ -4,7 +4,6 @@
 
 #import "ios/web/web_state/page_viewport_state.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"

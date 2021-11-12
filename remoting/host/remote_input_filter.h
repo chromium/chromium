@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_stub.h"

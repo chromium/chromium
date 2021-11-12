@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/device/bluetooth/le/mock_le_scan_manager.h"
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 #include "device/bluetooth/bluetooth_device.h"

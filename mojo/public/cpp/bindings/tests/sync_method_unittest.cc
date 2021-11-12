@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_token.h"
 #include "base/task/post_task.h"

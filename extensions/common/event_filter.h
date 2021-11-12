@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"

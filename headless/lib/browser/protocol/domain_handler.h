@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_DOMAIN_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_DOMAIN_HANDLER_H_
 
-#include "base/macros.h"
 #include "headless/lib/browser/protocol/protocol.h"
 
 namespace headless {

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "courgette/image_utils.h"
 #include "courgette/memory_allocator.h"
 

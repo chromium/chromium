@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/vulkan/vma_wrapper.h"
 

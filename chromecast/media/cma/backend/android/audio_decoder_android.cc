@@ -11,7 +11,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"

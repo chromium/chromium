@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 namespace data_decoder {

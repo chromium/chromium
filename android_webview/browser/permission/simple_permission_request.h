@@ -10,7 +10,6 @@
 #include "android_webview/browser/permission/aw_permission_request_delegate.h"
 #include "android_webview/browser/permission/permission_callback.h"
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace android_webview {
 

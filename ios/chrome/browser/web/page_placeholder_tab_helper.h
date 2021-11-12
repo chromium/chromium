@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

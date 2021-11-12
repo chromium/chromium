@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
 namespace storage {

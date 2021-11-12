@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 #define GPU_IPC_COMMON_GPU_SURFACE_LOOKUP_H_
 
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/native_widget_types.h"

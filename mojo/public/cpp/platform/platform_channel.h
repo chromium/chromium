@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"

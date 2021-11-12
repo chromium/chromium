@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/pe_image.h"
 #include "base/win/scoped_handle.h"

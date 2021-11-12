@@ -6,7 +6,6 @@
 #define DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"

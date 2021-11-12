@@ -5,8 +5,6 @@
 #ifndef SANDBOX_LINUX_TESTS_SANDBOX_TEST_RUNNER_H_
 #define SANDBOX_LINUX_TESTS_SANDBOX_TEST_RUNNER_H_
 
-#include "base/macros.h"
-
 namespace sandbox {
 
 // A simple "runner" class to implement tests.

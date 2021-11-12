@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_user_settings.h"

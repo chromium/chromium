@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 
 namespace base {

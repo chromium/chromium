@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"

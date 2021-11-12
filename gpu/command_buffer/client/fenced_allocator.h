@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {

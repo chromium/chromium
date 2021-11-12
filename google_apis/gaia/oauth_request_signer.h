@@ -8,8 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
-
 class GURL;
 
 // Implements the OAuth request signing process as described here:

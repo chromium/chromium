@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"

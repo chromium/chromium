@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"

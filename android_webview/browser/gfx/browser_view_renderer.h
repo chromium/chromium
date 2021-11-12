@@ -17,7 +17,6 @@
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"

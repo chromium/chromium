@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"

@@ -5,7 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUEZ_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_BLUEZ_H_
 #define DEVICE_BLUETOOTH_BLUEZ_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_BLUEZ_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"

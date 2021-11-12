@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

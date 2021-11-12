@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_MANAGER_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

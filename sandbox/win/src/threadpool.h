@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <list>
-#include "base/macros.h"
 #include "sandbox/win/src/crosscall_server.h"
 
 namespace sandbox {

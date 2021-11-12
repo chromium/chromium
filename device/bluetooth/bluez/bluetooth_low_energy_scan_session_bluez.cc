@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"

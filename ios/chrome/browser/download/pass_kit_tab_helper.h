@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_NET_FAKE_CONNECTIVITY_CHECKER_H_
 #define CHROMECAST_NET_FAKE_CONNECTIVITY_CHECKER_H_
 
-#include "base/macros.h"
 #include "chromecast/net/connectivity_checker.h"
 
 namespace chromecast {

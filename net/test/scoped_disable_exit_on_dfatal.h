@@ -6,7 +6,6 @@
 #define NET_TEST_SCOPED_DISABLE_EXIT_ON_DFATAL_H_
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

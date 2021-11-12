@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"

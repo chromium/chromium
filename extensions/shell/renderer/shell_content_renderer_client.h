@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/renderer/content_renderer_client.h"
 
 namespace blink {

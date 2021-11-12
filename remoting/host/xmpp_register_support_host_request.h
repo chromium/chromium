@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/register_support_host_request.h"

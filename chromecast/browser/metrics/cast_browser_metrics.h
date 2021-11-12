@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 

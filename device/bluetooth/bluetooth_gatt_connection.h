@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {

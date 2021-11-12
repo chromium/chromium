@@ -11,7 +11,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "fuchsia/base/test/context_provider_test_connector.h"

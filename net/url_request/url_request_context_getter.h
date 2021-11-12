@@ -5,7 +5,6 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_CONTEXT_GETTER_H_
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_GETTER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner_helpers.h"

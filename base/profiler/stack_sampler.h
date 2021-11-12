@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/threading/platform_thread.h"
 

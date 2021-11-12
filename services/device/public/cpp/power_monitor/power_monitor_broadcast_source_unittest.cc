@@ -4,7 +4,6 @@
 
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"

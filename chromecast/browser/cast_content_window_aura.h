@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_CONTENT_WINDOW_AURA_H_
 #define CHROMECAST_BROWSER_CAST_CONTENT_WINDOW_AURA_H_
 
-#include "base/macros.h"
 #include "chromecast/browser/cast_content_gesture_handler.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_observer.h"

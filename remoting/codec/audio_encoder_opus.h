@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "remoting/proto/audio.pb.h"
 
 struct OpusEncoder;

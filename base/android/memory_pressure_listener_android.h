@@ -6,7 +6,6 @@
 #define BASE_ANDROID_MEMORY_PRESSURE_LISTENER_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 
 namespace base {
 namespace android {

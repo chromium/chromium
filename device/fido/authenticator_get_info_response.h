@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"

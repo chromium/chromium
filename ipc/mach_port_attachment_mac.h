@@ -8,7 +8,6 @@
 #include <mach/mach.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_support_export.h"

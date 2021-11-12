@@ -48,7 +48,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"

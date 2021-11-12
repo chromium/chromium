@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"

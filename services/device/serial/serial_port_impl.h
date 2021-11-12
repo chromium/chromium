@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_SERIAL_SERIAL_PORT_IMPL_H_
 #define SERVICES_DEVICE_SERIAL_SERIAL_PORT_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

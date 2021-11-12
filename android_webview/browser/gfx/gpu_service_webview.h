@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"

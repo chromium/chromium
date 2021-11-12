@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "courgette/courgette_flow.h"
 #include "courgette/ensemble.h"
 #include "courgette/region.h"

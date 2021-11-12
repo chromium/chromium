@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_device_handle.h"

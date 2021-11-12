@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
 
-#include "base/macros.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"

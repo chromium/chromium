@@ -10,8 +10,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }  // namespace content

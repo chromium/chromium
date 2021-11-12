@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"

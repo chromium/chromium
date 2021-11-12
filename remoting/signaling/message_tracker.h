@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 

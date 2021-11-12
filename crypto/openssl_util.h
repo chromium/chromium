@@ -9,7 +9,6 @@
 #include <string.h>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {

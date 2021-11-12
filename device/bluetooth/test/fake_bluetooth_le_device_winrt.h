@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_device_information_winrt.h"
 

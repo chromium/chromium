@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"

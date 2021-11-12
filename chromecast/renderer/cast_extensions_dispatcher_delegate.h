@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_RENDERER_CAST_EXTENSIONS_DISPATCHER_DELEGATE_H_
 #define CHROMECAST_RENDERER_CAST_EXTENSIONS_DISPATCHER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/dispatcher_delegate.h"
 
 class CastExtensionsDispatcherDelegate

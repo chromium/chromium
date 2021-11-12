@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 #include "extensions/browser/lazy_context_task_queue.h"

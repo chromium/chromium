@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ipc/ipc_channel.h"
 
 namespace IPC {

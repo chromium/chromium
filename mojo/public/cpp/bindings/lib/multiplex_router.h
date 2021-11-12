@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"

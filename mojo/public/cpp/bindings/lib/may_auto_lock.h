@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MAY_AUTO_LOCK_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

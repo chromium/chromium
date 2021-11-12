@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_CLIENT_IMAGE_DECODE_ACCELERATOR_PROXY_H_
 #define GPU_IPC_CLIENT_IMAGE_DECODE_ACCELERATOR_PROXY_H_
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/client/image_decode_accelerator_interface.h"

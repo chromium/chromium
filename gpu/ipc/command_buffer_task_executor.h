@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"

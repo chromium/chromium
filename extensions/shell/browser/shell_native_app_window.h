@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 
-#include "base/macros.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 

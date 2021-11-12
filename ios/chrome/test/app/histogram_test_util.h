@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 

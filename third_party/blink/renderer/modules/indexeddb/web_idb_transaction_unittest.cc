@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_blob_info.h"

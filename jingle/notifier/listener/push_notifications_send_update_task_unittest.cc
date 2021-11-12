@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "jingle/notifier/listener/xml_element_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

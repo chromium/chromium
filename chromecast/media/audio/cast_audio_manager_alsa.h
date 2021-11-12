@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager.h"

@@ -6,7 +6,6 @@
 #define REMOTING_BASE_AUTO_THREAD_TASK_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace remoting {

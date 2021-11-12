@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

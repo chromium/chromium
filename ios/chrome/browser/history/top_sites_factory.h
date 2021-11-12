@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_TOP_SITES_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_TOP_SITES_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"

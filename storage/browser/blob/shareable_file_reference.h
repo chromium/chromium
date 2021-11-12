@@ -6,7 +6,6 @@
 #define STORAGE_BROWSER_BLOB_SHAREABLE_FILE_REFERENCE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "storage/browser/blob/scoped_file.h"
 
 namespace storage {

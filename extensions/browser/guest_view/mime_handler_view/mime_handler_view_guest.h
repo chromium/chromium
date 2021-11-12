@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/global_routing_id.h"

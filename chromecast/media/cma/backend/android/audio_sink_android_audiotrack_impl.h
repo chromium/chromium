@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"

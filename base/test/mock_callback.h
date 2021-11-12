@@ -38,7 +38,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {

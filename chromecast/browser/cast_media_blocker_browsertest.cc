@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"

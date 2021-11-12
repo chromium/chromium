@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_ANIMATED_SCOPED_FULLSCREEN_DISABLER_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_ANIMATED_SCOPED_FULLSCREEN_DISABLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class FullscreenController;

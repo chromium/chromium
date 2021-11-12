@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 
-#include "base/macros.h"
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

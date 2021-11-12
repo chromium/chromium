@@ -13,7 +13,6 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/vr_device.h"

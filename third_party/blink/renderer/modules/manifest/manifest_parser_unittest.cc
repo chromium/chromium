@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

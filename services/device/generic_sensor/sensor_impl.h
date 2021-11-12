@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_IMPL_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_SENSOR_IMPL_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"

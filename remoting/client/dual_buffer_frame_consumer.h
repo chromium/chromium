@@ -6,7 +6,6 @@
 #define REMOTING_CLIENT_DUAL_BUFFER_FRAME_CONSUMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

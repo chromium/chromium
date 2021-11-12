@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "device/udev_linux/scoped_udev.h"

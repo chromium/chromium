@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_METRICS_IOS_CHROME_STABILITY_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"

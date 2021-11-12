@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/task/sequenced_task_runner_helpers.h"

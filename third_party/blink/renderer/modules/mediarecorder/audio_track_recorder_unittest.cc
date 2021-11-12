@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/audio/simple_sources.h"

@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_array_output.h"
 #include "ppapi/c/pp_resource.h"

@@ -4,7 +4,6 @@
 
 #include "ios/chrome/test/ios_chrome_unit_test_suite.h"
 
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/test/test_simple_task_runner.h"

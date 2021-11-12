@@ -10,8 +10,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // A scoper for a variable-length structure such as SID, SECURITY_DESCRIPTOR and

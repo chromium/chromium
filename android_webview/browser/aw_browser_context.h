@@ -12,7 +12,6 @@
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_registry_simple.h"

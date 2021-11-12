@@ -6,7 +6,6 @@
 #define PPAPI_PROXY_NET_ADDRESS_RESOURCE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"

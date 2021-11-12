@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {

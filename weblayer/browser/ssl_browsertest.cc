@@ -5,7 +5,6 @@
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

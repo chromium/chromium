@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"

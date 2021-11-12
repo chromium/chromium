@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_SERVER_ENDPOINT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {

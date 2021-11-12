@@ -15,7 +15,6 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
 

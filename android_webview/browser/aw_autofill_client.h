@@ -11,7 +11,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"

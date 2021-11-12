@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_HTTP_SERVER_PROPERTIES_PREF_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/http/http_server_properties.h"
 

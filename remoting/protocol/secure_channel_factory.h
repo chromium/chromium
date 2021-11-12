@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "remoting/protocol/stream_channel_factory.h"
 

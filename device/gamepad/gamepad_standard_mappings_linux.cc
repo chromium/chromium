@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/macros.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 

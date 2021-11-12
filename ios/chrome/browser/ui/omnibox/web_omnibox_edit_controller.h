@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 
 namespace web {

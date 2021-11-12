@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_event_timestamps.h"
 

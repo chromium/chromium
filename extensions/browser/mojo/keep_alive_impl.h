@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_MOJO_KEEP_ALIVE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

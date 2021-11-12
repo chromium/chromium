@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/url_request/url_request.h"

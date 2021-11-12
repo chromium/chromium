@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 static const int kMaxRecursionDepth = 200;

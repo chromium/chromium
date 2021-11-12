@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_URL_LOADER_FACTORY_MANAGER_H_
 #define EXTENSIONS_BROWSER_URL_LOADER_FACTORY_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/common/extension.h"

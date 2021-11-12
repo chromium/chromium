@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/event.h"

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/gpu_fence_handle.h"
 

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"

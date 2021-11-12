@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"

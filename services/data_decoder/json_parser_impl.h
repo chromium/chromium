@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 
 namespace data_decoder {

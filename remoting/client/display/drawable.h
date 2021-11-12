@@ -5,7 +5,6 @@
 #ifndef REMOTING_CLIENT_DISPLAY_DRAWABLE_H_
 #define REMOTING_CLIENT_DISPLAY_DRAWABLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace remoting {

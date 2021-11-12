@@ -32,8 +32,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace base {
 class MessageLoop;
 }  // namespace base

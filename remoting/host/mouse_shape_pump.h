@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 #include "services/preferences/tracked/hash_store_contents.h"

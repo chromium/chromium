@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "net/cookies/cookie_monster.h"

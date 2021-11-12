@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/time_source.h"

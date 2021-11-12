@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"

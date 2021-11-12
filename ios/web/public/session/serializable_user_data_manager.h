@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "base/macros.h"
-
 namespace web {
 
 class WebState;

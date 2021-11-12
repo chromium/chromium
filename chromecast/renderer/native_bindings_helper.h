@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/function_template.h"
 #include "v8/include/v8.h"

@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_SYSTEM_INFO_SYSTEM_INFO_API_H_
 #define EXTENSIONS_BROWSER_API_SYSTEM_INFO_SYSTEM_INFO_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 

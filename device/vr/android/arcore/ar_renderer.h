@@ -5,7 +5,6 @@
 #ifndef DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
 #define DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace device {

@@ -5,7 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_DISPATCHER_H_
 #define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "sandbox/win/src/crosscall_server.h"

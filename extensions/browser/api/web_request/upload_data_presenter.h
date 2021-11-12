@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace base {

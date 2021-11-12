@@ -6,7 +6,6 @@
 #define REMOTING_HOST_IT2ME_IT2ME_CONFIRMATION_DIALOG_PROXY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

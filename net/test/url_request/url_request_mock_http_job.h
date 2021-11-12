@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/test/url_request/url_request_test_job_backed_by_file.h"
 #include "url/gurl.h"
 

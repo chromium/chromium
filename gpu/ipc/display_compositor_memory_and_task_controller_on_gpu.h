@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
 #define GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/memory_tracking.h"

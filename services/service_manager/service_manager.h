@@ -11,7 +11,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

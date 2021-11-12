@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_DISPLAY_GL_TEXTURE_IDS_H_
 #define REMOTING_CLIENT_DISPLAY_GL_TEXTURE_IDS_H_
 
-#include "base/macros.h"
-
 namespace remoting {
 
 const int kGlCursorTextureId = 0;

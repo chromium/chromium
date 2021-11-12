@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"

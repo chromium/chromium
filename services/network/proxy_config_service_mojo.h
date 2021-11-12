@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_PROXY_CONFIG_SERVICE_MOJO_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

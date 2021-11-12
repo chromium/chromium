@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ui_base_types.h"
 

@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"

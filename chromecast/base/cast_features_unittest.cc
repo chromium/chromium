@@ -4,7 +4,6 @@
 
 #include "chromecast/base/cast_features.h"
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"

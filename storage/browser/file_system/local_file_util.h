@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 
 namespace base {

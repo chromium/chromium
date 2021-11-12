@@ -4,7 +4,6 @@
 
 #include "net/cert/internal/extended_key_usage.h"
 
-#include "base/macros.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
 #include "net/der/tag.h"

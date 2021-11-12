@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"

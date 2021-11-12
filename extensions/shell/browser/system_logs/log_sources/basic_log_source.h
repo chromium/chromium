@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_LOG_SOURCES_BASIC_LOG_SOURCE_H_
 #define EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_LOG_SOURCES_BASIC_LOG_SOURCE_H_
 
-#include "base/macros.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace content {

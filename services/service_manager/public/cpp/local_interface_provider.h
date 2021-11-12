@@ -5,7 +5,6 @@
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_LOCAL_INTERFACE_PROVIDER_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_LOCAL_INTERFACE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/export.h"
