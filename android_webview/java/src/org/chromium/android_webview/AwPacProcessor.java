@@ -17,6 +17,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
 
+import java.net.InetAddress;
+
 /**
  * Class to evaluate PAC scripts.
  */
@@ -54,7 +56,8 @@ public class AwPacProcessor {
         } else {
             String[] addresses = linkProperties.getLinkAddresses()
                                          .stream()
-                                         .map(LinkAddress::toString)
+                                         .map(LinkAddress::getAddress)
+                                         .map(InetAddress::getHostAddress)
                                          .toArray(String[] ::new);
             setNetworkAndLinkAddresses(network.getNetworkHandle(), addresses);
         }
