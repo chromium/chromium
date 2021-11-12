@@ -295,4 +295,37 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
 }
 
+// Test Mac indirect columns and descendants.
+TEST_F(BrowserAccessibilityMacTest, TableColumnsAndDescendants) {
+  ui::AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(7);
+  MakeTable(&initial_state.nodes[0], 1, 0, 0);
+  initial_state.nodes[0].child_ids = {2, 3};
+  MakeRow(&initial_state.nodes[1], 2);
+  initial_state.nodes[1].child_ids = {4, 5};
+  MakeRow(&initial_state.nodes[2], 3);
+  initial_state.nodes[2].child_ids = {6, 7};
+  MakeColumnHeader(&initial_state.nodes[3], 4, 0, 0);
+  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 1);
+  MakeCell(&initial_state.nodes[5], 6, 1, 0);
+  MakeCell(&initial_state.nodes[6], 7, 1, 1);
+
+  // This relation is the key to force
+  // AXEventGenerator::FireRelationSourceEvents to trigger addition of an event
+  // which had caused a crash below.
+  initial_state.nodes[6].AddIntListAttribute(
+      ax::mojom::IntListAttribute::kFlowtoIds, {1});
+
+  manager_ =
+      std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
+
+  BrowserAccessibilityMac* root =
+      static_cast<BrowserAccessibilityMac*>(manager_->GetRoot());
+
+  // This triggers computation of the extra Mac table cells. 2 rows, 2 extra
+  // columns, and 1 extra column header. This used to crash.
+  ASSERT_EQ(root->PlatformChildCount(), 5U);
+}
+
 }  // namespace content
