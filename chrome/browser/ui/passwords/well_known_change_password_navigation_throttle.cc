@@ -57,32 +57,6 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
   return false;
 }
 
-// Used to scope the posted navigation task to the lifetime of |web_contents|.
-class WebContentsLifetimeHelper
-    : public content::WebContentsUserData<WebContentsLifetimeHelper> {
- public:
-  explicit WebContentsLifetimeHelper(WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  base::WeakPtr<WebContentsLifetimeHelper> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void NavigateTo(const content::OpenURLParams& url_params) {
-    web_contents_->OpenURL(url_params);
-  }
-
- private:
-  friend class content::WebContentsUserData<WebContentsLifetimeHelper>;
-
-  WebContents* const web_contents_;
-  base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper);
-
 }  // namespace
 
 // static
@@ -205,12 +179,15 @@ void WellKnownChangePasswordNavigationThrottle::Redirect(const GURL& url) {
   if (!web_contents)
     return;
 
-  WebContentsLifetimeHelper::CreateForWebContents(web_contents);
-  WebContentsLifetimeHelper* helper =
-      WebContentsLifetimeHelper::FromWebContents(web_contents);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebContentsLifetimeHelper::NavigateTo,
-                                helper->GetWeakPtr(), std::move(params)));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<content::WebContents> web_contents,
+                        const content::OpenURLParams& params) {
+                       if (!web_contents)
+                         return;
+                       web_contents->OpenURL(params);
+                     },
+                     web_contents->GetWeakPtr(), std::move(params)));
 }
 
 void WellKnownChangePasswordNavigationThrottle::RecordMetric(
