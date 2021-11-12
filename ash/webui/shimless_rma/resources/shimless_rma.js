@@ -26,7 +26,8 @@ import './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService, rmadErrorString} from './mojo_interface_provider.js';
 import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -202,7 +203,16 @@ const StateComponentMapping = {
  * @fileoverview
  * 'shimless-rma' is the main page for the shimless rma process modal dialog.
  */
-export class ShimlessRmaElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ShimlessRmaElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ShimlessRmaElement extends ShimlessRmaElementBase {
   static get is() {
     return 'shimless-rma';
   }

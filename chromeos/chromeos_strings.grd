@@ -2081,6 +2081,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_SPLASH_MESSAGE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
         Entering RMA
       </message>
+      <!-- Common buttons -->
+      <message name="IDS_SHIMLESS_RMA_CANCEL_BUTTON" desc="Button used to cancel RMA finalization, when allowed.">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_BACK_BUTTON" desc="Button used to go back to the previous step of RMA finalization, when allowed.">
+        Back
+      </message>
+      <message name="IDS_SHIMLESS_RMA_NEXT_BUTTON" desc="Default text for the button used to progress to the next step of RMA finalization.">
+        Next
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair
