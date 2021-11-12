@@ -33,3 +33,8 @@ android_library("public_java") {
 generate_jni("jni_headers") {
   sources = [ "public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java" ]
 }
+
+android_library("test_support_java") {
+  sources = [ "internal/javatests/src/org/chromium/chrome/features/start_surface/ViewIds.java" ]
+  deps = [ "//chrome/android/features/start_surface/internal:java" ]
+}
