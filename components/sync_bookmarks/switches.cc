@@ -8,7 +8,7 @@
 namespace switches {
 
 const base::Feature kSyncReuploadBookmarks{"SyncReuploadBookmarks",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSyncUseClientTagForBookmarkCommits{
     "SyncUseClientTagForBookmarkCommits", base::FEATURE_ENABLED_BY_DEFAULT};

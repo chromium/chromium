@@ -826,6 +826,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
   sync_pb::BookmarkModelMetadata model_metadata =
       processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
+  model_metadata.clear_bookmarks_hierarchy_fields_reuploaded();
   ASSERT_FALSE(processor()->GetTrackerForTest()->HasLocalChanges());
 
   // Simulate browser restart, enable sync reupload and initialize the processor
