@@ -512,6 +512,8 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
   for (const auto& it : icons_)
     UpdateIconVisibility(it.first);
   ReorderViews();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {
@@ -759,6 +761,9 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
                          [this, id](const std::string& action_id) {
                            return GetViewForId(action_id) == GetViewForId(id);
                          });
+  if (it == model_->pinned_action_ids().cend())
+    return;
+
   ToolbarActionView* extension_view = GetViewForId(*it);
   if (!extension_view)
     return;

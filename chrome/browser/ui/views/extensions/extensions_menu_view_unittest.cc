@@ -509,7 +509,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ResetDropCallback) {
               testing::ElementsAre(kName1, kName2, kName3));
 }
 
-TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallback) {
+TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnActionAdded) {
   constexpr char kName1[] = "Test 1";
   auto ext1 = AddSimpleExtension(kName1);
   constexpr char kName2[] = "Test 2";
@@ -551,6 +551,50 @@ TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallback) {
 
   EXPECT_THAT(GetPinnedExtensionNames(),
               testing::ElementsAre(kName1, kName2, kName3));
+}
+
+// ToolbarActionsModel::MovePinnedAction crashes if pinned extensions changes
+// while the drop callback isn't invalidated. This test makes sure this doesn't
+// happen anymore. https://crbug.com/1268239.
+TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnPrefChange) {
+  constexpr char kName1[] = "Test 1";
+  auto ext1 = AddSimpleExtension(kName1);
+  constexpr char kName2[] = "Test 2";
+  auto ext2 = AddSimpleExtension(kName2);
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile());
+  ASSERT_TRUE(toolbar_model);
+
+  toolbar_model->SetActionVisibility(ext1->id(), true);
+  toolbar_model->SetActionVisibility(ext2->id(), true);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName1, kName2));
+
+  // Simulate dragging "Test 2" to the first slot.
+  ToolbarActionView* drag_view = GetPinnedExtensionView(kName2);
+  ui::OSExchangeData drag_data;
+  extensions_container()->WriteDragDataForView(drag_view, gfx::Point(),
+                                               &drag_data);
+  gfx::PointF drop_point(GetPinnedExtensionView(kName1)->origin());
+  ui::DropTargetEvent drop_event(drag_data, drop_point, drop_point,
+                                 ui::DragDropTypes::DRAG_MOVE);
+  extensions_container()->OnDragUpdated(drop_event);
+  auto cb = extensions_container()->GetDropCallback(drop_event);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName2, kName1));
+
+  extensions::ExtensionPrefs::Get(profile())->SetPinnedExtensions({});
+  WaitForAnimation();
+
+  // The drop callback should be invalidated, and items should be back in their
+  // original order.
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(drop_event, output_drag_op);
+  WaitForAnimation();
+
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre());
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
