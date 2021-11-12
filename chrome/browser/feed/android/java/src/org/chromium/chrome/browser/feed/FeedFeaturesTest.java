@@ -83,7 +83,7 @@ public class FeedFeaturesTest {
     @Test
     public void testResetUponRestartFromFinchParam() {
         mParamsTestValues.addFieldTrialParamOverride(ChromeFeatureList.WEB_FEED,
-                "feed_tab_stickyness_logic", "reset_upon_chrome_restart");
+                "feed_tab_stickiness_logic", "reset_upon_chrome_restart");
         FeatureList.setTestValues(mParamsTestValues);
 
         assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());
@@ -97,7 +97,7 @@ public class FeedFeaturesTest {
     @Test
     public void testIndefinitelyPersistedFromFinchParam() {
         mParamsTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.WEB_FEED, "feed_tab_stickyness_logic", "indefinitely_persisted");
+                ChromeFeatureList.WEB_FEED, "feed_tab_stickiness_logic", "indefinitely_persisted");
         FeatureList.setTestValues(mParamsTestValues);
 
         assertEquals(StreamTabId.FOLLOWING, FeedFeatures.getFeedTabIdToRestore());
