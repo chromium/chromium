@@ -73,7 +73,7 @@ class TestViewsDelegate : public ViewsDelegate {
   std::unique_ptr<LayoutProvider> layout_provider_ =
       std::make_unique<LayoutProvider>();
 #if defined(OS_CHROMEOS)
-  gfx::NativeWindow context_;
+  gfx::NativeWindow context_ = nullptr;
 #endif
 };
 
