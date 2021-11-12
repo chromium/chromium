@@ -440,6 +440,9 @@
 }
 
 - (void)reload {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return;
+  }
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
   [self reloadContentSuggestions];
 }

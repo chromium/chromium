@@ -64,7 +64,7 @@ class WebState;
 // The content offset of the scroll view.
 - (CGPoint)contentOffset;
 
-// Reloads the content of the NewTabPage.
+// Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;
 
 // Calls when the visibility of the NTP changes.
