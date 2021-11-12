@@ -6,17 +6,20 @@
 
 #include "build/build_config.h"
 
-// Native headless is currently available only on Linux platform. More
-// platforms will be added soon, so avoid function level clutter by providing
-// stub implementations at the end of the file.
-#if defined(OS_LINUX)
+// Native headless is currently available only on Linux and Windows platforms.
+// More platforms will be added later, so avoid function level clutter by
+// providing stub implementations at the end of the file.
+#if defined(OS_LINUX) || defined(OS_WIN)
 
 #include <cstdlib>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "ui/gfx/switches.h"
+
+#if defined(OS_LINUX)
 #include "ui/ozone/public/ozone_switches.h"
+#endif  // defined(OS_LINUX)
 
 namespace headless {
 
@@ -48,18 +51,20 @@ void SetUpCommandLine(const base::CommandLine* command_line) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kNoErrorDialogs);
   }
-  // Native headless chrome relies on ozone/headless platform.
+#if defined(OS_LINUX)
+  // Native headless chrome on Linux relies on ozone/headless platform.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ::switches::kOzonePlatform, switches::kHeadless);
   if (!command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kOzoneOverrideScreenSize, "800,600");
   }
+#endif  // defined(OS_LINUX)
 }
 
 }  // namespace headless
 
-#else  // defined(OS_LINUX)
+#else  // defined(OS_LINUX) || defined(OS_WIN)
 
 namespace headless {
 
