@@ -741,13 +741,13 @@ void OverviewSession::OnWindowActivating(
   if (gained_active && gained_active->GetId() == kShellWindowId_DesksBarWindow)
     return;
 
-  // Activating one of the confirmation dialogs associated with desks templates
-  // should not end overview.
+  // Activating or deactivating one of the confirmation dialogs associated with
+  // desks templates should not end overview.
   if (gained_active && desks_templates_util::AreDesksTemplatesEnabled()) {
-    const views::Widget* dialog_widget =
-        desks_templates_dialog_controller_->dialog_widget();
-    if (dialog_widget && gained_active == dialog_widget->GetNativeWindow())
+    if (ShouldKeepOverviewOpenForDesksTemplatesDialog(gained_active,
+                                                      lost_active)) {
       return;
+    }
   }
 
   if (DesksController::Get()->AreDesksBeingModified()) {
@@ -1326,6 +1326,22 @@ void OverviewSession::UpdateAccessibilityFocus() {
     a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTreeChanged, true);
   }
+}
+
+bool OverviewSession::ShouldKeepOverviewOpenForDesksTemplatesDialog(
+    aura::Window* gained_active,
+    aura::Window* lost_active) {
+  DCHECK(desks_templates_util::AreDesksTemplatesEnabled());
+  const views::Widget* dialog_widget =
+      desks_templates_dialog_controller_->dialog_widget();
+  if (!dialog_widget)
+    return false;
+
+  auto* dialog_window = dialog_widget->GetNativeWindow();
+  if (gained_active == dialog_window || lost_active == dialog_window)
+    return true;
+
+  return false;
 }
 
 }  // namespace ash

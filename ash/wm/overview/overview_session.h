@@ -370,6 +370,14 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // overview item is added or removed.
   void UpdateAccessibilityFocus();
 
+  // Called when a window is activated or deactivated and the desks templates
+  // feature is enabled. Returns true if we should keep overview open. Overview
+  // should be kept open if |gained_active| or |lost_active| is a desks
+  // templates dialog.
+  bool ShouldKeepOverviewOpenForDesksTemplatesDialog(
+      aura::Window* gained_active,
+      aura::Window* lost_active);
+
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
   OverviewDelegate* delegate_;
