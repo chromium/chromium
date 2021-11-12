@@ -123,8 +123,7 @@ void ScreenOrientationController::UpdateOrientation() {
 }
 
 bool ScreenOrientationController::IsActiveAndVisible() const {
-  return orientation_ && screen_orientation_service_.is_bound() && GetPage() &&
-         GetPage()->IsPageVisible();
+  return orientation_ && DomWindow() && GetPage() && GetPage()->IsPageVisible();
 }
 
 void ScreenOrientationController::PageVisibilityChanged() {
@@ -199,8 +198,8 @@ void ScreenOrientationController::SetOrientation(
 void ScreenOrientationController::lock(
     device::mojom::blink::ScreenOrientationLockType orientation,
     std::unique_ptr<WebLockOrientationCallback> callback) {
-  // When detached, the |screen_orientation_service_| is no longer valid.
-  if (!screen_orientation_service_.is_bound())
+  // Do not lock the screen when detached.
+  if (!DomWindow() || !DomWindow()->document())
     return;
 
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
@@ -219,8 +218,8 @@ void ScreenOrientationController::lock(
 }
 
 void ScreenOrientationController::unlock() {
-  // When detached, the |screen_orientation_service_| is no longer valid.
-  if (!screen_orientation_service_.is_bound())
+  // Do not unlock the screen when detached.
+  if (!DomWindow() || !DomWindow()->document())
     return;
 
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
