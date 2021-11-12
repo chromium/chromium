@@ -59,9 +59,9 @@ const KEYS = {
 }
 
 function attachFencedFrame(url) {
-  assert_not_equals(window.HTMLFencedFrameElement, undefined,
-                    "The HTMLFencedFrameElement should be exposed on the " +
-                    "window object");
+  assert_implements(
+      window.HTMLFencedFrameElement,
+      'The HTMLFencedFrameElement should be exposed on the window object');
 
   const fenced_frame = document.createElement('fencedframe');
   fenced_frame.src = url;
