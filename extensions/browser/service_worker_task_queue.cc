@@ -669,7 +669,7 @@ void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(
     ServiceWorkerTaskQueue* other) {
   DCHECK(browser_context_->IsOffTheRecord())
       << "Only need to activate split mode extensions for an OTR context";
-  for (const auto& activated : activation_sequences_) {
+  for (const auto& activated : other->activation_sequences_) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     DCHECK(registry);
     const Extension* extension =
