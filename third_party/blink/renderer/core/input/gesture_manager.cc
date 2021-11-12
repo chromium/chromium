@@ -240,6 +240,9 @@ WebInputEventResult GestureManager::HandleGestureTap(
       FlooredIntPoint(gesture_event.PositionInRootFrame());
   Node* tapped_node = current_hit_test.InnerNode();
   Element* tapped_element = current_hit_test.InnerElement();
+  LocalFrame::NotifyUserActivation(
+      tapped_node ? tapped_node->GetDocument().GetFrame() : nullptr,
+      mojom::blink::UserActivationNotificationType::kInteraction);
 
   mouse_event_manager_->SetClickElement(tapped_element);
 
@@ -400,10 +403,6 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
     return WebInputEventResult::kNotHandled;
   }
 
-  // For touch pointer interactions, pointerup is an activation triggering
-  // event.  A long-press gesture doesn't fire a pointerup event (fires a
-  // pointercancel instead), but for compat reasons we need user activation
-  // here.
   LocalFrame::NotifyUserActivation(
       inner_node ? inner_node->GetDocument().GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kInteraction);
