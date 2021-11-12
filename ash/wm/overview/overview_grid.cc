@@ -999,7 +999,7 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   if (!save_desk_as_template_widget_) {
     save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
-    save_desk_as_template_widget_->SetContentsView(new PillButton(
+    save_desk_as_template_widget_->SetContentsView(std::make_unique<PillButton>(
         base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(

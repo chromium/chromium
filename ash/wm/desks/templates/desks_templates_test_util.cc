@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -24,6 +25,44 @@ OverviewGrid* GetPrimaryOverviewGrid() {
 }
 
 }  // namespace
+
+DesksTemplatesPresenterTestApi::DesksTemplatesPresenterTestApi(
+    DesksTemplatesPresenter* presenter)
+    : presenter_(presenter) {
+  DCHECK(presenter_);
+}
+
+DesksTemplatesPresenterTestApi::~DesksTemplatesPresenterTestApi() = default;
+
+void DesksTemplatesPresenterTestApi::SetOnUpdateUiClosure(
+    base::OnceClosure closure) {
+  DCHECK(!presenter_->on_update_ui_closure_for_testing_);
+  presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
+}
+
+DesksTemplatesGridViewTestApi::DesksTemplatesGridViewTestApi(
+    const DesksTemplatesGridView* grid_view)
+    : grid_view_(grid_view) {
+  DCHECK(grid_view_);
+}
+
+DesksTemplatesGridViewTestApi::~DesksTemplatesGridViewTestApi() = default;
+
+DesksTemplatesItemViewTestApi::DesksTemplatesItemViewTestApi(
+    const DesksTemplatesItemView* item_view)
+    : item_view_(item_view) {
+  DCHECK(item_view_);
+}
+
+DesksTemplatesItemViewTestApi::~DesksTemplatesItemViewTestApi() = default;
+
+DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
+    const DesksTemplatesIconView* desks_templates_icon_view)
+    : desks_templates_icon_view_(desks_templates_icon_view) {
+  DCHECK(desks_templates_icon_view_);
+}
+
+DesksTemplatesIconViewTestApi::~DesksTemplatesIconViewTestApi() = default;
 
 views::Button* GetZeroStateDesksTemplatesButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();

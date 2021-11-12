@@ -22,6 +22,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -49,115 +50,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
-
-// Wrapper for DesksTemplatesPresenter that exposes internal state to test
-// functions.
-class DesksTemplatesPresenterTestApi {
- public:
-  explicit DesksTemplatesPresenterTestApi(DesksTemplatesPresenter* presenter)
-      : presenter_(presenter) {
-    DCHECK(presenter_);
-  }
-  DesksTemplatesPresenterTestApi(const DesksTemplatesPresenterTestApi&) =
-      delete;
-  DesksTemplatesPresenterTestApi& operator=(
-      const DesksTemplatesPresenterTestApi&) = delete;
-  ~DesksTemplatesPresenterTestApi() = default;
-
-  void SetOnUpdateUiClosure(base::OnceClosure closure) {
-    DCHECK(!presenter_->on_update_ui_closure_for_testing_);
-    presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
-  }
-
- private:
-  DesksTemplatesPresenter* const presenter_;
-};
-
-// Wrapper for DesksTemplatesGridView that exposes internal state to test
-// functions.
-class DesksTemplatesGridViewTestApi {
- public:
-  explicit DesksTemplatesGridViewTestApi(
-      const DesksTemplatesGridView* grid_view)
-      : grid_view_(grid_view) {
-    DCHECK(grid_view_);
-  }
-  DesksTemplatesGridViewTestApi(const DesksTemplatesGridViewTestApi&) = delete;
-  DesksTemplatesGridViewTestApi& operator=(
-      const DesksTemplatesGridViewTestApi&) = delete;
-  ~DesksTemplatesGridViewTestApi() = default;
-
-  const std::vector<DesksTemplatesItemView*>& grid_items() const {
-    return grid_view_->grid_items_;
-  }
-
- private:
-  const DesksTemplatesGridView* grid_view_;
-};
-
-// Wrapper for DesksTemplatesItemView that exposes internal state to test
-// functions.
-class DesksTemplatesItemViewTestApi {
- public:
-  explicit DesksTemplatesItemViewTestApi(
-      const DesksTemplatesItemView* item_view)
-      : item_view_(item_view) {
-    DCHECK(item_view_);
-  }
-  DesksTemplatesItemViewTestApi(const DesksTemplatesItemViewTestApi&) = delete;
-  DesksTemplatesItemViewTestApi& operator=(
-      const DesksTemplatesItemViewTestApi&) = delete;
-  ~DesksTemplatesItemViewTestApi() = default;
-
-  const views::Textfield* name_view() const { return item_view_->name_view_; }
-
-  const views::Label* time_view() const { return item_view_->time_view_; }
-
-  const CloseButton* delete_button() const {
-    return item_view_->delete_button_;
-  }
-
-  const PillButton* launch_button() const { return item_view_->launch_button_; }
-
-  const base::GUID uuid() const { return item_view_->uuid_; }
-
-  const std::vector<DesksTemplatesIconView*>& icon_views() const {
-    return item_view_->icon_container_view_->icon_views_;
-  }
-
- private:
-  const DesksTemplatesItemView* item_view_;
-};
-
-// Wrapper for DesksTemplatesIconView that exposes internal state to test
-// functions.
-class DesksTemplatesIconViewTestApi {
- public:
-  explicit DesksTemplatesIconViewTestApi(
-      const DesksTemplatesIconView* desks_templates_icon_view)
-      : desks_templates_icon_view_(desks_templates_icon_view) {
-    DCHECK(desks_templates_icon_view_);
-  }
-  DesksTemplatesIconViewTestApi(const DesksTemplatesIconViewTestApi&) = delete;
-  DesksTemplatesIconViewTestApi& operator=(
-      const DesksTemplatesIconViewTestApi&) = delete;
-  ~DesksTemplatesIconViewTestApi() = default;
-
-  const views::Label* count_label() const {
-    return desks_templates_icon_view_->count_label_;
-  }
-
-  const RoundedImageView* icon_view() const {
-    return desks_templates_icon_view_->icon_view_;
-  }
-
-  const DesksTemplatesIconView* desks_templates_icon_view() const {
-    return desks_templates_icon_view_;
-  }
-
- private:
-  const DesksTemplatesIconView* desks_templates_icon_view_;
-};
 
 class DesksTemplatesTest : public OverviewTestBase {
  public:

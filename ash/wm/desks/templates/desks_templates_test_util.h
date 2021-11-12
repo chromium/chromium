@@ -5,11 +5,121 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_TEST_UTIL_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_TEST_UTIL_H_
 
+#include <vector>
+
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "base/callback_helpers.h"
+#include "base/guid.h"
+
 namespace views {
 class Button;
+class Textfield;
+class Label;
 }
 
 namespace ash {
+
+class DesksTemplatesPresenter;
+class RoundedImageView;
+class PillButton;
+class CloseButton;
+
+// Wrapper for DesksTemplatesPresenter that exposes internal state to test
+// functions.
+class DesksTemplatesPresenterTestApi {
+ public:
+  explicit DesksTemplatesPresenterTestApi(DesksTemplatesPresenter* presenter);
+  DesksTemplatesPresenterTestApi(const DesksTemplatesPresenterTestApi&) =
+      delete;
+  DesksTemplatesPresenterTestApi& operator=(
+      const DesksTemplatesPresenterTestApi&) = delete;
+  ~DesksTemplatesPresenterTestApi();
+
+  void SetOnUpdateUiClosure(base::OnceClosure closure);
+
+ private:
+  DesksTemplatesPresenter* const presenter_;
+};
+
+// Wrapper for DesksTemplatesGridView that exposes internal state to test
+// functions.
+class DesksTemplatesGridViewTestApi {
+ public:
+  explicit DesksTemplatesGridViewTestApi(
+      const DesksTemplatesGridView* grid_view);
+  DesksTemplatesGridViewTestApi(const DesksTemplatesGridViewTestApi&) = delete;
+  DesksTemplatesGridViewTestApi& operator=(
+      const DesksTemplatesGridViewTestApi&) = delete;
+  ~DesksTemplatesGridViewTestApi();
+
+  const std::vector<DesksTemplatesItemView*>& grid_items() const {
+    return grid_view_->grid_items_;
+  }
+
+ private:
+  const DesksTemplatesGridView* grid_view_;
+};
+
+// Wrapper for DesksTemplatesItemView that exposes internal state to test
+// functions.
+class DesksTemplatesItemViewTestApi {
+ public:
+  explicit DesksTemplatesItemViewTestApi(
+      const DesksTemplatesItemView* item_view);
+  DesksTemplatesItemViewTestApi(const DesksTemplatesItemViewTestApi&) = delete;
+  DesksTemplatesItemViewTestApi& operator=(
+      const DesksTemplatesItemViewTestApi&) = delete;
+  ~DesksTemplatesItemViewTestApi();
+
+  const views::Textfield* name_view() const { return item_view_->name_view_; }
+
+  const views::Label* time_view() const { return item_view_->time_view_; }
+
+  const CloseButton* delete_button() const {
+    return item_view_->delete_button_;
+  }
+
+  const PillButton* launch_button() const { return item_view_->launch_button_; }
+
+  const base::GUID uuid() const { return item_view_->uuid_; }
+
+  const std::vector<DesksTemplatesIconView*>& icon_views() const {
+    return item_view_->icon_container_view_->icon_views_;
+  }
+
+ private:
+  const DesksTemplatesItemView* item_view_;
+};
+
+// Wrapper for DesksTemplatesIconView that exposes internal state to test
+// functions.
+class DesksTemplatesIconViewTestApi {
+ public:
+  explicit DesksTemplatesIconViewTestApi(
+      const DesksTemplatesIconView* desks_templates_icon_view);
+  DesksTemplatesIconViewTestApi(const DesksTemplatesIconViewTestApi&) = delete;
+  DesksTemplatesIconViewTestApi& operator=(
+      const DesksTemplatesIconViewTestApi&) = delete;
+  ~DesksTemplatesIconViewTestApi();
+
+  const views::Label* count_label() const {
+    return desks_templates_icon_view_->count_label_;
+  }
+
+  const RoundedImageView* icon_view() const {
+    return desks_templates_icon_view_->icon_view_;
+  }
+
+  const DesksTemplatesIconView* desks_templates_icon_view() const {
+    return desks_templates_icon_view_;
+  }
+
+ private:
+  const DesksTemplatesIconView* desks_templates_icon_view_;
+};
 
 // These buttons are the ones on the primary root window.
 views::Button* GetZeroStateDesksTemplatesButton();
