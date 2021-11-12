@@ -39,7 +39,7 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
-#include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/events/test/event_generator.h"
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
 
   // Change the input state to a new client.
   std::unique_ptr<ui::TextInputClient> new_client =
-      std::make_unique<ui::DummyTextInputClient>();
+      std::make_unique<ui::FakeTextInputClient>(ui::TEXT_INPUT_TYPE_TEXT);
   NotifyTextInputStateChanged(new_client.get());
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
