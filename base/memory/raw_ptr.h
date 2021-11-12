@@ -287,7 +287,7 @@ struct IsSupportedType<T, std::enable_if_t<std::is_function<T>::value>> {
 // than static_cast) inside CastFromVoidPtr to compile on Apple systems using
 // ARC.
 template <typename T>
-struct IsSupportedType<T*,
+struct IsSupportedType<T,
                        std::enable_if_t<std::is_convertible<T*, id>::value>> {
   static constexpr bool value = false;
 };
