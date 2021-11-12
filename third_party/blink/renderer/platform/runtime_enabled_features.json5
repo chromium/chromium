@@ -2052,9 +2052,16 @@
     {
       name: "ScrollUnification",
     },
+    // SecurePaymentConfirmation has shipped on some platforms, but its
+    // availability is controlled by the browser process (via the
+    // SecurePaymentConfirmationBrowser feature), as it requires browser
+    // support to function. See //content/public/common/content_features.cc
+    //
+    // The status is set to 'test' here to enable some WPT tests that only
+    // require blink-side support to function.
     {
       name: "SecurePaymentConfirmation",
-      status: "stable",
+      status: "test",
     },
     {
       name: "SecurePaymentConfirmationDebug",
