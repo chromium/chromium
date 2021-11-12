@@ -13,13 +13,13 @@
 
 namespace views {
 class Label;
-class Textfield;
 }  // namespace views
 
 namespace ash {
 
 class CloseButton;
 class DesksTemplatesIconContainer;
+class DesksTemplatesNameView;
 class DeskTemplate;
 class PillButton;
 
@@ -60,7 +60,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void OnViewUnhighlighted() override;
 
   // Owned by the views hierarchy.
-  views::Textfield* name_view_ = nullptr;
+  DesksTemplatesNameView* name_view_ = nullptr;
   views::Label* time_view_ = nullptr;
   DesksTemplatesIconContainer* icon_container_view_ = nullptr;
   CloseButton* delete_button_ = nullptr;

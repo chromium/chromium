@@ -12,8 +12,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
+#include "ash/wm/desks/label_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -28,7 +30,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
@@ -45,7 +46,6 @@ constexpr gfx::Size kPreferredSize(220, 120);
 constexpr int kCornerRadius = 16;
 
 // TODO(richui): Replace these temporary values once specs come out.
-constexpr gfx::Size kViewSize(250, 20);
 constexpr int kDeleteButtonMargin = 8;
 
 // The margin between the grid item contents and the card container.
@@ -104,11 +104,10 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
               .SetInsideBorderInsets(
                   gfx::Insets(kVerticalPaddingDp, kHorizontalPaddingDp))
               .AddChildren(
-                  views::Builder<views::Textfield>()
+                  views::Builder<DesksTemplatesNameView>()
                       .CopyAddressTo(&name_view_)
                       .SetText(desk_template->template_name())
-                      .SetAccessibleName(desk_template->template_name())
-                      .SetPreferredSize(kViewSize),
+                      .SetAccessibleName(desk_template->template_name()),
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)

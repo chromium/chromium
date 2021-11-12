@@ -16,12 +16,12 @@
 
 namespace views {
 class Button;
-class Textfield;
 class Label;
 }
 
 namespace ash {
 
+class DesksTemplatesNameView;
 class DesksTemplatesPresenter;
 class RoundedImageView;
 class PillButton;
@@ -74,7 +74,9 @@ class DesksTemplatesItemViewTestApi {
       const DesksTemplatesItemViewTestApi&) = delete;
   ~DesksTemplatesItemViewTestApi();
 
-  const views::Textfield* name_view() const { return item_view_->name_view_; }
+  const DesksTemplatesNameView* name_view() const {
+    return item_view_->name_view_;
+  }
 
   const views::Label* time_view() const { return item_view_->time_view_; }
 
