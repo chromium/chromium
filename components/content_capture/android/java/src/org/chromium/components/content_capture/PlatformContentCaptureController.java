@@ -65,7 +65,12 @@ public class PlatformContentCaptureController {
             return;
         }
 
-        ComponentName componentName = mContentCaptureManager.getServiceComponentName();
+        ComponentName componentName = null;
+        try {
+            componentName = mContentCaptureManager.getServiceComponentName();
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Error to get component name", e);
+        }
         if (componentName == null) {
             log("Service isn't available.");
             return;
