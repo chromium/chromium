@@ -2612,13 +2612,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SavedGaiaPasswordHashCount" units="count"
-    expires_after="2021-11-14">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2022-05-14">
+  <owner>vsemeniuk@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the number of Gaia password hashes that have been saved for password
-    reuse detection. This is logged during the initialization of PasswordStore
-    class.
+    reuse detection. This is logged during the initialization of the
+    PasswordReuseManagerImpl class.
   </summary>
 </histogram>
 
