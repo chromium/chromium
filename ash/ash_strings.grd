@@ -199,9 +199,10 @@ This file contains the strings for ash.
         <ph name="network">$3<ex>Connected to Wifi.</ex></ph>,
         <ph name="mic">$4<ex>A virtual machine is using your microphone</ex></ph>,
         <ph name="camera">$5<ex>A virtual machine is using your camera</ex></ph>,
-        <ph name="notification">$6<ex>1 notification</ex></ph>,
-        <ph name="ime">$7<ex>Using US keyboard</ex></ph>
-        <ph name="locale">$8<ex>Using English</ex></ph>
+        <ph name="managed">$6<ex>This account is managed by Family Link</ex></ph>
+        <ph name="notification">$7<ex>1 notification</ex></ph>,
+        <ph name="ime">$8<ex>Using US keyboard</ex></ph>
+        <ph name="locale">$9<ex>Using English</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
         Quick Settings, Press search + left to access the notification center.

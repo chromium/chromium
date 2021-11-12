@@ -73,16 +73,20 @@ void ManagedDeviceTrayItemView::Update() {
       LOG(WARNING)
           << "Public account user, but device not enterprise-enrolled.";
     }
-  } else if (session->IsUserChild()) {
+    return;
+  }
+
+  if (session->IsUserChild()) {
     image_view()->SetImage(gfx::CreateVectorIcon(
         kSystemTraySupervisedUserIcon,
         TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
     image_view()->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FAMILY_LINK_LABEL));
     SetVisible(true);
-  } else {
-    SetVisible(false);
+    return;
   }
+
+  SetVisible(false);
 }
 
 }  // namespace ash

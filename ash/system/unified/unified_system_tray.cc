@@ -46,6 +46,7 @@
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_view_controller.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 
@@ -533,6 +534,9 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
                        : base::EmptyString16());
   status.push_back(camera_view_->GetVisible()
                        ? camera_view_->GetAccessibleNameString()
+                       : base::EmptyString16());
+  status.push_back(managed_device_view_->GetVisible()
+                       ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
   status.push_back(notification_icons_controller_->GetAccessibleNameString());
   status.push_back(ime_mode_view_->GetVisible()
