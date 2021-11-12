@@ -2676,22 +2676,31 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   }
 
   void TypeHello() {
-    auto* web_contents = GetWebContentsForInputRouting();
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('H'),
-                              ui::DomCode::US_H, ui::VKEY_H, false, false,
-                              false, false);
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
-                              ui::DomCode::US_E, ui::VKEY_E, false, false,
-                              false, false);
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('L'),
-                              ui::DomCode::US_L, ui::VKEY_L, false, false,
-                              false, false);
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('L'),
-                              ui::DomCode::US_L, ui::VKEY_L, false, false,
-                              false, false);
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('O'),
-                              ui::DomCode::US_O, ui::VKEY_O, false, false,
-                              false, false);
+    struct KeyData {
+      char ch;
+      ui::DomCode code;
+      ui::KeyboardCode key_code;
+    };
+
+    constexpr KeyData kData[] = {
+        {'H', ui::DomCode::US_H, ui::VKEY_H},
+        {'E', ui::DomCode::US_E, ui::VKEY_E},
+        {'L', ui::DomCode::US_L, ui::VKEY_L},
+        {'L', ui::DomCode::US_L, ui::VKEY_L},
+        {'O', ui::DomCode::US_O, ui::VKEY_O},
+    };
+
+    auto* contents = GetWebContentsForInputRouting();
+    auto* rwh = GetPluginFrame(contents)->GetRenderWidgetHost();
+    for (const auto& data : kData) {
+      content::SimulateKeyPress(contents, ui::DomKey::FromCharacter(data.ch),
+                                data.code, data.key_code, /*control=*/false,
+                                /*shift=*/false, /*alt=*/false,
+                                /*command=*/false);
+      content::InputEventAckWaiter key_waiter(
+          rwh, blink::WebInputEvent::Type::kKeyUp);
+      key_waiter.Wait();
+    }
   }
 
   // Presses the left arrow key.
@@ -2759,13 +2768,7 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   base::ScopedTempDir temp_dir_;
 };
 
-// Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_Save DISABLED_Save
-#else
-#define MAYBE_Save Save
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, MAYBE_Save) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, Save) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("edited.pdf");
@@ -2828,13 +2831,7 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-// Flaky, http://crbug.com/1269147
-#if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
-#else
-#define MAYBE_SaveWithPolicy SaveWithPolicy
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, SaveWithPolicy) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("combobox_form.pdf");
@@ -2851,15 +2848,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   WaitForSavedPdf(save_path);
 }
 
-// Flaky, http://crbug.com/1269105
-#if defined(OS_LINUX)
-#define MAYBE_SaveWithPolicyUniqueNumberSuffix \
-  DISABLED_SaveWithPolicyUniqueNumberSuffix
-#else
-#define MAYBE_SaveWithPolicyUniqueNumberSuffix SaveWithPolicyUniqueNumberSuffix
-#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
-                       MAYBE_SaveWithPolicyUniqueNumberSuffix) {
+                       SaveWithPolicyUniqueNumberSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
