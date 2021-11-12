@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/common/remote_commands/test_remote_command_job.h"
+#include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
 
 #include <memory>
 #include <utility>
@@ -20,10 +20,10 @@ const int kCommandExpirationTimeInHours = 3;
 
 namespace em = enterprise_management;
 
-const char TestRemoteCommandJob::kMalformedCommandPayload[] =
+const char EchoRemoteCommandJob::kMalformedCommandPayload[] =
     "_MALFORMED_COMMAND_PAYLOAD_";
 
-class TestRemoteCommandJob::EchoPayload
+class EchoRemoteCommandJob::EchoPayload
     : public RemoteCommandJob::ResultPayload {
  public:
   explicit EchoPayload(const std::string& payload) : payload_(payload) {}
@@ -37,21 +37,21 @@ class TestRemoteCommandJob::EchoPayload
   const std::string payload_;
 };
 
-std::unique_ptr<std::string> TestRemoteCommandJob::EchoPayload::Serialize() {
+std::unique_ptr<std::string> EchoRemoteCommandJob::EchoPayload::Serialize() {
   return std::make_unique<std::string>(payload_);
 }
 
-TestRemoteCommandJob::TestRemoteCommandJob(bool succeed,
+EchoRemoteCommandJob::EchoRemoteCommandJob(bool succeed,
                                            base::TimeDelta execution_duration)
     : succeed_(succeed), execution_duration_(execution_duration) {
   DCHECK_LT(base::Seconds(0), execution_duration_);
 }
 
-em::RemoteCommand_Type TestRemoteCommandJob::GetType() const {
+em::RemoteCommand_Type EchoRemoteCommandJob::GetType() const {
   return em::RemoteCommand_Type_COMMAND_ECHO_TEST;
 }
 
-bool TestRemoteCommandJob::ParseCommandPayload(
+bool EchoRemoteCommandJob::ParseCommandPayload(
     const std::string& command_payload) {
   if (command_payload == kMalformedCommandPayload)
     return false;
@@ -59,12 +59,12 @@ bool TestRemoteCommandJob::ParseCommandPayload(
   return true;
 }
 
-bool TestRemoteCommandJob::IsExpired(base::TimeTicks now) {
+bool EchoRemoteCommandJob::IsExpired(base::TimeTicks now) {
   return !issued_time().is_null() &&
          now > issued_time() + base::Hours(kCommandExpirationTimeInHours);
 }
 
-void TestRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,
+void EchoRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,
                                    CallbackWithResult failed_callback) {
   std::unique_ptr<ResultPayload> echo_payload(
       new EchoPayload(command_payload_));

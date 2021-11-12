@@ -15,7 +15,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
-#include "components/policy/core/common/remote_commands/test_remote_command_job.h"
+#include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -184,7 +184,7 @@ TEST_F(RemoteCommandsQueueTest, SingleSucceedCommand) {
   // Initialize a job expected to succeed after 5 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::Seconds(5)));
+      new EchoRemoteCommandJob(true, base::Seconds(5)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
   AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(4));
@@ -205,7 +205,7 @@ TEST_F(RemoteCommandsQueueTest, SingleFailedCommand) {
   // Initialize a job expected to fail after 10 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(false, base::Seconds(10)));
+      new EchoRemoteCommandJob(false, base::Seconds(10)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
   AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(9));
@@ -226,7 +226,7 @@ TEST_F(RemoteCommandsQueueTest, SingleTerminatedCommand) {
   // Initialize a job expected to fail after 600 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(false, base::Seconds(600)));
+      new EchoRemoteCommandJob(false, base::Seconds(600)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
   AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(599));
@@ -245,17 +245,17 @@ TEST_F(RemoteCommandsQueueTest, SingleMalformedCommand) {
   // Initialize a job expected to succeed after 10 seconds, from a protobuf with
   // |kUniqueID|, |kMalformedCommandPayload| and |test_start_time_|.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::Seconds(10)));
+      new EchoRemoteCommandJob(true, base::Seconds(10)));
   // Should failed immediately.
   FailInitializeJob(job.get(), kUniqueID, test_start_time_,
-                    TestRemoteCommandJob::kMalformedCommandPayload);
+                    EchoRemoteCommandJob::kMalformedCommandPayload);
 }
 
 TEST_F(RemoteCommandsQueueTest, SingleExpiredCommand) {
   // Initialize a job expected to succeed after 10 seconds, from a protobuf with
   // |kUniqueID| and |test_start_time_ - 4 hours|.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::Seconds(10)));
+      new EchoRemoteCommandJob(true, base::Seconds(10)));
   InitializeJob(job.get(), kUniqueID, test_start_time_ - base::Hours(4),
                 std::string());
 
@@ -274,7 +274,7 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
   // Initialize a job expected to succeed after 5 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::Seconds(5)));
+      new EchoRemoteCommandJob(true, base::Seconds(5)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
   // Add the job to the queue, should start executing immediately. Pass the
@@ -290,7 +290,7 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
   // Initialize another job expected to succeed after 5 seconds, from a protobuf
   // with |kUniqueID2|, |kPayload2| and |test_start_time_ + 1s| as command
   // issued time.
-  job = std::make_unique<TestRemoteCommandJob>(true, base::Seconds(5));
+  job = std::make_unique<EchoRemoteCommandJob>(true, base::Seconds(5));
   InitializeJob(job.get(), kUniqueID2, test_start_time_ + base::Seconds(1),
                 kPayload2);
 

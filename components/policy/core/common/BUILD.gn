@@ -351,10 +351,11 @@ static_library("test_support") {
     "mock_policy_service.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
-    "remote_commands/test_remote_command_job.cc",
-    "remote_commands/test_remote_command_job.h",
-    "remote_commands/testing_remote_commands_server.cc",
-    "remote_commands/testing_remote_commands_server.h",
+    "remote_commands/test_support/blocking_queue.h",
+    "remote_commands/test_support/echo_remote_command_job.cc",
+    "remote_commands/test_support/echo_remote_command_job.h",
+    "remote_commands/test_support/testing_remote_commands_server.cc",
+    "remote_commands/test_support/testing_remote_commands_server.h",
   ]
 
   if (is_chromeos_ash) {

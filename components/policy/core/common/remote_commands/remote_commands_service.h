@@ -106,6 +106,8 @@ class POLICY_EXPORT RemoteCommandsService
   void SetClocksForTesting(const base::Clock* clock,
                            const base::TickClock* tick_clock);
 
+  // Sets a callback that will be invoked the next time we receive a response
+  // from the server.
   virtual void SetOnCommandAckedCallback(base::OnceClosure callback);
 
  private:

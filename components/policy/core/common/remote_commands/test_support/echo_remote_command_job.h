@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_REMOTE_COMMAND_JOB_H_
-#define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_REMOTE_COMMAND_JOB_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_SUPPORT_ECHO_REMOTE_COMMAND_JOB_H_
+#define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_SUPPORT_ECHO_REMOTE_COMMAND_JOB_H_
 
 #include <string>
 
@@ -13,11 +13,13 @@
 
 namespace policy {
 
-class TestRemoteCommandJob : public RemoteCommandJob {
+// Remote Command Job that simply echos its payload.
+// Used during unittest.
+class EchoRemoteCommandJob : public RemoteCommandJob {
  public:
-  TestRemoteCommandJob(bool succeed, base::TimeDelta execution_duration);
-  TestRemoteCommandJob(const TestRemoteCommandJob&) = delete;
-  TestRemoteCommandJob& operator=(const TestRemoteCommandJob&) = delete;
+  EchoRemoteCommandJob(bool succeed, base::TimeDelta execution_duration);
+  EchoRemoteCommandJob(const EchoRemoteCommandJob&) = delete;
+  EchoRemoteCommandJob& operator=(const EchoRemoteCommandJob&) = delete;
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
@@ -41,4 +43,4 @@ class TestRemoteCommandJob : public RemoteCommandJob {
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_REMOTE_COMMAND_JOB_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_TEST_SUPPORT_ECHO_REMOTE_COMMAND_JOB_H_
