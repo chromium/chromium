@@ -14,18 +14,12 @@ import shutil
 import sys
 import time
 
-# get_compile_steps.py is still using python 2,
-# so this is necessary
-if sys.version_info.major == 3:
-  from functools import lru_cache
-else:
-  def lru_cache(func):
-    def decorator(*args):
-      return func(args)
-    return decorator
+from collections import OrderedDict
 
 SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+BLINK_TOOLS = os.path.join(
+    SRC_DIR, 'third_party', 'blink', 'tools')
 BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
@@ -39,8 +33,15 @@ if PYUTILS not in sys.path:
 if BUILD_ANDROID not in sys.path:
   sys.path.append(BUILD_ANDROID)
 
+if BLINK_TOOLS not in sys.path:
+  sys.path.append(BLINK_TOOLS)
+
 import common
 import devil_chromium
+import wpt_common
+
+from blinkpy.web_tests.port.android import (
+    ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
 
 from devil import devil_env
 from devil.android import apk_helper
@@ -67,31 +68,28 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 TEST_CASES = {}
 
-class TestResult(object):
-  Pass = 'PASS'
-  Fail = 'FAIL'
+
+class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
 
-@lru_cache
-def get_package_name(apk_path):
-  """Get package name from apk
-
-  Args:
-    apk_path: Path to apk
-
-  Returns:
-    Package name of apk
-  """
-  return apk_helper.GetPackageName(apk_path)
-
-
-class FinchTestCase(object):
-
-  def __init__(self, device, options):
-    self.device = device
-    self.options = options
+  def __init__(self, device):
+    super(FinchTestCase, self).__init__()
+    self._device = device
+    self.parse_args()
+    self.output_directory = os.path.join(SRC_DIR, 'out', self.options.target)
+    self.mojo_js_directory = os.path.join(self.output_directory, 'gen')
     self.flags = flag_changer.FlagChanger(
-        self.device, '%s-command-line' % self.product_name())
+        self._device, '%s-command-line' % self.product_name())
+    self.browser_package_name = apk_helper.GetPackageName(
+        self.options.browser_apk)
+    self.flags.ReplaceFlags(self.browser_command_line_args())
+    self.browser_activity_name = (self.options.browser_activity_name or
+                                  self.default_browser_activity_name)
+    self.log_mon = None
+
+    if self.options.webview_provider_apk:
+      self.webview_provider_package_name = (
+          apk_helper.GetPackageName(self.options.webview_provider_apk))
 
   @classmethod
   def app_user_sub_dir(cls):
@@ -102,21 +100,130 @@ class FinchTestCase(object):
   def product_name(cls):
     raise NotImplementedError
 
+  @classmethod
+  def wpt_product_name(cls):
+    raise NotImplementedError
+
+  @property
+  def tests(self):
+    return [
+      'dom/collections/HTMLCollection-delete.html',
+      'dom/collections/HTMLCollection-supported-property-names.html',
+      'dom/collections/HTMLCollection-supported-property-indices.html',
+    ]
+
   @property
   def default_browser_activity_name(self):
     raise NotImplementedError
 
   def __enter__(self):
+    self._device.EnableRoot()
+    self.log_mon = logcat_monitor.LogcatMonitor(
+          self._device.adb,
+          output_file=os.path.join(
+              os.path.dirname(self.options.isolated_script_test_output),
+              '%s_finch_smoke_tests_logcat.txt' % self.product_name()),
+          filter_specs=_LOGCAT_FILTERS)
+    self.log_mon.Start()
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     self.flags.ReplaceFlags([])
+    self.log_mon.Stop()
+
+  @property
+  def rest_args(self):
+    rest_args = super(FinchTestCase, self).rest_args
+    # Update the output directory to the default if it's not set.
+    self.maybe_set_default_isolated_script_test_output()
+
+    # Here we add all of the arguments required to run WPT tests on Android.
+    rest_args.extend([
+        os.path.join(SRC_DIR, 'third_party', 'wpt_tools', 'wpt', 'wpt')])
+
+    # By default, WPT will treat unexpected passes as errors, so we disable
+    # that to be consistent with Chromium CI.
+    rest_args.extend(['--no-fail-on-unexpected-pass'])
+
+    # vpython has packages needed by wpt, so force it to skip the setup
+    rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
+
+    rest_args.extend(['run',
+      self.wpt_product_name(),
+      '--tests=' + wpt_common.EXTERNAL_WPT_TESTS_DIR,
+      '--test-type=' + 'testharness',
+      '--device-serial',
+      self._device.serial,
+      '--webdriver-binary',
+      os.path.join('clang_x64', 'chromedriver'),
+      '--symbols-path',
+      self.output_directory,
+      '--package-name',
+      self.browser_package_name,
+      '--keep-app-data-directory',
+      '--no-pause-after-test',
+      '--no-capture-stdio',
+      '--no-manifest-download',
+      '--enable-mojojs',
+      '--mojojs-path=' + self.mojo_js_directory,
+    ])
+
+    for test in self.tests:
+      rest_args.extend(['--include', test])
+
+    if self.options.verbose >= 3:
+      rest_args.extend(['--log-mach=-', '--log-mach-level=debug',
+                        '--log-mach-verbose'])
+
+    if self.options.verbose >= 4:
+      rest_args.extend(['--webdriver-arg=--verbose',
+                        '--webdriver-arg="--log-path=-"'])
+
+    return rest_args
+
+  @classmethod
+  def add_extra_arguments(cls, parser):
+    parser.add_argument('--test-case',
+                        choices=TEST_CASES.keys(),
+                        # TODO(rmhasan): Remove default values after
+                        # adding arguments to test suites. Also make
+                        # this argument required.
+                        default='webview',
+                        help='Name of test case')
+    parser.add_argument('--finch-seed-path', default=TEST_SEED_PATH,
+                        type=os.path.realpath,
+                        help='Path to the finch seed')
+    parser.add_argument('--browser-apk',
+                        '--webview-shell-apk',
+                        '--weblayer-shell-apk',
+                        help='Path to the browser apk',
+                        type=os.path.realpath,
+                        required=True)
+    parser.add_argument('--webview-provider-apk',
+                        type=os.path.realpath,
+                        help='Path to the WebView provider apk')
+    parser.add_argument('--browser-activity-name',
+                        action='store',
+                        help='Browser activity name')
+    parser.add_argument('--target',
+                        action='store',
+                        default='Release',
+                        help='Build configuration')
+
+    add_emulator_args(parser)
+    script_common.AddDeviceArguments(parser)
+    script_common.AddEnvironmentArguments(parser)
+    logging_common.AddLoggingArguments(parser)
+
+  @contextlib.contextmanager
+  def _install_apks(self):
+    yield
 
   @contextlib.contextmanager
   def install_apks(self):
     """Install apks for testing"""
-    self.device.Uninstall(get_package_name(self.options.browser_apk))
-    self.device.Install(self.options.browser_apk, reinstall=True)
+    self._device.Uninstall(self.browser_package_name)
+    self._device.Install(self.options.browser_apk, reinstall=True)
     yield
 
   def browser_command_line_args(self):
@@ -124,7 +231,7 @@ class FinchTestCase(object):
     # for weblayer and chrome
     return []
 
-  def run_tests(self, test_suffix):
+  def run_tests(self, test_run_variation, results_dict):
     """Run browser test on test device
 
     Args:
@@ -133,62 +240,59 @@ class FinchTestCase(object):
     Returns:
       True if browser did not crash or False if the browser crashed
     """
-    self.flags.ReplaceFlags(self.browser_command_line_args())
-    browser_pkg_name = get_package_name(self.options.browser_apk)
-    browser_activity_name = (self.options.browser_activity_name or
-                             self.default_browser_activity_name)
-    full_activity_name = '%s/%s' % (browser_pkg_name, browser_activity_name)
-    logger.info('Starting activity %s' % full_activity_name)
+    self.layout_test_results_subdir = ('%s_smoke_test_artifacts' %
+                                       test_run_variation)
+    ret = super(FinchTestCase, self).run_test()
+    self.stop_browser()
 
-    self.device.RunShellCommand([
+    with open(self.wpt_output, 'r') as curr_test_results:
+      curr_results_dict = json.loads(curr_test_results.read())
+      results_dict['tests'][test_run_variation] = curr_results_dict['tests']
+
+      for result, count in curr_results_dict['num_failures_by_type'].items():
+        results_dict['num_failures_by_type'].setdefault(result, 0)
+        results_dict['num_failures_by_type'][result] += count
+
+    return ret
+
+  def stop_browser(self):
+    logger.info('Stopping package %s', self.browser_package_name)
+    self._device.ForceStop(self.browser_package_name)
+    if self.options.webview_provider_apk:
+      logger.info('Stopping package %s', self.webview_provider_package_name)
+      self._device.ForceStop(
+          self.webview_provider_package_name)
+
+  def start_browser(self):
+    full_activity_name = '%s/%s' % (self.browser_package_name,
+                                    self.browser_activity_name)
+    logger.info('Starting activity %s', full_activity_name)
+
+    self._device.RunShellCommand([
           'am',
           'start',
+          '-W',
           '-n',
           full_activity_name,
-          '-a',
-          'VIEW',
           '-d',
-          'www.google.com'])
-
-    logger.info('Waiting 10 s')
+          'data:,'])
+    logger.info('Waiting 10 seconds')
     time.sleep(10)
 
-    # Check browser process
-    browser_runs = self.check_browser()
-    if browser_runs:
-      logger.info('Browser is running ' + test_suffix)
-      self._wait_for_local_state_file(browser_pkg_name)
-    else:
-      logger.error('Browser is not running ' + test_suffix)
-
-    self.device.ForceStop(browser_pkg_name)
-    if self.options.webview_provider_apk:
-      self.device.ForceStop(
-          get_package_name(self.options.webview_provider_apk))
-    return browser_runs
-
-  def _wait_for_local_state_file(self, browser_pkg_name):
-    """Wait for local state file to be generated
-
-    Args:
-      browser_pkg_name: Name of the browser package
-
-    Returns
-      None
-    """
+  def _wait_for_local_state_file(self, local_state_file):
+    """Wait for local state file to be generated"""
     max_wait_time_secs = 120
     delta_secs = 10
     total_wait_time_secs = 0
 
-    app_data_dir = posixpath.join(
-        self.device.GetApplicationDataDirectory(browser_pkg_name),
-        self.app_user_sub_dir())
-    local_state_file = posixpath.join(app_data_dir, 'Local State')
+    self.start_browser()
 
     while total_wait_time_secs < max_wait_time_secs:
-      if self.device.PathExists(local_state_file):
+      if self._device.PathExists(local_state_file):
         logger.info('Local state file generated')
+        self.stop_browser()
         return
+
       logger.info('Waiting %d seconds for the local state file to generate',
                   delta_secs)
       time.sleep(delta_secs)
@@ -197,38 +301,22 @@ class FinchTestCase(object):
     raise Exception('Timed out waiting for the '
                     'local state file to be generated')
 
-  def check_browser(self):
-    """Check processes for browser process
-
-    Returns:
-      True if browser is running or False if it is not
-    """
-    # The browser may fork itself. We only want the
-    # original browser's process so we look for
-    # browser processes that have the zygote as it's
-    # parent process.
-    zygotes = self.device.ListProcesses('zygote')
-    zygote_pids = set(p.pid for p in zygotes)
-    assert zygote_pids, 'No Android zygote found'
-    processes = self.device.ListProcesses(
-        get_package_name(self.options.browser_apk))
-    return [p for p in processes if p.ppid in zygote_pids]
-
   def install_seed(self):
     """Install finch seed for testing
 
     Returns:
       None
     """
-    browser_pkg_name = get_package_name(self.options.browser_apk)
     app_data_dir = posixpath.join(
-        self.device.GetApplicationDataDirectory(browser_pkg_name),
+        self._device.GetApplicationDataDirectory(self.browser_package_name),
         self.app_user_sub_dir())
     device_local_state_file = posixpath.join(app_data_dir, 'Local State')
 
+    self._wait_for_local_state_file(device_local_state_file)
+
     with NamedTemporaryDirectory() as tmp_dir:
       tmp_ls_path = os.path.join(tmp_dir, 'local_state.json')
-      self.device.adb.Pull(device_local_state_file, tmp_ls_path)
+      self._device.adb.Pull(device_local_state_file, tmp_ls_path)
 
       with open(tmp_ls_path, 'r') as local_state_content, \
           open(self.options.finch_seed_path, 'r') as test_seed_content:
@@ -245,18 +333,23 @@ class FinchTestCase(object):
                   'w') as new_local_state:
           new_local_state.write(json.dumps(local_state_json))
 
-        self.device.adb.Push(new_local_state.name, device_local_state_file)
-        user_id = self.device.GetUidForPackage(browser_pkg_name)
+        self._device.adb.Push(new_local_state.name, device_local_state_file)
+        user_id = self._device.GetUidForPackage(self.browser_package_name)
         logger.info('Setting owner of Local State file to %r', user_id)
-        self.device.RunShellCommand(['chown', user_id, device_local_state_file],
-                                    as_root=True)
+        self._device.RunShellCommand(
+            ['chown', user_id, device_local_state_file], as_root=True)
 
 
 class ChromeFinchTestCase(FinchTestCase):
+
   @classmethod
   def product_name(cls):
     """Returns name of product being tested"""
     return 'chrome'
+
+  @classmethod
+  def wpt_product_name(cls):
+    return CHROME_ANDROID
 
   @property
   def default_browser_activity_name(self):
@@ -270,22 +363,22 @@ class WebViewFinchTestCase(FinchTestCase):
     """Returns name of product being tested"""
     return 'webview'
 
+  @classmethod
+  def wpt_product_name(cls):
+    return ANDROID_WEBVIEW
+
   @property
   def default_browser_activity_name(self):
-    return 'org.chromium.webview_shell.WebViewBrowserActivity'
+    return 'org.chromium.webview_shell.WebPlatformTestsActivity'
 
   def browser_command_line_args(self):
     return ['--webview-verbose-logging']
-
-  def _wait_for_local_state_file(self, _):
-    """The 'Local State' file is not used in the WebView test case"""
-    return
 
   @contextlib.contextmanager
   def install_apks(self):
     """Install apks for testing"""
     with super(WebViewFinchTestCase, self).install_apks(), \
-      webview_app.UseWebViewProvider(self.device,
+      webview_app.UseWebViewProvider(self._device,
                                      self.options.webview_provider_apk):
       yield
 
@@ -295,28 +388,29 @@ class WebViewFinchTestCase(FinchTestCase):
     Returns:
       None
     """
-    browser_pkg_name = get_package_name(self.options.browser_apk)
     app_data_dir = posixpath.join(
-        self.device.GetApplicationDataDirectory(browser_pkg_name),
+        self._device.GetApplicationDataDirectory(self.browser_package_name),
         self.app_user_sub_dir())
-    self.device.RunShellCommand(['mkdir', '-p', app_data_dir],
-                                run_as=browser_pkg_name)
+    self._device.RunShellCommand(['mkdir', '-p', app_data_dir],
+                                run_as=self.browser_package_name)
 
     seed_path = posixpath.join(app_data_dir, 'variations_seed')
     seed_new_path = posixpath.join(app_data_dir, 'variations_seed_new')
     seed_stamp = posixpath.join(app_data_dir, 'variations_stamp')
 
-    self.device.adb.Push(self.options.finch_seed_path, seed_path)
-    self.device.adb.Push(self.options.finch_seed_path, seed_new_path)
-    self.device.RunShellCommand(
-        ['touch', seed_stamp], check_return=True, run_as=browser_pkg_name)
+    self._device.adb.Push(self.options.finch_seed_path, seed_path)
+    self._device.adb.Push(self.options.finch_seed_path, seed_new_path)
+    self._device.RunShellCommand(
+        ['touch', seed_stamp], check_return=True,
+        run_as=self.browser_package_name)
 
     # We need to make the WebView shell package an owner of the seeds,
     # see crbug.com/1191169#c19
-    user_id = self.device.GetUidForPackage(browser_pkg_name)
+    user_id = self._device.GetUidForPackage(self.browser_package_name)
     logger.info('Setting owner of seed files to %r', user_id)
-    self.device.RunShellCommand(['chown', user_id, seed_path], as_root=True)
-    self.device.RunShellCommand(['chown', user_id, seed_new_path], as_root=True)
+    self._device.RunShellCommand(['chown', user_id, seed_path], as_root=True)
+    self._device.RunShellCommand(
+        ['chown', user_id, seed_new_path], as_root=True)
 
 
 class WebLayerFinchTestCase(FinchTestCase):
@@ -326,6 +420,10 @@ class WebLayerFinchTestCase(FinchTestCase):
     """Returns name of product being tested"""
     return 'weblayer'
 
+  @classmethod
+  def wpt_product_name(cls):
+    return ANDROID_WEBLAYER
+
   @property
   def default_browser_activity_name(self):
     return 'org.chromium.weblayer.shell.WebLayerShellActivity'
@@ -334,36 +432,9 @@ class WebLayerFinchTestCase(FinchTestCase):
   def install_apks(self):
     """Install apks for testing"""
     with super(WebLayerFinchTestCase, self).install_apks(), \
-      webview_app.UseWebViewProvider(self.device,
+      webview_app.UseWebViewProvider(self._device,
                                      self.options.webview_provider_apk):
       yield
-
-
-def get_json_results(with_seed_res, without_seed_res):
-  """Get json results for test suite
-
-  Args:
-    with_seed_res: Test result with seed installed
-    without_seed_res: Test result with no seed installed
-
-  Returns:
-    JSON results dictionary
-  """
-  json_results = {'version': 3, 'interrupted': False}
-  json_results['tests'] = {'finch_smoke_tests': {}}
-  json_results['tests']['finch_smoke_tests']['test_without_seed'] = (
-      {'expected': TestResult.Pass, 'actual': without_seed_res})
-  json_results['tests']['finch_smoke_tests']['test_with_seed'] = (
-      {'expected': TestResult.Pass, 'actual': with_seed_res})
-
-  json_results['num_failures_by_type'] = {}
-  json_results['num_failures_by_type'].setdefault(with_seed_res, 0)
-  json_results['num_failures_by_type'].setdefault(without_seed_res, 0)
-  json_results['num_failures_by_type'][with_seed_res] += 1
-  json_results['num_failures_by_type'][without_seed_res] += 1
-
-  json_results['seconds_since_epoch'] = int(time.time())
-  return json_results
 
 
 def main(args):
@@ -372,80 +443,49 @@ def main(args):
        for p in [ChromeFinchTestCase, WebViewFinchTestCase,
                  WebLayerFinchTestCase]})
 
-  parser = argparse.ArgumentParser(
-      prog='run_finch_smoke_tests_android.py')
-  parser.add_argument('--test-case',
-                      choices=TEST_CASES.keys(),
-                      # TODO(rmhasan): Remove default values after
-                      # adding arguments to test suites. Also make
-                      # this argument required.
-                      default='webview',
-                      help='Name of test case')
-  parser.add_argument('--finch-seed-path', default=TEST_SEED_PATH,
-                      type=os.path.realpath,
-                      help='Path to the finch seed')
-  parser.add_argument('--browser-apk',
-                      '--webview-shell-apk',
-                      '--weblayer-shell-apk',
-                      help='Path to the browser apk',
-                      type=os.path.realpath,
-                      required=True)
-  parser.add_argument('--webview-provider-apk',
-                      type=os.path.realpath,
-                      help='Path to the WebView provider apk')
-  parser.add_argument('--browser-activity-name',
-                      action='store',
-                      help='Browser activity name')
-  parser.add_argument('--write-full-results-to',
-                      '--isolated-script-test-output',
-                      action='store',
-                      type=os.path.realpath,
-                      default=os.path.join(os.getcwd(), 'output.json'),
-                      help='Path to output directory')
-  add_emulator_args(parser)
-  script_common.AddDeviceArguments(parser)
-  script_common.AddEnvironmentArguments(parser)
-  logging_common.AddLoggingArguments(parser)
+  parser = argparse.ArgumentParser()
 
+  FinchTestCase.add_extra_arguments(parser)
+  parser.add_argument(
+        '--isolated-script-test-output', type=str,
+        required=False,
+        help='path to write test results JSON object to')
   options, _ = parser.parse_known_args(args)
-  devil_chromium.Initialize(adb_path=options.adb_path)
-
-  logging_common.InitializeLogging(options)
 
   with get_device(options) as device, \
-      TEST_CASES[options.test_case](device, options) as test_case, \
+      TEST_CASES[options.test_case](device) as test_case, \
       test_case.install_apks():
 
-    device.EnableRoot()
-    log_mon = logcat_monitor.LogcatMonitor(
-          device.adb,
-          output_file=os.path.join(
-              os.path.dirname(options.write_full_results_to),
-              '%s_finch_smoke_tests_logcat.txt' % test_case.product_name()),
-          filter_specs=_LOGCAT_FILTERS)
-    log_mon.Start()
+    devil_chromium.Initialize(adb_path=options.adb_path)
+    logging_common.InitializeLogging(options)
+
+    # TODO(rmhasan): Best practice in Chromium is to allow users to provide
+    # their own adb binary to avoid adb server restarts. We should add a new
+    # command line argument to wptrunner so that users can pass the path to
+    # their adb binary.
+    platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
+    os.environ['PATH'] = os.pathsep.join([platform_tools_path] +
+                                          os.environ['PATH'].split(os.pathsep))
 
     device.RunShellCommand(
-        ['pm', 'clear', get_package_name(options.browser_apk)],
+        ['pm', 'clear', test_case.browser_package_name],
         check_return=True)
 
-    tests_pass = False
-    with_seed_res = TestResult.Fail
-    without_seed_res = TestResult.Fail
-    if test_case.run_tests('without finch seed') != 0:
-      test_case.install_seed()
-      tests_pass = test_case.run_tests('with finch seed')
-      without_seed_res = TestResult.Pass
-      if tests_pass:
-        with_seed_res = TestResult.Pass
+    test_results_dict = OrderedDict({'version': 3, 'interrupted': False,
+                                     'num_failures_by_type': {}, 'tests': {}})
 
-    log_mon.Stop()
-    json_results = get_json_results(with_seed_res, without_seed_res)
-    with open(options.write_full_results_to, 'w') as json_out:
-      json_out.write(json.dumps(json_results, indent=4))
+    ret = test_case.run_tests('without_finch_seed', test_results_dict)
+    test_case.install_seed()
+    ret |= test_case.run_tests('with_finch_seed', test_results_dict)
+
+    test_results_dict['seconds_since_epoch'] = int(time.time())
+    test_results_dict['path_delimiter'] = '/'
+
+    with open(options.isolated_script_test_output, 'w') as json_out:
+      json_out.write(json.dumps(test_results_dict, indent=4))
 
   # Return zero exit code if tests pass
-  return not tests_pass
+  return ret
 
 
 def main_compile_targets(args):

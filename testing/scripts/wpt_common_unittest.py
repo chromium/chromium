@@ -12,9 +12,7 @@ import re
 import unittest
 
 from wpt_common import (
-    BaseWptScriptAdapter, EXTERNAL_WPT_TESTS_DIR, WEB_TESTS_DIR,
-    LAYOUT_TEST_RESULTS_SUBDIR
-)
+    BaseWptScriptAdapter, EXTERNAL_WPT_TESTS_DIR, WEB_TESTS_DIR)
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
@@ -245,16 +243,19 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         written_files = self.wpt_adapter.fs.written_files
         self.assertEqual(written_files[OUTPUT_JSON_FILENAME],
                          written_files[os.path.join(
-                             LAYOUT_TEST_RESULTS_SUBDIR, 'full_results.json')])
+                             self.wpt_adapter.layout_test_results_subdir,
+                             'full_results.json')])
         # Verify JSONP
         full_results_jsonp = written_files[os.path.join(
-            LAYOUT_TEST_RESULTS_SUBDIR, 'full_results_jsonp.js')]
+            self.wpt_adapter.layout_test_results_subdir,
+            'full_results_jsonp.js')]
         match = re.match(r'ADD_FULL_RESULTS\((.*)\);$', full_results_jsonp)
         self.assertIsNotNone(match)
         self.assertEqual(match.group(1),
             written_files[OUTPUT_JSON_FILENAME].decode(encoding='utf-8'))
         failing_results_jsonp = written_files[os.path.join(
-            LAYOUT_TEST_RESULTS_SUBDIR, 'failing_results.json')]
+            self.wpt_adapter.layout_test_results_subdir,
+            'failing_results.json')]
         match = re.match(r'ADD_RESULTS\((.*)\);$', failing_results_jsonp)
         self.assertIsNotNone(match)
         failing_results = json.loads(match.group(1))
@@ -286,8 +287,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         actual_path = os.path.join(artifact_subdir,
                                    "test-actual.txt")
         diff_path = os.path.join(artifact_subdir, "test-diff.txt")
@@ -339,8 +341,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         stderr_path = os.path.join(artifact_subdir,
                                    "test-stderr.txt")
         self.assertEqual("test.html exceptions",
@@ -375,8 +378,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         crash_log_path = os.path.join(artifact_subdir,
                                       "test-crash-log.txt")
         self.assertEqual("test.html crashed!",
@@ -413,8 +417,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
         self._create_json_output(json_dict)
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         actual_image_path = os.path.join(artifact_subdir,
                                          "reftest-actual.png")
         self.assertEqual(base64.b64decode('abcd'),
@@ -470,8 +475,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             "test.html checked-in metadata")
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         actual_path = os.path.join(artifact_subdir,
                                    "test-actual.txt")
         self.assertEqual("test.html actual text",
@@ -548,8 +554,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             "variant.html checked-in metadata")
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         actual_path = os.path.join(artifact_subdir,
                                    "variant_foo=bar_abc-actual.txt")
         self.assertEqual("variant bar/abc actual text",
@@ -607,8 +614,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             "dir/multiglob checked-in metadata")
         self.wpt_adapter.do_post_test_run_tasks()
         written_files = self.wpt_adapter.fs.written_files
-        artifact_subdir = os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
-                                       "external", "wpt")
+        artifact_subdir = os.path.join(
+            self.wpt_adapter.layout_test_results_subdir,
+            "external", "wpt")
         actual_path = os.path.join(artifact_subdir,
                                    "dir/multiglob.https.any.worker-actual.txt")
         self.assertEqual("dir/multiglob worker actual text",

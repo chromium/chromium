@@ -14,7 +14,6 @@ import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
 CATAPULT_DIR = os.path.join(common.SRC_DIR, 'third_party', 'catapult')
-LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
 OUT_DIR = os.path.join(common.SRC_DIR, "out", "{}")
 DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
 TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
@@ -56,6 +55,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.wpt_output = None
         self.wptreport = None
         self.sink = ResultSinkReporter()
+        self.layout_test_results_subdir = 'layout-test-results'
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
@@ -86,7 +86,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # Move json results into layout-test-results directory
         results_dir = os.path.dirname(self.wpt_output)
         layout_test_results = os.path.join(results_dir,
-                                           LAYOUT_TEST_RESULTS_SUBDIR)
+                                           self.layout_test_results_subdir)
         if self.fs.exists(layout_test_results):
             self.fs.rmtree(layout_test_results)
         self.fs.maybe_make_directory(layout_test_results)
@@ -279,9 +279,10 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
               and an artifacts dictionary.
         """
 
-        artifacts = Artifacts(output_dir=self.wpt_output,
-                              host=self.sink.host,
-                              artifacts_base_dir=LAYOUT_TEST_RESULTS_SUBDIR)
+        artifacts = Artifacts(
+            output_dir=self.wpt_output,
+            host=self.sink.host,
+            artifacts_base_dir=self.layout_test_results_subdir)
 
         assert len(result_node['actual'].split()) == 1, (
             ('There should be only one result, however test %s has the '
@@ -309,7 +310,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         test_path = test_name[:index] if index != -1 else test_name
 
         self.sink.report_individual_test_result(
-            test_name, result, LAYOUT_TEST_RESULTS_SUBDIR,
+            test_name, result, self.layout_test_results_subdir,
             None, os.path.join(WEB_TESTS_DIR, test_path))
 
     def _maybe_write_expected_output(self, results_dir, test_name):
@@ -409,7 +410,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
               to the |results_dir|.
         """
         log_artifact_sub_path = (
-            os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+            os.path.join(self.layout_test_results_subdir,
                          self.port.output_filename(
                              test_name, suffix, extension))
         )
@@ -471,7 +472,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 actual_image_bytes = image_bytes
 
             screenshot_sub_path = (
-                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+                os.path.join(self.layout_test_results_subdir,
                              self.port.output_filename(
                                  test_name, file_suffix, ".png"))
             )
@@ -489,7 +490,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                                                  actual_image_bytes)
         if diff_bytes and not error:
             diff_sub_path = (
-                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+                os.path.join(self.layout_test_results_subdir,
                              self.port.output_filename(
                                  test_name, test_failures.FILENAME_SUFFIX_DIFF,
                                  ".png")))
