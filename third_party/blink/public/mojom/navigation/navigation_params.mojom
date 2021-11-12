@@ -473,4 +473,7 @@ struct CommitNavigationParams {
   array<AppHistoryEntry> app_history_forward_entries;
 
   array<url.mojom.Url> early_hints_preloaded_resources;
+
+  // The time the commit was sent from the browser.
+  mojo_base.mojom.TimeTicks commit_sent;
 };

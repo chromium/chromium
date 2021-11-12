@@ -1176,6 +1176,36 @@ void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
       frame.get(), has_played_media_before, std::move(closure));
 }
 
+void LogCommitHistograms(base::TimeTicks commit_sent, bool is_main_frame) {
+  if (!base::TimeTicks::IsConsistentAcrossProcesses())
+    return;
+
+  const char* frame_type = is_main_frame ? "MainFrame" : "Subframe";
+  auto now = base::TimeTicks::Now();
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.RendererCommitDelay.", frame_type}),
+      now - commit_sent);
+  if (auto* task = base::TaskAnnotator::CurrentTaskForThread()) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Navigation.RendererCommitQueueTime.", frame_type}),
+        now - task->queue_time);
+  }
+
+  // Some tests don't set the render thread.
+  if (!RenderThreadImpl::current())
+    return;
+
+  base::TimeTicks run_loop_start_time =
+      RenderThreadImpl::current()->run_loop_start_time();
+  // If the commit was sent before the run loop was started for this process,
+  // the navigation was likely delayed while waiting for the process to start.
+  if (commit_sent < run_loop_start_time) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Navigation.RendererCommitProcessWaitTime.", frame_type}),
+        run_loop_start_time - commit_sent);
+  }
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -2627,6 +2657,7 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
+  LogCommitHistograms(commit_params->commit_sent, is_main_frame_);
 
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);

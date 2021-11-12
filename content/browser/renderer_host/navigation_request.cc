@@ -1149,7 +1149,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
           /*early_hints_preloaded_resources=*/
-          std::vector<GURL>());
+          std::vector<GURL>(),
+          // This timestamp will be populated when the commit IPC is sent.
+          base::TimeTicks() /* commit_sent */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1273,7 +1275,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
-          std::vector<GURL>() /* early_hints_preloaded_resources */);
+          std::vector<GURL>() /* early_hints_preloaded_resources */,
+          // This timestamp will be populated when the commit IPC is sent.
+          base::TimeTicks() /* commit_sent */);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(

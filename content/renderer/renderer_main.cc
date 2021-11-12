@@ -262,6 +262,8 @@ int RendererMain(const MainFunctionParams& parameters) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
           "toplevel", "RendererMain.START_MSG_LOOP",
           TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
+      RenderThreadImpl::current()->set_run_loop_start_time(
+          base::TimeTicks::Now());
       run_loop.Run();
       TRACE_EVENT_NESTABLE_ASYNC_END0(
           "toplevel", "RendererMain.START_MSG_LOOP",
