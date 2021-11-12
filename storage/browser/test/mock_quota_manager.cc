@@ -57,6 +57,11 @@ void MockQuotaManager::GetOrCreateBucket(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (db_disabled_) {
+    std::move(callback).Run(QuotaError::kDatabaseError);
+    return;
+  }
+
   QuotaErrorOr<BucketInfo> bucketOr = FindBucket(
       storage_key, bucket_name, blink::mojom::StorageType::kTemporary);
   if (bucketOr.ok()) {

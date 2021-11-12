@@ -123,6 +123,8 @@ class MockQuotaManager : public QuotaManager {
     return write_error_tracker_;
   }
 
+  void SetDisableDatabase(bool disable) { db_disabled_ = disable; }
+
  protected:
   ~MockQuotaManager() override;
 
@@ -189,6 +191,8 @@ class MockQuotaManager : public QuotaManager {
 
   // Tracks number of times NotifyFailedWrite has been called per storage key.
   std::map<const blink::StorageKey, int> write_error_tracker_;
+
+  bool db_disabled_ = false;
 
   base::WeakPtrFactory<MockQuotaManager> weak_factory_{this};
 };

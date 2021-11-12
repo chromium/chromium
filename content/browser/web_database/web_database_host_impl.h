@@ -42,6 +42,7 @@ class CONTENT_EXPORT WebDatabaseHostImpl
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, OpenFileCreatesBucket);
+  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, GetOrCreateBucketError);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesUnauthorized);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesInvalid);
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, ProcessShutdown);
