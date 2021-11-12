@@ -134,6 +134,8 @@ crbug.com/dawn/1003 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,op
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgb9e5ufloat";* [ Failure ]
 crbug.com/tint/1228 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
 crbug.com/tint/1228 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
+crbug.com/tint/1293 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan:float_builtin_functions,atan:* [ Failure ]
+crbug.com/tint/1293 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan:float_builtin_functions,atan:* [ Failure ]
 
 # Precision. Only on Mac Intel
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:format="r8snorm";* [ Failure ]
@@ -322,7 +324,6 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,ca
 crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:clampDepth=false;writeDepth=true;* [ Failure ]
 crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:clampDepth=false;* [ Failure ]
 
-crbug.com/tint/1211 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:abs_float,float_builtin_functions:* [ Failure ]
 crbug.com/tint/1215 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,compute_builtins:inputs:* [ Failure ]
 
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="read";containerType="vector";* [ Failure ]
@@ -493,7 +494,6 @@ crbug.com/1005284 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,vali
 # Fails once then passes once, on ~every build, on Linux/NVIDIA.
 crbug.com/dawn/1095 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:* [ Failure ]
 
-[ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
 
 # (NVIDIA-only) Started failing when the test was added.
