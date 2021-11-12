@@ -90,6 +90,17 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   /**
+   * Navigate to a specific album in the Google Photos collection page.
+   * @param {WallpaperCollection} album
+   */
+  selectGooglePhotosAlbum(album) {
+    this.setProperties({
+      path_: Paths.GooglePhotosCollection,
+      queryParams_: {googlePhotosAlbumId: album.id}
+    });
+  }
+
+  /**
    * Navigate to the Google Photos collection page.
    */
   selectGooglePhotosCollection() {

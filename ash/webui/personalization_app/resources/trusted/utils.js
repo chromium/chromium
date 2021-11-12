@@ -20,3 +20,12 @@ export function getWallpaperLayoutEnum(layout) {
       return WallpaperLayout.kCenter;
   }
 }
+
+/**
+ * Checks if argument is a string with non-zero length.
+ * @param {?} maybeString
+ * @return {boolean}
+ */
+export function isNonEmptyString(maybeString) {
+  return typeof maybeString === 'string' && maybeString.length > 0;
+}

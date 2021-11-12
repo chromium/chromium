@@ -99,9 +99,14 @@
     <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
       <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
         <template>
-          <personalization-grid-item>
-            <div class="album" tabindex$="[[tabIndex]]">[[album.name]]</div>
-          </personalization-grid-item>
+            <personalization-grid-item>
+              <template is="dom-if" if="[[album]]">
+                <div class="album" tabindex$="[[tabIndex]]"
+                  on-click="onAlbumSelected_" on-keypress="onAlbumSelected_">
+                  [[album.name]]
+                </div>
+              </template>
+            </personalization-grid-item>
         </template>
       </iron-list>
     </div>

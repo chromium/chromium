@@ -14,7 +14,7 @@
     --cr-icon-button-margin-end: 8px;
   }
 
-  #textContainer {
+  #breadcrumbContainer {
     color: var(--cros-text-color-secondary);
     align-items: center;
     box-sizing: border-box;
@@ -24,15 +24,15 @@
     height: 100%;
   }
 
-  #textContainer>* {
+  #breadcrumbContainer>* {
     margin: 0;
   }
 
-  #textContainer>*+* {
+  #breadcrumbContainer>*+* {
     margin-left: 8px;
   }
 
-  #wallpaperLabel {
+  .breadcrumb {
     cursor: pointer;
   }
 
@@ -47,11 +47,12 @@
       class="icon-arrow-back" role="button" on-click="onBackClick_">
     </cr-icon-button>
   </template>
-  <div id="textContainer">
-    <p on-click="onBackClick_" id="wallpaperLabel">[[i18n('title')]]</p>
-    <template is="dom-if" if="[[pageLabel_]]">
-      <iron-icon icon="cr:chevron-right" aria-hidden$="true"></iron-icon>
-      <p id="pageLabel">[[pageLabel_]]</span>
+  <div id="breadcrumbContainer">
+    <template is="dom-repeat" items="[[breadcrumbs_]]" as="breadcrumb">
+      <template is="dom-if" if="[[index]]">
+        <iron-icon icon="cr:chevron-right" aria-hidden$="true"></iron-icon>
+      </template>
+      <p class="breadcrumb" on-click="onBreadcrumbClick_">[[breadcrumb]]</p>
     </template>
   </div>
 </div>

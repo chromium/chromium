@@ -11,11 +11,12 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '../common/styles.js';
-import {assertNotReached} from '/assert.m.js';
+import {assert, assertNotReached} from '/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getNumberOfGridItemsPerRow, isNonEmptyArray, normalizeKeyForRTL} from '../common/utils.js';
+import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeGooglePhotosData} from './personalization_controller.js';
+import {PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /**
@@ -156,6 +157,18 @@ export class GooglePhotos extends WithPersonalizationStore {
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
+  }
+
+  /**
+   * Invoked on selection of an album.
+   * @param {!Event} e
+   * @private
+   */
+  onAlbumSelected_(e) {
+    assert(e.model.album);
+    if (isSelectionEvent(e)) {
+      PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);
+    }
   }
 
   /**

@@ -18,6 +18,8 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {isNonEmptyArray} from '../common/utils.js';
 import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+import {isNonEmptyString} from './utils.js';
+
 
 /** @polymer */
 export class WallpaperBreadcrumb extends WithPersonalizationStore {
@@ -39,10 +41,27 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
       },
 
       /**
+       * The current Google Photos album id to display.
+       */
+      googlePhotosAlbumId: {
+        type: String,
+      },
+
+      /**
        * The current path of the page.
        */
       path: {
         type: String,
+      },
+
+      /**
+       * @type {Array<string>}
+       * @private
+       */
+      breadcrumbs_: {
+        type: Array,
+        computed:
+            'computeBreadcrumbs_(path, collections_, collectionId, googlePhotosAlbums_, googlePhotosAlbumId)',
       },
 
       /**
@@ -53,10 +72,13 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
         type: Array,
       },
 
-      /** @private */
-      pageLabel_: {
-        type: String,
-        computed: 'computePageLabel_(path, collections_, collectionId)',
+      /**
+       * The list of Google Photos albums.
+       * @type {?Array<WallpaperCollection>}
+       * @private
+       */
+      googlePhotosAlbums_: {
+        type: Array,
       },
 
       /** @private */
@@ -71,33 +93,52 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.backdrop.collections);
+    this.watch('googlePhotosAlbums_', state => state.googlePhotos.albums);
     this.updateFromStore();
   }
 
   /**
-   * @private
    * @param {string} path
-   * @param {?Array<!WallpaperCollection>}
-   *     collections
+   * @param {?Array<!WallpaperCollection>} collections
    * @param {string} collectionId
-   * @return {string}
+   * @param {?Array<WallpaperCollection>} googlePhotosAlbums
+   * @param {?string} googlePhotosAlbumId
+   * @return {Array<string>}
+   * @private
    */
-  computePageLabel_(path, collections, collectionId) {
+  computeBreadcrumbs_(
+      path, collections, collectionId, googlePhotosAlbums,
+      googlePhotosAlbumId) {
+    const breadcrumbs = [this.i18n('title')];
+
     switch (path) {
       case Paths.CollectionImages:
-        if (!isNonEmptyArray(collections)) {
-          return '';
+        if (isNonEmptyArray(collections)) {
+          const collection =
+              collections.find(collection => collection.id === collectionId);
+          if (collection) {
+            breadcrumbs.push(collection.name);
+          }
         }
-        const collection =
-            collections.find(collection => collection.id === collectionId);
-        return collection ? collection.name : '';
+        break;
       case Paths.GooglePhotosCollection:
-        return this.i18n('googlePhotosLabel');
+        breadcrumbs.push(this.i18n('googlePhotosLabel'));
+        if (isNonEmptyString(googlePhotosAlbumId) &&
+            isNonEmptyArray(googlePhotosAlbums)) {
+          const googlePhotosAlbum = googlePhotosAlbums.find(
+              googlePhotosAlbum =>
+                  googlePhotosAlbum.id === googlePhotosAlbumId);
+          if (googlePhotosAlbum) {
+            breadcrumbs.push(googlePhotosAlbum.name);
+          }
+        }
+        break;
       case Paths.LocalCollection:
-        return this.i18n('myImagesLabel');
-      default:
-        return '';
+        breadcrumbs.push(this.i18n('myImagesLabel'));
+        break;
     }
+
+    return breadcrumbs;
   }
 
   /**
@@ -120,6 +161,15 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
   /** @private */
   onBackClick_() {
     window.history.back();
+  }
+
+  /** @private */
+  onBreadcrumbClick_(e) {
+    const index = e.model.index;
+    const delta = this.breadcrumbs_.length - index - 1;
+    if (delta > 0) {
+      window.history.go(-delta);
+    }
   }
 }
 
