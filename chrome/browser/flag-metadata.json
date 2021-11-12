@@ -1560,7 +1560,7 @@
   {
     "name": "enable-commerce-price-tracking",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "enable-component-updater-test-request",
