@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(is_chromeos_ash,
        "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
@@ -101,5 +102,17 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+  ]
+}
+
+fuzzer_test("fast_pair_encryption_fuzzer") {
+  sources = [ "fast_pair/fast_pair_encryption_fuzzer.cc" ]
+  deps = [
+    ":pairing",
+    ":test_support",
+    "//ash:test_support",
+    "//ash/quick_pair/common",
+    "//ash/services/quick_pair",
+    "//base",
   ]
 }
