@@ -662,12 +662,7 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     timeout_seconds_ = 30;
 #elif defined(USE_OZONE)
     // Ozone builds go through a slower path than regular Linux builds.
-    // TODO(https://crbug.com/1096425): This special case of having both Ozone
-    // and X11 enabled that will be removed when Ozone is the default. Until
-    // then, we only need to use the slower Ozone timeout when the Ozone
-    // platform is being used. Remove this condition once it is not needed.
-    if (features::IsUsingOzonePlatform())
-      timeout_seconds_ = 30;
+    timeout_seconds_ = 30;
 #endif
   }
 

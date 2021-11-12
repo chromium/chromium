@@ -295,15 +295,6 @@ const base::Feature kResamplingScrollEventsExperimentalPrediction{
     "ResamplingScrollEventsExperimentalPrediction",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsUsingOzonePlatform() {
-#if defined(USE_X11) && !defined(USE_OZONE)
-
-#error Non-Ozone/X11 builds are no longer supported
-
-#endif  // defined(USE_X11) || defined(USE_OZONE)
-  return true;
-}
-
 const char kPredictorNameLsq[] = "lsq";
 const char kPredictorNameKalman[] = "kalman";
 const char kPredictorNameLinearFirst[] = "linear_first";
