@@ -82,7 +82,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   bool IsLoading(JNIEnv* env,
                  const base::android::JavaParamRef<jobject>& obj) const;
-  bool IsLoadingToDifferentDocument(
+  bool ShouldShowLoadingUI(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) const;
 

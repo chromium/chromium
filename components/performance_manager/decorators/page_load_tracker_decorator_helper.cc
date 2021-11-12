@@ -58,7 +58,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
     // |web_contents| must not be loading when it starts being tracked by this
     // observer. Otherwise, loading state wouldn't be tracked correctly.
-    DCHECK(!web_contents->IsLoadingToDifferentDocument());
+    DCHECK(!web_contents->ShouldShowLoadingUI());
   }
 
   WebContentsObserver(const WebContentsObserver&) = delete;
@@ -76,7 +76,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
 
     // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
     loading_state_ = LoadingState::kWaitingForNavigation;
@@ -88,8 +88,8 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    // Only observe top-level navigation that will show navigation UI.
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
     DCHECK(web_contents()->IsLoading());

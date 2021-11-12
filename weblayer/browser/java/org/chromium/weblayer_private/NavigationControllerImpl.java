@@ -255,9 +255,9 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     }
 
     @CalledByNative
-    private void loadStateChanged(boolean isLoading, boolean toDifferentDocument)
+    private void loadStateChanged(boolean isLoading, boolean shouldShowLoadingUi)
             throws RemoteException {
-        mNavigationControllerClient.loadStateChanged(isLoading, toDifferentDocument);
+        mNavigationControllerClient.loadStateChanged(isLoading, shouldShowLoadingUi);
     }
 
     @CalledByNative

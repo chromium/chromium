@@ -52,7 +52,7 @@ void TestNavigationObserver::NavigationFailed(Navigation* navigation) {
 }
 
 void TestNavigationObserver::LoadStateChanged(bool is_loading,
-                                              bool to_different_document) {
+                                              bool should_show_loading_ui) {
   done_loading_ = !is_loading;
   CheckNavigationCompleted();
 }

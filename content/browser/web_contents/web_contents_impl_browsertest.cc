@@ -249,26 +249,24 @@ class RenderViewSizeObserver : public WebContentsObserver {
 
 class LoadingStateChangedDelegate : public WebContentsDelegate {
  public:
-  LoadingStateChangedDelegate()
-      : loadingStateChangedCount_(0),
-        loadingStateToDifferentDocumentCount_(0) {}
+  LoadingStateChangedDelegate() = default;
 
   // WebContentsDelegate:
   void LoadingStateChanged(WebContents* contents,
-                           bool to_different_document) override {
+                           bool should_show_loading_ui) override {
     loadingStateChangedCount_++;
-    if (to_different_document)
-      loadingStateToDifferentDocumentCount_++;
+    if (should_show_loading_ui)
+      loadingStateShowLoadingUICount_++;
   }
 
   int loadingStateChangedCount() const { return loadingStateChangedCount_; }
-  int loadingStateToDifferentDocumentCount() const {
-    return loadingStateToDifferentDocumentCount_;
+  int loadingStateShowLoadingUICount() const {
+    return loadingStateShowLoadingUICount_;
   }
 
  private:
-  int loadingStateChangedCount_;
-  int loadingStateToDifferentDocumentCount_;
+  int loadingStateChangedCount_ = 0;
+  int loadingStateShowLoadingUICount_ = 0;
 };
 
 // Test that DidStopLoading includes the correct URL in the details.
@@ -660,10 +658,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // IsWaitingForResponse() to !IsWaitingForResponse(), and start and stop for
   // the "navigation" triggered by history.pushState(). However, the start
   // notification for the history.pushState() navigation should set
-  // to_different_document to false.
+  // should_show_loading_ui to false.
   EXPECT_EQ("pushState", shell()->web_contents()->GetLastCommittedURL().ref());
   EXPECT_EQ(5, delegate->loadingStateChangedCount());
-  EXPECT_EQ(4, delegate->loadingStateToDifferentDocumentCount());
+  EXPECT_EQ(4, delegate->loadingStateShowLoadingUICount());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {

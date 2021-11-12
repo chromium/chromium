@@ -410,7 +410,7 @@ void WebDialogView::AddNewContents(
 }
 
 void WebDialogView::LoadingStateChanged(content::WebContents* source,
-                                        bool to_different_document) {
+                                        bool should_show_loading_ui) {
   if (delegate_)
     delegate_->OnLoadingStateChanged(source);
 }

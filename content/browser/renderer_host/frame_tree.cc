@@ -806,13 +806,13 @@ void FrameTree::DidAccessInitialMainDocument() {
 }
 
 void FrameTree::DidStartLoadingNode(FrameTreeNode& node,
-                                    bool to_different_document,
+                                    bool should_show_loading_ui,
                                     bool was_previously_loading) {
   if (was_previously_loading)
     return;
 
   root()->render_manager()->SetIsLoading(IsLoading());
-  delegate_->DidStartLoading(&node, to_different_document);
+  delegate_->DidStartLoading(&node, should_show_loading_ui);
 }
 
 void FrameTree::DidStopLoadingNode(FrameTreeNode& node) {

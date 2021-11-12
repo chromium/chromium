@@ -631,12 +631,12 @@ bool GuestViewBase::HandleKeyboardEvent(
 }
 
 void GuestViewBase::LoadingStateChanged(WebContents* source,
-                                        bool to_different_document) {
+                                        bool should_show_loading_ui) {
   if (!attached() || !embedder_web_contents()->GetDelegate())
     return;
 
   embedder_web_contents()->GetDelegate()->LoadingStateChanged(
-      embedder_web_contents(), to_different_document);
+      embedder_web_contents(), should_show_loading_ui);
 }
 
 void GuestViewBase::ResizeDueToAutoResize(WebContents* web_contents,

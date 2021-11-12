@@ -332,7 +332,7 @@ void Shell::Stop() {
   web_contents_->Stop();
 }
 
-void Shell::UpdateNavigationControls(bool to_different_document) {
+void Shell::UpdateNavigationControls(bool should_show_loading_ui) {
   int current_index = web_contents_->GetController().GetCurrentEntryIndex();
   int max_index = web_contents_->GetController().GetEntryCount() - 1;
 
@@ -342,7 +342,7 @@ void Shell::UpdateNavigationControls(bool to_different_document) {
                               current_index < max_index);
   g_platform->EnableUIControl(
       this, ShellPlatformDelegate::STOP_BUTTON,
-      to_different_document && web_contents_->IsLoading());
+      should_show_loading_ui && web_contents_->IsLoading());
 }
 
 void Shell::ShowDevTools() {
@@ -457,8 +457,8 @@ WebContents* Shell::OpenURLFromTab(WebContents* source,
 }
 
 void Shell::LoadingStateChanged(WebContents* source,
-                                bool to_different_document) {
-  UpdateNavigationControls(to_different_document);
+                                bool should_show_loading_ui) {
+  UpdateNavigationControls(should_show_loading_ui);
   g_platform->SetIsLoading(this, source->IsLoading());
 }
 

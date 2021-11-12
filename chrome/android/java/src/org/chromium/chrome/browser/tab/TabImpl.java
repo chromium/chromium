@@ -903,7 +903,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             initWebContents(webContents);
 
-            if (!creatingWebContents && webContents.isLoadingToDifferentDocument()) {
+            if (!creatingWebContents && webContents.shouldShowLoadingUI()) {
                 didStartPageLoad(webContents.getVisibleUrl());
             }
 

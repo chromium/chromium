@@ -55,7 +55,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void Reload();
   void ReloadBypassingCache();
   void Stop();
-  void UpdateNavigationControls(bool to_different_document);
+  void UpdateNavigationControls(bool should_show_loading_ui);
   void Close();
   void ShowDevTools();
   void CloseDevTools();
@@ -120,7 +120,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                       bool user_gesture,
                       bool* was_blocked) override;
   void LoadingStateChanged(WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
 #if defined(OS_ANDROID)
   void SetOverlayMode(bool use_overlay_mode) override;
 #endif

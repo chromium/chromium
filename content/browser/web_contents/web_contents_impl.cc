@@ -894,7 +894,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
                   this,
                   FrameTree::Type::kPrimary),
       node_(this),
-      is_load_to_different_document_(false),
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
       primary_main_frame_process_error_code_(0),
@@ -1905,8 +1904,8 @@ double WebContentsImpl::GetLoadProgress() {
   return frame_tree_.GetLoadProgress();
 }
 
-bool WebContentsImpl::IsLoadingToDifferentDocument() {
-  return IsLoading() && is_load_to_different_document_;
+bool WebContentsImpl::ShouldShowLoadingUI() {
+  return IsLoading() && should_show_loading_ui_;
 }
 
 bool WebContentsImpl::IsDocumentOnLoadCompletedInMainFrame() {
@@ -4370,7 +4369,7 @@ void WebContentsImpl::SetNotWaitingForResponse() {
   // LoadingStateChanged must be called last in case it triggers deletion of
   // |this| due to recursive message pumps.
   if (delegate_)
-    delegate_->LoadingStateChanged(this, is_load_to_different_document_);
+    delegate_->LoadingStateChanged(this, should_show_loading_ui_);
 }
 
 void WebContentsImpl::SendScreenRects() {
@@ -6456,7 +6455,7 @@ void WebContentsImpl::ResetLoadProgressState() {
 
 // Notifies the RenderWidgetHost instance about the fact that the page is
 // loading, or done loading.
-void WebContentsImpl::LoadingStateChanged(bool to_different_document,
+void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
                                           LoadNotificationDetails* details) {
   if (IsBeingDestroyed())
     return;
@@ -6475,10 +6474,10 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
   }
 
   waiting_for_response_ = is_loading;
-  is_load_to_different_document_ = to_different_document;
+  should_show_loading_ui_ = should_show_loading_ui;
 
   if (delegate_)
-    delegate_->LoadingStateChanged(this, to_different_document);
+    delegate_->LoadingStateChanged(this, should_show_loading_ui_);
   NotifyNavigationStateChanged(INVALIDATE_TYPE_LOAD);
 
   std::string url = (details ? details->url.possibly_invalid_spec() : "NULL");
@@ -7227,10 +7226,10 @@ PrerenderHostRegistry* WebContentsImpl::GetPrerenderHostRegistry() {
 }
 
 void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
-                                      bool to_different_document) {
+                                      bool should_show_loading_ui) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
                         "frame_tree_node", frame_tree_node);
-  LoadingStateChanged(frame_tree_node->IsMainFrame() && to_different_document,
+  LoadingStateChanged(frame_tree_node->IsMainFrame() && should_show_loading_ui,
                       nullptr);
 
   // Reset the focus state from DidStartNavigation to false if a new load starts
@@ -7263,7 +7262,7 @@ void WebContentsImpl::DidStopLoading() {
         GetController().GetCurrentEntryIndex());
   }
 
-  LoadingStateChanged(true, details.get());
+  LoadingStateChanged(true /* should_show_loading_ui */, details.get());
 
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kSpareRenderer)) {

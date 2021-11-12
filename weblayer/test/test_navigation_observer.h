@@ -43,7 +43,7 @@ class TestNavigationObserver : public NavigationObserver {
   void NavigationStarted(Navigation* navigation) override;
   void NavigationCompleted(Navigation* navigation) override;
   void NavigationFailed(Navigation* navigation) override;
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
 
   void CheckNavigationCompleted();
 

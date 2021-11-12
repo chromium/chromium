@@ -26,7 +26,7 @@ interface INavigationControllerClient {
 
   void navigationFailed(IClientNavigation navigation) = 5;
 
-  void loadStateChanged(boolean isLoading, boolean toDifferentDocument) = 6;
+  void loadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) = 6;
 
   void loadProgressChanged(double progress) = 7;
 

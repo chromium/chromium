@@ -376,7 +376,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   SiteInstanceImpl* GetSiteInstance() override;
   bool IsLoading() override;
   double GetLoadProgress() override;
-  bool IsLoadingToDifferentDocument() override;
+  bool ShouldShowLoadingUI() override;
   bool IsDocumentOnLoadCompletedInMainFrame() override;
   bool IsWaitingForResponse() override;
   const net::LoadStateWithParam& GetLoadState() override;
@@ -1011,7 +1011,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // FrameTree::Delegate -------------------------------------------------------
 
   void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool to_different_document) override;
+                       bool should_show_loading_ui) override;
   void DidStopLoading() override;
   void DidChangeLoadProgress() override;
   bool IsHidden() override;
@@ -1668,7 +1668,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Notifies the delegate of a change in loading state.
   // |details| is used to provide details on the load that just finished
   // (but can be null if not applicable).
-  void LoadingStateChanged(bool to_different_document,
+  void LoadingStateChanged(bool should_show_loading_ui,
                            LoadNotificationDetails* details);
 
   // Misc non-view stuff -------------------------------------------------------
@@ -1900,10 +1900,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Data for loading state ----------------------------------------------------
 
-  // Indicates whether the current load is to a different document. Only valid
+  // Indicates whether the current navigation should show loading UI. Only valid
   // if |is_loading_| is true and only tracks loads in the main frame.
   // TODO(pbos): Check navigation requests and handles instead of caching this.
-  bool is_load_to_different_document_;
+  bool should_show_loading_ui_;
 
   // Indicates the process state of the primary main frame's renderer process.
   // If the process is not live due to a crash, this will be reflected by

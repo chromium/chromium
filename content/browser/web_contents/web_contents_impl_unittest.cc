@@ -292,7 +292,7 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   ~FakeWebContentsDelegate() override {}
 
   void LoadingStateChanged(WebContents* source,
-                           bool to_different_document) override {
+                           bool should_show_loading_ui) override {
     loading_state_changed_was_called_ = true;
   }
 
@@ -2495,10 +2495,10 @@ TEST_F(WebContentsImplTestWithSiteIsolation, StartStopEventsBalance) {
   EXPECT_FALSE(observer.is_loading());
 }
 
-// Tests that WebContentsImpl::IsLoadingToDifferentDocument only reports main
+// Tests that WebContentsImpl::ShouldShowLoadingUI only reports main
 // frame loads. Browser-initiated navigation of subframes is only possible in
 // --site-per-process mode within unit tests.
-TEST_F(WebContentsImplTestWithSiteIsolation, IsLoadingToDifferentDocument) {
+TEST_F(WebContentsImplTestWithSiteIsolation, ShouldShowLoadingUI) {
   const GURL main_url("http://www.chromium.org");
   TestRenderFrameHost* orig_rfh = main_test_rfh();
 
@@ -2511,23 +2511,23 @@ TEST_F(WebContentsImplTestWithSiteIsolation, IsLoadingToDifferentDocument) {
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(orig_rfh, main_test_rfh());
   EXPECT_TRUE(contents()->IsLoading());
-  EXPECT_TRUE(contents()->IsLoadingToDifferentDocument());
+  EXPECT_TRUE(contents()->ShouldShowLoadingUI());
 
   // Send the DidStopLoading for the main frame and ensure it isn't loading
   // anymore.
   navigation->StopLoading();
   EXPECT_FALSE(contents()->IsLoading());
-  EXPECT_FALSE(contents()->IsLoadingToDifferentDocument());
+  EXPECT_FALSE(contents()->ShouldShowLoadingUI());
 
   // Create a child frame to navigate.
   TestRenderFrameHost* subframe = orig_rfh->AppendChild("subframe");
 
   // Navigate the child frame to about:blank, make sure the web contents is
-  // marked as "loading" but not "loading to different document".
+  // marked as "loading" but not "showing loading UI".
   subframe->SendNavigateWithTransition(0, false, GURL("about:blank"),
                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_TRUE(contents()->IsLoading());
-  EXPECT_FALSE(contents()->IsLoadingToDifferentDocument());
+  EXPECT_FALSE(contents()->ShouldShowLoadingUI());
   static_cast<mojom::FrameHost*>(subframe)->DidStopLoading();
   EXPECT_FALSE(contents()->IsLoading());
 }

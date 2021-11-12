@@ -663,7 +663,7 @@ void AppBannerManager::DidActivatePortal(
   // If this page was loaded in a portal, AppBannerManager may have been
   // instantiated after DidFinishLoad. Trigger the banner pipeline now (on
   // portal activation) if we missed the load event.
-  if (!load_finished_ && !web_contents()->IsLoadingToDifferentDocument()) {
+  if (!load_finished_ && !web_contents()->ShouldShowLoadingUI()) {
     DidFinishLoad(web_contents()->GetMainFrame(),
                   web_contents()->GetLastCommittedURL());
   }

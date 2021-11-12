@@ -161,8 +161,8 @@ void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
 void TabLoadTracker::PrimaryPageChanged(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Only observe top-level navigation to a different document.
-  if (!web_contents->IsLoadingToDifferentDocument())
+  // Only observe top-level navigation that triggers navigation UI.
+  if (!web_contents->ShouldShowLoadingUI())
     return;
 
   auto it = tabs_.find(web_contents);
@@ -225,7 +225,7 @@ TabLoadTracker::LoadingState TabLoadTracker::DetermineLoadingState(
   // Determine if the WebContents is actively loading, using our definition of
   // loading. Start from the assumption that it is UNLOADED.
   LoadingState loading_state = UNLOADED;
-  if (web_contents->IsLoadingToDifferentDocument() &&
+  if (web_contents->ShouldShowLoadingUI() &&
       !web_contents->IsWaitingForResponse()) {
     loading_state = LOADING;
   } else {

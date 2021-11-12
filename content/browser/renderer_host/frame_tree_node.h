@@ -327,13 +327,15 @@ class CONTENT_EXPORT FrameTreeNode {
   void ResetNavigationRequest(bool keep_state);
 
   // A RenderFrameHost in this node started loading.
-  // |to_different_document| will be true unless the load is a fragment
-  // navigation, or triggered by history.pushState/replaceState.
+  // |should_show_loading_ui| indicates whether this navigation should be
+  // visible in the UI. True for cross-document navigations and navigations
+  // intercepted by appHistory's transitionWhile().
   // |was_previously_loading| is false if the FrameTree was not loading before.
   // The caller is required to provide this boolean as the delegate should only
   // be notified if the FrameTree went from non-loading to loading state.
   // However, when it is called, the FrameTree should be in a loading state.
-  void DidStartLoading(bool to_different_document, bool was_previously_loading);
+  void DidStartLoading(bool should_show_loading_ui,
+                       bool was_previously_loading);
 
   // A RenderFrameHost in this node stopped loading.
   void DidStopLoading();

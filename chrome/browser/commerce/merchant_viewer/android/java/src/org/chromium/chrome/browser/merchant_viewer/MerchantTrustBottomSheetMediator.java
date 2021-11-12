@@ -140,7 +140,7 @@ public class MerchantTrustBottomSheetMediator {
             }
 
             @Override
-            public void loadingStateChanged(boolean toDifferentDocument) {
+            public void loadingStateChanged(boolean shouldShowLoadingUI) {
                 boolean isLoading = mWebContents != null && mWebContents.isLoading();
                 if (isLoading) {
                     if (mToolbarModel == null) return;

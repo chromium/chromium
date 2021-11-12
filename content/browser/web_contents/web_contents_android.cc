@@ -356,10 +356,10 @@ bool WebContentsAndroid::IsLoading(JNIEnv* env,
   return web_contents_->IsLoading();
 }
 
-bool WebContentsAndroid::IsLoadingToDifferentDocument(
+bool WebContentsAndroid::ShouldShowLoadingUI(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) const {
-  return web_contents_->IsLoadingToDifferentDocument();
+  return web_contents_->ShouldShowLoadingUI();
 }
 
 void WebContentsAndroid::DispatchBeforeUnload(JNIEnv* env,

@@ -167,10 +167,15 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Notifies the delegate that this contents is starting or is done loading
   // some resource. The delegate should use this notification to represent
   // loading feedback. See WebContents::IsLoading()
-  // |to_different_document| will be true unless the load is a fragment
-  // navigation, or triggered by history.pushState/replaceState.
+  // |should_show_loading_ui| indicates whether a load start should be visible
+  // in UI elements. It is generally true for different-document navigations and
+  // false for most same-document navigations (because same-documents are
+  // typically instantaneous so there's no point in flickering the UI). The
+  // exception is appHistory's transitionWhile, which is the sole type of
+  // same-document navigation that is asynchronous, and therefore a UI change is
+  // sensible.
   virtual void LoadingStateChanged(WebContents* source,
-                                   bool to_different_document) {}
+                                   bool should_show_loading_ui) {}
 
   // Request the delegate to close this web contents, and do whatever cleanup
   // it needs to do.

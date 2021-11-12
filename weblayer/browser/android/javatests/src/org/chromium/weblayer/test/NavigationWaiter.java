@@ -52,7 +52,7 @@ public class NavigationWaiter {
         }
 
         @Override
-        public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {
+        public void onLoadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {
             mDoneLoading = !isLoading;
             checkComplete();
         }

@@ -136,7 +136,7 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
-    public boolean isLoadingToDifferentDocument() {
+    public boolean shouldShowLoadingUI() {
         return false;
     }
 

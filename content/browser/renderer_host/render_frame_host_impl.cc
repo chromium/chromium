@@ -8223,7 +8223,8 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
     bool was_loading = frame_tree()->IsLoading();
     is_loading_ = true;
-    frame_tree_node()->DidStartLoading(true, was_loading);
+    frame_tree_node()->DidStartLoading(true /* should_show_loading_ui */,
+                                       was_loading);
   }
 
   GetAssociatedLocalFrame()->HandleRendererDebugURL(url);

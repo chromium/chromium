@@ -149,7 +149,7 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
   gfx::Image favicon = favicon_driver->GetFavicon();
 
   // Desaturate the favicon if the navigation entry contains a network error.
-  if (!contents->IsLoadingToDifferentDocument()) {
+  if (!contents->ShouldShowLoadingUI()) {
     content::NavigationController& controller = contents->GetController();
 
     content::NavigationEntry* entry = controller.GetLastCommittedEntry();

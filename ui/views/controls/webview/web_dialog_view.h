@@ -146,7 +146,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                       bool user_gesture,
                       bool* was_blocked) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void BeforeUnloadFired(content::WebContents* tab,
                          bool proceed,
                          bool* proceed_to_fire_unload) override;

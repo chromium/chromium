@@ -44,7 +44,7 @@ public class WebContentsDelegateAndroid {
     public void closeContents() {}
 
     @CalledByNative
-    public void loadingStateChanged(boolean toDifferentDocument) {}
+    public void loadingStateChanged(boolean shouldShowLoadingUI) {}
 
     @CalledByNative
     public void navigationStateChanged(int flags) {}

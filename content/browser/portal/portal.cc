@@ -406,7 +406,7 @@ void Portal::WebContentsDestroyed() {
 }
 
 void Portal::LoadingStateChanged(WebContents* source,
-                                 bool to_different_document) {
+                                 bool should_show_loading_ui) {
   DCHECK_EQ(source, portal_contents_.get());
   if (!source->IsLoading())
     client_->DispatchLoadEvent();

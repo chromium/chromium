@@ -101,7 +101,7 @@ class Shell : public TabObserver,
   void DisplayedUrlChanged(const GURL& url) override;
 
   // NavigationObserver implementation:
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
   void LoadProgressChanged(double progress) override;
 
   // DownloadDelegate implementation:

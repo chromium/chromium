@@ -627,12 +627,12 @@ void NavigationControllerImpl::NotifyLoadStateChanged() {
     TRACE_EVENT0("weblayer", "Java_NavigationControllerImpl_loadStateChanged");
     Java_NavigationControllerImpl_loadStateChanged(
         AttachCurrentThread(), java_controller_, web_contents()->IsLoading(),
-        web_contents()->IsLoadingToDifferentDocument());
+        web_contents()->ShouldShowLoadingUI());
   }
 #endif
   for (auto& observer : observers_) {
     observer.LoadStateChanged(web_contents()->IsLoading(),
-                              web_contents()->IsLoadingToDifferentDocument());
+                              web_contents()->ShouldShowLoadingUI());
   }
 }
 

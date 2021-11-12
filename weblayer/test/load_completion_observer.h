@@ -31,7 +31,7 @@ class LoadCompletionObserver : public NavigationObserver {
 
  private:
   // NavigationObserver implementation:
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
 
   Tab* tab_;
   base::RunLoop run_loop_;

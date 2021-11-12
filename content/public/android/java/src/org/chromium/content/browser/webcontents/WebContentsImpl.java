@@ -481,9 +481,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public boolean isLoadingToDifferentDocument() {
+    public boolean shouldShowLoadingUI() {
         checkNotDestroyed();
-        return WebContentsImplJni.get().isLoadingToDifferentDocument(
+        return WebContentsImplJni.get().shouldShowLoadingUI(
                 mNativeWebContentsAndroid, WebContentsImpl.this);
     }
 
@@ -1080,7 +1080,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         GURL getVisibleURL(long nativeWebContentsAndroid, WebContentsImpl caller);
         String getEncoding(long nativeWebContentsAndroid, WebContentsImpl caller);
         boolean isLoading(long nativeWebContentsAndroid, WebContentsImpl caller);
-        boolean isLoadingToDifferentDocument(long nativeWebContentsAndroid, WebContentsImpl caller);
+        boolean shouldShowLoadingUI(long nativeWebContentsAndroid, WebContentsImpl caller);
         void dispatchBeforeUnload(
                 long nativeWebContentsAndroid, WebContentsImpl caller, boolean autoCancel);
         void stop(long nativeWebContentsAndroid, WebContentsImpl caller);

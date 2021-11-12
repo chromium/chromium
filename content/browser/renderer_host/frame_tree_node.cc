@@ -555,13 +555,13 @@ void FrameTreeNode::ResetNavigationRequest(bool keep_state) {
   render_manager_.CleanUpNavigation();
 }
 
-void FrameTreeNode::DidStartLoading(bool to_different_document,
+void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
                                     bool was_previously_loading) {
   TRACE_EVENT2("navigation", "FrameTreeNode::DidStartLoading",
-               "frame_tree_node", frame_tree_node_id(), "to different document",
-               to_different_document);
+               "frame_tree_node", frame_tree_node_id(),
+               "should_show_loading_ui ", should_show_loading_ui);
 
-  frame_tree_->DidStartLoadingNode(*this, to_different_document,
+  frame_tree_->DidStartLoadingNode(*this, should_show_loading_ui,
                                    was_previously_loading);
 
   // Set initial load progress and update overall progress. This will notify

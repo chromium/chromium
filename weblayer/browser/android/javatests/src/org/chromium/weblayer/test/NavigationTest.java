@@ -394,9 +394,9 @@ public class NavigationTest {
         }
 
         @Override
-        public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {
+        public void onLoadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {
             loadStateChangedCallback.recordValue(
-                    Boolean.toString(isLoading) + " " + Boolean.toString(toDifferentDocument));
+                    Boolean.toString(isLoading) + " " + Boolean.toString(shouldShowLoadingUi));
         }
 
         @Override

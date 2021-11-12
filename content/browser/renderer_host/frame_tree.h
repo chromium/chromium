@@ -121,11 +121,11 @@ class CONTENT_EXPORT FrameTree {
     // A RenderFrameHost in the specified |frame_tree_node| started loading a
     // new document. This corresponds to browser UI starting to show a spinner
     // or other visual indicator for loading. This method is only invoked if the
-    // FrameTree hadn't been previously loading. |to_different_document| will be
-    // true unless the load is a fragment navigation, or triggered by
+    // FrameTree hadn't been previously loading. |should_show_loading_ui| will
+    // be true unless the load is a fragment navigation, or triggered by
     // history.pushState/replaceState.
     virtual void DidStartLoading(FrameTreeNode* frame_tree_node,
-                                 bool to_different_document) = 0;
+                                 bool should_show_loading_ui) = 0;
 
     // This is called when all nodes in the FrameTree stopped loading. This
     // corresponds to the browser UI stop showing a spinner or other visual
@@ -383,7 +383,7 @@ class CONTENT_EXPORT FrameTree {
   void FrameRemoved(FrameTreeNode* frame);
 
   void DidStartLoadingNode(FrameTreeNode& node,
-                           bool to_different_document,
+                           bool should_show_loading_ui,
                            bool was_previously_loading);
   void DidStopLoadingNode(FrameTreeNode& node);
   void DidCancelLoading();

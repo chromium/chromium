@@ -578,11 +578,11 @@ class WebContents : public PageNavigator,
   // Returns the current load progress.
   virtual double GetLoadProgress() = 0;
 
-  // Returns whether this WebContents is loading and and the load is to a
-  // different top-level document (rather than being a navigation within the
-  // same document) in the main frame. This being true implies that IsLoading()
-  // is also true.
-  virtual bool IsLoadingToDifferentDocument() = 0;
+  // Returns whether a navigation is currently in progress that should show
+  // loading UI if such UI exists (progress bar, loading spinner, stop button,
+  // etc.) True for different-document navigations and appHistory's
+  // transitionWhile(). This being true implies that IsLoading() is also true.
+  virtual bool ShouldShowLoadingUI() = 0;
 
   // Returns whether the current main document has reached and finished
   // executing its onload() handler. Corresponds to

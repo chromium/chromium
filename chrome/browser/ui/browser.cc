@@ -1653,9 +1653,9 @@ void Browser::ActivateContents(WebContents* contents) {
 }
 
 void Browser::LoadingStateChanged(WebContents* source,
-                                  bool to_different_document) {
+                                  bool should_show_loading_ui) {
   ScheduleUIUpdate(source, content::INVALIDATE_TYPE_LOAD);
-  UpdateWindowForLoadingStateChanged(source, to_different_document);
+  UpdateWindowForLoadingStateChanged(source, should_show_loading_ui);
 }
 
 void Browser::CloseContents(WebContents* source) {
@@ -2762,13 +2762,13 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
 }
 
 void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
-                                                 bool to_different_document) {
+                                                 bool should_show_loading_ui) {
   window_->UpdateLoadingAnimations(tab_strip_model_->TabsAreLoading());
   window_->UpdateTitleBar();
 
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();
   if (source == selected_contents) {
-    bool is_loading = source->IsLoading() && to_different_document;
+    bool is_loading = source->IsLoading() && should_show_loading_ui;
     command_controller_->LoadingStateChanged(is_loading, false);
     if (GetStatusBubble()) {
       GetStatusBubble()->SetStatus(CoreTabHelper::FromWebContents(

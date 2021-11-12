@@ -212,10 +212,10 @@ public interface WebContents extends Parcelable {
     boolean isLoading();
 
     /**
-     * @return Whether this WebContents is loading and and the load is to a different top-level
-     *         document (rather than being a navigation within the same document).
+     * @return Whether this WebContents is loading and expects any loading UI to
+     * be displayed.
      */
-    boolean isLoadingToDifferentDocument();
+    boolean shouldShowLoadingUI();
 
     /**
      * Runs the beforeunload handler, if any. The tab will be closed if there's no beforeunload
