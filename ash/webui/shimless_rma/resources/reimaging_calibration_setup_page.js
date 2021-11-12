@@ -8,18 +8,17 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
-// TODO(gavindodd): i18n string
-const instructionMessages = {
+const instructionMessagesKeys = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
-      'Please place the device on a flat surface before proceeding.',
+      'calibrateBaseInstructionsText',
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface]:
-      'Please place the lid of the device on a flat surface before proceeding.'
+      'calibrateLidInstructionsText'
 };
 
 /**
@@ -27,7 +26,18 @@ const instructionMessages = {
  * 'reimaging-calibration-setup-page' is for displaying instructions for the
  * user to prepare the device for a calibration step.
  */
-export class ReimagingCalibrationSetupPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingCalibrationSetupPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingCalibrationSetupPage extends
+    ReimagingCalibrationSetupPageBase {
   static get is() {
     return 'reimaging-calibration-setup-page';
   }
@@ -57,14 +67,8 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
     super.ready();
     this.shimlessRmaService_.getCalibrationSetupInstructions().then(
         (result) => {
-          const message = instructionMessages[result.instructions];
-          if (message === undefined) {
-            // This is a catchall in case of errors.
-            // TODO(gavindodd): i18n string
-            this.calibrationInstructions_ = 'Click Next to proceed';
-          } else {
-            this.calibrationInstructions_ = message;
-          }
+          this.calibrationInstructions_ =
+              this.i18n(instructionMessagesKeys[result.instructions]);
         });
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
@@ -79,5 +83,4 @@ export class ReimagingCalibrationSetupPageElement extends PolymerElement {
 }
 
 customElements.define(
-    ReimagingCalibrationSetupPageElement.is,
-    ReimagingCalibrationSetupPageElement);
+    ReimagingCalibrationSetupPage.is, ReimagingCalibrationSetupPage);

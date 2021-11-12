@@ -2178,6 +2178,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when confirming components to calibrate.">
         Calibrate device components
       </message>
+      <!-- Setup calibration page -->
+      <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page that displays specific instructions required for some calibration steps.">
+        Prepare to calibrate device components
+      </message>
+      <message name="IDS_SHIMLESS_RMA_BASE_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the base of the device.">
+        Please place the device on a flat surface before proceeding.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
+        Please place the lid of the device on a flat surface before proceeding.
+      </message>
       <!-- Finalize device page -->
       <message name="IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE" translateable="false" desc="Title for the page shown when finalizing the device. Finalizing is the process of confirming the device is ready to return to the owner.">
         Finalizing repair

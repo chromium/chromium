@@ -127,6 +127,13 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Check calibration page
       {"checkCalibrationTitleText",
        IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE},
+      // Setup calibration page
+      {"setupCalibrationTitleText",
+       IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE},
+      {"calibrateBaseInstructionsText",
+       IDS_SHIMLESS_RMA_BASE_CALIBRATION_INSTRUCTIONS},
+      {"calibrateLidInstructionsText",
+       IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS},
       // Finalize device  page
       {"finalizePageTitleText", IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE},
       {"finalizePageProgressText", IDS_SHIMLESS_RMA_FINALIZE_PROGRESS},

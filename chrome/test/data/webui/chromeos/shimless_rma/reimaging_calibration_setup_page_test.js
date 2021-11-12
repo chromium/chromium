@@ -5,14 +5,14 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingCalibrationSetupPageElement} from 'chrome://shimless-rma/reimaging_calibration_setup_page.js';
+import {ReimagingCalibrationSetupPage} from 'chrome://shimless-rma/reimaging_calibration_setup_page.js';
 import {CalibrationComponentStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationSetupPageTest() {
-  /** @type {?ReimagingCalibrationSetupPageElement} */
+  /** @type {?ReimagingCalibrationSetupPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -41,7 +41,7 @@ export function reimagingCalibrationSetupPageTest() {
     assertFalse(!!component);
     service.setGetCalibrationSetupInstructionsResult(instructions);
 
-    component = /** @type {!ReimagingCalibrationSetupPageElement} */ (
+    component = /** @type {!ReimagingCalibrationSetupPage} */ (
         document.createElement('reimaging-calibration-setup-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
