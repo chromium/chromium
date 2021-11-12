@@ -1821,8 +1821,8 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
-  "traffic_annotation_proto": {
-    "label": "//chrome/browser/privacy:traffic_annotation_proto",
+  "traffic_annotation_auditor_dependencies": {
+    "label": "//:traffic_annotation_auditor_dependencies",
     "type": "additional_compile_target",
   },
   "trichrome_chrome_bundle_smoke_test": {

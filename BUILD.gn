@@ -880,8 +880,9 @@ group("rust_build_tests") {
 # other than X11 Ozone backends.
 if (enable_remoting && ((is_linux && ozone_platform_x11) ||
                         ((is_chromeos || is_win) && !use_ozone))) {
-  # This group is used for network annotation check test.
-  group("shipped_binaries") {
+  # On CQ, run the Traffic Annotation Auditor when a change affects one of these
+  # targets.
+  group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome:chrome",
       "//remoting/client",
@@ -892,6 +893,17 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
     if (is_win) {
       deps += [ "//chrome/chrome_cleaner:shipped_binaries" ]
     }
+  }
+}
+
+if (is_android) {
+  # On CQ, run the Traffic Annotation Auditor when a change affects one of these
+  # targets.
+  group("traffic_annotation_auditor_dependencies") {
+    deps = [
+      "//chrome/android:chrome_public_apk",
+      "//tools/traffic_annotation/summary:annotations_xml",
+    ]
   }
 }
 

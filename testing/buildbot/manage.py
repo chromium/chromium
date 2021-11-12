@@ -142,7 +142,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'services_junit_tests',
     'system_webview_apk',
     'touch_to_fill_junit_tests',
-    'traffic_annotation_proto',
+    'traffic_annotation_auditor_dependencies',
     'ui_junit_tests',
     'vr_common_perftests',
     'vr_perf_tests',
