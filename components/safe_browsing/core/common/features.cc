@@ -73,6 +73,13 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
+const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
+    &kExtensionTelemetry, "UploadIntervalSeconds",
+    /*default_value=*/3600};
+
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -160,6 +167,7 @@ constexpr struct {
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
     {&kDelayedWarnings, true},
+    {&kExtensionTelemetry, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},

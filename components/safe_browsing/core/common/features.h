@@ -64,6 +64,12 @@ extern const base::Feature kDelayedWarnings;
 // warnings feature is enabled.
 extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 
+// Enables collection of signals related to extension activity and uploads
+// of telemetry reports to SB servers.
+extern const base::Feature kExtensionTelemetry;
+// Specifies the upload interval for extension telemetry reports.
+extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
+
 // This gates mime type sniffing for DLP file support until the mime type list
 // and implementation are validated experimentally.
 extern const base::Feature kFileAnalysisMimeTypeSniff;

@@ -911,6 +911,16 @@ chromium-metrics-reviews@google.com.
   <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionTelemetry.Signals.SignalType"
+    enum="SBExtensionTelemetrySignalsSignalType" expires_after="2022-04-21">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the extension telemetry signal type. Logged each time a signal is
+    triggered (eg. a tabs.executeScript API call is invoked).
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"
     enum="SBFileTypeUpdateResult" expires_after="2022-08-15">
   <owner>drubery@chromium.org</owner>

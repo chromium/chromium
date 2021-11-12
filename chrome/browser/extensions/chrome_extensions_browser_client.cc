@@ -42,6 +42,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/bluetooth/chrome_extension_bluetooth_chooser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -579,6 +582,21 @@ bool ChromeExtensionsBrowserClient::IsValidTabId(
     int tab_id) const {
   return ExtensionTabUtil::GetTabById(
       tab_id, context, true /* include_incognito */, nullptr /* contents */);
+}
+
+void ChromeExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& code) const {
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!telemetry_service || !telemetry_service->enabled())
+    return;
+
+  auto signal = std::make_unique<safe_browsing::TabsExecuteScriptSignal>(
+      extension_id, code);
+  telemetry_service->AddSignal(std::move(signal));
 }
 
 // static

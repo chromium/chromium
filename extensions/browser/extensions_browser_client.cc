@@ -128,4 +128,9 @@ bool ExtensionsBrowserClient::IsValidTabId(content::BrowserContext* context,
   return false;
 }
 
+void ExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& code) const {}
+
 }  // namespace extensions

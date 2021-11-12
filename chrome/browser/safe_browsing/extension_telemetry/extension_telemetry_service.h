@@ -1,0 +1,119 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_SERVICE_H_
+#define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_SERVICE_H_
+
+#include <memory>
+
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "extensions/common/extension_id.h"
+
+class Profile;
+class PrefService;
+
+namespace safe_browsing {
+
+enum class ExtensionSignalType;
+class ExtensionSignal;
+class ExtensionSignalProcessor;
+class ExtensionTelemetryReportRequest;
+class ExtensionTelemetryReportRequest_ExtensionInfo;
+
+// This class process extension signals and reports telemetry for a given
+// user/profile. It is used exclusively on the UI thread.
+// Lifetime:
+// The service is lazy-instantiated when a signal is triggered by an extension
+// for the first time. The service is destructed when the corresponding profile
+// is destructed.
+// Enable/Disable state:
+// The service is enabled/disabled based on kEnhancedSafeBrowsing. The service
+// subscribes to the SB preference change notification to update its state.
+// When enabled, the service receives and stores signal information. It also
+// periodically creates telemetry reports and uploads them to the SB servers.
+// When disabled, any previously stored signal information is cleared, incoming
+// signals are ignored and no reports are sent to the SB servers.
+class ExtensionTelemetryService : public KeyedService {
+ public:
+  explicit ExtensionTelemetryService(Profile* profile);
+
+  ExtensionTelemetryService(const ExtensionTelemetryService&) = delete;
+  ExtensionTelemetryService& operator=(const ExtensionTelemetryService&) =
+      delete;
+
+  ~ExtensionTelemetryService() override;
+
+  // Enables/disables the service.
+  void SetEnabled(bool enable);
+  bool enabled() const { return enabled_; }
+
+  // Accepts extension telemetry signals for processing.
+  void AddSignal(std::unique_ptr<ExtensionSignal> signal);
+
+  base::TimeDelta current_reporting_interval() {
+    return current_reporting_interval_;
+  }
+
+  // KeyedService:
+  void Shutdown() override;
+
+ private:
+  // Called when prefs that affect extension telemetry service are changed.
+  void OnPrefChanged();
+
+  // Creates and uploads telemetry reports.
+  void CreateAndUploadReports();
+
+  // Creates telemetry report protobuf from extension store data and
+  // data retrieved from signal processors.
+  std::unique_ptr<ExtensionTelemetryReportRequest> CreateReport();
+
+  // Collects extension information for reporting.
+  std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
+  GetExtensionInfoForReport(const extensions::ExtensionId& extension_id);
+
+  // Records UMA metric: signal type.
+  void RecordSignalType(ExtensionSignalType signal_type);
+
+  // The profile with which this instance of the service is associated.
+  Profile* const profile_;
+
+  // Unowned object used for getting preference settings.
+  PrefService* pref_service_;
+
+  // Observes changes to kSafeBrowsingEnhanced.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  // Keeps track of the state of the service.
+  bool enabled_;
+
+  // Used for periodic collection of telemetry reports.
+  base::RepeatingTimer timer_;
+  base::TimeDelta current_reporting_interval_;
+
+  // Maps extension id to extension data.
+  using ExtensionStore = base::flat_map<
+      extensions::ExtensionId,
+      std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
+  ExtensionStore extension_store_;
+
+  using SignalProcessors =
+      base::flat_map<ExtensionSignalType,
+                     std::unique_ptr<ExtensionSignalProcessor>>;
+  SignalProcessors signal_processors_;
+
+  friend class ExtensionTelemetryServiceTest;
+
+  base::WeakPtrFactory<ExtensionTelemetryService> weak_factory_{this};
+};
+
+}  // namespace safe_browsing
+
+#endif  // CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_SERVICE_H_

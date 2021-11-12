@@ -75737,6 +75737,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="UPLOAD_COMPLETE_RESPONSE_ERROR"/>
 </enum>
 
+<enum name="SBExtensionTelemetrySignalsSignalType">
+  <int value="0" label="AnySignal"/>
+  <int value="1" label="TabsExecuteScript"/>
+</enum>
+
 <enum name="SBFileTypeUpdateResult">
   <int value="1" label="SUCCESS"/>
   <int value="2" label="FAILED_EMPTY"/>

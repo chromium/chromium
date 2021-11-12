@@ -379,6 +379,14 @@ class ExtensionsBrowserClient {
   // Returns true if the given |tab_id| exists.
   virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
 
+  // TODO(anunoy): This is a temporary implementation of notifying the
+  // extension telemetry service of the tabs.executeScript API invocation
+  // while its usefulness is evaluated.
+  virtual void NotifyExtensionApiTabExecuteScript(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const std::string& code) const;
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

@@ -1602,3 +1602,43 @@ message ExtensionWebStoreInstallRequest {
   // Options and metadata about the above referrer chain.
   optional ReferrerChainOptions referrer_chain_options = 2;
 }
+
+// Protobuf for uploading Chrome extension telemetry reports.
+message ExtensionTelemetryReportRequest {
+  // Information about the Chrome extension.
+  message ExtensionInfo {
+    optional string id = 1;
+    optional string version = 2;
+    optional string name = 3;
+    // Version install time.
+    optional int64 install_timestamp_msec = 4;
+  }
+
+  // Information about the various telemetry signals.
+  message SignalInfo {
+    message TabsExecuteScriptInfo {
+      message ScriptInfo {
+        optional bytes hash = 1;
+        // number of times script has been executed since
+        // last report/browser start
+        optional uint32 execution_count = 2;
+      }
+      repeated ScriptInfo scripts = 1;
+    }
+
+    optional TabsExecuteScriptInfo tabs_execute_script_info = 1;
+  }
+
+  // Single report structure consists of all the signals observed for a
+  // single extension.
+  message Report {
+    optional ExtensionInfo extension = 1;
+    repeated SignalInfo signals = 2;
+  }
+
+  // Report creation timestamp.
+  optional int64 creation_timestamp_msec = 1;
+  repeated Report reports = 2;
+}
+
+message ExtensionTelemetryResponse {}
