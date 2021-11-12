@@ -68,10 +68,10 @@ std::string GetFileMimeType(const base::FilePath& path,
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
-  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
-  // clicking "Open Now" without causing download errors.
+  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
+  // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
     return std::make_pair(BinaryUploadService::Result::UNKNOWN,
