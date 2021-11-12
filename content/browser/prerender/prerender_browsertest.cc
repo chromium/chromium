@@ -4381,6 +4381,53 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
       PrerenderHost::FinalStatus::kCrossOriginNavigation, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       CancelEmbedderTriggerPrerenderingSameOriginRedirection) {
+  base::HistogramTester histogram_tester;
+  const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
+
+  // Start prerendering by embedder triggered prerendering.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      web_contents_impl()->StartPrerendering(kPrerenderingUrl);
+  EXPECT_TRUE(prerender_handle);
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *shell()->web_contents(), kPrerenderingUrl);
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kEmbedderTriggeredAndRedirected, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    CancelEmbedderTriggeredPrerenderingCrossOriginRedirection) {
+  base::HistogramTester histogram_tester;
+  const GURL kRedirectedUrl = GetCrossOriginUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
+
+  // Start prerendering by embedder triggered prerendering.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      web_contents_impl()->StartPrerendering(kPrerenderingUrl);
+  EXPECT_TRUE(prerender_handle);
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *shell()->web_contents(), kPrerenderingUrl);
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kEmbedderTriggeredAndRedirected, 1);
+}
+
 namespace {
 
 class FrameDisplayStateChangedObserver : public WebContentsObserver {

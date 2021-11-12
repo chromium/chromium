@@ -69045,6 +69045,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="29" label="kAudioOutputDeviceRequested"/>
   <int value="30" label="kMixedContent"/>
   <int value="31" label="kTriggerBackgrounded"/>
+  <int value="32" label="kEmbedderTriggeredAndRedirected"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
