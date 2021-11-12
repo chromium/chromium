@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
@@ -55,6 +57,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
+      {"readerModeTabTitle", IDS_READER_MODE_TITLE},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
       {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
@@ -89,6 +92,9 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   source->AddBoolean(
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
+
+  source->AddBoolean("readerModeSidePanelEnabled",
+                     features::IsReaderModeSidePanelEnabled());
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -130,6 +136,18 @@ void ReadLaterUI::CreateBookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ =
       std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
+}
+
+void ReadLaterUI::BindInterface(
+    mojo::PendingReceiver<reader_mode::mojom::PageHandlerFactory> receiver) {
+  reader_mode_page_factory_receiver_.reset();
+  reader_mode_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReadLaterUI::CreatePageHandler(
+    mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) {
+  reader_mode_page_handler_ =
+      std::make_unique<ReaderModePageHandler>(std::move(receiver));
 }
 
 void ReadLaterUI::SetActiveTabURL(const GURL& url) {

@@ -77,5 +77,10 @@
         <bookmarks-list></bookmarks-list>
       </template>
     </div>
+    <div>
+      <template is="dom-if" if="[[isSelectedTab_(selectedTab_, 2)]]">
+        <reader-mode-app></reader-mode-app>
+      </template>
+    </div>
   </iron-pages>
 </div>

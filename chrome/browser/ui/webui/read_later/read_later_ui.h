@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks.mojom.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,11 +17,13 @@
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 class BookmarksPageHandler;
+class ReaderModePageHandler;
 class ReadLaterPageHandler;
 
 class ReadLaterUI : public ui::MojoBubbleWebUIController,
                     public read_later::mojom::PageHandlerFactory,
-                    public side_panel::mojom::BookmarksPageHandlerFactory {
+                    public side_panel::mojom::BookmarksPageHandlerFactory,
+                    public reader_mode::mojom::PageHandlerFactory {
  public:
   explicit ReadLaterUI(content::WebUI* web_ui);
   ReadLaterUI(const ReadLaterUI&) = delete;
@@ -36,6 +39,9 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<reader_mode::mojom::PageHandlerFactory> receiver);
+
   void SetActiveTabURL(const GURL& url);
 
  private:
@@ -49,6 +55,10 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver)
       override;
 
+  // reader_mode::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) override;
+
   std::unique_ptr<ReadLaterPageHandler> page_handler_;
   mojo::Receiver<read_later::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
@@ -56,6 +66,10 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
   std::unique_ptr<BookmarksPageHandler> bookmarks_page_handler_;
   mojo::Receiver<side_panel::mojom::BookmarksPageHandlerFactory>
       bookmarks_page_factory_receiver_{this};
+
+  std::unique_ptr<ReaderModePageHandler> reader_mode_page_handler_;
+  mojo::Receiver<reader_mode::mojom::PageHandlerFactory>
+      reader_mode_page_factory_receiver_{this};
 
   WebuiLoadTimer webui_load_timer_;
 

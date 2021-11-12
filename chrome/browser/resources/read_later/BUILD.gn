@@ -144,6 +144,9 @@ ts_library("build_ts") {
     "side_panel/bookmarks_api_proxy.ts",
     "side_panel/bookmarks_drag_manager.ts",
     "side_panel/bookmarks.mojom-webui.js",
+    "side_panel/reader_mode/app.ts",
+    "side_panel/reader_mode/reader_mode_api_proxy.ts",
+    "side_panel/reader_mode/reader_mode.mojom-webui.js",
   ]
   definitions = [
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",

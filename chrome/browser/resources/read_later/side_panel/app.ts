@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import '../app.js'; /* <read-later-app> */
 import '../strings.m.js';
 import './bookmarks_list.js';
+import './reader_mode/app.js'; /* <reader-mode-app> */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -49,6 +50,13 @@ export class SidePanelAppElement extends PolymerElement {
   private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
   private selectedTab_: number;
   private tabs_: {[key: string]: string};
+
+  ready() {
+    if (loadTimeData.getBoolean('readerModeSidePanelEnabled')) {
+      this.tabs_['readerMode'] = loadTimeData.getString('readerModeTabTitle');
+    }
+    super.ready();
+  }
 
   connectedCallback() {
     super.connectedCallback();

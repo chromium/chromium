@@ -81,6 +81,7 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -773,6 +774,11 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(features::kSidePanel)) {
     RegisterWebUIControllerInterfaceBinder<
         side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
+  }
+
+  if (features::IsReaderModeSidePanelEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        reader_mode::mojom::PageHandlerFactory, ReadLaterUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,

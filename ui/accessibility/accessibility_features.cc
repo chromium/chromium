@@ -196,4 +196,11 @@ bool IsComputeAXModeEnabled() {
 }
 #endif  // defined(OS_ANDROID)
 
+const base::Feature kReaderModeSidePanel{"ReaderModeSidePanel",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsReaderModeSidePanelEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReaderModeSidePanel);
+}
+
 }  // namespace features

@@ -169,6 +169,13 @@ AX_BASE_EXPORT extern const base::Feature kComputeAXMode;
 AX_BASE_EXPORT bool IsComputeAXModeEnabled();
 #endif  // defined(OS_ANDROID)
 
+AX_BASE_EXPORT extern const base::Feature kReaderModeSidePanel;
+
+// Returns true if reader mode in a side panel is enabled. This feature shows
+// users websites, such as articles, in a comfortable reading experience in a
+// side panel.
+AX_BASE_EXPORT bool IsReaderModeSidePanelEnabled();
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_
