@@ -1005,7 +1005,7 @@ TEST_F(SystemPerfettoTest, RespectsFeaturePreAndroidPie) {
 }
 #endif  // defined(OS_ANDROID)
 
-TEST_F(SystemPerfettoTest, EnablePerfettoSystemTracingDefaultState) {
+TEST_F(SystemPerfettoTest, DISABLED_EnablePerfettoSystemTracingDefaultState) {
 #if defined(OS_CHROMEOS)
   EXPECT_EQ(features::kEnablePerfettoSystemTracing.default_state,
             base::FEATURE_ENABLED_BY_DEFAULT);
