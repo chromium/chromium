@@ -264,7 +264,7 @@ class FileSystemOperation {
     kForceCrossFilesystem,
 
     kFirst = kPreserveLastModified,
-    kLast = kPreserveDestinationPermissions
+    kLast = kForceCrossFilesystem
   };
 
   using CopyOrMoveOptionSet = base::EnumSet<CopyOrMoveOption,

@@ -646,6 +646,18 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeById(
   return base::WeakPtr<Volume>();
 }
 
+base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
+    const base::FilePath& path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (const auto& pair : mounted_volumes_) {
+    base::FilePath volume_mount_path = pair.second->mount_path();
+    if (path == volume_mount_path || volume_mount_path.IsParent(path)) {
+      return pair.second->AsWeakPtr();
+    }
+  }
+  return nullptr;
+}
+
 void VolumeManager::AddSshfsCrostiniVolume(
     const base::FilePath& sshfs_mount_path,
     const base::FilePath& remote_mount_path) {

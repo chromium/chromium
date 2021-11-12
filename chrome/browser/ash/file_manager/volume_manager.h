@@ -329,6 +329,10 @@ class VolumeManager : public KeyedService,
   // the volume manager.
   base::WeakPtr<Volume> FindVolumeById(const std::string& volume_id);
 
+  // Returns the volume on which an entry, identified by its local (cracked)
+  // path, is located. Returns nullptr if no volume is found.
+  base::WeakPtr<Volume> FindVolumeFromPath(const base::FilePath& path);
+
   // Add sshfs crostini volume mounted at specified path.
   void AddSshfsCrostiniVolume(const base::FilePath& sshfs_mount_path,
                               const base::FilePath& remote_mount_path);

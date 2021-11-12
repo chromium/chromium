@@ -1026,6 +1026,35 @@ TEST_F(VolumeManagerTest, FindVolumeById) {
   EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, good_volume->type());
 }
 
+TEST_F(VolumeManagerTest, FindVolumeFromPath) {
+  volume_manager()->Initialize();  // Adds "Downloads"
+  base::WeakPtr<Volume> downloads_volume = volume_manager()->GetVolumeList()[0];
+  EXPECT_EQ("downloads:MyFiles", downloads_volume->volume_id());
+  base::FilePath downloads_mount_path = downloads_volume->mount_path();
+  // FindVolumeFromPath(downloads_mount_path.DirName()) should return null
+  // because the path is the parent folder of the Downloads mount path.
+  base::WeakPtr<Volume> volume_from_path =
+      volume_manager()->FindVolumeFromPath(downloads_mount_path.DirName());
+  ASSERT_FALSE(volume_from_path);
+  // FindVolumeFromPath("MyFiles") should return null because it's only the last
+  // component of the Downloads mount path.
+  volume_from_path =
+      volume_manager()->FindVolumeFromPath(downloads_mount_path.BaseName());
+  ASSERT_FALSE(volume_from_path);
+  // FindVolumeFromPath(<Downloads mount path>) should point to the Downloads
+  // volume.
+  volume_from_path = volume_manager()->FindVolumeFromPath(downloads_mount_path);
+  ASSERT_TRUE(volume_from_path);
+  EXPECT_EQ("downloads:MyFiles", volume_from_path->volume_id());
+  // FindVolumeFromPath(<Downloads mount path>/folder) is on the Downloads
+  // volume, it should also point to the Downloads volume, even if the folder
+  // doesn't exist.
+  volume_from_path = volume_manager()->FindVolumeFromPath(
+      downloads_mount_path.Append("folder"));
+  ASSERT_TRUE(volume_from_path);
+  EXPECT_EQ("downloads:MyFiles", volume_from_path->volume_id());
+}
+
 TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
