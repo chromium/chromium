@@ -278,12 +278,10 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   if (!inserted)
     return;
 
-  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
-    // TODO(tetsui): Reconsider the trigger condition after experimenting i.e.
-    // whether it is reasonable to have it enabled when ResizeLock is enabled.
-    window->GetHost()->GetEventSource()->AddEventRewriter(
-        touch_mode_mouse_rewriter_.get());
-  }
+  // TODO(tetsui): Reconsider the trigger condition after experimenting i.e.
+  // whether it is reasonable to have it enabled when ResizeLock is enabled.
+  if (touch_mode_mouse_rewriter_)
+    touch_mode_mouse_rewriter_->EnableForWindow(window);
 
   const auto app_id = GetAppId(window);
   DCHECK(app_id);
@@ -319,10 +317,8 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
 
-  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
-    window->GetHost()->GetEventSource()->RemoveEventRewriter(
-        touch_mode_mouse_rewriter_.get());
-  }
+  if (touch_mode_mouse_rewriter_)
+    touch_mode_mouse_rewriter_->DisableForWindow(window);
 }
 
 void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {

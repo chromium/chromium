@@ -5,8 +5,17 @@
 #ifndef COMPONENTS_ARC_COMPAT_MODE_TOUCH_MODE_MOUSE_REWRITER_H_
 #define COMPONENTS_ARC_COMPAT_MODE_TOUCH_MODE_MOUSE_REWRITER_H_
 
+#include <set>
+
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/events/event_rewriter.h"
+
+namespace aura {
+class WindowTreeHost;
+}  // namespace aura
 
 namespace arc {
 
@@ -14,13 +23,27 @@ namespace arc {
 // to phone-optimized ARC apps. For example, right click will be converted to
 // long press, as in many phone-optimized apps it is normal to use long press
 // for a secondary action rather than right click.
-class TouchModeMouseRewriter : public ui::EventRewriter {
+class TouchModeMouseRewriter : public aura::WindowObserver,
+                               public ui::EventRewriter {
  public:
   TouchModeMouseRewriter();
   TouchModeMouseRewriter(const TouchModeMouseRewriter&) = delete;
   TouchModeMouseRewriter& operator=(const TouchModeMouseRewriter&) = delete;
   ~TouchModeMouseRewriter() override;
 
+  // Starts rewriting events sent to |window|.
+  void EnableForWindow(aura::Window* window);
+
+  // Stops rewriting events sent to |window|.
+  void DisableForWindow(aura::Window* window);
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
+
+  // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
       const Continuation continuation) override;
@@ -32,6 +55,12 @@ class TouchModeMouseRewriter : public ui::EventRewriter {
   bool release_event_scheduled_ = false;
   bool left_pressed_ = false;
   bool discard_next_left_release_ = false;
+
+  std::multiset<aura::WindowTreeHost*> hosts_;
+  std::set<aura::Window*> enabled_windows_;
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 
   base::WeakPtrFactory<TouchModeMouseRewriter> weak_ptr_factory_{this};
 };

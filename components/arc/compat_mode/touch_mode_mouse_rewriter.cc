@@ -4,9 +4,12 @@
 
 #include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
+#include "ash/shell.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
 
 namespace arc {
@@ -17,12 +20,79 @@ constexpr base::TimeDelta kLongPressInterval = base::Milliseconds(700);
 }  // namespace
 
 TouchModeMouseRewriter::TouchModeMouseRewriter() = default;
-TouchModeMouseRewriter::~TouchModeMouseRewriter() = default;
+
+TouchModeMouseRewriter::~TouchModeMouseRewriter() {
+  std::set<aura::WindowTreeHost*> unique_hosts(hosts_.begin(), hosts_.end());
+  for (aura::WindowTreeHost* host : unique_hosts)
+    host->GetEventSource()->RemoveEventRewriter(this);
+}
+
+void TouchModeMouseRewriter::EnableForWindow(aura::Window* window) {
+  if (window_observations_.IsObservingSource(window))
+    return;
+  enabled_windows_.insert(window);
+  OnWindowAddedToRootWindow(window);
+  window_observations_.AddObservation(window);
+}
+
+void TouchModeMouseRewriter::DisableForWindow(aura::Window* window) {
+  OnWindowDestroying(window);
+}
+
+void TouchModeMouseRewriter::OnWindowDestroying(aura::Window* window) {
+  if (!window_observations_.IsObservingSource(window))
+    return;
+  window_observations_.RemoveObservation(window);
+  OnWindowRemovingFromRootWindow(window, nullptr);
+  enabled_windows_.erase(window);
+}
+
+void TouchModeMouseRewriter::OnWindowAddedToRootWindow(aura::Window* window) {
+  aura::WindowTreeHost* host = window->GetHost();
+  // |hosts_| is a multiset, so if this is the first one, add the EventRewriter
+  // to that WindowTreeHost.
+  if (hosts_.count(host) == 0)
+    host->GetEventSource()->AddEventRewriter(this);
+  hosts_.insert(host);
+}
+
+void TouchModeMouseRewriter::OnWindowRemovingFromRootWindow(
+    aura::Window* window,
+    aura::Window* new_root) {
+  aura::WindowTreeHost* host = window->GetHost();
+  auto it = hosts_.find(host);
+  DCHECK(it != hosts_.end());
+  hosts_.erase(it);
+  // |hosts_| is a multiset, so if this is the last one, remove the
+  // EventRewriter from that WindowTreeHost.
+  if (hosts_.count(host) == 0)
+    host->GetEventSource()->RemoveEventRewriter(this);
+}
 
 ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
   if (!event.IsMouseEvent())
+    return SendEvent(continuation, &event);
+
+  auto* screen = display::Screen::GetScreen();
+  aura::Window* target =
+      screen->GetWindowAtScreenPoint(screen->GetCursorScreenPoint());
+  // Only handle clicks to the content area of an Exo window i.e. exclude the
+  // caption bar.
+  if (!target || target->GetType() != aura::client::WINDOW_TYPE_CONTROL)
+    return SendEvent(continuation, &event);
+  bool found = false;
+  // TODO(b/202679170): Verify that it does not affect performance before
+  // flipping the flag, and fix it if necessary.
+  while (target != nullptr) {
+    if (enabled_windows_.count(target)) {
+      found = true;
+      break;
+    }
+    target = target->parent();
+  }
+  if (!found)
     return SendEvent(continuation, &event);
 
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();

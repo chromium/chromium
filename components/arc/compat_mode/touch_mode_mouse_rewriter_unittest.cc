@@ -60,13 +60,14 @@ class TouchModeMouseRewriterTest : public views::ViewsTestBase {
 };
 
 TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_FALSE(view->left_pressed());
   EXPECT_FALSE(view->right_pressed());
@@ -87,17 +88,18 @@ TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
   EXPECT_FALSE(view->left_pressed());
   EXPECT_FALSE(view->right_pressed());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 TEST_F(TouchModeMouseRewriterTest, LeftPressedBeforeRightClick) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_EQ(0, view->press_count());
   EXPECT_EQ(0, view->release_count());
@@ -122,17 +124,18 @@ TEST_F(TouchModeMouseRewriterTest, LeftPressedBeforeRightClick) {
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 TEST_F(TouchModeMouseRewriterTest, RightClickDuringLeftPress) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_EQ(0, view->press_count());
   EXPECT_EQ(0, view->release_count());
@@ -153,17 +156,18 @@ TEST_F(TouchModeMouseRewriterTest, RightClickDuringLeftPress) {
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 TEST_F(TouchModeMouseRewriterTest, LeftClickedAfterRightClick) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_EQ(0, view->press_count());
   EXPECT_EQ(0, view->release_count());
@@ -183,17 +187,18 @@ TEST_F(TouchModeMouseRewriterTest, LeftClickedAfterRightClick) {
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 TEST_F(TouchModeMouseRewriterTest, LeftLongPressedAfterRightClick) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_EQ(0, view->press_count());
   EXPECT_EQ(0, view->release_count());
@@ -213,17 +218,18 @@ TEST_F(TouchModeMouseRewriterTest, LeftLongPressedAfterRightClick) {
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 TEST_F(TouchModeMouseRewriterTest, RightClickedTwice) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
   LongPressReceiverView* view =
       widget->SetContentsView(std::make_unique<LongPressReceiverView>());
   widget->Show();
 
   TouchModeMouseRewriter touch_mode_mouse_rewriter;
-  host()->GetEventSource()->AddEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
   EXPECT_EQ(0, view->press_count());
   EXPECT_EQ(0, view->release_count());
@@ -245,7 +251,7 @@ TEST_F(TouchModeMouseRewriterTest, RightClickedTwice) {
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
 
-  host()->GetEventSource()->RemoveEventRewriter(&touch_mode_mouse_rewriter);
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
 
 }  // namespace arc
