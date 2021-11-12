@@ -122,8 +122,13 @@ public class TabListSceneLayer extends SceneLayer {
 
             int[] relatedTabIds = getRelatedTabIds(t.getId());
 
-            float toolbarYOffset = browserControls.getTopControlOffset()
-                    + browserControls.getTopControlsMinHeight();
+            float toolbarYOffset = 0;
+            int contentOffset = 0;
+            if (browserControls != null) {
+                toolbarYOffset = browserControls.getTopControlOffset()
+                        + browserControls.getTopControlsMinHeight();
+                contentOffset = browserControls.getContentOffset();
+            }
 
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
@@ -149,8 +154,8 @@ public class TabListSceneLayer extends SceneLayer {
                     t.getBrightness(), t.showToolbar(), defaultThemeColor,
                     t.getToolbarBackgroundColor(), closeButtonColor, t.anonymizeToolbar(),
                     t.isTitleNeeded(), urlBarBackgroundId, t.getTextBoxBackgroundColor(),
-                    t.getToolbarAlpha(), toolbarYOffset, browserControls.getContentOffset(),
-                    t.getSideBorderScale(), t.insetBorderVertical());
+                    t.getToolbarAlpha(), toolbarYOffset, contentOffset, t.getSideBorderScale(),
+                    t.insetBorderVertical());
         }
         TabListSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabListSceneLayer.this);
     }
