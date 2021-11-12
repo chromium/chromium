@@ -528,7 +528,7 @@ TEST_F(PointerTest, OnPointerMotion) {
   std::unique_ptr<Surface> sub_surface(new Surface);
   std::unique_ptr<SubSurface> sub(
       new SubSurface(sub_surface.get(), surface.get()));
-  surface->SetSubSurfacePosition(sub_surface.get(), gfx::Point(5, 5));
+  surface->SetSubSurfacePosition(sub_surface.get(), gfx::PointF(5, 5));
   gfx::Size sub_buffer_size(5, 5);
   std::unique_ptr<Buffer> sub_buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(sub_buffer_size)));
@@ -1011,7 +1011,7 @@ TEST_F(PointerTest, OnPointerRelativeMotion) {
 
   auto sub_surface = std::make_unique<Surface>();
   auto sub = std::make_unique<SubSurface>(sub_surface.get(), surface.get());
-  surface->SetSubSurfacePosition(sub_surface.get(), gfx::Point(5, 5));
+  surface->SetSubSurfacePosition(sub_surface.get(), gfx::PointF(5, 5));
   gfx::Size sub_buffer_size(5, 5);
   auto sub_buffer = std::make_unique<Buffer>(
       exo_test_helper()->CreateGpuMemoryBuffer(sub_buffer_size));

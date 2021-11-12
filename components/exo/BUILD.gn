@@ -73,6 +73,7 @@ static_library("exo") {
     "shell_surface_util.h",
     "sub_surface.cc",
     "sub_surface.h",
+    "sub_surface_observer.h",
     "surface.cc",
     "surface.h",
     "surface_delegate.h",

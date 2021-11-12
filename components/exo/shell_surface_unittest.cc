@@ -1133,7 +1133,7 @@ TEST_F(ShellSurfaceTest, PopupWithInputRegion) {
 
   auto subsurface =
       std::make_unique<SubSurface>(child_surface.get(), surface.get());
-  subsurface->SetPosition(gfx::Point(10, 10));
+  subsurface->SetPosition(gfx::PointF(10, 10));
   child_surface->SetInputRegion(cc::Region(gfx::Rect(0, 0, 256, 2560)));
   child_surface->Commit();
   surface->Commit();

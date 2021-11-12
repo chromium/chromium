@@ -25,6 +25,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -66,6 +67,7 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
@@ -1462,7 +1464,12 @@ gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
   if (geometry_.IsEmpty()) {
     gfx::Size size;
     if (root_surface()) {
-      size = root_surface()->content_size();
+      float int_part;
+      DCHECK(std::modf(root_surface()->content_size().width(), &int_part) ==
+                 0.0f &&
+             std::modf(root_surface()->content_size().height(), &int_part) ==
+                 0.0f);
+      size = gfx::ToCeiledSize(root_surface()->content_size());
       if (client_submits_surfaces_in_pixel_coordinates()) {
         float dsf = host_window()->layer()->device_scale_factor();
         size = gfx::ScaleToRoundedSize(size, 1.0f / dsf);

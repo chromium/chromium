@@ -11,6 +11,7 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace exo {
 namespace {
@@ -28,7 +29,7 @@ TEST_F(SubSurfaceTest, SetPosition) {
             surface->window()->bounds().origin().ToString());
 
   // Set position to 10, 10.
-  gfx::Point position(10, 10);
+  gfx::PointF position(10, 10);
   sub_surface->SetPosition(position);
 
   // A call to Commit() is required for position to take effect.
@@ -37,7 +38,7 @@ TEST_F(SubSurfaceTest, SetPosition) {
 
   // Check that position is updated when Commit() is called.
   parent->Commit();
-  EXPECT_EQ(position.ToString(),
+  EXPECT_EQ(gfx::ToRoundedPoint(position).ToString(),
             surface->window()->bounds().origin().ToString());
 
   // Create and commit a new sub-surface using the same surface.
@@ -129,7 +130,7 @@ TEST_F(SubSurfaceTest, SetCommitBehavior) {
             grandchild->window()->bounds().origin().ToString());
 
   // Set position to 10, 10.
-  gfx::Point position1(10, 10);
+  gfx::PointF position1(10, 10);
   grandchild_sub_surface->SetPosition(position1);
   child->Commit();
 
@@ -143,20 +144,20 @@ TEST_F(SubSurfaceTest, SetCommitBehavior) {
 
   // Position should have been updated when Commit() has been called on both
   // child and parent.
-  EXPECT_EQ(position1.ToString(),
+  EXPECT_EQ(gfx::ToRoundedPoint(position1).ToString(),
             grandchild->window()->bounds().origin().ToString());
 
   bool synchronized = false;
   child_sub_surface->SetCommitBehavior(synchronized);
 
   // Set position to 20, 20.
-  gfx::Point position2(20, 20);
+  gfx::PointF position2(20, 20);
   grandchild_sub_surface->SetPosition(position2);
   child->Commit();
 
   // A Commit() call on child should be sufficient for the position of
   // grandchild to take effect when synchronous is disabled.
-  EXPECT_EQ(position2.ToString(),
+  EXPECT_EQ(gfx::ToRoundedPoint(position2).ToString(),
             grandchild->window()->bounds().origin().ToString());
 }
 

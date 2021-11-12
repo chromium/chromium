@@ -24,6 +24,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
@@ -168,7 +169,8 @@ class Surface final : public ui::PropertyHandler {
   // double-buffered and will be applied when Commit() is called.
   void AddSubSurface(Surface* sub_surface);
   void RemoveSubSurface(Surface* sub_surface);
-  void SetSubSurfacePosition(Surface* sub_surface, const gfx::Point& position);
+  // Allow for finer granularity for sub surface positioning.
+  void SetSubSurfacePosition(Surface* sub_surface, const gfx::PointF& position);
   void PlaceSubSurfaceAbove(Surface* sub_surface, Surface* reference);
   void PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling);
   void OnSubSurfaceCommit();
@@ -177,7 +179,7 @@ class Surface final : public ui::PropertyHandler {
   void SetOverlayPriorityHint(OverlayPriority hint);
 
   // This sets the surface viewport for scaling.
-  void SetViewport(const gfx::Size& viewport);
+  void SetViewport(const gfx::SizeF& viewport);
 
   // This sets the surface crop rectangle.
   void SetCrop(const gfx::RectF& crop);
@@ -280,7 +282,7 @@ class Surface final : public ui::PropertyHandler {
 
   // This will append contents for surface and its descendants to frame.
   void AppendSurfaceHierarchyContentsToFrame(
-      const gfx::Point& origin,
+      const gfx::PointF& origin,
       float device_scale_factor,
       FrameSinkResourceManager* resource_manager,
       viz::CompositorFrame* frame);
@@ -319,7 +321,7 @@ class Surface final : public ui::PropertyHandler {
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source);
 
   // Returns the active content size.
-  const gfx::Size& content_size() const { return content_size_; }
+  const gfx::SizeF& content_size() const { return content_size_; }
 
   // Returns the active content bounds for surface hierarchy. ie. the bounding
   // box of the surface and its descendants, in the local coordinate space of
@@ -413,7 +415,7 @@ class Surface final : public ui::PropertyHandler {
     int input_outset = 0;
     float buffer_scale = 1.0f;
     Transform buffer_transform = Transform::NORMAL;
-    gfx::Size viewport;
+    gfx::SizeF viewport;
     gfx::RectF crop;
     bool only_visible_on_secure_output = false;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
@@ -485,7 +487,7 @@ class Surface final : public ui::PropertyHandler {
 
   // Puts the current surface into a draw quad, and appends the draw quads into
   // the |frame|.
-  void AppendContentsToFrame(const gfx::Point& origin,
+  void AppendContentsToFrame(const gfx::PointF& origin,
                              float device_scale_factor,
                              viz::CompositorFrame* frame);
 
@@ -502,7 +504,7 @@ class Surface final : public ui::PropertyHandler {
   bool sub_surfaces_changed_ = false;
 
   // This is the size of the last committed contents.
-  gfx::Size content_size_;
+  gfx::SizeF content_size_;
 
   // This is the bounds of the last committed surface hierarchy contents.
   gfx::Rect surface_hierarchy_content_bounds_;
@@ -527,7 +529,7 @@ class Surface final : public ui::PropertyHandler {
   // The stack of sub-surfaces to take effect when Commit() is called.
   // Bottom-most sub-surface at the front of the list and top-most sub-surface
   // at the back.
-  using SubSurfaceEntry = std::pair<Surface*, gfx::Point>;
+  using SubSurfaceEntry = std::pair<Surface*, gfx::PointF>;
   using SubSurfaceEntryList = std::list<SubSurfaceEntry>;
   SubSurfaceEntryList pending_sub_surfaces_;
   SubSurfaceEntryList sub_surfaces_;

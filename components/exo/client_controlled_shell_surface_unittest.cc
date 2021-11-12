@@ -231,7 +231,7 @@ TEST_F(ClientControlledShellSurfaceTest, UpdateModalWindow) {
   child->Attach(child_buffer.get());
   std::unique_ptr<SubSurface> sub_surface(
       display->CreateSubSurface(child.get(), surface.get()));
-  surface->SetSubSurfacePosition(child.get(), gfx::Point(10, 10));
+  surface->SetSubSurfacePosition(child.get(), gfx::PointF(10, 10));
   child->Commit();
   surface->Commit();
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());

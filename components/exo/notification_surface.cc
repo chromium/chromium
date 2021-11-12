@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/exo/notification_surface.h"
+#include <cmath>
 
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/shell_surface_util.h"
@@ -14,6 +15,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace exo {
 
@@ -38,8 +40,11 @@ NotificationSurface::~NotificationSurface() {
     root_surface()->RemoveSurfaceObserver(this);
 }
 
-const gfx::Size& NotificationSurface::GetContentSize() const {
-  return root_surface()->content_size();
+gfx::Size NotificationSurface::GetContentSize() const {
+  float int_part;
+  DCHECK(std::modf(root_surface()->content_size().width(), &int_part) == 0.0f &&
+         std::modf(root_surface()->content_size().height(), &int_part) == 0.0f);
+  return gfx::ToRoundedSize(root_surface()->content_size());
 }
 
 void NotificationSurface::SetApplicationId(const char* application_id) {

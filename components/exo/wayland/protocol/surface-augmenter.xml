@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="1">
+  <interface name="surface_augmenter" version="2">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -72,9 +72,22 @@
       <arg name="surface" type="object" interface="wl_surface"
            summary="the surface"/>
     </request>
+
+    <request name="get_augmented_subsurface">
+      <description summary="extend sub surface interface for delegation">
+	Instantiate an interface extension for the given wl_subsurface to
+	extend composition of its content. If the given wl_subsurface already has
+	a augmentation object associated, the delegate_exists protocol error is
+  raised.
+      </description>
+      <arg name="id" type="new_id" interface="augmented_sub_surface"
+           summary="the new augmenter interface id"/>
+      <arg name="subsurface" type="object" interface="wl_subsurface"
+           summary="the subsurface"/>
+    </request>
   </interface>
 
-  <interface name="augmented_surface" version="1">
+  <interface name="augmented_surface" version="2">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -105,6 +118,51 @@
       <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
     </request>
 
+    <request name="set_destination_size" since="2">
+      <description summary="set the surface destination viewport size, with subpixel accuracy">
+      Sets the surface destination viewport size, with subpixel accuracy.
+      This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="width" type="fixed" summary="width of the surface"/>
+      <arg name="height" type="fixed" summary="height of the surface"/>
+    </request>\
+  </interface>
+
+  <interface name="augmented_sub_surface" version="1">
+  <description summary="delegate composition of a wl_subsurface">
+      An additional interface to a wl_subsurface object, which allows the
+      client to specify the delegated composition of the surface
+      contents.
+    </description>
+  <request name="destroy" type="destructor">
+      <description summary="remove delegated composition of the surface">
+	The associated wl_surface's augmenter is removed.
+	The change is applied on the next wl_surface.commit.
+      </description>
+    </request>
+    <request name="set_position">
+      <description summary="sets a subsurface position with subpixel accuracy">
+	This schedules a sub-surface position change.
+	The sub-surface will be moved so that its origin (top left
+	corner pixel) will be at the location x, y of the parent surface
+	coordinate system. The coordinates are not restricted to the parent
+	surface area. Negative values are allowed.
+
+	The scheduled coordinates will take effect whenever the state of the
+	parent surface is applied. When this happens depends on whether the
+	parent surface is in synchronized mode or not. See
+	wl_subsurface.set_sync and wl_subsurface.set_desync for details.
+
+	If more than one set_position request is invoked by the client before
+	the commit of the parent surface, the position of a new request always
+	replaces the scheduled position from any previous request.
+
+	The initial position is 0, 0.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the parent surface"/>
+      <arg name="y" type="fixed" summary="y coordinate in the parent surface"/>
+    </request>
   </interface>
 
 </protocol>

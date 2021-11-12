@@ -56,7 +56,7 @@ struct Holder {
     auto surface = std::make_unique<exo::Surface>();
     surface->Attach(buffer.get());
     auto sub_surface = std::make_unique<exo::SubSurface>(surface.get(), parent);
-    sub_surface->SetPosition(bounds.origin());
+    sub_surface->SetPosition(gfx::PointF(bounds.origin()));
 
     auto* surface_ptr = surface.get();
     sub_surfaces.push_back(std::make_tuple<>(

@@ -25,8 +25,11 @@
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -622,7 +625,7 @@ TEST_P(SurfaceTest, SetInputRegion) {
     auto child_surface = std::make_unique<Surface>();
     auto sub_surface =
         std::make_unique<SubSurface>(child_surface.get(), surface.get());
-    sub_surface->SetPosition(child_input_rect.origin());
+    sub_surface->SetPosition(gfx::PointF(child_input_rect.origin()));
     child_surface->Attach(child_buffer.get());
     child_surface->Commit();
     surface->Commit();
@@ -651,9 +654,9 @@ TEST_P(SurfaceTest, SetBufferScale) {
   EXPECT_EQ(
       gfx::ScaleToFlooredSize(buffer_size, 1.0f / kBufferScale).ToString(),
       surface->window()->bounds().size().ToString());
-  EXPECT_EQ(
-      gfx::ScaleToFlooredSize(buffer_size, 1.0f / kBufferScale).ToString(),
-      surface->content_size().ToString());
+  gfx::SizeF buffer_size_float = gfx::SizeF(buffer_size);
+  buffer_size_float.Scale(1.0f / kBufferScale);
+  EXPECT_EQ(buffer_size_float.ToString(), surface->content_size().ToString());
 
   base::RunLoop().RunUntilIdle();
 
@@ -676,7 +679,7 @@ void SurfaceTest::SetBufferTransformHelperTransformAndTest(
   surface->Commit();
   EXPECT_EQ(gfx::Size(expected_size.width(), expected_size.height()),
             surface->window()->bounds().size());
-  EXPECT_EQ(gfx::Size(expected_size.width(), expected_size.height()),
+  EXPECT_EQ(gfx::SizeF(expected_size.width(), expected_size.height()),
             surface->content_size());
 
   base::RunLoop().RunUntilIdle();
@@ -731,7 +734,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
       std::make_unique<SubSurface>(child_surface.get(), surface.get());
 
   // Set position to 20, 10.
-  gfx::Point child_position(20, 10);
+  gfx::PointF child_position(20, 10);
   sub_surface->SetPosition(child_position);
 
   child_surface->Attach(child_buffer.get());
@@ -745,7 +748,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
       child_surface->window()->bounds().size());
   EXPECT_EQ(
       gfx::ScaleToRoundedSize(child_buffer_size, 1.0f / kChildBufferScale),
-      child_surface->content_size());
+      gfx::ToRoundedSize(child_surface->content_size()));
 
   base::RunLoop().RunUntilIdle();
 
@@ -756,7 +759,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
     const auto& quad_list = frame.render_pass_list[0]->quad_list;
     ASSERT_EQ(2u, quad_list.size());
     EXPECT_EQ(
-        ToPixel(gfx::Rect(child_position,
+        ToPixel(gfx::Rect(gfx::ToRoundedPoint(child_position),
                           gfx::ScaleToRoundedSize(child_buffer_size,
                                                   1.0f / kChildBufferScale))),
         cc::MathUtil::MapEnclosingClippedRect(
@@ -798,18 +801,18 @@ TEST_P(SurfaceTest, SetViewport) {
   // This will update the bounds of the surface and take the viewport into
   // account.
   surface->Attach(buffer.get());
-  gfx::Size viewport(256, 256);
+  gfx::SizeF viewport(256, 256);
   surface->SetViewport(viewport);
   surface->Commit();
   EXPECT_EQ(viewport.ToString(), surface->content_size().ToString());
 
   // This will update the bounds of the surface and take the viewport2 into
   // account.
-  gfx::Size viewport2(512, 512);
+  gfx::SizeF viewport2(512, 512);
   surface->SetViewport(viewport2);
   surface->Commit();
   EXPECT_EQ(viewport2.ToString(),
-            surface->window()->bounds().size().ToString());
+            gfx::SizeF(surface->window()->bounds().size()).ToString());
   EXPECT_EQ(viewport2.ToString(), surface->content_size().ToString());
 
   base::RunLoop().RunUntilIdle();
@@ -832,7 +835,8 @@ TEST_P(SurfaceTest, SetCrop) {
   surface->Commit();
   EXPECT_EQ(crop_size.ToString(),
             surface->window()->bounds().size().ToString());
-  EXPECT_EQ(crop_size.ToString(), surface->content_size().ToString());
+  EXPECT_EQ(gfx::SizeF(crop_size).ToString(),
+            surface->content_size().ToString());
 
   base::RunLoop().RunUntilIdle();
 
@@ -943,7 +947,7 @@ TEST_P(SurfaceTest, MAYBE_SetCropAndBufferTransform) {
         gfx::SkRectToRectF(tc.expected_rect), false);
   }
 
-  surface->SetViewport(gfx::Size(128, 64));
+  surface->SetViewport(gfx::SizeF(128, 64));
 
   for (const auto& tc : testcases) {
     SetCropAndBufferTransformHelperTransformAndTest(
@@ -1133,7 +1137,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
   // 128x64 rect.
   surface->SetEmbeddedSurfaceSize(gfx::Size(256, 256));
 
-  surface->SetViewport(gfx::Size(128, 64));
+  surface->SetViewport(gfx::SizeF(128, 64));
   surface->SetCrop(
       gfx::RectF(gfx::PointF(32.0f, 32.0f), gfx::SizeF(128.0f, 128.0f)));
 
@@ -1193,7 +1197,7 @@ TEST_P(SurfaceTest, RemoveSubSurface) {
   auto child_surface = std::make_unique<Surface>();
   auto sub_surface =
       std::make_unique<SubSurface>(child_surface.get(), surface.get());
-  sub_surface->SetPosition(gfx::Point(20, 10));
+  sub_surface->SetPosition(gfx::PointF(20, 10));
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();

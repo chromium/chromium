@@ -31,7 +31,7 @@ class NotificationSurface : public SurfaceTreeHost,
   ~NotificationSurface() override;
 
   // Get the content size of the |root_surface()|.
-  const gfx::Size& GetContentSize() const;
+  gfx::Size GetContentSize() const;
 
   void SetApplicationId(const char* application_id);
 
