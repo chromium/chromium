@@ -60,6 +60,7 @@ class CryptAuthDevice {
   base::Value AsDictionary() const;
 
   // Converts the device to a human-readable dictionary.
+  // Note: We remove |last_update_time_| which can be misleading in the logs.
   base::Value AsReadableDictionary() const;
 
   bool operator==(const CryptAuthDevice& other) const;
@@ -75,7 +76,10 @@ class CryptAuthDevice {
   // key.
   std::string device_better_together_public_key;
 
-  // The last time the device updated its information with the CryptAuth server.
+  // The last time the device's information in CryptAuth server was touched.
+  // Note: This is not a reliable indicator of the last-used time. A device's
+  // data in CryptAuth can be changed without any action from the device. See
+  // GetDevicesActivityStatus for more reliable timestamps.
   base::Time last_update_time;
 
   // Device metadata relevant to the suite of multi-device ("Better Together")
