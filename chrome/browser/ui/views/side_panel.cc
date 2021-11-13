@@ -129,8 +129,7 @@ class SidePanelBorder : public views::Border {
 class BorderView : public views::View {
  public:
   explicit BorderView(BrowserView* browser_view) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
+    SetVisible(false);
     SetBorder(std::make_unique<SidePanelBorder>(browser_view));
     // Don't allow the view to process events.
     SetCanProcessEventsWithinSubtree(false);
@@ -201,6 +200,7 @@ void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
 }
 
 void SidePanel::UpdateVisibility() {
+  bool any_child_visible = false;
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
   for (const auto* view : children()) {
@@ -208,11 +208,26 @@ void SidePanel::UpdateVisibility() {
       continue;
 
     if (view->GetVisible()) {
-      SetVisible(true);
-      return;
+      any_child_visible = true;
+      break;
     }
   }
-  SetVisible(false);
+  // Make sure the border visibility matches the side panel. Also dynamically
+  // create and destroy the layer to reclaim memory and avoid painting and
+  // compositing this border when it's not showing. See
+  // https://crbug.com/1269090.
+  // TODO(pbos): Should layer visibility/painting be automatically tied to
+  // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
+  if (border_view_ && any_child_visible != border_view_->GetVisible()) {
+    border_view_->SetVisible(any_child_visible);
+    if (any_child_visible) {
+      border_view_->SetPaintToLayer();
+      border_view_->layer()->SetFillsBoundsOpaquely(false);
+    } else {
+      border_view_->DestroyLayer();
+    }
+  }
+  SetVisible(any_child_visible);
 }
 
 BEGIN_METADATA(SidePanel, views::View)
