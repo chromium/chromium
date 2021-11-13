@@ -339,10 +339,11 @@ void ContentsView::ShowSearchResults(bool show) {
   DCHECK_GE(search_page, 0);
 
   // Hide or Show results
-  GetPageView(search_page)->SetVisible(show);
-
+  search_result_page_view()->SetVisible(show);
   SetActiveStateInternal(show ? search_page : page_before_search_,
                          true /*animate*/);
+  if (show)
+    search_result_page_view()->UpdateResultContainersVisibility();
 }
 
 bool ContentsView::IsShowingSearchResults() const {
