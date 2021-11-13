@@ -26,7 +26,7 @@ interface SellerWorklet {
   //
   // Arguments:
   // `ad_metadata_json` JSON representation of the `ad` value returned by the
-  //  BidWorklet that offered the bid.
+  //  BidderWorklet that offered the bid.
   //
   // `bid` The numeric value of the bid offered by the BidWorklet.
   //
@@ -38,6 +38,12 @@ interface SellerWorklet {
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the bid.
+  //
+  // `browser_signal_render_url` The `renderUrl` returned by the
+  //  BidderWorklet making the bid.
+  //
+  // `browser_signal_ad_component_urls` The `adComponents` array returned by
+  //  the BidderWorklet making the bid.
   //
   // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
   //  eventually to be replaced with a hash of the ad bundle, per spec.
@@ -60,6 +66,8 @@ interface SellerWorklet {
           blink.mojom.AuctionAdConfig auction_config,
           url.mojom.Origin browser_signal_top_window_origin,
           url.mojom.Origin browser_signal_interest_group_owner,
+          url.mojom.Url browser_signal_render_url,
+          array<url.mojom.Url> browser_signal_ad_component_render_urls,
           string browser_signal_ad_render_fingerprint,
           uint32 browser_signal_bidding_duration_msecs) =>
               (double score, array<string> errors);

@@ -63,6 +63,11 @@ function validateBrowserSignals(browserSignals) {
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if (!browserSignals.interestGroupOwner.includes('a.test'))
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
+  if (browserSignals.renderUrl !== "https://example.com/render")
+    throw 'Wrong renderUrl ' + browserSignals.renderUrl;
+  const adComponentsJSON = JSON.stringify(browserSignals.adComponents);
+  if (adComponentsJSON !== '["https://example.com/render-component"]')
+    throw 'Wrong adComponents ' + browserSignals.adComponents;
   if (browserSignals.adRenderFingerprint === undefined ||
       browserSignals.adRenderFingerprint === '') {
     throw 'Wrong adRenderFingerprint ' + browserSignals.adRenderFingerprint;

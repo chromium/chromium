@@ -90,9 +90,10 @@ class SellerWorkletTest : public testing::Test {
         url::Origin::Create(GURL("https://window.test/"));
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
+    browser_signal_render_url_ = GURL("https://render.url.test/");
+    browser_signal_ad_components_.clear();
     browser_signal_ad_render_fingerprint_ = "ad_render_fingerprint";
     browser_signal_bidding_duration_msecs_ = 0;
-    browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_desireability_ = 1;
   }
 
@@ -129,6 +130,7 @@ class SellerWorkletTest : public testing::Test {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, auction_config_.Clone(),
         browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
+        browser_signal_render_url_, browser_signal_ad_components_,
         browser_signal_ad_render_fingerprint_,
         browser_signal_bidding_duration_msecs_,
         base::BindOnce(
@@ -312,9 +314,10 @@ class SellerWorkletTest : public testing::Test {
   blink::mojom::AuctionAdConfigPtr auction_config_;
   url::Origin browser_signal_top_window_origin_;
   url::Origin browser_signal_interest_group_owner_;
+  GURL browser_signal_render_url_;
+  std::vector<GURL> browser_signal_ad_components_;
   std::string browser_signal_ad_render_fingerprint_;
   uint32_t browser_signal_bidding_duration_msecs_;
-  GURL browser_signal_render_url_;
   double browser_signal_desireability_;
 
   // Reuseable run loop for loading the script. It's always populated after
@@ -468,7 +471,9 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
         test_case.is_json ? 4 : 3);
     SetDefaultParameters();
   }
+}
 
+TEST_F(SellerWorkletTest, ScoreAdTopWindowOrigin) {
   browser_signal_top_window_origin_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunScoreAdWithReturnValueExpectingResult(
@@ -478,8 +483,9 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
       url::Origin::Create(GURL("https://[::1]:40000/"));
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.topWindowHostname == "[::1]" ? 3 : 0)", 3);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ScoreAdInterestGroupOwner) {
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunScoreAdWithReturnValueExpectingResult(
@@ -490,17 +496,52 @@ TEST_F(SellerWorkletTest, ScoreAdParameters) {
   RunScoreAdWithReturnValueExpectingResult(
       R"(browserSignals.interestGroupOwner == "https://[::1]:40000" ? 3 : 0)",
       3);
-  SetDefaultParameters();
+}
 
-  // Test bid parameter.
+TEST_F(SellerWorkletTest, ScoreAdRenderUrl) {
+  browser_signal_render_url_ = GURL("https://bar.test/path");
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.renderUrl === "https://bar.test/path" ? 3 : 0)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.renderUrl === "https://bar.test/" ? 3 : 0)", 0);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
+  browser_signal_ad_components_.clear();
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents === undefined ? 3 : 0)", 3);
+
+  browser_signal_ad_components_ = {GURL("https://bar.test/path")};
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents.length)", 1);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents[0] === "https://bar.test/path" ? 3 : 0)",
+      3);
+
+  // These are not in lexical order to make sure ordering is preserved.
+  browser_signal_ad_components_ = {GURL("https://2.test/"),
+                                   GURL("https://1.test/"),
+                                   GURL("https://3.test/")};
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents.length)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents[0] === "https://2.test/" ? 3 : 0)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents[1] === "https://1.test/" ? 3 : 0)", 3);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.adComponents[2] === "https://3.test/" ? 3 : 0)", 3);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdBid) {
   bid_ = 5;
   RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 5);
   bid_ = 0.5;
   RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0.5);
   bid_ = -1;
   RunScoreAdWithReturnValueExpectingResult(base::StringPrintf("bid"), 0);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ScoreAdBiddingDuration) {
   // Test browserSignals.bidding_duration_msec.
   browser_signal_bidding_duration_msecs_ = 0;
   RunScoreAdWithReturnValueExpectingResult(
@@ -771,8 +812,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       seller_worklet->ScoreAd(
           ad_metadata_, bid_, auction_config_.Clone(),
           browser_signal_top_window_origin_,
-          browser_signal_interest_group_owner_,
-          browser_signal_ad_render_fingerprint_,
+          browser_signal_interest_group_owner_, browser_signal_render_url_,
+          browser_signal_ad_components_, browser_signal_ad_render_fingerprint_,
           browser_signal_bidding_duration_msecs_,
           base::BindLambdaForTesting(
               [&run_loop](double score,
@@ -813,6 +854,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, auction_config_.Clone(),
       browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
+      browser_signal_render_url_, browser_signal_ad_components_,
       browser_signal_ad_render_fingerprint_,
       browser_signal_bidding_duration_msecs_,
       base::BindOnce([](double score, const std::vector<std::string>& errors) {

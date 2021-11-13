@@ -62,6 +62,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                blink::mojom::AuctionAdConfigPtr auction_config,
                const url::Origin& browser_signal_top_window_origin,
                const url::Origin& browser_signal_interest_group_owner,
+               const GURL& browser_signal_render_url,
+               const std::vector<GURL>& browser_signal_ad_components,
                const std::string& browser_signal_ad_render_fingerprint,
                uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback callback) override;
@@ -92,6 +94,8 @@ class SellerWorklet : public mojom::SellerWorklet {
                  blink::mojom::AuctionAdConfigPtr auction_config,
                  const url::Origin& browser_signal_top_window_origin,
                  const url::Origin& browser_signal_interest_group_owner,
+                 const GURL& browser_signal_render_url,
+                 const std::vector<GURL>& browser_signal_ad_components,
                  const std::string& browser_signal_ad_render_fingerprint,
                  uint32_t browser_signal_bidding_duration_msecs,
                  ScoreAdCallback callback);

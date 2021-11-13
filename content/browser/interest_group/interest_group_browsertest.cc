@@ -3101,7 +3101,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
       /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2, 3]}}",
       /*ads=*/
       {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
-      /*ad_components=*/absl::nullopt)));
+      /*ad_components=*/
+      {{{GURL("https://example.com/render-component"),
+         /*metadata=*/absl::nullopt}}})));
 
   EXPECT_EQ("https://example.com/render",
             EvalJs(shell(),

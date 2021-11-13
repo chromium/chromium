@@ -155,6 +155,8 @@ void SellerWorklet::ScoreAd(
     blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
+    const GURL& browser_signal_render_url,
+    const std::vector<GURL>& browser_signal_ad_components,
     const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
@@ -165,6 +167,7 @@ void SellerWorklet::ScoreAd(
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           ad_metadata_json, bid, std::move(auction_config),
           browser_signal_top_window_origin, browser_signal_interest_group_owner,
+          browser_signal_render_url, browser_signal_ad_components,
           browser_signal_ad_render_fingerprint,
           browser_signal_bidding_duration_msecs, std::move(callback)));
 }
@@ -223,6 +226,8 @@ void SellerWorklet::V8State::ScoreAd(
     blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
+    const GURL& browser_signal_render_url,
+    const std::vector<GURL>& browser_signal_ad_components,
     const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
@@ -260,6 +265,8 @@ void SellerWorklet::V8State::ScoreAd(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
+      !browser_signals_dict.Set("renderUrl",
+                                browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("adRenderFingerprint",
                                 browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("biddingDurationMsec",
@@ -267,6 +274,17 @@ void SellerWorklet::V8State::ScoreAd(
     PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
                                     std::vector<std::string>() /* errors */);
     return;
+  }
+  if (!browser_signal_ad_components.empty()) {
+    std::vector<std::string> ad_component_url_strings;
+    for (const GURL& url : browser_signal_ad_components) {
+      ad_component_url_strings.push_back(url.spec());
+    }
+    if (!browser_signals_dict.Set("adComponents", ad_component_url_strings)) {
+      PostScoreAdCallbackToUserThread(std::move(callback), /*score=*/0,
+                                      /*errors=*/std::vector<std::string>());
+      return;
+    }
   }
   args.push_back(browser_signals);
 

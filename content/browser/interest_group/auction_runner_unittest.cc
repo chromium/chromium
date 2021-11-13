@@ -70,11 +70,14 @@ std::string MakeBidScript(const std::string& bid,
 
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-      var result = {ad: {bidKey: "data for " + bid,
-                         groupName: interestGroupName},
+      var result = {ad: {"bidKey": "data for " + bid,
+                         "groupName": interestGroupName,
+                         "renderUrl": "data for " + renderUrl},
                     bid: bid, render: renderUrl};
-      if (interestGroup.adComponents)
+      if (interestGroup.adComponents) {
         result.adComponents = [interestGroup.adComponents[0].renderUrl];
+        result.ad.adComponentsUrl = interestGroup.adComponents[0].renderUrl;
+      }
 
       if (interestGroup.name !== interestGroupName)
         throw new Error("wrong interestGroupName");
@@ -195,6 +198,24 @@ constexpr char kCheckingAuctionScript[] = R"(
     if (adMetadata.bidKey !== ("data for " + bid)) {
       throw new Error("wrong data for bid:" +
                       JSON.stringify(adMetadata) + "/" + bid);
+    }
+    if (adMetadata.renderUrl !== ("data for " + browserSignals.renderUrl)) {
+      throw new Error("wrong data for renderUrl:" +
+                      JSON.stringify(adMetadata) + "/" +
+                      browserSignals.renderUrl);
+    }
+    let components = browserSignals.adComponents;
+    if (adMetadata.adComponentsUrl) {
+      if (components.length !== 1 ||
+          components[0] !== adMetadata.adComponentsUrl) {
+        throw new Error("wrong data for adComponents:" +
+                        JSON.stringify(adMetadata) + "/" +
+                        browserSignals.adComponents);
+      }
+    } else if (components !== undefined) {
+      throw new Error("wrong data for adComponents:" +
+                      JSON.stringify(adMetadata) + "/" +
+                      browserSignals.adComponents);
     }
     if (auctionConfig.decisionLogicUrl
         !== "https://adstuff.publisher1.com/auction.js") {
@@ -449,6 +470,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                blink::mojom::AuctionAdConfigPtr auction_config,
                const url::Origin& browser_signal_top_window_origin,
                const url::Origin& browser_signal_interest_group_owner,
+               const GURL& browser_signal_render_url,
+               const std::vector<GURL>& browser_signal_ad_components,
                const std::string& browser_signal_ad_render_fingerprint,
                uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback score_ad_callback) override {

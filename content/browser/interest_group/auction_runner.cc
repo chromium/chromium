@@ -377,7 +377,10 @@ void AuctionRunner::ScoreBid(BidState* state) {
   seller_worklet_->ScoreAd(
       state->bid_result->ad, state->bid_result->bid, auction_config_.Clone(),
       browser_signals_->top_frame_origin,
-      state->bidder.bidding_group->group.owner, AdRenderFingerprint(state),
+      state->bidder.bidding_group->group.owner, state->bid_result->render_url,
+      state->bid_result->ad_components ? *state->bid_result->ad_components
+                                       : std::vector<GURL>(),
+      AdRenderFingerprint(state),
       state->bid_result->bid_duration.InMilliseconds(),
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this),
                      state));
