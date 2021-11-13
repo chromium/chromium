@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -19,6 +20,8 @@ class ReportingSettings;
 // setting path.
 class MetricRateController {
  public:
+  static const base::Feature kEnableTelemetryTestingRates;
+
   MetricRateController(base::RepeatingClosure task,
                        ReportingSettings* reporting_settings,
                        const std::string& rate_setting_path,

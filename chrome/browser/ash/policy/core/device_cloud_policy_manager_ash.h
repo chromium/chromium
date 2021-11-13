@@ -19,6 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
 namespace reporting {
+class MetricReportingManager;
 class UserAddedRemovedReporter;
 }  // namespace reporting
 
@@ -193,6 +194,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // Object that reports user added/removed events to the server.
   std::unique_ptr<reporting::UserAddedRemovedReporter>
       user_added_removed_reporter_;
+
+  // Object that initiates device metrics collection and reporting.
+  std::unique_ptr<reporting::MetricReportingManager> metric_reporting_manager_;
 
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
