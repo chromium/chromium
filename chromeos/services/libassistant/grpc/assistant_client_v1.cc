@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
-#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
@@ -37,16 +36,9 @@
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 #include "libassistant/shared/internal_api/voiceless_response.h"
+#include "libassistant/shared/public/alarm_timer_types.h"
 #include "libassistant/shared/public/device_state_listener.h"
 #include "libassistant/shared/public/media_manager.h"
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
-#include "libassistant/shared/internal_api/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_146S
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
-#include "libassistant/shared/public/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_152S
 
 namespace chromeos {
 namespace libassistant {
