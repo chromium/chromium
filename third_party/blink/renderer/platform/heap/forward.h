@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_FORWARD_H_
 
 namespace cppgc {
+class LivenessBroker;
 class Visitor;
 }
 
 namespace blink {
 
+using LivenessBroker = cppgc::LivenessBroker;
 using Visitor = cppgc::Visitor;
 
 }  // namespace blink

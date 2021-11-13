@@ -55,6 +55,10 @@ inline void swap(Member<T>& a, Member<T>& b) {
   a.Swap(b);
 }
 
+static constexpr bool kBlinkMemberGCHasDebugChecks =
+    !std::is_same<cppgc::internal::DefaultMemberCheckingPolicy,
+                  cppgc::internal::DisabledCheckingPolicy>::value;
+
 }  // namespace blink
 
 namespace WTF {

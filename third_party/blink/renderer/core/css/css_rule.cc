@@ -33,7 +33,7 @@ struct SameSizeAsCSSRule : public GarbageCollected<SameSizeAsCSSRule>,
   ~SameSizeAsCSSRule() override;
   unsigned char bitfields;
   Member<ScriptWrappable> member;
-  static_assert(kBlinkGCHasDebugChecks ||
+  static_assert(kBlinkMemberGCHasDebugChecks ||
                     ::WTF::internal::SizesEqual<sizeof(Member<ScriptWrappable>),
                                                 sizeof(void*)>::value,
                 "Member<ScriptWrappable> should stay small");
