@@ -6,6 +6,8 @@
 
 #include <set>
 
+#include "base/check_op.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task.h"
@@ -14,11 +16,13 @@
 namespace task_manager {
 
 CrosapiTaskProviderAsh::CrosapiTaskProviderAsh() {
-  DCHECK(crosapi::CrosapiManager::IsInitialized());
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->task_manager_ash()
-      ->SetObserver(this);
+  // CrosapiManager is not initialized on unit testing.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->task_manager_ash()
+        ->SetObserver(this);
+  }
 }
 
 CrosapiTaskProviderAsh::~CrosapiTaskProviderAsh() {
@@ -68,6 +72,11 @@ const TaskIdList& CrosapiTaskProviderAsh::GetSortedTaskIds() {
 }
 
 void CrosapiTaskProviderAsh::StartUpdating() {
+  // CrosapiManager is not initialized on unit testing and do not start
+  // refresh_timer_ on unit testing.
+  if (!crosapi::CrosapiManager::IsInitialized())
+    return;
+
   refresh_timer_.Start(
       FROM_HERE, base::Seconds(1),
       base::BindRepeating(&CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks,
@@ -120,18 +129,12 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   if (!IsUpdating())
     return;
 
+  DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
+
   std::set<std::string> uuid_to_remove;
   for (const auto& item : uuid_to_task_)
     uuid_to_remove.insert(item.first);
 
-  // Do not generate |sorted_task_ids_| before |task_results| and
-  // |task_group_results| are completely processed, i.e., |uuid_to_task_|
-  // has been updated, and all tasks have been properly added or removed from
-  // the task manager.
-  // Note: All task ids added to |sorted_task_ids_|, which will be accessed by
-  // task manager's GetTaskIdsList(), must have their tasks properly added to
-  // task manager first.
-  sorted_task_ids_.clear();
   bool task_added_or_removed = false;
 
   for (const auto& mojo_task : task_results) {
@@ -141,6 +144,13 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
       task_added_or_removed = true;
       DCHECK(!task.get());
       task = std::make_unique<CrosapiTask>(mojo_task);
+      // Since NotifyObserverTaskAdded will cause task manager to rebuild its
+      // GetSortedTaskIds() with |sorted_task_ids_|, and also trigger the UI to
+      // update with new task added. We must make sure |sorted_task_ids_|
+      // always contains all the crosapi tasks before calling
+      // NotifyObserverTaskAdded.
+      sorted_task_ids_.push_back(task->task_id());
+      DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
       NotifyObserverTaskAdded(task.get());
     } else {
       // Update existing lacros task.
@@ -155,7 +165,9 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   // Remove the stale lacros tasks.
   for (const auto& uuid : uuid_to_remove) {
     NotifyObserverTaskRemoved(uuid_to_task_[uuid].get());
+    base::Erase(sorted_task_ids_, uuid_to_task_[uuid]->task_id());
     uuid_to_task_.erase(uuid);
+    DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
     task_added_or_removed = true;
   }
 
@@ -171,7 +183,7 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   // Now task data have been properly updated, let's update |sorted_task_ids_|.
   // Place task ids in |sorted_task_ids_| with the same order of tasks
   // shown in |task_results|, which is pre-sorted by Lacros task manager.
-  DCHECK(sorted_task_ids_.empty());
+  sorted_task_ids_.clear();
   for (const auto& task : task_results)
     sorted_task_ids_.push_back(uuid_to_task_[task->task_uuid]->task_id());
 
@@ -180,6 +192,7 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   // lacros tasks to be re-sorted in lacros. Ash task manager UI won't get the
   // complete list of the new sorted lacros task ids until task manager
   // invalidate and rebuild the sorted task list in GetTaskIdsList().
+  DCHECK_EQ(task_results.size(), sorted_task_ids_.size());
   if (task_added_or_removed)
     NotifyObserverTaskIdsListToBeInvalidated();
 }
