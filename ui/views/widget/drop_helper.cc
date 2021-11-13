@@ -129,7 +129,8 @@ DropHelper::DropCallback DropHelper::GetDropCallback(
       [](View::DropCallback drop_cb, const ui::DropTargetEvent& event,
          std::unique_ptr<ui::OSExchangeData> data,
          ui::mojom::DragOperation& output_drag_op) {
-        std::move(drop_cb).Run(event, output_drag_op);
+        if (drop_cb)
+          std::move(drop_cb).Run(event, output_drag_op);
       },
       std::move(drop_view_cb));
 }
