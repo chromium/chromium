@@ -492,6 +492,8 @@ elif package_exists php7.1-cgi; then
   dev_list="${dev_list} php7.1-cgi libapache2-mod-php7.1"
 elif package_exists php7.0-cgi; then
   dev_list="${dev_list} php7.0-cgi libapache2-mod-php7.0"
+elif package_exists php8.0-cgi; then
+  dev_list="${dev_list} php8.0-cgi libapache2-mod-php8.0"
 else
   dev_list="${dev_list} php5-cgi libapache2-mod-php5"
 fi
