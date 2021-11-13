@@ -407,7 +407,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsMiddleClickTargetBlankOrigin) {
 }
 
 // Context menu, from HTTP to HTTP.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ContextMenuOrigin DISABLED_ContextMenuOrigin
+#else
+#define MAYBE_ContextMenuOrigin ContextMenuOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(
@@ -543,7 +549,13 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuRedirect) {
 }
 
 // Context menu, from HTTPS to HTTP via server redirect.
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsContextMenuRedirect) {
+// TODO(crbug.com/1269942): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HttpsContextMenuRedirect DISABLED_HttpsContextMenuRedirect
+#else
+#define MAYBE_HttpsContextMenuRedirect HttpsContextMenuRedirect
+#endif
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_HttpsContextMenuRedirect) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(network::mojom::ReferrerPolicy::kOrigin, START_ON_HTTPS,
