@@ -16,6 +16,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/sid.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sandbox_types.h"
 
@@ -37,7 +38,7 @@ class TargetProcess {
                 base::win::ScopedHandle lockdown_token,
                 HANDLE job,
                 ThreadPool* thread_pool,
-                const std::vector<Sid>& impersonation_capabilities);
+                const std::vector<base::win::Sid>& impersonation_capabilities);
 
   TargetProcess(const TargetProcess&) = delete;
   TargetProcess& operator=(const TargetProcess&) = delete;
@@ -115,7 +116,7 @@ class TargetProcess {
   // Full name of the target executable.
   std::unique_ptr<wchar_t, base::FreeDeleter> exe_name_;
   /// List of capability sids for use when impersonating in an AC process.
-  std::vector<Sid> impersonation_capabilities_;
+  std::vector<base::win::Sid> impersonation_capabilities_;
 
   // Function used for testing.
   friend std::unique_ptr<TargetProcess> MakeTestTargetProcess(

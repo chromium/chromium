@@ -17,6 +17,7 @@
 
 #include "base/logging.h"
 #include "base/win/atl.h"
+#include "base/win/sid.h"
 #include "sandbox/win/sandbox_poc/resource.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/sandbox.h"
@@ -548,8 +549,8 @@ bool MainUIWindow::SpawnTarget() {
       AddDebugMessage(L"Failed to create pipe. Error %d", ::GetLastError());
 
     if (!sandbox::AddKnownSidToObject(pipe_handle_, SE_KERNEL_OBJECT,
-                                      WinWorldSid, GRANT_ACCESS,
-                                      FILE_ALL_ACCESS))
+                                      base::win::WellKnownSid::kWorld,
+                                      GRANT_ACCESS, FILE_ALL_ACCESS))
       AddDebugMessage(L"Failed to set security on pipe. Error %d",
                       ::GetLastError());
 

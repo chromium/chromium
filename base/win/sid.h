@@ -86,6 +86,9 @@ class BASE_EXPORT Sid {
   // Generate a random SID value.
   static absl::optional<Sid> GenerateRandomSid();
 
+  // Create a SID for a token's user.
+  static absl::optional<Sid> FromToken(HANDLE token);
+
   // Create a SID for the current user.
   static absl::optional<Sid> CurrentUser();
 
@@ -100,6 +103,14 @@ class BASE_EXPORT Sid {
   static absl::optional<std::vector<Sid>> FromNamedCapabilityVector(
       const std::vector<const wchar_t*>& capability_names);
 
+  // Create a vector of SIDs from a vector of well-known capability.
+  static absl::optional<std::vector<Sid>> FromKnownCapabilityVector(
+      const std::vector<WellKnownCapability>& capabilities);
+
+  // Create a vector of SIDs from a vector of well-known sids.
+  static absl::optional<std::vector<Sid>> FromKnownSidVector(
+      const std::vector<WellKnownSid>& sids);
+
   Sid(const Sid&) = delete;
   Sid& operator=(const Sid&) = delete;
   Sid(Sid&& sid);
@@ -111,6 +122,18 @@ class BASE_EXPORT Sid {
 
   // Converts the SID to a SDDL format string.
   absl::optional<std::wstring> ToSddlString() const;
+
+  // Make a clone of the current Sid object.
+  Sid Clone() const;
+
+  // Is this Sid equal to another raw PSID?
+  bool Equal(PSID sid) const;
+
+  // Is this Sid equal to another Sid?
+  bool operator==(const Sid& sid) const;
+
+  // Is this Sid not equal to another Sid?
+  bool operator!=(const Sid& sid) const;
 
  private:
   Sid(const void* sid, size_t length);

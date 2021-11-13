@@ -5,6 +5,7 @@
 #include "sandbox/policy/win/sandbox_test_utils.h"
 
 #include "base/strings/strcat.h"
+#include "base/win/security_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -14,11 +15,11 @@ constexpr wchar_t kBaseSecurityDescriptor[] = L"D:(A;;GA;;;WD)";
 constexpr wchar_t kRegistryRead[] = L"registryRead";
 constexpr wchar_t klpacPnpNotifications[] = L"lpacPnpNotifications";
 
-std::vector<Sid> GetCapabilitySids(
+std::vector<base::win::Sid> GetCapabilitySids(
     const std::initializer_list<std::wstring>& capabilities) {
-  std::vector<Sid> sids;
+  std::vector<base::win::Sid> sids;
   for (const auto& capability : capabilities) {
-    sids.emplace_back(Sid::FromNamedCapability(capability.c_str()));
+    sids.push_back(*base::win::Sid::FromNamedCapability(capability.c_str()));
   }
   return sids;
 }
@@ -27,19 +28,19 @@ std::wstring GetAccessAllowedForCapabilities(
     const std::initializer_list<std::wstring>& capabilities) {
   std::wstring sddl = kBaseSecurityDescriptor;
   for (const auto& capability : GetCapabilitySids(capabilities)) {
-    std::wstring sid_string;
-    CHECK(capability.ToSddlString(&sid_string));
-    base::StrAppend(&sddl, {L"(A;;GRGX;;;", sid_string, L")"});
+    absl::optional<std::wstring> sid_string = capability.ToSddlString();
+    CHECK(sid_string);
+    base::StrAppend(&sddl, {L"(A;;GRGX;;;", *sid_string, L")"});
   }
   return sddl;
 }
 
-void EqualSidList(const std::vector<Sid>& left, const std::vector<Sid>& right) {
+void EqualSidList(const std::vector<base::win::Sid>& left,
+                  const std::vector<base::win::Sid>& right) {
   EXPECT_EQ(left.size(), right.size());
   auto result = std::mismatch(left.cbegin(), left.cend(), right.cbegin(),
                               [](const auto& left_sid, const auto& right_sid) {
-                                return !!::EqualSid(left_sid.GetPSID(),
-                                                    right_sid.GetPSID());
+                                return left_sid == right_sid;
                               });
   EXPECT_EQ(result.first, left.cend());
 }
@@ -54,10 +55,8 @@ void CheckCapabilities(
   auto base_caps = GetCapabilitySids(
       {klpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead});
 
-  impersonation_caps.insert(impersonation_caps.end(), additional_caps.begin(),
-                            additional_caps.end());
-  base_caps.insert(base_caps.end(), additional_caps.begin(),
-                   additional_caps.end());
+  base::win::AppendSidVector(impersonation_caps, additional_caps);
+  base::win::AppendSidVector(base_caps, additional_caps);
 
   EqualSidList(impersonation_caps, profile->GetImpersonationCapabilities());
   EqualSidList(base_caps, profile->GetCapabilities());

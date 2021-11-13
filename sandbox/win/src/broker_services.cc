@@ -536,11 +536,16 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
   base::win::ScopedProcessInformation process_info;
+  std::vector<base::win::Sid> imp_caps;
+  if (container) {
+    for (const base::win::Sid& sid :
+         container->GetImpersonationCapabilities()) {
+      imp_caps.push_back(sid.Clone());
+    }
+  }
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(initial_token), std::move(lockdown_token), job.Get(),
-      thread_pool_,
-      container ? container->GetImpersonationCapabilities()
-                : std::vector<Sid>());
+      thread_pool_, imp_caps);
 
   result = target->Create(exe_path, command_line, std::move(startup_info),
                           &process_info, last_error);

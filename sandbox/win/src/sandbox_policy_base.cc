@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
@@ -423,16 +424,17 @@ ResultCode PolicyBase::DropActiveProcessLimit(base::win::ScopedHandle* job) {
 ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
                                   base::win::ScopedHandle* lockdown,
                                   base::win::ScopedHandle* lowbox) {
-  Sid random_sid = Sid::GenerateRandomSid();
-  PSID random_sid_ptr = nullptr;
-  if (add_restricting_random_sid_)
-    random_sid_ptr = random_sid.GetPSID();
+  absl::optional<base::win::Sid> random_sid =
+      add_restricting_random_sid_ ? base::win::Sid::GenerateRandomSid()
+                                  : absl::nullopt;
+  if (add_restricting_random_sid_ && !random_sid)
+    return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
   // Create the 'naked' token. This will be the permanent token associated
   // with the process and therefore with any thread that is not impersonating.
   DWORD result = CreateRestrictedToken(
       effective_token_, lockdown_level_, integrity_level_, PRIMARY,
-      lockdown_default_dacl_, random_sid_ptr, lockdown);
+      lockdown_default_dacl_, random_sid, lockdown);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
@@ -482,9 +484,9 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
   // what we need (before reaching main( ))
-  result = CreateRestrictedToken(
-      effective_token_, initial_level_, integrity_level_, IMPERSONATION,
-      lockdown_default_dacl_, random_sid_ptr, initial);
+  result = CreateRestrictedToken(effective_token_, initial_level_,
+                                 integrity_level_, IMPERSONATION,
+                                 lockdown_default_dacl_, random_sid, initial);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
 
