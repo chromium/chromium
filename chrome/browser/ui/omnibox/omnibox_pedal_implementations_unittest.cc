@@ -16334,27 +16334,6 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "visit url history",
         },
 
-        // ID#34
-        {
-            // Generated suggestions:
-            "cast page",
-            "cast screen",
-            "cast this page",
-            "qr code",
-            "save page as",
-            "save this page",
-            "send link",
-            "send link via qr code",
-            "send link with qr code",
-            "send page",
-            "share link",
-            "share link via qr code",
-            "share link with qr code",
-            "share page",
-            "share this page",
-            "share this tab",
-        },
-
         // ID#36
         {
             // Generated suggestions:
