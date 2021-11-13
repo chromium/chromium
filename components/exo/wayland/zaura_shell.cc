@@ -816,6 +816,20 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
     wl_client* client = wl_resource_get_client(aura_shell_resource_);
 
+    // If surface that gained active is not owned by the aura shell then
+    // set to null.
+    if (gained_active_surface_resource &&
+        wl_resource_get_client(gained_active_surface_resource) != client) {
+      gained_active_surface_resource = nullptr;
+    }
+
+    // If surface that lost active is not owned by the aura shell then set
+    // to null.
+    if (lost_active_surface_resource &&
+        wl_resource_get_client(lost_active_surface_resource) != client) {
+      lost_active_surface_resource = nullptr;
+    }
+
     zaura_shell_send_activated(aura_shell_resource_,
                                gained_active_surface_resource,
                                lost_active_surface_resource);
