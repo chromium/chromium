@@ -754,9 +754,12 @@ LayoutUnit ComputeBlockSizeForFragment(
     return intrinsic_size;
 
   if (constraint_space.IsFixedBlockSize()) {
-    return (constraint_space.AvailableSize().block_size -
-            available_block_size_adjustment)
-        .ClampNegativeToZero();
+    LayoutUnit block_size = (constraint_space.AvailableSize().block_size -
+                             available_block_size_adjustment)
+                                .ClampNegativeToZero();
+    if (constraint_space.MinBlockSizeShouldEncompassIntrinsicSize())
+      return std::max(intrinsic_size, block_size);
+    return block_size;
   }
 
   if (constraint_space.IsTableCell() && !constraint_space.IsLegacyTableCell() &&

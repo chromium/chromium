@@ -70,8 +70,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
       absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
-      absl::optional<LayoutUnit> block_offset_for_fragmentation =
-          absl::nullopt) const;
+      absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
+      bool min_block_size_should_encompass_intrinsic_size = false) const;
   void ConstructAndAppendFlexItems();
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
   bool GiveItemsFinalPositionAndSize(Vector<NGFlexLine>& flex_line_outputs);

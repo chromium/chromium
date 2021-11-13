@@ -139,6 +139,18 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
   return AxisEdge::kStart;
 }
 
+// We are interested in cases where the flex item *may* expand due to
+// fragmentation (lines pushed down by a fragmentation line, etc).
+bool MinBlockSizeShouldEncompassIntrinsicSize(const NGFlexItem& item) {
+  if (item.ng_input_node.IsMonolithic())
+    return false;
+
+  // TODO(almaher): Figure out which cases this should be true. (Should this
+  // only be true when min-block-size is auto in the case of |is_column_|?)
+  const auto& item_style = item.ng_input_node.Style();
+  return item_style.LogicalHeight().IsAutoOrContentOrIntrinsic();
+}
+
 }  // namespace
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositioned(NGBlockNode child) {
@@ -336,7 +348,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     const NGBlockNode& flex_item_node,
     LayoutUnit item_main_axis_final_size,
     absl::optional<LayoutUnit> line_cross_size_for_stretch,
-    absl::optional<LayoutUnit> block_offset_for_fragmentation) const {
+    absl::optional<LayoutUnit> block_offset_for_fragmentation,
+    bool min_block_size_should_encompass_intrinsic_size) const {
   const ComputedStyle& child_style = flex_item_node.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
                                          child_style.GetWritingDirection(),
@@ -387,6 +400,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
   } else if (block_offset_for_fragmentation) {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
+    if (min_block_size_should_encompass_intrinsic_size)
+      space_builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), flex_item_node,
                                       *block_offset_for_fragmentation,
                                       &space_builder,
@@ -1233,9 +1248,14 @@ NGFlexLayoutAlgorithm::LayoutWithBlockFragmentation(
   DCHECK(!DoesItemStretch(flex_item.ng_input_node) ||
          line_cross_size_for_stretch);
 
+  // TODO(almaher): Record the max expansion if
+  // |min_block_size_should_encompass_intrinsic_size| is set.
+  const bool min_block_size_should_encompass_intrinsic_size =
+      MinBlockSizeShouldEncompassIntrinsicSize(flex_item);
   NGConstraintSpace child_space = BuildSpaceForLayout(
       flex_item.ng_input_node, flex_item.main_axis_final_size,
-      line_cross_size_for_stretch, block_offset);
+      line_cross_size_for_stretch, block_offset,
+      min_block_size_should_encompass_intrinsic_size);
   // TODO(almaher): Handle a break before.
   return flex_item.ng_input_node.Layout(child_space, item_break_token);
 }
