@@ -68,7 +68,7 @@ bool EventQueue::EnqueueEvent(const base::Location& from_here, Event& event) {
   // Pass the event as a weak persistent so that GC can collect an event-related
   // object like IDBTransaction as soon as possible.
   task_runner->PostTask(
-      FROM_HERE, WTF::Bind(&EventQueue::DispatchEvent, WrapPersistent(this),
+      from_here, WTF::Bind(&EventQueue::DispatchEvent, WrapPersistent(this),
                            WrapWeakPersistent(&event)));
 
   return true;
