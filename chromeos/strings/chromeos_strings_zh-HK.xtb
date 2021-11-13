@@ -158,6 +158,8 @@
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
+<translation id="360089215033199597">建議連線至 Wi-Fi，這樣可簡化維修程序。
+        系統將儲存你的網路。</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -479,6 +481,7 @@
 <translation id="816013303019725643">輸入解鎖碼：</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
+<translation id="8217675307824400706">連上網路</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>

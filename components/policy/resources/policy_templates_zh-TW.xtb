@@ -1679,6 +1679,10 @@
 
       如果未設定這項政策，系統會套用 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策，但使用者可以變更這項設定。</translation>
 <translation id="2922511125678964398">允許網頁認證入口驗證機制忽略 Proxy 設定</translation>
+<translation id="2931888116345994552">如果將這項政策設為啟用或不設定，就會允許更新 <ph name="PRODUCT_NAME" /> 中的所有元件。
+
+      如果將這項政策設為停用，則會禁止更新元件。不過，部分元件不受本政策規範：只要元件更新不含可執行的程式碼，且對瀏覽器安全性至關重要，就不會遭到禁止。
+      舉例來說，憑證撤銷清單和子資源篩選器等元件不會受到這項政策影響。</translation>
 <translation id="2939988360019366928">允許瀏覽器側邊面板顯示最新的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果</translation>
 <translation id="2940127076681735544">如果將這項政策設為有效的網址，<ph name="PRODUCT_NAME" /> 會從該網址下載網站清單，然後按照 <ph name="SITELIST_POLICY_NAME" /> 政策中的設定套用規則。
 
@@ -2719,6 +2723,7 @@
 
       如果將這項政策設為停用，系統會關閉 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="4203879074082863035">僅對使用者顯示許可清單中的印表機</translation>
+<translation id="4204327073692415353">不要在登入畫面中提示使用者選取用戶端憑證</translation>
 <translation id="4205316772333487392">強制啟用 Google 搜尋的安全搜尋功能</translation>
 <translation id="4209297478239988291">啟用自動點擊無障礙功能。
 
@@ -5401,6 +5406,7 @@
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
+<translation id="7486205887492534734">當有多個憑證相符時，在登入畫面中顯示提示訊息</translation>
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 1 分鐘的預設頻率。</translation>
@@ -5499,6 +5505,7 @@
 
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的單位轉換功能。
       如果停用這項政策，系統會停用快速解答的單位轉換功能。</translation>
+<translation id="7587345076013230465">每當自動選取政策與多個憑證相符時，在登入畫面中提示使用者選取用戶端憑證</translation>
 <translation id="7590188804371204512">控管是否能安裝外部擴充功能。
 
       啟用這項設定會禁止安裝外部擴充功能。

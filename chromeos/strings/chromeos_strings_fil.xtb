@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
+<translation id="1857850044054738019">Piliin ang opsyong ito kung ire-restock o ire-refurbish ang device para sa
+        pamamahagi sa bagong customer.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
@@ -197,6 +199,7 @@
 <translation id="4244962993387259361">Kailangan mo ng hindi bababa sa bakanteng 500 MB para magpatakbo ng pagsusuri sa Memory. Para magbakante ng espasyo, pumunta sa Mga Setting &gt; Pamamahala sa storage.</translation>
 <translation id="4258281355379922695">Latency ng HTTP</translation>
 <translation id="4271957103967917607">Tingnan nang Full Screen</translation>
+<translation id="4275799948641988986">Pagkatapos maayos, sino na ang gagamit sa device?</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
@@ -412,6 +415,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7297226631177386107">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTPS na website</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Mapupunta ang device sa ibang may-ari</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
@@ -419,6 +423,9 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
+<translation id="7451112128070628323">Piliin ang opsyong ito kung hindi magbabago ang pagmamay-ari ng device.
+        Halimbawa, inililipat ang device sa ibang tao
+        sa loob ng isang organisasyon.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
 <translation id="7490813197707563893">MAC address</translation>
@@ -544,6 +551,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
+<translation id="9095415590198785865">Mapupunta ang device sa parehong may-ari</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">I-refresh ang ticket para sa <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Sina-scan ang pahina <ph name="PAGE_NUMBER" /></translation>

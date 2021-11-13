@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1-8</translation>
 <translation id="3837047332182291558">Handitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
 <translation id="3949671998904569433">koma</translation>
+<translation id="3976707995992061296">Aldatu leiho aktiboa lan-eremu guztiei esleituta egoteko aukera</translation>
 <translation id="3976863468609830880">Egin klik apaleko azken ikonoan</translation>
 <translation id="3994783594793697310">Berrezarri bistaratzearen zoom-maila</translation>
 <translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Bistaratzea handitzea</translation>
 <translation id="634687982629734605">Aldatu fokua hauetako batetik bestera: egoeraren eremua (kontuko irudia agertzen den tokia), Abiarazlea, helbide-barra, laster-marken barra (ikusgai badago), irekita dagoen web-orria eta deskargen barra (ikusgai badago). Fokura daitekeen leiho bat bistaratzen bada, eraman fokuratzea hara.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Aktibatu 1-8 lan-eremuak.</translation>
 <translation id="6395172954772765143">Hautatu lerroaren amaierako testua</translation>
 <translation id="6425378783626925378">Egin klik apaleko 1-8 ikonoetan</translation>
 <translation id="6435207348963613811">Nabarmendu apaleko aurreko elementua</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Bistaratu ezkutatutako fitxategiak Fitxategiak aplikazioan</translation>
 <translation id="8717459106217102612">Hautatu aurreko hitza edo hizkia</translation>
 <translation id="8727232706774971183">Ikusi jakinarazpenak</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-8</translation>
 <translation id="8855885154700222542">Pantaila osoaren tekla</translation>
 <translation id="8881584919399569791">Eraman leiho aktiboa ezkerreko lan-eremura</translation>
 <translation id="88986195241502842">Orrian behera</translation>

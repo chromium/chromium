@@ -158,6 +158,8 @@
 <translation id="357889014807611375">計量付費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度偏弱，建議你移動到較靠近 Wi-Fi 訊號來源的位置。</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
+<translation id="360089215033199597">建議連線至 Wi-Fi，這樣可簡化維修程序。
+        系統將儲存你的網路。</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站時延遲時間過長</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -480,6 +482,7 @@
 <translation id="816013303019725643">輸入解鎖碼：</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8208861521865154048">獎勵</translation>
+<translation id="8217675307824400706">連上網路</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
 <translation id="8286154143153872371">如要查看桌布，請連上網路並重新載入網頁。</translation>
