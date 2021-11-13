@@ -932,7 +932,7 @@ String Range::toString() const {
     }
   }
 
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String Range::GetText() const {

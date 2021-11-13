@@ -1318,7 +1318,7 @@ class ParameterizedViewportFitDocumentTest
       html.Append("'>");
     }
 
-    GetDocument().documentElement()->setInnerHTML(html.ToString());
+    GetDocument().documentElement()->setInnerHTML(html.ReleaseString());
     UpdateAllLifecyclePhasesForTest();
   }
 };

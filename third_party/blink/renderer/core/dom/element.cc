@@ -5116,7 +5116,7 @@ String Element::TextFromChildren() {
   }
 
   DCHECK_EQ(content.length(), total_length);
-  return content.ToString();
+  return content.ReleaseString();
 }
 
 const AtomicString& Element::ShadowPseudoId() const {

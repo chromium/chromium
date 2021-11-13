@@ -135,7 +135,7 @@ TEST_F(DocumentStatisticsCollectorTest, CountScoreSaturation) {
     }
     html.Append("</p>");
   }
-  SetHtmlInnerHTML(html.ToString());
+  SetHtmlInnerHTML(html.ReleaseString());
   WebDistillabilityFeatures features =
       DocumentStatisticsCollector::CollectStatistics(GetDocument());
 

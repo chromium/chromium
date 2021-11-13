@@ -104,7 +104,7 @@ void CharacterData::insertData(unsigned offset,
   new_str.Append(data);
   new_str.Append(StringView(current_data, offset));
 
-  SetDataAndUpdate(new_str.ToString(), offset, 0, data.length(),
+  SetDataAndUpdate(new_str.ReleaseString(), offset, 0, data.length(),
                    kUpdateFromNonParser);
 
   GetDocument().DidInsertText(*this, offset, data.length());
@@ -148,7 +148,7 @@ void CharacterData::deleteData(unsigned offset,
   new_str.ReserveCapacity(current_data.length() - real_count);
   new_str.Append(StringView(current_data, 0, offset));
   new_str.Append(StringView(current_data, offset + real_count));
-  SetDataAndUpdate(new_str.ToString(), offset, real_count, 0,
+  SetDataAndUpdate(new_str.ReleaseString(), offset, real_count, 0,
                    kUpdateFromNonParser);
 
   GetDocument().DidRemoveText(*this, offset, real_count);
@@ -170,7 +170,7 @@ void CharacterData::replaceData(unsigned offset,
   new_str.Append(data);
   new_str.Append(StringView(current_data, offset + real_count));
 
-  SetDataAndUpdate(new_str.ToString(), offset, real_count, data.length(),
+  SetDataAndUpdate(new_str.ReleaseString(), offset, real_count, data.length(),
                    kUpdateFromNonParser);
 
   // update DOM ranges
