@@ -164,6 +164,14 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_FAILED},
       {"runCalibrationComponentSkippedText",
        IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_SKIPPED},
+      // Device provisioning page
+      {"provisioningPageTitleText", IDS_SHIMLESS_RMA_PROVISIONING_TITLE},
+      {"provisioningPageProgressText", IDS_SHIMLESS_RMA_PROVISIONING_PROGRESS},
+      {"provisioningPageCompleteText", IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE},
+      {"provisioningPageFailedBlockingText",
+       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING},
+      {"provisioningPageFailedNonBlockingText",
+       IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       // Manual disable wp page

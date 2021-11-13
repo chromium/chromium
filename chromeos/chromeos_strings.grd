@@ -2218,6 +2218,22 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when finalization failed, but RMA can continue.">
         Failed, non blocking.
       </message>
+      <!-- Device provisioning page -->
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" translateable="false" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
+        Provisioning the device...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_PROGRESS" translateable="false" desc="Message to display current progress of provisioning.">
+        Progress <ph name="PROGRESS_PERCENT">$1<ex>25</ex></ph>%.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE" translateable="false" desc="Message to display when provisioning is complete.">
+        Complete.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING" translateable="false" desc="Message to display when provisioning failed and RMA cannot complete.">
+        Failed, blocking.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when provisioning failed, but RMA can continue.">
+        Failed, non blocking.
+      </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair completed
