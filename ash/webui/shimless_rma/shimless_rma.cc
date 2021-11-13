@@ -117,6 +117,17 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE},
       {"updateVersionRestartLabel",
        IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART},
+      // Choose WP disable method page
+      {"chooseWpDisableMethodPageTitleText",
+       IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE},
+      {"manualWpDisableMethodOptionText",
+       IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_OPTION},
+      {"manualWpDisableMethodDescriptionText",
+       IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION},
+      {"rsuWpDisableMethodOptionText",
+       IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_OPTION},
+      {"rsuWpDisableMethodDescriptionText",
+       IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_DESCRIPTION},
       // RSU code page
       {"rsuCodePageTitleText", IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE},
       {"rsuCodeInstructionsText", IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS},

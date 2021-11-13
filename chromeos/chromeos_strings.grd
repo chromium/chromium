@@ -2155,6 +2155,22 @@ Try tapping the mic to ask me anything.
         Select this option if the device is being restocked or refurbished for
         distribution to a new customer.
       </message>
+      <!-- Choose write protect disable method page -->
+      <message name="IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Select how you would like to disable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_OPTION"  translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Manually disable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Once you disable write-protect, you can immediately enable it again. You will see instructions for disabling write-protect on this Chromebook on the next screen.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_OPTION"  translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Perform RMA Server Unlock (RSU)
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_DESCRIPTION" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        This requires an RSU-enabled Security Key, a QR code scanner, and a second device with internet connectivity.
+      </message>
       <!-- Enter RSU code page -->
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE" desc="Title for the RSU challenge page.">
         Perform RMA Server Unlock
