@@ -1697,7 +1697,8 @@ typedef void(GL_BINDING_CALL* glTexStorageMemFlags2DANGLEProc)(
     GLuint memory,
     GLuint64 offset,
     GLbitfield createFlags,
-    GLbitfield usageFlags);
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext);
 typedef void(GL_BINDING_CALL* glTexSubImage2DProc)(GLenum target,
                                                    GLint level,
                                                    GLint xoffset,
@@ -4077,15 +4078,17 @@ class GL_EXPORT GLApi {
                                       GLsizei height,
                                       GLuint memory,
                                       GLuint64 offset) = 0;
-  virtual void glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                             GLsizei levels,
-                                             GLenum internalFormat,
-                                             GLsizei width,
-                                             GLsizei height,
-                                             GLuint memory,
-                                             GLuint64 offset,
-                                             GLbitfield createFlags,
-                                             GLbitfield usageFlags) = 0;
+  virtual void glTexStorageMemFlags2DANGLEFn(
+      GLenum target,
+      GLsizei levels,
+      GLenum internalFormat,
+      GLsizei width,
+      GLsizei height,
+      GLuint memory,
+      GLuint64 offset,
+      GLbitfield createFlags,
+      GLbitfield usageFlags,
+      const void* imageCreateInfoPNext) = 0;
   virtual void glTexSubImage2DFn(GLenum target,
                                  GLint level,
                                  GLint xoffset,

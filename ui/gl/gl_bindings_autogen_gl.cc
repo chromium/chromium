@@ -5967,18 +5967,20 @@ void GLApiBase::glTexStorageMem2DEXTFn(GLenum target,
                                      height, memory, offset);
 }
 
-void GLApiBase::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                              GLsizei levels,
-                                              GLenum internalFormat,
-                                              GLsizei width,
-                                              GLsizei height,
-                                              GLuint memory,
-                                              GLuint64 offset,
-                                              GLbitfield createFlags,
-                                              GLbitfield usageFlags) {
-  driver_->fn.glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat,
-                                            width, height, memory, offset,
-                                            createFlags, usageFlags);
+void GLApiBase::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
+  driver_->fn.glTexStorageMemFlags2DANGLEFn(
+      target, levels, internalFormat, width, height, memory, offset,
+      createFlags, usageFlags, imageCreateInfoPNext);
 }
 
 void GLApiBase::glTexSubImage2DFn(GLenum target,
@@ -9860,20 +9862,22 @@ void TraceGLApi::glTexStorageMem2DEXTFn(GLenum target,
                                   memory, offset);
 }
 
-void TraceGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                               GLsizei levels,
-                                               GLenum internalFormat,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLuint memory,
-                                               GLuint64 offset,
-                                               GLbitfield createFlags,
-                                               GLbitfield usageFlags) {
+void TraceGLApi::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceGLAPI::glTexStorageMemFlags2DANGLE");
   gl_api_->glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat, width,
                                          height, memory, offset, createFlags,
-                                         usageFlags);
+                                         usageFlags, imageCreateInfoPNext);
 }
 
 void TraceGLApi::glTexSubImage2DFn(GLenum target,
@@ -14903,15 +14907,17 @@ void LogGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
                                              GLuint memory,
                                              GLuint64 offset,
                                              GLbitfield createFlags,
-                                             GLbitfield usageFlags) {
+                                             GLbitfield usageFlags,
+                                             const void* imageCreateInfoPNext) {
   GL_SERVICE_LOG("glTexStorageMemFlags2DANGLE"
                  << "(" << GLEnums::GetStringEnum(target) << ", " << levels
                  << ", " << GLEnums::GetStringEnum(internalFormat) << ", "
                  << width << ", " << height << ", " << memory << ", " << offset
-                 << ", " << createFlags << ", " << usageFlags << ")");
+                 << ", " << createFlags << ", " << usageFlags << ", "
+                 << static_cast<const void*>(imageCreateInfoPNext) << ")");
   gl_api_->glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat, width,
                                          height, memory, offset, createFlags,
-                                         usageFlags);
+                                         usageFlags, imageCreateInfoPNext);
 }
 
 void LogGLApi::glTexSubImage2DFn(GLenum target,
@@ -18420,15 +18426,17 @@ void NoContextGLApi::glTexStorageMem2DEXTFn(GLenum target,
   NoContextHelper("glTexStorageMem2DEXT");
 }
 
-void NoContextGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                                   GLsizei levels,
-                                                   GLenum internalFormat,
-                                                   GLsizei width,
-                                                   GLsizei height,
-                                                   GLuint memory,
-                                                   GLuint64 offset,
-                                                   GLbitfield createFlags,
-                                                   GLbitfield usageFlags) {
+void NoContextGLApi::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   NoContextHelper("glTexStorageMemFlags2DANGLE");
 }
 

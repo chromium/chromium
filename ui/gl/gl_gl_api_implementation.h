@@ -97,7 +97,8 @@ class GL_EXPORT RealGLApi : public GLApiBase {
                                      GLuint memory,
                                      GLuint64 offset,
                                      GLbitfield createFlags,
-                                     GLbitfield usageFlags) override;
+                                     GLbitfield usageFlags,
+                                     const void* imageCreateInfoPNext) override;
 
   void glRenderbufferStorageEXTFn(GLenum target,
                                   GLenum internalformat,

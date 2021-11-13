@@ -4785,20 +4785,21 @@ MockGLInterface::Mock_glTexStorageMem2DEXT(GLenum target,
                                  memory, offset);
 }
 
-void GL_BINDING_CALL
-MockGLInterface::Mock_glTexStorageMemFlags2DANGLE(GLenum target,
-                                                  GLsizei levels,
-                                                  GLenum internalFormat,
-                                                  GLsizei width,
-                                                  GLsizei height,
-                                                  GLuint memory,
-                                                  GLuint64 offset,
-                                                  GLbitfield createFlags,
-                                                  GLbitfield usageFlags) {
+void GL_BINDING_CALL MockGLInterface::Mock_glTexStorageMemFlags2DANGLE(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   MakeGlMockFunctionUnique("glTexStorageMemFlags2DANGLE");
   interface_->TexStorageMemFlags2DANGLE(target, levels, internalFormat, width,
                                         height, memory, offset, createFlags,
-                                        usageFlags);
+                                        usageFlags, imageCreateInfoPNext);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glTexSubImage2D(GLenum target,

@@ -649,12 +649,16 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
     DCHECK(memory_object);
     // If ANGLE_memory_object_flags is supported, use that to communicate the
     // exact create and usage flags the image was created with.
+    //
+    // Currently, no extension structs are appended to VkImageCreateInfo::pNext
+    // when creating the image, so communicate that information to ANGLE.  This
+    // makes sure that ANGLE recreates the VkImage identically to Chromium.
     DCHECK(image_->usage() != 0);
     GLuint internal_format = viz::TextureStorageFormat(format());
     if (UseMinimalUsageFlags(context_state())) {
       api->glTexStorageMemFlags2DANGLEFn(
           GL_TEXTURE_2D, 1, internal_format, size().width(), size().height(),
-          memory_object->id(), 0, image_->flags(), image_->usage());
+          memory_object->id(), 0, image_->flags(), image_->usage(), nullptr);
     } else {
       api->glTexStorageMem2DEXTFn(GL_TEXTURE_2D, 1, internal_format,
                                   size().width(), size().height(),

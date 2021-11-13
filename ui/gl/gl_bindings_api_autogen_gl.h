@@ -1455,7 +1455,8 @@ void glTexStorageMemFlags2DANGLEFn(GLenum target,
                                    GLuint memory,
                                    GLuint64 offset,
                                    GLbitfield createFlags,
-                                   GLbitfield usageFlags) override;
+                                   GLbitfield usageFlags,
+                                   const void* imageCreateInfoPNext) override;
 void glTexSubImage2DFn(GLenum target,
                        GLint level,
                        GLint xoffset,

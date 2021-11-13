@@ -2115,7 +2115,8 @@ Mock_glTexStorageMemFlags2DANGLE(GLenum target,
                                  GLuint memory,
                                  GLuint64 offset,
                                  GLbitfield createFlags,
-                                 GLbitfield usageFlags);
+                                 GLbitfield usageFlags,
+                                 const void* imageCreateInfoPNext);
 static void GL_BINDING_CALL Mock_glTexSubImage2D(GLenum target,
                                                  GLint level,
                                                  GLint xoffset,
