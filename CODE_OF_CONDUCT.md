@@ -1,6 +1,6 @@
-# Chromium Code of Conduct
+# Blitz Code of Conduct
 
-Google and the Chromium team are committed to preserving and fostering a
+Blitz and the Blitz team are committed to preserving and fostering a
 diverse, welcoming community. Below is our community code of conduct, which
 applies to our repos and organizations, issue trackers, mailing lists,
 blog content, and any other Chromium-supported communication group, as
@@ -11,7 +11,7 @@ the Chromium project, regardless of affiliation or position.
 Simply put, community discussions should be
 
  * respectful and kind;
- * about Chromium;
+ * about Blitz;
  * about features and code, not the individuals involved.
 
 ## Be respectful and constructive.
