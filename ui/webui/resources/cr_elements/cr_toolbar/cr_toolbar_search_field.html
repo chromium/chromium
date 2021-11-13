@@ -134,7 +134,7 @@
         :host-context([enable-branding-update]) input {
           caret-color: var(--google-blue-refresh-700);
           color: var(--cr-toolbar-search-field-input-text-color,
-              var(--google-grey-refresh-700));
+              var(--google-grey-900));
         }
       }
 
@@ -186,6 +186,12 @@
 
       :host(:not([narrow])) #prompt {
         opacity: var(--cr-toolbar-search-field-prompt-opacity, .7);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host(:not([narrow])) #prompt {
+          opacity: 1;
+        }
       }
 
       :host([narrow]) #prompt {
