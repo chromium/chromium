@@ -73,14 +73,43 @@ size_t GetMaxSearchResultListItems() {
   return SharedAppListConfig::instance().max_search_result_list_items();
 }
 
+// Maps |sh::AppListSearchResultCategory.to SearchResultListType.
+SearchResultListView::SearchResultListType CategoryToListType(
+    ash::AppListSearchResultCategory category) {
+  switch (category) {
+    case ash::AppListSearchResultCategory::kApps:
+      return SearchResultListView::SearchResultListType::kApps;
+    case ash::AppListSearchResultCategory::kAppShortcuts:
+      return SearchResultListView::SearchResultListType::kAppShortcuts;
+    case ash::AppListSearchResultCategory::kWeb:
+      return SearchResultListView::SearchResultListType::kWeb;
+    case ash::AppListSearchResultCategory::kFiles:
+      return SearchResultListView::SearchResultListType::kFiles;
+    case ash::AppListSearchResultCategory::kSettings:
+      return SearchResultListView::SearchResultListType::kSettings;
+    case ash::AppListSearchResultCategory::kHelp:
+      return SearchResultListView::SearchResultListType::kHelp;
+    case ash::AppListSearchResultCategory::kPlayStore:
+      return SearchResultListView::SearchResultListType::kPlayStore;
+    case ash::AppListSearchResultCategory::kSearchAndAssistant:
+      return SearchResultListView::SearchResultListType::kSearchAndAssistant;
+    case ash::AppListSearchResultCategory::kUnknown:
+      NOTREACHED();
+      return SearchResultListView::SearchResultListType::kUnified;
+  }
+}
+
 }  // namespace
 
-SearchResultListView::SearchResultListView(AppListMainView* main_view,
-                                           AppListViewDelegate* view_delegate)
+SearchResultListView::SearchResultListView(
+    AppListMainView* main_view,
+    AppListViewDelegate* view_delegate,
+    absl::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
       main_view_(main_view),
       view_delegate_(view_delegate),
-      results_container_(new views::View) {
+      results_container_(new views::View),
+      productivity_launcher_index_(productivity_launcher_index) {
   auto* layout = results_container_->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -117,7 +146,7 @@ SearchResultListView::~SearchResultListView() = default;
 
 void SearchResultListView::SetListType(SearchResultListType list_type) {
   list_type_ = list_type;
-  switch (list_type_) {
+  switch (list_type_.value()) {
     case SearchResultListType::kUnified:
       // Classic SearchResultListView does not have category labels.
       break;
@@ -159,7 +188,7 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
       break;
   }
 
-  switch (list_type_) {
+  switch (list_type_.value()) {
     case SearchResultListType::kUnified:
       // Classic SearchResultListView does not have category labels.
       title_label_->SetVisible(false);
@@ -207,7 +236,21 @@ SearchResultListView::GetAllListTypesForCategoricalSearch() {
 }
 
 int SearchResultListView::DoUpdate() {
-  if (!GetWidget() || !GetWidget()->IsVisible()) {
+  if (productivity_launcher_index_.has_value()) {
+    std::vector<ash::AppListSearchResultCategory>* ordered_categories =
+        AppListModelProvider::Get()->search_model()->ordered_categories();
+    if (productivity_launcher_index_ < ordered_categories->size()) {
+      enabled_ = true;
+      list_type_ = CategoryToListType(
+          (*ordered_categories)[productivity_launcher_index_.value()]);
+    } else {
+      enabled_ = false;
+      list_type_.reset();
+    }
+  }
+
+  SetVisible(enabled_);
+  if (!enabled_ || !GetWidget() || !GetWidget()->IsVisible()) {
     for (auto* result_view : search_result_views_) {
       result_view->SetResult(nullptr);
       result_view->SetVisible(false);
@@ -362,7 +405,7 @@ std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
       SharedAppListConfig::instance().max_assistant_search_result_list_items());
 }
 
-std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
+std::vector<SearchResult*> SearchResultListView::GetUnifiedSearchResults() {
   std::vector<SearchResult*> search_results =
       SearchModel::FilterSearchResultsByFunction(
           results(), base::BindRepeating([](const SearchResult& result) {
@@ -381,7 +424,8 @@ std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
 }
 
 SearchResult::Category SearchResultListView::GetSearchCategory() {
-  switch (list_type_) {
+  DCHECK(list_type_.has_value());
+  switch (list_type_.value()) {
     case SearchResultListType::kUnified:
     case SearchResultListType::kBestMatch:
       // Categories are undefined for |kUnified| and |KBestMatch| list types.
@@ -407,10 +451,11 @@ SearchResult::Category SearchResultListView::GetSearchCategory() {
 }
 
 std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
-  switch (list_type_) {
+  DCHECK(enabled_ && list_type_.has_value());
+  switch (list_type_.value()) {
     case SearchResultListType::kUnified:
       // Use classic search results for the kUnified list view.
-      return GetSearchResults();
+      return GetUnifiedSearchResults();
     case SearchResultListType::kBestMatch:
       // Filter results based on whether they have the best_match label.
       return SearchModel::FilterSearchResultsByFunction(

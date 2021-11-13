@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_TEST_APP_LIST_TEST_HELPER_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/model/app_list_test_model.h"
@@ -123,6 +124,7 @@ class AppListTestHelper {
   AppListBubbleAssistantPage* GetBubbleAssistantPage();
   SearchModel::SearchResults* GetSearchResults();
   views::View* GetBubbleLauncherAppsSeparatorView();
+  std::vector<ash::AppListSearchResultCategory>* GetOrderedResultCategories();
 
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 

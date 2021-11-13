@@ -99,9 +99,8 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // accessibility framework.
   bool ignore_result_changes_for_a11y_ = false;
 
-  // Containers for search result views. Has a single element, but is a vector
-  // for compatibility with SearchBoxView. The contained view is owned by the
-  // views hierarchy.
+  // Containers for search result views. The contained views are owned by the
+  // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
 
   // Handles search result selection.

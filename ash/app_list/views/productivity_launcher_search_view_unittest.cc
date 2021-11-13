@@ -42,20 +42,30 @@ class ProductivityLauncherSearchViewTest : public AshTestBase {
 
   void SetUpSearchResults(SearchModel::SearchResults* results,
                           int init_id,
-                          int new_result_count) {
+                          int new_result_count,
+                          int display_score,
+                          bool best_match,
+                          SearchResult::Category category) {
     for (int i = 0; i < new_result_count; ++i) {
       std::unique_ptr<TestSearchResult> result =
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_title(
           base::UTF8ToUTF16(base::StringPrintf("Result %d", init_id + i)));
-      result->set_display_score(100);
+      result->set_display_score(display_score);
       result->set_details(u"Detail");
-      result->set_best_match(true);
+      result->set_best_match(best_match);
+      result->set_category(category);
       results->Add(std::move(result));
     }
     // Adding results will schedule Update().
     base::RunLoop().RunUntilIdle();
+  }
+
+  SearchResultListView::SearchResultListType GetListType(
+      SearchResultContainerView* result_container_view) {
+    return static_cast<SearchResultListView*>(result_container_view)
+        ->list_type_for_test();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -76,6 +86,75 @@ TEST_F(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
   EXPECT_TRUE(result_containers[0]->GetVisible());
 }
 
+// Verifies that search result categories are sorted properly.
+TEST_F(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+
+  std::vector<SearchResultContainerView*> result_containers =
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_container_views_for_test();
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
+
+  // Create categorized results and order categories as {kApps, kWeb}.
+  std::vector<ash::AppListSearchResultCategory>* ordered_categories =
+      test_helper->GetOrderedResultCategories();
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  ordered_categories->push_back(ash::AppListSearchResultCategory::kApps);
+  ordered_categories->push_back(ash::AppListSearchResultCategory::kWeb);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+                     SearchResult::Category::kApps);
+  SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
+                     false, SearchResult::Category::kWeb);
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
+
+  // Verify result container visibility.
+  EXPECT_FALSE(result_containers[0]->GetVisible());
+  EXPECT_TRUE(result_containers[1]->GetVisible());
+  EXPECT_TRUE(result_containers[2]->GetVisible());
+  EXPECT_FALSE(result_containers[3]->GetVisible());
+
+  // Verify result container ordering.
+  auto list_views = test_helper->GetProductivityLauncherSearchView()
+                        ->result_container_views_for_test();
+  EXPECT_EQ(GetListType(list_views[1]),
+            SearchResultListView::SearchResultListType::kApps);
+  EXPECT_EQ(GetListType(list_views[2]),
+            SearchResultListView::SearchResultListType::kWeb);
+
+  // Create categorized results and order categories as {kWeb, kApps}.
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  ordered_categories->push_back(ash::AppListSearchResultCategory::kWeb);
+  ordered_categories->push_back(ash::AppListSearchResultCategory::kApps);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 1, false,
+                     SearchResult::Category::kApps);
+  SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 100,
+                     false, SearchResult::Category::kWeb);
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
+
+  // Verify result container visibility.
+  EXPECT_FALSE(result_containers[0]->GetVisible());
+  EXPECT_TRUE(result_containers[1]->GetVisible());
+  EXPECT_TRUE(result_containers[2]->GetVisible());
+  EXPECT_FALSE(result_containers[3]->GetVisible());
+
+  // Verify result container ordering.
+  list_views = test_helper->GetProductivityLauncherSearchView()
+                   ->result_container_views_for_test();
+
+  EXPECT_EQ(GetListType(list_views[1]),
+            SearchResultListView::SearchResultListType::kWeb);
+  EXPECT_EQ(GetListType(list_views[2]),
+            SearchResultListView::SearchResultListType::kApps);
+}
+
 TEST_F(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
@@ -86,7 +165,8 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   // Create |kDefaultSearchItems| new search results for us to cycle through.
-  SetUpSearchResults(results, 1, kDefaultSearchItems);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, true,
+                     SearchResult::Category::kApps);
   test_helper->GetProductivityLauncherSearchView()
       ->OnSearchResultContainerResultsChanged();
 
@@ -147,14 +227,15 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchPageA11y) {
   EXPECT_EQ("Displaying 0 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
   // Create a single search result and and verify A11yNodeData.
-  SetUpSearchResults(results, 1, 1);
+  SetUpSearchResults(results, 1, 1, 100, true, SearchResult::Category::kApps);
   search_view->OnSearchResultContainerResultsChanged();
   search_view->GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 1 result for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // Create new search results and and and verify A11yNodeData.
-  SetUpSearchResults(results, 2, kDefaultSearchItems - 1);
+  SetUpSearchResults(results, 2, kDefaultSearchItems - 1, 100, true,
+                     SearchResult::Category::kApps);
   search_view->OnSearchResultContainerResultsChanged();
   ui::AXNodeData data2;
   search_view->GetAccessibleNodeData(&data);
@@ -171,7 +252,8 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
 
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
   // Create |kDefaultSearchItems| new search results for us to cycle through.
-  SetUpSearchResults(results, 1, kDefaultSearchItems);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, true,
+                     SearchResult::Category::kApps);
   test_helper->GetProductivityLauncherSearchView()
       ->OnSearchResultContainerResultsChanged();
 
@@ -196,7 +278,8 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
 
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
-  SetUpSearchResults(search_model_override->results(), 2, 1);
+  SetUpSearchResults(search_model_override->results(), 2, 1, 100, true,
+                     SearchResult::Category::kApps);
   test_helper->GetProductivityLauncherSearchView()
       ->OnSearchResultContainerResultsChanged();
 

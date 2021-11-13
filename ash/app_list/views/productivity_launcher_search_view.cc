@@ -74,16 +74,32 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
-  for (SearchResultListView::SearchResultListType list_type :
-       SearchResultListView::GetAllListTypesForCategoricalSearch()) {
+  auto add_result_container = [&](SearchResultListView* new_container) {
+    new_container->SetResults(
+        AppListModelProvider::Get()->search_model()->results());
+    new_container->set_delegate(this);
+    result_container_views_.push_back(new_container);
+  };
+
+  // kBestMatch is always the first list view shown.
+  auto* best_match_container =
+      scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
+          /*main_view=*/nullptr, view_delegate, absl::nullopt));
+  best_match_container->SetListType(
+      SearchResultListView::SearchResultListType::kBestMatch);
+  add_result_container(best_match_container);
+
+  // SearchResultListViews are aware of their relative position in the
+  // Productivity launcher search view. SearchResultListViews with mutable
+  // positions are passed their productivity_launcher_search_view_position to
+  // update their own category type. kBestMatch has already been constructed.
+  const size_t category_count =
+      SearchResultListView::GetAllListTypesForCategoricalSearch().size() - 1;
+  for (size_t i = 0; i < category_count; ++i) {
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-            /*main_view=*/nullptr, view_delegate));
-    result_container->SetListType(list_type);
-    result_container->SetResults(
-        AppListModelProvider::Get()->search_model()->results());
-    result_container->set_delegate(this);
-    result_container_views_.push_back(result_container);
+            /*main_view=*/nullptr, view_delegate, i));
+    add_result_container(result_container);
   }
 
   scroll_view_->SetContents(std::move(scroll_contents));

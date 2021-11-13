@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -66,7 +67,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   };
 
   SearchResultListView(AppListMainView* main_view,
-                       AppListViewDelegate* view_delegate);
+                       AppListViewDelegate* view_delegate,
+                       absl::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
   SearchResultListView& operator=(const SearchResultListView&) = delete;
@@ -99,6 +101,10 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   static std::vector<SearchResultListType>
   GetAllListTypesForCategoricalSearch();
 
+  // This should not be called on a disabled list view as list_type_ will be
+  // reset.
+  SearchResultListType list_type_for_test() { return list_type_.value(); }
+
  protected:
   // Overridden from views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -122,7 +128,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   std::vector<SearchResult*> GetAssistantResults();
 
   // Returns regular search results with Assistant search results appended.
-  std::vector<SearchResult*> GetSearchResults();
+  std::vector<SearchResult*> GetUnifiedSearchResults();
 
   // Fetches the category of results this view should show.
   SearchResult::Category GetSearchCategory();
@@ -138,10 +144,23 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   std::vector<SearchResultView*> search_result_views_;  // Not owned.
 
   // The SearchResultListViewType dictates what kinds of results will be shown.
-  SearchResultListType list_type_ = SearchResultListType::kUnified;
+  absl::optional<SearchResultListType> list_type_ =
+      SearchResultListType::kUnified;
   views::Label* title_label_ = nullptr;  // Owned by view hierarchy.
   // Used for logging impressions shown to users.
   base::OneShotTimer impression_timer_;
+
+  // The search result list view's location in the
+  // productivity_launcher_search_view_'s list of 'search_result_list_view_'.
+  // Not set if productivity_launcher is disabled or if the position of the
+  // category is const as for kBestMatch.
+  const absl::optional<size_t> productivity_launcher_index_;
+
+  // A search result list view may be disabled if there are fewer search result
+  // categories than there are search result list views in the
+  // 'productivity_launcher_search_view_'. A disabled view does not query the
+  // search model.
+  bool enabled_ = true;
 };
 
 }  // namespace ash

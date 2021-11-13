@@ -57,15 +57,13 @@ class APP_LIST_MODEL_EXPORT SearchModel {
 
   SearchBoxModel* search_box() { return search_box_.get(); }
   SearchResults* results() { return results_.get(); }
+  std::vector<ash::AppListSearchResultCategory>* ordered_categories() {
+    return &ordered_categories_;
+  }
 
   void PublishResults(
       std::vector<std::unique_ptr<SearchResult>> new_results,
       const std::vector<ash::AppListSearchResultCategory>& categories);
-
-  // Fetches search result categories ordered by relevance to the active query.
-  std::vector<ash::AppListSearchResultCategory> ordered_categories() {
-    return ordered_categories_;
-  }
 
   SearchResult* FindSearchResult(const std::string& id);
 

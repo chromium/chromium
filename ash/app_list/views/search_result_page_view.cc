@@ -246,9 +246,10 @@ void SearchResultPageView::InitializeContainers(
             search_box_view->search_box(), view_delegate));
     result_lists_separator_ = contents_view_->AddChildView(
         std::make_unique<HorizontalSeparator>(bounds().width()));
+    // productivity_launcher_index is not set as the feature is not enabled.
     search_result_list_view_ =
         AddSearchResultContainerView(std::make_unique<SearchResultListView>(
-            app_list_main_view, view_delegate));
+            app_list_main_view, view_delegate, absl::nullopt));
     search_result_list_view_->SetListType(
         SearchResultListView::SearchResultListType::kUnified);
 

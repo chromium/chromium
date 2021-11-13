@@ -231,6 +231,11 @@ SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
   return AppListModelProvider::Get()->search_model()->results();
 }
 
+std::vector<ash::AppListSearchResultCategory>*
+AppListTestHelper::GetOrderedResultCategories() {
+  return AppListModelProvider::Get()->search_model()->ordered_categories();
+}
+
 ProductivityLauncherSearchView*
 AppListTestHelper::GetProductivityLauncherSearchView() {
   return app_list_controller_->bubble_presenter_for_test()
