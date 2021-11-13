@@ -69,6 +69,12 @@ export class FakeShimlessRmaService {
     this.automaticallyTriggerFinalizationObservation_ = false;
 
     /**
+     * Control automatically triggering power cable state observations.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerPowerCableStateObservation_ = false;
+
+    /**
      * The fake result of calling UpdatesOs, used to determine if fake
      * observations should be triggered.
      * @private {boolean}
@@ -879,6 +885,17 @@ export class FakeShimlessRmaService {
         'PowerCableStateObserver_onPowerCableStateChanged', (pluggedIn) => {
           remote.onPowerCableStateChanged(/** @type {boolean} */ (pluggedIn));
         });
+    if (this.automaticallyTriggerPowerCableStateObservation_) {
+      this.triggerPowerCableObserver(true, 1000);
+      this.triggerPowerCableObserver(false, 5000);
+    }
+  }
+
+  /**
+   * Trigger a disable power cable state observations when an observer is added.
+   */
+  automaticallyTriggerPowerCableStateObservation() {
+    this.automaticallyTriggerPowerCableStateObservation_ = true;
   }
 
   /**

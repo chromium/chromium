@@ -200,6 +200,20 @@ export const PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
 
 /**
+ * Type alias for PowerCableStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverReceiver}
+ */
+export const PowerCableStateObserverReceiver =
+    ash.shimlessRma.mojom.PowerCableStateObserverReceiver;
+
+/**
+ * Type alias for PowerCableStateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverInterface}
+ */
+export const PowerCableStateObserverInterface =
+    ash.shimlessRma.mojom.PowerCableStateObserverInterface;
+
+/**
  * Type alias for HardwareVerificationStatusObserverRemote.
  * @typedef {ash.shimlessRma.mojom.HardwareVerificationStatusObserverRemote}
  */

@@ -11,7 +11,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -43,6 +43,15 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
       log_: {
         type: String,
         value: '',
+      },
+
+      /**
+       * @protected
+       * Assume plugged in is true until first observation.
+       */
+      pluggedIn_: {
+        type: Boolean,
+        value: true,
       }
     };
   }
@@ -51,6 +60,13 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+
+    /** @private {!PowerCableStateObserverReceiver} */
+    this.powerCableStateReceiver_ = new PowerCableStateObserverReceiver(
+        /** @type {!PowerCableStateObserverInterface} */ (this));
+
+    this.shimlessRmaService_.observePowerCableState(
+        this.powerCableStateReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /** @protected */
@@ -85,6 +101,14 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     Array.from(dialogs).map((dialog) => {
       dialog.close();
     });
+  }
+
+  /**
+   * Implements PowerCableStateObserver.onPowerCableStateChanged()
+   * @param {boolean} pluggedIn
+   */
+  onPowerCableStateChanged(pluggedIn) {
+    this.pluggedIn_ = pluggedIn;
   }
 }
 

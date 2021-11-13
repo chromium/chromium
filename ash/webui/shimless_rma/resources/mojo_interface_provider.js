@@ -80,6 +80,7 @@ function setupFakeShimlessRmaService_() {
   service.automaticallyTriggerProvisioningObservation();
   service.automaticallyTriggerFinalizationObservation();
 
+  service.automaticallyTriggerPowerCableStateObservation();
   service.setGetLogResult(fakeLog);
 
   // Set the fake service.

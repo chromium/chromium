@@ -80,8 +80,9 @@
         </div>
       </div>
     </cr-button>
+    <!-- TODO(gavindodd): Add UI cues that button is disabled. -->
     <cr-button id="batteryCutButton" class="button-card"
-      on-click="onBatteryCutButtonClick_">
+      on-click="onBatteryCutButtonClick_" disabled$="[[pluggedIn_]]">
       <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
           hidden="[[!checked]]">
       </iron-icon>
@@ -91,6 +92,9 @@
         </div>
         <div class="button-description">
           Perform battery cutoff for devices being shipped or stored
+        </div>
+        <div class="button-description" hidden="[[!pluggedIn_]]">
+          Unplug the power cable to enable this option.
         </div>
       </div>
     </cr-button>

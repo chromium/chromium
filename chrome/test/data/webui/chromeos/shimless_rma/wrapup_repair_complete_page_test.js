@@ -81,8 +81,39 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(logsDialog.open);
   });
 
+  test('BatteryCutDialogDisabledByDefault', async () => {
+    await initializeRepairCompletePage();
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertTrue(!!button);
+    assertTrue(button.disabled);
+  });
+
+  test('PowerCableStateTrueDisablesBatteryCutDialog', async () => {
+    await initializeRepairCompletePage();
+    shimlessRmaService.triggerPowerCableObserver(true, 0);
+    await flushTasks();
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertTrue(!!button);
+    assertTrue(button.disabled);
+  });
+
+  test('PowerCableStateFalseEnablesBatteryCutDialog', async () => {
+    await initializeRepairCompletePage();
+    shimlessRmaService.triggerPowerCableObserver(false, 0);
+    await flushTasks();
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertTrue(!!button);
+    assertFalse(button.disabled);
+  });
+
   test('OpensBatteryCutDialog', async () => {
     await initializeRepairCompletePage();
+    // Trigger observation to enable button.
+    shimlessRmaService.triggerPowerCableObserver(false, 0);
+    await flushTasks();
     await clickButton('#batteryCutButton');
 
     const batteryDialog =
