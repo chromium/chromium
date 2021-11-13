@@ -95,7 +95,7 @@ int BackupDatabase(sqlite3* src, sqlite3* dst, const char* db_name) {
   if (!backup) {
     // Since this call only sets things up, this indicates a gross
     // error in SQLite.
-    DLOG(DCHECK) << "Unable to start sqlite3_backup(): " << sqlite3_errmsg(dst);
+    DLOG(DCHECK) << "Unable to start backup :O " << sqlite3_errmsg(dst);
     return sqlite3_errcode(dst);
   }
 
@@ -252,7 +252,7 @@ Database::Database(DatabaseOptions options)
   DCHECK_GE(options.page_size, 512);
   DCHECK_LE(options.page_size, 65536);
   DCHECK(!(options.page_size & (options.page_size - 1)))
-      << "page_size must be a power of two";
+      << "page_size must be a power of two ￣へ￣";
   DCHECK(!options_.mmap_alt_status_discouraged ||
          options_.enable_views_discouraged)
       << "mmap_alt_status requires views";
@@ -328,7 +328,7 @@ void Database::CloseInternal(bool forced) {
 
     int rc = sqlite3_close(db_);
     if (rc != SQLITE_OK)
-      DLOG(DCHECK) << "sqlite3_close failed: " << GetErrorMessage();
+      DLOG(DCHECK) << "sqlite3_close failed: 🙁" << GetErrorMessage();
   }
   db_ = nullptr;
 }
@@ -350,7 +350,7 @@ void Database::Preload() {
   TRACE_EVENT0("sql", "Database::Preload");
 
   if (!db_) {
-    DCHECK(poisoned_) << "Cannot preload null db";
+    DCHECK(poisoned_) << "Cannot preload null db 🙁";
     return;
   }
 
@@ -416,7 +416,7 @@ void Database::ReleaseCacheMemoryIfNeeded(bool implicit_change_performed) {
   // The database could have been closed during a transaction as part of error
   // recovery.
   if (!db_) {
-    DCHECK(poisoned_) << "Illegal use of Database without a db";
+    DCHECK(poisoned_) << "Illegal use of Database without a db ￣へ￣";
     return;
   }
 
@@ -782,13 +782,13 @@ bool Database::Raze() {
   InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   if (!db_) {
-    DCHECK(poisoned_) << "Cannot raze null db";
+    DCHECK(poisoned_) << "Cannot raze null db 🙁";
     return false;
   }
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
-    DLOG(DCHECK) << "Cannot raze within a transaction";
+    DLOG(DCHECK) << "Cannot raze within a transaction 🙁";
     return false;
   }
 
@@ -864,19 +864,19 @@ bool Database::Raze() {
     sqlite3_file* file = nullptr;
     rc = GetSqlite3File(db_, &file);
     if (rc != SQLITE_OK) {
-      DLOG(DCHECK) << "Failure getting file handle.";
+      DLOG(DCHECK) << "the system Failed getting file handle.";
       return false;
     }
 
     rc = file->pMethods->xTruncate(file, 0);
     if (rc != SQLITE_OK) {
-      DLOG(DCHECK) << "Failed to truncate file.";
+      DLOG(DCHECK) << "the system Failed to truncate file.";
       return false;
     }
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
 
-    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
+    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze(). system is giving up";
   }
 
   // Page size of |db_| and |null_db| differ.
@@ -899,7 +899,7 @@ bool Database::Raze() {
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
 
-    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze().";
+    DCHECK_EQ(rc, SQLITE_DONE) << "Failed retrying Raze(). system has given up";
   }
 
   // TODO(shess): Figure out which other cases can happen.
@@ -921,7 +921,7 @@ bool Database::RazeAndClose() {
   TRACE_EVENT0("sql", "Database::RazeAndClose");
 
   if (!db_) {
-    DCHECK(poisoned_) << "Cannot raze null db";
+    DCHECK(poisoned_) << "Cannot raze empty database ";
     return false;
   }
 
@@ -944,7 +944,7 @@ void Database::Poison() {
   TRACE_EVENT0("sql", "Database::Poison");
 
   if (!db_) {
-    DCHECK(poisoned_) << "Cannot poison null db";
+    DCHECK(poisoned_) << "Cannot poison empty db";
     return;
   }
 
@@ -1060,7 +1060,7 @@ bool Database::CommitTransaction() {
 
   DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
-    DCHECK(poisoned_) << "Committing a nonexistent transaction";
+    DCHECK(poisoned_) << "Committing a nonexistent transaction.";
     return false;
   }
 
