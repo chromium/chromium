@@ -13281,12 +13281,61 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.AllocatedObjects"
       label="Only counting objects allocated using the malloc allocator. The
              measurement is only accurate on Linux and MacOS."/>
+  <suffix name="Malloc.Fragmentation"
+      label="Fragmentation of Partition allocator."/>
+  <suffix name="Malloc.Fragmentation.After1H"
+      label="Fragmentation of Partition allocator for processes that have
+             existed for &gt;=1H."/>
+  <suffix name="Malloc.Fragmentation.After24H"
+      label="Fragmentation of Partition allocator for processes older than 1
+             day."/>
+  <suffix name="Malloc.Wasted"
+      label="Amount of memory that is wasted due to fragmentation in
+             PartitionAlloc, in bytes."/>
+  <suffix name="Malloc.Wasted.After1H"
+      label="Amount of memory that is wasted due to fragmentation in
+             PartitionAlloc, in bytes, for renderers older than 1 hour."/>
+  <suffix name="Malloc.Wasted.After24H"
+      label="Amount of memory that is wasted due to fragmentation in
+             PartitionAlloc, in bytes, for renderers older than 1 day."/>
   <suffix name="ManualFillingCache"
       label="Only counting memory used by the password manager fallbacks."/>
   <suffix name="PartitionAlloc"
       label="Only counting memory used by Partition allocator."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
       label="Only counting objects allocated using Partition allocator."/>
+  <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer"
+      label="Fragmentation of ArrayBuffer partition."/>
+  <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer.After1H"
+      label="Fragmentation of ArrayBuffer partition. Only recorded for
+             renderers older than 1 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.ArrayBuffer.After24H"
+      label="Fragmentation of ArrayBuffer partition. Only recorded for
+             renderers older than 24 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.Buffer"
+      label="Fragmentation of Buffer partition."/>
+  <suffix name="PartitionAlloc.Fragmentation.Buffer.After1H"
+      label="Fragmentation of Buffer partition. Only recorded for renderers
+             older than 1 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.Buffer.After24H"
+      label="Fragmentation of Buffer partition. Only recorded for renderers
+             older than 24 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.FastMalloc"
+      label="Fragmentation of FastMalloc partition."/>
+  <suffix name="PartitionAlloc.Fragmentation.FastMalloc.After1H"
+      label="Fragmentation of FastMalloc partition. Only recorded for
+             renderers older than 1 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.FastMalloc.After24H"
+      label="Fragmentation of FastMalloc partition. Only recorded for
+             renderers older than 24 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.Layout"
+      label="Fragmentation of Layout partition."/>
+  <suffix name="PartitionAlloc.Fragmentation.Layout.After1H"
+      label="Fragmentation of Layout partition. Only recorded for renderers
+             older than 1 hour."/>
+  <suffix name="PartitionAlloc.Fragmentation.Layout.After24H"
+      label="Fragmentation of Layout partition. Only recorded for renderers
+             older than 24 hour."/>
   <suffix name="PartitionAlloc.MaxAllocatedSize.ArrayBuffer"
       label="Highwatermark for allocated memory for the ArrayBuffer
              partition."/>
@@ -13313,6 +13362,50 @@ chromium-metrics-reviews@google.com.
       label="Only counting memory used by Fast Malloc partition."/>
   <suffix name="PartitionAlloc.Partitions.Layout"
       label="Only counting memory used by Layout partition."/>
+  <suffix name="PartitionAlloc.Wasted.ArrayBuffer"
+      label="Amount of memory that is wasted in the ArrayBuffer partition due
+             to fragmentation, in bytes."/>
+  <suffix name="PartitionAlloc.Wasted.ArrayBuffer.After1H"
+      label="Amount of memory that is wasted in the ArrayBuffer partition due
+             to fragmentation, in bytes. Only recorded for renderers older
+             than 1 hour."/>
+  <suffix name="PartitionAlloc.Wasted.ArrayBuffer.After24H"
+      label="Amount of memory that is wasted in the ArrayBuffer partition due
+             to fragmentation, in bytes. Only recorded for renderers older
+             than 24 hour."/>
+  <suffix name="PartitionAlloc.Wasted.Buffer"
+      label="Amount of memory that is wasted in the Buffer partition due to
+             fragmentation, in bytes."/>
+  <suffix name="PartitionAlloc.Wasted.Buffer.After1H"
+      label="Amount of memory that is wasted in the Buffer partition due to
+             fragmentation, in bytes. Only recorded for renderers older than
+             1 hour."/>
+  <suffix name="PartitionAlloc.Wasted.Buffer.After24H"
+      label="Amount of memory that is wasted in the Buffer partition due to
+             fragmentation, in bytes. Only recorded for renderers older than
+             24 hour."/>
+  <suffix name="PartitionAlloc.Wasted.FastMalloc"
+      label="Amount of memory that is wasted in the FastMalloc partition due
+             to fragmentation, in bytes."/>
+  <suffix name="PartitionAlloc.Wasted.FastMalloc.After1H"
+      label="Amount of memory that is wasted in the FastMalloc partition due
+             to fragmentation, in bytes. Only recorded for renderers older
+             than 1 hour."/>
+  <suffix name="PartitionAlloc.Wasted.FastMalloc.After24H"
+      label="Amount of memory that is wasted in the FastMalloc partition due
+             to fragmentation, in bytes. Only recorded for renderers older
+             than 24 hour."/>
+  <suffix name="PartitionAlloc.Wasted.Layout"
+      label="Amount of memory that is wasted in the Layout partition due to
+             fragmentation, in bytes."/>
+  <suffix name="PartitionAlloc.Wasted.Layout.After1H"
+      label="Amount of memory that is wasted in the Layout partition due to
+             fragmentation, in bytes. Only recorded for renderers older than
+             1 hour."/>
+  <suffix name="PartitionAlloc.Wasted.Layout.After24H"
+      label="Amount of memory that is wasted in the Layout partition due to
+             fragmentation, in bytes. Only recorded for renderers older than
+             24 hour."/>
   <suffix name="PrivateMemoryFootprint"
       label="Only counting private resident + swapped/compressed memory.">
     <obsolete>

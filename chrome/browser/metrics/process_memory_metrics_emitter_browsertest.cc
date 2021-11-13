@@ -196,6 +196,13 @@ void CheckExperimentalMemoryMetricsForProcessType(
                         "2.Small.Malloc.ThreadCache",
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Malloc.Fragmentation",
+                    histogram_tester, count, ValueRestriction::NONE,
+                    number_of_processes);
+  CheckMemoryMetric(
+      std::string("Memory.Experimental.") + process_type + "2.Malloc.Wasted",
+      histogram_tester, count, ValueRestriction::NONE, number_of_processes);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 

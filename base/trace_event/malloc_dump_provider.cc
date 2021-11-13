@@ -298,6 +298,14 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
+
+  auto total_committed_bytes = memory_stats->total_committed_bytes;
+  auto total_active_bytes = memory_stats->total_active_bytes;
+  size_t wasted = total_committed_bytes - total_active_bytes;
+  DCHECK_GE(total_committed_bytes, total_active_bytes);
+  size_t fragmentation =
+      total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
+
   allocator_dump->AddScalar("size", "bytes",
                             memory_stats->total_resident_bytes);
   allocator_dump->AddScalar("allocated_objects_size", "bytes",
@@ -322,11 +330,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   allocator_dump->AddScalar("brp_quarantined_count", "count",
                             memory_stats->total_brp_quarantined_count);
 #endif
-
   allocator_dump->AddScalar("syscall_count", "count",
                             memory_stats->syscall_count);
   allocator_dump->AddScalar("syscall_total_time_ms", "ms",
                             memory_stats->syscall_total_time_ns / 1e6);
+  allocator_dump->AddScalar("fragmentation", "percent", fragmentation);
+  allocator_dump->AddScalar("wasted", "bytes", wasted);
 
   if (memory_stats->has_thread_cache) {
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;
