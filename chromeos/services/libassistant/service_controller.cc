@@ -15,7 +15,7 @@
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/util.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/public/assistant_manager.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
@@ -265,16 +265,6 @@ bool ServiceController::IsRunning() const {
 
 AssistantClient* ServiceController::assistant_client() {
   return assistant_client_.get();
-}
-
-assistant_client::AssistantManager* ServiceController::assistant_manager() {
-  return assistant_client_ ? assistant_client_->assistant_manager() : nullptr;
-}
-
-assistant_client::AssistantManagerInternal*
-ServiceController::assistant_manager_internal() {
-  return assistant_client_ ? assistant_client_->assistant_manager_internal()
-                           : nullptr;
 }
 
 void ServiceController::OnAllServicesReady() {

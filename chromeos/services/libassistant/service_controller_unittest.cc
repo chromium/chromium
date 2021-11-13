@@ -333,11 +333,12 @@ TEST_F(AssistantServiceControllerTest,
 
 TEST_F(AssistantServiceControllerTest,
        ShouldCreateAssistantManagerWhenCallingInitialize) {
-  EXPECT_EQ(nullptr, service_controller().assistant_manager());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 }
 
 TEST_F(AssistantServiceControllerTest, ShouldBeNoopWhenCallingStartTwice) {
@@ -373,7 +374,8 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
   // The second Initialize() call should create the AssistantManager.
 
   Initialize();
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 
   // The second Start() call should send out a state update.
 
@@ -384,18 +386,20 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
 
   Start();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 }
 
 TEST_F(AssistantServiceControllerTest,
        ShouldDestroyAssistantManagerWhenCallingStop) {
   Initialize();
   Start();
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 
   Stop();
 
-  EXPECT_EQ(nullptr, service_controller().assistant_manager());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -414,11 +418,13 @@ TEST_F(AssistantServiceControllerTest,
 
 TEST_F(AssistantServiceControllerTest,
        ShouldCreateButNotPublishAssistantManagerInternalWhenCallingInitialize) {
-  EXPECT_EQ(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -426,19 +432,23 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
   Start();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 }
 
 TEST_F(AssistantServiceControllerTest,
        ShouldDestroyAssistantManagerInternalWhenCallingStop) {
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 
   Start();
   Stop();
 
-  EXPECT_EQ(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 }
 
 TEST_F(AssistantServiceControllerTest,

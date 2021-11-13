@@ -15,14 +15,8 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
-#include "libassistant/shared/public/assistant_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace libassistant {
@@ -69,10 +63,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   // Will return nullptr if the service is stopped.
   AssistantClient* assistant_client();
-  // Will return nullptr if the service is stopped.
-  assistant_client::AssistantManager* assistant_manager();
-  // Will return nullptr if the service is stopped.
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
   // Will be invoked when all Libassistant services are ready to query.
