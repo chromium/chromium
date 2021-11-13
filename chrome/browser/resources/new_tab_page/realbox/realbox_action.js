@@ -74,8 +74,8 @@ class RealboxActionElement extends PolymerElement {
    * @private
    */
   computeAriaLabel_() {
-    if (this.action.accessibilityHint) {
-      return decodeString16(this.action.accessibilityHint);
+    if (this.action.a11yLabel) {
+      return decodeString16(this.action.a11yLabel);
     }
     return '';
   }

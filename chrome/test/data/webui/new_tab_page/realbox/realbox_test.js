@@ -124,6 +124,7 @@ function createClipboardEvent(name) {
  */
 function createAutocompleteMatch() {
   return {
+    a11yLabel: mojoString16(''),
     allowedToBeDefaultMatch: false,
     isSearchType: false,
     swapContentsAndDescription: false,
@@ -139,6 +140,7 @@ function createAutocompleteMatch() {
     iconUrl: '',
     imageDominantColor: '',
     imageUrl: '',
+    removeButtonA11yLabel: mojoString16(''),
     type: '',
   };
 }
@@ -2133,8 +2135,18 @@ suite('NewTabPageRealboxTest', () => {
     const matches =
         [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
     const suggestionGroupsMap = {
-      100: {header: mojoString16('Recommended for you'), hidden: true},
-      101: {header: mojoString16('Not recommended for you'), hidden: false}
+      100: {
+        header: mojoString16('Recommended for you'),
+        hideGroupA11yLabel: mojoString16(''),
+        showGroupA11yLabel: mojoString16(''),
+        hidden: true
+      },
+      101: {
+        header: mojoString16('Not recommended for you'),
+        hideGroupA11yLabel: mojoString16(''),
+        showGroupA11yLabel: mojoString16(''),
+        hidden: false
+      }
     };
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2226,7 +2238,12 @@ suite('NewTabPageRealboxTest', () => {
         const matches =
             [createSearchMatch(), createUrlMatch({suggestionGroupId: 100})];
         const suggestionGroupsMap = {
-          100: {header: mojoString16('Recommended for you'), hidden: false},
+          100: {
+            header: mojoString16('Recommended for you'),
+            hideGroupA11yLabel: mojoString16(''),
+            showGroupA11yLabel: mojoString16(''),
+            hidden: false
+          },
         };
         testProxy.callbackRouterRemote.autocompleteResultChanged({
           input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2364,8 +2381,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     const matches = [createSearchMatch({
       action: {
-        accessibilityHint: mojoString16(''),
-        accessibilitySuffix: mojoString16(''),
+        a11yLabel: mojoString16(''),
         hint: mojoString16('Clear Browsing History'),
         suggestionContents: mojoString16(''),
         iconUrl: 'chrome://theme/current-channel-logo'
@@ -2416,8 +2432,7 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({contents: mojoString16('Clear Bro')}),
       createSearchMatch({
         action: {
-          accessibilityHint: mojoString16(''),
-          accessibilitySuffix: mojoString16(''),
+          a11yLabel: mojoString16(''),
           hint: mojoString16('Clear Browsing History'),
           suggestionContents: mojoString16(''),
           iconUrl: 'chrome://theme/current-channel-logo'

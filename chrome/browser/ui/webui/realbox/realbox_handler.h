@@ -34,6 +34,15 @@ struct VectorIcon;
 class RealboxHandler : public realbox::mojom::PageHandler,
                        public AutocompleteController::Observer {
  public:
+  enum class FocusState {
+    // kNormal means the row is focused, and Enter key navigates to the match.
+    kFocusedMatch,
+
+    // kFocusedButtonRemoveSuggestion state means the Remove Suggestion (X)
+    // button is focused. Pressing enter will attempt to remove this suggestion.
+    kFocusedButtonRemoveSuggestion,
+  };
+
   static void SetupWebUIDataSource(content::WebUIDataSource* source);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);

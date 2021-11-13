@@ -109,6 +109,13 @@ CreateSuggestionGroupsMap(
     suggestion_group->header = pair.second;
     suggestion_group->hidden =
         result.IsSuggestionGroupIdHidden(prefs, pair.first);
+    suggestion_group->show_group_a11y_label =
+        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON,
+                                   result.GetHeaderForGroupId(pair.first));
+    suggestion_group->hide_group_a11y_label =
+        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON,
+                                   result.GetHeaderForGroupId(pair.first));
+
     result_map.emplace(pair.first, std::move(suggestion_group));
   }
   return result_map;
@@ -139,10 +146,33 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   return base::JoinString(text, u" ");
 }
 
+std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
+                                        RealboxHandler::FocusState state) {
+  switch (state) {
+    case RealboxHandler::FocusState::kFocusedMatch: {
+      if (match.action) {
+        return match.action->GetLabelStrings().accessibility_suffix;
+      }
+      if (match.SupportsDeletion()) {
+        return l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_SUFFIX);
+      }
+      break;
+    }
+    case RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion:
+      return l10n_util::GetStringUTF16(
+          IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX);
+    default:
+      NOTREACHED();
+      break;
+  }
+  return std::u16string();
+}
+
 std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model) {
   std::vector<realbox::mojom::AutocompleteMatchPtr> matches;
+  int line = 0;
   for (const AutocompleteMatch& match : result) {
     realbox::mojom::AutocompleteMatchPtr mojom_match =
         realbox::mojom::AutocompleteMatch::New();
@@ -193,17 +223,30 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value() &&
          base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
-    if (match.action &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+    const bool has_action = match.action && base::FeatureList::IsEnabled(
+                                                omnibox::kNtpRealboxPedals);
+    if (has_action) {
       mojom_match->action = realbox::mojom::Action::New(
           match.action->GetLabelStrings().accessibility_hint,
-          match.action->GetLabelStrings().accessibility_suffix,
           match.action->GetLabelStrings().hint,
           match.action->GetLabelStrings().suggestion_contents,
           RealboxHandler::PedalVectorIconToResourceName(
               match.action->GetVectorIcon()));
     }
+    mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
+        match, match.contents, has_action, line,
+        GetAdditionalA11yMessage(match,
+                                 RealboxHandler::FocusState::kFocusedMatch));
+
+    mojom_match->remove_button_a11y_label =
+        AutocompleteMatchType::ToAccessibilityLabel(
+            match, match.contents, false, line,
+            GetAdditionalA11yMessage(
+                match,
+                RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion));
+
     matches.push_back(std::move(mojom_match));
+    line++;
   }
   return matches;
 }
@@ -231,12 +274,8 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
       {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
       {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"removeSuggestionA11ySuffix", IDS_ACC_REMOVE_SUGGESTION_SUFFIX},
-      {"removeSuggestionA11yPrefix", IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX},
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON},
-      {"hideSection", IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSection", IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON}};
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
 
   source->AddBoolean(

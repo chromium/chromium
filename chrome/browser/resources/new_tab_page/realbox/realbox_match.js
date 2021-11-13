@@ -51,7 +51,7 @@ class RealboxMatchElement extends PolymerElement {
        */
       ariaLabel: {
         type: String,
-        computed: `computeAriaLabel_(matchText_, removeButtonIsVisible_)`,
+        computed: `computeAriaLabel_(match.a11yLabel)`,
         reflectToAttribute: true,
       },
 
@@ -107,17 +107,6 @@ class RealboxMatchElement extends PolymerElement {
       },
 
       /**
-       * The text content of match used to calculate the 'aria-label' attributes
-       * of the element as well as the remove button.
-       * @type {string}
-       * @private
-       */
-      matchText_: {
-        type: String,
-        computed: `computeMatchText_(match)`,
-      },
-
-      /**
        * @type {boolean}
        * @private
        */
@@ -133,16 +122,7 @@ class RealboxMatchElement extends PolymerElement {
        */
       removeButtonAriaLabel_: {
         type: String,
-        computed: `computeRemoveButtonAriaLabel_(matchText_)`,
-      },
-
-      /**
-       * @type {boolean}
-       * @private
-       */
-      removeButtonIsVisible_: {
-        type: Boolean,
-        computed: `computeRemoveButtonIsVisible_(match)`,
+        computed: `computeRemoveButtonAriaLabel_(match.removeButtonA11yLabel)`,
       },
 
       /**
@@ -279,34 +259,16 @@ class RealboxMatchElement extends PolymerElement {
   // Helpers
   //============================================================================
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeMatchText_() {
-    if (!this.match) {
-      return '';
-    }
-
-    const contents = this.match.answer ?
-        decodeString16(this.match.answer.firstLine) :
-        decodeString16(this.match.contents);
-    const description = this.match.answer ?
-        decodeString16(this.match.answer.secondLine) :
-        decodeString16(this.match.description);
-    return this.match.swapContentsAndDescription ?
-        description + this.separatorText_ + contents :
-        contents + this.separatorText_ + description;
-  }
 
   /**
    * @return {string}
    * @private
    */
   computeAriaLabel_() {
-    return this.removeButtonIsVisible_ ?
-        loadTimeData.getStringF('removeSuggestionA11ySuffix', this.matchText_) :
-        this.matchText_;
+    if (!this.match) {
+      return '';
+    }
+    return decodeString16(this.match.a11yLabel);
   }
 
   /**
@@ -373,20 +335,14 @@ class RealboxMatchElement extends PolymerElement {
   }
 
   /**
-   * @return {boolean}
-   * @private
-   */
-  computeRemoveButtonIsVisible_() {
-    return this.match && this.match.supportsDeletion;
-  }
-
-  /**
    * @return {string}
    * @private
    */
   computeRemoveButtonAriaLabel_() {
-    return loadTimeData.getStringF(
-        'removeSuggestionA11yPrefix', this.matchText_);
+    if (!this.match) {
+      return '';
+    }
+    return decodeString16(this.match.removeButtonA11yLabel);
   }
 
   /**

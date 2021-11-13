@@ -407,10 +407,11 @@ class RealboxDropdownElement extends PolymerElement {
     if (!this.groupHasHeader_(groupId)) {
       return '';
     }
-    return loadTimeData.substituteString(
-        loadTimeData.getString(
-            this.groupIsHidden_(groupId) ? 'showSection' : 'hideSection'),
-        this.headerForGroup_(groupId));
+    return !this.groupIsHidden_(groupId) ?
+        decodeString16(
+            this.result.suggestionGroupsMap[groupId].hideGroupA11yLabel) :
+        decodeString16(
+            this.result.suggestionGroupsMap[groupId].showGroupA11yLabel);
   }
 }
 
