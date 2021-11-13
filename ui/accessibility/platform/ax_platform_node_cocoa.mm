@@ -773,10 +773,11 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState))
     [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
 
-  // Focusable element or a control element.
+  // Control element.
   if (ui::IsControl(role)) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityAccessKeyAttribute,
+      NSAccessibilityInvalidAttribute,
     ]];
   }
 
@@ -787,13 +788,6 @@ bool IsAXSetter(SEL selector) {
   // Details.
   if (_node->HasIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
-  }
-
-  // Anything focusable or any control
-  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _node->HasState(ax::mojom::State::kFocusable)) {
-    [axAttributes addObject:NSAccessibilityInvalidAttribute];
   }
 
   // Table and grid.
