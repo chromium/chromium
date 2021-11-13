@@ -562,14 +562,6 @@
 <translation id="4918086044614829423">Қабылдау</translation>
 <translation id="4924411785043111640">Қайта қосу және бастапқы күйге қайтару</translation>
 <translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
-<translation id="4942878304446937978">Күй жолағы, уақыты: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Хабарландыруларды өшіру</translation>
 <translation id="4946376291507881335">Суретке түсіру</translation>
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>

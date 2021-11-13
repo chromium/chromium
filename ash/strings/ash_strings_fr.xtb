@@ -562,14 +562,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4924411785043111640">Redémarrer et réinitialiser</translation>
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
-<translation id="4942878304446937978">Barre d'état, il est <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>

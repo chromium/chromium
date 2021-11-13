@@ -562,14 +562,6 @@
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4924411785043111640">再起動してリセット</translation>
 <translation id="4925542575807923399">このアカウントの管理者が、マルチ ログイン セッションにおいて最初にこのアカウントにログインすることを要件としています。</translation>
-<translation id="4942878304446937978">ステータス トレイ、時間 <ph name="TIME" />、
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />、
-        <ph name="MIC" />、
-        <ph name="CAMERA" />、
-        <ph name="NOTIFICATION" />、
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
 <translation id="495046168593986294">上にスクロール</translation>

@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Don't allow sites to connect to MIDI devices</translation>
 <translation id="1088654056000736875">Chrome is removing harmful software from your computer…</translation>
 <translation id="1088659085457112967">Enter Reader Mode</translation>
+<translation id="1089606299949659462">Review complete!</translation>
 <translation id="1090126737595388931">No background apps running</translation>
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
@@ -817,6 +818,7 @@
     <ph name="LINE_BREAKS2" />
     This doesn’t affect apps or content on other devices.</translation>
 <translation id="1809734401532861917">Add my bookmarks, history, passwords and other settings to <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1810366086647840386">Image server</translation>
 <translation id="1813278315230285598">Services</translation>
 <translation id="18139523105317219">EDI Party Name</translation>
 <translation id="1815083418640426271">Paste as Plain Text</translation>
@@ -1390,6 +1392,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2381499968174336913">Preview of shared tab</translation>
 <translation id="2381756643783702095">Ask before sending (recommended)</translation>
 <translation id="2387052489799050037">Go home</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard font</translation>
@@ -1447,6 +1450,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454264884354864965">Camera is off</translation>
+<translation id="2454524890947537054">Approve web request?</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wants to copy files from <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Currently on <ph name="CHANNEL_NAME" /> channel</translation>
@@ -1764,6 +1768,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2773802008104670137">This type of file may harm your computer.</translation>
 <translation id="2775104091073479743">Edit Fingerprints</translation>
 <translation id="2776560192867872731">Change device name for <ph name="DEVICE_NAME" /></translation>
+<translation id="2777251078198759550">Delete this container</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Error installing Linux application</translation>
 <translation id="2783298271312924866">Downloaded</translation>
@@ -1845,10 +1850,12 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2851728849045278002">Something went wrong. Click for more details.</translation>
 <translation id="285241945869362924">Automatically creates captions for audio and video. Audio and captions never leave your device.</translation>
 <translation id="2854896010770911740">Remove third-party cookies</translation>
+<translation id="2856776373509145513">Create a new container</translation>
 <translation id="2858138569776157458">Top sites</translation>
 <translation id="2861301611394761800">System update complete. Please restart the system.</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Remove Linux development environment</translation>
+<translation id="2864272167277395865">Select a device:</translation>
 <translation id="2864601841139725659">Set your profile picture</translation>
 <translation id="2865919525181940183">Screenshot of programs that are currently on the screen</translation>
 <translation id="286674810810214575">Checking power sources…</translation>
@@ -2403,6 +2410,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3449393517661170867">New tabbed window</translation>
 <translation id="3449839693241009168">Press <ph name="SEARCH_KEY" /> to send commands to <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Idle State Occupancy Percentage</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="3451753556629288767">Allowed to open types of files</translation>
 <translation id="3452999110156026232">Parent access</translation>
 <translation id="3453612417627951340">Needs authorisation</translation>
@@ -2414,6 +2422,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3458794975359644386">Unshare failed</translation>
 <translation id="3459509316159669723">Printing</translation>
 <translation id="3459697287128633276">To enable your account to access the Google Play Store, please authenticate with your Identity Provider.</translation>
+<translation id="3461766685318630278">Create and delete extra containers.</translation>
 <translation id="3462311546193741693">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be cleared.</translation>
 <translation id="3462413494201477527">Cancel account setup?</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
@@ -3257,6 +3266,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4366138410738374926">Printing started</translation>
 <translation id="4369121877634339065">Drag over any image to search</translation>
+<translation id="4369215744064167350">Website request approved</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4373966964907728675">Casting desktop</translation>
 <translation id="4374831787438678295">Linux installer</translation>
@@ -3951,6 +3961,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5117139026559873716">Disconnect your phone from your <ph name="DEVICE_TYPE" />. They will no longer connect automatically.</translation>
 <translation id="5117930984404104619">Monitor the behaviour of other extensions, including visited URLs</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Click here to visit <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.</translation>
 <translation id="5121130586824819730">Your hard disk is full.  Please save to another location or make more room on the hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
@@ -4059,6 +4070,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5235750401727657667">Replace the page that you see when opening a new tab</translation>
 <translation id="5236374273162681467">To easily use them on all your devices, you can move them to your Google Account</translation>
+<translation id="523862956770478816">Site permissions</translation>
 <translation id="5242724311594467048">Enable "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Please try again in a few moments</translation>
 <translation id="5244474230056479698">Syncing to <ph name="EMAIL" /></translation>
@@ -4267,6 +4279,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5472627187093107397">Save passwords for this site</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN must be at least one character}other{PIN must be at least # characters}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5483785310822538350">Revoke file and device access</translation>
@@ -4333,6 +4346,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5526745900034778153">Sign in again to resume sync</translation>
 <translation id="5527463195266282916">Attempted to downgrade extension.</translation>
 <translation id="5527474464531963247">You may also select another network.</translation>
+<translation id="5528295196101251711">VM name</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
 <translation id="5534304873398226603">Discard photo or video</translation>
@@ -4687,9 +4701,11 @@ You can assign multiple switches to this action.</translation>
     <ph name="LINE_BREAK" />
     This picture will appear on the Chromebook sign-in screen and lock screen.</translation>
 <translation id="5925147183566400388">Certification Practice Statement Pointer</translation>
+<translation id="592740088639760830">Stop this container</translation>
 <translation id="592880897588170157">Download PDF files instead of automatically opening them in Chrome</translation>
 <translation id="592919310198008711">When I click the extension</translation>
 <translation id="5932124097031739492">Linux has been successfully upgraded.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately.</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
 <translation id="59324397759951282">USB device from <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">You do not have enough available licences to enrol this Google Meet hardware device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
@@ -5225,6 +5241,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
 <translation id="6499143127267478107">Resolving host in proxy script...</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> wants to open this file:</translation>
+<translation id="6501957628055559556">All containers</translation>
 <translation id="650266656685499220">To create albums, go to Google Photos</translation>
 <translation id="6503077044568424649">Most visited</translation>
 <translation id="650457560773015827">Left button</translation>
@@ -5338,6 +5355,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6619243162837544323">Network state</translation>
 <translation id="6619801788773578757">Add kiosk application</translation>
 <translation id="6619990499523117484">Confirm your PIN</translation>
+<translation id="6620254580880484313">Container name</translation>
 <translation id="6622980291894852883">Continue blocking images</translation>
 <translation id="6624036901798307345">In tablet mode, tap on the tab counter toolbar button to open the new tab strip that shows thumbnails of each tab.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> has sensitive or dangerous content. Ask its owner to fix it.</translation>
@@ -5348,6 +5366,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6635674640674343739">Network connection cannot be established. Check your network connection and try again.</translation>
 <translation id="6635944431854494329">The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.</translation>
 <translation id="6635956300022133031">Select and customise text-to-speech voices</translation>
+<translation id="6636623428211296678">Explore more settings below or finish now</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
 <translation id="6640268266988685324">Open tab</translation>
 <translation id="6642720633335369752">To see all open app windows, swipe up from the bottom and hold.</translation>
@@ -6109,6 +6128,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">Manage extra containers</translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Open Location...</translation>
 <translation id="7457384018036134905">Manage languages in Chrome OS settings</translation>
@@ -6624,6 +6644,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
 <translation id="7947962633355574091">C&amp;opy Video Address</translation>
+<translation id="7948407723851303488">All pages of <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">To add or manage Google Pay payment methods, visit your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Sites can ask to see text and images on your clipboard</translation>
 <translation id="795282463722894016">Restore complete</translation>
@@ -7689,6 +7710,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9053893665344928494">Remember my choice</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wants to access the following content:</translation>
 <translation id="9057354806206861646">Update schedule</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
@@ -7776,6 +7798,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9139258866388561662">Sign in to <ph name="WEB_DRIVE" /> to complete download</translation>
 <translation id="9139988741193276691">Configuring Linux</translation>
 <translation id="9140067245205650184">You are using an unsupported feature flag: <ph name="BAD_FLAG" />. Stability and security will suffer.</translation>
+<translation id="9142637293078737510">Image alias</translation>
 <translation id="9143298529634201539">Remove suggestion?</translation>
 <translation id="9147392381910171771">&amp;Options</translation>
 <translation id="9148058034647219655">Exit</translation>

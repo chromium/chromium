@@ -260,6 +260,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
 <translation id="2561519700418191927">Pregledi video snimaka</translation>
 <translation id="2567385386134582609">SLIKA</translation>
+<translation id="2567545343356994513">Brža proaktivna zaštita od opasnih veb-sajtova, preuzimanja i dodataka</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima u Google prevodilac</translation>
 <translation id="2581165646603367611">Ovim ćete obrisati kolačiće, keš i druge podatke sajtova koje Chrome ne smatra važnim.</translation>
 <translation id="2587052924345400782">Dostupna je novija verzija</translation>
@@ -487,6 +488,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="395377504920307820">Koristi bez naloga</translation>
 <translation id="3958287878205277013">Da biste obrisali istoriju pregledanja bez arhiviranja sa uređaja, zatvorite sve kartice bez arhiviranja.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati stranicu kada bude spremna}one{Chrome će učitati stranice kada budu spremne}few{Chrome će učitati stranice kada budu spremne}other{Chrome će učitati stranice kada budu spremne}}</translation>
+<translation id="3962119236270174787">Standardna zaštita od veb-sajtova, preuzimanja i dodataka za koje se zna da su štetni</translation>
 <translation id="3962957115499249330">Videćete obaveštenje kad se ovo preuzimanje pokrene preko WiFi mreže.</translation>
 <translation id="3963007978381181125">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a. Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti je on čuva. Ako zaboravite pristupnu frazu ili poželite da promenite ovo podešavanje, treba da resetujete sinhronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne može da vam proverava lozinke</translation>
@@ -952,6 +954,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6627583120233659107">Izmeni direktorijum</translation>
 <translation id="6633067410344541938">Otključaj kartice bez arhiviranja</translation>
 <translation id="663674369910034433">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK1" />Sinhronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Google usluge<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Blokiraj uvek</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6643649862576733715">Sortiraj po količini ušteđenih podataka</translation>
 <translation id="6648459603387803038">Administrator može daljinski da promeni podešavanje pregledača. Aktivnostima na ovom uređaju može da se upravlja i van Chrome-a.</translation>
@@ -1078,6 +1081,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7437998757836447326">Odjavljivanje iz Chrome-a</translation>
 <translation id="7438641746574390233">Kada je Lite režim uključen, Chrome ubrzava učitavanje stranica pomoću Google servera. Lite režim ponovo upisuje veoma spore stranice da bi učitavale samo sadržaj koji je neophodan. Lite režim se ne primenjuje na kartice bez arhiviranja.</translation>
+<translation id="7443901082822119557">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="7444811645081526538">Još kategorija</translation>
 <translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
@@ -1185,6 +1189,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="7998918019931843664">Ponovo otvorite zatvorenu karticu</translation>
 <translation id="8004582292198964060">Pregledač</translation>
+<translation id="8006818846907410687">Blokiraj dok se koristi režim bez arhiviranja</translation>
 <translation id="8013372441983637696">Obriši Chrome podatke i sa ovog uređaja</translation>
 <translation id="8015452622527143194">Vraćanje celokupnog prikaza stranice na podrazumevanu veličinu</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
@@ -1232,6 +1237,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8223642481677794647">Meni kartice fida</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica koristi previše memorije, pa je Chrome uklonio određeni sadržaj.</translation>
+<translation id="8255617931166444521">Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja samo na vlastitom sajtu</translation>
 <translation id="8260126382462817229">Probajte ponovo da se prijavite</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Prikaži druge kartice</translation>

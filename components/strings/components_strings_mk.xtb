@@ -156,6 +156,7 @@
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1428146450423315676">Фиока за складирање 7</translation>
+<translation id="142858679511221695">Корисник во облакот</translation>
 <translation id="1428729058023778569">Ја гледате опоменава бидејќи сајтов не поддржува HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
@@ -712,6 +713,7 @@
 <translation id="3329013043687509092">Заситеност</translation>
 <translation id="3333762389743153920">Не е подобна за виртуелна картичка</translation>
 <translation id="3338095232262050444">Безбедно</translation>
+<translation id="3339446062576134663">Облак (Ash)</translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
 <translation id="3360103848165129075">Лист на ракувачот со плаќања</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />нема да ги зачува<ph name="END_EMPHASIS" /> следниве информации:
@@ -734,6 +736,7 @@
 <translation id="3380365263193509176">Непозната грешка</translation>
 <translation id="3380864720620200369">ИД на клиент:</translation>
 <translation id="3381668585148405088">Потврдете го купувањето</translation>
+<translation id="3383566085871012386">Тековен редослед на предност</translation>
 <translation id="3387261909427947069">Начини на плаќање</translation>
 <translation id="3391030046425686457">Адреса на испорака</translation>
 <translation id="3391482648489541560">изменување датотеки</translation>
@@ -1401,6 +1404,7 @@
 <translation id="5478437291406423475">B6/C4 (плик)</translation>
 <translation id="5481076368049295676">Содржинава може да се обиде да инсталира опасен софтвер на вашиот уред што ги краде или брише вашите информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Додавање важечка адреса</translation>
+<translation id="5485973315555778056">Компјутер во облак</translation>
 <translation id="5490432419156082418">Адреси и друго</translation>
 <translation id="5492298309214877701">Сајтот на интранетот на компанија, организација или училиште има иста URL-адреса како надворешен веб-сајт.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1434,7 @@
 <translation id="5571083550517324815">Не може да се подигне од оваа адреса. Изберете друга.</translation>
 <translation id="5580958916614886209">Проверете го месецот на истекување и обидете се повторно</translation>
 <translation id="5586446728396275693">Нема зачувани адреси</translation>
+<translation id="5587987780934666589">Корисник на платформа</translation>
 <translation id="5593349413089863479">Врската не е потполно безбедна</translation>
 <translation id="5595485650161345191">Измени адреса</translation>
 <translation id="5598944008576757369">Изберете начин на плаќање</translation>
@@ -2114,6 +2119,7 @@
 <translation id="7953569069500808819">Шиење на работ горе</translation>
 <translation id="7956713633345437162">Мобилни обележувачи</translation>
 <translation id="7961015016161918242">Никогаш</translation>
+<translation id="7962467575542381659">Компјутер на платформа</translation>
 <translation id="7966803981046576691">Тип работен налог</translation>
 <translation id="79682505114836835">Вредноста „<ph name="VALUE" />“ е неважечка хексадецимална боја.</translation>
 <translation id="7968982339740310781">Погледнете детали</translation>

@@ -107,6 +107,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1894205589103145703">Při přihlašování se něco pokazilo.</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
 <translation id="1923342640370224680">Poslední hodina</translation>
+<translation id="1930989359703290198">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů. Nepovolené účty jsou skryty. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
 <translation id="1952172573699511566">Pokud to bude možné, budou weby zobrazovat text ve vašem preferovaném jazyce.</translation>
 <translation id="1965935827552890526">Dokončete akci, kterou jste prováděli v jiném otevřeném okně Chromu.</translation>
@@ -386,6 +387,8 @@ Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li
 <translation id="4802417911091824046">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay.
 
 Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Spravováno vaší organizací.
+<ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Neplatné číslo karty</translation>
 <translation id="4808744395915275922">Aktualizace</translation>
 <translation id="4818522717893377262">Přidat jazyk...</translation>

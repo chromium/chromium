@@ -562,14 +562,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4924411785043111640">Restartuj i resetuj</translation>
 <translation id="4925542575807923399">Administrator za ovaj nalog zahteva da ovaj nalog bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
-<translation id="4942878304446937978">Statusna traka, vreme <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
 <translation id="495046168593986294">Pomeri nagore</translation>

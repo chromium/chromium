@@ -562,14 +562,6 @@
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4924411785043111640">הפעלה מחדש ואתחול</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
-<translation id="4942878304446937978">מגש סטטוס, שעה <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>

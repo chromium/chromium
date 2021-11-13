@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Niet toestaan dat sites verbinding maken met MIDI-apparaten</translation>
 <translation id="1088654056000736875">Chrome verwijdert schadelijke software van je computer…</translation>
 <translation id="1088659085457112967">Lezermodus aanzetten</translation>
+<translation id="1089606299949659462">Beoordeling voltooid</translation>
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
@@ -805,6 +806,7 @@
     <ph name="LINE_BREAKS2" />
     Dit is niet van invloed op apps of content op andere apparaten.</translation>
 <translation id="1809734401532861917">Mijn bookmarks, geschiedenis, wachtwoorden en andere instellingen toevoegen aan <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1810366086647840386">Afbeeldingsserver</translation>
 <translation id="1813278315230285598">Services</translation>
 <translation id="18139523105317219">EDI Partynaam</translation>
 <translation id="1815083418640426271">Plakken als tekst zonder opmaak</translation>
@@ -1373,6 +1375,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2381499968174336913">Voorbeeld van gedeeld tabblad</translation>
 <translation id="2381756643783702095">Vragen vóór verzenden (aanbevolen)</translation>
 <translation id="2387052489799050037">Naar het startscherm</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Kan geen verbinding maken met proxy, log opnieuw in</translation>
 <translation id="2390782873446084770">Wifi-synchronisatie</translation>
 <translation id="2391419135980381625">Standaard lettertype</translation>
@@ -1430,6 +1433,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2454247629720664989">Zoekwoord</translation>
 <translation id="2454264884354864965">Camera staat uit</translation>
+<translation id="2454524890947537054">Webverzoek goedkeuren?</translation>
 <translation id="245650153866130664">Als je een ticket automatisch wilt vernieuwen, vink je 'Wachtwoord onthouden' aan. Het wachtwoord wordt alleen opgeslagen op je apparaat.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wil bestanden van <ph name="VOLUME_NAME" /> kopiëren.</translation>
 <translation id="2457842160081795172">Momenteel op het kanaal <ph name="CHANNEL_NAME" /></translation>
@@ -1746,6 +1750,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2773802008104670137">Dit type bestand kan je computer beschadigen.</translation>
 <translation id="2775104091073479743">Vingerafdrukken bewerken</translation>
 <translation id="2776560192867872731">Apparaatnaam wijzigen voor <ph name="DEVICE_NAME" /></translation>
+<translation id="2777251078198759550">Deze container verwijderen</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
 <translation id="2783298271312924866">Gedownload</translation>
@@ -1827,10 +1832,12 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2851728849045278002">Er is iets misgegaan. Klik voor meer informatie.</translation>
 <translation id="285241945869362924">Maakt automatisch een ondertiteling voor audio en video. De audio en ondertiteling worden nooit doorgestuurd vanaf je apparaat.</translation>
 <translation id="2854896010770911740">Cookies van derden verwijderen</translation>
+<translation id="2856776373509145513">Een nieuwe container maken</translation>
 <translation id="2858138569776157458">Topsites</translation>
 <translation id="2861301611394761800">Het systeem is geüpdatet. Start het systeem opnieuw op.</translation>
 <translation id="2861941300086904918">Beveiligingsbeheerder voor Native Client</translation>
 <translation id="2862815659905780618">Linux-ontwikkelomgeving verwijderen</translation>
+<translation id="2864272167277395865">Selecteer een apparaat:</translation>
 <translation id="2864601841139725659">Je profielfoto instellen</translation>
 <translation id="2865919525181940183">Screenshot van programma's die momenteel op het scherm staan</translation>
 <translation id="286674810810214575">Voedingsbronnen controleren…</translation>
@@ -2397,6 +2404,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3458794975359644386">Kan delen niet opheffen</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
 <translation id="3459697287128633276">Als je je account toegang wilt geven tot de Google Play Store, moet je verifiëren via je identiteitsprovider.</translation>
+<translation id="3461766685318630278">Maak en verwijder extra containers.</translation>
 <translation id="3462311546193741693">Hiermee word je uitgelogd bij de meeste sites. Je blijft ingelogd op je Google-account zodat je gesynchroniseerde gegevens kunnen worden gewist.</translation>
 <translation id="3462413494201477527">Accountconfiguratie annuleren?</translation>
 <translation id="346298925039590474">Dit mobiele netwerk is beschikbaar voor alle gebruikers op dit apparaat</translation>
@@ -3240,6 +3248,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4366138410738374926">Afdrukken gestart</translation>
 <translation id="4369121877634339065">Sleep over een afbeelding om te zoeken</translation>
+<translation id="4369215744064167350">Websiteverzoek goedgekeurd</translation>
 <translation id="4370975561335139969">Het opgegeven e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="4373966964907728675">Bureaublad casten</translation>
 <translation id="4374831787438678295">Linux-installatieprogramma</translation>
@@ -3929,6 +3938,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5117139026559873716">Ontkoppel je telefoon van je <ph name="DEVICE_TYPE" />. Je apparaten maken dan niet meer automatisch verbinding.</translation>
 <translation id="5117930984404104619">Het gedrag van andere extensies controleren, waaronder bezochte URL's</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Klik hier om naar <ph name="APPROVED_URL" /> te gaan</translation>
 <translation id="5121052518313988218">Het besturingssysteem in je Linux-container wordt niet meer ondersteund. Het besturingssysteem krijgt geen beveiligingsupdates en bugfixes meer, en functies die nu nog werken kunnen onverwacht stoppen met werken. Upgrade naar de nieuwste versie om Linux te blijven gebruiken.</translation>
 <translation id="5121130586824819730">Je vaste schijf is vol. Sla op een andere locatie op of maak ruimte vrij op de vaste schijf.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
@@ -4037,6 +4047,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235750401727657667">De pagina vervangen die je ziet als je een nieuw tabblad opent</translation>
 <translation id="5236374273162681467">Je kunt ze naar je Google-account verplaatsen zodat je ze makkelijk kunt gebruiken op al je apparaten</translation>
+<translation id="523862956770478816">Siterechten</translation>
 <translation id="5242724311594467048"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="5243522832766285132">Probeer het over enige tijd opnieuw</translation>
 <translation id="5244474230056479698">Synchroniseren met <ph name="EMAIL" /></translation>
@@ -4312,6 +4323,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5526745900034778153">Log opnieuw in om door te gaan met synchroniseren</translation>
 <translation id="5527463195266282916">Je probeert een oudere versie van de extensie te installeren.</translation>
 <translation id="5527474464531963247">Je kunt ook een ander netwerk selecteren.</translation>
+<translation id="5528295196101251711">VM-naam</translation>
 <translation id="5532223876348815659">Algemeen</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil het volgende</translation>
 <translation id="5534304873398226603">Foto of video verwijderen</translation>
@@ -4665,6 +4677,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     <ph name="LINE_BREAK" />
     Deze foto zie je op het inlogscherm en vergrendelscherm van de Chromebook.</translation>
 <translation id="5925147183566400388">Pointer naar certificeringspraktijkverklaring</translation>
+<translation id="592740088639760830">Deze container stoppen</translation>
 <translation id="592880897588170157">Download pdf-bestanden in plaats van ze automatisch te openen in Chrome</translation>
 <translation id="592919310198008711">Als ik op de extensie klikt</translation>
 <translation id="5932124097031739492">Linux is geüpgraded.</translation>
@@ -5204,6 +5217,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
 <translation id="6499143127267478107">Host omzetten in proxyscript...</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> wil dit bestand openen:</translation>
+<translation id="6501957628055559556">Alle containers</translation>
 <translation id="650266656685499220">Ga naar Google Foto's om albums te maken</translation>
 <translation id="6503077044568424649">Meest bezocht</translation>
 <translation id="650457560773015827">Linkerknop</translation>
@@ -5317,6 +5331,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6619243162837544323">Netwerkstatus</translation>
 <translation id="6619801788773578757">Kiosk-app toevoegen</translation>
 <translation id="6619990499523117484">Je pincode bevestigen</translation>
+<translation id="6620254580880484313">Containernaam</translation>
 <translation id="6622980291894852883">Afbeeldingen blijven blokkeren</translation>
 <translation id="6624036901798307345">Tik in de tabletmodus op de werkbalkknop met de tabbladteller om de tabbladstrook te openen. Je ziet dan miniaturen van alle tabbladen.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> bevat gevoelige of gevaarlijke content. Vraag de eigenaar om dit op te lossen.</translation>
@@ -5327,6 +5342,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6635674640674343739">Netwerkverbinding kan niet tot stand worden gebracht. Check je netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="6635944431854494329">De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens verzenden naar Google.</translation>
 <translation id="6635956300022133031">Stemmen voor tekst-naar-spraak selecteren en aanpassen</translation>
+<translation id="6636623428211296678">Bekijk hieronder meer instellingen of rond nu af</translation>
 <translation id="6639554308659482635">SQLite-geheugen</translation>
 <translation id="6640268266988685324">Geopend tabblad</translation>
 <translation id="6642720633335369752">Als je alle geopende app-vensters wilt bekijken, swipe je omhoog vanaf de onderkant en houd je het scherm vast.</translation>
@@ -6088,6 +6104,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7450761244949417357">Wordt nu geopend in <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="7453008956351770337">Door het selecteren van deze printer geef je de volgende extensie rechten tot je printer:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">Extra containers beheren</translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Open locatie...</translation>
 <translation id="7457384018036134905">Talen beheren in de instellingen van Chrome OS</translation>
@@ -6601,6 +6618,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7946586320617670168">Herkomst moet zijn beveiligd</translation>
 <translation id="794676567536738329">Rechten bevestigen</translation>
 <translation id="7947962633355574091">Adres van video k&amp;opiëren</translation>
+<translation id="7948407723851303488">Alle pagina's van <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Ga voor het toevoegen of beheren van Google Pay-betaalmethoden naar je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
 <translation id="795282463722894016">Herstellen voltooid</translation>
@@ -7667,6 +7685,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="9053893665344928494">Mijn keuze onthouden</translation>
 <translation id="9055636786322918818">RC4-versleuteling afdwingen. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
 <translation id="9056810968620647706">Geen overeenkomsten gevonden.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> wil toegang tot de volgende content:</translation>
 <translation id="9057354806206861646">Updateplanning</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fout van regel <ph name="ERROR_LINE_START" /> tot en met <ph name="ERROR_LINE_END" /></translation>
@@ -7754,6 +7773,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9139258866388561662">Log in bij <ph name="WEB_DRIVE" /> om het downloaden af te ronden</translation>
 <translation id="9139988741193276691">Linux configureren</translation>
 <translation id="9140067245205650184">Je gebruikt een niet-ondersteunde functiemarkering: <ph name="BAD_FLAG" />. De stabiliteit en beveiliging zullen hieronder lijden.</translation>
+<translation id="9142637293078737510">Afbeeldingsalias</translation>
 <translation id="9143298529634201539">Suggestie verwijderen?</translation>
 <translation id="9147392381910171771">&amp;Opties</translation>
 <translation id="9148058034647219655">Sluiten</translation>

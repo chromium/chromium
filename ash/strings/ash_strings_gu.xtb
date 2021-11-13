@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">ઓળખાયેલ નથી</translation>
 <translation id="1746730358044914197">ઇનપુટ પદ્ધતિઓને તમારા વ્યવસ્થાપક દ્વારા ગોઠવવામાં આવી છે.</translation>
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
+<translation id="1750088060796401187">માત્ર <ph name="MAX_DESK_LIMIT" /> ડેસ્કની મંજૂરી આપવામાં આવી છે. નવી ડેસ્ક ખોલવા માટે, એક ડેસ્ક કાઢી નાખો.</translation>
 <translation id="1761222317188459878">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period કીનો કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Insert કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace કી દબાવો.</translation>
 <translation id="1771761307086386028">જમણે સ્ક્રોલ કરો</translation>
@@ -564,14 +565,6 @@
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4924411785043111640">ફરી શરૂ કરો અને રીસેટ કરો</translation>
 <translation id="4925542575807923399">આ એકાઉન્ટના એડમિન માટે જરૂરી છે કે આ એકાઉન્ટ એકથી વધુ સાઇન ઇન સત્રમાં પ્રથમ સાઇન ઇન કરેલ એકાઉન્ટ હોય.</translation>
-<translation id="4942878304446937978">સ્ટેટસ ટ્રે, સમય <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">નોટિફિકેશન બંધ કરો</translation>
 <translation id="4946376291507881335">કૅપ્ચર કરો</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>

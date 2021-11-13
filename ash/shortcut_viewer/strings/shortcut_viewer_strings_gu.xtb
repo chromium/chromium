@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 થી 8</translation>
 <translation id="3837047332182291558">કીબોર્ડને બ્રાઇટ બનાવો (માત્ર બૅકલિટ કીબોર્ડ માટે)</translation>
 <translation id="3949671998904569433">અલ્પવિરામ</translation>
+<translation id="3976707995992061296">સક્રિય વિન્ડો તમામ ડેસ્કને સોંપવા આવી છે કે કેમ તે ટૉગલ કરો</translation>
 <translation id="3976863468609830880">તમારા શેલ્ફ પરના છેલ્લા આઇકન પર ક્લિક કરો</translation>
 <translation id="3994783594793697310">ડિસ્પ્લે ઝૂમ લેવલ રીસેટ કરો</translation>
 <translation id="4026843240379844265">સક્રિય વિંડોને ડિસ્પ્લેની વચ્ચે ખસેડો</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">ઝૂમ વધારવાનું બતાવો</translation>
 <translation id="634687982629734605">આની વચ્ચે ફોકસ સ્વિચ કરો: સ્ટેટસ એરિયા (જ્યાં તમારા એકાઉન્ટનો ફોટો દેખાય છે), લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર (જો દેખાતી હોય, તો), ખુલ્લું છે તે વેબપેજ અને ડાઉનલોડ બાર (જો દેખાતી હોય, તો). તેના બદલે જો કોઈ ફોકસ કરી શકાય તેવો સંવાદ બતાવવામાં આવે, તો ફોકસને ત્યાં ખસેડો.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">1લીથી 8મી ડેસ્કને સક્રિય કરો.</translation>
 <translation id="6395172954772765143">પંક્તિના અંતે આવેલી ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="6425378783626925378">તમારા શેલ્ફ પરના 1-8 આઇકન પર ક્લિક કરો</translation>
 <translation id="6435207348963613811">તમારા શેલ્ફ પરની પાછલી આઇટમને હાઇલાઇટ કરો</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Files ઍપમાંની છુપાયેલી ફાઇલો બતાવો</translation>
 <translation id="8717459106217102612">પાછલો શબ્દ અથવા અક્ષર પસંદ કરો</translation>
 <translation id="8727232706774971183">તમારા નોટિફિકેશનો જુઓ</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1થી 8</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8881584919399569791">વધુ સક્રિય વિંડોને ડાબી બાજુએ ડેસ્ક પર ખસેડો</translation>
 <translation id="88986195241502842">Page Down</translation>

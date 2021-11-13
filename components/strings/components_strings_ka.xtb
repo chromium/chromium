@@ -156,6 +156,7 @@
 <translation id="1422930527989633628">შეუძლია ახლომდებარე Bluetooth-მოწყობილობების აღმოჩენის თხოვნა</translation>
 <translation id="1426410128494586442">დიახ</translation>
 <translation id="1428146450423315676">სტეკერი 7</translation>
+<translation id="142858679511221695">ღრუბლის მომხმარებელი</translation>
 <translation id="1428729058023778569">ამ გაფრთხილებას ხედავთ იმიტომ, რომ ამ საიტის მიერ HTTPS მხარდაუჭერელია. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
@@ -708,6 +709,7 @@
 <translation id="3329013043687509092">გაჯერება</translation>
 <translation id="3333762389743153920">ვირტუალური ბარათის მიღება ვერ ხერხდება</translation>
 <translation id="3338095232262050444">დაცული</translation>
+<translation id="3339446062576134663">ღრუბელი (Ash)</translation>
 <translation id="3355823806454867987">პროქსის პარამეტრების შეცვლა…</translation>
 <translation id="3360103848165129075">გადახდების დამმუშავებლის გვერდი</translation>
 <translation id="3361596688432910856">Chrome-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" /> შემდეგი ინფორმაცია:
@@ -730,6 +732,7 @@
 <translation id="3380365263193509176">უცნობი შეცდომა</translation>
 <translation id="3380864720620200369">კლიენტის ID:</translation>
 <translation id="3381668585148405088">დაადასტურეთ შენაძენი</translation>
+<translation id="3383566085871012386">უპირატესობის ამჟამინდელი მიმდევრობა</translation>
 <translation id="3387261909427947069">გადახდის მეთოდები</translation>
 <translation id="3391030046425686457">მიწოდების მისამართი</translation>
 <translation id="3391482648489541560">ფაილების რედაქტირება</translation>
@@ -1392,6 +1395,7 @@
 <translation id="5478437291406423475">B6/C4 (კონვერტი)</translation>
 <translation id="5481076368049295676">ამ კონტენტმა შეიძლება თქვენს მოწყობილობაზე დააინსტალიროს სახიფათო პროგრამული უზრუნველყოფა, რომელიც შეძლებს თქვენი ინფორმაციის მოპარვას ან წაშლას. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">დაამატეთ სწორი მისამართი</translation>
+<translation id="5485973315555778056">ღრუბლის მოწყობილობა</translation>
 <translation id="5490432419156082418">მისამართები და სხვა</translation>
 <translation id="5492298309214877701">კომპანიის, ორგანიზაციის ან სკოლის ინტრანეტში მდებარე ამ საიტსა და მის გარე ვებსაიტს ერთი და იგივე URL აქვს.
     <ph name="LINE_BREAK" />
@@ -1421,6 +1425,7 @@
 <translation id="5571083550517324815">ამ მისამართიდან წამოღება ვერ მოხერხდება. აირჩიეთ სხვა მისამართი.</translation>
 <translation id="5580958916614886209">შეამოწმეთ ვადის გასვლის თვე და ხელახლა ცადეთ</translation>
 <translation id="5586446728396275693">შენახული მისამართები არ არის</translation>
+<translation id="5587987780934666589">პლატფორმის მომხმარებელი</translation>
 <translation id="5593349413089863479">კავშირი სრულად დაცული არ არის</translation>
 <translation id="5595485650161345191">მისამართის რედაქტირება</translation>
 <translation id="5598944008576757369">გადახდის მეთოდის არჩევა</translation>
@@ -2105,6 +2110,7 @@
 <translation id="7953569069500808819">კიდეების მიკერება ზემოთ</translation>
 <translation id="7956713633345437162">მობილური სანიშნეები</translation>
 <translation id="7961015016161918242">არასოდეს</translation>
+<translation id="7962467575542381659">პლატფორმის მოწყობილობა</translation>
 <translation id="7966803981046576691">დავალების ანგარიშის ტიპი</translation>
 <translation id="79682505114836835">მნიშვნელობა „<ph name="VALUE" />“ არასწორი თექვსმეტობითი ფერია.</translation>
 <translation id="7968982339740310781">დეტალების დათვალიერება</translation>

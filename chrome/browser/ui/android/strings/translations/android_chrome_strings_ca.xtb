@@ -64,7 +64,7 @@
 <translation id="1327257854815634930">L'historial de navegació està obert</translation>
 <translation id="1331212799747679585">No es pot actualitzar Chrome. Més opcions</translation>
 <translation id="1332501820983677155">Dreceres per a funcions de Google Chrome</translation>
-<translation id="1344653310988386453">Inclou un enllaç al contingut marcat</translation>
+<translation id="1344653310988386453">Inclou un enllaç al text marcat</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
@@ -260,6 +260,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2561519700418191927">Previsualitzacions de vídeo</translation>
 <translation id="2567385386134582609">IMATGE</translation>
+<translation id="2567545343356994513">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos</translation>
 <translation id="2571711316400087311">Proposa enviar pàgines en altres idiomes al Traductor de Google</translation>
 <translation id="2581165646603367611">Amb aquesta acció, se suprimiran les galetes, la memòria cau i altres dades de llocs que Chrome no consideri importants.</translation>
 <translation id="2587052924345400782">Versió nova disponible</translation>
@@ -487,6 +488,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="395377504920307820">Utilitza sense cap compte</translation>
 <translation id="3958287878205277013">Per esborrar l'historial de navegació d'incògnit del dispositiu, tanca totes les pestanyes d'incògnit.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome carregarà la pàgina quan estigui a punt}other{Chrome carregarà les pàgines quan estiguin a punt}}</translation>
+<translation id="3962119236270174787">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos</translation>
 <translation id="3962957115499249330">Veuràs una notificació quan aquesta baixada comenci amb Wi-Fi.</translation>
 <translation id="3963007978381181125">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay. Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptes. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si l'oblides o vols canviar aquesta opció, has de restablir la sincronització. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome no pot comprovar les teves contrasenyes</translation>
@@ -952,6 +954,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6627583120233659107">Edita la carpeta</translation>
 <translation id="6633067410344541938">Desbloqueja el mode d'incògnit</translation>
 <translation id="663674369910034433">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK1" />Sincronització<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />serveis de Google<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Bloqueja sempre</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6643649862576733715">Ordena per quantitat de dades estalviades</translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>
@@ -1078,6 +1081,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7437998757836447326">Tanca la sessió de Chrome</translation>
 <translation id="7438641746574390233">Quan el mode bàsic estigui activat, Chrome utilitzarà els servidors de Google perquè les pàgines es carreguin més de pressa. El mode bàsic reescriu les pàgines molt lentes per carregar només el contingut essencial. El mode bàsic no s'aplica a les pestanyes d'incògnit.</translation>
+<translation id="7443901082822119557">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que aquestes funcions no responguin en alguns llocs web.</translation>
 <translation id="7444811645081526538">Més categories</translation>
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
 <translation id="7454641608352164238">No hi ha prou espai</translation>
@@ -1185,6 +1189,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="799576009106109668">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="7998918019931843664">Torna a obrir la pestanya tancada</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006818846907410687">Bloqueja en mode d'incògnit</translation>
 <translation id="8013372441983637696">Esborra també les teves dades de Chrome d'aquest dispositiu</translation>
 <translation id="8015452622527143194">Restableix la mida de tots els elements de la pàgina</translation>
 <translation id="8026334261755873520">Esborra les dades de navegació</translation>
@@ -1232,6 +1237,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8223642481677794647">Menú de la targeta del tauler</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Com que aquesta pàgina fa servir massa memòria, Chrome n'ha suprimit contingut.</translation>
+<translation id="8255617931166444521">Els llocs web només poden fer servir les teves galetes per veure la teva activitat de navegació només en aquests mateixos llocs web</translation>
 <translation id="8260126382462817229">Prova d'iniciar la sessió de nou</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="82619448491672958">Mostra les altres pestanyes</translation>

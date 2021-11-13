@@ -200,6 +200,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2352467521400612932">Configuración de la pluma stylus</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2367186422933365202">No se puede acceder a la Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
@@ -564,14 +565,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4924411785043111640">Reiniciar y restablecer</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
-<translation id="4942878304446937978">Bandeja de estado, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
@@ -708,6 +701,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5977415296283489383">Auriculares</translation>
 <translation id="5978382165065462689">Se está compartiendo el control de la pantalla mediante la Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
+<translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para obtener la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se habilitó el modo de contraste alto. Presiona Ctrl+Buscar+H de nuevo para desactivarlo.</translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>

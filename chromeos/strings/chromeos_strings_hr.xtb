@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Prosječan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
+<translation id="1201402288615127009">Dalje</translation>
 <translation id="1204296502688602597">Latencija DNS-a</translation>
 <translation id="123124571410524056">Moguć je portal</translation>
 <translation id="1238612778414822719">Latencija HTTPS-a</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Spremi pojedinosti testa</translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
+<translation id="4140251671072434548">Otključavanje RMA poslužitelja</translation>
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
@@ -468,6 +470,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Unesite kôd za otključavanje:</translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>

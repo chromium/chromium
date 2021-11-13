@@ -2176,7 +2176,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si inhabilitas la política o no la estableces, se desactivará el DTC. Este no podrá recopilar, procesar ni informar los datos de telemetría y diagnóstico del dispositivo.</translation>
 <translation id="3450649825886735618">No usar ningún servicio web de Google para ayudar a solucionar errores de ortografía</translation>
-<translation id="3451422488938880786"> Permite habilitar o inhabilitar reasignaciones de combinaciones de teclas internacionales</translation>
+<translation id="3451422488938880786">Permitir la habilitación o inhabilitación de reasignaciones de combinaciones de teclas internacionales</translation>
 <translation id="3451901387456196887">Permitir que el usuario seleccione desde el menú de <ph name="PRODUCT_NAME" /> dispositivos de transmisión mediante un código QR o de acceso</translation>
 <translation id="3456292544936505775">Esta política controla los períodos durante los cuales el dispositivo con <ph name="PRODUCT_OS_NAME" /> no puede comprobar automáticamente si hay actualizaciones disponibles.
       Si estableces la política con una lista no vacía de intervalos de tiempo, los dispositivos no podrán comprobar de forma automática si hay actualizaciones disponibles durante los intervalos de tiempo especificados. Debido a posibles problemas de seguridad, esta política no afectará a los dispositivos que necesiten una reversión empresarial o tengan versiones anteriores a la mínima de <ph name="PRODUCT_OS_NAME" />. Además, esta política no bloqueará comprobaciones de actualizaciones que soliciten los usuarios o administradores.

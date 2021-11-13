@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Qrupda yeni tabda açın</translation>
 <translation id="1103142993930332957">Chrome'un təkmilləşdirilməsinə kömək edirsiniz?</translation>
 <translation id="1105960400813249514">Ekranın Ani Çəkimi</translation>
+<translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1110914759170138831">Vurğulama qısaldılıb</translation>
 <translation id="1111673857033749125">Digər cihazlarınızda yadda saxlanmış əlfəcinlər burada görünəcək.</translation>
 <translation id="1113597929977215864">Sadə görüntüyə baxın</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Ünvan paneli və axtarış qutusundakı bəzi kuki və axtarışları defolt axtarış mühərrikinizə göndərin</translation>
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fayl}other{# Fayl}}</translation>
+<translation id="2020309681647789787">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
 <translation id="2021896219286479412">Tam ekran sayt nəzarətləri</translation>
 <translation id="2038563949887743358">Əsas Versiya Sorğusunu aktiv edin</translation>
 <translation id="204321170514947529">Həmçinin, <ph name="APP_NAME" /> tətbiqinin Chrome'da datası var</translation>
@@ -847,6 +849,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6070730414166672373">Bankınız əlaqə saxlanılır\u2026</translation>
 <translation id="6085886413119427067">Güvənli bağlantı vasitəsilə vebsaytlara necə qoşulmağı müəyyən edir</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> saat qaldı</translation>
+<translation id="6095578583683628124">Google həm də defolt axtarış sisteminizdirsə daha yaxşı, kontekstə uyğun təkliflər görəcəksiniz</translation>
 <translation id="6108923351542677676">Quraşdırma icra olunur...</translation>
 <translation id="6111020039983847643">istifadə edilmiş data</translation>
 <translation id="6112702117600201073">Səhifə yenilənir</translation>
@@ -1389,6 +1392,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9155898266292537608">Sözün üzərində klikləməklə axtarış edə bilərsiniz</translation>
 <translation id="9158770349521403363">Yalnız məzmun paylaşın</translation>
+<translation id="916446198114569890">Ziyarət etdiyiniz keçidlər Google hesabınızda saxlanılır</translation>
 <translation id="9169507124922466868">Naviqasiya tarixçəsi yarı açıqdır</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dəqiqə əvvəl yoxlanılıb}other{# dəqiqə əvvəl yoxlanılıb}}</translation>
 <translation id="9204836675896933765">1 fayl qaldı</translation>

@@ -258,6 +258,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2546283357679194313">Pliki cookie i dane stron</translation>
 <translation id="2561519700418191927">Podglądy filmów</translation>
 <translation id="2567385386134582609">OBRAZ</translation>
+<translation id="2567545343356994513">Szybsza proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
 <translation id="2571711316400087311">Proponuj przesyłanie stron w innych językach do Tłumacza Google</translation>
 <translation id="2581165646603367611">Spowoduje to skasowanie plików cookie, pamięci podręcznej i innych danych witryn, które Chrome uzna za nieistotne.</translation>
 <translation id="2587052924345400782">Dostępna jest nowsza wersja</translation>
@@ -485,6 +486,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="395377504920307820">Używaj bez konta</translation>
 <translation id="3958287878205277013">Aby usunąć z urządzenia historię przeglądania w trybie incognito, zamknij wszystkie karty incognito.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome wczyta stronę, gdy będzie gotowa}few{Chrome wczyta strony, gdy będą gotowe}many{Chrome wczyta strony, gdy będą gotowe}other{Chrome wczyta strony, gdy będą gotowe}}</translation>
+<translation id="3962119236270174787">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne</translation>
 <translation id="3962957115499249330">Gdy rozpocznie się to pobieranie przez Wi-Fi, zobaczysz powiadomienie.</translation>
 <translation id="3963007978381181125">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nie może sprawdzić Twoich haseł</translation>
@@ -949,6 +951,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6633067410344541938">Odblokuj tryb incognito</translation>
 <translation id="663674369910034433">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK1" />Synchronizacja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Usługi Google<ph name="END_LINK2" />.</translation>
+<translation id="6640207029842583248">Blokuj zawsze</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6643649862576733715">Sortuj według ilości zaoszczędzonych danych</translation>
 <translation id="6648459603387803038">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.</translation>
@@ -1075,6 +1078,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7437998757836447326">Wyloguj się z Chrome</translation>
 <translation id="7438641746574390233">W wersji uproszczonej Chrome korzysta z serwerów Google, by szybciej wczytywać strony. W wersji uproszczonej bardzo wolne strony są przepisywane na nowo, by ładowały się tylko najważniejsze treści. Wersja uproszczona nie działa na kartach incognito.</translation>
+<translation id="7443901082822119557">W trybie incognito strony nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam. Funkcje niektórych stron mogą nie działać prawidłowo.</translation>
 <translation id="7444811645081526538">Więcej kategorii</translation>
 <translation id="7453467225369441013">Wylogowuje z większości stron internetowych. Nie wyloguje Cię z konta Google.</translation>
 <translation id="7454641608352164238">Za mało miejsca</translation>
@@ -1182,6 +1186,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="799576009106109668">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie.</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
+<translation id="8006818846907410687">Blokuj w trybie incognito</translation>
 <translation id="8013372441983637696">Usuń też swoje dane Chrome z tego urządzenia</translation>
 <translation id="8015452622527143194">Powróć do normalnego rozmiaru całej treści strony</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
@@ -1229,6 +1234,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8223642481677794647">Menu karty kanału</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="825412236959742607">Ta strona używa zbyt dużo pamięci, dlatego Chrome usunął część jej zawartości.</translation>
+<translation id="8255617931166444521">Witryny mogą używać plików cookie tylko do śledzenia Twojej aktywności związanej z przeglądaniem tych witryn</translation>
 <translation id="8260126382462817229">Spróbuj zalogować się jeszcze raz</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="82619448491672958">Zobacz inne karty</translation>

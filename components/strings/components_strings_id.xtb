@@ -156,6 +156,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1422930527989633628">Dapat meminta untuk menemukan perangkat Bluetooth di sekitar</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1428146450423315676">Tempat kertas 7</translation>
+<translation id="142858679511221695">Pengguna cloud</translation>
 <translation id="1428729058023778569">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
@@ -708,6 +709,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3329013043687509092">Saturasi</translation>
 <translation id="3333762389743153920">Tidak memenuhi syarat untuk kartu virtual</translation>
 <translation id="3338095232262050444">Aman</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Ubah setelan proxy...</translation>
 <translation id="3360103848165129075">Lembar handler pembayaran</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" /> informasi berikut:
@@ -730,6 +732,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3380365263193509176">Kesalahan tidak dikenal</translation>
 <translation id="3380864720620200369">ID Klien:</translation>
 <translation id="3381668585148405088">Verifikasi pembelian Anda</translation>
+<translation id="3383566085871012386">Urutan prioritas saat ini</translation>
 <translation id="3387261909427947069">Metode Pembayaran</translation>
 <translation id="3391030046425686457">Alamat pengiriman</translation>
 <translation id="3391482648489541560">pengeditan file</translation>
@@ -1391,6 +1394,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Konten ini mungkin mencoba menginstal software berbahaya yang mencuri atau menghapus informasi Anda di perangkat. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Tambahkan alamat yang valid</translation>
+<translation id="5485973315555778056">Perangkat cloud</translation>
 <translation id="5490432419156082418">Alamat dan Lain-Lain</translation>
 <translation id="5492298309214877701">Situs yang ada di intranet perusahaan, organisasi, atau sekolah ini memiliki URL yang sama dengan situs web eksternal.
     <ph name="LINE_BREAK" />
@@ -1420,6 +1424,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5571083550517324815">Tidak dapat mengambil dari alamat ini. Pilih alamat lain.</translation>
 <translation id="5580958916614886209">Periksa bulan kedaluwarsa dan coba lagi</translation>
 <translation id="5586446728396275693">Tidak ada alamat yang disimpan</translation>
+<translation id="5587987780934666589">Pengguna platform</translation>
 <translation id="5593349413089863479">Koneksi tidak sepenuhnya aman</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="5598944008576757369">Pilih Metode Pembayaran</translation>
@@ -2102,6 +2107,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7953569069500808819">Jahit tepi di atas</translation>
 <translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
+<translation id="7962467575542381659">Perangkat platform</translation>
 <translation id="7966803981046576691">Jenis akun tugas</translation>
 <translation id="79682505114836835">Nilai "<ph name="VALUE" />" adalah warna hex yang tidak valid.</translation>
 <translation id="7968982339740310781">Lihat detail</translation>

@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Biasa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1195447618553298278">Ralat tidak diketahui.</translation>
+<translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1204296502688602597">Kependaman DNS</translation>
 <translation id="123124571410524056">Portal disyaki</translation>
 <translation id="1238612778414822719">Kependaman HTTPS</translation>
@@ -62,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
+<translation id="1857850044054738019">Buat pilihan ini jika peranti sedang distok semula atau diperbaharui untuk pengedaran kepada pelanggan baharu.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Anda memerlukan sekurang-kurangnya 500 MB ruang kosong untuk menjalankan ujian Memori. Untuk mengosongkan ruang, pergi ke Tetapan &gt; Pengurusan storan.</translation>
 <translation id="4258281355379922695">Kependaman HTTP</translation>
 <translation id="4271957103967917607">Lihat Skrin Penuh</translation>
+<translation id="4275799948641988986">Selepas dibaiki, siapa yang akan menggunakan peranti itu?</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -412,6 +415,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7297226631177386107">Tidak dapat menyambung melalui tembok api ke laman web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Peranti akan menjadi milik orang lain</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7359657277149375382">Jenis fail</translation>
@@ -419,6 +423,8 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
+<translation id="7451112128070628323">Buat pilihan ini jika pemilikan peranti tidak berubah.
+        Contohnya, peranti sedang dipindahkan kepada orang lain dalam organisasi.</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
@@ -543,6 +549,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
+<translation id="9095415590198785865">Peranti akan menjadi milik pemilik yang sama</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>

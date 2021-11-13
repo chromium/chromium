@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Gemiddeld (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
+<translation id="1201402288615127009">Volgende</translation>
 <translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
 <translation id="1238612778414822719">HTTPS-latentie</translation>
@@ -258,6 +259,7 @@
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
 <translation id="5051044138948155788">Dit is de enige pagina. Hierna kom je op het startscherm voor scannen.</translation>
+<translation id="5061169534910302641">Versie updaten en opnieuw opstarten</translation>
 <translation id="5088172560898466307">Hostnaam van server</translation>
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5142961317498132443">Verificatie</translation>

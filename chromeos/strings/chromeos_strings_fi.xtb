@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Keskitasoa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
+<translation id="1201402288615127009">Seuraava</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
 <translation id="1238612778414822719">HTTPS-viive</translation>
@@ -62,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Perutaan skannausta</translation>
 <translation id="1851218745569890714">Videokonferenssit</translation>
+<translation id="1857850044054738019">Valitse tämä vaihtoehto, jos laite varastoidaan uudelleen tai
+        kunnostetaan uutta asiakasta varten.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1905710495812624430">Yritysten enimmäismäärä ylitettiin.</translation>
@@ -195,6 +198,7 @@
 <translation id="4244962993387259361">Tarvitset muistitestin suorittamiseen ainakin 500 Mt vapaata tilaa. Voit vapauttaa tilaa valitsemalla Asetukset &gt; Tallennustilan hallinta.</translation>
 <translation id="4258281355379922695">HTTP-viive</translation>
 <translation id="4271957103967917607">Katso koko näytöllä</translation>
+<translation id="4275799948641988986">Kuka käyttää laitetta korjauksen jälkeen?</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
 <translation id="4378373042927530923">Ei suoritettu</translation>
@@ -411,6 +415,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7297226631177386107">HTTPS-sivustoihin ei voi yhdistää palomuurin läpi</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Laitteen omistaja vaihtuu</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
@@ -418,6 +423,9 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
+<translation id="7451112128070628323">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu,
+        esimerkiksi jos laite siirretään toiselle henkilölle
+        organisaation sisällä.</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
 <translation id="7487067081878637334">Tekniikka</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
@@ -542,6 +550,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>
+<translation id="9095415590198785865">Laite pysyy samalla omistajalla</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Päivitä tukipyyntö: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannataan sivu <ph name="PAGE_NUMBER" /></translation>

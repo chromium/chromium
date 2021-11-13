@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">ಗುರುತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="1746730358044914197">ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಾಹಕರ ಸಹಾಯದಿಂದ ಕಾನ್ಫಿಗರ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1747827819627189109">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1750088060796401187">ಕೇವಲ <ph name="MAX_DESK_LIMIT" /> ಡೆಸ್ಕ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ. ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಹಾಗೂ ಹೊಸದನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="1761222317188459878">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ಪಿರಿಯಡ್ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. ಇನ್‌ಸರ್ಟ್ ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಶಿಫ್ಟ್ + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್.</translation>
 <translation id="1771761307086386028">ಬಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
@@ -564,14 +565,6 @@
 <translation id="4918086044614829423">ಸಮ್ಮತಿಸು</translation>
 <translation id="4924411785043111640">ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="4925542575807923399">ಬಹು ಸೈನ್ ಇನ್ ಸೆಷನ್‌ನಲ್ಲಿ ಈ ಖಾತೆಯನ್ನು ಮೊದಲಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾದ ಖಾತೆಯು ಅಗತ್ಯವಿರುತ್ತದೆ ಎಂದು ಈ ಖಾತೆಯ ನಿರ್ವಾಹಕರಿಗೆ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
-<translation id="4942878304446937978">ಸ್ಥಿತಿ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">ಅಧಿಸೂಚನೆಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="4946376291507881335">ಕ್ಯಾಪ್ಚರ್ ಮಾಡಿ</translation>
 <translation id="495046168593986294">ಮೇಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>

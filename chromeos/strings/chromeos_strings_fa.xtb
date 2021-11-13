@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">متوسط (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
+<translation id="1201402288615127009">بعدی</translation>
 <translation id="1204296502688602597">تأخیر ساناد</translation>
 <translation id="123124571410524056">احتمالاً درگاهی وجود دارد</translation>
 <translation id="1238612778414822719">‏تأخیر در HTTPS</translation>
@@ -155,6 +156,8 @@
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
 <translation id="3583278742022654445">‏سیگنال ضعیف است. به منبع سیگنال Wi-Fi نزدیک‌تر شوید.</translation>
 <translation id="3595596368722241419">باتری پر است</translation>
+<translation id="360089215033199597">‏برای آسان‌تر شدن فرایند تعمیر، توصیه می‌شود به Wi-Fi متصل شوید.
+        شبکه‌تان ذخیره خواهد شد.</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
@@ -183,6 +186,7 @@
 <translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
 <translation id="4111761024568264522">‏تاچ‌پد USB</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
+<translation id="4140251671072434548">‏اجرای باز کردن قفل سرور RMA (مجوز پس دادن کالا)</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">مطمئن شوید اسکنر روشن باشد و ازطریق شبکه یا اتصال مستقیم دردسترس باشد</translation>
@@ -468,8 +472,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8132480444149501833">درخواست شمارش‌گرهای ترافیک</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">کد باز کردن قفل را وارد کنید:</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
+<translation id="8217675307824400706">متصل شوید</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را تازه‌سازی کنید.</translation>

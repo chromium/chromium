@@ -562,14 +562,6 @@
 <translation id="4918086044614829423">ยอมรับ</translation>
 <translation id="4924411785043111640">รีสตาร์ทและรีเซ็ต</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
-<translation id="4942878304446937978">ถาดสถานะ เวลา <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>

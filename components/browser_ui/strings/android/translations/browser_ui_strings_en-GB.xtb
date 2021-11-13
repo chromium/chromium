@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2490684707762498678">Managed by <ph name="APP_NAME" /></translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
 <translation id="5063480226653192405">Usage</translation>
+<translation id="509133520954049755">Request desktop view</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
+<translation id="5134599672855298214">Request mobile view (recommended)</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Last visited today</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Revoke device permission</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in use}other{# cookies in use}}</translation>
 <translation id="8487700953926739672">Available offline</translation>
+<translation id="848952951823693243">Always request mobile site</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>

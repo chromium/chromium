@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">ओळखले नाही</translation>
 <translation id="1746730358044914197">तुमच्या ॲडमिनिस्ट्रेटरद्वारे कॉंफिगर केलेल्या इनपुट पद्धती.</translation>
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
+<translation id="1750088060796401187">फक्त <ph name="MAX_DESK_LIMIT" /> डेस्कना अनुमती आहे. नवीन डेस्क उघडण्यासाठी एक डेस्क काढून टाका.</translation>
 <translation id="1761222317188459878">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदलला आहे. Insert की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace दाबा.</translation>
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
@@ -564,14 +565,6 @@
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4924411785043111640">रीस्टार्ट करा आणि रीसेट करा</translation>
 <translation id="4925542575807923399">या खात्याच्या ॲडमिनिस्ट्रेटरला हे खाते एका एकाहून अधिक साइन इन सेशनमधील प्रथम साइन इन केलेले खाते असणे आवश्यक आहे.</translation>
-<translation id="4942878304446937978">स्थिती ट्रे, वेळ <ph name="TIME" />,
-<ph name="BATTERY" />
-<ph name="NETWORK" />,
-<ph name="MIC" />,
-<ph name="CAMERA" />,
-<ph name="NOTIFICATION" />,
-<ph name="IME" />
-<ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">सूचना बंद करा</translation>
 <translation id="4946376291507881335">कॅप्चर करा</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>

@@ -565,14 +565,6 @@
 <translation id="4918086044614829423">قبول</translation>
 <translation id="4924411785043111640">إعادة التشغيل وإعادة الضبط</translation>
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
-<translation id="4942878304446937978">شريط الحالة، الوقت <ph name="TIME" />،
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />،
-        <ph name="MIC" />،
-        <ph name="CAMERA" />،
-        <ph name="NOTIFICATION" />،
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>

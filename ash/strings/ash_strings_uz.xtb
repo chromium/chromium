@@ -564,14 +564,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4924411785043111640">Qayta ishga tushirish va asliga qaytarish</translation>
 <translation id="4925542575807923399">Bu hisobning administratori ko‘plab tizimga kirish seanslarida birinchi bo‘lib shu hisobga kirishni talab qiladi.</translation>
-<translation id="4942878304446937978">Holat qatori, vaqt: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
 <translation id="4946376291507881335">Tasvirga olish</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>

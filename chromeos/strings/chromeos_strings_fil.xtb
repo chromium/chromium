@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Katamtaman (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1195447618553298278">Hindi kilalang error.</translation>
+<translation id="1201402288615127009">Susunod</translation>
 <translation id="1204296502688602597">Latency ng DNS</translation>
 <translation id="123124571410524056">May pinaghihinalaang portal</translation>
 <translation id="1238612778414822719">Latency ng HTTPS</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">I-save ang mga detalye ng pagsubok</translation>
 <translation id="4111761024568264522">USB na touchpad</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
+<translation id="4140251671072434548">I-unlock ang RMA Server</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
@@ -468,6 +470,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Humiling ng Mga Traffic Counter</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Ilagay ang code sa pag-unlock:</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>

@@ -156,6 +156,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1422930527989633628">Getur beðið um að finna nálæg Bluetooth-tæki</translation>
 <translation id="1426410128494586442">Já</translation>
 <translation id="1428146450423315676">Staflari 7</translation>
+<translation id="142858679511221695">Notandi í skýi</translation>
 <translation id="1428729058023778569">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1432581352905426595">Stjórna leitarvélum</translation>
@@ -712,6 +713,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3329013043687509092">Mettun</translation>
 <translation id="3333762389743153920">Ekki gjaldgengt fyrir sýndarkort</translation>
 <translation id="3338095232262050444">Öruggt</translation>
+<translation id="3339446062576134663">Ský (Ash)</translation>
 <translation id="3355823806454867987">Breyta proxy-stillingum...</translation>
 <translation id="3360103848165129075">Greiðsluhjálparforrit</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />mun ekki vista<ph name="END_EMPHASIS" /> eftirfarandi upplýsingar:
@@ -734,6 +736,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3380365263193509176">Óþekkt villa</translation>
 <translation id="3380864720620200369">Auðkenni biðlara:</translation>
 <translation id="3381668585148405088">Staðfestu kaupin</translation>
+<translation id="3383566085871012386">Núverandi forgangsröðun</translation>
 <translation id="3387261909427947069">Greiðslumátar</translation>
 <translation id="3391030046425686457">Sendingarheimilisfang</translation>
 <translation id="3391482648489541560">skráavinnslu</translation>
@@ -1401,6 +1404,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5478437291406423475">B6/C4 (umslag)</translation>
 <translation id="5481076368049295676">Þetta efni gæti reynt að setja upp hættulegan hugbúnað í tækinu þínu sem stelur eða eyðir upplýsingunum þínum. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Bæta gildu heimilisfangi við</translation>
+<translation id="5485973315555778056">Skýjavél</translation>
 <translation id="5490432419156082418">Heimilisföng og fleira</translation>
 <translation id="5492298309214877701">Þetta svæði á innraneti fyrirtækis, stofnunar eða skóla hefur sömu vefslóð og ytra vefsvæði.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1434,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5571083550517324815">Ekki er hægt að sækja frá þessu heimilisfangi. Veldu annað heimilisfang.</translation>
 <translation id="5580958916614886209">Athugaðu mánuð gildistímans og reyndu aftur</translation>
 <translation id="5586446728396275693">Engin vistuð vistföng</translation>
+<translation id="5587987780934666589">Notandi verkvangs</translation>
 <translation id="5593349413089863479">Tengingin er ekki alveg örugg</translation>
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
 <translation id="5598944008576757369">Velja greiðslumáta</translation>
@@ -2114,6 +2119,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7953569069500808819">Saumur efst</translation>
 <translation id="7956713633345437162">Bókamerki fartækis</translation>
 <translation id="7961015016161918242">Aldrei</translation>
+<translation id="7962467575542381659">Verkvangsvél</translation>
 <translation id="7966803981046576691">Gerð vinnslureiknings</translation>
 <translation id="79682505114836835">Gildið „<ph name="VALUE" />“ er ógildur litur í sextándakerfi.</translation>
 <translation id="7968982339740310781">Skoða upplýsingar</translation>

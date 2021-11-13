@@ -600,6 +600,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611432201750675208">Vaš uređaj je zaključan</translation>
 <translation id="1612019740169791082">Vaš spremnik nije konfiguriran da podrži promjenu veličine diska. Da podesite količinu prostora koja je rezervirana za Linux, napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
+<translation id="1613019471223620622">Prikazivanje lozinke za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Moguće je da ste iskoristili ograničenje prijenosa podataka na mobilnoj mreži. Posjetite portal za aktivaciju <ph name="NAME" /> da kupite još prijenosa podataka</translation>
 <translation id="161460670679785907">Nije moguće zaštititi vaš telefon</translation>
 <translation id="1615337439947999338">Sačuvaj na Google računu (<ph name="EMAIL" />)</translation>
@@ -1212,6 +1213,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Neimenovani izvor medijskog sadržaja</translation>
 <translation id="2224444042887712269">Vlasnik ove postavke je <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Morate odabrati najmanje jedan album Umjetničke galerije</translation>
 <translation id="2224551243087462610">Uređivanje naziva foldera</translation>
@@ -3328,6 +3330,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4444304522807523469">Pristupi skenerima dokumenata spojenim putem USB-a ili lokalne mreže</translation>
 <translation id="4444512841222467874">Ako se ne obezbijedi prostor, može doći do automatskog uklanjanja korisnika i podataka.</translation>
 <translation id="4446933390699670756">Preslikan</translation>
+<translation id="4448914100439890108">Sakrivanje lozinke za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Vaše korisničko ime pripada računu preduzeća vaše organizacije. Da prijavite uređaje na račun, najprije potvrdite vlasništvo domene u konzoli administratora. Trebat će vam administrativne privilegije na računu da potvrdite.</translation>
 <translation id="4449996769074858870">Ova kartica reproducira zvuk.</translation>
 <translation id="4450274068924249931">Kada je ekran neaktivan, prikazivat će se fotografije, sat, vrijeme i vijesti. Ako omogućite čuvar ekrana, vaš ekran će biti uključen tokom punjenja.</translation>
@@ -3852,6 +3855,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5009463889040999939">Promjena naziva profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5010043101506446253">Tijelo za izdavanje potvrde</translation>
 <translation id="5015344424288992913">Rješavanje problema s proksi serverom...</translation>
+<translation id="5016491575926936899">Možete slati SMS-ove sa svog računara, dijeliti internetsku vezu, odgovarati na obavještenja o razgovoru i telefonom otključati uređaj <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Možete navigirati stranicama pomoću kursora za tekst. Pritisnite Ctrl+Search+7 da isključite.</translation>
 <translation id="5017828934289857214">Podsjeti me kasnije</translation>
 <translation id="5018207570537526145">Otvori ekstenziju web lokacije</translation>
@@ -4439,6 +4443,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5638309510554459422">Pronađite ekstenzije i teme u <ph name="BEGIN_LINK" />Chrome Web trgovini<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovno učitajte ovu stranicu. Držite da vidite više opcija</translation>
 <translation id="5640133431808313291">Upravljanje sigurnosnim ključevima</translation>
+<translation id="5641608986289282154">Počnite koristiti <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Potpisnik CRL-a</translation>
 <translation id="5643321261065707929">Mreža s naplatom</translation>
 <translation id="5643620609347735571">Obriši i nastavi</translation>

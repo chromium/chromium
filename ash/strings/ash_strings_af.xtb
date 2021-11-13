@@ -119,6 +119,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1743570585616704562">Nie herken nie</translation>
 <translation id="1746730358044914197">Invoermetodes word deur jou administrateur opgestel.</translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
+<translation id="1750088060796401187">Net <ph name="MAX_DESK_LIMIT" /> lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een oop te maak.</translation>
 <translation id="1761222317188459878">Wissel netwerkverbinding. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + punt het verander. Om die Insert-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Shift + Backspace druk.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
@@ -565,14 +566,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4924411785043111640">Herbegin en stel terug</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
-<translation id="4942878304446937978">Statuslaai, tyd <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
 <translation id="4946376291507881335">Vang vas</translation>
 <translation id="495046168593986294">Rollees op</translation>

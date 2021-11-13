@@ -156,6 +156,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1422930527989633628">Får begära tillstånd att söka efter Bluetooth-enheter i närheten</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Utmatningsfack 7</translation>
+<translation id="142858679511221695">Molnanvändare</translation>
 <translation id="1428729058023778569">Den här varningen visas därför att webbplatsen inte stöder HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1432581352905426595">Hantera sökmotorer</translation>
@@ -712,6 +713,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3329013043687509092">Mättnad</translation>
 <translation id="3333762389743153920">Uppfyller inte kraven för virtuella kort</translation>
 <translation id="3338095232262050444">Säker</translation>
+<translation id="3339446062576134663">Molnet (Ash)</translation>
 <translation id="3355823806454867987">Ändra proxyinställningar...</translation>
 <translation id="3360103848165129075">Arbetsblad för betalningshantering</translation>
 <translation id="3361596688432910856">Följande information <ph name="BEGIN_EMPHASIS" />sparas inte<ph name="END_EMPHASIS" /> i Chrome:
@@ -734,6 +736,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3380365263193509176">Okänt fel</translation>
 <translation id="3380864720620200369">Klient-ID:</translation>
 <translation id="3381668585148405088">Verifiera köpet</translation>
+<translation id="3383566085871012386">Nuvarande prioritetsordning</translation>
 <translation id="3387261909427947069">Betalningsmetoder</translation>
 <translation id="3391030046425686457">Leveransadress</translation>
 <translation id="3391482648489541560">filredigering</translation>
@@ -1401,6 +1404,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5478437291406423475">B6/C4 (kuvert)</translation>
 <translation id="5481076368049295676">Sidan kan ha till syfte att installera farlig programvara som stjäl eller raderar information på enheten. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Lägg till giltig adress</translation>
+<translation id="5485973315555778056">Molndator</translation>
 <translation id="5490432419156082418">Adresser och annat</translation>
 <translation id="5492298309214877701">Webbplatsen på företagets, organisationens eller skolans intranät har samma webbadress som en extern webbplats.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1434,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5571083550517324815">Utlämning erbjuds inte på den här adressen. Välj en annan adress.</translation>
 <translation id="5580958916614886209">Kontrollera utgångsmånad och försök igen</translation>
 <translation id="5586446728396275693">Inga sparade adresser</translation>
+<translation id="5587987780934666589">Plattformsanvändare</translation>
 <translation id="5593349413089863479">Anslutningen är inte helt säker</translation>
 <translation id="5595485650161345191">Redigera adress</translation>
 <translation id="5598944008576757369">Välj betalningsmetod</translation>
@@ -2114,6 +2119,7 @@ Mer information.
 <translation id="7953569069500808819">Kanthäftning högst upp</translation>
 <translation id="7956713633345437162">Bokmärken i mobilen</translation>
 <translation id="7961015016161918242">Aldrig</translation>
+<translation id="7962467575542381659">Plattformsdator</translation>
 <translation id="7966803981046576691">Kontotyp för utskriften</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> är ett ogiltigt hexadecimalt värde för en färg.</translation>
 <translation id="7968982339740310781">Visa information</translation>

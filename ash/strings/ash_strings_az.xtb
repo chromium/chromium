@@ -200,6 +200,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2352467521400612932">Staylus ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktivləşdirilir</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="2360625459710946148">Yenidən sıralama meyarı:</translation>
 <translation id="2367186422933365202">Chromebook'a daxil olmaq olmur</translation>
 <translation id="2369165858548251131">Çin dilində "Salam"</translation>
 <translation id="2390318262976603432">Yerli ayarlar</translation>
@@ -563,14 +564,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
 <translation id="4924411785043111640">Yenidən başlayın və sıfırlayın</translation>
 <translation id="4925542575807923399">Bu hesabın administratoru istəyir ki, çoxsaylı hesab girişi sessiyalarında bu hesaba giriş birinci edilsin.</translation>
-<translation id="4942878304446937978">Vəziyyət bölməsi, vaxt <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Bildirişləri deaktiv edin</translation>
 <translation id="4946376291507881335">Çəkin</translation>
 <translation id="495046168593986294">Yuxarı sürüşdürün</translation>
@@ -707,6 +700,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5977415296283489383">Qulaqlıq</translation>
 <translation id="5978382165065462689">Uzaq Yardım vasitəsilə ekranınızın kontrolunu paylaşır.</translation>
 <translation id="5980301590375426705">Qonaq hesabından çıxın</translation>
+<translation id="598407983968395253">Şablon istifadə edin</translation>
 <translation id="598882571027504733">Güncəlləməni əldə etmək üçün əlavə edilən klavatura ilə Chromebook'u yenidən başladın.</translation>
 <translation id="5992218262414051481">Yüksək Kontrast Rejimi aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+H düymələrini basın.</translation>
 <translation id="6018164090099858612">Güzgü rejimindən çıxır</translation>

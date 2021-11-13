@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">કસ્ટમ</translation>
 <translation id="1197267115302279827">બુકમાર્ક્સ ખસેડો</translation>
 <translation id="1201402288615127009">આગલું</translation>
+<translation id="1202892408424955784">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
 <translation id="1204037785786432551">ડાઉનલોડ કરવાની લિંક</translation>
 <translation id="1206892813135768548">લિંક ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="1208340532756947324">સમગ્ર ઉપકરણોમાં સિંક તથા વ્યક્તિગત કરવા માટે સિંક ચાલુ કરો</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Googleનો સંપર્ક કરી રહ્યાં છીએ. આમાં એક મિનિટ લાગી શકે છે…</translation>
 <translation id="1416550906796893042">ઍપ્લિકેશન વર્ઝન</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
+<translation id="1448440926884431741">Bookmarksમાં તમારી ટ્રૅક કરેલી પ્રોડક્ટની ગોઠવણ કરો</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> શેર કરી શકતાં નથી</translation>
 <translation id="1466383950273130737">Chromeની ભાષા પસંદ કરો</translation>
 <translation id="147113415845704694">“આજે હવામાન કેવું છે?" પૂછવાનો પ્રયાસ કરો</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
+<translation id="1894023287452300670">અહીં કિંમત ટ્રૅક કરો</translation>
 <translation id="1905320231301365059">તમે જે ફાઇલો છૂપા મોડમાં ડાઉનલોડ કરો છો, તે હજી પણ આ ડિવાઇસનો ઉપયોગ કરતી કોઈપણ વ્યક્તિને દેખાઈ શકે છે.</translation>
 <translation id="1910950723001426294">શેરિંગના વિકલ્પોની સૂચિ બંધ છે.</translation>
 <translation id="1918175104945982129">Assistant વૉઇસ શોધની સંમતિ માટેનું UI અડધી ઊંચાઈએ ખોલ્યું</translation>
@@ -346,6 +349,7 @@
 <translation id="3029704984691124060">પાસફ્રેઝેસ મેળ ખાતા નથી</translation>
 <translation id="3031225630520268969">Assistant વૉઇસ શોધની સંમતિ માટેનું UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
 <translation id="3046945242843292318">આગલી વખતે આ સાઇટ પર ઝડપથી ઍક્સેસ મેળવો</translation>
 <translation id="305593374596241526">સ્થાન બંધ છે, તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
@@ -504,6 +508,7 @@
 <translation id="4016425174436051808">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# કલાક}one{# કલાક}other{# કલાક}}</translation>
 <translation id="4045764304651014138">વપરાશનો ડેટા</translation>
+<translation id="405399507749852140">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">સ્ક્રીનની ટોચ પર વિકલ્પો ઉપલબ્ધ છે</translation>
 <translation id="4062305924942672200">કાનુની માહિતી</translation>
@@ -557,6 +562,7 @@
 <translation id="4409271659088619928">તમારું શોધ એન્જિન <ph name="DSE" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
 <translation id="4411535500181276704">લાઇટ મોડ</translation>
 <translation id="4415276339145661267">તમારું Google એકાઉન્ટ મેનેજ કરો</translation>
+<translation id="4425140285732600465">કિંમત ટ્રૅક કરી રહ્યાં છીએ. જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
 <translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4450672886426705087">Google પરથી મળેલા શોધ પરિણામો.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ટૅબ બંધ કરો</translation>
@@ -754,6 +760,7 @@
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
 <translation id="5555525474779371165">તમારું Safe Browsing સંરક્ષણ પસંદ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
+<translation id="555816257274242153">કિંમત ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="5561549206367097665">નેટવર્કની રાહ જોઈ રહ્યાં છે…</translation>
 <translation id="5568069709869097550">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="55737423895878184">સ્થાન અને નોટિફિકેશનોની મંજૂરી છે</translation>
@@ -804,9 +811,11 @@
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5834764604050996579">કોઈ QR કોડને સ્કૅન કરવા માટે, Chromeને તમારા કૅમેરાનો ઉપયોગ કરવા દો</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Bookmarksમાંના ફોલ્ડર આઇકન પરથી તમારી ટ્રૅક કરેલી પ્રોડક્ટની ગોઠવણ કરો</translation>
 <translation id="5853623416121554550">થોભાવેલ</translation>
 <translation id="5854512288214985237">Googleને કોઈ આંકડા કે ક્રૅશ રિપોર્ટ મોકલવામાં આવતા નથી</translation>
 <translation id="5855546874025048181">આને સુધારો: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">કંઈક ખોટું થયું. કિંમત અપડેટ કરી શક્યા નથી.</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5862731021271217234">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
@@ -863,6 +872,7 @@
 <translation id="6140912465461743537">દેશ/પ્રદેશ</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
+<translation id="6150320133806434356">બુકમાર્ક સાચવ્યું</translation>
 <translation id="6154478581116148741">આ ઉપકરણ પરથી તમારા બધા પાસવર્ડને નિકાસ કરવા માટે સેટિંગમાંથી સ્ક્રીન લૉક ચાલુ કરો</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> ડેટા બચત</translation>
 <translation id="6159729262978459665">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે.</translation>
@@ -877,6 +887,7 @@
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
+<translation id="6277722725779679269">કિંમત ટ્રૅક કરી શક્યા નથી</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6292420053234093573">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="6294610283659775533">તમે સમાન Google એકાઉન્ટ વડે સાઇન ઇન કરેલા ડિવાઇસ વચ્ચે ટૅબ મોકલી શકો છો</translation>
@@ -910,6 +921,7 @@
 <translation id="6411219469806822692">વધુ ઉપર જઈ શકાતું નથી. પેજ પર વધુ ઉપરથી શરૂ કરીને જુઓ.</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="641643625718530986">પ્રિન્ટ…</translation>
+<translation id="6422857128426228781">તમને તમારી ટ્રૅક કરેલી પ્રોડક્ટ અહીં જોવા મળશે</translation>
 <translation id="6433501201775827830">તમારું શોધ એંજિન પસંદ કરો</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6437478888915024427">પેજ વિશે માહિતી</translation>
@@ -987,6 +999,7 @@
 <translation id="6817747507826986771">આ પેજ ઝડપથી શેર કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ટૅબ, પસંદ કરી</translation>
+<translation id="6828070228333235514">કિંમત ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="6850409657436465440">તમારું ડાઉનલોડ હજી પણ પ્રક્રિયામાં છે</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ટેબ્સ બંધ કર્યા</translation>
@@ -1303,6 +1316,7 @@
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8572344201470131220">છબી કૉપિ કરી</translation>
 <translation id="8583805026567836021">એકાઉન્ટ ડેટા સાફ કરી રહ્યું છે</translation>
+<translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
 <translation id="8602358303461588329">Chromeમાં સાઇન ઇન કરવાની શીટ બંધ કરવામાં આવી.</translation>
 <translation id="860282621117673749">કિંમતમાં ઘટાડા વિશે અલર્ટ</translation>

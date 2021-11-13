@@ -564,14 +564,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4918086044614829423">Nõustu</translation>
 <translation id="4924411785043111640">Taaskäivita ja lähtesta</translation>
 <translation id="4925542575807923399">Selle konto administraator nõuab, et mitmesse kontosse sisselogimisega seansil logitaks esmalt sisse sellesse kontosse.</translation>
-<translation id="4942878304446937978">Olekusalv, aeg <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
 <translation id="495046168593986294">Keri üles</translation>

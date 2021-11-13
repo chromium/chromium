@@ -200,6 +200,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Fortsätt</translation>
+<translation id="2360625459710946148">Ändra ordning efter</translation>
 <translation id="2367186422933365202">Det går inte att logga in på Chromebook</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2390318262976603432">Inställningar av språkkod</translation>
@@ -562,14 +563,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4924411785043111640">Starta om och återställ</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
-<translation id="4942878304446937978">Statusfältet, tid <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />
-        <ph name="NOTIFICATION" />
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Rulla upp</translation>
@@ -705,6 +698,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5977415296283489383">Hörlurar</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
+<translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="5992218262414051481">Högkontrastläget har aktiverats. Tryck på Ctrl+Sök+H igen om du vill inaktivera det.</translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>

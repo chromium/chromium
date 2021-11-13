@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4924411785043111640">重启并重置</translation>
 <translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
-<translation id="4942878304446937978">状态栏，时间为 <ph name="TIME" />，
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />，
-        <ph name="MIC" />，
-        <ph name="CAMERA" />，
-        <ph name="NOTIFICATION" />，
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>

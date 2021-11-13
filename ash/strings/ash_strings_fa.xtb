@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">شناسایی نشد</translation>
 <translation id="1746730358044914197">روش‌های ورودی توسط سرپرستتان پیکربندی می‌شوند.</translation>
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
+<translation id="1750088060796401187">فقط <ph name="MAX_DESK_LIMIT" /> میزکار مجاز است. یکی‌از میزکارها را بردارید تا بتوانید میزکار جدیدی باز کنید.</translation>
 <translation id="1761222317188459878">تغییر وضعیت اتصال شبکه. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + نقطه» تغییر کرده است. برای استفاده از کلید «درج»، کلید <ph name="LAUNCHER_KEY_NAME" /> + تبدیل + پس‌بر را فشار دهید.</translation>
 <translation id="1771761307086386028">پیمایش به راست</translation>
@@ -563,14 +564,6 @@
 <translation id="4918086044614829423">می‌پذیرم</translation>
 <translation id="4924411785043111640">بازراه‌اندازی و بازنشانی</translation>
 <translation id="4925542575807923399">سرپرست این حساب لازم می‌داند که این حساب اولین حسابی باشد که در جلسه چندگانه ورود به سیستم وارد سیستم شده باشد.</translation>
-<translation id="4942878304446937978">سینی وضعیت، زمان <ph name="TIME" />،
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />،
-        <ph name="MIC" />،
-        <ph name="CAMERA" />،
-        <ph name="NOTIFICATION" />،
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">غیرفعال کردن اعلان‌ها</translation>
 <translation id="4946376291507881335">ضبط</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>

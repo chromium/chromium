@@ -157,6 +157,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1422930527989633628">Saa pyytää lupaa löytää lähellä olevat Bluetooth-laitteet</translation>
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1428146450423315676">Pinoaja 7</translation>
+<translation id="142858679511221695">Pilvipalvelun käyttäjä</translation>
 <translation id="1428729058023778569">Näet tämän varoituksen, koska sivusto ei tue HTTPS:ää. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1432581352905426595">Hallinnoi hakukoneita</translation>
@@ -720,6 +721,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3329013043687509092">Värikylläisyys</translation>
 <translation id="3333762389743153920">Virtuaalista korttia ei saatavilla</translation>
 <translation id="3338095232262050444">Turvallinen</translation>
+<translation id="3339446062576134663">Pilvipalvelu (Ash)</translation>
 <translation id="3355823806454867987">Muuta välityspalvelimen asetuksia...</translation>
 <translation id="3360103848165129075">Maksujenkäsittelytaulukko</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ei tallenna<ph name="END_EMPHASIS" />
@@ -743,6 +745,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3380365263193509176">Tuntematon virhe</translation>
 <translation id="3380864720620200369">Asiakastunnus:</translation>
 <translation id="3381668585148405088">Todenna ostoksesi</translation>
+<translation id="3383566085871012386">Nykyinen järjestys</translation>
 <translation id="3387261909427947069">Maksutavat</translation>
 <translation id="3391030046425686457">Toimitusosoite</translation>
 <translation id="3391482648489541560">tiedostojen muokkaus</translation>
@@ -1412,6 +1415,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5478437291406423475">B6/C4 (kirjekuori)</translation>
 <translation id="5481076368049295676">Tämä sisältö saattaa yrittää asentaa vaarallisia ohjelmistoja laitteellesi tai varastaa tai poistaa tietojasi. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Lisää kelvollinen osoite</translation>
+<translation id="5485973315555778056">Pilvipalvelun laite</translation>
 <translation id="5490432419156082418">Osoitteet ja muita tietoja</translation>
 <translation id="5492298309214877701">Tällä yrityksen, organisaation tai oppilaitoksen intranetissä olevalla sivustolla on sama URL-osoite kuin ulkoisella verkkosivustolla.
     <ph name="LINE_BREAK" />
@@ -1441,6 +1445,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5571083550517324815">Nouto tästä osoitteesta ei onnistu. Valitse eri osoite.</translation>
 <translation id="5580958916614886209">Tarkista vanhentumiskuukausi ja yritä uudelleen.</translation>
 <translation id="5586446728396275693">Ei tallennettuja osoitteita</translation>
+<translation id="5587987780934666589">Alustan käyttäjä</translation>
 <translation id="5593349413089863479">Yhteys ei ole täysin suojattu</translation>
 <translation id="5595485650161345191">Osoitteen muokkaus</translation>
 <translation id="5598944008576757369">Valitse maksutapa</translation>
@@ -2129,6 +2134,7 @@ Lisätietoja:
 <translation id="7953569069500808819">Reunasidonta yläreunassa</translation>
 <translation id="7956713633345437162">Mobiilikirjanmerkit</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
+<translation id="7962467575542381659">Alustan laite</translation>
 <translation id="7966803981046576691">Työpaikkatilin tyyppi</translation>
 <translation id="79682505114836835">Arvo "<ph name="VALUE" />" on virheellinen heksadesimaaliväri.</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>

@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
+<translation id="1201402288615127009">Dalej</translation>
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
 <translation id="123124571410524056">Podejrzany portal</translation>
 <translation id="1238612778414822719">Opóźnienie HTTPS</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
+<translation id="4140251671072434548">Przeprowadź odblokowanie serwera RMA</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
 <translation id="4147897805161313378">Zdjęcia Google</translation>
 <translation id="4155551848414053977">Upewnij się, że skaner jest włączony i dostępny przez sieć lub połączenie bezpośrednie</translation>
@@ -468,6 +470,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Wpisz kod odblokowania:</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>

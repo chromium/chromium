@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
+<translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
 <translation id="123124571410524056">প’ৰ্টেলৰ সন্দেহ কৰা হৈছে</translation>
 <translation id="1238612778414822719">HTTPSৰ বিলম্বতা</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
 <translation id="3583278742022654445">ছিগনেলৰ ক্ষমতা দুৰ্বল। ৱাই-ফাইৰ ছিগনেলৰ উৎসটোৰ ওচৰলৈ গৈ চাওক।</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
+<translation id="360089215033199597">মেৰামতিৰ প্ৰক্ৰিয়াটো সহজ কৰিবলৈ ৱাই-ফাইৰ সৈতে সংযোগ কৰাৰ চুপাৰিছ কৰা হয়।
+        আপোনাৰ নেটৱৰ্ক ছেভ কৰা হ’ব।</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3606583719724308068">HTTPS ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> পৰীক্ষা</translation>
@@ -481,6 +484,7 @@
 <translation id="816013303019725643">আনলক কৰা ক’ডটো দিয়ক:</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
+<translation id="8217675307824400706">সংযুক্ত হওক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
 <translation id="8286154143153872371">অনুগ্ৰহ কৰি এটা নেটৱৰ্কৰ সৈতে সংযোগ কৰক আৰু ৱালপেপাৰ চাবলৈ পৃষ্ঠাখন পুনৰ ল’ড কৰক।</translation>

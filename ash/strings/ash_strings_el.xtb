@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">Αποδοχή</translation>
 <translation id="4924411785043111640">Επανεκκίνηση και επαναφορά</translation>
 <translation id="4925542575807923399">Ο διαχειριστής αυτού του λογαριασμού απαιτεί ο συγκεκριμένος λογαριασμός να είναι ο πρώτος λογαριασμός που συνδέεται σε μια περίοδο σύνδεσης πολλαπλών συνδέσεων.</translation>
-<translation id="4942878304446937978">Δίσκος κατάστασης, ώρα <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>

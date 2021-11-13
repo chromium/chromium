@@ -564,14 +564,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4918086044614829423">Accepta</translation>
 <translation id="4924411785043111640">Reinicia i restableix</translation>
 <translation id="4925542575807923399">L'administrador d'aquest compte requereix que sigui el primer compte que iniciï la sessió en una sessió amb inici de sessió múltiple.</translation>
-<translation id="4942878304446937978">Safata d'estat, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Desactiva les notificacions</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>

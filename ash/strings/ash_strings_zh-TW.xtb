@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">接受</translation>
 <translation id="4924411785043111640">重新啟動並重設</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
-<translation id="4942878304446937978">狀態匣，時間 <ph name="TIME" />，
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />，
-        <ph name="MIC" />，
-        <ph name="CAMERA" />，
-        <ph name="NOTIFICATION" />，
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>

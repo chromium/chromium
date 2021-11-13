@@ -201,6 +201,7 @@
 <translation id="2352467521400612932">სტილუსის პარამეტრები</translation>
 <translation id="2354174487190027830"><ph name="NAME" />-ის გააქტიურება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
+<translation id="2360625459710946148">გადალაგება კრიტერიუმით</translation>
 <translation id="2367186422933365202">თქვენს Chromebook-ში შესვლა ვერ მოხერხდა</translation>
 <translation id="2369165858548251131">„გამარჯობა“ ჩინურად</translation>
 <translation id="2390318262976603432">ლოკალის პარამეტრები</translation>
@@ -563,14 +564,6 @@
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4924411785043111640">გადატვირთვა და გადაყენება</translation>
 <translation id="4925542575807923399">ამ ანგარიშის ადმინისტრატორს მოეთხოვება რომ ეს ანგარიში იყოს მრავალჯერადი შესვლის სესიის პირველი ანგარიში.</translation>
-<translation id="4942878304446937978">სტატუსის პანელი, დრო: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">შეტყობინებების გამორთვა</translation>
 <translation id="4946376291507881335">აღბეჭდვა</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
@@ -706,6 +699,7 @@
 <translation id="5977415296283489383">ყურსასმენი</translation>
 <translation id="5978382165065462689">დისტანციური დამხმარეს მეშვეობით თვენი ეკრანის გაზიარების მართვა.</translation>
 <translation id="5980301590375426705">სტუმრის რეჟიმიდან გამოსვლა</translation>
+<translation id="598407983968395253">შაბლონის გამოყენება</translation>
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
 <translation id="5992218262414051481">მაღალკონტრასტული რეჟიმი ჩართულია. გამოსართავად ხელახლა დააჭირეთ კლავიშთა კომბინაციას: Ctrl+Search+H.</translation>
 <translation id="6018164090099858612">მიმდინარეობს სარკის რეჟიმიდან გამოსვლა</translation>

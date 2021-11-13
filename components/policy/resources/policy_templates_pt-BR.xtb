@@ -269,6 +269,13 @@
 <translation id="1352799151662469739">O tempo, em milissegundos, sem entrada do usuário até que a tela seja bloqueada quando o dispositivo estiver funcionando com energia CA.</translation>
 <translation id="1353416417709895349">Desativar verificações de interceptação de DNS e barras de informações oferecendo "http://intranetsite/" como alternativa.</translation>
 <translation id="1354424209129232709">Máximo:</translation>
+<translation id="1355050231181289439"> Esta política controla se a melhoria do mapeamento de atalhos de teclados internacionais está ativada.
+      Esse recurso garante que os atalhos funcionem de modo consistente em layouts de teclados internacionais e atalhos legados descontinuados.
+
+      Se esta política estiver desativada, a melhoria de atalhos de teclados internacionais ficará desativada.
+      Se ela estiver ativada, a melhoria ficará ativada.
+      Se a política for deixada sem definição, ela ficará ativada em dispositivos gerenciados e dispositivos de consumidores.
+      Observe que esta é uma política temporária para permitir que os usuários gerenciados continuem usando atalhos legados descontinuados. Esta política será descontinuada quando os atalhos personalizados ficarem disponíveis.</translation>
 <translation id="1359553908012294236">Se esta política é definida como "true" ou não é configurada, o <ph name="PRODUCT_NAME" /> ativa os logins de convidados. Os logins de convidados são perfis do <ph name="PRODUCT_NAME" /> nos quais todas as janelas ficam no modo de navegação anônima.
 
       Se esta política é definida como "false", o <ph name="PRODUCT_NAME" /> não permite que perfis de convidados sejam iniciados.</translation>
@@ -764,6 +771,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida como "Desativada" ou não for definida, a transição rápida não será usada.</translation>
 <translation id="1972134432340252414">Bloquear pontos de extensão legados no processo do navegador</translation>
 <translation id="1977581177449752640">Se a política for definida, o host de acesso remoto usará um certificado do cliente com o CN do emissor para se autenticar em <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Defina a política como <ph name="WILDCARD_VALUE" /> para usar qualquer certificado do cliente disponível. Este recurso será desativado se for deixado vazio ou sem definição.</translation>
+<translation id="1984423899110408165">Mostrar jornadas na página de histórico do Chrome</translation>
 <translation id="1988345404999458987">Oferece as configurações dos servidores de impressão disponíveis.
 
       Esta política permite fornecer a configuração de servidores de impressão externos no formato de arquivo JSON para dispositivos <ph name="PRODUCT_OS_NAME" />.
@@ -1495,6 +1503,14 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2725855586003209701">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a lista de usuários que fizeram login recentemente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não informarão a lista de usuários.</translation>
+<translation id="2725944143509568512">Esta política controla a visibilidade da jornada na página de histórico do Chrome.
+
+      Se a política estiver ativada, a jornada ficar visível em chrome://history/journeys.
+
+      Se estiver desativada, a jornada não ficará visível nessa página.
+
+      Se a política for deixada sem definição, a jornada ficará visível por padrão e os usuários poderão mudar a visibilidade.
+      </translation>
 <translation id="2730419309754848345">Padrão para imprimir PDF como imagem</translation>
 <translation id="2731627323327011390">Desativar o uso de certificados do <ph name="PRODUCT_OS_NAME" /> para apps Arc</translation>
 <translation id="2742843273354638707">Oculta o link do aplicativo e do rodapé da Chrome Web Store na página "Nova guia" e no iniciador de aplicativos do <ph name="PRODUCT_OS_NAME" />.
@@ -2143,6 +2159,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada" ou deixada sem definição, o DTC será desativado. Não será possível coletar, processar ou gerar relatórios de dados de diagnóstico e telemetria pelo dispositivo.</translation>
 <translation id="3450649825886735618">Não usar serviços da Web do Google para ajudar a solucionar erros de ortografia</translation>
+<translation id="3451422488938880786"> Permite ativar/desativar o remapeamento de atalhos de teclados internacionais</translation>
 <translation id="3451901387456196887">O usuário terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um código QR no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3456292544936505775">Essa política controla os períodos durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não tem permissão para procurar atualizações automaticamente.
       Isto é o que acontece quando ela é definida como uma lista não vazia de intervalos de tempo:
@@ -2180,6 +2197,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
        Um valor da lista de bloqueio de <ph name="ALL_EXTENSIONS" /> significa que todas as extensões estão bloqueadas e que os usuários só podem instalar extensões que estejam na lista de permissões.
 
        Por padrão, todas as extensões são permitidas. Mas, se você proibiu extensões por meio de uma política, use a lista de extensões permitidas para mudar essa política.</translation>
+<translation id="3501606938635483637">Os atalhos de teclados internacionais são associados ao glifo das teclas, não ao local delas.</translation>
 <translation id="3502555714327823858">Permitir todos os modos duplex</translation>
 <translation id="350443680860256679">Configurar ARC</translation>
 <translation id="350797926066071931">Ativar Traduzir</translation>
@@ -3117,6 +3135,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4802905909524200151">Configurar o comportamento de atualização do firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">É sempre reinicializado quando o usuário sai.</translation>
 <translation id="4807950475297505572">Os usuários menos utilizados ​​recentemente serão removidos até que haja espaço livre suficiente</translation>
+<translation id="4811210934875253713">A jornada fica visível em chrome://history/journeys.</translation>
 <translation id="4812270373673968774">Se a política for definida como "Sempre", a estante do <ph name="PRODUCT_OS_NAME" /> será ocultada automaticamente. Se ela for definida como "Nunca", a estante nunca será ocultada automaticamente.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, os usuários poderão decidir se a estante é ocultada automaticamente ou não.</translation>
@@ -4380,6 +4399,44 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.
 
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
+<translation id="6332192586629642626">A jornada não fica visível em chrome://history/journeys.</translation>
+<translation id="6332489309596092806">Se a política for definida, será especificada uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
+
+      Cada item da lista da política é um objeto com um elemento obrigatório:
+      <ph name="URL_LABEL" />, que é o URL do app da Web que será instalado.
+
+      Além de cinco elementos opcionais:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
+      para a maneira como o app da Web é aberto (o padrão é uma nova guia).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
+      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do
+      <ph name="MS_WIN_NAME" />.
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (a partir da versão 90 do <ph name="PRODUCT_NAME" />)
+      permite substituir o nome do app se ele não for um
+      Progressive Web App (PWA) ou o nome do app instalado
+      temporariamente se ele for um PWA, mas a autenticação for exigida antes de
+      concluir a instalação. Se um
+      <ph name="CUSTOM_NAME_LABEL" /> e um
+      <ph name="FALLBACK_APP_NAME_LABEL" /> forem fornecidos,
+      o segundo será ignorado.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (a partir da versão 96 do <ph name="PRODUCT_NAME" />)
+      permite substituir permanentemente os nomes de todos os apps da Web e PWAs. No momento, com suporte apenas no
+      <ph name="PRODUCT_OS_NAME" />.
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (a partir da versão 96 do <ph name="PRODUCT_NAME" />)
+      permite substituir os ícones dos apps instalados. Os
+      ícones precisam ser quadrados, ter no máximo 1 MB e estar em um destes
+      formatos: jpeg, png, gif, webp, ico. O valor de hash precisa ser o hash SHA256
+      do arquivo de ícone. No momento, com suporte apenas no
+      <ph name="PRODUCT_OS_NAME" />.
+
+      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Bloquear acesso de leitura com a API File System nestes sites</translation>
 <translation id="6334330017384340264">Esta política especifica quais aplicativos e URLs serão permitidos para restrições de uso por app.
         A lista de permissões configurada é aplicada aos apps instalados no <ph name="PRODUCT_OS_NAME" /> para um determinado usuário com limite de tempo por app.
@@ -5794,6 +5851,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 
       Se ela for ativada, o usuário poderá usar o <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
+<translation id="8025620823136567878">Os atalhos de teclados internacionais são associados o local das teclas, não ao glifo delas.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
@@ -6570,6 +6628,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
+<translation id="8934618237639919190">Por padrão, a jornada fica visível em chrome://history/journeys, mas os usuários podem mudar a visibilidade.</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 
       Se esta política for definida como verdadeira, os elementos de controle de formulários "legados" serão usados para todos os sites.

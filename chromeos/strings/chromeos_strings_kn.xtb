@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
+<translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1204296502688602597">DNS ವಿಳಂಬ</translation>
 <translation id="123124571410524056">ಶಂಕಿತ ಪೋರ್ಟಲ್</translation>
 <translation id="1238612778414822719">HTTPS ವಿಳಂಬ</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3583278742022654445">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ದುರ್ಬಲವಾಗಿದೆ. ವೈ-ಫೈ ಸಿಗ್ನಲ್ ಮೂಲದ ಸಮೀಪಕ್ಕೆ ಹೋಗಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
+<translation id="360089215033199597">ದುರಸ್ತಿ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಸುಲಭಗೊಳಿಸಲು ವೈಫೈಗೆ ಕನೆಕ್ಟ್ ಮಾಡುವುದನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.
+        ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="3606583719724308068">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿಳಂಬದ ಸಮಯವು ದೀರ್ಘವಾಗಿದೆ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ಪರೀಕ್ಷೆ</translation>
@@ -186,6 +189,7 @@
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4111761024568264522">USB ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
+<translation id="4140251671072434548">RMA ಸರ್ವರ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
@@ -476,8 +480,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">ಅನ್‌ಲಾಕ್ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
+<translation id="8217675307824400706">ಕನೆಕ್ಟ್ ಆಗಿರಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
 <translation id="8286154143153872371">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಹಾಗೂ ವಾಲ್‌ಪೇಪರ್ ವೀಕ್ಷಿಸಲು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>

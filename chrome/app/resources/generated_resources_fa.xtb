@@ -596,6 +596,7 @@
 <translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1611432201750675208">دستگاهتان قفل شده است</translation>
 <translation id="1612019740169791082">‏محتوی شما برای پشتیبانی از تغییر اندازه دیسک پیکربندی نشده است. برای تنظیم مقدار فضایی که برای Linux درنظر گرفته شده است، پشتیبان‌گیری کنید و سپس در محتوی جدیدی بازیابی کنید.</translation>
+<translation id="1613019471223620622">نمایش گذرواژه مربوط به <ph name="USERNAME" /> در <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">ممکن است حجم مجاز داده دستگاه همراهتان را مصرف کرده باشید. برای خرید داده بیشتر، از پورتال فعال‌سازی <ph name="NAME" /> بازدید کنید</translation>
 <translation id="161460670679785907">تلفن شناسایی نشد</translation>
 <translation id="1615337439947999338">‏ذخیره در «حساب Google» شما (<ph name="EMAIL" />)</translation>
@@ -1210,6 +1211,7 @@
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">منبع رسانه بدون نام</translation>
 <translation id="2224444042887712269">این تنظیم به <ph name="OWNER_EMAIL" /> متعلق است.</translation>
 <translation id="222447520299472966">باید حداقل یک آلبوم از «گالری هنری» انتخاب شود</translation>
 <translation id="2224551243087462610">ویرایش نام پوشه</translation>
@@ -3327,6 +3329,7 @@
 <translation id="4444304522807523469">‏دسترسی به اسکنرهای سند متصل شده از طریق USB یا در شبکه محلی</translation>
 <translation id="4444512841222467874">اگر فضای کافی در دسترس قرار نگیرد، ممکن است کاربران و داده‌ها به‌طور خودکار حذف شوند.</translation>
 <translation id="4446933390699670756">صفحه نمایش روی دستگاه دیگر نمایش داده شد</translation>
+<translation id="4448914100439890108">پنهان کردن گذرواژه مربوط به <ph name="USERNAME" /> در <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">نام کاربری شما به حساب سازمانی سازمانتان تعلق دارد. برای ثبت‌نام دستگاه‌ها در حساب، ابتدا مالکیت دامنه را در کنسول سرپرست به‌تأیید برسانید. باید امتیازهای سرپرستی در حساب به‌تأیید برسد.</translation>
 <translation id="4449996769074858870">این برگه در حال پخش صدا است.</translation>
 <translation id="4450274068924249931">وقتی صفحه‌نمایش بدون فعالیت است، عکس، ساعت، وضعیت آب‌وهوا، و اطلاعات رسانه نمایش داده می‌شود. فعال کردن محافظ صفحه باعث می‌شود نمایشگر درحین شارژ روشن بماند.</translation>
@@ -3851,6 +3854,7 @@
 <translation id="5009463889040999939">درحال تغییر نام نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5010043101506446253">مدیر گواهی‌نامه</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
+<translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، Ctrl+Search+7 را فشار دهید.</translation>
 <translation id="5017828934289857214">بعداً به من یادآوری شود</translation>
 <translation id="5018207570537526145">باز کردن وب‌سایت افزونه</translation>
@@ -4437,6 +4441,7 @@
 <translation id="5638309510554459422">‏افزونه‌ها و طرح‌های زمینه را در <ph name="BEGIN_LINK" />نت‌بازار Chrome<ph name="END_LINK" /> پیدا کنید</translation>
 <translation id="5639549361331209298">تازه‌سازی این صفحه، آن را نگهدارید تا گزینه‌های بیشتری را ببینید</translation>
 <translation id="5640133431808313291">مدیریت کلیدهای امنیتی</translation>
+<translation id="5641608986289282154">آغاز استفاده از <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">‏امضاکننده CRL</translation>
 <translation id="5643321261065707929">شبکه محدود</translation>
 <translation id="5643620609347735571">پاک کردن و ادامه دادن</translation>

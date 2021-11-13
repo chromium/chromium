@@ -564,14 +564,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4924411785043111640">Genstart og nulstil</translation>
 <translation id="4925542575807923399">Kontoadministratoren kræver, at denne konto er den første konto, der logges ind på, i en session med samlet login fra flere konti.</translation>
-<translation id="4942878304446937978">Statusbakke, tid <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Deaktiver notifikationer</translation>
 <translation id="4946376291507881335">Tag billeder</translation>
 <translation id="495046168593986294">Rul op</translation>

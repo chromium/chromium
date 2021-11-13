@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Normala (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1195447618553298278">Errore ezezaguna.</translation>
+<translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1204296502688602597">DNSaren latentzia</translation>
 <translation id="123124571410524056">Atari bat dagoela dirudi</translation>
 <translation id="1238612778414822719">HTTPS eskaeren latentzia</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">Gorde probaren xehetasunak</translation>
 <translation id="4111761024568264522">USB bidezko ukipen-panela</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
+<translation id="4140251671072434548">Desblokeatu RMA zerbitzaria</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
 <translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
@@ -261,6 +263,7 @@
 <translation id="5049856988445523908">SIMa blokeatuta dago (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Taldearen izena</translation>
 <translation id="5051044138948155788">Orri bakarra da hau. Eskaneatzeko prozesuaren hasierako orrira joango zara.</translation>
+<translation id="5061169534910302641">Eguneratu bertsioa eta berrabiarazi</translation>
 <translation id="5088172560898466307">Zerbitzariaren ostalari-izena</translation>
 <translation id="5089810972385038852">Estatua</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
@@ -473,6 +476,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Eskatu trafiko-kontagailuak</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Idatzi desblokeatzeko kodea:</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
 <translation id="8208861521865154048">Abantailak</translation>
 <translation id="8230672074305416752">Ezin izan da egin ping sarerako atebide lehenetsian</translation>

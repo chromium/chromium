@@ -560,14 +560,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4924411785043111640">Start på nytt og tilbakestill</translation>
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
-<translation id="4942878304446937978">Statusfelt, kl. <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
 <translation id="495046168593986294">Rull opp</translation>

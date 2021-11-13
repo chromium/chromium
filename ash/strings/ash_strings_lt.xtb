@@ -563,14 +563,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4924411785043111640">Paleisti ir nustatyti iš naujo</translation>
 <translation id="4925542575807923399">Šios paskyros administratorius reikalauja, kad kelių paskyrų sesijoje pirmiausia būtų prisijungta naudojant šią paskyrą.</translation>
-<translation id="4942878304446937978">Būsenos dėklas, laikas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>

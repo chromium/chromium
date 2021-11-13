@@ -157,6 +157,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1422930527989633628">Puede solicitar permiso para establecer conexión con dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1428146450423315676">Apilador 7</translation>
+<translation id="142858679511221695">Usuario de la nube</translation>
 <translation id="1428729058023778569">Se muestra esta advertencia porque este sitio no admite HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
@@ -716,6 +717,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">No admite una tarjeta virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
+<translation id="3339446062576134663">Nube (Ash)</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
@@ -739,6 +741,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3380365263193509176">Error desconocido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
 <translation id="3381668585148405088">Verificar tu compra</translation>
+<translation id="3383566085871012386">Orden de prioridad actual</translation>
 <translation id="3387261909427947069">Formas de pago</translation>
 <translation id="3391030046425686457">Dirección de entrega</translation>
 <translation id="3391482648489541560">edición de archivo</translation>
@@ -1403,6 +1406,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o borre tu información en tu dispositivo . <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Agregar una dirección válida</translation>
+<translation id="5485973315555778056">Máquina en la nube</translation>
 <translation id="5490432419156082418">Direcciones y más</translation>
 <translation id="5492298309214877701">En la intranet de la compañía, organización o escuela, este sitio tiene la misma URL que un sitio web externo
     <ph name="LINE_BREAK" />
@@ -1432,6 +1436,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5571083550517324815">No se puede retirar el artículo en esta dirección. Selecciona una diferente.</translation>
 <translation id="5580958916614886209">Comprueba el mes de vencimiento y vuelve a intentarlo</translation>
 <translation id="5586446728396275693">No hay direcciones guardadas</translation>
+<translation id="5587987780934666589">Usuario de la plataforma</translation>
 <translation id="5593349413089863479">La conexión no es totalmente segura</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5598944008576757369">Seleccionar forma de pago</translation>
@@ -2120,6 +2125,7 @@ Detalles adicionales:
 <translation id="7953569069500808819">Costura de borde superior</translation>
 <translation id="7956713633345437162">Favoritos del celular</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7962467575542381659">Máquina de la plataforma</translation>
 <translation id="7966803981046576691">Tipo de cuenta para el trabajo</translation>
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" es un código hexadecimal de color no válido.</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>

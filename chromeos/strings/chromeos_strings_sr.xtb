@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
+<translation id="1201402288615127009">Даље</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
 <translation id="123124571410524056">Сумња се на портал</translation>
 <translation id="1238612778414822719">HTTPS кашњење</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Сачувај детаље теста</translation>
 <translation id="4111761024568264522">USB тачпед</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
+<translation id="4140251671072434548">Обавите откључавање RMA сервера</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4147897805161313378">Google слике</translation>
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
@@ -237,6 +239,7 @@
 <translation id="4813345808229079766">Веза</translation>
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4835901797422965222">Нема активних мрежа</translation>
+<translation id="4839698083503556542">Направите сопствени филм</translation>
 <translation id="484790837831576105">(Android) DNS разрешавање</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
@@ -468,6 +471,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Затражи бројаче саобраћаја</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Унесите кôд за откључавање:</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8208861521865154048">Погодности</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>

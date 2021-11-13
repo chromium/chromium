@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Open in new tab in group</translation>
 <translation id="1103142993930332957">Help improve Chrome?</translation>
 <translation id="1105960400813249514">Screen Capture</translation>
+<translation id="1108938384783527433">History sync</translation>
 <translation id="1110914759170138831">Highlight was shortened</translation>
 <translation id="1111673857033749125">Bookmarks saved on your other devices will appear here.</translation>
 <translation id="1113597929977215864">Show simplified view</translation>
@@ -160,6 +161,7 @@
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
+<translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
@@ -858,6 +860,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6070730414166672373">Contacting your bank\u2026</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> hours left</translation>
+<translation id="6095578583683628124">If Google is also your default search engine, you’ll see better, contextually relevant suggestions</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6111020039983847643">data used</translation>
 <translation id="6112702117600201073">Refreshing page</translation>
@@ -1411,6 +1414,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>
 <translation id="9158770349521403363">Share content only</translation>
+<translation id="916446198114569890">The URLs that you visit are saved to your Google Account</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>

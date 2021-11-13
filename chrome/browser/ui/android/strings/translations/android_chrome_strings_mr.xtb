@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1197267115302279827">बुकर्माक हलवा</translation>
 <translation id="1201402288615127009">पुढील</translation>
+<translation id="1202892408424955784">माग ठेवलेली उत्पादने</translation>
 <translation id="1204037785786432551">लिंक डाउनलोड करा</translation>
 <translation id="1206892813135768548">लिंक मजकूर कॉपी करा</translation>
 <translation id="1208340532756947324">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Google शी संपर्क साधत आहे. याला एखादे मिनिट लागेल…</translation>
 <translation id="1416550906796893042">ॲप्लिकेशन आवृत्ती</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
+<translation id="1448440926884431741">तुमची माग ठेवलेली उत्पादने Bookmarks मध्ये व्यवस्थापित करा</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
 <translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पहा</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1883903952484604915">माझ्या फाइल</translation>
 <translation id="189358972401248634">इतर भाषा</translation>
+<translation id="1894023287452300670">येथे किमतीचा माग ठेवा</translation>
 <translation id="1905320231301365059">तुम्ही गुप्त मोडमध्ये डाउनलोड केलेल्या फाइल अजूनही हे डिव्हाइस वापरणाऱ्या कोणालाही दृश्यमान आहेत.</translation>
 <translation id="1910950723001426294">शेअरिंग पर्यांयाची सूची बंद आहे.</translation>
 <translation id="1918175104945982129">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI स्क्रीनवर अर्ध्या उंचीपर्यंत उघडले</translation>
@@ -346,6 +349,7 @@
 <translation id="3029704984691124060">सांकेतिक वाक्यांश जुळत नाहीत</translation>
 <translation id="3031225630520268969">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मदत मिळवा<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037517125981011456">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते</translation>
 <translation id="3046945242843292318">पुढील वेळी या साइटवर आणखी जलद जा</translation>
 <translation id="305593374596241526">स्‍थान बंद आहे; <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
@@ -504,6 +508,7 @@
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
+<translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4060598801229743805">स्क्रीनच्या शीर्षावर पर्याय उपलब्ध आहेत</translation>
 <translation id="4062305924942672200">कायदेशीर माहिती</translation>
@@ -557,6 +562,7 @@
 <translation id="4409271659088619928"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
+<translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4450672886426705087">Google वरील शोध परिणाम.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
@@ -754,6 +760,7 @@
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5555525474779371165">तुमचे सुरक्षित ब्राउझिंग संरक्षण निवडा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
+<translation id="555816257274242153">किमतीचा माग ठेवणे बंद केले</translation>
 <translation id="5561549206367097665">नेटवर्कची वाट पाहत आहे…</translation>
 <translation id="5568069709869097550">साइन इन करणे शक्य नाही</translation>
 <translation id="55737423895878184">स्‍थान आणि सूचनांना अनुमती आहे</translation>
@@ -804,9 +811,11 @@
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5834764604050996579">QR कोड स्कॅन करण्यासाठी, Chrome ला तुमचा कॅमेरा वापरू द्या</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">तुमची माग ठेवलेली उत्पादने Bookmarks मध्ये फोल्डर आयकन द्वारे व्यवस्थापित करा</translation>
 <translation id="5853623416121554550">थांबवले</translation>
 <translation id="5854512288214985237">Google कडे कोणतीही आकडेवारी किंवा क्रॅश अहवाल पाठवले जात नाहीत</translation>
 <translation id="5855546874025048181">सुधारित करा: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">काहीतरी चूक झाली. माग ठेवलेली किंमत अपडेट करता आली नाही.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5862731021271217234">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळवण्यासाठी, सिंक सुरू करा</translation>
@@ -863,6 +872,7 @@
 <translation id="6140912465461743537">देश/प्रदेश</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="614940544461990577">हे करून पहा:</translation>
+<translation id="6150320133806434356">बुकमार्क सेव्ह केला</translation>
 <translation id="6154478581116148741">तुमचे पासवर्ड या डिव्हाइसवरून एक्सपोर्ट करण्यासाठी सेटिंग्जमधील लॉक स्क्रीन सुरू करा</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6159729262978459665">सिंक केलेल्या सर्व डिव्हाइसवरून इतिहास साफ करते.</translation>
@@ -877,6 +887,7 @@
 उदाहरणार्थ, काही वेबसाइट तुम्ही भेट दिलेल्‍या इतर वेबसाइटवर आधारित नसलेल्‍या जाहिराती तुम्हाला दर्शवून या विनंतीस प्रतिसाद देऊ शकतात. अनेक वेबसाइट अद्यापही तुमचा ब्राउझिंग डेटा संकलित करून त्‍याचा वापर करतील - उदाहरणार्थ त्‍यांच्‍या वेबसाइटवर सुरक्षितता सुधारणे, आशय, जाहिराती आणि शिफारशी देऊ करणे आणि अहवाल आकडेवारी निर्माण करणे.</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6277522088822131679">पृष्‍ठ प्रिंट करण्‍यात एक समस्‍या होती. कृपया पुन्‍हा प्रयत्न करा.</translation>
+<translation id="6277722725779679269">माग ठेवलेली किंमत अपडेट करता आली नाही</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6292420053234093573">Chrome वापरून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="6294610283659775533">तुम्ही हेच Google खाते वापरून साइन केलेल्या डिव्हाइस दरम्यान टॅब पाठवू शकता</translation>
@@ -910,6 +921,7 @@
 <translation id="6411219469806822692">यापेक्षा वर जाऊ शकत नाही. पेजच्या आणखी वरून सुरुवात करून पहा.</translation>
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
 <translation id="641643625718530986">प्रिंट करा...</translation>
+<translation id="6422857128426228781">तुम्ही माग ठेवलेली उत्पादने येथे शोधू शकता</translation>
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6437478888915024427">पेज माहिती</translation>
@@ -987,6 +999,7 @@
 <translation id="6817747507826986771">हे पेज झटपट शेअर करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> हा टॅब निवडला</translation>
+<translation id="6828070228333235514">किमतीचा माग ठेवणे बंद करा</translation>
 <translation id="6846298663435243399">लोड करत आहे...</translation>
 <translation id="6850409657436465440">तुमचे डाउनलोड अजून प्रगतीपथावर आहे</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टॅब बंद केले</translation>
@@ -1303,6 +1316,7 @@
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8572344201470131220">इमेज कॉपी केली</translation>
 <translation id="8583805026567836021">खाते डेटा साफ करत आहे</translation>
+<translation id="859046281437143747">आणखी पर्याय बटणावरून किमतीचा माग ठेवा</translation>
 <translation id="860043288473659153">कार्डधारकाचे नाव</translation>
 <translation id="8602358303461588329">Chrome मध्ये साइन इन करा, बंद केले.</translation>
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>

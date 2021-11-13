@@ -15,7 +15,7 @@
 <translation id="1010498023906173788">આ ટૅબ સિરીઅલ પોર્ટ સાથે કનેક્ટ થયેલ છે.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{પેજ પ્રતિભાવ આપતું નથી}one{પેજ પ્રતિભાવ આપતું નથી}other{પેજ પ્રતિભાવ આપતું નથી}}</translation>
 <translation id="1011355516189274711">ટેક્સ્ટ ટૂ સ્પીચનું વૉલ્યૂમ</translation>
-<translation id="1012794136286421601">તમારી દસ્તાવેજ, શીટ, સ્લાઇડ, અને ડ્રોઇંગ્સ ફાઇલો સિંક થઈ રહી છે. ઓનલાઇન કે ઑફલાઇન તેમને વાપરવા માટે Google ડ્રાઇવ ઍપ મેમરીન ખોલો.</translation>
+<translation id="1012794136286421601">તમારી Docs, Sheets, Slides, અને Drawings ફાઇલો સિંક થઈ રહી છે. ઑનલાઇન કે ઑફલાઇન તેમને વાપરવા માટે Google Drive ઍપ ખોલો.</translation>
 <translation id="1012876632442809908">USB-C ઉપકરણ (આગળનું પોર્ટ)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
@@ -593,6 +593,7 @@
 <translation id="161042844686301425">સ્યાન</translation>
 <translation id="1611432201750675208">તમારું ડિવાઇસ લૉક કરેલું છે</translation>
 <translation id="1612019740169791082">ડિસ્કનું કદ બદલવાને સપોર્ટ કરવા માટે તમારા કન્ટેન્ટની ગોઠવણી કરેલી નથી. Linux માટે આરક્ષિત રાખેલી સ્પેસની માત્રાને ગોઠવવા માટે, બૅકઅપ લો અને પછી નવા કન્ટેનરમાં રિસ્ટોર કરો.</translation>
+<translation id="1613019471223620622"><ph name="DOMAIN" /> પર <ph name="USERNAME" />નો પાસવર્ડ બતાવો</translation>
 <translation id="1614511179807650956">બની શકે છે કે તમે તમારી મળેલી મોબાઇલ ડેટા લિમિટનો ઉપયોગ કરી લીધો હોય. વધુ ડેટા ખરીદવા માટે <ph name="NAME" /> ઍક્ટિવેશન પોર્ટલની મુલાકાત લો</translation>
 <translation id="161460670679785907">તમારો ફોન શોધવામાં અસમર્થ</translation>
 <translation id="1615337439947999338">તમારા Google એકાઉન્ટમાં સાચવો (<ph name="EMAIL" />)</translation>
@@ -1200,6 +1201,7 @@
 <translation id="2220529011494928058">સમસ્યાની જાણ કરો</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">નામ વગરનો મીડિયા સૉર્સ</translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
 <translation id="222447520299472966">ઓછામાં ઓછું એક આર્ટ ગૅલરી આલ્બમ પસંદ કરો</translation>
 <translation id="2224551243087462610">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
@@ -3322,6 +3324,7 @@
 <translation id="4444304522807523469">USB અથવા સ્થાનિક નેટવર્ક મારફતે જોડાયેલ દસ્તાવેજ સ્કેનર્સની ઍક્સેસ</translation>
 <translation id="4444512841222467874">જો સ્થાન ઉપલબ્ધ બનાવવામાં ન આવે, તો વપરાશકર્તાઓ અને ડેટા ઑટોમૅટિક રીતે કાઢી નાખવામાં આવી શકે છે.</translation>
 <translation id="4446933390699670756">પ્રતિબિંબિત</translation>
+<translation id="4448914100439890108"><ph name="DOMAIN" /> પર <ph name="USERNAME" />નો પાસવર્ડ છુપાવો</translation>
 <translation id="4449948729197510913">તમારું વપરાશકર્તા નામ તમારી સંસ્થાના એન્ટરપ્રાઇઝ એકાઉન્ટથી સંબંધિત છે. એકાઉન્ટ પર ડિવાઇસની નોંધણી કરાવવા માટે, પહેલા એડમિન કન્સોલ પર ડોમેનની માલિકીની ચકાસણી કરો. ચકાસણી કરવા માટે તમને એકાઉન્ટ પર વ્યવસ્થાપકીય અધિકારોની જરૂર પડશે.</translation>
 <translation id="4449996769074858870">આ ટેબ ઑડિઓ ચલાવી રહ્યું છે.</translation>
 <translation id="4450274068924249931">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો. સ્ક્રીન સેવર ચાલુ કરવાથી ચાર્જિંગ કરતી વખતે તમારું ડિસ્પ્લે ચાલુ રહેશે.</translation>
@@ -3845,6 +3848,7 @@
 <translation id="5009463889040999939">પ્રોફાઇલનું નામ બદલી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5010043101506446253">પ્રમાણપત્ર અધિકારી</translation>
 <translation id="5015344424288992913">પ્રૉક્સીને ઉકેલી રહ્યા છે...</translation>
+<translation id="5016491575926936899">તમે તમારા કમ્પ્યુટર પરથી ટેક્સ્ટ મોકલી શકો છો, તમારું ઇન્ટરનેટ કનેક્શન શેર કરી શકો છો, વાતચીતના નોટિફિકેશનનો જવાબ આપી શકો છો અને તમારી <ph name="DEVICE_TYPE" />ને તમારા ફોન વડે અનલૉક કરી શકો છો.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">તમે ટેક્સ્ટ કર્સર વડે કોઈપણ પેજ પર નૅવિગેટ કરી શકશો. બંધ કરવા માટે, Ctrl+Search+7 દબાવો.</translation>
 <translation id="5017828934289857214">મને પછીથી યાદ કરાવો</translation>
 <translation id="5018207570537526145">એક્સ્ટેંશન વેબસાઇટ ખોલો</translation>
@@ -4436,6 +4440,7 @@
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome વેબ દુકાન<ph name="END_LINK" />માં એક્સ્ટેંશન અને થીમ શોધો.</translation>
 <translation id="5639549361331209298">આ પેજને ફરીથી લોડ કરો, વધુ વિકલ્પો જોવા માટે દબાવી રાખો</translation>
 <translation id="5640133431808313291">સુરક્ષા કોડને મેનેજ કરો</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" />નો ઉપયોગ કરવાનું શરૂ કરો</translation>
 <translation id="5642508497713047">CRL હસ્તાક્ષરકર્તા</translation>
 <translation id="5643321261065707929">મીટર્ડ (ડેટા નિયંત્રણ) નેટવર્ક</translation>
 <translation id="5643620609347735571">સાફ કરો અને ચાલુ રાખો</translation>

@@ -200,6 +200,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2352467521400612932">Tetapan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Teruskan</translation>
+<translation id="2360625459710946148">Susun semula mengikut</translation>
 <translation id="2367186422933365202">Tidak dapat log masuk ke Chromebook anda</translation>
 <translation id="2369165858548251131">"Helo" dalam bahasa Cina</translation>
 <translation id="2390318262976603432">Tetapan Tempat Peristiwa</translation>
@@ -564,14 +565,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4924411785043111640">Mulakan semula dan tetapkan semula</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
-<translation id="4942878304446937978">Dulang status, masa <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
 <translation id="4946376291507881335">Tangkap</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
@@ -708,6 +701,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5977415296283489383">Fon kepala</translation>
 <translation id="5978382165065462689">Berkongsi kawalan skrin anda melalui Bantuan Jauh.</translation>
 <translation id="5980301590375426705">Keluar dari tetamu</translation>
+<translation id="598407983968395253">Gunakan templat</translation>
 <translation id="598882571027504733">Untuk mendapatkan kemas kini, mulakan semula Chromebook dengan papan kekunci yang dipasang.</translation>
 <translation id="5992218262414051481">Mod Kontras Tinggi didayakan. Tekan Ctrl+Cari+H semula untuk mematikannya.</translation>
 <translation id="6018164090099858612">Keluar daripada mod cermin</translation>

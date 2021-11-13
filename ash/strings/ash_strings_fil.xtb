@@ -563,14 +563,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4924411785043111640">I-restart at i-reset</translation>
 <translation id="4925542575807923399">Kinakailangan ng administrator sa account na ito na ang account na ito ang unang i-sign in na account sa isang session ng multiple na pag-sign in.</translation>
-<translation id="4942878304446937978">Status tray, oras <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">I-off ang mga notification</translation>
 <translation id="4946376291507881335">I-capture</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>

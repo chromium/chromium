@@ -157,6 +157,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1422930527989633628">Môže žiadať o povolenie objavovať zariadenia s rozhraním Bluetooth v okolí</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="1428146450423315676">Odkladač č. 7</translation>
+<translation id="142858679511221695">Používateľ cloudu</translation>
 <translation id="1428729058023778569">Toto upozornenie sa vám zobrazuje, pretože tento web nepodporuje protokol HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1432581352905426595">Spravovať vyhľadávače</translation>
@@ -712,6 +713,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3329013043687509092">Sýtosť</translation>
 <translation id="3333762389743153920">Nespĺňa podmienky na pridelenie virtuálnej karty</translation>
 <translation id="3338095232262050444">Zabezpečené</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Zmeniť nastavenia proxy...</translation>
 <translation id="3360103848165129075">Hárok obslužného nástroja platieb</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukladať<ph name="END_EMPHASIS" />:
@@ -735,6 +737,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3380365263193509176">Neznáma chyba</translation>
 <translation id="3380864720620200369">ID klienta:</translation>
 <translation id="3381668585148405088">Overenie nákupu</translation>
+<translation id="3383566085871012386">Aktuálne poradie uprednostnenia</translation>
 <translation id="3387261909427947069">Spôsoby platby</translation>
 <translation id="3391030046425686457">Doručovacia adresa</translation>
 <translation id="3391482648489541560">úprava súborov</translation>
@@ -1398,6 +1401,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5478437291406423475">B6/C4 (obálka)</translation>
 <translation id="5481076368049295676">Tento obsah sa môže pokúsiť nainštalovať v zariadení nebezpečný softvér, ktorý ukradne alebo odstráni vaše informácie. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Pridanie platnej adresy</translation>
+<translation id="5485973315555778056">Počítač cloudu</translation>
 <translation id="5490432419156082418">Adresy a ďalšie údaje</translation>
 <translation id="5492298309214877701">Tento web v intranete danej spoločnosti, organizácie či školy má rovnakú webovú adresu ako externý web.
     <ph name="LINE_BREAK" />
@@ -1427,6 +1431,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5571083550517324815">Vyzdvihnutie na tejto adrese nie je možné. Vyberte inú adresu.</translation>
 <translation id="5580958916614886209">Skontrolujte mesiac vypršania platnosti a skúste to znova</translation>
 <translation id="5586446728396275693">Žiadne uložené adresy</translation>
+<translation id="5587987780934666589">Používateľ platformy</translation>
 <translation id="5593349413089863479">Pripojenie nie je úplne zabezpečené</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="5598944008576757369">Zvoliť spôsob platby</translation>
@@ -2114,6 +2119,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7953569069500808819">Zošiť hrebeňovou väzbou hore</translation>
 <translation id="7956713633345437162">Mobilné záložky</translation>
 <translation id="7961015016161918242">Nikdy</translation>
+<translation id="7962467575542381659">Počítač platformy</translation>
 <translation id="7966803981046576691">Typ účtu úlohy</translation>
 <translation id="79682505114836835">Hodnota <ph name="VALUE" /> nie je platný hex kód farby.</translation>
 <translation id="7968982339740310781">Zobraziť podrobnosti</translation>

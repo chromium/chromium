@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{បានអនុញ្ញាត <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}other{បានអនុញ្ញាត <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}}</translation>
 <translation id="2434158240863470628">ការទាញយក​បានបញ្ចប់ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">ស្នើគេហទំព័រសម្រាប់កុំព្យូទ័រជានិច្ច</translation>
 <translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="2485422356828889247">លុបការតំឡើង</translation>
 <translation id="2490684707762498678">ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="APP_NAME" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">ដកហូតសិទ្ធិអនុញ្ញាតឧបករណ៍</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{កំពុងប្រើខូគី 1}other{កំពុងប្រើខូគី #}}</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
+<translation id="848952951823693243">ស្នើគេហទំព័រសម្រាប់ឧបករណ៍ចល័តជានិច្ច</translation>
 <translation id="851751545965956758">ទប់​ស្កាត់​ទំព័រ​មិន​ឱ្យ​ភ្ជាប់​ជាមួយ​ឧបករណ៍</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
 <translation id="857943718398505171">បានអនុញ្ញាត (បានណែនាំ)</translation>

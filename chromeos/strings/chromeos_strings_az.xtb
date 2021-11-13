@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Orta (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1195447618553298278">Naməlum xəta.</translation>
+<translation id="1201402288615127009">Növbəti</translation>
 <translation id="1204296502688602597">DNS Gecikməsi</translation>
 <translation id="123124571410524056">Portal şübhəsi var</translation>
 <translation id="1238612778414822719">HTTPS Gecikməsi</translation>
@@ -62,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanlama ləğv edilir</translation>
 <translation id="1851218745569890714">Video Konfrans</translation>
+<translation id="1857850044054738019">Cihaz yeni müştəriyə verilmək üçün ehtiyatda saxlansa və ya yenilənsə, bu seçimi edin.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Avadanlıq versiyası</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
@@ -195,6 +197,7 @@
 <translation id="4244962993387259361">Yaddaş testi etmək üçün minimum 500 MB boş yaddaşınız olmalıdır. Yaddaşda yer boşaltmaq üçün Ayarlar &gt; Yaddaş menecerinə daxil olun.</translation>
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
 <translation id="4271957103967917607">Tam Ekranda BAxın</translation>
+<translation id="4275799948641988986">Təmirdən sonra cihazdan kim istifadə edəcək?</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
@@ -259,6 +262,7 @@
 <translation id="5049856988445523908">SIM Kilidlənib (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Qrup adı</translation>
 <translation id="5051044138948155788">Bu, yeganə səhifədir. Bu, sizi skanlamanı başlatma ekranına aparacaq.</translation>
+<translation id="5061169534910302641">Versiyanı güncəlləyin və yenidən başladın</translation>
 <translation id="5088172560898466307">Serverin host adı</translation>
 <translation id="5089810972385038852">Dövlət</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
@@ -409,6 +413,7 @@
 <translation id="7297226631177386107">Alov divarı aktiv olduqda HTTPS vebsaytlarına qoşulmaq olmur</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Cihaz başqa şəxsin mülkiyyətinə keçəcək</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
@@ -416,6 +421,8 @@
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
+<translation id="7451112128070628323">Cihazın mülkiyyəti dəyişmirsə, bu seçimi edin.
+        Məsələn, cihaz təşkilat daxilində başqa bir şəxsə ötürüldükdə.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC ünvanı</translation>
@@ -540,6 +547,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
+<translation id="9095415590198785865">Cihaz eyni şəxsin mülkiyyətinə keçəcək</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>

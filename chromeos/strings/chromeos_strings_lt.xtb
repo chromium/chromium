@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Vidutiniškas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
+<translation id="1201402288615127009">Kitas</translation>
 <translation id="1204296502688602597">DNS delsa</translation>
 <translation id="123124571410524056">Įtariamas portalas</translation>
 <translation id="1238612778414822719">HTTPS delsa</translation>
@@ -259,6 +260,7 @@
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupės pavadinimas</translation>
 <translation id="5051044138948155788">Tai vienintelis puslapis. Būsite nukreipti į nuskaitymo pradžios ekraną.</translation>
+<translation id="5061169534910302641">Atnaujinti versiją ir paleisti iš naujo</translation>
 <translation id="5088172560898466307">Prieglobos serverio pavadinimas</translation>
 <translation id="5089810972385038852">Valstija</translation>
 <translation id="5142961317498132443">Autentifikavimas</translation>

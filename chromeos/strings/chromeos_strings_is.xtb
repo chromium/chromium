@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Í meðallagi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1195447618553298278">Óþekkt villa.</translation>
+<translation id="1201402288615127009">Áfram</translation>
 <translation id="1204296502688602597">DNS-biðtími</translation>
 <translation id="123124571410524056">Grunur um gátt</translation>
 <translation id="1238612778414822719">HTTPS-biðtími</translation>
@@ -62,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Hættir við að skanna</translation>
 <translation id="1851218745569890714">Myndfundur</translation>
+<translation id="1857850044054738019">Veldu þennan valkost ef tækið er skráð aftur í birgðir eða ef endurnýja á tækið
+        og afhenda það nýjum viðskiptavini.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Útgáfa vélbúnaðar</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
@@ -195,6 +198,7 @@
 <translation id="4244962993387259361">Þú verður að hafa a.m.k. 500 MB laus til að keyra minnisprófun. Til að losa um pláss skaltu opna Stillingar &gt; Geymslustjórnun.</translation>
 <translation id="4258281355379922695">HTTP-biðtími</translation>
 <translation id="4271957103967917607">Skoða á öllum skjánum</translation>
+<translation id="4275799948641988986">Hver mun nota tækið eftir að viðgerð er lokið?</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
 <translation id="4378373042927530923">Ekki keyra</translation>
@@ -259,6 +263,7 @@
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
 <translation id="5051044138948155788">Þetta er eina síðan. Þetta opnar upphafsskjá skönnunar.</translation>
+<translation id="5061169534910302641">Uppfæra útgáfu og endurræsa</translation>
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
@@ -410,6 +415,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7297226631177386107">Ekki er hægt að tengjast HTTPS-vefsvæðum í gegnum eldvegg</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Tækið verður afhent öðrum notanda</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7359657277149375382">Skráargerð</translation>
@@ -417,6 +423,9 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skönnun lokið. 1 síða skönnuð}one{Skönnun lokið. {NUMBER_OF_PAGES} síða skönnuð}other{Skönnun lokið. {NUMBER_OF_PAGES} síður skannaðar}}</translation>
+<translation id="7451112128070628323">Veldu þennan valkost ef eignarhald tækisins breytist ekki.
+        Þegar tækið er t.d. flutt yfir til annars notanda
+        innan sama fyrirtækis.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7487067081878637334">Tækni</translation>
 <translation id="7490813197707563893">MAC-vistfang</translation>
@@ -541,6 +550,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
+<translation id="9095415590198785865">Tækið verður afhent sama notanda</translation>
 <translation id="9095775724867566971">VM-viðbót</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>

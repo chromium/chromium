@@ -200,6 +200,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2352467521400612932">Stillingar penna</translation>
 <translation id="2354174487190027830">Virkjar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
+<translation id="2360625459710946148">Endurraða eftir</translation>
 <translation id="2367186422933365202">Ekki tókst að skrá þig inn á Chromebook</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2390318262976603432">Stillingar tungumálskóða</translation>
@@ -562,14 +563,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4924411785043111640">Endurræsa og endurstilla</translation>
 <translation id="4925542575807923399">Stjórnandi þessa reiknings krefst þess að reikningurinn sé fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
-<translation id="4942878304446937978">Stöðubakki, klukkan er <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Slökkva á tilkynningum</translation>
 <translation id="4946376291507881335">Taka mynd</translation>
 <translation id="495046168593986294">Fletta upp</translation>
@@ -705,6 +698,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5977415296283489383">Heyrnartól</translation>
 <translation id="5978382165065462689">Stjórn yfir skjánum þínum er deilt í gegnum fjaraðstoð.</translation>
 <translation id="5980301590375426705">Loka gestastillingu</translation>
+<translation id="598407983968395253">Nota sniðmát</translation>
 <translation id="598882571027504733">Endurræstu Chromebook með lyklaborðið tengt til að uppfæra</translation>
 <translation id="5992218262414051481">Kveikt á stillingu fyrir mikil birtuskil. Ýttu aftur á Ctrl+leitarhnappinn+H til að slökkva á henni.</translation>
 <translation id="6018164090099858612">Hættir í spegilstillingu</translation>

@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">ശരാശരി (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1195447618553298278">അജ്ഞാത പിശക്.</translation>
+<translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1204296502688602597">DNS പ്രതികരണ സമയം</translation>
 <translation id="123124571410524056">പോർട്ടൽ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">മീറ്റർ ചെയ്‌ത വൈഫൈ</translation>
 <translation id="3583278742022654445">സിഗ്‌നൽ ശക്തി ദുർബലമാണ്. വൈഫൈ സിഗ്നൽ ഉറവിടത്തിന് കൂടുതൽ അടുത്തേക്ക് നീക്കി ശ്രമിക്കുക.</translation>
 <translation id="3595596368722241419">ബാറ്ററി നിറഞ്ഞു</translation>
+<translation id="360089215033199597">റിപ്പയർ പ്രക്രിയ കൂടുതൽ എളുപ്പമാക്കാൻ വൈഫൈലേക്ക് കണക്റ്റ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്നു.
+        നിങ്ങളുടെ നെറ്റ്‌വർക്ക് സംരക്ഷിക്കും.</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> പരിശോധന</translation>
@@ -480,6 +483,7 @@
 <translation id="816013303019725643">അൺലോക്ക് കോഡ് നൽകുക:</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
+<translation id="8217675307824400706">കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="8246209727385807362">അജ്ഞാത സേവനദാതാവ്</translation>
 <translation id="8286154143153872371">വാൾപേപ്പർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>

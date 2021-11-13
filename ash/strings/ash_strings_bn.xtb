@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">স্বীকার</translation>
 <translation id="4924411785043111640">রিস্টার্ট করুন এবং রিসেট করুন</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
-<translation id="4942878304446937978">স্ট্যাটাস ট্রে, সময় <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="4946376291507881335">ক্যাপচার করুন</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>

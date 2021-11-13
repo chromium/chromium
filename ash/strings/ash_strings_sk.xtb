@@ -201,6 +201,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2352467521400612932">Nastavenia dotykového pera</translation>
 <translation id="2354174487190027830">Aktivujte sa sieť <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Pokračovať</translation>
+<translation id="2360625459710946148">Zoradenie podľa</translation>
 <translation id="2367186422933365202">Do Chromebooku sa nedá prihlásiť</translation>
 <translation id="2369165858548251131">„Dobrý deň“ po čínsky</translation>
 <translation id="2390318262976603432">Miestne nastavenia</translation>
@@ -564,14 +565,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4924411785043111640">Reštartovať a resetovať</translation>
 <translation id="4925542575807923399">Správca tohto účtu vyžaduje, aby sa tento účet v relácii viacnásobného prihlásenia prihlásil ako prvý.</translation>
-<translation id="4942878304446937978">Stavový panel, čas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Vypnúť upozornenia</translation>
 <translation id="4946376291507881335">Nasnímať</translation>
 <translation id="495046168593986294">Posunúť nahor</translation>
@@ -708,6 +701,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5977415296283489383">Slúchadlo</translation>
 <translation id="5978382165065462689">Ovládanie obrazovky sa zdieľa prostredníctvom Vzdialenej pomoci.</translation>
 <translation id="5980301590375426705">Ukončiť rel. hosťa</translation>
+<translation id="598407983968395253">Použiť šablónu</translation>
 <translation id="598882571027504733">Ak chcete získať aktualizáciu, Chromebook s pripojenou klávesnicou reštartujte.</translation>
 <translation id="5992218262414051481">Režim vysokého kontrastu je aktívny. Vypnete ho opätovným stlačením kombinácie klávesov Ctrl+Hľadať+H.</translation>
 <translation id="6018164090099858612">Ukončuje sa režim zrkadlenia</translation>

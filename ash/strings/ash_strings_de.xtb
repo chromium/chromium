@@ -564,14 +564,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4924411785043111640">Neu starten und zurücksetzen</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
-<translation id="4942878304446937978">Statusleiste, Uhrzeit <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
 <translation id="4946376291507881335">Aufnahme</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>

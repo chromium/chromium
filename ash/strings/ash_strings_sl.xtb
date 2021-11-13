@@ -563,14 +563,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
 <translation id="4924411785043111640">Znova zaženi in ponastavi</translation>
 <translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
-<translation id="4942878304446937978">Vrstica stanja, čas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
 <translation id="4946376291507881335">Zajemi</translation>
 <translation id="495046168593986294">Pomik navzgor</translation>

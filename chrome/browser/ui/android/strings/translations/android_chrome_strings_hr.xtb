@@ -258,6 +258,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
 <translation id="2561519700418191927">Pregledi videozapisa</translation>
 <translation id="2567385386134582609">SLIKA</translation>
+<translation id="2567545343356994513">Brža, proaktivna zaštita od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="2571711316400087311">Ponudi slanje stranica na drugim jezicima na Google prevoditelj</translation>
 <translation id="2581165646603367611">Time će se izbrisati kolačići, predmemorija i ostali podaci o web-lokacijama koje Chrome ne smatra važnima.</translation>
 <translation id="2587052924345400782">Dostupna je novija verzija</translation>
@@ -485,6 +486,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="395377504920307820">Upotrebljavaj bez računa</translation>
 <translation id="3958287878205277013">Da biste izbrisali povijest anonimnog pregledavanja s uređaja, zatvorite sve anonimne kartice.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati stranicu kad bude spreman}one{Chrome će učitati stranice kad bude spreman}few{Chrome će učitati stranice kad bude spreman}other{Chrome će učitati stranice kad bude spreman}}</translation>
+<translation id="3962119236270174787">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni</translation>
 <translation id="3962957115499249330">Obavijest će se prikazati kad preuzimanje započne na Wi-Fiju.</translation>
 <translation id="3963007978381181125">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne može provjeriti vaše zaporke</translation>
@@ -949,6 +951,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6627583120233659107">Uredi mapu</translation>
 <translation id="6633067410344541938">Otključaj anonimni način</translation>
 <translation id="663674369910034433">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljcima <ph name="BEGIN_LINK1" />Sinkronizacija<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Googleove usluge<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Blokiraj cijelo vrijeme</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6643649862576733715">Poredaj po količini spremljenih podataka</translation>
 <translation id="6648459603387803038">Vaš administrator može daljinski promijeniti postavke preglednika. Aktivnostima na ovom uređaju može se upravljati i izvan Chromea.</translation>
@@ -1075,6 +1078,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7435356471928173109">Isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava s Chromea</translation>
 <translation id="7438641746574390233">Kad je omogućen Jednostavni način, Chrome upotrebljava Googleove poslužitelje kako bi se stranice brže učitale. Jednostavni način ponovo ispisuje vrlo spore stranice kako bi se učitao samo neophodan sadržaj. Jednostavni se način ne primjenjuje na anonimne stranice.</translation>
+<translation id="7443901082822119557">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="7444811645081526538">Više kategorija</translation>
 <translation id="7453467225369441013">Odjavit ćete se s većine web-lokacija, ali se nećete odjaviti s Google računa.</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
@@ -1182,6 +1186,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="799576009106109668">Pregledavat ćete brže jer se sadržaj učitava proaktivno na temelju vašeg posjeta trenutačnoj web-stranici</translation>
 <translation id="7998918019931843664">Ponovno otvaranje zatvorene kartice</translation>
 <translation id="8004582292198964060">Preglednik</translation>
+<translation id="8006818846907410687">Blokiraj tijekom upotrebe u anonimnom načinu</translation>
 <translation id="8013372441983637696">Izbriši podatke iz Chromea i s ovog uređaja</translation>
 <translation id="8015452622527143194">Vraćanje svega na stranici na zadanu veličinu</translation>
 <translation id="8026334261755873520">Brisanje podataka o pregledavanju</translation>
@@ -1229,6 +1234,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8223642481677794647">Izbornik kartica feeda</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica upotrebljava previše memorije, pa je Chrome uklonio dio sadržaja.</translation>
+<translation id="8255617931166444521">Pojedina web-lokacija može upotrebljavati vaše kolačiće samo za uvid u vašu aktivnost pregledavanja na toj web-lokaciji</translation>
 <translation id="8260126382462817229">Ponovo se pokušajte prijaviti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="82619448491672958">Pogledajte ostale kartice</translation>

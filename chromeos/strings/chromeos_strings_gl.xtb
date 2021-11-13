@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
+<translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
 <translation id="1238612778414822719">Latencia de HTTPS</translation>
@@ -62,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando escaneo</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
+<translation id="1857850044054738019">Selecciona esta opción se o dispositivo se vai reacondicionar ou volver poñer en distribución para novos clientes.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión do hardware</translation>
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
@@ -195,6 +197,7 @@
 <translation id="4244962993387259361">Como mínimo, precísanse 500 MB de espazo para executar unha proba de memoria. Se queres liberar espazo, vai a Configuración &gt; Xestión do almacenamento.</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4271957103967917607">Ver pantalla completa</translation>
+<translation id="4275799948641988986">Despois da reparación, quen vai usar o dispositivo?</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
 <translation id="4378373042927530923">Non se executou</translation>
@@ -411,6 +414,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Vai cambiar a propiedade do dispositivo</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
@@ -418,6 +422,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7415801143053185905">Latencia de HTTP moi alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Escaneouse 1 páxina}other{A operación rematou. Escaneáronse {NUMBER_OF_PAGES} páxinas}}</translation>
+<translation id="7451112128070628323">Selecciona esta opción se non vai cambiar a propiedade do dispositivo (por exemplo, se o dispositivo se vai transferir a unha persoa diferente dentro da mesma organización).</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7487067081878637334">Tecnoloxía</translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>
@@ -542,6 +547,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">En uso</translation>
+<translation id="9095415590198785865">Non vai cambiar a propiedade do dispositivo</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>

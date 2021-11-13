@@ -4083,6 +4083,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5265562206369321422">Ngoại tuyến hơn một tuần</translation>
 <translation id="5265797726250773323">Lỗi khi cài đặt</translation>
 <translation id="5266113311903163739">Lỗi nhập Tổ chức phát hành chứng chỉ</translation>
+<translation id="526622169288322445">Thao tác khác cho <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">In không thành công</translation>
 <translation id="5275352920323889391">Cún</translation>
 <translation id="527605982717517565">Luôn cho phép JavaScript trên <ph name="HOST" /></translation>
@@ -5461,6 +5462,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6775163072363532304">Các thiết bị hiện có sẽ xuất hiện ở đây.</translation>
 <translation id="6777817260680419853">Đã chặn chuyển hướng</translation>
 <translation id="6778737459546443941">Cha mẹ của bạn chưa phê duyệt trang web</translation>
+<translation id="6779092717724412415">Để tạo một khu vực được làm nổi bật như thế này, hãy chọn văn bản bất kỳ rồi nhấp chuột phải.</translation>
 <translation id="6779447100905857289">giỏ hàng của bạn</translation>
 <translation id="677965093459947883">Rất nhỏ</translation>
 <translation id="6781005693196527806">&amp;Quản lý công cụ tìm kiếm...</translation>
@@ -6275,6 +6277,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7625823789272218216">Thẻ mới ở bên Trái</translation>
 <translation id="7628201176665550262">Tốc độ làm mới</translation>
 <translation id="7629827748548208700">Thẻ: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Thiết bị này do <ph name="MANAGER" /> quản lý và yêu cầu bạn phải đăng nhập mỗi lần sử dụng.</translation>
 <translation id="7631014249255418691">Đã sao lưu thành công các ứng dụng và tệp Linux</translation>
 <translation id="7631205654593498032">Khi kết nối các thiết bị, bạn đồng ý rằng <ph name="DEVICE_TYPE" /> có thể:</translation>
 <translation id="7631887513477658702">&amp;Luôn Mở Loại Tệp Này</translation>

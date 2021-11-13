@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Atidar. naujame grup. skirtuke</translation>
 <translation id="1103142993930332957">Norite padėti tobulinti „Chrome“?</translation>
 <translation id="1105960400813249514">Ekrano fiksavimas</translation>
+<translation id="1108938384783527433">Istorijos sinchronizavimas</translation>
 <translation id="1110914759170138831">Paryškinimas sutrumpintas</translation>
 <translation id="1111673857033749125">Čia bus rodomos kituose įrenginiuose išsaugotos žymės.</translation>
 <translation id="1113597929977215864">Rodyti supaprastintą rodinį</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
 <translation id="200114059308480249">Įtraukti aplinkinį tekstą į „Google“ paieškas?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# failas}one{# failas}few{# failai}many{# failo}other{# failų}}</translation>
+<translation id="2020309681647789787">Istorija bus rodoma visuose sinchronizuojamuose įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="204321170514947529">„<ph name="APP_NAME" />“ duomenų taip pat yra naršyklėje „Chrome“</translation>
@@ -847,6 +849,7 @@ Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyv
 <translation id="6070730414166672373">Susisiekiama su banku\u2026</translation>
 <translation id="6085886413119427067">Nustatoma, kaip prisijungti prie svetainių saugiu ryšiu</translation>
 <translation id="60923314841986378">Liko <ph name="HOURS" /> val.</translation>
+<translation id="6095578583683628124">Jei „Google“ taip pat yra jūsų numatytasis paieškos variklis, matysite geresnius, kontekstą atitinkančius pasiūlymus</translation>
 <translation id="6108923351542677676">Nustatoma…</translation>
 <translation id="6111020039983847643">išnaudoti duomenys</translation>
 <translation id="6112702117600201073">Puslapio atnaujinimas</translation>
@@ -1391,6 +1394,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="9148126808321036104">Prisijungti dar kartą</translation>
 <translation id="9155898266292537608">Taip pat galite ieškoti greitai paliesdami žodį</translation>
 <translation id="9158770349521403363">Bendrinti tik turinį</translation>
+<translation id="916446198114569890">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tikrinta prieš 1 minutę}one{Tikrinta prieš # minutę}few{Tikrinta prieš # minutes}many{Tikrinta prieš # minutės}other{Tikrinta prieš # minučių}}</translation>
 <translation id="9204836675896933765">Liko failų: 1</translation>

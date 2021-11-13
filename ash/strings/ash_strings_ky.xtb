@@ -563,14 +563,6 @@
 <translation id="4918086044614829423">Кабыл алуу</translation>
 <translation id="4924411785043111640">Өчүрүп-күйгүзүү жана баштапкы абалга келтирүү</translation>
 <translation id="4925542575807923399">Бул аккаунтунун администратору анын бир нече профиль сеансындагы аккаунтка биринчи кирген каттоо эсеби болушун талап кылат.</translation>
-<translation id="4942878304446937978">Абал түпкүчү, убакыт <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Билдирмелерди өчүрүү</translation>
 <translation id="4946376291507881335">Сүрөткө тартуу</translation>
 <translation id="495046168593986294">Өйдө сыдыруу</translation>

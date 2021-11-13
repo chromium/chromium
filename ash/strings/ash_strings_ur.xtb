@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">قبول کریں</translation>
 <translation id="4924411785043111640">ری سٹارٹ اور ری سیٹ کریں</translation>
 <translation id="4925542575807923399">اس اکاؤنٹ کے منتظم کا تقاضہ ہے کہ یہ اکاؤنٹ متعدد سائن سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہو۔</translation>
-<translation id="4942878304446937978">صورتحال کی ٹرے، وقت <ph name="TIME" />،
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />،
-        <ph name="MIC" />،
-        <ph name="CAMERA" />،
-        <ph name="NOTIFICATION" />،
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>

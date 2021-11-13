@@ -82,6 +82,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="124116460088058876">Další jazyky</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Tučné</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v nastavení Chrome OS můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="1250759482327835220">Abyste příště mohli zaplatit rychleji, uložte si kartu, jméno a fakturační adresu do účtu Google.</translation>
 <translation id="1252799212227771492">Tlačítko Vytvořit tabulku, stisknutím klávesy Enter rychle vytvoříte novou Tabulku Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronizováno)</translation>
@@ -319,6 +320,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="192020519938775529">{COUNT,plural, =0{Žádné}=1{1 web}few{# weby}many{# webu}other{# webů}}</translation>
 <translation id="1923390796829649802">Tlačítko správy nastavení přístupnosti. Stisknutím klávesy Enter si v nastavení Chrome OS můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="1924727005275031552">Nová</translation>
+<translation id="1927439593081478069">Tlačítko Spustit bezpečnostní kontrolu Chromu, stisknutím klávesy Enter spustíte bezpečnostní kontrolu v nastavení Chromu</translation>
 <translation id="1939175642807587452">Může žádat o odesílání oznámení</translation>
 <translation id="1945968466830820669">Mohli byste ztratit přístup k účtu organizace nebo by mohlo dojít k odcizení vaší identity. Chromium doporučuje okamžitě změnit heslo.</translation>
 <translation id="1947454675006758438">Sponka vpravo nahoře</translation>
@@ -338,6 +340,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2003709556000175978">Resetujte heslo</translation>
 <translation id="2003775180883135320">Čtyři otvory nahoře</translation>
 <translation id="201174227998721785">Spravujte oprávnění a uložená data webů v nastavení Chromu</translation>
+<translation id="2019607688127825327">Tlačítko správy nastavení přístupnosti. Stisknutím klávesy Enter si v nastavení Chromu můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="2025115093177348061">Rozšířená realita</translation>
 <translation id="2025186561304664664">Proxy server je nastaven na automatickou konfiguraci.</translation>
 <translation id="2025891858974379949">Nezabezpečený obsah</translation>
@@ -503,6 +506,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2556876185419854533">&amp;Vrátit úpravy zpět</translation>
 <translation id="2570734079541893434">Spravovat nastavení</translation>
 <translation id="257674075312929031">Skupina</translation>
+<translation id="2576880857912732701">Tlačítko Spravovat nastavení zabezpečení, stisknutím klávesy Enter můžete spravovat Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2587730715158995865">Vydavatel: <ph name="ARTICLE_PUBLISHER" />. Přečtěte si tento článek a další (<ph name="OTHER_ARTICLE_COUNT" />).</translation>
 <translation id="2587841377698384444">ID rozhraní Directory API:</translation>
@@ -547,6 +551,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter můžete spravovat údaje o platbách a platebních kartách v nastavení Chromu</translation>
 <translation id="2721148159707890343">Požadavek byl úspěšný</translation>
+<translation id="2723669454293168317">Spusťte v nastavení Chromu bezpečnostní kontrolu</translation>
 <translation id="2726001110728089263">Boční zásobník</translation>
 <translation id="2728127805433021124">Certifikát serveru je podepsán slabým algoritmem.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Spustit Diagnostiku připojení<ph name="END_LINK" /></translation>
@@ -577,6 +582,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2859806420264540918">Tento web zobrazuje rušivé nebo zavádějící reklamy.</translation>
 <translation id="287596039013813457">Přátelské</translation>
 <translation id="2876489322757410363">Chystáte se opustit anonymní režim, abyste mohli zaplatit v externí aplikaci. Pokračovat?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat Bezpečné prohlížení a další funkce v nastavení Chromu</translation>
 <translation id="2878197950673342043">Plakátové přeložení</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Umístění oken</translation>
@@ -679,6 +685,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3229041911291329567">Informace o verzi zařízení a prohlížeče</translation>
 <translation id="323107829343500871">Zadejte kód CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Vždy na tomto webu zjišťovat důležitý obsah</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si přizpůsobíte vzhled prohlížeče</translation>
 <translation id="3240791268468473923">List identifikačních údajů pro zabezpečené platby o nenalezených odpovídajících identifikačních údajích je otevřený</translation>
 <translation id="3249845759089040423">Elegantní</translation>
 <translation id="3252266817569339921">francouzština</translation>
@@ -723,6 +730,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
       • vytvářet 3D mapu vašeho okolí a sledovat polohu kamery,
       • používat fotoaparát.</translation>
 <translation id="337363190475750230">Vyřazeno</translation>
+<translation id="3375754925484257129">Spustit bezpečnostní kontrolu Chromu</translation>
 <translation id="3377144306166885718">Server použil zastaralou verzi protokolu TLS.</translation>
 <translation id="3377188786107721145">Chyba analýzy zásady</translation>
 <translation id="3377736046129930310">Potvrzovat karty rychleji pomocí zámku obrazovky</translation>
@@ -764,6 +772,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3462200631372590220">Skrýt rozšířené</translation>
 <translation id="3467763166455606212">Je nutné zadat jméno držitele karty</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, aktuálně otevřeno, na otevřenou kartu přejdete tak, že stisknete tabulátor a poté Enter</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter zavřete všechna aktuálně otevřená anonymní okna</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3484560055331845446">Mohli byste ztratit přístup k účtu Google. Chrome doporučuje okamžitě změnit heslo. Budete vyzváni k přihlášení.</translation>
 <translation id="3487845404393360112">Přihrádka 4</translation>
@@ -802,6 +811,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3611395257124510155">Virtuální karta pro kartu <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Velikost 2</translation>
 <translation id="361438452008624280">Položka seznamu „<ph name="LANGUAGE_ID" />“: Neznámý nebo nepodporovaný jazyk.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter spustíte bezpečnostní kontrolu v nastavení Chromu</translation>
 <translation id="3615877443314183785">Zadejte platné datum vypršení platnosti</translation>
 <translation id="36224234498066874">Vymazat údaje o prohlížení...</translation>
 <translation id="362276910939193118">Zobrazit celou historii</translation>
@@ -1592,6 +1602,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6218753634732582820">Odstranit adresu z prohlížeče Chromium?</translation>
 <translation id="622039917539443112">Paralelní přeložení</translation>
 <translation id="6221345481584921695">Služba Bezpečné prohlížení Google na webu <ph name="SITE" /> nedávno <ph name="BEGIN_LINK" />zjistila malware<ph name="END_LINK" />. Někdy mohou být malwarem nakaženy i weby, které jsou obvykle bezpečné. Tento škodlivý obsah pochází z webu <ph name="SUBRESOURCE_HOST" />, který je distribucí malwaru známý.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v nastavení Chromu můžete přizpůsobit nástroje pro usnadnění přístupu</translation>
 <translation id="6234122620015464377">Oříznout za každým dokumentem</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6241121617266208201">Skrýt návrhy</translation>
@@ -1610,6 +1621,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6279098320682980337">Číslo virtuální karty není vyplněno? Klikněte na podrobnosti o kartě a zkopírujte ho</translation>
 <translation id="6280223929691119688">Doručení na tuto adresu není možné. Vyberte jinou adresu.</translation>
 <translation id="6282194474023008486">PSČ</translation>
+<translation id="6285507000506177184">Tlačítko správy stažených souborů v Chromu. Stisknutím klávesy Enter můžete spravovat soubory, které jste v Chromu stáhli</translation>
 <translation id="6289939620939689042">Barva stránky</translation>
 <translation id="6290238015253830360">Zde se zobrazí navrhované články</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1725,6 +1737,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6689249931105087298">Relativní s kompresí černého bodu</translation>
 <translation id="6689271823431384964">Chrome vám nabízí uložení karet do účtu Google, protože jste přihlášeni. Toto chování můžete změnit v Nastavení. Jméno držitele karty pochází z vašeho účtu.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter najdete zařízení v účtu Google</translation>
+<translation id="6696588630955820014">Tlačítko sdílení karty. Stisknutím klávesy Enter tuto kartu můžete sdílet pomocí odkazu, QR kódu, odesláním apod.</translation>
 <translation id="6698381487523150993">Vytvořil:</translation>
 <translation id="6702919718839027939">Prezentovat</translation>
 <translation id="6710213216561001401">Předchozí</translation>
@@ -1929,6 +1942,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7392089738299859607">Aktualizovat adresu</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
+<translation id="7403392780200267761">Sdílet tuto kartu pomocí odkazu či QR kódu, odesláním apod.</translation>
 <translation id="7403591733719184120">Vaše zařízení <ph name="DEVICE_NAME" /> je spravováno</translation>
 <translation id="7407424307057130981">&lt;p&gt;Tato chyba se zobrazuje, pokud v počítači se systémem Windows máte software Superfish.&lt;/p&gt;
       &lt;p&gt;Abyste se mohli dostat na web, podle těchto pokynů tento software dočasně zakažte. Budete potřebovat administrátorská práva.&lt;/p&gt;
@@ -2159,6 +2173,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="810875025413331850">V okolí nebyla nalezena žádná zařízení.</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8118489163946903409">Platební metoda</translation>
+<translation id="8124639700796374294">Tlačítko přizpůsobení Chromu. Stisknutím klávesy Enter si můžete přizpůsobit vzhled prohlížeče</translation>
 <translation id="8127301229239896662">Software <ph name="SOFTWARE_NAME" /> na počítači nebo v síti nebyl nainstalován správně. Požádejte administrátora IT o vyřešení tohoto problému.</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8148608574971654810">Verze PDF:</translation>
@@ -2342,6 +2357,7 @@ Další podrobnosti:
 <translation id="87601671197631245">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla, zprávy nebo kreditní karty) vystavuje riziku odhalení.</translation>
 <translation id="8761567432415473239">Bezpečné prohlížení Google na webu <ph name="SITE" /> nedávno <ph name="BEGIN_LINK" />nalezlo škodlivé programy<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">Zařízení USB</translation>
+<translation id="8763986294015493060">Zavřít všechna aktuálně otevřená anonymní okna</translation>
 <translation id="8766943070169463815">List ověření identifikačních údajů pro zabezpečené platby je otevřený</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Opakovat smazání</translation>
@@ -2355,6 +2371,7 @@ Další podrobnosti:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="882338992931677877">Ruční slot</translation>
+<translation id="8834380158646307944">Tlačítko zavření anonymních oken. Stisknutím klávesy Enter zavřete všechna aktuálně otevřená anonymní okna</translation>
 <translation id="883848425547221593">Jiné záložky</translation>
 <translation id="884264119367021077">Dodací adresa</translation>
 <translation id="884923133447025588">Nebyl nalezen žádný mechanismus zamítnutí.</translation>
@@ -2408,6 +2425,7 @@ Další podrobnosti:
 <translation id="9020200922353704812">Fakturační adresa karty je povinná</translation>
 <translation id="9020542370529661692">Stránka byla přeložena do jazyka <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter tuto kartu můžete sdílet pomocí odkazu, QR kódu, odesláním apod.</translation>
 <translation id="9025348182339809926">(neplatný)</translation>
 <translation id="9030265603405983977">Monochromatické</translation>
 <translation id="9035022520814077154">Chyba zabezpečení</translation>

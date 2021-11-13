@@ -563,14 +563,6 @@
 <translation id="4918086044614829423">Прийняти</translation>
 <translation id="4924411785043111640">Перезапустити й скинути</translation>
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
-<translation id="4942878304446937978">Панель статусу, час: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>

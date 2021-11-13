@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">Saytlar yaxınlıqdakı Bluetooth cihazlarını aşkarlamaq üçün icazə istəyə bilər</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1428146450423315676">Yığıcı 7</translation>
+<translation id="142858679511221695">Bulud istifadəçisi</translation>
 <translation id="1428729058023778569">Bu sayt HTTPS-i dəstəkləmədiyinə görə bu xəbərdarlığı görürsünüz. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
@@ -717,6 +718,7 @@
 <translation id="3329013043687509092">Saturasiya</translation>
 <translation id="3333762389743153920">Virtual kart üçün uyğun deyil</translation>
 <translation id="3338095232262050444">Güvənli</translation>
+<translation id="3339446062576134663">Bulud (Ash)</translation>
 <translation id="3355823806454867987">Proksi ayarlarını dəyişin...</translation>
 <translation id="3360103848165129075">Ödəniş səhifəsi</translation>
 <translation id="3361596688432910856">Chrome aşağıdakı məlumatları <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
@@ -740,6 +742,7 @@
 <translation id="3380365263193509176">Naməlum xəta</translation>
 <translation id="3380864720620200369">Klient ID:</translation>
 <translation id="3381668585148405088">Alışınızı doğrulayın</translation>
+<translation id="3383566085871012386">Cari öncəlik sırası</translation>
 <translation id="3387261909427947069">Ödəniş Üsulları</translation>
 <translation id="3391030046425686457">Çatdırılma ünvanı</translation>
 <translation id="3391482648489541560">fayl redaktəsi</translation>
@@ -1406,6 +1409,7 @@
 <translation id="5478437291406423475">B6/C4 (Zərf)</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Etibarlı ünvan əlavə edin</translation>
+<translation id="5485973315555778056">Bulud cihazı</translation>
 <translation id="5490432419156082418">Ünvanlar və s.</translation>
 <translation id="5492298309214877701">Şirkət, təşkilat və ya məktəb intranetindəki saytın xarici veb saytlara bənzər linki var.
     <ph name="LINE_BREAK" />
@@ -1435,6 +1439,7 @@
 <translation id="5571083550517324815">Bu ünvandan götürmək mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="5580958916614886209">Bitmə ayını yoxlayın və yenidən cəhd edin</translation>
 <translation id="5586446728396275693">Yadda saxlanılmış ünvan yoxdur</translation>
+<translation id="5587987780934666589">Platforma istifadəçisi</translation>
 <translation id="5593349413089863479">Bağlantı tam güvənli deyil</translation>
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
 <translation id="5598944008576757369">Ödəniş Üsulu seçin</translation>
@@ -2123,6 +2128,7 @@
 <translation id="7953569069500808819">Yuxarıdan kənarını tikin</translation>
 <translation id="7956713633345437162">Mobil əlfəcinlər</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
+<translation id="7962467575542381659">Platforma cihazı</translation>
 <translation id="7966803981046576691">İş hesabı növü</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" dəyəri yanlış altılıq rəngdir.</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>

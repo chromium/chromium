@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">सिग्नल ठीक-ठाक है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
+<translation id="1201402288615127009">अगला</translation>
 <translation id="1204296502688602597">डिवाइस और डीएनएस के बीच के इंतज़ार का समय</translation>
 <translation id="123124571410524056">पोर्टल में गड़बड़ी हो सकती है</translation>
 <translation id="1238612778414822719">एचटीटीपीएस पेजों के खुलने में इंतज़ार का समय</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
+<translation id="360089215033199597">रिपेयर की प्रोसेस को और आसान करने के लिए वाई-फ़ाई से कनेक्ट करें.
+        आपका नेटवर्क सेव कर लिया जाएगा.</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
@@ -186,6 +189,7 @@
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
 <translation id="4111761024568264522">यूएसबी टचपैड</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
+<translation id="4140251671072434548">आरएमए सर्वर को अनलॉक करें</translation>
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
@@ -477,8 +481,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">अनलॉक करने का कोड डालें:</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
+<translation id="8217675307824400706">वाई-फ़ाई से कनेक्ट हों</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
 <translation id="8286154143153872371">वॉलपेपर देखने के लिए, नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>

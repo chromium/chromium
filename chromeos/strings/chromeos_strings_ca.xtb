@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
+<translation id="1201402288615127009">Següent</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
 <translation id="123124571410524056">Possible portal</translation>
 <translation id="1238612778414822719">Latència d'HTTPS</translation>
@@ -186,6 +187,7 @@
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4111761024568264522">Ratolí tàctil USB</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
+<translation id="4140251671072434548">Fes un desbloqueig del servidor RMA</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Comprova que l'escàner estigui encès i disponible a través de la teva xarxa o d'una connexió directa</translation>
@@ -477,6 +479,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Introdueix el codi de desbloqueig:</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>

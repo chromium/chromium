@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
+<translation id="1201402288615127009">આગલું</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
 <translation id="123124571410524056">શંકાસ્પદ પોર્ટલ</translation>
 <translation id="1238612778414822719">HTTPSની વિલંબતા</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="3583278742022654445">સિગ્નલની પ્રબળતા નબળી છે. વાઇ-ફાઇ સિગ્નલના સૉર્સની વધુ નજીક જઈને પ્રયાસ કરી જુઓ.</translation>
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
+<translation id="360089215033199597">ઠીક કરવાની પ્રક્રિયા વધુ સરળ બનાવવા માટે, વાઇ-ફાઇ સાથે કનેક્ટ કરવાનો સુઝાવ આપવામાં આવે છે.
+        તમારું નેટવર્ક સાચવવામાં આવશે.</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
@@ -480,6 +483,7 @@
 <translation id="816013303019725643">અનલૉક કરવાનો કોડ દાખલ કરો:</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
+<translation id="8217675307824400706">કનેક્ટ કરો</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8246209727385807362">અજાણ કૅરિઅર</translation>
 <translation id="8286154143153872371">કૃપા કરીને નેટવર્ક સાથે કનેક્ટ કરો અને વૉલપેપર જોવા માટે પેજને ફરીથી લોડ કરો.</translation>

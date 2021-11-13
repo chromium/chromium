@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1103142993930332957">Chrome을 개선하는 데 도움을 주시겠어요?</translation>
 <translation id="1105960400813249514">화면 캡처</translation>
+<translation id="1108938384783527433">방문 기록 동기화</translation>
 <translation id="1110914759170138831">강조표시가 잘렸습니다.</translation>
 <translation id="1111673857033749125">다른 기기에서 저장한 북마크가 여기에 표시됩니다.</translation>
 <translation id="1113597929977215864">간단히 보기 표시</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
+<translation id="2020309681647789787">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />도 Chrome에서 데이터를 보유하고 있습니다</translation>
@@ -847,6 +849,7 @@
 <translation id="6070730414166672373">은행 연결 중\u2026</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="60923314841986378"><ph name="HOURS" />시간 남음</translation>
+<translation id="6095578583683628124">Google이 기본 검색엔진이면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="6108923351542677676">설정 진행 중...</translation>
 <translation id="6111020039983847643">데이터 사용됨</translation>
 <translation id="6112702117600201073">페이지 새로고침</translation>
@@ -1391,6 +1394,7 @@
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9155898266292537608">단어를 살짝 탭하여 검색할 수도 있습니다</translation>
 <translation id="9158770349521403363">콘텐츠만 공유</translation>
+<translation id="916446198114569890">방문한 URL이 Google 계정에 저장됩니다.</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>

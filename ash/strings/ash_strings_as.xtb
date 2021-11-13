@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">চিনাক্ত কৰিব পৰা নাই</translation>
 <translation id="1746730358044914197">ইনপুট পদ্ধতিসমূহ আপোনাৰ প্ৰশাসকে কনফিগাৰ কৰে।</translation>
 <translation id="1747827819627189109">অন-স্ক্ৰীণ কীব‘র্ড সক্ষম কৰা হ‘ল</translation>
+<translation id="1750088060796401187">কেৱল <ph name="MAX_DESK_LIMIT" /> খন ডেস্কৰ অনুমতি আছে। নতুন এখন খুলিবলৈ এখন ডেস্ক আঁতৰাওক।</translation>
 <translation id="1761222317188459878">নেটৱৰ্ক সংযোগ ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + পিৰিয়ডটো সলনি হৈছে। ইনছাৰ্ট কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + শ্বিফ্ট + বেকস্পেচ টিপক।</translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
@@ -564,14 +565,6 @@
 <translation id="4918086044614829423">গ্ৰহণ কৰক</translation>
 <translation id="4924411785043111640">ৰিষ্টাৰ্ট কৰি ৰিছেট কৰক</translation>
 <translation id="4925542575807923399">এই একাউণ্টৰ প্ৰশাসকে এই একাউণ্টটো একাধিকবাৰ ছাইন-ইন কৰা কোনো ছেশ্বনত প্ৰথমে ছাইন ইন কৰাটো বিচাৰে।</translation>
-<translation id="4942878304446937978">ষ্টেটাছ ট্ৰে’, সময় <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">জাননী অফ কৰক</translation>
 <translation id="4946376291507881335">কেপচাৰ কৰক</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>

@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
+<translation id="1750088060796401187">बढीमा <ph name="MAX_DESK_LIMIT" /> वटा डेस्क मात्र खोल्न मिल्छ। तपाईं नयाँ डेस्क खोल्न चाहनुहुन्छ भने कुनै डेस्क हटाउनुहोस्।</translation>
 <translation id="1761222317188459878">नेटवर्क जडान टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
@@ -564,14 +565,6 @@
 <translation id="4918086044614829423">स्वीकार्नुहोस्</translation>
 <translation id="4924411785043111640">पुनः सुरु गरी रिसेट गर्नुहोस्</translation>
 <translation id="4925542575807923399">यस खाताको प्रशासकलाई एक बहुविध साइन-इन सत्रमा प्रथम साइन-इन गरिएको खाता हुन यस खातालाई आवश्यक छ।</translation>
-<translation id="4942878304446937978">स्ट्याटस ट्रे, समय <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">सूचनाहरू अफ गर्नुहोस्</translation>
 <translation id="4946376291507881335">फोटो खिच्नुहोस्</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>

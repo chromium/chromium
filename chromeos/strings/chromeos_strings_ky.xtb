@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Орточо (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
+<translation id="1201402288615127009">Кийинки</translation>
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
 <translation id="123124571410524056">Портал бар окшойт</translation>
 <translation id="1238612778414822719">HTTPS күтүү убакыты</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Сыноонун чоо-жайын сактоо</translation>
 <translation id="4111761024568264522">USB сенсордук тактасы</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
+<translation id="4140251671072434548">RMA серверинин кулпусун ачуу</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
@@ -259,6 +261,7 @@
 <translation id="5049856988445523908">SIM карта кулпуланды (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Топтун аталышы:</translation>
 <translation id="5051044138948155788">Бир эле бет бар. Ушуну менен скандап баштоо экранына өтөсүз.</translation>
+<translation id="5061169534910302641">Версияны жаңыртып, өчүрүп күйгүзүү</translation>
 <translation id="5088172560898466307">Сервер түйүнүнүн аталышы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5142961317498132443">Аныктыгын текшерүү</translation>
@@ -468,6 +471,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафикти эсептегичтерди сурануу</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Кулпуну ачуу кодун киргизүү:</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>

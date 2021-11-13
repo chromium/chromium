@@ -3828,6 +3828,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5620392548325769024">Welkomstpagina tonen bij eerste opstart van de browser na een upgrade van het besturingssysteem</translation>
 <translation id="5622924058222112599">Standaard CECPQ2-uitrolproces aanzetten</translation>
+<translation id="5623304306796942802">Prompt als meerdere certificaten overeenkomen</translation>
 <translation id="5625771176514429288">Chrome-apps kunnen op deze platforms worden uitgevoerd.</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>

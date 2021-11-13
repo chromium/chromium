@@ -4081,6 +4081,7 @@
 <translation id="5265562206369321422">بلا إنترنت لمدة تتجاوز أسبوعًا</translation>
 <translation id="5265797726250773323">حدث خطأ أثناء التثبيت</translation>
 <translation id="5266113311903163739">خطأ استيراد مرجع مصدق</translation>
+<translation id="526622169288322445">مزيد من الإجراءات للعنوان <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5275352920323889391">كلب</translation>
 <translation id="527605982717517565">‏السماح بتشغيل JavaScript على الموقع <ph name="HOST" /> دومًا</translation>
@@ -5464,6 +5465,7 @@
 <translation id="6775163072363532304">الأجهزة المتاحة ستظهر هنا.</translation>
 <translation id="6777817260680419853">تم حظر إعادة التوجيه</translation>
 <translation id="6778737459546443941">لم يوافق عليه والداك حتى الآن</translation>
+<translation id="6779092717724412415">لإنشاء تمييز كهذا، حدِّد أي نص وانقر عليه بزر الماوس الأيمن.</translation>
 <translation id="6779447100905857289">سلات التسوّق الخاصة بك</translation>
 <translation id="677965093459947883">صغير جدًا</translation>
 <translation id="6781005693196527806">&amp;إدارة محركات البحث...</translation>
@@ -6280,6 +6282,7 @@
 <translation id="7625823789272218216">إضافة علامة تبويب جديدة على اليمين</translation>
 <translation id="7628201176665550262">معدّل إعادة التحميل</translation>
 <translation id="7629827748548208700">علامة التبويب: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">يتولى <ph name="MANAGER" /> إدارة هذا الجهاز ويتطلّب منك تسجيل الدخول في كل مرة.</translation>
 <translation id="7631014249255418691">‏تم الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux بنجاح</translation>
 <translation id="7631205654593498032">عند ربط أجهزتك، أنت توافق على أن جهاز <ph name="DEVICE_TYPE" /> سيتمكّن من إجراء ما يلي:</translation>
 <translation id="7631887513477658702">فت&amp;ح هذا النوع من الملفات دومًا</translation>

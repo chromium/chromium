@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
+<translation id="1201402288615127009">Ďalej</translation>
 <translation id="1204296502688602597">Latencia DNS</translation>
 <translation id="123124571410524056">Podozrenie na portál</translation>
 <translation id="1238612778414822719">Latencia protokolu HTTPS</translation>
@@ -62,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Ruší sa skenovanie</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
+<translation id="1857850044054738019">Túto možnosť vyberte, keď bolo zariadenie opätovne naskladnené alebo repasované na distribúciu novému zákazníkovi.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
@@ -198,6 +200,7 @@
 <translation id="4244962993387259361">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Miesto uvoľnite v sekcii Nastavenia &gt; Správa priestoru.</translation>
 <translation id="4258281355379922695">Latencia protokolu HTTP</translation>
 <translation id="4271957103967917607">Zobraziť na celú obrazovku</translation>
+<translation id="4275799948641988986">Kto bude zariadenie používať po oprave?</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
@@ -414,6 +417,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7297226631177386107">Prostredníctvom brány firewall sa nedá pripojiť k webom HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Zariadenie dostane iný vlastník</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
@@ -421,6 +425,8 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Skenovanie je dokončené. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
+<translation id="7451112128070628323">Túto možnosť vyberte, keď sa vlastníctvo daného zariadenia nemení.
+        Ak napríklad zariadenie prevediete na inú osobu v rámci organizácie.</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -547,6 +553,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
+<translation id="9095415590198785865">Zariadenie zostane u rovnakého vlastníka</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnoviť tiket pre <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenuje sa <ph name="PAGE_NUMBER" />. strana</translation>

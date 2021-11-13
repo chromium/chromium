@@ -563,14 +563,6 @@
 <translation id="4918086044614829423">수락</translation>
 <translation id="4924411785043111640">다시 시작 및 재설정</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
-<translation id="4942878304446937978">상태 표시줄, 시간 <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
 <translation id="495046168593986294">위로 스크롤</translation>

@@ -562,14 +562,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4924411785043111640">Uruchom ponownie i zresetuj</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
-<translation id="4942878304446937978">Zasobnik stanu, godzina <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Wyłącz powiadomienia</translation>
 <translation id="4946376291507881335">Zapis</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>

@@ -564,14 +564,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4924411785043111640">Repornește și resetează</translation>
 <translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
-<translation id="4942878304446937978">Bară de stare, ora: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
 <translation id="495046168593986294">Derulează în sus</translation>

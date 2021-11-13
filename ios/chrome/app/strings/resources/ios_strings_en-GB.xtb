@@ -107,6 +107,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1894205589103145703">Something went wrong during sign-in.</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
+<translation id="1930989359703290198">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1965935827552890526">Finish what you were doing in your other open Chrome window.</translation>
@@ -225,6 +226,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Mark…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Block all</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
 <translation id="3153862085237805241">Save Card</translation>
@@ -386,6 +388,8 @@ Your data is encrypted with your sync passphrase. Enter it to start sync.</trans
 <translation id="4802417911091824046">Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Managed by your organisation.
+<ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Invalid Card Number</translation>
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4818522717893377262">Add language…</translation>

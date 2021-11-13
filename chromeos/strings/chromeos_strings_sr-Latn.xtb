@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Prosečan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
+<translation id="1201402288615127009">Dalje</translation>
 <translation id="1204296502688602597">Kašnjenje DNS-a</translation>
 <translation id="123124571410524056">Sumnja se na portal</translation>
 <translation id="1238612778414822719">HTTPS kašnjenje</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Sačuvaj detalje testa</translation>
 <translation id="4111761024568264522">USB tačped</translation>
 <translation id="4131410914670010031">Crno-belo</translation>
+<translation id="4140251671072434548">Obavite otključavanje RMA servera</translation>
 <translation id="4145784616224233563">HTTP zaštitni zid</translation>
 <translation id="4147897805161313378">Google slike</translation>
 <translation id="4155551848414053977">Proverite da li je skener uključen i dostupan preko mreže ili direktne veze</translation>
@@ -237,6 +239,7 @@
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
+<translation id="4839698083503556542">Napravite sopstveni film</translation>
 <translation id="484790837831576105">(Android) DNS razrešavanje</translation>
 <translation id="4848429997038228357">U TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostaju {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostaje {0} pokušaja}}</translation>
@@ -468,6 +471,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zatraži brojače saobraćaja</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Unesite kôd za otključavanje:</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>

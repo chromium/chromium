@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Standar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
+<translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1204296502688602597">Latensi DNS</translation>
 <translation id="123124571410524056">Portal dicurigai</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
@@ -62,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
+<translation id="1857850044054738019">Pilih opsi ini jika perangkat sedang di-stok ulang atau di-refurbished untuk
+        distribusi kepada pelanggan baru.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
@@ -195,6 +198,7 @@
 <translation id="4244962993387259361">Anda perlu minimal 500 MB untuk menjalankan pengujian Memori. Untuk mengosongkan ruang penyimpanan, buka Setelan &gt; Pengelolaan penyimpanan.</translation>
 <translation id="4258281355379922695">Latensi HTTP</translation>
 <translation id="4271957103967917607">Lihat di Layar Penuh</translation>
+<translation id="4275799948641988986">Setelah diperbaiki, siapa yang akan menggunakan perangkat ini?</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -409,6 +413,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7297226631177386107">Tidak dapat terhubung melewati firewall ke situs HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Perangkat akan diberikan kepada pemilik lain</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7359657277149375382">Jenis file</translation>
@@ -416,6 +421,9 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
+<translation id="7451112128070628323">Pilih opsi ini jika kepemilikan perangkat tidak berubah.
+        Misalnya, perangkat sedang ditransfer kepada pengguna lain
+        dalam organisasi.</translation>
 <translation id="7469648432129124067">Portal terdeteksi</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
@@ -540,6 +548,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
+<translation id="9095415590198785865">Perangkat akan diberikan kepada pemilik yang sama</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>

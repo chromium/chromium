@@ -327,6 +327,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="3351879221545518001">Právě odesíláte obrazovku.</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
+<translation id="3365977133351922112">Telefon je moc daleko. Přineste ho blíž.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3371140690572404006">Zařízení USB Type-C (pravý přední port)</translation>
 <translation id="3375634426936648815">Připojeno</translation>
@@ -563,14 +564,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4918086044614829423">Přijmout</translation>
 <translation id="4924411785043111640">Restartovat a resetovat</translation>
 <translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
-<translation id="4942878304446937978">Stavový panel, čas <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
@@ -603,6 +596,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
 <translation id="5199367439331364630">Pokud se chcete přihlásit do Chromebooku, zadejte heslo</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
@@ -888,6 +882,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7398254312354928459">Přepnuto na jinou síť</translation>
 <translation id="7405710164030118432">Chcete-li zařízení odemknout, zadejte svůj rodičovský přístupový kód služby Family Link</translation>
 <translation id="7406608787870898861">Dokončete nastavení mobilní sítě</translation>
+<translation id="740790383907119240">Zkratky do aplikace</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="7413851974711031813">Dialog zavřete stisknutím klávesy Escape</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
@@ -990,6 +985,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8061464966246066292">Vysoký kontrast</translation>
 <translation id="8098591350844501178">Ukončit odesílání obrazovky do přijímače <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Zap., všechny</translation>
+<translation id="8120151603115102514">Telefon nemá zámek obrazovky. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8132487352815776550">Vypnout skryté titulky</translation>
@@ -1039,6 +1035,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8473301994082929012">Organizace <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> funkci <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth v Chromebooku je vypnuté. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>

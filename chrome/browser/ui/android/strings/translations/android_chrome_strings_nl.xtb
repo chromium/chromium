@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Open in nieuw tabblad in groep</translation>
 <translation id="1103142993930332957">Wil je Chrome helpen verbeteren?</translation>
 <translation id="1105960400813249514">Schermopname</translation>
+<translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1110914759170138831">Markering is ingekort</translation>
 <translation id="1111673857033749125">Hier zie je bookmarks die je op andere apparaten hebt opgeslagen.</translation>
 <translation id="1113597929977215864">Vereenvoudigde weergave bekijken</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
 <translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
+<translation id="2020309681647789787">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was.</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
 <translation id="2038563949887743358">'Desktopsite aanvragen' aanzetten</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> heeft ook gegevens in Chrome</translation>
@@ -847,6 +849,7 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="6070730414166672373">Contact opnemen met je bank\u2026</translation>
 <translation id="6085886413119427067">Bepaalt hoe verbinding wordt gemaakt met websites via een beveiligde verbinding</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> uur resterend</translation>
+<translation id="6095578583683628124">Als Google ook je standaardzoekmachine is, krijg je betere, contextueel relevante suggesties te zien.</translation>
 <translation id="6108923351542677676">Instellen wordt uitgevoerd...</translation>
 <translation id="6111020039983847643">data gebruikt</translation>
 <translation id="6112702117600201073">Pagina vernieuwen</translation>
@@ -1391,6 +1394,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9155898266292537608">Je kunt ook zoeken door kort op een woord te tikken</translation>
 <translation id="9158770349521403363">Alleen content delen</translation>
+<translation id="916446198114569890">De URL's die je bezoekt, worden opgeslagen in je Google-account.</translation>
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>

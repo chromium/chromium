@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Open in nuwe oortjie in groep</translation>
 <translation id="1103142993930332957">Help om Chrome te verbeter?</translation>
 <translation id="1105960400813249514">Skermskoot</translation>
+<translation id="1108938384783527433">Geskiedenissinkronisering</translation>
 <translation id="1110914759170138831">Gemerkte teks is verkort</translation>
 <translation id="1111673857033749125">Boekmerke wat op jou ander toestelle gestoor is, sal hier verskyn.</translation>
 <translation id="1113597929977215864">Wys vereenvoudigde aansig</translation>
@@ -35,6 +36,7 @@
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1197267115302279827">Skuif boekmerke</translation>
 <translation id="1201402288615127009">Volgende</translation>
+<translation id="1202892408424955784">Nagespoorde produkte</translation>
 <translation id="1204037785786432551">Laai skakel af</translation>
 <translation id="1206892813135768548">Kopieer skakelteks</translation>
 <translation id="1208340532756947324">Skakel sinkronisering aan om oor toestelle heen te sinkroniseer en personaliseer</translation>
@@ -81,6 +83,7 @@
 <translation id="1414981605391750300">Kontak tans Google. Dit kan dalk 'n minuut neem …</translation>
 <translation id="1416550906796893042">Programweergawe</translation>
 <translation id="1430915738399379752">Druk uit</translation>
+<translation id="1448440926884431741">Organiseer jou nagespoorde produkte in Boekmerke</translation>
 <translation id="1450753235335490080">Kan nie <ph name="CONTENT_TYPE" /> deel nie</translation>
 <translation id="1466383950273130737">Kies Chrome se taal</translation>
 <translation id="147113415845704694">Probeer: "What's the weather today?" (Hoe lyk die weer vandag?)</translation>
@@ -133,6 +136,7 @@
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">My lêers</translation>
 <translation id="189358972401248634">Ander tale</translation>
+<translation id="1894023287452300670">Spoor prys hier na</translation>
 <translation id="1905320231301365059">Lêers wat jy in Incognitomodus aflaai, is steeds sigbaar vir enigiemand wat hierdie toestel gebruik.</translation>
 <translation id="1910950723001426294">Lys deelopsies is gesluit.</translation>
 <translation id="1918175104945982129">Assistent-stemsoektog se instemming-UI is teen halwe hoogte oopgemaak</translation>
@@ -157,6 +161,7 @@
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
 <translation id="200114059308480249">Sluit omringende teks by Google-soektogte in?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# lêer}other{# lêers}}</translation>
+<translation id="2020309681647789787">Jy sal jou geskiedenis op al jou gesinkroniseerde toestelle hê sodat jy kan voortgaan met dit waarmee jy besig was</translation>
 <translation id="2021896219286479412">Volskermwerfkontroles</translation>
 <translation id="2038563949887743358">Skakel Versoek rekenaarwerf aan</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> het ook data in Chrome</translation>
@@ -344,6 +349,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3029704984691124060">Wagwoordfrases stem nie ooreen nie</translation>
 <translation id="3031225630520268969">Assistent-stemsoektog se instemming-UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kry hulp<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Spoor tans prys na</translation>
 <translation id="3037517125981011456">Wys porboodskappe om by Chrome aan te meld.</translation>
 <translation id="3046945242843292318">Kom volgende keer vinniger by hierdie werf uit</translation>
 <translation id="305593374596241526">Ligging is af; skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
@@ -502,6 +508,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4016425174436051808">Kan nie volg nie. Iets was fout.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# uur}other{# uur}}</translation>
 <translation id="4045764304651014138">Gebruiksdata</translation>
+<translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opsies is naby die bokant van die skerm beskikbaar</translation>
 <translation id="4062305924942672200">Regsinligting</translation>
@@ -555,6 +562,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4409271659088619928">Jou soekenjin is <ph name="DSE" />. Sien hul instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="4411535500181276704">Ligte modus</translation>
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
+<translation id="4425140285732600465">Spoor tans prys na. Kry kennisgewings as die prys op enige werf daal.</translation>
 <translation id="4427306783828095590">Verbeterde beskerming doen meer om uitvissing en wanware te blokkeer</translation>
 <translation id="4450672886426705087">Soekresultate van Google af</translation>
 <translation id="4452411734226507615">Maak <ph name="TAB_TITLE" />-oortjie toe</translation>
@@ -752,6 +760,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5548606607480005320">Veiligheidskontrole</translation>
 <translation id="5555525474779371165">Kies jou Veiligblaai-beskerming</translation>
 <translation id="5556459405103347317">Herlaai</translation>
+<translation id="555816257274242153">Prysnasporing is gestop</translation>
 <translation id="5561549206367097665">Wag tans vir netwerk …</translation>
 <translation id="5568069709869097550">Kan nie aanmeld nie</translation>
 <translation id="55737423895878184">Ligging en kennisgewings word toegelaat</translation>
@@ -802,9 +811,11 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5833984609253377421">Deel skakel</translation>
 <translation id="5834764604050996579">Laat Chrome jou kamera gebruik om 'n QR-kode te skandeer</translation>
 <translation id="5839058148541733625">Chrome-dinosourusspeletjie</translation>
+<translation id="5842437907245493289">Organiseer jou nagespoorde produkte in Boekmerke deur die vouerikoon</translation>
 <translation id="5853623416121554550">laat wag</translation>
 <translation id="5854512288214985237">Geen statistieke of omvalverslae word na Google toe gestuur nie</translation>
 <translation id="5855546874025048181">Verfyn: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Iets was fout. Kon nie prysnasporing opdateer nie.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5862731021271217234">Skakel sinkronisering aan om jou oortjies van jou ander toestelle af te kry</translation>
@@ -849,6 +860,7 @@ Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte strek
 <translation id="6070730414166672373">Kontak tans jou bank u2026</translation>
 <translation id="6085886413119427067">Bepaal hoe om met 'n beveiligde verbinding aan webwerwe te koppel</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> uur oor</translation>
+<translation id="6095578583683628124">As Google ook jou versteksoekenjin is, sal jy beter, kontekstueel relevante voorstelle sien</translation>
 <translation id="6108923351542677676">Opstelling is besig …</translation>
 <translation id="6111020039983847643">data gebruik</translation>
 <translation id="6112702117600201073">Herlaai tans bladsy</translation>
@@ -860,6 +872,7 @@ Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte strek
 <translation id="6140912465461743537">Land/streek</translation>
 <translation id="6141988275892716286">Bevestig aflaai</translation>
 <translation id="614940544461990577">Probeer:</translation>
+<translation id="6150320133806434356">Boekmerk is gestoor</translation>
 <translation id="6154478581116148741">Skakel skermslot in Instellings aan om jou wagwoorde van hierdie toestel af uit te voer</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> databesparings</translation>
 <translation id="6159729262978459665">Vee geskiedenis op alle gesinkroniseerde toestelle uit.</translation>
@@ -874,6 +887,7 @@ Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte strek
 Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advertensies te wys wat nie gegrond is op ander webwerwe wat jy besoek het nie. Baie webwerwe sal steeds jou blaaidata insamel en gebruik – byvoorbeeld om sekuriteit te verbeter, om inhoud, advertensies en aanbevelings te verskaf en om verslagdoeningstatistiek te genereer.</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
+<translation id="6277722725779679269">Kon nie prysnasporing opdateer nie</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">As jy Chrome gebruik, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Jy kan oortjies stuur tussen toestelle wat met dieselfde Google-rekening aangemeld is</translation>
@@ -907,6 +921,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6411219469806822692">Kan nie hoër gaan nie. Probeer om hoër op die bladsy te begin.</translation>
 <translation id="6412673304250309937">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg word. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="641643625718530986">Druk tans uit …</translation>
+<translation id="6422857128426228781">Jy sal jou nagespoorde produkte hier kry</translation>
 <translation id="6433501201775827830">Kies jou soekenjin</translation>
 <translation id="6434309073475700221">Gooi weg</translation>
 <translation id="6437478888915024427">Bladsy-inligting</translation>
@@ -984,6 +999,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6817747507826986771">Deel hierdie bladsy vinnig. Raak en hou om hierdie kortpad te wysig.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, oortjie, gekies</translation>
+<translation id="6828070228333235514">Stop prysnasporing</translation>
 <translation id="6846298663435243399">Laai tans …</translation>
 <translation id="6850409657436465440">Jou aflaai is nog aan die gang</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> oortjies is toegemaak</translation>
@@ -1300,6 +1316,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8571213806525832805">Afgelope vier weke</translation>
 <translation id="8572344201470131220">Prent is gekopieer</translation>
 <translation id="8583805026567836021">Vee tans rekeningdata uit</translation>
+<translation id="859046281437143747">Spoor pryse deur die Meer Opsies-knoppie na</translation>
 <translation id="860043288473659153">Kaarthouernaam</translation>
 <translation id="8602358303461588329">Meld by Chrome aan; toegemaak.</translation>
 <translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
@@ -1397,6 +1414,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9148126808321036104">Meld weer aan …</translation>
 <translation id="9155898266292537608">Jy kan ook soek met 'n vinnige tik op 'n woord</translation>
 <translation id="9158770349521403363">Deel net inhoud</translation>
+<translation id="916446198114569890">Die URL'e wat jy besoek, word in jou Google-rekening gestoor</translation>
 <translation id="9169507124922466868">Navigasiegeskiedenis is half oopgemaak</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut gelede nagegaan}other{# minute gelede nagegaan}}</translation>
 <translation id="9204836675896933765">1 lêer oor</translation>

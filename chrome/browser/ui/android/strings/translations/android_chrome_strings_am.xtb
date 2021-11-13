@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">በቡድን ውስጥ አዲስ ትር ይክፈቱ</translation>
 <translation id="1103142993930332957">Chromeን ለማሻሻል ይረዱ?</translation>
 <translation id="1105960400813249514">የማያ ገጽ ቀረጻ</translation>
+<translation id="1108938384783527433">ታሪክ አስምር</translation>
 <translation id="1110914759170138831">ማድመቂያ እንዲያጥር ተደርጓል</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
 <translation id="1113597929977215864">የተቃለለ እይታን አሳይ</translation>
@@ -160,6 +161,7 @@
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
 <translation id="200114059308480249">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለው ጽሑፍ ይካተት?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
+<translation id="2020309681647789787">እያደረጉ የነበሩትን መቀጠል እንዲችሉ ታሪክዎን በሁሉም በተሰመሩ መሳሪያዎችዎ ላይ ይኖረዎታል</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገጽ ጣቢያ መቆጣጠሪያዎች</translation>
 <translation id="2038563949887743358">የዴስክቶፕ ጣቢያን ጠይቅን አብራ</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> እንዲሁም በChrome ውስጥ ውሂብ አለው</translation>
@@ -858,6 +860,7 @@
 <translation id="6070730414166672373">ባንክዎን በማነጋገር ላይ\u2026</translation>
 <translation id="6085886413119427067">እንዴት ደህንነቱ በተጠበቀ ግንኙነት ላይ ከድር ጣቢያዎች ጋር እንደሚገናኙ ይወስናል</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ሰዓቶች ይቀራሉ</translation>
+<translation id="6095578583683628124">Google እንዲሁ የእርስዎ ነባሪ የፍለጋ ፕሮግራምዎ ከሆነ፣ የተሻለ፣ ከአውድ ጋር ተዛማጅነት ያላቸውን አስተያየቶች ያያሉ።</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>
 <translation id="6111020039983847643">ጥቅም ላይ የዋለው ውሂብ</translation>
 <translation id="6112702117600201073">ገጽ በማደስ ላይ</translation>
@@ -1411,6 +1414,7 @@
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>
 <translation id="9155898266292537608">እንዲሁም አንድ ቃል ላይ በፍጥነት መታ በማድረግ ፍለጋ ማድረግ ይችላሉ</translation>
 <translation id="9158770349521403363">ይዘትን ብቻ ያጋሩ</translation>
+<translation id="916446198114569890">የሚጎበኟቸው ዩአርኤሎች በGoogle መለያዎ ላይ ይቀመጣሉ</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ከ1 ደቂቃ በፊት ተፈትሿል}one{ከ# ደቂቃዎች በፊት ተፈትሿል}other{ከ# ደቂቃዎች በፊት ተፈትሿል}}</translation>
 <translation id="9204836675896933765">1 ፋይል ቀርቷል</translation>

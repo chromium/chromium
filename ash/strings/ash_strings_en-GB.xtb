@@ -328,6 +328,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">You are currently casting the screen.</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
+<translation id="3365977133351922112">Your phone is too far away. Bring your phone closer.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3375634426936648815">Connected</translation>
@@ -564,14 +565,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4924411785043111640">Restart and reset</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
-<translation id="4942878304446937978">Status tray, time <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
@@ -604,6 +597,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5199367439331364630">To sign in to your Chromebook, enter password</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 other notification}other{# other notifications}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="5208059991603368177">On</translation>
@@ -889,6 +883,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7398254312354928459">Switched network connection</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="7406608787870898861">Finish setting up your mobile network</translation>
+<translation id="740790383907119240">App Shortcuts</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7413851974711031813">Press escape to close</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
@@ -991,6 +986,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8061464966246066292">High contrast</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, all apps</translation>
+<translation id="8120151603115102514">Your phone doesn’t have a lock screen. To unlock your Chromebook, enter password.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8132487352815776550">Stop closed captions</translation>
@@ -1040,6 +1036,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Your Chromebook’s Bluetooth is off. To unlock your Chromebook, enter password.</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>
 <translation id="8517041960877371778">Your <ph name="DEVICE_TYPE" /> may not charge while it is turned on.</translation>

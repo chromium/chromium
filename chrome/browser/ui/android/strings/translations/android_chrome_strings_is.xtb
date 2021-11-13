@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Opna á nýjum flipa í hópi</translation>
 <translation id="1103142993930332957">Viltu hjálpa við að bæta Chrome?</translation>
 <translation id="1105960400813249514">Skjámyndataka</translation>
+<translation id="1108938384783527433">Samstilla feril</translation>
 <translation id="1110914759170138831">Áherslumerktur texti var styttur</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1113597929977215864">Sýna einfaldað yfirlit</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Sendir sum fótspor og sumar leitir úr veffangastikunni og leitarreitnum í sjálfgefnu leitarvélina þína</translation>
 <translation id="200114059308480249">Taka með texta umhverfis í Google leitum?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# skrá}one{# skrá}other{# skrár}}</translation>
+<translation id="2020309681647789787">Ferilinn þinn verður í öllum samstilltum tækjum svo að þú getir haldið áfram þar sem frá var horfið</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
 <translation id="2038563949887743358">Kveikja á beiðni um vefsvæði fyrir tölvur</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> er einnig með gögn í Chrome</translation>
@@ -847,6 +849,7 @@ Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum sv�
 <translation id="6070730414166672373">Hefur samband við bankann</translation>
 <translation id="6085886413119427067">Ákvarðar hvernig á að tengjast vefsvæðum um örugga tengingu</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> klst. eftir</translation>
+<translation id="6095578583683628124">Ef nú notar Google einnig sem sjálfgefna leitarvél færðu betri tillögur með viðeigandi samhengi</translation>
 <translation id="6108923351542677676">Uppsetning fer fram…</translation>
 <translation id="6111020039983847643">gagnanotkun</translation>
 <translation id="6112702117600201073">Endurnýjar síðu</translation>
@@ -1391,6 +1394,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="9148126808321036104">Skrá inn aftur</translation>
 <translation id="9155898266292537608">Þú getur einnig leitað með því að ýta á orð</translation>
 <translation id="9158770349521403363">Aðeins deila efni</translation>
+<translation id="916446198114569890">Vefslóðirnar sem þú opnar eru vistaðar á Google reikningnum þínum</translation>
 <translation id="9169507124922466868">Ferill er hálfopinn</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Athugað fyrir 1 mínútu}one{Athugað fyrir # mínútu}other{Athugað fyrir # mínútum}}</translation>
 <translation id="9204836675896933765">Ein skrá eftir</translation>

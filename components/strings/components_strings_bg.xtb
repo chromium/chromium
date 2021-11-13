@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">Може да поиска разрешение да открива устройства с Bluetooth в близост</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1428146450423315676">Стакер 7</translation>
+<translation id="142858679511221695">Потребител на облака</translation>
 <translation id="1428729058023778569">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1432581352905426595">Управление на търсещите машини</translation>
@@ -717,6 +718,7 @@
 <translation id="3329013043687509092">Насищане</translation>
 <translation id="3333762389743153920">Не отговаря на условията за виртуална карта</translation>
 <translation id="3338095232262050444">Има защита</translation>
+<translation id="3339446062576134663">Облак (Ash)</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="3360103848165129075">Лист на инструмента за обработване на плащания</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />няма да съхранява<ph name="END_EMPHASIS" /> следната информация:
@@ -740,6 +742,7 @@
 <translation id="3380365263193509176">Неизвестна грешка</translation>
 <translation id="3380864720620200369">Идент. № на клиентската програма:</translation>
 <translation id="3381668585148405088">Потвърждаване на покупката ви</translation>
+<translation id="3383566085871012386">Текущият приоритет</translation>
 <translation id="3387261909427947069">Начини на плащане</translation>
 <translation id="3391030046425686457">Адрес за бърза доставка</translation>
 <translation id="3391482648489541560">редактиране на файлове</translation>
@@ -1409,6 +1412,7 @@
 <translation id="5478437291406423475">B6/C4 (плик)</translation>
 <translation id="5481076368049295676">Въпросното съдържание може да се опита да инсталира опасен софтуер на устройството ви, който да открадне или изтрие информацията ви. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Добавяне на валиден адрес</translation>
+<translation id="5485973315555778056">Машина в облака</translation>
 <translation id="5490432419156082418">Адреси и др.</translation>
 <translation id="5492298309214877701">Този интранет сайт на фирмата, организацията или училището има същия URL адрес като на външен уебсайт.
 <ph name="LINE_BREAK" />
@@ -1438,6 +1442,7 @@
 <translation id="5571083550517324815">Този адрес за вземане не се поддържа. Изберете друг.</translation>
 <translation id="5580958916614886209">Проверете месеца на валидност и опитайте отново</translation>
 <translation id="5586446728396275693">Няма запазени адреси</translation>
+<translation id="5587987780934666589">Потребител на платформата</translation>
 <translation id="5593349413089863479">Връзката не е напълно защитена</translation>
 <translation id="5595485650161345191">Редактиране на адреса</translation>
 <translation id="5598944008576757369">Избиране на начин на плащане</translation>
@@ -2126,6 +2131,7 @@
 <translation id="7953569069500808819">Зашиване на горния ръб</translation>
 <translation id="7956713633345437162">Мобилни отметки</translation>
 <translation id="7961015016161918242">Никога</translation>
+<translation id="7962467575542381659">Машина в платформата</translation>
 <translation id="7966803981046576691">Тип отчитане на задания</translation>
 <translation id="79682505114836835">Стойността „<ph name="VALUE" />“ е невалиден шестнадесетичен цвят.</translation>
 <translation id="7968982339740310781">Преглед на подробностите</translation>

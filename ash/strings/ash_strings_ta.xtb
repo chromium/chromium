@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">ஏற்கிறேன்</translation>
 <translation id="4924411785043111640">மீண்டும் தொடங்கி, மீட்டமை</translation>
 <translation id="4925542575807923399">பல உள்நுழைவு அமர்வில் இந்தக் கணக்கு முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டிய தேவை இந்தக் கணக்கின் நிர்வாகிக்கு உள்ளது.</translation>
-<translation id="4942878304446937978">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">அறிவிப்புகளை முடக்கு</translation>
 <translation id="4946376291507881335">படமெடு</translation>
 <translation id="495046168593986294">மேலே நகர்த்து</translation>

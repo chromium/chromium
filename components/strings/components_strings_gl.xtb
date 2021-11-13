@@ -156,6 +156,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1428146450423315676">Amontoador 7</translation>
+<translation id="142858679511221695">Usuario da nube</translation>
 <translation id="1428729058023778569">Estás a ver esta advertencia porque o sitio non é compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
@@ -711,6 +712,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3329013043687509092">Saturación</translation>
 <translation id="3333762389743153920">Non apta para asociarlle unha tarxeta virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
+<translation id="3339446062576134663">Nube (Ash)</translation>
 <translation id="3355823806454867987">Cambiar configuración do proxy...</translation>
 <translation id="3360103848165129075">Folla do controlador de pagos</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />non gardará<ph name="END_EMPHASIS" /> a seguinte información:
@@ -733,6 +735,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3380365263193509176">Erro descoñecido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
 <translation id="3381668585148405088">Verifica a túa compra</translation>
+<translation id="3383566085871012386">Orde de prioridade actual</translation>
 <translation id="3387261909427947069">Métodos de pago</translation>
 <translation id="3391030046425686457">Enderezo de entrega</translation>
 <translation id="3391482648489541560">modificación de ficheiros</translation>
@@ -1400,6 +1403,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5478437291406423475">B6/C4 (sobre)</translation>
 <translation id="5481076368049295676">É posible que con este contido se pretenda instalar software perigoso no teu dispositivo que che roube ou elimine información. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Engade un enderezo válido</translation>
+<translation id="5485973315555778056">Máquina da nube</translation>
 <translation id="5490432419156082418">Enderezos e moito máis</translation>
 <translation id="5492298309214877701">Este sitio da intranet da empresa, da organización ou da escola ten o mesmo URL que un sitio web externo.
     <ph name="LINE_BREAK" />
@@ -1429,6 +1433,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5571083550517324815">Non se pode realizar a recollida neste enderezo. Selecciona un diferente.</translation>
 <translation id="5580958916614886209">Comproba o mes de caducidade e téntao de novo</translation>
 <translation id="5586446728396275693">Non hai enderezos gardados</translation>
+<translation id="5587987780934666589">Usuario da plataforma</translation>
 <translation id="5593349413089863479">A conexión non é totalmente segura</translation>
 <translation id="5595485650161345191">Editar enderezo</translation>
 <translation id="5598944008576757369">Escoller método de pago</translation>
@@ -2113,6 +2118,7 @@ Detalles adicionais:
 <translation id="7953569069500808819">Grampa no bordo superior</translation>
 <translation id="7956713633345437162">Marcadores para móbiles</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7962467575542381659">Máquina da plataforma</translation>
 <translation id="7966803981046576691">Tipo de conta para o traballo</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é unha cor hexadecimal non válida.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>

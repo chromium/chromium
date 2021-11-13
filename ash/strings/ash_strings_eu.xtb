@@ -565,14 +565,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4924411785043111640">Berrabiarazi eta berrezarri</translation>
 <translation id="4925542575807923399">Saio-hasiera anitzeko saioetan, saioa hasten duen lehen kontua hau izatea eskatzen du kontu honen administratzaileak.</translation>
-<translation id="4942878304446937978">Egoera-erretilua. Ordua: <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Desaktibatu jakinarazpenak</translation>
 <translation id="4946376291507881335">Atera argazkia</translation>
 <translation id="495046168593986294">Egin gora</translation>

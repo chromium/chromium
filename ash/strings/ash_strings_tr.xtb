@@ -562,14 +562,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4924411785043111640">Yeniden başlat ve sıfırla</translation>
 <translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
-<translation id="4942878304446937978">Durum tepsisi, zaman <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>

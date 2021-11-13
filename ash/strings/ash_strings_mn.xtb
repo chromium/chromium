@@ -564,14 +564,6 @@
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
 <translation id="4924411785043111640">Дахин эхлүүлэх болон шинэчлэх</translation>
 <translation id="4925542575807923399">Энэ хаягийг хариуцсан ажилтан нь олон хаягаар зэрэг нэвтрэх тохиолдолд зөвхөн энэ хаягаар түрүүлж нэвтэрсний дараагаар бусад хаягт нэвтрэх боломжтой байхаар тохируулсан байна.</translation>
-<translation id="4942878304446937978">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>

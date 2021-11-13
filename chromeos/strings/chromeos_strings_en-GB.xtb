@@ -16,6 +16,7 @@
 <translation id="1175951029573070619">Average (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
+<translation id="1201402288615127009">Next</translation>
 <translation id="1204296502688602597">DNS latency</translation>
 <translation id="123124571410524056">Portal suspected</translation>
 <translation id="1238612778414822719">HTTPS latency</translation>
@@ -264,6 +265,7 @@
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
 <translation id="5051044138948155788">This is the only page. This will take you to the scanning start screen.</translation>
+<translation id="5061169534910302641">Update version and restart</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
 <translation id="5142961317498132443">Authentication</translation>
