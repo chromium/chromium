@@ -390,16 +390,14 @@ class GitCLTest(unittest.TestCase):
                             "builder": {
                                 "builder": "builder-b"
                             },
-                            "number": 100,
-                            "id": "100"
+                            "number": 100
                         },
                         {
                             "status": "SUCCESS",
                             "builder": {
                                 "builder": "builder-b"
                             },
-                            "number": 90,
-                            "id": "90"
+                            "number": 90
                         },
                         {
                             "status": "SCHEDULED",
@@ -412,8 +410,7 @@ class GitCLTest(unittest.TestCase):
                             "builder": {
                                 "builder": "builder-c"
                             },
-                            "number": 123,
-                            "id": "123"
+                            "number": 123
                         }
                     ]
                 }"""
@@ -421,7 +418,7 @@ class GitCLTest(unittest.TestCase):
         self.assertEqual(
             git_cl.latest_try_jobs(builder_names=['builder-a', 'builder-b']), {
                 Build('builder-a'): TryJobStatus('SCHEDULED'),
-                Build('builder-b', 100, "100"): TryJobStatus('COMPLETED', 'SUCCESS'),
+                Build('builder-b', 100): TryJobStatus('COMPLETED', 'SUCCESS'),
             })
 
     def test_latest_try_jobs_started(self):

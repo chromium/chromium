@@ -660,9 +660,6 @@ class TestImporter(object):
         _log.info('Adding test expectations lines for disable-layout-ng')
         self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
 
-        _log.info('Adding test expectations lines for disable-site-isolation-trials')
-        self._expectations_updater.update_expectations_for_flag_specific('disable-site-isolation-trials')
-
     def fetch_wpt_override_expectations(self):
         """Modifies WPT Override expectations based on try job results.
 
