@@ -203,7 +203,7 @@ class ScrollEnabledTestClient : public TestClient {
   gfx::Vector2d received_scroll_delta_;
 };
 
-TEST_F(AccessibilityTest, TestScrollIntoViewActionHandling) {
+TEST_F(AccessibilityTest, ScrollIntoViewActionHandling) {
   // This test checks that accessibility scroll action is passed
   // on to the ScrollEnabledTestClient implementation.
   ScrollEnabledTestClient client;
@@ -286,7 +286,7 @@ TEST_F(AccessibilityTest, TestScrollIntoViewActionHandling) {
   EXPECT_EQ(gfx::Vector2d(-180, -300), client.GetScrollRequestDelta());
 }
 
-TEST_F(AccessibilityTest, TestScrollToNearestEdge) {
+TEST_F(AccessibilityTest, ScrollToNearestEdge) {
   ScrollEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -325,7 +325,7 @@ TEST_F(AccessibilityTest, TestScrollToNearestEdge) {
   EXPECT_EQ(gfx::Vector2d(-199, -199), client.GetScrollRequestDelta());
 }
 
-TEST_F(AccessibilityTest, TestScrollToGlobalPoint) {
+TEST_F(AccessibilityTest, ScrollToGlobalPoint) {
   ScrollEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -390,7 +390,7 @@ class NavigationEnabledTestClient : public TestClient {
   float zoom_ = 0;
 };
 
-TEST_F(AccessibilityTest, TestWebLinkClickActionHandling) {
+TEST_F(AccessibilityTest, WebLinkClickActionHandling) {
   NavigationEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
@@ -406,7 +406,7 @@ TEST_F(AccessibilityTest, TestWebLinkClickActionHandling) {
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, client.disposition());
 }
 
-TEST_F(AccessibilityTest, TestInternalLinkClickActionHandling) {
+TEST_F(AccessibilityTest, InternalLinkClickActionHandling) {
   NavigationEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
@@ -560,7 +560,7 @@ TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   }
 }
 
-TEST_F(AccessibilityTest, TestSelectionActionHandling) {
+TEST_F(AccessibilityTest, SelectionActionHandling) {
   struct Selection {
     uint32_t start_page_index;
     uint32_t start_char_index;
@@ -624,7 +624,7 @@ TEST_F(AccessibilityTest, TestSelectionActionHandling) {
 
 // Tests if PP_PDF_SET_SELECTION updates scroll offsets if the selection is not
 // in the current visible rect.
-TEST_F(AccessibilityTest, TestSetSelectionAndScroll) {
+TEST_F(AccessibilityTest, SetSelectionAndScroll) {
   struct Selection {
     uint32_t start_page_index;
     uint32_t start_char_index;

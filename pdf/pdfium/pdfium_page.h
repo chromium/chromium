@@ -204,17 +204,17 @@ class PDFiumPage {
   friend class PDFiumPageLinkTest;
   friend class PDFiumTestBase;
 
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageButtonTest, TestPopulateButtons);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageChoiceFieldTest, TestPopulateChoiceFields);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, TestPopulateHighlights);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, TestCalculateImages);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, TestImageAltText);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, TestAnnotLinkGeneration);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, TestGetLinkTarget);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, TestLinkGeneration);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageButtonTest, PopulateButtons);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageChoiceFieldTest, PopulateChoiceFields);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, CalculateImages);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, ImageAltText);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, AnnotLinkGeneration);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, GetLinkTarget);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, LinkGeneration);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageOverlappingTest, CountCompleteOverlaps);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageOverlappingTest, CountPartialOverlaps);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageTextFieldTest, TestPopulateTextFields);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageTextFieldTest, PopulateTextFields);
 
   class ScopedUnloadPreventer {
    public:
