@@ -12,6 +12,7 @@ namespace libassistant {
 
 namespace {
 
+constexpr char kAlarmTimerEventName[] = "AlarmTimerEvent";
 constexpr char kAssistantDisplayEventName[] = "AssistantDisplayEvent";
 constexpr char kDeviceStateEventName[] = "DeviceStateEvent";
 constexpr char kHandlerMethodName[] = "OnEventFromLibas";
@@ -30,6 +31,16 @@ void PopulateRequest(const std::string& assistant_service_address,
 }
 
 }  // namespace
+
+template <>
+::assistant::api::RegisterEventHandlerRequest
+CreateRegistrationRequest<::assistant::api::AlarmTimerEventHandlerInterface>(
+    const std::string& assistant_service_address) {
+  ::assistant::api::RegisterEventHandlerRequest request;
+  PopulateRequest(assistant_service_address, kAlarmTimerEventName, &request,
+                  request.mutable_alarm_timer_events_to_handle());
+  return request;
+}
 
 template <>
 ::assistant::api::RegisterEventHandlerRequest CreateRegistrationRequest<

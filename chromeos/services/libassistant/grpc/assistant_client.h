@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/grpc/services_status_observer.h"
@@ -192,9 +191,8 @@ class AssistantClient {
           on_done) = 0;
 
   // Registers |observer| to get notified on any alarm/timer status change.
-  virtual void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  virtual void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) = 0;
 
   // Will not return nullptr.

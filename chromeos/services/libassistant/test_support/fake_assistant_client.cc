@@ -136,18 +136,16 @@ void FakeAssistantClient::GetTimers(
       fake_alarm_timer_manager()->GetAllEvents()));
 }
 
-void FakeAssistantClient::RegisterAlarmTimerEventObserver(
-    base::WeakPtr<
-        GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+void FakeAssistantClient::AddAlarmTimerEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
         observer) {
   timer_observer_ = observer;
 
   fake_alarm_timer_manager()->RegisterRingingStateListener(
-      [observer, this]() { GetAndNotifyTimerStatus(); });
+      [this]() { GetAndNotifyTimerStatus(); });
 
   fake_alarm_timer_manager()->RegisterAlarmActionListener(
-      [observer,
-       this](assistant_client::AlarmTimerManager::EventActionType ignore) {
+      [this](assistant_client::AlarmTimerManager::EventActionType ignore) {
         GetAndNotifyTimerStatus();
       });
 }

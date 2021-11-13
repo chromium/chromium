@@ -20,6 +20,7 @@
 
 namespace assistant {
 namespace api {
+class AlarmTimerEventHandlerInterface;
 class AssistantDisplayEventHandlerInterface;
 class DeviceStateEventHandlerInterface;
 }  // namespace api
@@ -49,6 +50,9 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   bool Start();
 
   // Add observer for each handler driver.
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+          observer);
   void AddAssistantDisplayEventObserver(
       GrpcServicesObserver<::assistant::api::OnAssistantDisplayEventRequest>*
           observer);
@@ -109,6 +113,10 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<HeartbeatEventHandlerDriver> heartbeat_driver_;
 
   std::unique_ptr<ActionService> action_handler_driver_;
+
+  std::unique_ptr<
+      EventHandlerDriver<::assistant::api::AlarmTimerEventHandlerInterface>>
+      alarm_timer_event_handler_driver_;
 
   std::unique_ptr<EventHandlerDriver<
       ::assistant::api::AssistantDisplayEventHandlerInterface>>

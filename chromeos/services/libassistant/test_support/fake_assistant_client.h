@@ -94,18 +94,15 @@ class FakeAssistantClient : public AssistantClient {
   void GetTimers(
       base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
           on_done) override;
-  void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) override;
 
-  assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
-
  private:
+  assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
   void GetAndNotifyTimerStatus();
 
-  base::WeakPtr<
-      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
       timer_observer_;
 };
 

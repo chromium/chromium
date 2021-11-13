@@ -37,8 +37,7 @@ class TimerController::TimerListener
     // Register as an observer of |AlarmTimerEvent| to get notified on
     // alarm/timer status change, i.e. when timers are scheduled, updated,
     // and/or removed. Status change will be reflected on UI correspondingly.
-    assistant_client_.RegisterAlarmTimerEventObserver(
-        weak_factory_.GetWeakPtr());
+    assistant_client_.AddAlarmTimerEventObserver(this);
 
     // Force sync the initial timer state.
     assistant_client_.GetTimers(base::BindOnce(

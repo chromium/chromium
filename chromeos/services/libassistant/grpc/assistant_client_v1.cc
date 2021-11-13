@@ -546,12 +546,10 @@ void AssistantClientV1::GetTimers(
   std::move(on_done).Run(std::move(timers));
 }
 
-void AssistantClientV1::RegisterAlarmTimerEventObserver(
-    base::WeakPtr<GrpcServicesObserver<OnAlarmTimerEventRequest>> observer) {
-  // TODO(b/189973553): Change this to observer list so that we can add more
-  // observers. It will be done in the next cl after changing the WeakPtr to
-  // pointer of the observer.
-  timer_observer_ = observer;
+void AssistantClientV1::AddAlarmTimerEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+        observer) {
+  timer_event_observer_list_.AddObserver(observer);
 
   // We always want to know when a timer has started ringing.
   alarm_timer_manager()->RegisterRingingStateListener(
@@ -587,9 +585,14 @@ void AssistantClientV1::GetAndNotifyTimerStatus() {
   GetTimers(base::BindOnce(
       [](const base::WeakPtr<AssistantClientV1>& self,
          const std::vector<assistant::AssistantTimer>& timers) {
-        if (self && self->timer_observer_) {
-          self->timer_observer_->OnGrpcMessage(
-              CreateOnAlarmTimerEventRequestProtoForV1(timers));
+        // Observers outlive `this`. Observers are added when
+        // `OnAssistantClientRunning()`, and destroyed when
+        // `OnDestroyingAssistantClient()`.
+        if (self) {
+          for (auto& observer : self->timer_event_observer_list_) {
+            observer.OnGrpcMessage(
+                CreateOnAlarmTimerEventRequestProtoForV1(timers));
+          }
         }
       },
       weak_factory_.GetWeakPtr()));

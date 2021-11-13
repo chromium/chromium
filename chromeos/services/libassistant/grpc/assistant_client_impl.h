@@ -53,6 +53,10 @@ class AssistantClientImpl : public AssistantClientV1 {
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
 
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+          observer) override;
+
  private:
   chromeos::libassistant::GrpcServicesInitializer grpc_services_;
 

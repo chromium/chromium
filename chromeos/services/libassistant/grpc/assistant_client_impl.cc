@@ -169,6 +169,12 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
       kDefaultStateConfig);
 }
 
+void AssistantClientImpl::AddAlarmTimerEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+        observer) {
+  grpc_services_.AddAlarmTimerEventObserver(observer);
+}
+
 // static
 std::unique_ptr<AssistantClient> AssistantClient::Create(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,

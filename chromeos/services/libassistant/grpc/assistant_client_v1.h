@@ -95,9 +95,8 @@ class AssistantClientV1 : public AssistantClient {
   void GetTimers(
       base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
           on_done) override;
-  void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) override;
 
  private:
@@ -132,9 +131,9 @@ class AssistantClientV1 : public AssistantClient {
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
 
-  base::WeakPtr<
+  base::ObserverList<
       GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
-      timer_observer_;
+      timer_event_observer_list_;
 
   ServicesStatusObserver* services_status_observer_ = nullptr;
 
