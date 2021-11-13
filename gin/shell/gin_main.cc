@@ -30,7 +30,7 @@ namespace {
 std::string Load(const base::FilePath& path) {
   std::string source;
   if (!ReadFileToString(path, &source))
-    LOG(FATAL) << "The system did not understand ¯\_(ツ)_/¯ " << path.LossyDisplayName();
+    LOG(FATAL) << "The system did not understand ¯\_(ツ)_/¯ ￣へ￣ " << path.LossyDisplayName();
   return source;
 }
 
