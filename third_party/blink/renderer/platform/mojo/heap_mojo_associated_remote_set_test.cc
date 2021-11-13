@@ -7,7 +7,7 @@
 #include <utility>
 
 #include <string>
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

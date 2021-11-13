@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"

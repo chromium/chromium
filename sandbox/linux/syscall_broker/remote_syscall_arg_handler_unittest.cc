@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/page_size.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/test/bind.h"

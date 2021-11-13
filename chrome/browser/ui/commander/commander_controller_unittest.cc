@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/commander/command_source.h"

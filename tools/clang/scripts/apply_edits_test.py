@@ -490,8 +490,6 @@ namespace ash {
 #include <stddef.h>
 #include <vector>
 
-#include "base/macros.h"
-
 // ...
 
 #endif
@@ -504,7 +502,6 @@ namespace ash {
 #include <vector>
 
 #include "new/header.h"
-#include "base/macros.h"
 
 // ...
 

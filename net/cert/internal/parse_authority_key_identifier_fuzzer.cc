@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/der/input.h"
 

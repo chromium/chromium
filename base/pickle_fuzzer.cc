@@ -4,7 +4,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/pickle.h"
 
 namespace {

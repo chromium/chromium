@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"

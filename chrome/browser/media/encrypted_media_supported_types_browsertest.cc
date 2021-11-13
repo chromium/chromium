@@ -9,7 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

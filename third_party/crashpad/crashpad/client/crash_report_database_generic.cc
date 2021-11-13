@@ -20,8 +20,8 @@
 
 #include <utility>
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "client/settings.h"
 #include "util/file/directory_reader.h"

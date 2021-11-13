@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"

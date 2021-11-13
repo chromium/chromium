@@ -20,7 +20,7 @@
 
 #include "base/check.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace crashpad {

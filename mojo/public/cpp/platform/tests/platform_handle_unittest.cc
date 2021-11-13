@@ -8,7 +8,7 @@
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"

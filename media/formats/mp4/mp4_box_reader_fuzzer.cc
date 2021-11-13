@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_reader.h"
 

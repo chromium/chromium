@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 

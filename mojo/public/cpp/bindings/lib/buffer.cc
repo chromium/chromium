@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "mojo/public/c/system/message_pipe.h"

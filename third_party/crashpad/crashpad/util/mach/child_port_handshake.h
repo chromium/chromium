@@ -20,7 +20,7 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "util/mach/child_port_types.h"
 
 namespace crashpad {

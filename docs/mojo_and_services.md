@@ -294,7 +294,6 @@ Then the actual `MathService` implementation:
 
 ``` cpp
 // src/chrome/services/math/math_service.h
-#include "base/macros.h"
 #include "chrome/services/math/public/mojom/math_service.mojom.h"
 
 namespace math {
@@ -302,9 +301,9 @@ namespace math {
 class MathService : public mojom::MathService {
  public:
   explicit MathService(mojo::PendingReceiver<mojom::MathService> receiver);
-  ~MathService() override;
   MathService(const MathService&) = delete;
   MathService& operator=(const MathService&) = delete;
+  ~MathService() override;
 
  private:
   // mojom::MathService:

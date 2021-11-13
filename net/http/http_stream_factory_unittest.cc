@@ -15,7 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"

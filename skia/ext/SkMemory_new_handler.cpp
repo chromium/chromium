@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "base/debug/alias.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypes.h"

@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/threading/thread_task_runner_handle.h"

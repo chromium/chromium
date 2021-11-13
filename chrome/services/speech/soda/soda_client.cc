@@ -4,8 +4,8 @@
 
 #include "chrome/services/speech/soda/soda_client.h"
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 

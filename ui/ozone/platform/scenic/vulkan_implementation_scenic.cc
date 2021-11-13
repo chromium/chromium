@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/native_library.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"

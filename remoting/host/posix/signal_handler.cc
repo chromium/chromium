@@ -16,8 +16,8 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/platform_thread.h"
 

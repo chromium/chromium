@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"

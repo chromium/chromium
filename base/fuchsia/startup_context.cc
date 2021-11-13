@@ -10,8 +10,8 @@
 
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 
 namespace base {
 

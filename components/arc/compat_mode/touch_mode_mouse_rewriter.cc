@@ -6,8 +6,8 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"

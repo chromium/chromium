@@ -33,7 +33,7 @@
 #include <memory>
 
 #include "base/bits.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/pickle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sessions/core/serialized_navigation_driver.h"

@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"

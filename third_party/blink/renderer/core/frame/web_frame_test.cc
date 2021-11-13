@@ -36,7 +36,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"

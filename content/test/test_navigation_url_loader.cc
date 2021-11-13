@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"

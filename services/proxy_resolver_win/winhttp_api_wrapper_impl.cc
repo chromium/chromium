@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 
 namespace proxy_resolver_win {

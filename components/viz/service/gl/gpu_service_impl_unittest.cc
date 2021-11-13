@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"

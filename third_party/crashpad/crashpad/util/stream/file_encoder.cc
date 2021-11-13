@@ -16,7 +16,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "util/file/file_io.h"
 #include "util/file/file_reader.h"
 #include "util/file/scoped_remove_file.h"

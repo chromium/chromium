@@ -12,7 +12,7 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"

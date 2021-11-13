@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"

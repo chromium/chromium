@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/win/scoped_hstring.h"
 #include "testing/gtest/include/gtest/gtest.h"

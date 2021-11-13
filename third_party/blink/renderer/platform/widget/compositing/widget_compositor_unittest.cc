@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"

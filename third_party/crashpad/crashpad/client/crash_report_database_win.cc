@@ -23,8 +23,8 @@
 
 #include <utility>
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/settings.h"

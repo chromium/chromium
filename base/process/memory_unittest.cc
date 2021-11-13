@@ -16,7 +16,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"

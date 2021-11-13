@@ -69,7 +69,6 @@ index 000000000000..a94f56d77fbf
 +include_rules = [
 +    "+base/bit_cast.h",
 +    "+base/compiler_specific.h",
-+    "+base/macros.h",
 +    "+build/build_config.h",
 +]
 diff --git a/third_party/fdlibm/README.chromium b/third_party/fdlibm/README.chromium
@@ -116,7 +115,6 @@ index 1706b56dfd90..4825b22fc6f5 100644
 -#include "src/base/overflowing-math.h"
 +#include "base/bit_cast.h"
 +#include "base/compiler_specific.h"
-+#include "base/macros.h"
 +#include "build/build_config.h"
 +#include "third_party/fdlibm/overflowing-math.h"
  
@@ -401,7 +399,6 @@ index 14dcfb10de1a..815fa624ce11 100644
  #include <type_traits>
  
 -#include "src/base/macros.h"
-+#include "base/macros.h"
  
 -namespace v8 {
 -namespace base {

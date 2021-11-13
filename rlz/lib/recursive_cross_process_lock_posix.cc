@@ -12,8 +12,8 @@
 #include <unistd.h>
 
 #include "base/files/file_path.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace rlz_lib {

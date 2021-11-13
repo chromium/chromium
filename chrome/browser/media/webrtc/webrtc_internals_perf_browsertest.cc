@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"

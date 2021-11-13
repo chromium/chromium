@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"

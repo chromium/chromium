@@ -168,7 +168,7 @@ ${argHint}
     addSetPreloadInfo = true;
   }
   output(`
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "url/gurl.h"
 #include "testing/gtest/include/gtest/gtest.h"`);
   // Add includes specified by test fixture.

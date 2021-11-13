@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"

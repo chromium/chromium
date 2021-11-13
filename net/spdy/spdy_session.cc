@@ -12,9 +12,9 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"

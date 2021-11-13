@@ -6,7 +6,7 @@
 
 #include <cstring>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/trace_event/typed_macros.h"
 
 namespace mojo {

@@ -9,7 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

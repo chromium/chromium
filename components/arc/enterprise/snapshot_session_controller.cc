@@ -4,8 +4,8 @@
 
 #include "components/arc/enterprise/snapshot_session_controller.h"
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/session_manager/core/session_manager.h"

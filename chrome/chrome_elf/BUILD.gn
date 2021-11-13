@@ -141,7 +141,6 @@ executable("dll_hash_main") {
 
 static_library("hook_util") {
   sources = [
-    "../../base/macros.h",
     "hook_util/hook_util.cc",
     "hook_util/hook_util.h",
   ]

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 namespace blink {

@@ -136,7 +136,6 @@ Next we need a class to handle requests to this new resource URL. Typically this
 #define COMPONENTS_HELLO_WORLD_HELLO_WORLD_UI_H_
 #pragma once
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 // The WebUI for chrome://hello-world

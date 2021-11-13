@@ -26,7 +26,7 @@
 
 #include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"

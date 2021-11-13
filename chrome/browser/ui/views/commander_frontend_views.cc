@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"

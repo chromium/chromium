@@ -5,8 +5,8 @@
 #include <map>
 
 #include "base/feature_list.h"
+#include "base/ignore_result.h"
 #import "base/ios/ios_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"

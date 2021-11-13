@@ -4,7 +4,7 @@
 
 #include "services/network/public/cpp/optional_trust_token_params.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

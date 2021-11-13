@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "media/filters/vp9_raw_bits_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

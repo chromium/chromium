@@ -6,8 +6,8 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/av1_decoder.h"

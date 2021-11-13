@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

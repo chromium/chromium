@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/task/post_task.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

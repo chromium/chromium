@@ -14,9 +14,9 @@
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 
 namespace IPC {
 namespace internal {

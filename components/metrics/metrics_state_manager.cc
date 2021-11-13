@@ -19,7 +19,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"

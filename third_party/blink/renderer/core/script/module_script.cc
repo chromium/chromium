@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/script/module_script.h"
 
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"

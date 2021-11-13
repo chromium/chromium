@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/environment.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/strings/string_number_conversions.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 #include "testing/gtest/include/gtest/gtest.h"

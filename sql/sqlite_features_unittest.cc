@@ -12,7 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"

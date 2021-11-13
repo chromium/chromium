@@ -18,9 +18,9 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/ignore_result.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"

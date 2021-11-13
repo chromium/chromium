@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/ignore_result.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"

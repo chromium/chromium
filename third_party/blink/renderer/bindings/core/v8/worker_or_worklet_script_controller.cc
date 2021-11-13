@@ -32,7 +32,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"

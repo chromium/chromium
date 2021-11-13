@@ -3,7 +3,6 @@ include_rules = [
     "+base/files/file_path.h",
     "+base/i18n/rtl.h",
     "+base/observer_list_types.h",
-    "+base/macros.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
     "+base/memory/weak_ptr.h",

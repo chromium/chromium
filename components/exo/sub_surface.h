@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"

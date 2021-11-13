@@ -13,7 +13,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 
 namespace base {
 

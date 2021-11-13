@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/threading/sequence_local_storage_slot.h"
 
 namespace blink {

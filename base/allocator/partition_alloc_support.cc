@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"

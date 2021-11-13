@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/unguessable_token.h"

@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_TAB_HELPER_H_
 
 #include "base/gtest_prod_util.h"
-#import "base/macros.h"
 #import "base/memory/weak_ptr.h"
 #import "base/timer/elapsed_timer.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"

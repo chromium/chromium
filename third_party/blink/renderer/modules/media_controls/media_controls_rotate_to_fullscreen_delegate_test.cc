@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_rotate_to_fullscreen_delegate.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"

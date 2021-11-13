@@ -23,9 +23,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/bootstrap.h"

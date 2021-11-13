@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/message.h"

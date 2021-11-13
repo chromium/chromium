@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/global_file_system_access.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"

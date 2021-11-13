@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

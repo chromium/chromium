@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

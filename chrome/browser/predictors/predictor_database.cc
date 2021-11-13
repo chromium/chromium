@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"

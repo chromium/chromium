@@ -11,8 +11,8 @@
 #include <unistd.h>
 
 #include "base/command_line.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/safe_sprintf.h"
 #include "sandbox/policy/switches.h"
 

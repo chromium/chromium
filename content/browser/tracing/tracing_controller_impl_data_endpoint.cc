@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/ignore_result.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"

@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 

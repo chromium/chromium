@@ -16,8 +16,8 @@
 
 #include <unistd.h>
 
+#include "base/ignore_result.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "util/mach/mach_extensions.h"

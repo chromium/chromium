@@ -4,8 +4,8 @@
 
 #include "mojo/public/cpp/platform/platform_handle.h"
 
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

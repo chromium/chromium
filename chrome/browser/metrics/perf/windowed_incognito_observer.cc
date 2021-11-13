@@ -4,7 +4,7 @@
 
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

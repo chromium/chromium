@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
+#include "base/ignore_result.h"
 #include "base/mac/bundle_locations.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"

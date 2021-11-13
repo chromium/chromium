@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h"
 
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"

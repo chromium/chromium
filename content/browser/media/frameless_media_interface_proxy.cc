@@ -5,8 +5,8 @@
 #include "content/browser/media/frameless_media_interface_proxy.h"
 
 #include "base/bind.h"
+#include "base/ignore_result.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "content/public/browser/media_service.h"
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"

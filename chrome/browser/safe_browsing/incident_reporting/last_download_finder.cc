@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
