@@ -215,7 +215,8 @@ bool DisplayLockContext::NeedsLifecycleNotifications() const {
   return needs_deferred_not_intersecting_signal_ ||
          render_affecting_state_[static_cast<int>(
              RenderAffectingState::kAutoStateUnlockedUntilLifecycle)] ||
-         has_pending_subtree_checks_ || has_pending_clear_has_top_layer_;
+         has_pending_subtree_checks_ || has_pending_clear_has_top_layer_ ||
+         has_pending_top_layer_check_;
 }
 
 void DisplayLockContext::UpdateLifecycleNotificationRegistration() {
@@ -855,10 +856,14 @@ void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
         RenderAffectingState::kAutoStateUnlockedUntilLifecycle)]);
   }
 
+  if (has_pending_subtree_checks_ || has_pending_top_layer_check_) {
+    DetermineIfSubtreeHasTopLayerElement();
+    has_pending_top_layer_check_ = false;
+  }
+
   if (has_pending_subtree_checks_) {
     DetermineIfSubtreeHasFocus();
     DetermineIfSubtreeHasSelection();
-    DetermineIfSubtreeHasTopLayerElement();
 
     has_pending_subtree_checks_ = false;
     update_registration = true;
@@ -907,6 +912,12 @@ void DisplayLockContext::ElementConnected() {
   // this reassignment. This is fine, since the state check can be deferred
   // until the beginning of the next frame.
   has_pending_subtree_checks_ = true;
+  UpdateLifecycleNotificationRegistration();
+  ScheduleAnimation();
+}
+
+void DisplayLockContext::ScheduleTopLayerCheck() {
+  has_pending_top_layer_check_ = true;
   UpdateLifecycleNotificationRegistration();
   ScheduleAnimation();
 }
