@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_event_targeter.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
@@ -20,7 +21,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
@@ -41,10 +41,8 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -183,8 +181,6 @@ SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
                      sk_opacity_value);
 }
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kExcludeWindowFromEventHandling, false)
-
 // Gets radius for app list background corners when the app list has the
 // provided height. The rounded corner should match the current app list height
 // (so the rounded corners bottom edge matches the shelf top), until it reaches
@@ -197,45 +193,6 @@ double GetBackgroundRadiusForAppListHeight(double height,
   return std::min(static_cast<double>(shelf_background_corner_radius),
                   std::max(height, 0.));
 }
-
-// This targeter prevents routing events to sub-windows, such as
-// RenderHostWindow in order to handle events in context of app list.
-class AppListEventTargeter : public aura::WindowTargeter {
- public:
-  explicit AppListEventTargeter(AppListViewDelegate* delegate)
-      : delegate_(delegate) {}
-
-  AppListEventTargeter(const AppListEventTargeter&) = delete;
-  AppListEventTargeter& operator=(const AppListEventTargeter&) = delete;
-
-  ~AppListEventTargeter() override = default;
-
-  // aura::WindowTargeter:
-  bool SubtreeShouldBeExploredForEvent(aura::Window* window,
-                                       const ui::LocatedEvent& event) override {
-    if (delegate_ && !delegate_->CanProcessEventsOnApplistViews())
-      return false;
-
-    if (window->GetProperty(kExcludeWindowFromEventHandling)) {
-      // Allow routing to sub-windows for ET_MOUSE_MOVED event which is used by
-      // accessibility to enter the mode of exploration of WebView contents.
-      if (event.type() != ui::ET_MOUSE_MOVED)
-        return false;
-    }
-
-    if (window->GetProperty(ash::assistant::ui::kOnlyAllowMouseClickEvents)) {
-      if (event.type() != ui::ET_MOUSE_PRESSED &&
-          event.type() != ui::ET_MOUSE_RELEASED) {
-        return false;
-      }
-    }
-
-    return aura::WindowTargeter::SubtreeShouldBeExploredForEvent(window, event);
-  }
-
- private:
-  AppListViewDelegate* delegate_;  // Weak. Owned by AppListService.
-};
 
 float ComputeSubpixelOffset(const display::Display& display, float value) {
   float pixel_position = std::round(display.device_scale_factor() * value);
@@ -649,12 +606,6 @@ AppListView::~AppListView() {
 
   // Remove child views first to ensure no remaining dependencies on delegate_.
   RemoveAllChildViews();
-}
-
-// static
-void AppListView::ExcludeWindowFromEventHandling(aura::Window* window) {
-  DCHECK(window);
-  window->SetProperty(kExcludeWindowFromEventHandling, true);
 }
 
 // static

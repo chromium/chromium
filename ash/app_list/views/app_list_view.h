@@ -162,10 +162,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   ~AppListView() override;
 
-  // Prevents handling input events for the |window| in context of handling in
-  // app list.
-  static void ExcludeWindowFromEventHandling(aura::Window* window);
-
   // Used for testing, allows the page reset timer to be fired immediately
   // after starting.
   static void SetSkipPageResetTimerForTesting(bool enabled);

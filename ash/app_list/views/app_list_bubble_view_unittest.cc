@@ -452,7 +452,7 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
 }
 
-TEST_F(AppListBubbleViewTest, AssistantPageDoesNotHaveBackground) {
+TEST_F(AppListBubbleViewTest, AssistantPageLayout) {
   SimulateAssistantEnabled();
   ShowAppList();
   LeftClickOn(GetSearchBoxView()->assistant_button());
@@ -460,6 +460,11 @@ TEST_F(AppListBubbleViewTest, AssistantPageDoesNotHaveBackground) {
   // Assistant not have a background so the blurred launcher is visible
   // underneath the AppListBubbleAssistantPage view.
   EXPECT_FALSE(GetAssistantPage()->GetBackground());
+
+  // Assistant fills the bubble view, so that any suggestion chips will appear
+  // at the bottom.
+  auto* app_list_bubble_view = GetAppListTestHelper()->GetBubbleView();
+  EXPECT_EQ(GetAssistantPage()->bounds(), app_list_bubble_view->bounds());
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {

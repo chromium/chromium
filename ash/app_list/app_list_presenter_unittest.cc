@@ -38,6 +38,7 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -86,6 +87,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
@@ -587,6 +589,41 @@ TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {
   // Delete the character in the textfield and check visibility.
   generator->PressKey(ui::VKEY_BACK, 0);
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
+}
+
+// Regression test for b/204482740.
+TEST_P(AppListBubbleAndTabletTest, AppListEventTargeterForAssistantScrolling) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // A custom event targeter is installed.
+  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
+  ASSERT_TRUE(window);
+  aura::WindowTargeter* targeter = window->targeter();
+  ASSERT_TRUE(targeter);
+
+  // Simulate an assistant card with a webview being shown, which sets a window
+  // property on its window. See AssistantCardElementView::AddedToWidget().
+  aura::Window* child =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(100, 100), window);
+  child->SetProperty(assistant::ui::kOnlyAllowMouseClickEvents, true);
+
+  // Scroll events are blocked for that window.
+  constexpr int offset = 10;
+  ui::ScrollEvent scroll_down(ui::ET_SCROLL, gfx::Point(),
+                              base::TimeTicks::Now(), ui::EF_NONE, 0, offset, 0,
+                              offset, /*finger_count=*/2);
+  EXPECT_FALSE(targeter->SubtreeShouldBeExploredForEvent(child, scroll_down));
+
+  // Click events are not blocked.
+  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       base::TimeTicks::Now(), ui::EF_NONE,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
+  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
 }
 
 // Tests that apps container/page does not have a separator between apps grid

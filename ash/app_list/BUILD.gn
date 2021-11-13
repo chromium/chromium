@@ -17,6 +17,8 @@ source_set("app_list") {
     "app_list_color_provider_impl.h",
     "app_list_controller_impl.cc",
     "app_list_controller_impl.h",
+    "app_list_event_targeter.cc",
+    "app_list_event_targeter.h",
     "app_list_feature_usage_metrics.cc",
     "app_list_feature_usage_metrics.h",
     "app_list_metrics.cc",

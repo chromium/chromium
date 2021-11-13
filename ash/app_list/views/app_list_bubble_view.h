@@ -95,7 +95,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   friend class AppListTestHelper;
   friend class AssistantTestApiImpl;
 
-  // Initializes the main contents (search box and pages).
+  // Initializes the main contents (search box, apps page, and search page).
   void InitContentsView(ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Initializes the folder view, which appears on top of all other views.

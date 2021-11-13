@@ -120,6 +120,13 @@ AppListBubbleView::AppListBubbleView(
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
   InitContentsView(drag_and_drop_host);
+
+  // Add assistant page as a top-level child so it will fill the bubble and
+  // suggestion chips will appear at the bottom of the bubble view.
+  assistant_page_ = AddChildView(std::make_unique<AppListBubbleAssistantPage>(
+      view_delegate_->GetAssistantViewDelegate()));
+  assistant_page_->SetVisible(false);
+
   InitFolderView(drag_and_drop_host);
   // Folder view is laid out manually based on its contents.
   layout->SetChildViewIgnoredByLayout(folder_view_, true);
@@ -174,11 +181,6 @@ void AppListBubbleView::InitContentsView(
       contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(
           view_delegate_, search_box_view_));
   search_page_->SetVisible(false);
-
-  assistant_page_ =
-      contents->AddChildView(std::make_unique<AppListBubbleAssistantPage>(
-          view_delegate_->GetAssistantViewDelegate()));
-  assistant_page_->SetVisible(false);
 }
 
 void AppListBubbleView::InitFolderView(

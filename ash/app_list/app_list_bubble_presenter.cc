@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_event_targeter.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/constants/ash_features.h"
@@ -163,6 +164,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
   bubble_widget_ = CreateBubbleWidget(root_window);
+  bubble_widget_->GetNativeWindow()->SetEventTargeter(
+      std::make_unique<AppListEventTargeter>(controller_));
   Shelf* shelf = Shelf::ForWindow(root_window);
   ApplicationDragAndDropHost* drag_and_drop_host =
       shelf->shelf_widget()->GetDragAndDropHostForAppList();
