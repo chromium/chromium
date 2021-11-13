@@ -49,7 +49,7 @@
   <!-- TODO(joonbug): Update text for i18n -->
   <div slot="header">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
-    <p>Your repair was successful. You can exit or take some additional actions.</h2>
+    <div>[[i18n('repairCompletedDescriptionText')]]</div>
   </div>
   <div slot="body">
     <cr-button id="diagnosticsButton" class="button-card"
@@ -59,10 +59,10 @@
       </div>
       <div class="button-text">
         <div class="button-label">
-          <span>Run Diagnostics</span>
+          <span>[[i18n('repairCompletedDiagnosticsButtonText')]]</span>
         </div>
         <div class="button-description">
-          Confirm everything's in the right place and view the diagnostic report
+          [[i18n('repairCompletedDiagnosticsDescriptionText')]]
         </div>
       </div>
     </cr-button>
@@ -73,10 +73,10 @@
       </iron-icon>
       <div class="button-text">
         <div class="button-label">
-          <span>See RMA Logs</span>
+          <span>[[i18n('repairCompletedLogsButtonText')]]</span>
         </div>
         <div class="button-description">
-          See what's been fixed
+          [[i18n('repairCompletedLogsDescriptionText')]]
         </div>
       </div>
     </cr-button>
@@ -88,13 +88,13 @@
       </iron-icon>
       <div class="button-text">
         <div class="button-label">
-          <span>Battery Cutoff</span>
+          <span>[[i18n('repairCompletedShutoffButtonText')]]</span>
         </div>
         <div class="button-description">
-          Perform battery cutoff for devices being shipped or stored
+          [[i18n('repairCompletedShutoffDescriptionText')]]
         </div>
         <div class="button-description" hidden="[[!pluggedIn_]]">
-          Unplug the power cable to enable this option.
+          [[i18n('repairCompletedShutoffInstructionsText')]]
         </div>
       </div>
     </cr-button>

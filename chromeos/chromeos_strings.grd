@@ -2254,6 +2254,30 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair completed
       </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DESCRIPTION" translateable="false" desc="Notice for the user that repair is complete and they can shutdown when ready or run diagnostics/view logs.">
+        Your repair was successful. You can exit or take some additional actions.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON" translateable="false" desc="Label of the button that launches the post-boot diagnostics SWA.">
+        Run Diagnostics
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION" translateable="false" desc="Description of what the diagnostics SWA is for">
+        Confirm everything's in the right place and make a diagnostic report.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_BUTTON" translateable="false" desc="Label for the button that opens the view/save logs dialog">
+        See RMA Logs
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_DESCRIPTION" translateable="false" desc="Description of what the logs dialog is used for.">
+        Review what's been fixed and results of diagnostic tests, and save the logs to a USB storage device.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_BUTTON" translateable="false" desc="Label of the button that triggers a shutdown with battery cutoff.">
+        Battery Cutoff
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_DESCRIPTION" translateable="false" desc="Explanation of why user would choose battery cutoff.">
+        Perform battery cutoff for devices being shipped or stored.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" translateable="false" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
+        Remove power cable to enable this option.
+      </message>
       <!-- Run calibration page -->
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
         Calibrating device components
