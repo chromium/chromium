@@ -2298,6 +2298,16 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button that triggers device shutdown on the restock page.">
         Shutdown
       </message>
+      <!-- Manually enable wp page -->
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE" translateable="false" desc="The title for the page to manually enable write-protect on the device, afer device provisioning completes.">
+        Manually enable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions to manually enable write-protect on the device.">
+        Enable write-protect to continue to the next screen.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE" translateable="false" desc="Message to inform user hardware write protection has been enabled and RMA is ready to continue.">
+        Hardware write protection enabled. Click 'Next' to continue.
+      </message>
     </messages>
   </release>
 </grit>

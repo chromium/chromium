@@ -175,6 +175,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"restockTitleText", IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE},
       {"restockInstructionsText", IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS},
       {"restockShutdownButtonText", IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON},
+      // Manual enable wp page
+      {"manuallyEnableWpTitleText", IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE},
+      {"manuallyEnableWpInstructionsText",
+       IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS},
+      {"manuallyEnabledWpMessageText",
+       IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
