@@ -179,12 +179,6 @@
   },
   'blink_platform_unittests': {
     'modifications': {
-      # TODO(crbug.com/1108121): Remove this filter
-      'android-nougat-arm64-rel': {
-        'args': [
-          '--gtest_filter=-HarfBuzzShaperTest.ShapeHorizontalWithoutSubpixelPositionWithKerningIsRounded',
-        ],
-      },
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
@@ -1017,17 +1011,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
     ],
-    'modifications': {
-      # Use "--remove-system-package" according to crbug.com/931947#c1
-      'android-nougat-arm64-rel': {
-        'args': [
-          # Applying a mixin via an exception doesn't work, so manually apply
-          # the same arguments as the 'vr_instrumentation_test' mixin.
-          '--remove-system-package=com.google.vr.vrcore',
-          '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
-        ],
-      },
-    },
   },
   'chrome_public_test_vr_apk-vega': {
     'modifications': {
@@ -1276,15 +1259,6 @@
         'swarming': {
           'shards': 20,
         },
-      },
-      'android-nougat-arm64-rel': {
-        'swarming': {
-          'shards': 16,
-        },
-        # TODO(crbug.com/1108055): Remove this filter
-        'args': [
-          '--gtest_filter=-BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenario*',
-        ],
       },
       'android-pie-x86-rel': {
         'args': [
@@ -2158,13 +2132,6 @@
           '--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk',
         ]
       },
-      'android-nougat-arm64-rel': {
-        'args': [
-          # ArCore is not installed as a system app on N, so we can install it
-          # normally instead of replacing the system version.
-          '--additional-apk=//third_party/arcore-android-sdk/test-apks/arcore/arcore_current.apk'
-        ],
-      },
       'android-pie-arm64-dbg': {
         'args': [
           '--remove-system-package=com.google.ar.core',
@@ -2393,7 +2360,6 @@
       'android-code-coverage-native',
       'android-marshmallow-arm64-rel',
       'android-marshmallow-x86-rel-non-cq',
-      'android-nougat-arm64-rel',
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
       'android-pie-arm64-rel',
       'android-pie-x86-rel',
@@ -2636,12 +2602,6 @@
         'args': [
           # TODO(crbug.com/1234824): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
-        ],
-      },
-      'android-nougat-arm64-rel': {
-        # TODO(crbug.com/1108055): Remove this filter
-        'args': [
-          '--gtest_filter=-SystemPerfettoTest.*',
         ],
       },
       'fuchsia-code-coverage': {
@@ -2903,7 +2863,6 @@
       # marshmallow on the CQ. https://crbug.com/1026487.
       # TODO(crbug/1260494): Test suite isn't running on android.
       'android-marshmallow-arm64-rel',
-      'android-nougat-arm64-rel', # crbug.com/1108124
       'android-pie-arm64-rel',
       # crbug.com/936540
       'Mac10.11 Tests',

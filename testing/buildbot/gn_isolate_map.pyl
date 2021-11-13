@@ -1750,16 +1750,6 @@
     "type": "script",
     "python3": True,
   },
-  "telemetry_perf_unittests_android_monochrome": {
-    "args": [
-      "../../tools/perf/run_tests",
-      "-v",
-    ],
-    "label": "//chrome/test:telemetry_perf_unittests_android_monochrome",
-    "script": "//testing/scripts/run_telemetry_as_googletest.py",
-    "type": "script",
-    "python3": True,
-  },
   "telemetry_unittests": {
     "args": [
       "--xvfb",

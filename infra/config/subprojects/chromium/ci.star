@@ -939,17 +939,6 @@ ci.android_builder(
 )
 
 ci.android_builder(
-    name = "android-nougat-arm64-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|arm64",
-        short_name = "N",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = main_console_if_on_branch(),
-)
-
-ci.android_builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(

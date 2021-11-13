@@ -887,13 +887,6 @@
       },
     },
   },
-  'nougat': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'NJH47F',
-      },
-    },
-  },
   'nougat_generic': {
     'swarming': {
       'dimensions': {
@@ -976,15 +969,6 @@
       'dimensions': {
         'device_os': 'PQ3A.190801.002',
         'device_os_flavor': 'google',
-      },
-    },
-  },
-  'sailfish': {
-    # Pixel 1
-    'swarming': {
-      'dimensions': {
-        'device_type': 'sailfish',
-        'os': 'Android',
       },
     },
   },

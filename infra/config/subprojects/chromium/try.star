@@ -416,15 +416,6 @@ try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel-non-cq",
 )
 
-# TODO(crbug.com/1111436) Added it back once all Pixel 1s are flashed
-# back to NJH47F
-#try_.chromium_android_builder(
-#    name = "android-nougat-arm64-rel",
-#    branch_selector = branches.STANDARD_MILESTONE,
-#    goma_jobs = goma.jobs.J150,
-#    main_list_view = 'try',
-#)
-
 try_.chromium_android_builder(
     name = "android-opus-arm-rel",
 )

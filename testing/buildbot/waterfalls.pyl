@@ -949,22 +949,6 @@
           'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
         }
       },
-      'android-nougat-arm64-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'nougat',
-          'sailfish',
-        ],
-        'additional_compile_targets': [
-          'monochrome_static_initializers',
-          'weblayer_shell',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_nougat_rel_gtests',
-          'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
-        },
-        'os_type': 'android',
-      },
       'android-pie-arm64-coverage-experimental-rel': {
         'mixins': [
           'has_native_resultdb_integration',

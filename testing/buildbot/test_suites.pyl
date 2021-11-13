@@ -633,11 +633,9 @@
           'lollipop',
           'marshmallow',
           'marshmallow_generic',
-          'nougat',
           'nougat_generic',
           'oreo_fleet',
           'pie_fleet',
-          'sailfish',
           'walleye',
         ],
       },
@@ -5891,24 +5889,6 @@
       'android_ddready_vr_gtests',
       'android_monochrome_smoke_tests',
       'android_smoke_tests',
-    ],
-
-    # TODO(crbug/1095778): Split the test suites to run on sailfish and marlin
-    # when both of device types are online
-    'android_nougat_rel_gtests': [
-      'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'chrome_public_tests',
-      'linux_flavor_specific_chromium_gtests',
-      'system_webview_shell_instrumentation_tests', # Not an experimental test
-      'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-      'weblayer_android_gtests',
-      'weblayer_gtests',
     ],
 
     'android_oreo_gtests': [
