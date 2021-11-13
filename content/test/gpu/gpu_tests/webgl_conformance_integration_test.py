@@ -224,6 +224,11 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'WEBGL_webcodecs_video_frame',
       ]
 
+  def _ShouldForceRetryOnFailureFirstTest(self):
+    # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
+    # See crbug.com/1079244.
+    return 'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
+
   def RunActualGpuTest(self, test_path, *args):
     # This indirection allows these tests to trampoline through
     # _RunGpuTest.
