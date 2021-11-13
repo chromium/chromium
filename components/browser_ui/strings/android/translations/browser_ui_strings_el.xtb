@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες κίνησης (συνιστάται)</translation>
 <translation id="5050380848339752099">Αυτός ο ιστότοπος πρόκειται να κοινοποιήσει πληροφορίες σε μια εφαρμογή εκτός της κατάστασης ανώνυμης περιήγησης.</translation>
 <translation id="5063480226653192405">Χρήση</translation>
+<translation id="509133520954049755">Αίτημα για προβολή για υπολογιστές</translation>
 <translation id="5100237604440890931">Συμπτυγμένη - Κάντε κλικ για ανάπτυξη</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="5134599672855298214">Αίτημα για προβολή για κινητά (συνιστάται)</translation>
 <translation id="5186036860380548585">Η επιλογή είναι διαθέσιμη κοντά στην κορυφή της οθόνης</translation>
 <translation id="5197729504361054390">Οι επαφές που επιλέγετε θα κοινοποιηθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Τελευταία επίσκεψη σήμερα</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6216432067784365534">Επιλογές <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Απεγκατάσταση <ph name="APP_NAME" />;</translation>
-<translation id="6233545266937675277">Υποβολή αιτήματος για την προβολή ιστοτόπων για υπολογιστή</translation>
 <translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
 <translation id="6270391203985052864">Οι ιστότοποι μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">Η σύνδεση είναι ασφαλής</translation>
 <translation id="8249310407154411074">Μετακίνηση επάνω</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
-<translation id="8267092878336850213">Υποβολή αιτήματος για την προβολή ιστοτόπων για κινητό</translation>
 <translation id="8300705686683892304">Διαχείριση από εφαρμογή</translation>
 <translation id="8324158725704657629">Να μην ερωτηθώ ξανά</translation>
 <translation id="8372893542064058268">Να επιτρέπεται ο Συγχρονισμός παρασκηνίου για έναν συγκεκριμένο ιστότοπο.</translation>

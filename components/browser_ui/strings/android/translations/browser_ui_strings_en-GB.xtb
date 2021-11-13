@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Always request desktop site</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2490684707762498678">Managed by <ph name="APP_NAME" /></translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3333961966071413176">All contacts</translation>
 <translation id="3386292677130313581">Ask before allowing sites to know your location (recommended)</translation>
+<translation id="3517437118288792304">Always request desktop view for a specific site.</translation>
 <translation id="3538390592868664640">Block sites from creating a 3D map of your surroundings or tracking camera position</translation>
 <translation id="3551268116566418498">Leave Incognito mode?</translation>
 <translation id="3586500876634962664">Camera and microphone use</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4336434711095810371">Clear all data</translation>
+<translation id="4353125860368453721">Always request mobile view for a specific site.</translation>
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="445467742685312942">Allow sites to play protected content</translation>
@@ -148,8 +151,10 @@
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
 <translation id="5063480226653192405">Usage</translation>
+<translation id="509133520954049755">Request desktop view</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
+<translation id="5134599672855298214">Request mobile view (recommended)</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Last visited today</translation>
@@ -201,7 +206,6 @@
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Options</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
-<translation id="6233545266937675277">Request the desktop view of sites</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
@@ -286,7 +290,6 @@
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8249310407154411074">Move to top</translation>
 <translation id="8261506727792406068">Delete</translation>
-<translation id="8267092878336850213">Request the mobile view of sites</translation>
 <translation id="8300705686683892304">Managed by app</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>
@@ -300,6 +303,7 @@
 <translation id="8447861592752582886">Revoke device permission</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in use}other{# cookies in use}}</translation>
 <translation id="8487700953926739672">Available offline</translation>
+<translation id="848952951823693243">Always request mobile site</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>

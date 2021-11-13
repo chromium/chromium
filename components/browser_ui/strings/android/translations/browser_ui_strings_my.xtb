@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="5050380848339752099">ဤဝဘ်ဆိုက်သည် အချက်အလက်များကို ရုပ်ဖျက်မုဒ်ပြင်ပရှိ အက်ပ်တစ်ခုနှင့် မျှဝေပါတော့မည်။</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
+<translation id="509133520954049755">ဒက်စ်တော့ မြင်ကွင်း တောင်းဆိုမည်</translation>
 <translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် နှိပ်ပါ။</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
+<translation id="5134599672855298214">မိုဘိုင်း မြင်ကွင်း တောင်းဆိုမည် (အကြံပြုထားသည်)</translation>
 <translation id="5186036860380548585">ဖန်သားပြင်၏ထိပ်နားတွင် ရွေးချယ်နိုင်သည်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ဆို့မည်</translation>
 <translation id="6216432067784365534">ရွေးစရာ <ph name="NAME_OF_LIST_ITEM" /> ခု</translation>
 <translation id="6231752747840485235">‘<ph name="APP_NAME" />’ ဖယ်ရှားမလား။</translation>
-<translation id="6233545266937675277">ဝဘ်ဆိုက်များ၏ ဒက်စ်တော့ပြသမှုကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> နှင့် <ph name="PERMISSION_2" /> ပိတ်ထားသည်</translation>
 <translation id="6270391203985052864">ဝဘ်ဆိုက်များက အကြောင်းကြားချက်များပို့ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="6295158916970320988">ဆိုဒ်များအားလုံး</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်</translation>
 <translation id="8249310407154411074">အပေါ်ဆုံးသို့ ရွှေ့ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
-<translation id="8267092878336850213">ဝဘ်ဆိုက်များ၏ မိုဘိုင်းပြသမှုကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="8300705686683892304">အက်ပ်က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8324158725704657629">ထပ်မမေးပါနှင့်</translation>
 <translation id="8372893542064058268">တိကျသည့်ဆိုက်အတွက် နောက်ခံတွင်စင့်ခ်လုပ်ခြင်းကို ခွင့်ပြုပါ</translation>

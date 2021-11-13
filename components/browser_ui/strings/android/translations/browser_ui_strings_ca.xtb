@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">Permet que els llocs web accedeixin als sensors de moviment (opció recomanada)</translation>
 <translation id="5050380848339752099">Aquest lloc web està a punt de compartir informació amb una aplicació fora del mode d'incògnit.</translation>
 <translation id="5063480226653192405">Ús</translation>
+<translation id="509133520954049755">Sol·licita la visualització per a ordinadors</translation>
 <translation id="5100237604440890931">Vista replegada (feu clic per desplegar-la)</translation>
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
+<translation id="5134599672855298214">Sol·licita la visualització per a mòbils (opció recomanada)</translation>
 <translation id="5186036860380548585">L'opció està disponible a prop de la part superior de la pantalla.</translation>
 <translation id="5197729504361054390">Els contactes que seleccionis es compartiran amb <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Darrera visita: avui</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6216432067784365534">Opcions per a <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
-<translation id="6233545266937675277">Sol·licita la visualització per a ordinadors dels llocs web</translation>
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">La connexió és segura</translation>
 <translation id="8249310407154411074">Mou a la part superior</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
-<translation id="8267092878336850213">Sol·licita la visualització per a mòbils dels llocs web</translation>
 <translation id="8300705686683892304">Gestionats per aplicacions</translation>
 <translation id="8324158725704657629">No m'ho tornis a preguntar</translation>
 <translation id="8372893542064058268">Permet la sincronització en segon pla en un lloc concret.</translation>

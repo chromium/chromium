@@ -148,8 +148,10 @@
 <translation id="5048398596102334565">Дозволете сајтовите да пристапуваат до сензорите за движење (препорачано)</translation>
 <translation id="5050380848339752099">Сајтов ќе сподели информации со апликација надвор од режимот „Инкогнито“.</translation>
 <translation id="5063480226653192405">Користење</translation>
+<translation id="509133520954049755">Побарајте приказ на компјутер</translation>
 <translation id="5100237604440890931">Проширено - кликни да се прошири.</translation>
 <translation id="5123685120097942451">Картичка инкогнито</translation>
+<translation id="5134599672855298214">Побарајте приказ на мобилен (препорачано)</translation>
 <translation id="5186036860380548585">Опцијата е достапна речиси најгоре на екранот</translation>
 <translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
@@ -201,7 +203,6 @@
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
-<translation id="6233545266937675277">Барај компјутерски приказ на сајтовите</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се блокирани</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6295158916970320988">Сите локации</translation>
@@ -286,7 +287,6 @@
 <translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="8249310407154411074">Премести најгоре</translation>
 <translation id="8261506727792406068">Избриши</translation>
-<translation id="8267092878336850213">Барај мобилен приказ на сајтовите</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>
 <translation id="8324158725704657629">Не прашувај повторно</translation>
 <translation id="8372893542064058268">Дозволи Синхронизација во заднина за одреден сајт.</translation>

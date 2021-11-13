@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">നിങ്ങളുടെ ചലന സെൻസറുകൾ ആക്‌സസ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്യുന്നത്)</translation>
 <translation id="5050380848339752099">ഈ സൈറ്റ്, അദൃശ്യ മോഡിന് പുറത്തുള്ള ഒരു ആപ്പുമായി വിവരങ്ങൾ പങ്കിടാൻ പോകുന്നു.</translation>
 <translation id="5063480226653192405">ഉപയോഗം</translation>
+<translation id="509133520954049755">ഡെസ്‌ക്‌ടോപ്പ് വ്യൂ അഭ്യർത്ഥിക്കുക</translation>
 <translation id="5100237604440890931">ചുരുക്കിയത് - വിപുലീകരിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
+<translation id="5134599672855298214">മൊബൈൽ വ്യൂ അഭ്യർത്ഥിക്കുക (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="5186036860380548585">സ്‌ക്രീനിന്റെ മുകളിൽ ഓപ്‌ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5197729504361054390">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന കോൺടാക്‌റ്റുകൾ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5216942107514965959">അവസാനം സന്ദർശിച്ചത് ഇന്നാണ്</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">മൂന്നാം കക്ഷി കുക്കികള്‍ ബ്ലോക്കുചെയ്യുക</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ഓപ്‌ഷനുകൾ</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' അൺഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
-<translation id="6233545266937675277">സൈറ്റുകളുടെ ഡെസ്‌ക്ടോപ്പ് കാഴ്‌ച അഭ്യർത്ഥിക്കുക</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />,<ph name="PERMISSION_2" /> എന്നിവ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="6270391203985052864">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കേണ്ടി വരും</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">കണക്ഷൻ സുരക്ഷിതമാണ്</translation>
 <translation id="8249310407154411074">മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
-<translation id="8267092878336850213">സൈറ്റുകളുടെ മൊബൈൽ കാഴ്‌ച അഭ്യർത്ഥിക്കുക</translation>
 <translation id="8300705686683892304">ആപ്പ് മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8324158725704657629">വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
 <translation id="8372893542064058268">ഒരു പ്രത്യേക സൈറ്റിന് വേണ്ടി പശ്ചാത്തലം സമന്വയിപ്പിക്കൽ അനുവദിക്കുക.</translation>

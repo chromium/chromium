@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">మోషన్ సెన్సార్‌లను యాక్సెస్ చేయడానికి సైట్‌లను అనుమతించండి (సిఫార్సు చేస్తున్నాము)</translation>
 <translation id="5050380848339752099">ఈ సైట్ అజ్ఞాత మోడ్ వెలుపల ఉన్న ఒక యాప్‌తో సమాచారాన్ని షేర్ చేయబోతోంది.</translation>
 <translation id="5063480226653192405">నిల్వ వినియోగం</translation>
+<translation id="509133520954049755">డెస్క్‌టాప్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="5100237604440890931">కుదించబడింది - విస్తరింపజేయడానికి క్లిక్ చేయండి.</translation>
 <translation id="5123685120097942451">అజ్ఞాత ట్యాబ్</translation>
+<translation id="5134599672855298214">మొబైల్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి (సిఫార్సు చేసినది)</translation>
 <translation id="5186036860380548585">ఆప్షన్ స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉంటుంది</translation>
 <translation id="5197729504361054390">మీరు ఎంచుకున్న పరిచయాలు <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />తో షేర్ చేయబడతాయి.</translation>
 <translation id="5216942107514965959">చివరిగా ఈరోజు సందర్శించారు</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ఎంపికలు</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />'ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
-<translation id="6233545266937675277">సైట్‌లకు సంబంధించిన డెస్క్‌టాప్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">కనెక్షన్ సురక్షితంగా ఉంది</translation>
 <translation id="8249310407154411074">ఎగువకు తరలించు</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
-<translation id="8267092878336850213">సైట్‌లకు సంబంధించిన మొబైల్ వీక్షణ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8300705686683892304">యాప్ ద్వారా నిర్వహించబడుతున్నవి</translation>
 <translation id="8324158725704657629">మళ్లీ అడగవద్దు</translation>
 <translation id="8372893542064058268">నిర్దిష్ట సైట్ కోసం నేపథ్య సింక్‌ను అనుమతిస్తుంది.</translation>

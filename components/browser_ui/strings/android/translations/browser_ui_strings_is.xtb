@@ -148,8 +148,10 @@
 <translation id="5048398596102334565">Leyfa vefsvæðum að fá aðgang að hreyfiskynjurunum (ráðlagt)</translation>
 <translation id="5050380848339752099">Vefsvæðið er við það að deila upplýsingum með forriti fyrir utan huliðsstillingu.</translation>
 <translation id="5063480226653192405">Notkun</translation>
+<translation id="509133520954049755">Biðja um tölvuútgáfu</translation>
 <translation id="5100237604440890931">Minnkað – smelltu til að stækka.</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
+<translation id="5134599672855298214">Biðja um símaútgáfu (ráðlagt)</translation>
 <translation id="5186036860380548585">Valkosturinn er við efri brún skjásins</translation>
 <translation id="5197729504361054390">Tengiliðunum sem þú valdir verður deilt með <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
@@ -201,7 +203,6 @@
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6216432067784365534">Valkostir fyrir <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
-<translation id="6233545266937675277">Biðja um skjáborðsútgáfu vefsvæða</translation>
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
@@ -286,7 +287,6 @@
 <translation id="8211406090763984747">Tengingin er örugg</translation>
 <translation id="8249310407154411074">Færa efst</translation>
 <translation id="8261506727792406068">Eyða</translation>
-<translation id="8267092878336850213">Biðja um farsímaútgáfu vefsvæða</translation>
 <translation id="8300705686683892304">Stjórnað af forriti</translation>
 <translation id="8324158725704657629">Ekki spyrja aftur</translation>
 <translation id="8372893542064058268">Leyfa bakgrunnssamstillingu fyrir ákveðið vefsvæði.</translation>

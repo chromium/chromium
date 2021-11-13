@@ -151,8 +151,10 @@
 <translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
 <translation id="5050380848339752099">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
 <translation id="5063480226653192405">Употреба</translation>
+<translation id="509133520954049755">Заявяване на изглед за настолни компютри</translation>
 <translation id="5100237604440890931">Свито – кликнете за разгъване.</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
+<translation id="5134599672855298214">Заявяване на изглед за мобилни устройства (препоръчително)</translation>
 <translation id="5186036860380548585">Опцията е в горната част на екрана</translation>
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
@@ -204,7 +206,6 @@
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
-<translation id="6233545266937675277">Заявяване на настолния изглед на сайтовете</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> са блокирани</translation>
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
@@ -289,7 +290,6 @@
 <translation id="8211406090763984747">Връзката е защитена</translation>
 <translation id="8249310407154411074">Преместване най-горе</translation>
 <translation id="8261506727792406068">Изтриване</translation>
-<translation id="8267092878336850213">Заявяване на мобилния изглед на сайтовете</translation>
 <translation id="8300705686683892304">Управлявани от приложение</translation>
 <translation id="8324158725704657629">Без повторно питане</translation>
 <translation id="8372893542064058268">Разрешаване на синхронизирането на заден план за конкретен сайт.</translation>

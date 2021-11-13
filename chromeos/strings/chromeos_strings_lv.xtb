@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Savienojums</translation>
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4835901797422965222">Nav aktīvu tīklu</translation>
+<translation id="4839698083503556542">Izveidojiet savu filmu</translation>
 <translation id="484790837831576105">(Android) DNS atrise</translation>
 <translation id="4848429997038228357">TIEK VEIKTA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Atlicis {0} mēģinājums.}zero{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}one{<ph name="ERROR_MESSAGE" />. Atlicis {0} mēģinājums.}other{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}}</translation>

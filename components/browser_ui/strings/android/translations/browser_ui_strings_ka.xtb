@@ -148,8 +148,10 @@
 <translation id="5048398596102334565">საიტებისთვის მოძრაობის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
 <translation id="5050380848339752099">ეს საიტი აპირებს, ინკოგნიტო რეჟიმის გარეთ გაუზიაროს ინფორმაცია აპს.</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
+<translation id="509133520954049755">დესკტოპის ხედის მოთხოვნა</translation>
 <translation id="5100237604440890931">ჩაკეცილია — დააწკაპუნეთ გასაშლელად.</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
+<translation id="5134599672855298214">მობილურის ხედის მოთხოვნა (რეკომენდებული)</translation>
 <translation id="5186036860380548585">ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5197729504361054390">თქვენ მიერ არჩეული კონტაქტები გაზიარდება <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-თან.</translation>
 <translation id="5216942107514965959">ბოლო ვიზიტი იყო დღეს</translation>
@@ -201,7 +203,6 @@
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> — ვარიანტები</translation>
 <translation id="6231752747840485235">გსურთ <ph name="APP_NAME" />-ის დეინსტალაცია?</translation>
-<translation id="6233545266937675277">საიტების დესკტოპ-ხედის მოთხოვნა</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაბლოკილია</translation>
 <translation id="6270391203985052864">საიტებს შეუძლიათ შეტყობინებების გამოგზავნის თხოვნა</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
@@ -286,7 +287,6 @@
 <translation id="8211406090763984747">კავშირი დაცულია</translation>
 <translation id="8249310407154411074">თავში გადატანა</translation>
 <translation id="8261506727792406068">წაშლა</translation>
-<translation id="8267092878336850213">საიტების მობილური ხედის მოთხოვნა</translation>
 <translation id="8300705686683892304">იმართება აპის მიერ</translation>
 <translation id="8324158725704657629">აღარ მკითხო</translation>
 <translation id="8372893542064058268">კონკრეტული საიტისთვის ფონური სინქრონიზაციის დაშვება.</translation>
