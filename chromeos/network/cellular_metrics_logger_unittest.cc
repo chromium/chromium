@@ -18,6 +18,7 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/network_ui_data.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,10 +32,14 @@ const char kTestEuiccPath[] = "euicc_path";
 const char kTestIccid[] = "iccid";
 const char kTestProfileName[] = "test_profile_name";
 const char kTestEidName[] = "eid";
+const char kTestPSimGuid[] = "psim_guid";
+const char kTestESimGuid[] = "esim_guid";
+const char kTestESimPolicyGuid[] = "esim_policy_guid";
 
 const char kTestCellularDevicePath[] = "/device/wwan0";
 const char kTestPSimCellularServicePath[] = "/service/cellular0";
 const char kTestESimCellularServicePath[] = "/service/cellular1";
+const char kTestESimPolicyCellularServicePath[] = "/service/cellular2";
 const char kTestEthServicePath[] = "/service/eth0";
 
 const char kESimFeatureUsageMetric[] = "ChromeOS.FeatureUsage.ESim";
@@ -43,11 +48,15 @@ const char kESimFeatureUsageUsetimeMetric[] =
 
 const char kPSimUsageCountHistogram[] = "Network.Cellular.PSim.Usage.Count";
 const char kESimUsageCountHistogram[] = "Network.Cellular.ESim.Usage.Count";
+const char kESimPolicyUsageCountHistogram[] =
+    "Network.Cellular.ESim.Policy.Usage.Count";
 
 const char kPSimServiceAtLoginHistogram[] =
     "Network.Cellular.PSim.ServiceAtLogin.Count";
 const char kESimServiceAtLoginHistogram[] =
     "Network.Cellular.ESim.ServiceAtLogin.Count";
+const char kESimPolicyServiceAtLoginHistogram[] =
+    "Network.Cellular.ESim.Policy.ServiceAtLogin.Count";
 
 const char kPSimStatusAtLoginHistogram[] =
     "Network.Cellular.PSim.StatusAtLogin";
@@ -63,6 +72,8 @@ const char kPSimDisconnectionsHistogram[] =
     "Network.Cellular.PSim.Disconnections";
 const char kESimDisconnectionsHistogram[] =
     "Network.Cellular.ESim.Disconnections";
+const char kESimPolicyDisconnectionsHistogram[] =
+    "Network.Cellular.ESim.Policy.Disconnections";
 
 }  // namespace
 
@@ -130,8 +141,7 @@ class CellularMetricsLoggerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void InitCellular(const std::string& pSimGuid = "psim_guid",
-                    const std::string& eSimGuid = "esim_guid") {
+  void InitCellular() {
     ShillDeviceClient::TestInterface* device_test =
         network_state_test_helper_.device_test();
     device_test->AddDevice(kTestCellularDevicePath, shill::kTypeCellular,
@@ -139,12 +149,15 @@ class CellularMetricsLoggerTest : public testing::Test {
 
     ShillServiceClient::TestInterface* service_test =
         network_state_test_helper_.service_test();
-    service_test->AddService(kTestPSimCellularServicePath, pSimGuid,
+    service_test->AddService(kTestPSimCellularServicePath, kTestPSimGuid,
                              "test_cellular", shill::kTypeCellular,
                              shill::kStateIdle, true);
-    service_test->AddService(kTestESimCellularServicePath, eSimGuid,
+    service_test->AddService(kTestESimCellularServicePath, kTestESimGuid,
                              "test_cellular_2", shill::kTypeCellular,
                              shill::kStateIdle, true);
+    service_test->AddService(kTestESimPolicyCellularServicePath,
+                             kTestESimPolicyGuid, "test_cellular_3",
+                             shill::kTypeCellular, shill::kStateIdle, true);
     base::RunLoop().RunUntilIdle();
 
     service_test->SetServiceProperty(
@@ -153,10 +166,25 @@ class CellularMetricsLoggerTest : public testing::Test {
     service_test->SetServiceProperty(
         kTestESimCellularServicePath, shill::kActivationStateProperty,
         base::Value(shill::kActivationStateNotActivated));
-
+    service_test->SetServiceProperty(
+        kTestESimPolicyCellularServicePath, shill::kActivationStateProperty,
+        base::Value(shill::kActivationStateNotActivated));
     service_test->SetServiceProperty(kTestESimCellularServicePath,
                                      shill::kEidProperty,
                                      base::Value("test_eid"));
+    // Emulate 'test_cellular_3' being a managed network.
+    service_test->SetServiceProperty(
+        kTestESimPolicyCellularServicePath, shill::kONCSourceProperty,
+        base::Value(shill::kONCSourceDevicePolicy));
+    std::unique_ptr<NetworkUIData> ui_data = NetworkUIData::CreateFromONC(
+        ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+    service_test->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                     shill::kUIDataProperty,
+                                     base::Value(ui_data->GetAsJson()));
+    service_test->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                     shill::kEidProperty,
+                                     base::Value("test_eid_2"));
+
     base::RunLoop().RunUntilIdle();
   }
 
@@ -232,15 +260,18 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 0);
 
   // Should wait until initialization timeout before logging status.
   InitCellular();
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 0);
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kInitializationTimeout);
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 1);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 1);
 
   // Should log immediately when networks are already initialized.
   LoginState::Get()->SetLoggedInState(
@@ -251,6 +282,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+  histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
 
   // Should not log when the logged in user is neither owner nor regular.
   LoginState::Get()->SetLoggedInState(
@@ -258,6 +290,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK_APP);
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+  histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
 }
 
 TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
@@ -380,6 +413,63 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
       "Network.Cellular.ESim.Usage.Duration", kTimeSpentOnlineESim, 1);
   histogram_tester_->ExpectTimeBucketCount(kESimFeatureUsageUsetimeMetric,
                                            kTimeSpentOnlineESim, 1);
+
+  // Connect ethernet network.
+  service_client_test()->SetServiceProperty(
+      kTestEthServicePath, shill::kStateProperty, kTestOnlineStateValue);
+
+  // ESim Policy Cellular connected.
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kTestOnlineStateValue);
+  // ESim Policy Cellular connected with other network.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectBucketCount(
+      kPSimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedWithOtherNetwork, 1);
+  histogram_tester_->ExpectBucketCount(
+      kESimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedWithOtherNetwork, 2);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedWithOtherNetwork, 1);
+
+  // ESim Policy Cellular connected as only network.
+  service_client_test()->SetServiceProperty(
+      kTestEthServicePath, shill::kStateProperty, kTestIdleStateValue);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectBucketCount(
+      kPSimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 1);
+  histogram_tester_->ExpectBucketCount(
+      kESimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 2);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 1);
+
+  // After |kTimeSpentOnlineESim|, ESim Policy Cellular becomes not connected.
+  task_environment_.FastForwardBy(kTimeSpentOnlineESim);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kTestIdleStateValue);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectBucketCount(
+      kPSimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kNotConnected, 2);
+  histogram_tester_->ExpectBucketCount(
+      kESimUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kNotConnected, 3);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyUsageCountHistogram,
+      CellularMetricsLogger::CellularUsage::kNotConnected, 1);
+  histogram_tester_->ExpectTimeBucketCount(
+      "Network.Cellular.ESim.Usage.Duration", kTimeSpentOnlineESim, 2);
+  histogram_tester_->ExpectTimeBucketCount(
+      "Network.Cellular.ESim.Policy.Usage.Duration", kTimeSpentOnlineESim, 1);
+  histogram_tester_->ExpectTimeBucketCount(kESimFeatureUsageUsetimeMetric,
+                                           kTimeSpentOnlineESim, 2);
 }
 
 TEST_F(CellularMetricsLoggerTest, CellularUsageCountDongleTest) {
@@ -551,9 +641,15 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
       kTestPSimCellularServicePath, shill::kStateProperty, kAssocStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kAssocStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kAssocStateValue);
   base::RunLoop().RunUntilIdle();
+
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kESimAllConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 0);
 
@@ -564,14 +660,23 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateFailure));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateFailure));
   base::RunLoop().RunUntilIdle();
+
   histogram_tester_->ExpectTotalCount(
-      CellularMetricsLogger::kESimAllConnectionResultHistogram, 1);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 1);
 
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kUnknown, 2);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram,
       CellularMetricsLogger::ShillConnectResult::kUnknown, 1);
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram,
@@ -581,13 +686,16 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
       kESimFeatureUsageMetric,
       static_cast<int>(
           feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure),
-      1);
+      2);
 
   // Set cellular networks to connecting state.
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kAssocStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kAssocStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kAssocStateValue);
   base::RunLoop().RunUntilIdle();
 
   // Set cellular networks to connected state.
@@ -597,14 +705,22 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateOnline));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateOnline));
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectTotalCount(
-      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 4);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 2);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 2);
 
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 2);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram,
       CellularMetricsLogger::ShillConnectResult::kSuccess, 1);
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram,
@@ -623,12 +739,17 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateOffline));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateOffline));
   base::RunLoop().RunUntilIdle();
 
   // A connected to disconnected state change should not impact connection
   // success.
   histogram_tester_->ExpectTotalCount(
-      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 4);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 2);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 2);
 
@@ -639,16 +760,25 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateOnline));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateOnline));
   base::RunLoop().RunUntilIdle();
 
   // A disconnected to connected state, skipping the connecting state change
   // should emit a success.
   histogram_tester_->ExpectTotalCount(
-      CellularMetricsLogger::kESimAllConnectionResultHistogram, 3);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 6);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 3);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 3);
+
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kESimAllConnectionResultHistogram,
+      CellularMetricsLogger::ShillConnectResult::kSuccess, 4);
+  histogram_tester_->ExpectBucketCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram,
       CellularMetricsLogger::ShillConnectResult::kSuccess, 2);
   histogram_tester_->ExpectBucketCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram,
@@ -677,10 +807,15 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty,
       base::Value(shill::kStateAssociation));
+  service_client_test()->SetServiceProperty(
+      kTestESimPolicyCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
   base::RunLoop().RunUntilIdle();
 
   // Simulate chrome disconnect request.
   cellular_metrics_logger()->DisconnectRequested(kTestESimCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(
+      kTestESimPolicyCellularServicePath);
   cellular_metrics_logger()->DisconnectRequested(kTestPSimCellularServicePath);
 
   // Set cellular networks to failed state via shill.
@@ -688,6 +823,9 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
                                             shill::kStateProperty,
                                             base::Value(shill::kStateIdle));
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateIdle));
   base::RunLoop().RunUntilIdle();
@@ -699,6 +837,8 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kESimAllConnectionResultHistogram, 0);
   histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 0);
 
   // Set cellular networks to connecting state.
@@ -707,6 +847,9 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
       base::Value(shill::kStateAssociation));
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty,
+      base::Value(shill::kStateAssociation));
+  service_client_test()->SetServiceProperty(
+      kTestESimPolicyCellularServicePath, shill::kStateProperty,
       base::Value(shill::kStateAssociation));
   base::RunLoop().RunUntilIdle();
 
@@ -717,6 +860,9 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
                                             base::Value(shill::kStateIdle));
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            base::Value(shill::kStateIdle));
   base::RunLoop().RunUntilIdle();
 
   histogram_tester_->ExpectTotalCount(
@@ -724,7 +870,9 @@ TEST_F(CellularMetricsLoggerTest, CancellationDuringConnecting) {
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kESimUserInitiatedConnectionResultHistogram, 0);
   histogram_tester_->ExpectTotalCount(
-      CellularMetricsLogger::kESimAllConnectionResultHistogram, 1);
+      CellularMetricsLogger::kESimAllConnectionResultHistogram, 2);
+  histogram_tester_->ExpectTotalCount(
+      CellularMetricsLogger::kESimPolicyAllConnectionResultHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kPSimAllConnectionResultHistogram, 1);
 }
@@ -825,26 +973,45 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kOnlineStateValue);
+
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectBucketCount(
       kPSimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kConnected, 1);
   histogram_tester_->ExpectBucketCount(
       kESimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kConnected, 2);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kConnected, 1);
 
   // Should not log user initiated disconnections.
   cellular_metrics_logger()->DisconnectRequested(kTestPSimCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(kTestESimCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(
+      kTestESimPolicyCellularServicePath);
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kDisconnectRequestTimeout / 2);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kIdleStateValue);
   base::RunLoop().RunUntilIdle();
+
   histogram_tester_->ExpectBucketCount(
       kPSimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 0);
   histogram_tester_->ExpectBucketCount(
       kESimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 0);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 0);
 
   // Should log non user initiated disconnects.
@@ -852,17 +1019,28 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
+
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kIdleStateValue);
   base::RunLoop().RunUntilIdle();
+
   histogram_tester_->ExpectBucketCount(
       kPSimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 1);
   histogram_tester_->ExpectBucketCount(
       kESimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 2);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 1);
 
   // Should log non user initiated disconnects when a previous
@@ -871,21 +1049,33 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
+
   cellular_metrics_logger()->DisconnectRequested(kTestPSimCellularServicePath);
   cellular_metrics_logger()->DisconnectRequested(kTestESimCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(
+      kTestESimPolicyCellularServicePath);
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kDisconnectRequestTimeout * 2);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
+                                            shill::kStateProperty,
+                                            kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectBucketCount(
       kPSimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 2);
   histogram_tester_->ExpectBucketCount(
       kESimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 4);
+  histogram_tester_->ExpectBucketCount(
+      kESimPolicyDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 2);
 }
 

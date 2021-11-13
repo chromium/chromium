@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Histograms associated with all connection success.
   static const char kESimAllConnectionResultHistogram[];
+  static const char kESimPolicyAllConnectionResultHistogram[];
   static const char kPSimAllConnectionResultHistogram[];
 
   // PIN operations that are tracked by metrics.
@@ -293,11 +294,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Helper method to save cellular disconnections histogram.
   void LogCellularDisconnectionsHistogram(ConnectionState connection_state,
-                                          SimType sim_type);
+                                          SimType sim_type,
+                                          bool is_managed_by_policy);
 
   void LogCellularAllConnectionSuccessHistogram(
       ShillConnectResult start_connect_result,
-      SimType sim_type);
+      SimType sim_type,
+      bool is_managed_by_policy);
 
   void OnInitializationTimeout();
 
@@ -348,6 +351,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   // Tracks the last ESim cellular network usage state.
   absl::optional<CellularUsage> last_esim_cellular_usage_;
+
+  // Tracks the last time ESim network's cellular usage is managed or not.
+  bool last_managed_by_policy_ = false;
 
   // Tracks the last time the ESim network's cellular usage changed.
   absl::optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
