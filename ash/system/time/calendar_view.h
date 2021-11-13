@@ -5,11 +5,14 @@
 #ifndef ASH_SYSTEM_TIME_CALENDAR_VIEW_H_
 #define ASH_SYSTEM_TIME_CALENDAR_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,6 +28,31 @@ class Label;
 namespace ash {
 
 class CalendarMonthView;
+
+// The header of the calendar view, which shows the current month and year.
+class CalendarHeaderView : public views::View {
+ public:
+  CalendarHeaderView(const std::u16string& month, const std::u16string& year);
+  CalendarHeaderView(const CalendarHeaderView& other) = delete;
+  CalendarHeaderView& operator=(const CalendarHeaderView& other) = delete;
+  ~CalendarHeaderView() override;
+
+  // views::View:
+  void OnThemeChanged() override;
+
+  // Updates the month and year labels.
+  void UpdateHeaders(const std::u16string& month, const std::u16string& year);
+
+ private:
+  friend class CalendarViewTest;
+  friend class CalendarViewAnimationTest;
+
+  // The main header which shows the month name.
+  views::Label* const header_;
+
+  // The year header which follows the `header_`.
+  views::Label* const header_year_;
+};
 
 // This view displays a scrollable calendar.
 class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
@@ -50,7 +78,6 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void OnViewFocused(View* observed_view) override;
 
   // views::View:
-  void OnThemeChanged() override;
   void OnEvent(ui::Event* event) override;
 
   // TrayDetailedView:
@@ -73,6 +100,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   enum LabelType { PREVIOUS, CURRENT, NEXT };
 
   friend class CalendarViewTest;
+  friend class CalendarViewAnimationTest;
 
   // Assigns month views and labels based on the current date on screen.
   void SetMonthViews();
@@ -104,8 +132,23 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // Scrolls down one month then auto scroll to the current month's first row.
   void ScrollDownOneMonthAndAutoScroll();
 
+  // Shows the scrolling animation then scrolls one month then auto scroll to
+  // the current month's first row.
+  void ScrollOneMonthWithAnimation(bool is_scrolling_up);
+
   // Back to the landing view.
   void ResetToToday();
+
+  // Updates the `header_`'s month and year to the current month and year.
+  void UpdateHeaders();
+
+  // Resets the `header_`'s opacity and position. Also resets
+  // `scrolling_settled_timer_` and `animation_restart_timer_`.
+  void RestoreHeadersStatus();
+
+  // Resets the the month views' opacity and position. In case the animation is
+  // aborted in the middle and the view's are not in the original status.
+  void RestoreMonthStatus(bool is_scrolling_up);
 
   // Auto scrolls to today. If the view is big enough we scroll to the first row
   // of today's month, otherwise we scroll to the position of today's row.
@@ -141,8 +184,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   CalendarMonthView* previous_month_ = nullptr;
   CalendarMonthView* current_month_ = nullptr;
   CalendarMonthView* next_month_ = nullptr;
-  views::Label* header_ = nullptr;
-  views::Label* header_year_ = nullptr;
+  CalendarHeaderView* header_ = nullptr;
   views::Button* reset_to_today_button_ = nullptr;
   views::Button* settings_button_ = nullptr;
   TopShortcutButton* up_button_ = nullptr;
@@ -152,15 +194,27 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // don't need to check if we need to update the month or not.
   bool is_resetting_scroll_ = false;
 
+  // It's true if it should animate, but false when it is currently animating or
+  // cooling down from the last animation.
+  bool should_show_animation_ = true;
+
   // Timer that fires when we've "settled" on, i.e. finished scrolling to, a
   // currently-visible month
   base::RetainingOneShotTimer scrolling_settled_timer_;
+
+  // Timer that enables the updating month animation. When the month keeps
+  // getting changed, the animation will be disabled and the cool-down duration
+  // is `kAnimationDisablingTimeout` ms to enable the next animation.
+  base::RetainingOneShotTimer animation_restart_timer_;
+
   base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
       scoped_calendar_view_controller_observer_{this};
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       scoped_view_observer_{this};
+
+  base::WeakPtrFactory<CalendarView> weak_factory_{this};
 };
 
 }  // namespace ash

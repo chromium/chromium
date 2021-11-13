@@ -93,6 +93,11 @@ class ASH_EXPORT CalendarViewController {
   // month if current month is not today's month.
   base::Time current_date() { return current_date_; }
 
+  // Returns true if before getting to the on-screen-month, it was showing a
+  // later month; returns false if it was showing an earlier month. This is used
+  // to define the animation directions for updating the header and month views.
+  bool was_on_later_month() { return was_on_later_month_; }
+
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
@@ -190,6 +195,9 @@ class ASH_EXPORT CalendarViewController {
   // Each row's height. Every row should have the same height, so this height is
   // only updated once with today's row.
   int row_height_ = 0;
+
+  // If before getting to the on-screen-month, it was showing a later month.
+  bool was_on_later_month_ = false;
 
   base::ObserverList<Observer> observers_;
 
