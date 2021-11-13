@@ -846,9 +846,10 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
 // NaCl doesn't implement system calls to open files directly.
 #if !defined(OS_NACL)
 FILE* FileToFILE(File file, const char* mode) {
-  FILE* stream = fdopen(file.GetPlatformFile(), mode);
-  if (stream)
-    file.TakePlatformFile();
+  PlatformFile unowned = file.GetPlatformFile();
+  FILE* stream = fdopen(file.TakePlatformFile(), mode);
+  if (!stream)
+    ScopedFD to_be_closed(unowned);
   return stream;
 }
 
