@@ -11,7 +11,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/night_light/time_of_day.h"
+#include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
