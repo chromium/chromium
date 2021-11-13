@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -279,13 +278,9 @@ void OriginTrialContext::AddTokenFromExternalScript(
     const String& token,
     const SecurityOrigin* origin) {
   bool is_script_origin_secure = false;
-  if (origin &&
-      RuntimeEnabledFeatures::ThirdPartyOriginTrialsEnabled(context_)) {
-    DVLOG(1) << "AddTokenFromExternalScript: "
-             << (origin ? origin->ToString() : "null");
+  if (origin) {
+    DVLOG(1) << "AddTokenFromExternalScript: " << origin->ToString();
     is_script_origin_secure = origin->IsPotentiallyTrustworthy();
-  } else {
-    origin = nullptr;
   }
   AddTokenInternal(token, GetSecurityOrigin(), IsSecureContext(), origin,
                    is_script_origin_secure);

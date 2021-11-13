@@ -2237,10 +2237,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "ThirdPartyOriginTrials",
-      status: "stable",
-    },
-    {
       name: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
       status: "experimental",
     },
