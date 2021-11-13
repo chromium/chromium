@@ -12,14 +12,13 @@
 namespace ash {
 namespace shortcut_ui {
 
-using AcceleratorSource = ash::accelerator_keys::mojom::Source;
-
 AcceleratorConfigurationProvider::AcceleratorConfigurationProvider() = default;
 AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() = default;
 
-void AcceleratorConfigurationProvider::IsMutable(AcceleratorSource source,
-                                                 IsMutableCallback callback) {
-  if (source == AcceleratorSource::kBrowser) {
+void AcceleratorConfigurationProvider::IsMutable(
+    ash::mojom::AcceleratorSource source,
+    IsMutableCallback callback) {
+  if (source == ash::mojom::AcceleratorSource::kBrowser) {
     // Browser shortcuts are not mutable.
     std::move(callback).Run(/*is_mutable=*/false);
     return;

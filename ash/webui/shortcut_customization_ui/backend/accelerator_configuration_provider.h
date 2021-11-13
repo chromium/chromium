@@ -14,8 +14,6 @@
 namespace ash {
 namespace shortcut_ui {
 
-using AcceleratorSource = ash::accelerator_keys::mojom::Source;
-
 class AcceleratorConfigurationProvider
     : shortcut_customization::mojom::AcceleratorConfigurationProvider {
  public:
@@ -27,7 +25,8 @@ class AcceleratorConfigurationProvider
   ~AcceleratorConfigurationProvider() override;
 
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
-  void IsMutable(AcceleratorSource source, IsMutableCallback callback) override;
+  void IsMutable(ash::mojom::AcceleratorSource source,
+                 IsMutableCallback callback) override;
 
   void BindInterface(
       mojo::PendingReceiver<

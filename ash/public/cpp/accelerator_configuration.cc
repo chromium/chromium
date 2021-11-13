@@ -8,7 +8,8 @@
 
 namespace ash {
 
-AcceleratorConfiguration::AcceleratorConfiguration(AcceleratorSource source)
+AcceleratorConfiguration::AcceleratorConfiguration(
+    ash::mojom::AcceleratorSource source)
     : source_(source) {}
 
 AcceleratorConfiguration::~AcceleratorConfiguration() = default;

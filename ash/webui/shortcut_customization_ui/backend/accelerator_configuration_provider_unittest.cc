@@ -20,8 +20,6 @@
 namespace ash {
 namespace shortcut_ui {
 
-using AcceleratorSource = ash::accelerator_keys::mojom::Source;
-
 class AcceleratorConfigurationProviderTest : public testing::Test {
  public:
   AcceleratorConfigurationProviderTest() {}
@@ -36,7 +34,7 @@ TEST_F(AcceleratorConfigurationProviderTest, BrowserIsMutable) {
   base::RunLoop run_loop;
   // Verify that requesting IsMutable state for Browser accelerators returns
   // false.
-  provider_.IsMutable(AcceleratorSource::kBrowser,
+  provider_.IsMutable(ash::mojom::AcceleratorSource::kBrowser,
                       base::BindLambdaForTesting([&](bool is_mutable) {
                         // Browser accelerators are not mutable.
                         EXPECT_FALSE(is_mutable);
@@ -48,7 +46,7 @@ TEST_F(AcceleratorConfigurationProviderTest, BrowserIsMutable) {
 TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
   base::RunLoop run_loop;
   // Verify that requesting IsMutable state for Ash accelerators returns true.
-  provider_.IsMutable(AcceleratorSource::kAsh,
+  provider_.IsMutable(ash::mojom::AcceleratorSource::kAsh,
                       base::BindLambdaForTesting([&](bool is_mutable) {
                         // Ash accelerators are mutable.
                         EXPECT_TRUE(is_mutable);

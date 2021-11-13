@@ -56,7 +56,6 @@ struct ASH_PUBLIC_EXPORT AcceleratorInfo {
 };
 
 using AcceleratorAction = uint32_t;
-using AcceleratorSource = ash::accelerator_keys::mojom::Source;
 
 // The public-facing interface for shortcut providers, this should be
 // implemented by sources, e.g. Browser, Ash, that want their shortcuts to be
@@ -64,10 +63,10 @@ using AcceleratorSource = ash::accelerator_keys::mojom::Source;
 class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
  public:
   using AcceleratorsUpdatedCallback = base::RepeatingCallback<void(
-      AcceleratorSource,
+      ash::mojom::AcceleratorSource,
       std::multimap<AcceleratorAction, AcceleratorInfo>)>;
 
-  explicit AcceleratorConfiguration(AcceleratorSource source);
+  explicit AcceleratorConfiguration(ash::mojom::AcceleratorSource source);
   virtual ~AcceleratorConfiguration();
 
   // Callback will fire immediately once after updating.
@@ -114,7 +113,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
  private:
   // The source of the accelerators. Derived classes are responsible for only
   // one source.
-  const AcceleratorSource source_;
+  const ash::mojom::AcceleratorSource source_;
 
   // Container of all invoked callbacks when the accelerators are updated. Call
   // AddAcceleratorsUpdatedCallback or RemoveAcceleratorsUpdatedCallback to

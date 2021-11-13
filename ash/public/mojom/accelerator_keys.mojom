@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module ash.accelerator_keys.mojom;
+module ash.mojom;
 
 // Represents the v-key (main key) values of the accelerator. Values are
 // based off of ui/events/keycodes/keyboard_codes_posix.h.
@@ -215,7 +215,7 @@ enum VKey {
 };
 
 // Contains all sources of shortcuts, new sources must added to this enum.
-enum Source {
+enum AcceleratorSource {
   // Accelerators that are owned by ash and handled in
   // accelerator_controller_impl.cc.
   kAsh,
