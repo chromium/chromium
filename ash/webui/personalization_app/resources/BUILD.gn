@@ -19,13 +19,14 @@ static_js_files = [
   "common/iframe_api.js",
   "common/utils.js",
 
-  "trusted/mojo_interface_provider.js",
+  "trusted/mojo_interface_provider.ts",
   "trusted/personalization_actions.js",
   "trusted/personalization_app.js",
   "trusted/personalization_controller.js",
   "trusted/personalization_message_handler.js",
   "trusted/personalization_reducers.js",
-  "trusted/personalization_store.js",
+  "trusted/personalization_state.ts",
+  "trusted/personalization_store.ts",
   "trusted/personalization_test_api.js",
   "trusted/utils.js",
 
@@ -45,7 +46,7 @@ polymer_js_files = [
   "trusted/wallpaper_breadcrumb_element.js",
   "trusted/wallpaper_collections_element.js",
   "trusted/wallpaper_error_element.js",
-  "trusted/wallpaper_fullscreen_element.js",
+  "trusted/wallpaper_fullscreen_element.ts",
   "trusted/wallpaper_images_element.js",
   "trusted/wallpaper_selected_element.js",
 

@@ -10,24 +10,22 @@
 
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {WallpaperProvider} from './personalization_app.mojom-webui.js';
 
-/** @type {?WallpaperProviderInterface} */
-let wallpaperProvider = null;
+import {WallpaperProvider, WallpaperProviderInterface} from './personalization_app.mojom-webui.js';
+
+let wallpaperProvider: WallpaperProviderInterface|null = null;
 
 /**
  * @param {!WallpaperProviderInterface}
  *     testProvider
  */
-export function setWallpaperProviderForTesting(testProvider) {
+export function setWallpaperProviderForTesting(
+    testProvider: WallpaperProviderInterface): void {
   wallpaperProvider = testProvider;
 }
 
-/**
- * Returns a singleton for the WallpaperProvider mojom interface.
- * @return {!WallpaperProviderInterface}
- */
-export function getWallpaperProvider() {
+/** Returns a singleton for the WallpaperProvider mojom interface. */
+export function getWallpaperProvider(): WallpaperProviderInterface {
   if (!wallpaperProvider) {
     wallpaperProvider = WallpaperProvider.getRemote();
     wallpaperProvider.makeTransparent();

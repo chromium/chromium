@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
-import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
+import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper_collections_element.js';
 import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.js';

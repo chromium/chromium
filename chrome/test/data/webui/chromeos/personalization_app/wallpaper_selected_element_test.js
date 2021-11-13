@@ -5,11 +5,13 @@
 /** @fileoverview Test suite for wallpaper-selected component.  */
 
 import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
-import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
+import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {mockTimeoutForTesting, WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

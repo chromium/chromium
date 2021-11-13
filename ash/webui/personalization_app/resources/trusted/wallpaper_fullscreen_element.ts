@@ -13,19 +13,22 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {setFullscreenEnabledAction} from './personalization_actions.js';
-import {WallpaperLayout} from './personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from './personalization_app.mojom-webui.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './personalization_controller.js';
-import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getWallpaperLayoutEnum} from './utils.js';
 
 const fullscreenClass = 'fullscreen-preview';
 
-/** @polymer */
+export interface WallpaperFullscreen {
+  $: {container: HTMLDivElement;};
+}
+
 export class WallpaperFullscreen extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-fullscreen';
@@ -37,70 +40,57 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /** @private */
       visible_: {
         type: Boolean,
-        value: false,
         observer: 'onVisibleChanged_',
       },
-      /** @private */
-      showLayoutOptions_: {
-        type: Boolean,
-        value: false,
-      },
+      showLayoutOptions_: Boolean,
       /**
        * Note that this contains information about the non-preview wallpaper
        * that was set before entering fullscreen mode.
-       * @type {!CurrentWallpaper}
-       * @private
        */
-      currentSelected_: {
-        type: Object,
-        value: null,
-      },
+      currentSelected_: Object,
+      /** This will be set during the duration of preview mode. */
+      pendingSelected_: Object,
       /**
-       * This will be set during the duration of preview mode.
-       * @type {?DisplayableImage}
-       * @private
-       */
-      pendingSelected_: {
-        type: Object,
-        value: null,
-      },
-      /**
-       * When preview mode starts, this is set to currentSelected.layout. If the
+       * When preview mode starts, this is set to the default layout. If the
        * user changes layout option, this will be updated locally to track which
        * option the user has selected (currentSelected.layout does not change
        * until confirmPreviewWallpaper is called).
-       * @type {?WallpaperLayout}
-       * @private
        */
-      selectedLayout_: {
-        type: Number,
-        value: null,
-      },
+      selectedLayout_: Number,
     };
   }
 
-  /** @override */
+  private visible_: boolean = false;
+  private showLayoutOptions_: boolean = false;
+  private currentSelected_: CurrentWallpaper|null = null;
+  private pendingSelected_: FilePath|WallpaperImage|null = null;
+  private selectedLayout_: WallpaperLayout|null = null;
+
+  private wallpaperProvider_: WallpaperProviderInterface;
+
   constructor() {
     super();
-    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  /** @override */
+  /** Add override when tsc is updated to 4.3+. */
   connectedCallback() {
     super.connectedCallback();
-    this.shadowRoot.getElementById('container')
-        .addEventListener(
-            'fullscreenchange', this.onFullscreenChange_.bind(this));
-    this.watch('visible_', state => state.fullscreen);
-    this.watch(
+    this.$.container.addEventListener(
+        'fullscreenchange', this.onFullscreenChange_.bind(this));
+
+    this.watch<WallpaperFullscreen['visible_']>(
+        'visible_', state => state.fullscreen);
+    this.watch<WallpaperFullscreen['showLayoutOptions_']>(
         'showLayoutOptions_',
-        state => state.pendingSelected?.hasOwnProperty('path'));
-    this.watch('currentSelected_', state => state.currentSelected);
-    this.watch('pendingSelected_', state => state.pendingSelected);
+        state => !!(state.pendingSelected?.hasOwnProperty('path')));
+    this.watch<WallpaperFullscreen['currentSelected_']>(
+        'currentSelected_', state => state.currentSelected);
+    this.watch<WallpaperFullscreen['pendingSelected_']>(
+        'pendingSelected_', state => state.pendingSelected);
+
     // Visibility change will fire in case of alt+tab, closing the window, or
     // anything else that exits out of full screen mode.
     window.addEventListener('visibilitychange', () => {
@@ -114,40 +104,31 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     });
   }
 
-  /**
-   * Wrapper function to mock out for testing.
-   * @return {?Element}
-   */
-  getFullscreenElement() {
+  /** Wrapper function to mock out for testing. */
+  getFullscreenElement(): Element|null {
     return document.fullscreenElement;
   }
 
   /** Wrapper function to mock out for testing.  */
-  exitFullscreen() {
-    document.exitFullscreen();
+  exitFullscreen(): Promise<void> {
+    return document.exitFullscreen();
   }
 
-  /**
-   * @param {boolean} value
-   * @private
-   */
-  onVisibleChanged_(value) {
+  private onVisibleChanged_(value: boolean) {
     if (value && !this.getFullscreenElement()) {
       // Reset to default wallpaper layout each time.
       this.selectedLayout_ = WallpaperLayout.kCenterCropped;
-      this.shadowRoot.getElementById('container')
-          .requestFullscreen()
-          .then(() => document.body.classList.add(fullscreenClass));
+      this.$.container.requestFullscreen().then(
+          () => document.body.classList.add(fullscreenClass));
     } else if (!value && this.getFullscreenElement()) {
       this.selectedLayout_ = null;
       this.exitFullscreen();
     }
   }
 
-  /** @private */
-  onFullscreenChange_() {
+  private onFullscreenChange_() {
     const hidden = !this.getFullscreenElement();
-    this.shadowRoot.getElementById('container').hidden = hidden;
+    this.$.container.hidden = hidden;
     if (hidden) {
       // SWA also supports exiting fullscreen when users press ESC. In this
       // case, the preview mode may be still on so we have to call cancel
@@ -160,38 +141,28 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     }
   }
 
-  /** @private */
-  onClickExit_() {
+  private onClickExit_() {
     cancelPreviewWallpaper(this.wallpaperProvider_);
     this.exitFullscreen();
   }
 
-  /** @private */
-  onClickConfirm_() {
+  private onClickConfirm_() {
     confirmPreviewWallpaper(this.wallpaperProvider_);
     this.exitFullscreen();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  async onClickLayout_(event) {
+  private async onClickLayout_(event: MouseEvent) {
     assert(this.pendingSelected_?.hasOwnProperty('path'));
-    const layout = getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
+    const layout = getWallpaperLayoutEnum(
+        (event.currentTarget as HTMLButtonElement).dataset['layout']!);
     await selectWallpaper(
         /** @type {!DisplayableImage} */ (this.pendingSelected_),
         this.wallpaperProvider_, this.getStore(), layout);
     this.selectedLayout_ = layout;
   }
 
-  /**
-   * @param {?WallpaperLayout} selectedLayout
-   * @param {string} str
-   * @return {string}
-   * @private
-   */
-  getLayoutAriaSelected_(selectedLayout, str) {
+  private getLayoutAriaSelected_(
+      selectedLayout: WallpaperLayout, str: 'FILL'|'CENTER'): string {
     assert(str === 'FILL' || str === 'CENTER');
     const layout = getWallpaperLayoutEnum(str);
     return (selectedLayout === layout).toString();
