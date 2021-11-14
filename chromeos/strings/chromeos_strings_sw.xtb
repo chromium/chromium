@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Jaribu hatua za utatuzi</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
+<translation id="2104796393919810494">Mchakato wa kurekebisha umekamilika</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,6 +238,7 @@
 <translation id="4813345808229079766">Muunganisho</translation>
 <translation id="4832079907277790330">Chagua folda katika programu ya Faili...</translation>
 <translation id="4835901797422965222">Hakuna mitandao inayotumika</translation>
+<translation id="4839698083503556542">Andaa filamu yako mwenyewe</translation>
 <translation id="484790837831576105">Usuluhishaji wa DNS (Android)</translation>
 <translation id="4848429997038228357">LINATEKELEZWA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} ya kujaribu}other{<ph name="ERROR_MESSAGE" /> umebakisha mara {0} za kujaribu}}</translation>
