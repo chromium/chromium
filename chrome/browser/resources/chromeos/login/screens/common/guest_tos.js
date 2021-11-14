@@ -5,10 +5,11 @@
 /**
  * @fileoverview guest tos screen implementation.
  */
-(function() {
 
-// Enum that describes the current state of the Consolidated Consent screen
-const UIState = {
+/* #js_imports_placeholder */
+
+// Enum that describes the current state of the Guest ToS screen
+const GuestTosScreenState = {
   LOADING: 'loading',
   LOADED: 'loaded',
   GOOGLE_EULA: 'google-eula',
@@ -21,24 +22,59 @@ const UIState = {
  */
 const EULA_TERMS_URL = 'chrome://terms';
 
-Polymer({
-  is: 'guest-tos-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const GuestTosScreenElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+/**
+ * @polymer
+ */
+class GuestTos extends GuestTosScreenElementBase {
+  static get is() {
+    return 'guest-tos-element';
+  }
 
-  properties: {
-    usageChecked: {
-      type: Boolean,
-      value: true,
-    },
-  },
+  /* #html_template_placeholder */
 
+  static get properties() {
+    return {
+      usageChecked: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.usageChecked = true;
+  }
+
+  /** @override */
+  defaultUIStep() {
+    return GuestTosScreenState.LOADING;
+  }
+
+  get UI_STEPS() {
+    return GuestTosScreenState;
+  }
+  // clang-format on
+
+  /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('GuestTosScreen', {
       resetAllowed: true,
     });
     this.updateLocalizedContent();
-  },
+  }
 
   onBeforeShow(data) {
     const googleEulaUrl = data['googleEulaUrl'];
@@ -48,25 +84,19 @@ Polymer({
         this.$.googleEulaWebview, googleEulaUrl, false /* clear_anchors */);
     this.loadEulaWebview_(
         this.$.crosEulaWebview, crosEulaUrl, true /* clear_anchors */);
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.HIDDEN;
-  },
-
-  defaultUIStep() {
-    return UIState.LOADING;
-  },
-
-  UI_STEPS: UIState,
+  }
 
   updateLocalizedContent() {
-    this.$$('#googleEulaLink')
+    this.shadowRoot.querySelector('#googleEulaLink')
         .addEventListener('click', () => this.onGoogleEulaLinkClick_());
-    this.$$('#crosEulaLink')
+    this.shadowRoot.querySelector('#crosEulaLink')
         .addEventListener('click', () => this.onCrosEulaLinkClick_());
-  },
+  }
 
   loadEulaWebview_(webview, online_tos_url, clear_anchors) {
     const loadFailureCallback = () => {
@@ -77,7 +107,7 @@ Polymer({
     const tosLoader = new WebViewLoader(
         webview, loadFailureCallback, clear_anchors, true /* inject_css */);
     tosLoader.setUrl(online_tos_url);
-  },
+  }
 
   getTerms_(locale) {
     const terms = document.createElement('div');
@@ -92,47 +122,48 @@ Polymer({
     crosEulaLink.classList.add('oobe-local-link');
 
     return terms.innerHTML;
-  },
+  }
 
   getUsageLearnMoreText_(locale) {
     return this.i18nAdvanced('guestTosUsageOptInLearnMore');
-  },
+  }
 
   onGoogleEulaLinkClick_() {
-    this.setUIStep(UIState.GOOGLE_EULA);
+    this.setUIStep(GuestTosScreenState.GOOGLE_EULA);
     this.$.googleEulaOkButton.focus();
-  },
+  }
 
   onCrosEulaLinkClick_() {
-    this.setUIStep(UIState.CROS_EULA);
+    this.setUIStep(GuestTosScreenState.CROS_EULA);
     this.$.crosEulaOkButton.focus();
-  },
+  }
 
   onGoogleEulaContentLoad_() {
-    if (this.uiStep == UIState.LOADING) {
-      this.setUIStep(UIState.LOADED);
+    if (this.uiStep == GuestTosScreenState.LOADING) {
+      this.setUIStep(GuestTosScreenState.LOADED);
     }
-  },
+  }
 
   onUsageLearnMoreClick_() {
     this.$.usageLearnMorePopUp.showDialog();
-  },
+  }
 
   onTermsStepOkClick_() {
-    this.setUIStep(UIState.LOADED);
+    this.setUIStep(GuestTosScreenState.LOADED);
     this.$.acceptButton.focus();
-  },
+  }
 
   onAcceptClick_() {
     chrome.send('GuestToSAccept', [this.usageChecked]);
-  },
+  }
 
   onBackClick_() {
     this.userActed('back-button');
-  },
+  }
 
   cancel() {
     this.userActed('cancel');
-  },
-});
-})();
+  }
+}
+
+customElements.define(GuestTos.is, GuestTos);
