@@ -29,7 +29,7 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
  public:
   JavaCanvasHolder(JNIEnv* env,
                    jobject java_canvas,
-                   const gfx::Vector2d& scroll_correction);
+                   const gfx::Point& scroll_correction);
 
   JavaCanvasHolder(const JavaCanvasHolder&) = delete;
   JavaCanvasHolder& operator=(const JavaCanvasHolder&) = delete;
@@ -45,7 +45,7 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
 
 JavaCanvasHolder::JavaCanvasHolder(JNIEnv* env,
                                    jobject java_canvas,
-                                   const gfx::Vector2d& scroll)
+                                   const gfx::Point& scroll)
     : pixels_(nullptr) {
   if (!g_sw_draw_functions)
     return;
@@ -80,7 +80,7 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
  public:
   AuxiliaryCanvasHolder(JNIEnv* env,
                         jobject java_canvas,
-                        const gfx::Vector2d& scroll_correction,
+                        const gfx::Point& scroll_correction,
                         const gfx::Size size);
 
   AuxiliaryCanvasHolder(const AuxiliaryCanvasHolder&) = delete;
@@ -93,7 +93,7 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
  private:
   ScopedJavaLocalRef<jobject> jcanvas_;
   ScopedJavaLocalRef<jobject> jbitmap_;
-  gfx::Vector2d scroll_;
+  gfx::Point scroll_;
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<SkCanvas> canvas_;
 };
@@ -101,7 +101,7 @@ class AuxiliaryCanvasHolder : public SoftwareCanvasHolder {
 AuxiliaryCanvasHolder::AuxiliaryCanvasHolder(
     JNIEnv* env,
     jobject java_canvas,
-    const gfx::Vector2d& scroll_correction,
+    const gfx::Point& scroll_correction,
     const gfx::Size size)
     : jcanvas_(env, java_canvas), scroll_(scroll_correction) {
   DCHECK(size.width() > 0);
@@ -156,7 +156,7 @@ void RasterHelperSetAwDrawSWFunctionTable(AwDrawSWFunctionTable* table) {
 // static
 std::unique_ptr<SoftwareCanvasHolder> SoftwareCanvasHolder::Create(
     jobject java_canvas,
-    const gfx::Vector2d& scroll_correction,
+    const gfx::Point& scroll_correction,
     const gfx::Size& auxiliary_bitmap_size,
     bool force_auxiliary_bitmap) {
   JNIEnv* env = base::android::AttachCurrentThread();

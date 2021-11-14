@@ -947,11 +947,10 @@ bool LayerTreeHostImpl::PrepareTiles() {
   return did_prepare_tiles;
 }
 
-void LayerTreeHostImpl::StartPageScaleAnimation(
-    const gfx::Vector2d& target_offset,
-    bool anchor_point,
-    float page_scale,
-    base::TimeDelta duration) {
+void LayerTreeHostImpl::StartPageScaleAnimation(const gfx::Point& target_offset,
+                                                bool anchor_point,
+                                                float page_scale,
+                                                base::TimeDelta duration) {
   // Temporary crash logging for https://crbug.com/845097.
   static bool has_dumped_without_crashing = false;
   if (settings().is_layer_tree_for_subframe && !has_dumped_without_crashing) {
@@ -968,7 +967,7 @@ void LayerTreeHostImpl::StartPageScaleAnimation(
   if (!InnerViewportScrollNode())
     return;
 
-  gfx::Vector2dF scroll_total = active_tree_->TotalScrollOffset();
+  gfx::PointF scroll_total = active_tree_->TotalScrollOffset();
   gfx::SizeF scrollable_size = active_tree_->ScrollableSize();
   gfx::SizeF viewport_size(
       active_tree_->InnerViewportScrollNode()->container_bounds);
@@ -979,11 +978,11 @@ void LayerTreeHostImpl::StartPageScaleAnimation(
       scrollable_size);
 
   if (anchor_point) {
-    gfx::Vector2dF anchor(target_offset);
+    gfx::PointF anchor(target_offset);
     page_scale_animation_->ZoomWithAnchor(anchor, page_scale,
                                           duration.InSecondsF());
   } else {
-    gfx::Vector2dF scaled_target_offset = target_offset;
+    gfx::PointF scaled_target_offset(target_offset);
     page_scale_animation_->ZoomTo(scaled_target_offset, page_scale,
                                   duration.InSecondsF());
   }
@@ -2340,7 +2339,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   if (last_draw_render_frame_metadata_) {
     const float last_root_scroll_offset_y =
         last_draw_render_frame_metadata_->root_scroll_offset
-            .value_or(gfx::Vector2dF())
+            .value_or(gfx::PointF())
             .y();
 
     const float new_root_scroll_offset_y =
@@ -3926,35 +3925,38 @@ float LayerTreeHostImpl::CurrentBottomControlsShownRatio() const {
   return active_tree_->CurrentBottomControlsShownRatio();
 }
 
-gfx::Vector2dF LayerTreeHostImpl::ViewportScrollOffset() const {
+gfx::PointF LayerTreeHostImpl::ViewportScrollOffset() const {
   return viewport_->TotalScrollOffset();
 }
 
-bool LayerTreeHostImpl::AutoScrollAnimationCreate(const ScrollNode& scroll_node,
-                                                  const gfx::Vector2dF& delta,
-                                                  float autoscroll_velocity) {
-  return ScrollAnimationCreateInternal(scroll_node, delta, base::TimeDelta(),
-                                       autoscroll_velocity);
+void LayerTreeHostImpl::AutoScrollAnimationCreate(
+    const ScrollNode& scroll_node,
+    const gfx::PointF& target_offset,
+    float autoscroll_velocity) {
+  // Start the animation one full frame in. Without any offset, the animation
+  // doesn't start until next frame, increasing latency, and preventing our
+  // input latency tracking architecture from working.
+  base::TimeDelta animation_start_offset = CurrentBeginFrameArgs().interval;
+
+  ScrollTree& scroll_tree = active_tree_->property_trees()->scroll_tree;
+  gfx::PointF current_offset =
+      scroll_tree.current_scroll_offset(scroll_node.element_id);
+
+  mutator_host_->ImplOnlyAutoScrollAnimationCreate(
+      scroll_node.element_id, target_offset, current_offset,
+      autoscroll_velocity, animation_start_offset);
+
+  SetNeedsOneBeginImplFrame();
 }
 
 bool LayerTreeHostImpl::ScrollAnimationCreate(const ScrollNode& scroll_node,
                                               const gfx::Vector2dF& delta,
                                               base::TimeDelta delayed_by) {
-  return ScrollAnimationCreateInternal(scroll_node, delta, delayed_by,
-                                       absl::nullopt);
-}
-
-bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
-    const ScrollNode& scroll_node,
-    const gfx::Vector2dF& delta,
-    base::TimeDelta delayed_by,
-    absl::optional<float> autoscroll_velocity) {
   ScrollTree& scroll_tree = active_tree_->property_trees()->scroll_tree;
 
   const float kEpsilon = 0.1f;
   bool scroll_animated =
-      (std::abs(delta.x()) > kEpsilon || std::abs(delta.y()) > kEpsilon) ||
-      autoscroll_velocity;
+      std::abs(delta.x()) > kEpsilon || std::abs(delta.y()) > kEpsilon;
   if (!scroll_animated) {
     scroll_tree.ScrollBy(scroll_node, delta, active_tree());
     TRACE_EVENT_INSTANT0("cc", "no scroll animation due to small delta",
@@ -3962,9 +3964,9 @@ bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
     return false;
   }
 
-  gfx::Vector2dF current_offset =
+  gfx::PointF current_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
-  gfx::Vector2dF target_offset = scroll_tree.ClampScrollOffsetToLimits(
+  gfx::PointF target_offset = scroll_tree.ClampScrollOffsetToLimits(
       current_offset + delta, scroll_node);
 
   // Start the animation one full frame in. Without any offset, the animation
@@ -3972,15 +3974,9 @@ bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
   // input latency tracking architecture from working.
   base::TimeDelta animation_start_offset = CurrentBeginFrameArgs().interval;
 
-  if (autoscroll_velocity) {
-    mutator_host_->ImplOnlyAutoScrollAnimationCreate(
-        scroll_node.element_id, delta, current_offset,
-        autoscroll_velocity.value(), animation_start_offset);
-  } else {
-    mutator_host_->ImplOnlyScrollAnimationCreate(
-        scroll_node.element_id, target_offset, current_offset, delayed_by,
-        animation_start_offset);
-  }
+  mutator_host_->ImplOnlyScrollAnimationCreate(
+      scroll_node.element_id, target_offset, current_offset, delayed_by,
+      animation_start_offset);
 
   SetNeedsOneBeginImplFrame();
 
@@ -4143,15 +4139,15 @@ bool LayerTreeHostImpl::AnimatePageScale(base::TimeTicks monotonic_time) {
   if (!page_scale_animation_)
     return false;
 
-  gfx::Vector2dF scroll_total = active_tree_->TotalScrollOffset();
+  gfx::PointF scroll_total = active_tree_->TotalScrollOffset();
 
   if (!page_scale_animation_->IsAnimationStarted())
     page_scale_animation_->StartAnimation(monotonic_time);
 
   active_tree_->SetPageScaleOnActiveTree(
       page_scale_animation_->PageScaleFactorAtTime(monotonic_time));
-  gfx::Vector2dF next_scroll =
-      gfx::Vector2dF(page_scale_animation_->ScrollOffsetAtTime(monotonic_time));
+  gfx::PointF next_scroll =
+      page_scale_animation_->ScrollOffsetAtTime(monotonic_time);
 
   viewport().ScrollByInnerFirst(next_scroll - scroll_total);
 
@@ -4810,7 +4806,7 @@ void LayerTreeHostImpl::SetMutatorsNeedRebuildPropertyTrees() {}
 void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
     ElementId element_id,
     LayerTreeImpl* tree,
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   if (!tree)
     return;
 
@@ -4892,7 +4888,7 @@ void LayerTreeHostImpl::SetElementTransformMutated(
 void LayerTreeHostImpl::SetElementScrollOffsetMutated(
     ElementId element_id,
     ElementListType list_type,
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   if (list_type == ElementListType::ACTIVE) {
     SetTreeLayerScrollOffsetMutated(element_id, active_tree(), scroll_offset);
     ShowScrollbarsForImplScroll(element_id);
@@ -4947,14 +4943,14 @@ void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
   }
 }
 
-gfx::Vector2dF LayerTreeHostImpl::GetScrollOffsetForAnimation(
+gfx::PointF LayerTreeHostImpl::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   if (active_tree()) {
     return active_tree()->property_trees()->scroll_tree.current_scroll_offset(
         element_id);
   }
 
-  return gfx::Vector2dF();
+  return gfx::PointF();
 }
 
 bool LayerTreeHostImpl::CommitToActiveTree() const {

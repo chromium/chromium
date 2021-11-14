@@ -1326,7 +1326,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
                              root_document_scroll_to.height(),
                              base::TimeDelta());
       iframe->SetScrollOffset(
-          gfx::Vector2dF(iframe_scroll_to.width(), iframe_scroll_to.height()));
+          gfx::PointF(iframe_scroll_to.width(), iframe_scroll_to.height()));
       UpdateAllLifecyclePhases(web_view);
       RunPendingTasks();
 

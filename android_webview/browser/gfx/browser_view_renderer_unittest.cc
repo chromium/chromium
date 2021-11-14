@@ -183,7 +183,7 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
     // webview onto the screen on render thread. End the test when the parent
     // draw constraints of BVR is updated to initial constraints.
     if (on_draw_count_ == 1 || on_draw_count_ == 2)
-      browser_view_renderer_->PrepareToDraw(gfx::Vector2d(), gfx::Rect());
+      browser_view_renderer_->PrepareToDraw(gfx::Point(), gfx::Rect());
   }
 
   void DidOnDraw(bool success) override {
@@ -264,7 +264,7 @@ class TestAnimateOnScreenWithoutOnDraw : public RenderingTest {
   void WillOnDraw() override {
     RenderingTest::WillOnDraw();
     // Set empty tile viewport on first frame.
-    browser_view_renderer_->PrepareToDraw(gfx::Vector2d(), gfx::Rect());
+    browser_view_renderer_->PrepareToDraw(gfx::Point(), gfx::Rect());
   }
 
   void DidOnDraw(bool success) override {
@@ -690,8 +690,8 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
  public:
   void StartTest() override {
     browser_view_renderer_->SetDipScale(kDipScale);
-    gfx::Vector2dF total_scroll_offset = kTotalScrollOffset;
-    gfx::Vector2dF total_max_scroll_offset = kTotalMaxScrollOffset;
+    gfx::PointF total_scroll_offset = kTotalScrollOffset;
+    gfx::PointF total_max_scroll_offset = kTotalMaxScrollOffset;
     gfx::SizeF scrollable_size = kScrollableSize;
     // When --use-zoom-for-dsf is enabled, these values are in physical pixels.
     if (content::IsUseZoomForDSFEnabled()) {
@@ -706,37 +706,37 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
         kMaxPageScaleFactor);
   }
 
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override {
-    EXPECT_EQ(kExpectedScrollOffset.ToString(), new_value.ToString());
+  void ScrollContainerViewTo(const gfx::Point& new_value) override {
+    EXPECT_EQ(kExpectedScrollOffset, new_value);
     EndTest();
   }
 
  private:
   static constexpr float kDipScale = 2.625f;
-  static const gfx::Vector2dF kTotalScrollOffset;
-  static const gfx::Vector2dF kTotalMaxScrollOffset;
+  static const gfx::PointF kTotalScrollOffset;
+  static const gfx::PointF kTotalMaxScrollOffset;
   static const gfx::SizeF kScrollableSize;
   static constexpr float kPageScaleFactor = 1.f;
   // These two are not used in this test.
   static constexpr float kMinPageScaleFactor = 1.f;
   static constexpr float kMaxPageScaleFactor = 5.f;
 
-  static const gfx::Vector2d kExpectedScrollOffset;
+  static const gfx::Point kExpectedScrollOffset;
 };
 
 // The current scroll offset in logical pixel, which is at the end.
-const gfx::Vector2dF DidReachMaximalScrollOffsetTest::kTotalScrollOffset =
-    gfx::Vector2dF(0.f, 6132.f);
+const gfx::PointF DidReachMaximalScrollOffsetTest::kTotalScrollOffset =
+    gfx::PointF(0.f, 6132.f);
 // The maximum possible scroll offset in logical pixel.
-const gfx::Vector2dF DidReachMaximalScrollOffsetTest::kTotalMaxScrollOffset =
-    gfx::Vector2dF(0.f, 6132.f);
+const gfx::PointF DidReachMaximalScrollOffsetTest::kTotalMaxScrollOffset =
+    gfx::PointF(0.f, 6132.f);
 // This is what passed to CTS test, not used for this test.
 const gfx::SizeF DidReachMaximalScrollOffsetTest::kScrollableSize =
     gfx::SizeF(412.f, 6712.f);
 // In max_scroll_offset() we are using ceiling rounding for scaled scroll
 // offset. Therefore ceiling(2.625 * 6132 = 16096.5) = 16097.
-const gfx::Vector2d DidReachMaximalScrollOffsetTest::kExpectedScrollOffset =
-    gfx::Vector2d(0, 16097);
+const gfx::Point DidReachMaximalScrollOffsetTest::kExpectedScrollOffset =
+    gfx::Point(0, 16097);
 
 RENDERING_TEST_F(DidReachMaximalScrollOffsetTest);
 

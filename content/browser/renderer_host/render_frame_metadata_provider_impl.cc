@@ -133,7 +133,7 @@ void RenderFrameMetadataProviderImpl::OnFrameSubmissionForTesting(
 
 #if defined(OS_ANDROID)
 void RenderFrameMetadataProviderImpl::OnRootScrollOffsetChanged(
-    const gfx::Vector2dF& root_scroll_offset) {
+    const gfx::PointF& root_scroll_offset) {
   for (Observer& observer : observers_)
     observer.OnRootScrollOffsetChanged(root_scroll_offset);
 }

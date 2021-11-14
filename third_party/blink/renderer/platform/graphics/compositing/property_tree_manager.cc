@@ -75,7 +75,8 @@ static void UpdateCcTransformLocalMatrix(
     if (transform_node.ScrollNode()) {
       // Blink creates a 2d transform node just for scroll offset whereas cc's
       // transform node has a special scroll offset field.
-      compositor_node.scroll_offset = gfx::Vector2dF(-translation);
+      compositor_node.scroll_offset =
+          gfx::PointAtOffsetFromOrigin(-translation);
       DCHECK(compositor_node.local.IsIdentity());
       DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
     } else {
@@ -145,7 +146,8 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
 
   DCHECK(!cc_transform->is_currently_animating);
 
-  gfx::Vector2dF scroll_offset(-transform.Translation2D());
+  gfx::PointF scroll_offset =
+      gfx::PointAtOffsetFromOrigin(-transform.Translation2D());
   DirectlySetScrollOffset(host, scroll_node->GetCompositorElementId(),
                           scroll_offset);
   if (cc_transform->scroll_offset != scroll_offset) {
@@ -206,7 +208,7 @@ bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
 void PropertyTreeManager::DirectlySetScrollOffset(
     cc::LayerTreeHost& host,
     CompositorElementId element_id,
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   auto* property_trees = host.property_trees();
   if (property_trees->scroll_tree.SetScrollOffset(element_id, scroll_offset)) {
     // Scroll offset animations are clobbered via |Layer::PushPropertiesTo|.

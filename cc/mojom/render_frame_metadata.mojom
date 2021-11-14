@@ -31,7 +31,7 @@ struct RenderFrameMetadata {
 
   // Scroll offset of the root layer. This optional parameter is only sent
   // during tests.
-  gfx.mojom.Vector2dF? root_scroll_offset;
+  gfx.mojom.PointF? root_scroll_offset;
 
   // Indicates whether the scroll offset of the root layer is at top, i.e.,
   // whether scroll_offset.y() == 0.
@@ -153,5 +153,5 @@ interface RenderFrameMetadataObserverClient {
   // Only called if ReportAllRootScrolls(true) has been called. See
   // ReportAllRootScrolls() for details.
   [EnableIf=is_android]
-  OnRootScrollOffsetChanged(gfx.mojom.Vector2dF root_scroll_offset);
+  OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
 };

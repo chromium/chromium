@@ -104,7 +104,7 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
   void WaitForScroll() {
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     while (observer.LastRenderFrameMetadata()
                .root_scroll_offset.value_or(default_scroll_offset)
                .y() <= 0) {

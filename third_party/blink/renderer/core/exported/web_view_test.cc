@@ -1576,7 +1576,7 @@ TEST_F(WebViewTest, FinishCompositionDoesNotRevealSelection) {
       web_view_helper_.InitializeAndLoad(base_url_ + "form_with_input.html");
   web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   web_view->MainFrameImpl()->GetFrame()->SetInitialFocus(false);
-  EXPECT_EQ(gfx::Vector2dF(), web_view->MainFrameImpl()->GetScrollOffset());
+  EXPECT_EQ(gfx::PointF(), web_view->MainFrameImpl()->GetScrollOffset());
 
   // Set up a composition from existing text that needs to be committed.
   Vector<ImeTextSpan> empty_ime_text_spans;
@@ -2433,12 +2433,11 @@ TEST_F(WebViewTest, HistoryResetScrollAndScaleState) {
       web_view_helper_.InitializeAndLoad(base_url_ + "200-by-300.html");
   web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(gfx::Vector2dF(),
-            web_view_impl->MainFrameImpl()->GetScrollOffset());
+  EXPECT_EQ(gfx::PointF(), web_view_impl->MainFrameImpl()->GetScrollOffset());
 
   // Make the page scale and scroll with the given paremeters.
   web_view_impl->SetPageScaleFactor(2.0f);
-  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(94, 111));
+  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::PointF(94, 111));
   EXPECT_EQ(2.0f, web_view_impl->PageScaleFactor());
   EXPECT_EQ(94, web_view_impl->MainFrameImpl()->GetScrollOffset().x());
   EXPECT_EQ(111, web_view_impl->MainFrameImpl()->GetScrollOffset().y());
@@ -2464,8 +2463,7 @@ TEST_F(WebViewTest, HistoryResetScrollAndScaleState) {
   // Confirm that resetting the page state resets the saved scroll position.
   web_view_impl->ResetScrollAndScaleState();
   EXPECT_EQ(1.0f, web_view_impl->PageScaleFactor());
-  EXPECT_EQ(gfx::Vector2dF(),
-            web_view_impl->MainFrameImpl()->GetScrollOffset());
+  EXPECT_EQ(gfx::PointF(), web_view_impl->MainFrameImpl()->GetScrollOffset());
   EXPECT_FALSE(main_frame_local->Loader()
                    .GetDocumentLoader()
                    ->GetHistoryItem()
@@ -2482,7 +2480,7 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
       DocumentUpdateReason::kTest);
 
   // Emulate a user scroll
-  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 900));
+  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 900));
   auto* main_frame_local =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   Persistent<HistoryItem> item1 =
@@ -2567,7 +2565,7 @@ TEST_F(WebViewTest, FullscreenNoResetScroll) {
   UpdateAllLifecyclePhases();
 
   // Scroll the page down.
-  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 2000));
+  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 2000));
   ASSERT_EQ(2000, web_view_impl->MainFrameImpl()->GetScrollOffset().y());
 
   // Enter fullscreen.
@@ -2582,7 +2580,7 @@ TEST_F(WebViewTest, FullscreenNoResetScroll) {
   // Assert the scroll position on the document element doesn't change.
   ASSERT_EQ(2000, web_view_impl->MainFrameImpl()->GetScrollOffset().y());
 
-  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 2100));
+  web_view_impl->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 2100));
 
   web_view_impl->DidExitFullscreen();
   UpdateAllLifecyclePhases();

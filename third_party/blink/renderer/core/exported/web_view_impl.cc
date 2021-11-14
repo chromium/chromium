@@ -652,7 +652,7 @@ bool WebViewImpl::StartPageScaleAnimation(const gfx::Point& target_position,
     fake_page_scale_animation_page_scale_factor_ = new_scale;
   } else {
     MainFrameImpl()->FrameWidgetImpl()->StartPageScaleAnimation(
-        target_position.OffsetFromOrigin(), use_anchor, new_scale, duration);
+        target_position, use_anchor, new_scale, duration);
   }
   return true;
 }
@@ -681,8 +681,7 @@ gfx::Rect WebViewImpl::WidenRectWithinPageBounds(const gfx::Rect& source,
   DCHECK(MainFrame());
   DCHECK(MainFrame()->IsWebLocalFrame());
   gfx::Size max_size = MainFrame()->ToWebLocalFrame()->DocumentSize();
-  gfx::Vector2dF scroll_offset =
-      MainFrame()->ToWebLocalFrame()->GetScrollOffset();
+  gfx::PointF scroll_offset = MainFrame()->ToWebLocalFrame()->GetScrollOffset();
 
   int left_margin = target_margin;
   int right_margin = target_margin;

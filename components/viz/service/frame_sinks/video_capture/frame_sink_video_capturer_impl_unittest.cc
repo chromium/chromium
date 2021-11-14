@@ -61,7 +61,7 @@ bool CompareVarsInCompositorFrameMetadata(
     const VideoFrame& frame,
     float device_scale_factor,
     float page_scale_factor,
-    const gfx::Vector2dF& root_scroll_offset) {
+    const gfx::PointF& root_scroll_offset) {
   auto dsf = frame.metadata().device_scale_factor;
   auto psf = frame.metadata().page_scale_factor;
   auto rso_x = frame.metadata().root_scroll_offset_x;
@@ -71,7 +71,7 @@ bool CompareVarsInCompositorFrameMetadata(
                rso_y.has_value();
 
   return valid && *dsf == device_scale_factor && *psf == page_scale_factor &&
-         gfx::Vector2dF(*rso_x, *rso_y) == root_scroll_offset;
+         gfx::PointF(*rso_x, *rso_y) == root_scroll_offset;
 }
 
 // Dummy frame sink ID.
@@ -97,7 +97,7 @@ const struct SizeSet {
 
 constexpr float kDefaultDeviceScaleFactor = 1.f;
 constexpr float kDefaultPageScaleFactor = 1.f;
-constexpr gfx::Vector2dF kDefaultRootScrollOffset = gfx::Vector2dF(0, 0);
+constexpr gfx::PointF kDefaultRootScrollOffset = gfx::PointF(0, 0);
 
 struct YUVColor {
   uint8_t y;
@@ -534,7 +534,7 @@ class FrameSinkVideoCapturerTest : public testing::Test {
       gfx::Rect damage_rect,
       float device_scale_factor = kDefaultDeviceScaleFactor,
       float page_scale_factor = kDefaultPageScaleFactor,
-      gfx::Vector2dF root_scroll_offset = kDefaultRootScrollOffset) {
+      gfx::PointF root_scroll_offset = kDefaultRootScrollOffset) {
     CompositorFrameMetadata metadata;
 
     metadata.device_scale_factor = device_scale_factor;
@@ -1162,7 +1162,7 @@ TEST_F(FrameSinkVideoCapturerTest, CompositorFrameMetadataReachesConsumer) {
   // consumer.
   const float kNewDeviceScaleFactor = 3.5;
   const float kNewPageScaleFactor = 1.5;
-  const gfx::Vector2dF kNewRootScrollOffset = gfx::Vector2dF(100, 200);
+  const gfx::PointF kNewRootScrollOffset = gfx::PointF(100, 200);
 
   // Notify frame damage with new metadata, and expect that the refresh frame
   // is delivered to the consumer with this new metadata.

@@ -176,14 +176,14 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     return ScrollNodeForScrollableArea(ScrollableAreaByDOMElementId(dom_id));
   }
 
-  gfx::Vector2dF CurrentScrollOffset(cc::ElementId element_id) const {
+  gfx::PointF CurrentScrollOffset(cc::ElementId element_id) const {
     return RootCcLayer()
         ->layer_tree_host()
         ->property_trees()
         ->scroll_tree.current_scroll_offset(element_id);
   }
 
-  gfx::Vector2dF CurrentScrollOffset(const cc::ScrollNode* scroll_node) const {
+  gfx::PointF CurrentScrollOffset(const cc::ScrollNode* scroll_node) const {
     return CurrentScrollOffset(scroll_node->element_id);
   }
 
@@ -1793,9 +1793,11 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
       {scrollable_area->GetScrollElementId(), compositor_delta, absl::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   // The compositor offset is reflected in blink and cc scroll tree.
-  EXPECT_EQ(compositor_delta,
-            ToGfxVector2dF(scrollable_area->ScrollPosition()));
-  EXPECT_EQ(compositor_delta, CurrentScrollOffset(scroll_node));
+  gfx::PointF expected_scroll_position =
+      gfx::PointAtOffsetFromOrigin(compositor_delta);
+  EXPECT_EQ(expected_scroll_position,
+            ToGfxPointF(scrollable_area->ScrollPosition()));
+  EXPECT_EQ(expected_scroll_position, CurrentScrollOffset(scroll_node));
 
   // Before updating the lifecycle, set the scroll offset back to what it was
   // before the commit from the main thread.
@@ -1806,7 +1808,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   // the main thread is concerned, it was unchanged since the last time we
   // pushed the scroll offset.
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_node));
+  EXPECT_EQ(gfx::PointF(), CurrentScrollOffset(scroll_node));
 }
 
 TEST_P(ScrollingTest, UpdateVisualViewportScrollLayer) {
@@ -1830,12 +1832,11 @@ TEST_P(ScrollingTest, UpdateVisualViewportScrollLayer) {
 
   page->GetVisualViewport().SetScale(2);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(0, 0),
-            CurrentScrollOffset(inner_viewport_scroll_node));
+  EXPECT_EQ(gfx::PointF(0, 0), CurrentScrollOffset(inner_viewport_scroll_node));
 
   page->GetVisualViewport().SetLocation(FloatPoint(10, 20));
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(10, 20),
+  EXPECT_EQ(gfx::PointF(10, 20),
             CurrentScrollOffset(inner_viewport_scroll_node));
 }
 
@@ -1985,12 +1986,12 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   auto element_id = scrollable_area->GetScrollElementId();
 
-  EXPECT_EQ(gfx::Vector2dF(), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(), CurrentScrollOffset(element_id));
 
   // Simulate a direct scroll update out of document lifecycle update.
   scroller->scrollTo(0, 200);
   EXPECT_EQ(FloatPoint(0, 200), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 200), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(0, 200), CurrentScrollOffset(element_id));
 
   // Simulate the scroll update with scroll delta from impl-side at the
   // beginning of BeginMainFrame.
@@ -1999,7 +2000,7 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
       element_id, gfx::Vector2dF(0, 10), absl::nullopt));
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(FloatPoint(0, 210), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 210), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(0, 210), CurrentScrollOffset(element_id));
 }
 
 TEST_P(ScrollingTest, ThumbInvalidatesLayer) {

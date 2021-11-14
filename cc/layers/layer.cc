@@ -957,7 +957,7 @@ void Layer::SetTransformOrigin(const gfx::Point3F& transform_origin) {
   SetNeedsCommit();
 }
 
-void Layer::SetScrollOffset(const gfx::Vector2dF& scroll_offset) {
+void Layer::SetScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsPropertyChangeAllowed());
 
   auto& inputs = EnsureLayerTreeInputs();
@@ -973,7 +973,7 @@ void Layer::SetScrollOffset(const gfx::Vector2dF& scroll_offset) {
   SetNeedsCommit();
 }
 
-void Layer::SetScrollOffsetFromImplSide(const gfx::Vector2dF& scroll_offset) {
+void Layer::SetScrollOffsetFromImplSide(const gfx::PointF& scroll_offset) {
   DCHECK(IsPropertyChangeAllowed());
   // This function only gets called during a BeginMainFrame, so there
   // is no need to call SetNeedsUpdate here.
@@ -1018,7 +1018,7 @@ void Layer::UpdatePropertyTreeScrollOffset() {
 }
 
 void Layer::SetDidScrollCallback(
-    base::RepeatingCallback<void(const gfx::Vector2dF&, const ElementId&)>
+    base::RepeatingCallback<void(const gfx::PointF&, const ElementId&)>
         callback) {
   EnsureLayerTreeInputs().did_scroll_callback = std::move(callback);
 }

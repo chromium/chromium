@@ -56,14 +56,14 @@ void RenderThreadManager::ViewTreeForceDarkStateChangedOnUI(
   }
 }
 
-void RenderThreadManager::SetScrollOffsetOnUI(gfx::Vector2d scroll_offset) {
+void RenderThreadManager::SetScrollOffsetOnUI(gfx::Point scroll_offset) {
   DCHECK(ui_loop_->BelongsToCurrentThread());
   CheckUiCallsAllowed();
   base::AutoLock lock(lock_);
   scroll_offset_ = scroll_offset;
 }
 
-gfx::Vector2d RenderThreadManager::GetScrollOffsetOnRT() {
+gfx::Point RenderThreadManager::GetScrollOffsetOnRT() {
   base::AutoLock lock(lock_);
   return scroll_offset_;
 }

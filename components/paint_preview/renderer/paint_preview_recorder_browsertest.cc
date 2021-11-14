@@ -510,7 +510,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
   auto* child_frame = content::RenderFrame::FromWebFrame(child_web_frame);
   ASSERT_TRUE(child_frame);
 
-  child_web_frame->SetScrollOffset(gfx::Vector2dF(0, 400));
+  child_web_frame->SetScrollOffset(gfx::PointF(0, 400));
 
   base::FilePath skp_path = RunCapture(child_frame, &out_response, false);
 

@@ -75,19 +75,19 @@ class MockMutatorHost : public MutatorHost {
                      bool(ElementId element_id));
   MOCK_METHOD5(ImplOnlyAutoScrollAnimationCreate,
                void(ElementId element_id,
-                    const gfx::Vector2dF& target_offset,
-                    const gfx::Vector2dF& current_offset,
+                    const gfx::PointF& target_offset,
+                    const gfx::PointF& current_offset,
                     float autoscroll_velocity,
                     base::TimeDelta animation_start_offset));
   MOCK_METHOD5(ImplOnlyScrollAnimationCreate,
                void(ElementId element_id,
-                    const gfx::Vector2dF& target_offset,
-                    const gfx::Vector2dF& current_offset,
+                    const gfx::PointF& target_offset,
+                    const gfx::PointF& current_offset,
                     base::TimeDelta delayed_by,
                     base::TimeDelta animation_start_offset));
   MOCK_METHOD4(ImplOnlyScrollAnimationUpdateTarget,
                bool(const gfx::Vector2dF& scroll_delta,
-                    const gfx::Vector2dF& max_scroll_offset,
+                    const gfx::PointF& max_scroll_offset,
                     base::TimeTicks frame_monotonic_time,
                     base::TimeDelta delayed_by));
   MOCK_METHOD0(ScrollAnimationAbort, void());

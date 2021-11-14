@@ -1276,7 +1276,7 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
 }
 
 void Layer::SetDidScrollCallback(
-    base::RepeatingCallback<void(const gfx::Vector2dF&, const cc::ElementId&)>
+    base::RepeatingCallback<void(const gfx::PointF&, const cc::ElementId&)>
         callback) {
   cc_layer_->SetDidScrollCallback(std::move(callback));
 }
@@ -1286,16 +1286,16 @@ void Layer::SetScrollable(const gfx::Size& container_bounds) {
   cc_layer_->SetUserScrollable(true, true);
 }
 
-gfx::Vector2dF Layer::CurrentScrollOffset() const {
+gfx::PointF Layer::CurrentScrollOffset() const {
   const Compositor* compositor = GetCompositor();
-  gfx::Vector2dF offset;
+  gfx::PointF offset;
   if (compositor &&
       compositor->GetScrollOffsetForLayer(cc_layer_->element_id(), &offset))
     return offset;
   return cc_layer_->scroll_offset();
 }
 
-void Layer::SetScrollOffset(const gfx::Vector2dF& offset) {
+void Layer::SetScrollOffset(const gfx::PointF& offset) {
   Compositor* compositor = GetCompositor();
   bool scrolled_on_impl_side =
       compositor && compositor->ScrollLayerTo(cc_layer_->element_id(), offset);

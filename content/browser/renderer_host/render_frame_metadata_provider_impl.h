@@ -88,7 +88,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   void OnFrameSubmissionForTesting(uint32_t frame_token) override;
 #if defined(OS_ANDROID)
   void OnRootScrollOffsetChanged(
-      const gfx::Vector2dF& root_scroll_offset) override;
+      const gfx::PointF& root_scroll_offset) override;
 #endif
 
   base::ObserverList<Observer>::Unchecked observers_;

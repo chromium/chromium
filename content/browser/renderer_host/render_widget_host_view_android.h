@@ -303,7 +303,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // once we have a reliable way to get it through RenderFrameMetadata.
   void FrameTokenChangedForSynchronousCompositor(
       uint32_t frame_token,
-      const gfx::Vector2dF& root_scroll_offset);
+      const gfx::PointF& root_scroll_offset);
 
   void SetSynchronousCompositorClient(SynchronousCompositorClient* client);
 
@@ -347,7 +347,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override {}
   void OnRootScrollOffsetChanged(
-      const gfx::Vector2dF& root_scroll_offset) override;
+      const gfx::PointF& root_scroll_offset) override;
 
   void WasEvicted();
 

@@ -524,7 +524,7 @@ TEST_F(StructTraitsTest, CompositorFrame) {
 
   // CompositorFrameMetadata constants.
   const float device_scale_factor = 2.6f;
-  const gfx::Vector2dF root_scroll_offset(1234.5f, 6789.1f);
+  const gfx::PointF root_scroll_offset(1234.5f, 6789.1f);
   const float page_scale_factor = 1337.5f;
   const gfx::SizeF scrollable_viewport_size(1337.7f, 1234.5f);
   const BeginFrameAck begin_frame_ack(5, 10, false);
@@ -669,7 +669,7 @@ TEST_F(StructTraitsTest, ReturnedResource) {
 
 TEST_F(StructTraitsTest, CompositorFrameMetadata) {
   const float device_scale_factor = 2.6f;
-  const gfx::Vector2dF root_scroll_offset(1234.5f, 6789.1f);
+  const gfx::PointF root_scroll_offset(1234.5f, 6789.1f);
   const float page_scale_factor = 1337.5f;
   const gfx::SizeF scrollable_viewport_size(1337.7f, 1234.5f);
   const bool may_contain_video = true;

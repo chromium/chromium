@@ -531,7 +531,7 @@ void SynchronousCompositorHost::SetMemoryPolicy(size_t bytes_limit) {
 }
 
 void SynchronousCompositorHost::DidChangeRootLayerScrollOffset(
-    const gfx::Vector2dF& root_offset) {
+    const gfx::PointF& root_offset) {
   if (root_scroll_offset_ == root_offset)
     return;
   root_scroll_offset_ = root_offset;

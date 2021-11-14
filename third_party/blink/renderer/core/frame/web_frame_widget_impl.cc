@@ -1244,11 +1244,10 @@ void WebFrameWidgetImpl::RegisterSelection(cc::LayerSelection selection) {
   widget_base_->LayerTreeHost()->RegisterSelection(selection);
 }
 
-void WebFrameWidgetImpl::StartPageScaleAnimation(
-    const gfx::Vector2d& destination,
-    bool use_anchor,
-    float new_page_scale,
-    base::TimeDelta duration) {
+void WebFrameWidgetImpl::StartPageScaleAnimation(const gfx::Point& destination,
+                                                 bool use_anchor,
+                                                 float new_page_scale,
+                                                 base::TimeDelta duration) {
   widget_base_->LayerTreeHost()->StartPageScaleAnimation(
       destination, use_anchor, new_page_scale, duration);
 }

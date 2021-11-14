@@ -4389,7 +4389,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameSubmissionObserver render_frame_observer(web_contents);
 
   // Verify that we are starting our test without scroll offset.
-  render_frame_observer.WaitForScrollOffset(gfx::Vector2dF());
+  render_frame_observer.WaitForScrollOffset(gfx::PointF());
 
   // Assert initial state.
   EXPECT_EQ(0, web_contents_observer.call_count());
@@ -4403,14 +4403,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Note that this is primarily being done to satisfy tests running on Android.
   const double device_pixel_ratio =
       EvalJs(web_contents, "window.devicePixelRatio").ExtractDouble();
-  auto ScaledVector2dF = [device_pixel_ratio](float x, float y) {
-    return gfx::Vector2dF(std::floor(x * device_pixel_ratio),
-                          std::floor(y * device_pixel_ratio));
+  auto ScaledPointF = [device_pixel_ratio](float x, float y) {
+    return gfx::PointF(std::floor(x * device_pixel_ratio),
+                       std::floor(y * device_pixel_ratio));
   };
 
   // Scroll down.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 5.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(0.f, 5.f));
 
   // Assert that we are notified of the scroll down event.
   EXPECT_EQ(1, web_contents_observer.call_count());
@@ -4419,7 +4419,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Scroll down again.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 10)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 10.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(0.f, 10.f));
 
   // Assert that we are *not* notified of the scroll down event given that no
   // change in scroll direction occurred (as our previous scroll was also down).
@@ -4429,7 +4429,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Scroll right.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(10, 10)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(10.f, 10.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(10.f, 10.f));
 
   // Assert that we are *not* notified of the scroll right event given that no
   // change occurred in the vertical direction.
@@ -4439,7 +4439,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Scroll left.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 10)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 10.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(0.f, 10.f));
 
   // Assert that we are *not* notified of the scroll left event given that no
   // change occurred in the vertical direction.
@@ -4449,7 +4449,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Scroll up.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 5.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(0.f, 5.f));
 
   // Assert that we are notified of the scroll up event.
   EXPECT_EQ(2, web_contents_observer.call_count());
@@ -4458,7 +4458,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Scroll up again.
   EXPECT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 0)"));
-  render_frame_observer.WaitForScrollOffset(ScaledVector2dF(0.f, 0.f));
+  render_frame_observer.WaitForScrollOffset(ScaledPointF(0.f, 0.f));
 
   // Assert that we are *not* notified of the scroll up event given that no
   // change in scroll direction occurred (as our previous scroll was also up).

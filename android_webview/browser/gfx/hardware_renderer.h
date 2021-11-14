@@ -104,7 +104,7 @@ class HardwareRenderer {
   bool did_submit_compositor_frame_ = false;
 
   // Information from UI on last commit.
-  gfx::Vector2d scroll_offset_;
+  gfx::Point scroll_offset_;
 
   // HardwareRendererSingleThread guarantees resources are returned in the order
   // of layer_tree_frame_sink_id, and resources for old output surfaces are

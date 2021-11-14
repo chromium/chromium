@@ -35,7 +35,7 @@ void TestLayer::ClearMutatedProperties() {
   opacity_ = 0;
   filters_ = FilterOperations();
   backdrop_filters_ = FilterOperations();
-  scroll_offset_ = gfx::Vector2dF();
+  scroll_offset_ = gfx::PointF();
 
   has_potential_animation_.reset();
   is_currently_animating_.reset();
@@ -141,7 +141,7 @@ void TestHostClient::SetElementTransformMutated(
 void TestHostClient::SetElementScrollOffsetMutated(
     ElementId element_id,
     ElementListType list_type,
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   TestLayer* layer = FindTestLayer(element_id, list_type);
   if (layer)
     layer->set_scroll_offset(scroll_offset);
@@ -176,11 +176,11 @@ void TestHostClient::MaximumScaleChanged(ElementId element_id,
 }
 
 void TestHostClient::SetScrollOffsetForAnimation(
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   scroll_offset_ = scroll_offset;
 }
 
-gfx::Vector2dF TestHostClient::GetScrollOffsetForAnimation(
+gfx::PointF TestHostClient::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   return scroll_offset_;
 }
@@ -247,9 +247,8 @@ gfx::Transform TestHostClient::GetTransform(ElementId element_id,
   return layer->transform();
 }
 
-gfx::Vector2dF TestHostClient::GetScrollOffset(
-    ElementId element_id,
-    ElementListType list_type) const {
+gfx::PointF TestHostClient::GetScrollOffset(ElementId element_id,
+                                            ElementListType list_type) const {
   TestLayer* layer = FindTestLayer(element_id, list_type);
   EXPECT_TRUE(layer);
   return layer->scroll_offset();

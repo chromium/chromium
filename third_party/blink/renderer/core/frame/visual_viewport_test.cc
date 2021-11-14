@@ -292,7 +292,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   UpdateAllLifecyclePhases();
 
   // Scroll layout viewport and verify visibleContentRect.
-  WebView()->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 50));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 50));
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(IntRect(gfx::Point(0, 0), size - scrollbar_size),
@@ -400,7 +400,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 200));
 
   // Scroll main frame to the bottom of the document
-  WebView()->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 400));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 400));
   EXPECT_EQ(ScrollOffset(0, 400),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 
@@ -2851,7 +2851,7 @@ TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {
 
   auto* layer_tree_host = GetFrame()->View()->RootCcLayer()->layer_tree_host();
   EXPECT_EQ(
-      gfx::Vector2dF(12, 34),
+      gfx::PointF(12, 34),
       layer_tree_host->property_trees()->scroll_tree.current_scroll_offset(
           visual_viewport.GetScrollElementId()));
 }

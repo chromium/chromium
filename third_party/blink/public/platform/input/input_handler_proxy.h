@@ -174,8 +174,8 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void ReconcileElasticOverscrollAndRootScroll() override;
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::Vector2dF& total_scroll_offset,
-      const gfx::Vector2dF& max_scroll_offset,
+      const gfx::PointF& total_scroll_offset,
+      const gfx::PointF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -187,16 +187,16 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void SetSynchronousInputHandler(
       SynchronousInputHandler* synchronous_input_handler) override;
   void SynchronouslySetRootScrollOffset(
-      const gfx::Vector2dF& root_offset) override;
+      const gfx::PointF& root_offset) override;
   void SynchronouslyZoomBy(float magnify_delta,
                            const gfx::Point& anchor) override;
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement,
-      gfx::Vector2dF* initial_offset,
-      gfx::Vector2dF* target_offset) const override;
-  gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) override;
+      gfx::PointF* initial_offset,
+      gfx::PointF* target_offset) const override;
+  gfx::PointF ScrollByForSnapFling(const gfx::Vector2dF& delta) override;
   void ScrollEndForSnapFling(bool did_finish) override;
   void RequestAnimationForSnapFling() override;
 

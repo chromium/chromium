@@ -281,8 +281,8 @@ class CC_EXPORT LayerTreeImpl {
     hud_layer_ = layer_impl;
   }
 
-  gfx::Vector2dF TotalScrollOffset() const;
-  gfx::Vector2dF TotalMaxScrollOffset() const;
+  gfx::PointF TotalScrollOffset() const;
+  gfx::PointF TotalMaxScrollOffset() const;
 
   void AddPresentationCallbacks(
       std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks);

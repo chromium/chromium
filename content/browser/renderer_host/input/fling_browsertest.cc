@@ -250,7 +250,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   void WaitForScroll() {
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     // scrollTop > 0 is not enough since the first progressFling is called from
     // FlingController::ProcessGestureFlingStart. Wait for scrollTop to exceed
     // 100 pixels to make sure that ProgressFling has been called through

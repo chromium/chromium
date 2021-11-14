@@ -2550,7 +2550,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   ASSERT_TRUE(ExecJs(root->current_frame_host(),
                      base::StringPrintf("window.scrollTo(%d, %d);", 0, 0)));
   content::RenderFrameSubmissionObserver root_frame_observer(root);
-  gfx::Vector2dF zero_offset;
+  gfx::PointF zero_offset;
   root_frame_observer.WaitForScrollOffset(zero_offset);
 
   RenderWidgetHostViewChildFrame* child_render_widget_host_view_child_frame =
@@ -2578,7 +2578,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // window.scrollY == htmlScrollHeight - viewportHeight;
   // Verify that setting insets scrolled to the bottom to make
   // editable element visible.
-  gfx::Vector2dF final_root_offset(
+  gfx::PointF final_root_offset(
       0, htmlScrollHeight - (original_viewport_size.height() - inset_height));
   root_frame_observer.WaitForScrollOffset(final_root_offset);
   EXPECT_EQ(EvalJs(root->current_frame_host(), "window.scrollY").ExtractInt(),

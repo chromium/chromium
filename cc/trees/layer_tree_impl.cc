@@ -68,11 +68,15 @@ class ViewportAnchor {
                  LayerTreeImpl* tree_impl)
       : inner_(inner_scroll), outer_(outer_scroll), tree_impl_(tree_impl) {
     viewport_in_content_coordinates_ =
-        scroll_tree().current_scroll_offset(inner_->element_id);
+        scroll_tree()
+            .current_scroll_offset(inner_->element_id)
+            .OffsetFromOrigin();
 
     if (outer_) {
       viewport_in_content_coordinates_ +=
-          scroll_tree().current_scroll_offset(outer_->element_id);
+          scroll_tree()
+              .current_scroll_offset(outer_->element_id)
+              .OffsetFromOrigin();
     }
   }
 
@@ -83,8 +87,12 @@ class ViewportAnchor {
     scroll_tree().ClampScrollToMaxScrollOffset(*outer_, tree_impl_);
 
     gfx::Vector2dF viewport_location =
-        scroll_tree().current_scroll_offset(inner_->element_id) +
-        scroll_tree().current_scroll_offset(outer_->element_id);
+        scroll_tree()
+            .current_scroll_offset(inner_->element_id)
+            .OffsetFromOrigin() +
+        scroll_tree()
+            .current_scroll_offset(outer_->element_id)
+            .OffsetFromOrigin();
 
     gfx::Vector2dF delta = viewport_in_content_coordinates_ - viewport_location;
 
@@ -273,7 +281,7 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
     auto* scroll_node = scroll_tree.FindNodeFromElementId(scrolling_element_id);
     if (!scroll_node)
       continue;
-    gfx::Vector2dF current_offset =
+    gfx::PointF current_offset =
         scroll_tree.current_scroll_offset(scrolling_element_id);
     gfx::SizeF scrolling_size(scroll_node->bounds);
     gfx::Size bounds_size(scroll_tree.container_bounds(scroll_node->id));
@@ -289,7 +297,8 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
 
         // Add offset and bounds contribution of outer viewport.
         current_offset +=
-            scroll_tree.current_scroll_offset(outer_scroll_node->element_id);
+            scroll_tree.current_scroll_offset(outer_scroll_node->element_id)
+                .OffsetFromOrigin();
         gfx::SizeF outer_viewport_bounds(
             scroll_tree.container_bounds(outer_scroll_node->id));
         viewport_bounds.SetToMin(outer_viewport_bounds);
@@ -301,7 +310,8 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
         DCHECK(inner_scroll_node);
         // Add offset and bounds contribution of inner viewport.
         current_offset +=
-            scroll_tree.current_scroll_offset(inner_scroll_node->element_id);
+            scroll_tree.current_scroll_offset(inner_scroll_node->element_id)
+                .OffsetFromOrigin();
         gfx::SizeF inner_viewport_bounds(
             scroll_tree.container_bounds(inner_scroll_node->id));
         viewport_bounds.SetToMin(inner_viewport_bounds);
@@ -468,31 +478,37 @@ bool LayerTreeImpl::IsRootLayer(const LayerImpl* layer) const {
   return !layer_list_.empty() && layer_list_[0].get() == layer;
 }
 
-gfx::Vector2dF LayerTreeImpl::TotalScrollOffset() const {
+gfx::PointF LayerTreeImpl::TotalScrollOffset() const {
   gfx::Vector2dF offset;
   const auto& scroll_tree = property_trees()->scroll_tree;
 
   if (auto* inner_scroll = InnerViewportScrollNode()) {
-    offset += scroll_tree.current_scroll_offset(inner_scroll->element_id);
+    offset += scroll_tree.current_scroll_offset(inner_scroll->element_id)
+                  .OffsetFromOrigin();
     DCHECK(OuterViewportScrollNode());
-    offset += scroll_tree.current_scroll_offset(
-        OuterViewportScrollNode()->element_id);
+    offset +=
+        scroll_tree.current_scroll_offset(OuterViewportScrollNode()->element_id)
+            .OffsetFromOrigin();
   }
 
-  return offset;
+  return gfx::PointAtOffsetFromOrigin(offset);
 }
 
-gfx::Vector2dF LayerTreeImpl::TotalMaxScrollOffset() const {
+gfx::PointF LayerTreeImpl::TotalMaxScrollOffset() const {
   gfx::Vector2dF offset;
   const auto& scroll_tree = property_trees()->scroll_tree;
 
-  if (viewport_property_ids_.inner_scroll != ScrollTree::kInvalidNodeId)
-    offset += scroll_tree.MaxScrollOffset(viewport_property_ids_.inner_scroll);
+  if (viewport_property_ids_.inner_scroll != ScrollTree::kInvalidNodeId) {
+    offset += scroll_tree.MaxScrollOffset(viewport_property_ids_.inner_scroll)
+                  .OffsetFromOrigin();
+  }
 
-  if (viewport_property_ids_.outer_scroll != ScrollTree::kInvalidNodeId)
-    offset += scroll_tree.MaxScrollOffset(viewport_property_ids_.outer_scroll);
+  if (viewport_property_ids_.outer_scroll != ScrollTree::kInvalidNodeId) {
+    offset += scroll_tree.MaxScrollOffset(viewport_property_ids_.outer_scroll)
+                  .OffsetFromOrigin();
+  }
 
-  return offset;
+  return gfx::PointAtOffsetFromOrigin(offset);
 }
 
 OwnedLayerImplList LayerTreeImpl::DetachLayers() {

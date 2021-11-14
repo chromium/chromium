@@ -54,7 +54,7 @@
 
 namespace gfx {
 class Point;
-class Vector2dF;
+class PointF;
 }  // namespace gfx
 
 namespace ui {
@@ -701,8 +701,8 @@ class WebLocalFrame : public WebFrame {
   // because it is the term used throughout Chrome (except for blink renderer)
   // where there is no concept of scroll origin.
   // See renderer/core/scroll/scroll_area.h for details.
-  virtual gfx::Vector2dF GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const gfx::Vector2dF&) = 0;
+  virtual gfx::PointF GetScrollOffset() const = 0;
+  virtual void SetScrollOffset(const gfx::PointF&) = 0;
 
   // The size of the document in this frame.
   virtual gfx::Size DocumentSize() const = 0;

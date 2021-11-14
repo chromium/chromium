@@ -479,8 +479,8 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   float dip_scale = view_.GetDipScale();
   gfx::SizeF root_layer_size_dip = metadata.root_layer_size;
   gfx::SizeF scrollable_viewport_size_dip = metadata.scrollable_viewport_size;
-  gfx::Vector2dF root_scroll_offset_dip =
-      metadata.root_scroll_offset.value_or(gfx::Vector2dF());
+  gfx::PointF root_scroll_offset_dip =
+      metadata.root_scroll_offset.value_or(gfx::PointF());
   if (IsUseZoomForDSFEnabled()) {
     float pix_to_dip = 1 / dip_scale;
     root_layer_size_dip.Scale(pix_to_dip);
@@ -527,7 +527,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
     overscroll_controller_->OnFrameMetadataUpdated(
         metadata.page_scale_factor, metadata.device_scale_factor,
         metadata.scrollable_viewport_size, metadata.root_layer_size,
-        metadata.root_scroll_offset.value_or(gfx::Vector2dF()),
+        metadata.root_scroll_offset.value_or(gfx::PointF()),
         metadata.root_overflow_y_hidden);
   }
 
@@ -741,10 +741,10 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
 }
 
 void RenderWidgetHostViewAndroid::OnRootScrollOffsetChanged(
-    const gfx::Vector2dF& root_scroll_offset) {
+    const gfx::PointF& root_scroll_offset) {
   if (!gesture_listener_manager_)
     return;
-  gfx::Vector2dF root_scroll_offset_dip = root_scroll_offset;
+  gfx::PointF root_scroll_offset_dip = root_scroll_offset;
   if (IsUseZoomForDSFEnabled())
     root_scroll_offset_dip.Scale(1 / view_.GetDipScale());
   gesture_listener_manager_->OnRootScrollOffsetChanged(root_scroll_offset_dip);
@@ -1290,7 +1290,7 @@ bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
 
 void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     uint32_t frame_token,
-    const gfx::Vector2dF& root_scroll_offset) {
+    const gfx::PointF& root_scroll_offset) {
   if (!viz::FrameTokenGT(frame_token, sync_compositor_last_frame_token_))
     return;
   sync_compositor_last_frame_token_ = frame_token;

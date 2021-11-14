@@ -137,13 +137,13 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
 
   // A positive y scroll offset at the start of scroll will prevent activation,
   // even if the subsequent scroll overscrolls upward.
-  gfx::Vector2dF nonzero_offset(0, 10);
+  gfx::PointF nonzero_offset(0, 10);
   gfx::SizeF viewport(100, 100);
   bool overflow_y_hidden = false;
   effect.OnFrameUpdated(viewport, nonzero_offset, overflow_y_hidden);
   effect.OnScrollBegin(kStartPos);
 
-  effect.OnFrameUpdated(viewport, gfx::Vector2dF(), overflow_y_hidden);
+  effect.OnFrameUpdated(viewport, gfx::PointF(), overflow_y_hidden);
   ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
@@ -160,7 +160,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   // overflow-y:hidden at the start of scroll will prevent activation.
-  gfx::Vector2dF zero_offset;
+  gfx::PointF zero_offset;
   bool overflow_y_hidden = true;
   gfx::SizeF viewport(100, 100);
   effect.OnFrameUpdated(viewport, zero_offset, overflow_y_hidden);

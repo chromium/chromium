@@ -1749,7 +1749,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
       element_id, gfx::Vector2dF(0, 10), absl::nullopt));
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(FloatPoint(0, 10), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 10),
+  EXPECT_EQ(gfx::PointF(0, 10),
             GetPropertyTrees()->scroll_tree.current_scroll_offset(element_id));
 
   // Update just the blink lifecycle because a full frame would clear the bit

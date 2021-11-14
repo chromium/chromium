@@ -10,6 +10,7 @@
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"

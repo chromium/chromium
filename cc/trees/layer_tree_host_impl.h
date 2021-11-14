@@ -78,7 +78,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
-class Vector2dF;
+class PointF;
 }
 
 namespace viz {
@@ -290,7 +290,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ThreadedInputHandler& GetInputHandler();
   const ThreadedInputHandler& GetInputHandler() const;
 
-  void StartPageScaleAnimation(const gfx::Vector2d& target_offset,
+  void StartPageScaleAnimation(const gfx::Point& target_offset,
                                bool anchor_point,
                                float page_scale,
                                base::TimeDelta duration);
@@ -311,7 +311,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                            float bottom_ratio) override;
   float CurrentTopControlsShownRatio() const override;
   float CurrentBottomControlsShownRatio() const override;
-  gfx::Vector2dF ViewportScrollOffset() const override;
+  gfx::PointF ViewportScrollOffset() const override;
   void DidChangeBrowserControlsPosition() override;
   void DidObserveScrollDelay(base::TimeDelta scroll_delay,
                              base::TimeTicks scroll_timestamp);
@@ -422,7 +422,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetTreeLayerScrollOffsetMutated(ElementId element_id,
                                        LayerTreeImpl* tree,
-                                       const gfx::Vector2dF& scroll_offset);
+                                       const gfx::PointF& scroll_offset);
   void SetNeedUpdateGpuRasterizationStatus();
   bool NeedUpdateGpuRasterizationStatusForTesting() const {
     return need_update_gpu_rasterization_status_;
@@ -446,10 +446,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetElementTransformMutated(ElementId element_id,
                                   ElementListType list_type,
                                   const gfx::Transform& transform) override;
-  void SetElementScrollOffsetMutated(
-      ElementId element_id,
-      ElementListType list_type,
-      const gfx::Vector2dF& scroll_offset) override;
+  void SetElementScrollOffsetMutated(ElementId element_id,
+                                     ElementListType list_type,
+                                     const gfx::PointF& scroll_offset) override;
   void ElementIsAnimatingChanged(const PropertyToElementIdMap& element_id_map,
                                  ElementListType list_type,
                                  const PropertyAnimationState& mask,
@@ -462,8 +461,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       PaintWorkletInput::PropertyValue property_value) override;
 
   void ScrollOffsetAnimationFinished() override;
-  gfx::Vector2dF GetScrollOffsetForAnimation(
-      ElementId element_id) const override;
+  gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override;
@@ -800,8 +798,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool ScrollAnimationCreate(const ScrollNode& scroll_node,
                              const gfx::Vector2dF& scroll_amount,
                              base::TimeDelta delayed_by);
-  bool AutoScrollAnimationCreate(const ScrollNode& scroll_node,
-                                 const gfx::Vector2dF& scroll_amount,
+  void AutoScrollAnimationCreate(const ScrollNode& scroll_node,
+                                 const gfx::PointF& target_offset,
                                  float autoscroll_velocity);
 
   void SetLayerTreeMutator(std::unique_ptr<LayerTreeMutator> mutator);
@@ -922,10 +920,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
  private:
   void CollectScrollbarUpdatesForCommit(
       CompositorCommitData* commit_data) const;
-  bool ScrollAnimationCreateInternal(const ScrollNode& scroll_node,
-                                     const gfx::Vector2dF& delta,
-                                     base::TimeDelta delayed_by,
-                                     absl::optional<float> autoscroll_velocity);
 
   void CleanUpTileManagerResources();
   void CreateTileManagerResources();

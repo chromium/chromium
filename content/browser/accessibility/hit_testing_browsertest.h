@@ -56,7 +56,7 @@ class AccessibilityHitTestingBrowserTest
   void SimulatePinchZoom(float desired_page_scale);
 
   float page_scale_ = 1.0f;
-  gfx::Vector2d scroll_offset_;
+  gfx::Point scroll_offset_;
 };
 
 }  // namespace content

@@ -20,8 +20,8 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   gfx::Vector2dF StretchAmount() const override;
   gfx::Size ScrollBounds() const override;
   void SetStretchAmount(const gfx::Vector2dF& stretch_amount) override;
-  gfx::Vector2dF ScrollOffset() const override;
-  gfx::Vector2dF MaxScrollOffset() const override;
+  gfx::PointF ScrollOffset() const override;
+  gfx::PointF MaxScrollOffset() const override;
   void ScrollBy(const gfx::Vector2dF& delta) override;
   void RequestOneBeginFrame() override;
 
@@ -65,11 +65,11 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
   host_impl_->SetFullViewportDamage();
 }
 
-gfx::Vector2dF ScrollElasticityHelperImpl::ScrollOffset() const {
+gfx::PointF ScrollElasticityHelperImpl::ScrollOffset() const {
   return host_impl_->active_tree()->TotalScrollOffset();
 }
 
-gfx::Vector2dF ScrollElasticityHelperImpl::MaxScrollOffset() const {
+gfx::PointF ScrollElasticityHelperImpl::MaxScrollOffset() const {
   return host_impl_->active_tree()->TotalMaxScrollOffset();
 }
 

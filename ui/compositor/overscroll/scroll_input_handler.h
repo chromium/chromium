@@ -35,8 +35,8 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
   void ReconcileElasticOverscrollAndRootScroll() override;
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::Vector2dF& total_scroll_offset,
-      const gfx::Vector2dF& max_scroll_offset,
+      const gfx::PointF& total_scroll_offset,
+      const gfx::PointF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,

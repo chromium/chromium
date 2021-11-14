@@ -252,8 +252,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // Gets or sets the scroll offset for the given layer in step with the
   // cc::InputHandler. Returns true if the layer is active on the impl side.
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
-                               gfx::Vector2dF* offset) const;
-  bool ScrollLayerTo(cc::ElementId element_id, const gfx::Vector2dF& offset);
+                               gfx::PointF* offset) const;
+  bool ScrollLayerTo(cc::ElementId element_id, const gfx::PointF& offset);
 
   // Mac path for transporting vsync parameters to the display. Other platforms
   // update it via the BrowserCompositorLayerTreeFrameSink directly.

@@ -71,7 +71,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       const gfx::PointF& viewport_point) override;
   void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::Vector2dF& root_content_offset) override;
+      const gfx::PointF& root_content_offset) override;
   void PinchGestureBegin() override;
   void PinchGestureUpdate(float magnify_delta,
                           const gfx::Point& anchor) override;
@@ -94,14 +94,13 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   ScrollElasticityHelper* CreateScrollElasticityHelper() override;
   void DestroyScrollElasticityHelper() override;
   bool GetScrollOffsetForLayer(ElementId element_id,
-                               gfx::Vector2dF* offset) override;
-  bool ScrollLayerTo(ElementId element_id,
-                     const gfx::Vector2dF& offset) override;
+                               gfx::PointF* offset) override;
+  bool ScrollLayerTo(ElementId element_id, const gfx::PointF& offset) override;
   bool ScrollingShouldSwitchtoMainThread() override;
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
-      gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position) override;
+      gfx::PointF* out_initial_position,
+      gfx::PointF* out_target_position) override;
   void ScrollEndForSnapFling(bool did_finish) override;
   void NotifyInputEvent() override;
   bool ScrollbarScrollIsActive() override;
@@ -184,7 +183,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
 
   // This method gets the scroll offset for a regular scroller, or the combined
   // visual and layout offsets of the viewport.
-  gfx::Vector2dF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
+  gfx::PointF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
   bool IsScrolledBy(LayerImpl* child, ScrollNode* ancestor);
   bool IsAnimatingForSnap() const;
 

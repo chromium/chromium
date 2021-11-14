@@ -620,8 +620,8 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
 
   transient_scroll_layer->SetScrollable(gfx::Size(1, 1));
   scroll_layer->SetScrollable(gfx::Size(1, 1));
-  transient_scroll_layer->SetScrollOffset(gfx::Vector2dF(1, 2));
-  scroll_layer->SetScrollOffset(gfx::Vector2dF(10, 20));
+  transient_scroll_layer->SetScrollOffset(gfx::PointF(1, 2));
+  scroll_layer->SetScrollOffset(gfx::PointF(10, 20));
 
   host_->SetRootLayer(layer_tree_root);
   host_->BuildPropertyTreesForTesting();
@@ -657,13 +657,13 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
                                 ->scroll_tree.GetSyncedScrollOffset(
                                     transient_scroll_layer->element_id())));
 
-  // Set ScrollOffset active delta: gfx::Vector2dF(10, 10)
+  // Set ScrollOffset active delta: gfx::PointF(10, 10)
   LayerImpl* scroll_layer_impl =
       host_impl->active_tree()->LayerById(scroll_layer->id());
   ScrollTree& scroll_tree =
       host_impl->active_tree()->property_trees()->scroll_tree;
   scroll_tree.SetScrollOffset(scroll_layer_impl->element_id(),
-                              gfx::Vector2dF(20, 30));
+                              gfx::PointF(20, 30));
 
   // Pull ScrollOffset delta for main thread, and change offset on main thread
   std::unique_ptr<CompositorCommitData> commit_data(new CompositorCommitData());
@@ -672,12 +672,12 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
       base::flat_map<ElementId, TargetSnapAreaElementIds>());
   host_->proxy()->SetNeedsCommit();
   host_->ApplyCompositorChanges(commit_data.get());
-  EXPECT_EQ(gfx::Vector2dF(20, 30), scroll_layer->scroll_offset());
-  scroll_layer->SetScrollOffset(gfx::Vector2dF(100, 100));
+  EXPECT_EQ(gfx::PointF(20, 30), scroll_layer->scroll_offset());
+  scroll_layer->SetScrollOffset(gfx::PointF(100, 100));
 
   // More update to ScrollOffset active delta: gfx::Vector2dF(20, 20)
   scroll_tree.SetScrollOffset(scroll_layer_impl->element_id(),
-                              gfx::Vector2dF(40, 50));
+                              gfx::PointF(40, 50));
   host_impl->active_tree()->SetCurrentlyScrollingNode(
       scroll_tree.Node(scroll_layer_impl->scroll_tree_index()));
 
@@ -692,10 +692,10 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
 
   EXPECT_EQ(scroll_layer->scroll_tree_index(),
             host_impl->active_tree()->CurrentlyScrollingNode()->id);
-  scroll_layer_offset->SetCurrent(gfx::Vector2dF(20, 30));
+  scroll_layer_offset->SetCurrent(gfx::PointF(20, 30));
   scroll_layer_offset->PullDeltaForMainThread();
-  scroll_layer_offset->SetCurrent(gfx::Vector2dF(40, 50));
-  scroll_layer_offset->PushMainToPending(gfx::Vector2dF(100, 100));
+  scroll_layer_offset->SetCurrent(gfx::PointF(40, 50));
+  scroll_layer_offset->PushMainToPending(gfx::PointF(100, 100));
   scroll_layer_offset->PushPendingToActive();
   EXPECT_TRUE(AreScrollOffsetsEqual(
       scroll_layer_offset.get(),

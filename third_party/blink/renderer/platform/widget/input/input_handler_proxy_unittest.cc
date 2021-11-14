@@ -138,11 +138,11 @@ class MockInputHandler : public cc::InputHandler {
   void DestroyScrollElasticityHelper() override {}
 
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
-                               gfx::Vector2dF* offset) override {
+                               gfx::PointF* offset) override {
     return false;
   }
   bool ScrollLayerTo(cc::ElementId element_id,
-                     const gfx::Vector2dF& offset) override {
+                     const gfx::PointF& offset) override {
     return false;
   }
 
@@ -168,7 +168,7 @@ class MockInputHandler : public cc::InputHandler {
 
   MOCK_METHOD0(RequestUpdateForSynchronousInputHandler, void());
   MOCK_METHOD1(SetSynchronousInputHandlerRootScrollOffset,
-               void(const gfx::Vector2dF& root_offset));
+               void(const gfx::PointF& root_offset));
 
   bool IsCurrentlyScrollingViewport() const override {
     return is_scrolling_root_;
@@ -177,8 +177,8 @@ class MockInputHandler : public cc::InputHandler {
 
   MOCK_METHOD3(GetSnapFlingInfoAndSetAnimatingSnapTarget,
                bool(const gfx::Vector2dF& natural_displacement,
-                    gfx::Vector2dF* initial_offset,
-                    gfx::Vector2dF* target_offset));
+                    gfx::PointF* initial_offset,
+                    gfx::PointF* target_offset));
   MOCK_METHOD1(ScrollEndForSnapFling, void(bool));
 
   bool ScrollbarScrollIsActive() override { return false; }
@@ -192,8 +192,8 @@ class MockInputHandler : public cc::InputHandler {
 class MockSynchronousInputHandler : public SynchronousInputHandler {
  public:
   MOCK_METHOD6(UpdateRootLayerState,
-               void(const gfx::Vector2dF& total_scroll_offset,
-                    const gfx::Vector2dF& max_scroll_offset,
+               void(const gfx::PointF& total_scroll_offset,
+                    const gfx::PointF& max_scroll_offset,
                     const gfx::SizeF& scrollable_size,
                     float page_scale_factor,
                     float min_page_scale_factor,
@@ -618,7 +618,7 @@ TEST_P(InputHandlerProxyTest, NestedGestureBasedScrollsDifferentSourceDevice) {
 
   cc::InputHandlerPointerResult pointer_down_result;
   pointer_down_result.type = cc::PointerResultType::kScrollbarScroll;
-  pointer_down_result.scroll_offset = gfx::Vector2dF(0, 1);
+  pointer_down_result.scroll_delta = gfx::Vector2dF(0, 1);
   EXPECT_CALL(mock_input_handler_, HitTest(_))
       .WillOnce(testing::Return(pointer_down_result.type));
   EXPECT_CALL(mock_input_handler_, MouseDown(_, _))
@@ -791,7 +791,7 @@ TEST_P(InputHandlerProxyTest, ScrollbarScrollEndOnDeviceChange) {
   mouse_event.button = WebMouseEvent::Button::kLeft;
   cc::InputHandlerPointerResult pointer_down_result;
   pointer_down_result.type = cc::PointerResultType::kScrollbarScroll;
-  pointer_down_result.scroll_offset = gfx::Vector2dF(0, 1);
+  pointer_down_result.scroll_delta = gfx::Vector2dF(0, 1);
   EXPECT_CALL(mock_input_handler_, HitTest(_))
       .WillOnce(testing::Return(pointer_down_result.type));
   EXPECT_CALL(mock_input_handler_, MouseDown(_, _))
@@ -1088,8 +1088,8 @@ void InputHandlerProxyTest::FlingAndSnap() {
       WebGestureEvent::InertialPhaseState::kMomentum;
   EXPECT_CALL(mock_input_handler_,
               GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _))
-      .WillOnce(DoAll(testing::SetArgPointee<1>(gfx::Vector2dF(0, 0)),
-                      testing::SetArgPointee<2>(gfx::Vector2dF(0, 100)),
+      .WillOnce(DoAll(testing::SetArgPointee<1>(gfx::PointF(0, 0)),
+                      testing::SetArgPointee<2>(gfx::PointF(0, 100)),
                       testing::Return(true)));
   EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
   EXPECT_SET_NEEDS_ANIMATE_INPUT(1);
@@ -1473,7 +1473,7 @@ TEST_F(InputHandlerProxyEventQueueTest,
 
   cc::InputHandlerPointerResult pointer_down_result;
   pointer_down_result.type = cc::PointerResultType::kScrollbarScroll;
-  pointer_down_result.scroll_offset = gfx::Vector2dF(0, 1);
+  pointer_down_result.scroll_delta = gfx::Vector2dF(0, 1);
   EXPECT_CALL(mock_input_handler_, HitTest(_))
       .WillOnce(testing::Return(pointer_down_result.type));
   EXPECT_CALL(mock_input_handler_, MouseDown(_, _))
@@ -2471,11 +2471,11 @@ TEST(SynchronousInputHandlerProxyTest, UpdateRootLayerState) {
   // When adding a SynchronousInputHandler, immediately request an
   // UpdateRootLayerStateForSynchronousInputHandler() call.
   EXPECT_CALL(mock_synchronous_input_handler,
-              UpdateRootLayerState(gfx::Vector2dF(1, 2), gfx::Vector2dF(3, 4),
+              UpdateRootLayerState(gfx::PointF(1, 2), gfx::PointF(3, 4),
                                    gfx::SizeF(5, 6), 7, 8, 9))
       .Times(1);
   proxy.UpdateRootLayerStateForSynchronousInputHandler(
-      gfx::Vector2dF(1, 2), gfx::Vector2dF(3, 4), gfx::SizeF(5, 6), 7, 8, 9);
+      gfx::PointF(1, 2), gfx::PointF(3, 4), gfx::SizeF(5, 6), 7, 8, 9);
 
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler);
   testing::Mock::VerifyAndClearExpectations(&mock_client);
@@ -2492,8 +2492,8 @@ TEST(SynchronousInputHandlerProxyTest, SetOffset) {
   proxy.SetSynchronousInputHandler(&mock_synchronous_input_handler);
 
   EXPECT_CALL(mock_input_handler,
-              SetSynchronousInputHandlerRootScrollOffset(gfx::Vector2dF(5, 6)));
-  proxy.SynchronouslySetRootScrollOffset(gfx::Vector2dF(5, 6));
+              SetSynchronousInputHandlerRootScrollOffset(gfx::PointF(5, 6)));
+  proxy.SynchronouslySetRootScrollOffset(gfx::PointF(5, 6));
 
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler);
   testing::Mock::VerifyAndClearExpectations(&mock_client);
@@ -2510,7 +2510,7 @@ TEST_F(InputHandlerProxyEventQueueTest,
   // Test mousedown on the scrollbar. Expect to get GSB and GSU.
   cc::InputHandlerPointerResult pointer_down_result;
   pointer_down_result.type = cc::PointerResultType::kScrollbarScroll;
-  pointer_down_result.scroll_offset = gfx::Vector2dF(0, 1);
+  pointer_down_result.scroll_delta = gfx::Vector2dF(0, 1);
   EXPECT_CALL(mock_input_handler_, HitTest(_))
       .WillOnce(testing::Return(pointer_down_result.type));
   EXPECT_CALL(mock_input_handler_, MouseDown(_, _))
@@ -3837,7 +3837,7 @@ TEST_P(InputHandlerProxyTouchScrollbarTest,
   SetupEvents();
   cc::InputHandlerPointerResult pointer_down_result;
   pointer_down_result.type = cc::PointerResultType::kScrollbarScroll;
-  pointer_down_result.scroll_offset = gfx::Vector2dF(0, 1);
+  pointer_down_result.scroll_delta = gfx::Vector2dF(0, 1);
   cc::InputHandlerPointerResult pointer_up_result;
   pointer_up_result.type = cc::PointerResultType::kScrollbarScroll;
 

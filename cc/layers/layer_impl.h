@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -244,7 +245,7 @@ class CC_EXPORT LayerImpl {
     is_inner_viewport_scroll_layer_ = true;
   }
 
-  void SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset);
+  void SetCurrentScrollOffset(const gfx::PointF& scroll_offset);
 
   // Returns the delta of the scroll that was outside of the bounds of the
   // initial scroll

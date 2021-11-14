@@ -20,11 +20,12 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class Point;
 class SizeF;
-class Vector2dF;
 }  // namespace gfx
 
 namespace ui {
@@ -64,7 +65,7 @@ struct CC_EXPORT InputHandlerPointerResult {
   // instead of the input handler performing it as a part of handling the
   // pointer event (due to the latency attribution that happens at the
   // InputHandlerProxy level).
-  gfx::Vector2dF scroll_offset;
+  gfx::Vector2dF scroll_delta;
 
   // Used to determine which scroll_node needs to be scrolled. The primary
   // purpose of this is to avoid hit testing for gestures that already know
@@ -92,7 +93,7 @@ struct CC_EXPORT InputHandlerScrollResult {
   // physical pixels depending on the use-zoom-for-dsf flag. If the currently
   // scrolling node is the viewport, this would be the sum of the scroll offsets
   // of the inner and outer node, representing the visual scroll offset.
-  gfx::Vector2dF current_visual_offset;
+  gfx::PointF current_visual_offset;
 };
 
 class CC_EXPORT InputHandlerClient {
@@ -107,8 +108,8 @@ class CC_EXPORT InputHandlerClient {
   virtual void ReconcileElasticOverscrollAndRootScroll() = 0;
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
   virtual void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::Vector2dF& total_scroll_offset,
-      const gfx::Vector2dF& max_scroll_offset,
+      const gfx::PointF& total_scroll_offset,
+      const gfx::PointF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -296,7 +297,7 @@ class CC_EXPORT InputHandler {
   // input handler by the application (outside of input event handling). Offset
   // is expected in "content/page coordinates".
   virtual void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::Vector2dF& root_content_offset) = 0;
+      const gfx::PointF& root_content_offset) = 0;
 
   virtual void PinchGestureBegin() = 0;
   virtual void PinchGestureUpdate(float magnify_delta,
@@ -357,9 +358,9 @@ class CC_EXPORT InputHandler {
   // Called by the single-threaded UI Compositor to get or set the scroll offset
   // on the impl side. Returns false if |element_id| isn't in the active tree.
   virtual bool GetScrollOffsetForLayer(ElementId element_id,
-                                       gfx::Vector2dF* offset) = 0;
+                                       gfx::PointF* offset) = 0;
   virtual bool ScrollLayerTo(ElementId element_id,
-                             const gfx::Vector2dF& offset) = 0;
+                             const gfx::PointF& offset) = 0;
 
   virtual bool ScrollingShouldSwitchtoMainThread() = 0;
 
@@ -371,8 +372,8 @@ class CC_EXPORT InputHandler {
   // Returns false if their is no position to snap to.
   virtual bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
-      gfx::Vector2dF* initial_offset,
-      gfx::Vector2dF* target_offset) = 0;
+      gfx::PointF* initial_offset,
+      gfx::PointF* target_offset) = 0;
 
   // |did_finish| is true if the animation reached its target position (i.e.
   // it wasn't aborted).

@@ -62,7 +62,7 @@ class ScrollingIntegrationTest : public SitePerProcessBrowserTest {
 
   void WaitForVerticalScroll() {
     RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     while (frame_observer.LastRenderFrameMetadata()
                .root_scroll_offset.value_or(default_scroll_offset)
                .y() <= 0) {

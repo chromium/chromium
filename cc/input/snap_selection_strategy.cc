@@ -10,7 +10,7 @@ namespace cc {
 
 std::unique_ptr<SnapSelectionStrategy>
 SnapSelectionStrategy::CreateForEndPosition(
-    const gfx::Vector2dF& current_position,
+    const gfx::PointF& current_position,
     bool scrolled_x,
     bool scrolled_y,
     SnapTargetsPrioritization prioritization) {
@@ -19,7 +19,7 @@ SnapSelectionStrategy::CreateForEndPosition(
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForDirection(gfx::Vector2dF current_position,
+SnapSelectionStrategy::CreateForDirection(gfx::PointF current_position,
                                           gfx::Vector2dF step,
                                           bool use_fractional_offsets,
                                           SnapStopAlwaysFilter filter) {
@@ -28,7 +28,7 @@ SnapSelectionStrategy::CreateForDirection(gfx::Vector2dF current_position,
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForEndAndDirection(gfx::Vector2dF current_position,
+SnapSelectionStrategy::CreateForEndAndDirection(gfx::PointF current_position,
                                                 gfx::Vector2dF displacement,
                                                 bool use_fractional_offsets) {
   return std::make_unique<EndAndDirectionStrategy>(
@@ -36,7 +36,7 @@ SnapSelectionStrategy::CreateForEndAndDirection(gfx::Vector2dF current_position,
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForTargetElement(gfx::Vector2dF current_position) {
+SnapSelectionStrategy::CreateForTargetElement(gfx::PointF current_position) {
   return std::make_unique<EndPositionStrategy>(
       current_position, true /* scrolled_x */, true /* scrolled_y */,
       SnapTargetsPrioritization::kRequire);
@@ -73,11 +73,11 @@ bool EndPositionStrategy::ShouldSnapOnY() const {
   return scrolled_y_;
 }
 
-gfx::Vector2dF EndPositionStrategy::intended_position() const {
+gfx::PointF EndPositionStrategy::intended_position() const {
   return current_position_;
 }
 
-gfx::Vector2dF EndPositionStrategy::base_position() const {
+gfx::PointF EndPositionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -110,11 +110,11 @@ bool DirectionStrategy::ShouldSnapOnY() const {
   return step_.y() != 0;
 }
 
-gfx::Vector2dF DirectionStrategy::intended_position() const {
+gfx::PointF DirectionStrategy::intended_position() const {
   return current_position_ + step_;
 }
 
-gfx::Vector2dF DirectionStrategy::base_position() const {
+gfx::PointF DirectionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -184,11 +184,11 @@ bool EndAndDirectionStrategy::ShouldSnapOnY() const {
   return displacement_.y() != 0;
 }
 
-gfx::Vector2dF EndAndDirectionStrategy::intended_position() const {
+gfx::PointF EndAndDirectionStrategy::intended_position() const {
   return current_position_ + displacement_;
 }
 
-gfx::Vector2dF EndAndDirectionStrategy::base_position() const {
+gfx::PointF EndAndDirectionStrategy::base_position() const {
   return current_position_ + displacement_;
 }
 

@@ -10,6 +10,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
@@ -115,11 +116,11 @@ const ScrollNode* GetScrollNode(const LayerType* layer) {
   return GetPropertyTrees(layer)->scroll_tree.Node(layer->scroll_tree_index());
 }
 
-void SetScrollOffset(Layer*, const gfx::Vector2dF&);
-void SetScrollOffset(LayerImpl*, const gfx::Vector2dF&);
+void SetScrollOffset(Layer*, const gfx::PointF&);
+void SetScrollOffset(LayerImpl*, const gfx::PointF&);
 // Used to synchronize the main-thread scroll offset with the impl-side. The
 // difference from SetScrollOffset() is this function doesn't schedule commit.
-void SetScrollOffsetFromImplSide(Layer*, const gfx::Vector2dF&);
+void SetScrollOffsetFromImplSide(Layer*, const gfx::PointF&);
 
 template <typename LayerType>
 void SetLocalTransformChanged(LayerType* layer) {
@@ -224,11 +225,11 @@ void SetupViewport(LayerImpl* root,
 RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer);
 const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer);
 
-gfx::Vector2dF ScrollOffsetBase(const LayerImpl* layer);
+gfx::PointF ScrollOffsetBase(const LayerImpl* layer);
 gfx::Vector2dF ScrollDelta(const LayerImpl* layer);
-gfx::Vector2dF CurrentScrollOffset(const Layer* layer);
-gfx::Vector2dF CurrentScrollOffset(const LayerImpl* layer);
-gfx::Vector2dF MaxScrollOffset(const LayerImpl* layer);
+gfx::PointF CurrentScrollOffset(const Layer* layer);
+gfx::PointF CurrentScrollOffset(const LayerImpl* layer);
+gfx::PointF MaxScrollOffset(const LayerImpl* layer);
 
 }  // namespace cc
 

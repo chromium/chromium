@@ -11,8 +11,8 @@
 #include "cc/animation/worklet_animation.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -97,13 +97,11 @@ absl::optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(scroller_id);
 
-  gfx::Vector2dF offset =
-      scroll_tree.GetPixelSnappedScrollOffset(scroll_node->id);
+  gfx::PointF offset = scroll_tree.GetPixelSnappedScrollOffset(scroll_node->id);
   DCHECK_GE(offset.x(), 0);
   DCHECK_GE(offset.y(), 0);
 
-  gfx::Vector2dF scroll_dimensions =
-      scroll_tree.MaxScrollOffset(scroll_node->id);
+  gfx::PointF scroll_dimensions = scroll_tree.MaxScrollOffset(scroll_node->id);
 
   double max_offset =
       IsVertical(direction_) ? scroll_dimensions.y() : scroll_dimensions.x();

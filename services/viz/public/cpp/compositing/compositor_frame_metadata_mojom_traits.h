@@ -33,7 +33,7 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.device_scale_factor;
   }
 
-  static gfx::Vector2dF root_scroll_offset(
+  static gfx::PointF root_scroll_offset(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.root_scroll_offset;
   }

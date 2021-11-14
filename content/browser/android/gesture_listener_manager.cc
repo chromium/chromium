@@ -201,16 +201,15 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
 
 // All positions and sizes (except |top_shown_pix|) are in CSS pixels.
 // Note that viewport_width/height is a best effort based.
-void GestureListenerManager::UpdateScrollInfo(
-    const gfx::Vector2dF& scroll_offset,
-    float page_scale_factor,
-    const float min_page_scale,
-    const float max_page_scale,
-    const gfx::SizeF& content,
-    const gfx::SizeF& viewport,
-    const float content_offset,
-    const float top_shown_pix,
-    bool top_changed) {
+void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
+                                              float page_scale_factor,
+                                              const float min_page_scale,
+                                              const float max_page_scale,
+                                              const gfx::SizeF& content,
+                                              const gfx::SizeF& viewport,
+                                              const float content_offset,
+                                              const float top_shown_pix,
+                                              bool top_changed) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
@@ -233,7 +232,7 @@ void GestureListenerManager::UpdateOnTouchDown() {
 }
 
 void GestureListenerManager::OnRootScrollOffsetChanged(
-    const gfx::Vector2dF& root_scroll_offset) {
+    const gfx::PointF& root_scroll_offset) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())

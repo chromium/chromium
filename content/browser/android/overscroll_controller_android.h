@@ -73,7 +73,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
                               float device_scale_factor,
                               const gfx::SizeF& scrollable_viewport_size,
                               const gfx::SizeF& root_layer_size,
-                              const gfx::Vector2dF& root_scroll_offset,
+                              const gfx::PointF& root_scroll_offset,
                               bool root_overflow_y_hidden);
 
   // Toggle activity of any overscroll effects. When disabled, events will be

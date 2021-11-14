@@ -4,6 +4,8 @@
 
 #include "cc/input/snap_fling_controller.h"
 
+#include <utility>
+
 #include "cc/input/snap_fling_curve.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,19 +18,17 @@ class MockSnapFlingClient : public SnapFlingClient {
  public:
   MOCK_CONST_METHOD3(GetSnapFlingInfoAndSetAnimatingSnapTarget,
                      bool(const gfx::Vector2dF& natural_displacement,
-                          gfx::Vector2dF* initial_offset,
-                          gfx::Vector2dF* target_offset));
+                          gfx::PointF* initial_offset,
+                          gfx::PointF* target_offset));
   MOCK_METHOD1(ScrollEndForSnapFling, void(bool));
   MOCK_METHOD0(RequestAnimationForSnapFling, void());
-  MOCK_METHOD1(ScrollByForSnapFling, gfx::Vector2dF(const gfx::Vector2dF&));
+  MOCK_METHOD1(ScrollByForSnapFling, gfx::PointF(const gfx::Vector2dF&));
 };
 
 class MockSnapFlingCurve : public SnapFlingCurve {
  public:
   MockSnapFlingCurve()
-      : SnapFlingCurve(gfx::Vector2dF(),
-                       gfx::Vector2dF(0, 100),
-                       base::TimeTicks()) {}
+      : SnapFlingCurve(gfx::PointF(), gfx::PointF(0, 100), base::TimeTicks()) {}
   MOCK_CONST_METHOD0(IsFinished, bool());
   MOCK_METHOD1(GetScrollDelta, gfx::Vector2dF(base::TimeTicks));
 };
@@ -77,10 +77,9 @@ TEST_F(SnapFlingControllerTest, CreatesAndAnimatesCurveOnFirstInertialGSU) {
 
   EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetAnimatingSnapTarget(
                                 testing::_, testing::_, testing::_))
-      .WillOnce(
-          testing::DoAll(testing::SetArgPointee<1>(gfx::Vector2dF(0, 0)),
-                         testing::SetArgPointee<2>(gfx::Vector2dF(0, 100)),
-                         testing::Return(true)));
+      .WillOnce(testing::DoAll(testing::SetArgPointee<1>(gfx::PointF(0, 0)),
+                               testing::SetArgPointee<2>(gfx::PointF(0, 100)),
+                               testing::Return(true)));
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(1);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(1);
   EXPECT_TRUE(controller_->HandleGestureScrollUpdate(gsu));

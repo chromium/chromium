@@ -23,6 +23,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -1291,12 +1292,12 @@ void ScrollTree::clear() {
 #endif
 }
 
-gfx::Vector2dF ScrollTree::MaxScrollOffset(int scroll_node_id) const {
+gfx::PointF ScrollTree::MaxScrollOffset(int scroll_node_id) const {
   const ScrollNode* scroll_node = Node(scroll_node_id);
   gfx::SizeF scroll_bounds = this->scroll_bounds(scroll_node_id);
 
   if (!scroll_node->scrollable || scroll_bounds.IsEmpty())
-    return gfx::Vector2dF();
+    return gfx::PointF();
 
   TransformTree& transform_tree = property_trees()->transform_tree;
   float scale_factor = 1.f;
@@ -1309,12 +1310,12 @@ gfx::Vector2dF ScrollTree::MaxScrollOffset(int scroll_node_id) const {
 
   gfx::Size clip_layer_bounds = container_bounds(scroll_node->id);
 
-  gfx::Vector2dF max_offset(
+  gfx::PointF max_offset(
       scaled_scroll_bounds.width() - clip_layer_bounds.width(),
       scaled_scroll_bounds.height() - clip_layer_bounds.height());
 
   max_offset.Scale(1 / scale_factor);
-  max_offset.SetToMax(gfx::Vector2dF());
+  max_offset.SetToMax(gfx::PointF());
   return max_offset;
 }
 
@@ -1330,7 +1331,7 @@ gfx::SizeF ScrollTree::scroll_bounds(int scroll_node_id) const {
 
 void ScrollTree::OnScrollOffsetAnimated(ElementId id,
                                         int scroll_tree_index,
-                                        const gfx::Vector2dF& scroll_offset,
+                                        const gfx::PointF& scroll_offset,
                                         LayerTreeImpl* layer_tree_impl) {
   // Only active tree needs to be updated, pending tree will find out about
   // these changes as a result of the shared SyncedProperty.
@@ -1418,29 +1419,29 @@ const SyncedScrollOffset* ScrollTree::GetSyncedScrollOffset(
 gfx::Vector2dF ScrollTree::ClampScrollToMaxScrollOffset(
     const ScrollNode& node,
     LayerTreeImpl* layer_tree_impl) {
-  gfx::Vector2dF old_offset = current_scroll_offset(node.element_id);
-  gfx::Vector2dF clamped_offset = ClampScrollOffsetToLimits(old_offset, node);
+  gfx::PointF old_offset = current_scroll_offset(node.element_id);
+  gfx::PointF clamped_offset = ClampScrollOffsetToLimits(old_offset, node);
   gfx::Vector2dF delta = clamped_offset - old_offset;
   if (!delta.IsZero())
     ScrollBy(node, delta, layer_tree_impl);
   return delta;
 }
 
-const gfx::Vector2dF ScrollTree::current_scroll_offset(ElementId id) const {
+const gfx::PointF ScrollTree::current_scroll_offset(ElementId id) const {
   if (property_trees()->is_main_thread) {
     auto it = scroll_offset_map_.find(id);
-    return it != scroll_offset_map_.end() ? it->second : gfx::Vector2dF();
+    return it != scroll_offset_map_.end() ? it->second : gfx::PointF();
   }
-  return GetSyncedScrollOffset(id)
-             ? GetSyncedScrollOffset(id)->Current(property_trees()->is_active)
-             : gfx::Vector2dF();
+  if (const auto* synced_scroll_offset = GetSyncedScrollOffset(id))
+    return synced_scroll_offset->Current(property_trees()->is_active);
+  return gfx::PointF();
 }
 
-const gfx::Vector2dF ScrollTree::GetPixelSnappedScrollOffset(
+const gfx::PointF ScrollTree::GetPixelSnappedScrollOffset(
     int scroll_node_id) const {
   const ScrollNode* scroll_node = Node(scroll_node_id);
   DCHECK(scroll_node);
-  gfx::Vector2dF offset = current_scroll_offset(scroll_node->element_id);
+  gfx::PointF offset = current_scroll_offset(scroll_node->element_id);
 
   const TransformNode* transform_node =
       property_trees()->transform_tree.Node(scroll_node->transform_id);
@@ -1484,14 +1485,14 @@ gfx::Vector2dF ScrollTree::PullDeltaForMainThread(
   // TODO(flackr): We should ideally round the fractional scrolls in the same
   // direction as the scroll will be snapped but for common cases this is
   // equivalent to rounding to the nearest integer offset.
-  gfx::Vector2dF current_offset =
+  gfx::PointF current_offset =
       scroll_offset->Current(/* is_active_tree */ true);
-  gfx::Vector2dF rounded_offset = gfx::ToRoundedVector2d(current_offset);
+  gfx::PointF rounded_offset(gfx::ToRoundedPoint(current_offset));
   // The calculation of the difference from the rounded active base is to
   // represent the integer delta that the main thread should know about.
-  gfx::Vector2dF active_base = scroll_offset->ActiveBase();
+  gfx::PointF active_base = scroll_offset->ActiveBase();
   gfx::Vector2dF diff_active_base =
-      active_base - gfx::ToRoundedVector2d(active_base);
+      active_base - gfx::PointF(gfx::ToRoundedPoint(active_base));
   scroll_offset->SetCurrent(rounded_offset + diff_active_base);
   gfx::Vector2dF delta = scroll_offset->PullDeltaForMainThread();
   scroll_offset->SetCurrent(current_offset);
@@ -1577,8 +1578,8 @@ void ScrollTree::PushScrollUpdatesFromMainThread(
     // PullDeltaForMainThread where only an integer delta is extracted and
     // prevents unnecessary property change in this case.
     if (!use_fractional_deltas) {
-      gfx::Vector2dF pending_offset = synced_scroll_offset->Current(false);
-      gfx::Vector2dF rounded_offset = gfx::ToRoundedVector2d(pending_offset);
+      gfx::PointF pending_offset = synced_scroll_offset->Current(false);
+      gfx::PointF rounded_offset(gfx::ToRoundedPoint(pending_offset));
       needs_scroll_update = map_entry.second != rounded_offset;
     }
 
@@ -1622,7 +1623,7 @@ void ScrollTree::ApplySentScrollDeltasFromAbortedCommit() {
 }
 
 void ScrollTree::SetBaseScrollOffset(ElementId id,
-                                     const gfx::Vector2dF& scroll_offset) {
+                                     const gfx::PointF& scroll_offset) {
   if (property_trees()->is_main_thread) {
     scroll_offset_map_[id] = scroll_offset;
     return;
@@ -1635,7 +1636,7 @@ void ScrollTree::SetBaseScrollOffset(ElementId id,
 }
 
 bool ScrollTree::SetScrollOffset(ElementId id,
-                                 const gfx::Vector2dF& scroll_offset) {
+                                 const gfx::PointF& scroll_offset) {
   // TODO(crbug.com/1087088): Remove TRACE_EVENT call when the bug is fixed
   TRACE_EVENT2("cc", "ScrollTree::SetScrollOffset", "x", scroll_offset.x(), "y",
                scroll_offset.y());
@@ -1646,16 +1647,14 @@ bool ScrollTree::SetScrollOffset(ElementId id,
     return true;
   }
 
-  if (property_trees()->is_active) {
+  if (property_trees()->is_active)
     return GetOrCreateSyncedScrollOffset(id)->SetCurrent(scroll_offset);
-  }
 
   return false;
 }
 
-bool ScrollTree::UpdateScrollOffsetBaseForTesting(
-    ElementId id,
-    const gfx::Vector2dF& offset) {
+bool ScrollTree::UpdateScrollOffsetBaseForTesting(ElementId id,
+                                                  const gfx::PointF& offset) {
   DCHECK(!property_trees()->is_main_thread);
   SyncedScrollOffset* synced_scroll_offset = GetOrCreateSyncedScrollOffset(id);
   bool changed = synced_scroll_offset->PushMainToPending(offset);
@@ -1670,7 +1669,7 @@ bool ScrollTree::SetScrollOffsetDeltaForTesting(ElementId id,
       GetOrCreateSyncedScrollOffset(id)->ActiveBase() + delta);
 }
 
-const gfx::Vector2dF ScrollTree::GetScrollOffsetBaseForTesting(
+const gfx::PointF ScrollTree::GetScrollOffsetBaseForTesting(
     ElementId id) const {
   DCHECK(!property_trees()->is_main_thread);
   if (GetSyncedScrollOffset(id)) {
@@ -1678,7 +1677,7 @@ const gfx::Vector2dF ScrollTree::GetScrollOffsetBaseForTesting(
                ? GetSyncedScrollOffset(id)->ActiveBase()
                : GetSyncedScrollOffset(id)->PendingBase();
   }
-  return gfx::Vector2dF();
+  return gfx::PointF();
 }
 
 const gfx::Vector2dF ScrollTree::GetScrollOffsetDeltaForTesting(
@@ -1701,8 +1700,8 @@ gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
   if (!scroll_node.user_scrollable_vertical)
     adjusted_scroll.set_y(0);
   DCHECK(scroll_node.scrollable);
-  gfx::Vector2dF old_offset = current_scroll_offset(scroll_node.element_id);
-  gfx::Vector2dF new_offset =
+  gfx::PointF old_offset = current_scroll_offset(scroll_node.element_id);
+  gfx::PointF new_offset =
       ClampScrollOffsetToLimits(old_offset + adjusted_scroll, scroll_node);
   if (SetScrollOffset(scroll_node.element_id, new_offset))
     layer_tree_impl->DidUpdateScrollOffset(scroll_node.element_id);
@@ -1711,11 +1710,11 @@ gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
   return old_offset + scroll - new_offset;
 }
 
-gfx::Vector2dF ScrollTree::ClampScrollOffsetToLimits(
-    gfx::Vector2dF offset,
+gfx::PointF ScrollTree::ClampScrollOffsetToLimits(
+    gfx::PointF offset,
     const ScrollNode& scroll_node) const {
   offset.SetToMin(MaxScrollOffset(scroll_node.id));
-  offset.SetToMax(gfx::Vector2dF());
+  offset.SetToMax(gfx::PointF());
   return offset;
 }
 
@@ -1726,7 +1725,7 @@ void ScrollTree::SetScrollCallbacks(base::WeakPtr<ScrollCallbacks> callbacks) {
 
 void ScrollTree::NotifyDidCompositorScroll(
     ElementId scroll_element_id,
-    const gfx::Vector2dF& scroll_offset,
+    const gfx::PointF& scroll_offset,
     const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   DCHECK(property_trees()->is_main_thread);
   if (callbacks_) {

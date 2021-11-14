@@ -559,8 +559,8 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     const ui::LatencyInfo& latency_info,
     const base::TimeTicks original_timestamp,
     const cc::EventMetrics* original_metrics) {
-  gfx::Vector2dF scroll_delta(pointer_result.scroll_offset.x(),
-                              pointer_result.scroll_offset.y());
+  gfx::Vector2dF scroll_delta = pointer_result.scroll_delta;
+  ;
 
   std::unique_ptr<WebGestureEvent> synthetic_gesture_event =
       WebGestureEvent::GenerateInjectedScrollGesture(
@@ -1386,8 +1386,8 @@ void InputHandlerProxy::SetPrefersReducedMotion(bool prefers_reduced_motion) {
 }
 
 void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
-    const gfx::Vector2dF& total_scroll_offset,
-    const gfx::Vector2dF& max_scroll_offset,
+    const gfx::PointF& total_scroll_offset,
+    const gfx::PointF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -1436,7 +1436,7 @@ void InputHandlerProxy::SetSynchronousInputHandler(
 }
 
 void InputHandlerProxy::SynchronouslySetRootScrollOffset(
-    const gfx::Vector2dF& root_offset) {
+    const gfx::PointF& root_offset) {
   DCHECK(synchronous_input_handler_);
   input_handler_->SetSynchronousInputHandlerRootScrollOffset(root_offset);
 }
@@ -1451,13 +1451,13 @@ void InputHandlerProxy::SynchronouslyZoomBy(float magnify_delta,
 
 bool InputHandlerProxy::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     const gfx::Vector2dF& natural_displacement,
-    gfx::Vector2dF* initial_offset,
-    gfx::Vector2dF* target_offset) const {
+    gfx::PointF* initial_offset,
+    gfx::PointF* target_offset) const {
   return input_handler_->GetSnapFlingInfoAndSetAnimatingSnapTarget(
       natural_displacement, initial_offset, target_offset);
 }
 
-gfx::Vector2dF InputHandlerProxy::ScrollByForSnapFling(
+gfx::PointF InputHandlerProxy::ScrollByForSnapFling(
     const gfx::Vector2dF& delta) {
   cc::ScrollState scroll_state = CreateScrollStateForInertialUpdate(delta);
 
@@ -1556,7 +1556,7 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
 
   // Don't need to inject GSU if the scroll offset is zero (this can be the case
   // where mouse down occurs on the thumb).
-  if (!pointer_result.scroll_offset.IsZero()) {
+  if (!pointer_result.scroll_delta.IsZero()) {
     InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
                                  position, pointer_result,
                                  event_with_callback->latency_info(),
@@ -1596,7 +1596,7 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
     // Generate a GSU event and add it to the CompositorThreadEventQueue if
     // delta is non zero.
-    if (!pointer_result.scroll_offset.IsZero()) {
+    if (!pointer_result.scroll_delta.IsZero()) {
       InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
                                    position, pointer_result,
                                    event_with_callback->latency_info(),

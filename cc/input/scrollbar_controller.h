@@ -218,16 +218,11 @@ class CC_EXPORT ScrollbarController {
   float ScreenSpaceScaleFactor() const;
 
   // Helper to convert scroll offset to autoscroll velocity.
-  float InitialDeltaToAutoscrollVelocity(gfx::Vector2dF scroll_offset) const;
+  float InitialDeltaToAutoscrollVelocity(gfx::Vector2dF scroll_delta) const;
 
   // Returns the hit tested ScrollbarPart based on the position_in_widget.
   ScrollbarPart GetScrollbarPartFromPointerDown(
       const gfx::PointF position_in_widget) const;
-
-  // Returns scroll offsets based on which ScrollbarPart was hit tested.
-  gfx::Vector2dF GetScrollOffsetForScrollbarPart(
-      const ScrollbarPart scrollbar_part,
-      const bool jump_key_modifier) const;
 
   // Clamps |scroll_delta| based on the available scrollable amount of
   // |target_node|. The returned delta includes the page scale factor and is
@@ -239,8 +234,15 @@ class CC_EXPORT ScrollbarController {
   gfx::Rect GetRectForScrollbarPart(const ScrollbarPart scrollbar_part) const;
 
   LayerImpl* GetLayerHitByPoint(const gfx::PointF position_in_widget) const;
-  float GetScrollDeltaForScrollbarPart(const ScrollbarPart scrollbar_part,
-                                       const bool jump_key_modifier) const;
+
+  // Returns scroll delta as Vector2dF based on which ScrollbarPart was hit
+  // tested.
+  gfx::Vector2dF GetScrollDeltaForScrollbarPart(
+      const ScrollbarPart scrollbar_part,
+      const bool jump_key_modifier) const;
+  // Returns scroll delta in the direction of the scrollbar's orientation.
+  float GetScrollDistanceForScrollbarPart(const ScrollbarPart scrollbar_part,
+                                          const bool jump_key_modifier) const;
 
   // Makes position_in_widget relative to the scrollbar.
   gfx::PointF GetScrollbarRelativePosition(const gfx::PointF position_in_widget,
@@ -257,14 +259,14 @@ class CC_EXPORT ScrollbarController {
 
   // Shift (or "Option" in case of Mac) + click is expected to do a non-animated
   // jump to a certain offset.
-  float GetScrollDeltaForAbsoluteJump() const;
+  float GetScrollDistanceForAbsoluteJump() const;
 
   // Determines if the delta needs to be animated.
   ui::ScrollGranularity Granularity(const ScrollbarPart scrollbar_part,
                                     bool jump_key_modifier) const;
 
-  // Calculates the delta based on position_in_widget and drag_origin.
-  float GetScrollDeltaForDragPosition(
+  // Calculates the distance based on position_in_widget and drag_origin.
+  float GetScrollDistanceForDragPosition(
       const gfx::PointF pointer_position_in_widget) const;
 
   // Returns the ratio of the scroller length to the scrollbar length. This is
@@ -273,8 +275,8 @@ class CC_EXPORT ScrollbarController {
 
   float GetViewportLength() const;
 
-  // Returns the pixel delta for a percent-based scroll of the scrollbar
-  float GetScrollDeltaForPercentBasedScroll() const;
+  // Returns the pixel distance for a percent-based scroll of the scrollbar
+  float GetScrollDistanceForPercentBasedScroll() const;
 
   // Returns the page scale factor (i.e. pinch zoom factor). This is relevant
   // for root viewport scrollbar scrolling.

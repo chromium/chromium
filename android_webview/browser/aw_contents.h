@@ -319,9 +319,9 @@ class AwContents : public FindHelper::Listener,
       bool view_tree_force_dark_state) override;
 
   // |new_value| is in physical pixel scale.
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override;
+  void ScrollContainerViewTo(const gfx::Point& new_value) override;
 
-  void UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+  void UpdateScrollState(const gfx::Point& max_scroll_offset,
                          const gfx::SizeF& contents_size_dip,
                          float page_scale_factor,
                          float min_page_scale_factor,

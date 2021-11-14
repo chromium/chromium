@@ -73,7 +73,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Scroll offset and scale of the root layer. This can be used for tasks
   // like positioning windowed plugins.
-  gfx::Vector2dF root_scroll_offset;
+  gfx::PointF root_scroll_offset;
   float page_scale_factor = 0.f;
 
   gfx::SizeF scrollable_viewport_size;

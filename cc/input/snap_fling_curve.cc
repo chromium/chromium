@@ -57,8 +57,8 @@ gfx::Vector2dF SnapFlingCurve::EstimateDisplacement(
   return destination;
 }
 
-SnapFlingCurve::SnapFlingCurve(const gfx::Vector2dF& start_offset,
-                               const gfx::Vector2dF& target_offset,
+SnapFlingCurve::SnapFlingCurve(const gfx::PointF& start_offset,
+                               const gfx::PointF& target_offset,
                                base::TimeTicks first_gsu_time)
     : start_offset_(start_offset),
       total_displacement_(target_offset - start_offset),
@@ -104,7 +104,7 @@ gfx::Vector2dF SnapFlingCurve::GetScrollDelta(base::TimeTicks time_stamp) {
   return new_displacement - current_displacement_;
 }
 
-void SnapFlingCurve::UpdateCurrentOffset(const gfx::Vector2dF& current_offset) {
+void SnapFlingCurve::UpdateCurrentOffset(const gfx::PointF& current_offset) {
   current_displacement_ = current_offset - start_offset_;
 }
 

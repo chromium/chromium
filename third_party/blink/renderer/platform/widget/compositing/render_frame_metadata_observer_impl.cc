@@ -190,10 +190,10 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
     return true;
   }
 
-  gfx::Vector2dF old_root_scroll_offset =
-      rfm1.root_scroll_offset.value_or(gfx::Vector2dF());
-  gfx::Vector2dF new_root_scroll_offset =
-      rfm2.root_scroll_offset.value_or(gfx::Vector2dF());
+  gfx::PointF old_root_scroll_offset =
+      rfm1.root_scroll_offset.value_or(gfx::PointF());
+  gfx::PointF new_root_scroll_offset =
+      rfm2.root_scroll_offset.value_or(gfx::PointF());
   gfx::RectF old_viewport_rect(
       gfx::PointF(old_root_scroll_offset.x(), old_root_scroll_offset.y()),
       rfm1.scrollable_viewport_size);

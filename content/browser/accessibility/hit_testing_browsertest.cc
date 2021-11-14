@@ -110,13 +110,13 @@ gfx::Point AccessibilityHitTestingBrowserTest::CSSToFramePoint(
   else
     page_point = css_point;
 
-  gfx::Point frame_point = page_point - scroll_offset_;
+  gfx::Point frame_point = page_point - scroll_offset_.OffsetFromOrigin();
   return frame_point;
 }
 
 gfx::Point AccessibilityHitTestingBrowserTest::FrameToCSSPoint(
     gfx::Point frame_point) {
-  gfx::Point page_point = frame_point + scroll_offset_;
+  gfx::Point page_point = frame_point + scroll_offset_.OffsetFromOrigin();
 
   gfx::Point css_point;
   if (IsUseZoomForDSFEnabled())
@@ -272,11 +272,12 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
   const cc::RenderFrameMetadata& render_frame_metadata =
       observer.LastRenderFrameMetadata();
   DCHECK(render_frame_metadata.page_scale_factor == desired_page_scale);
-  if (render_frame_metadata.root_scroll_offset)
-    scroll_offset_ = gfx::ToRoundedVector2d(
-        render_frame_metadata.root_scroll_offset.value());
-  else
-    scroll_offset_ = gfx::Vector2d();
+  if (render_frame_metadata.root_scroll_offset) {
+    scroll_offset_ =
+        gfx::ToRoundedPoint(render_frame_metadata.root_scroll_offset.value());
+  } else {
+    scroll_offset_ = gfx::Point();
+  }
 
   // Ensure we get an accessibility update reflecting the new scale factor.
   accessibility_waiter.WaitForNotification();

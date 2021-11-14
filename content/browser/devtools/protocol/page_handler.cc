@@ -122,7 +122,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
     const gfx::Size& surface_size,
     float device_scale_factor,
     float page_scale_factor,
-    const gfx::Vector2dF& root_scroll_offset,
+    const gfx::PointF& root_scroll_offset,
     float top_controls_visible_height) {
   if (surface_size.IsEmpty() || device_scale_factor == 0)
     return nullptr;
@@ -130,7 +130,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
   const gfx::SizeF content_size_dip =
       gfx::ScaleSize(gfx::SizeF(surface_size), 1 / device_scale_factor);
   float top_offset_dip = top_controls_visible_height;
-  gfx::Vector2dF root_scroll_offset_dip = root_scroll_offset;
+  gfx::PointF root_scroll_offset_dip = root_scroll_offset;
   if (IsUseZoomForDSFEnabled()) {
     top_offset_dip /= device_scale_factor;
     root_scroll_offset_dip.Scale(1 / device_scale_factor);
@@ -171,7 +171,7 @@ gfx::Size DetermineSnapshotSize(const gfx::Size& surface_size,
 void GetMetadataFromFrame(const media::VideoFrame& frame,
                           double* device_scale_factor,
                           double* page_scale_factor,
-                          gfx::Vector2dF* root_scroll_offset,
+                          gfx::PointF* root_scroll_offset,
                           double* top_controls_visible_height) {
   // Get metadata from |frame|. This will CHECK if metadata is missing.
   *device_scale_factor = *frame.metadata().device_scale_factor;
@@ -1057,7 +1057,7 @@ void PageHandler::InnerSwapCompositorFrame() {
       BuildScreencastFrameMetadata(
           surface_size, frame_metadata_->device_scale_factor,
           frame_metadata_->page_scale_factor,
-          frame_metadata_->root_scroll_offset.value_or(gfx::Vector2dF()),
+          frame_metadata_->root_scroll_offset.value_or(gfx::PointF()),
           top_controls_visible_height);
   if (!page_metadata)
     return;
@@ -1099,7 +1099,7 @@ void PageHandler::OnFrameFromVideoConsumer(
 
   double device_scale_factor, page_scale_factor;
   double top_controls_visible_height;
-  gfx::Vector2dF root_scroll_offset;
+  gfx::PointF root_scroll_offset;
   GetMetadataFromFrame(*frame, &device_scale_factor, &page_scale_factor,
                        &root_scroll_offset, &top_controls_visible_height);
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =

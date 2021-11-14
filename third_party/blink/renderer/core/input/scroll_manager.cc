@@ -742,7 +742,7 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   FloatPoint current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          gfx::Vector2dF(current_position.x(), current_position.y()),
+          ToGfxPointF(current_position),
           gfx::Vector2dF(scroll_state_data->delta_x,
                          scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
@@ -896,15 +896,15 @@ bool ScrollManager::SnapAtGestureScrollEnd(
 
 bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     const gfx::Vector2dF& natural_displacement,
-    gfx::Vector2dF* out_initial_position,
-    gfx::Vector2dF* out_target_position) const {
+    gfx::PointF* out_initial_position,
+    gfx::PointF* out_target_position) const {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(LayoutBoxForSnapping());
   if (!scrollable_area)
     return false;
 
   FloatPoint current_position = scrollable_area->ScrollPosition();
-  *out_initial_position = ToGfxVector2dF(current_position);
+  *out_initial_position = ToGfxPointF(current_position);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
           *out_initial_position, natural_displacement,
@@ -913,16 +913,15 @@ bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_end.has_value())
     return false;
-  *out_target_position = ToGfxVector2dF(snap_end.value());
+  *out_target_position = ToGfxPointF(snap_end.value());
   return true;
 }
 
-gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
-    const gfx::Vector2dF& delta) {
+gfx::PointF ScrollManager::ScrollByForSnapFling(const gfx::Vector2dF& delta) {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(LayoutBoxForSnapping());
   if (!scrollable_area)
-    return gfx::Vector2dF();
+    return gfx::PointF();
 
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
@@ -942,7 +941,7 @@ gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
 
   CustomizedScroll(*scroll_state);
   FloatPoint end_position = scrollable_area->ScrollPosition();
-  return gfx::Vector2dF(end_position.x(), end_position.y());
+  return ToGfxPointF(end_position);
 }
 
 void ScrollManager::ScrollEndForSnapFling(bool did_finish) {

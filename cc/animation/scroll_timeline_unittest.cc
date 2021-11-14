@@ -11,7 +11,7 @@
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -26,7 +26,7 @@ static constexpr double time_error_ms = 0.001;
 
 void SetScrollOffset(PropertyTrees* property_trees,
                      ElementId scroller_id,
-                     gfx::Vector2dF offset) {
+                     gfx::PointF offset) {
   // Update both scroll and transform trees
   property_trees->scroll_tree.SetScrollOffset(scroller_id, offset);
   TransformNode* transform_node =
@@ -121,14 +121,14 @@ TEST_F(ScrollTimelineTest, BasicCurrentTimeCalculations) {
       scroller_id(), ScrollTimeline::ScrollRight, scroll_offsets);
 
   // Unscrolled, both timelines should read a current time of 0.
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF());
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF());
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       0, vertical_timeline->CurrentTime(scroll_tree(), false));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       0, horizontal_timeline->CurrentTime(scroll_tree(), false));
 
   // Now do some scrolling and make sure that the ScrollTimelines update.
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(75, 50));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(75, 50));
 
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       0.5 * ScrollTimeline::kScrollTimelineDurationMs,
@@ -158,44 +158,44 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
   // Scale necessary to convert absolute unit times to progress based values
   double scale = ScrollTimeline::kScrollTimelineDurationMs / scroll_size;
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF());
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF());
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
   p = (70.0 - 0.0) / (100.0 - 0.0);
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 70));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 70));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
   offset = 1;
   p = 0;
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 100));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 100));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
   p = (150.0 - 100.0) / (250.0 - 100.0);
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 150));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 150));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
   offset = 2;
   p = 0;
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 250));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 250));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
   p = (350.0 - 250.0) / (400.0 - 250.0);
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 350));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 350));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       (offset + p) * w * scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 400));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 400));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       ScrollTimeline::kScrollTimelineDurationMs,
       vertical_timeline->CurrentTime(scroll_tree(), false));
@@ -212,7 +212,7 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
 
   // Offset is less than start offset ==> current time is 0.
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 300));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 300));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       0, vertical_timeline->CurrentTime(scroll_tree(), false));
 
@@ -220,7 +220,7 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
   double scale = ScrollTimeline::kScrollTimelineDurationMs / scroll_size;
 
   // Offset is greater than end offset ==> current time is 100%.
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 360));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 360));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       scroll_size * scale,
       vertical_timeline->CurrentTime(scroll_tree(), false));
@@ -230,7 +230,7 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
   vertical_timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 100));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 100));
   // Scroll offset is 25% of [0, 400) range, which maps to [0% 50%) of the
   // entire scroll range.
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
@@ -242,7 +242,7 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
   vertical_timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 300));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 300));
   // Scroll offset is 75% of [0, 400) range, which maps to [50% 100%) of the
   // entire scroll range.
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
@@ -277,7 +277,7 @@ TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
 
   double halfwayY = scroll_size / 2.;
   double expectedTime = 0.5 * ScrollTimeline::kScrollTimelineDurationMs;
-  SetScrollOffset(&pending_tree, scroller_id, gfx::Vector2dF(0, halfwayY));
+  SetScrollOffset(&pending_tree, scroller_id, gfx::PointF(0, halfwayY));
 
   scoped_refptr<ScrollTimeline> main_timeline = ScrollTimeline::Create(
       scroller_id, ScrollTimeline::ScrollDown, scroll_offsets);
@@ -314,7 +314,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsAdjustedForPixelSnapping) {
   scoped_refptr<ScrollTimeline> timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 50));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 50));
 
   // For simplicity emulate snapping by directly setting snap_amount of
   // transform node.
@@ -340,24 +340,24 @@ TEST_F(ScrollTimelineTest, CurrentTimeHandlesStartScrollOffset) {
 
   // Unscrolled, the timeline should read a current time of 0 since the current
   // offset (0) will be less than the startScrollOffset.
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF());
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF());
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(0,
                                    timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 19));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 19));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(0,
                                    timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 20));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 20));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(0,
                                    timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 50));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 50));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       CalculateCurrentTime(50, start_scroll_offset, scroll_size),
       timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 200));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 200));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       CalculateCurrentTime(200, start_scroll_offset, scroll_size),
       timeline->CurrentTime(scroll_tree(), false));
@@ -373,23 +373,23 @@ TEST_F(ScrollTimelineTest, CurrentTimeHandlesEndScrollOffset) {
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
 
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, scroll_size));
+                  gfx::PointF(0, scroll_size));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
 
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, scroll_size - 20));
+                  gfx::PointF(0, scroll_size - 20));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
 
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, scroll_size - 50));
+                  gfx::PointF(0, scroll_size - 50));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       CalculateCurrentTime(scroll_size - 50, 0, end_scroll_offset),
       timeline->CurrentTime(scroll_tree(), false));
 
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, scroll_size - 200));
+                  gfx::PointF(0, scroll_size - 200));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       CalculateCurrentTime(scroll_size - 200, 0, end_scroll_offset),
       timeline->CurrentTime(scroll_tree(), false));
@@ -405,7 +405,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeHandlesCombinedStartAndEndScrollOffset) {
   scoped_refptr<ScrollTimeline> timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, scroll_size - 150));
+                  gfx::PointF(0, scroll_size - 150));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(
       CalculateCurrentTime(scroll_size - 150, start_scroll_offset,
                            end_scroll_offset),
@@ -418,7 +418,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeHandlesEqualStartAndEndScrollOffset) {
   scroll_offsets.push_back(20);
   scoped_refptr<ScrollTimeline> timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 150));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 150));
 
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
@@ -431,11 +431,11 @@ TEST_F(ScrollTimelineTest,
   scroll_offsets.push_back(10);
   scoped_refptr<ScrollTimeline> timeline = ScrollTimeline::Create(
       scroller_id(), ScrollTimeline::ScrollDown, scroll_offsets);
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 40));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 40));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(0,
                                    timeline->CurrentTime(scroll_tree(), false));
 
-  SetScrollOffset(&property_trees(), scroller_id(), gfx::Vector2dF(0, 150));
+  SetScrollOffset(&property_trees(), scroller_id(), gfx::PointF(0, 150));
 
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
@@ -455,19 +455,19 @@ TEST_F(ScrollTimelineTest, CurrentTimeHandlesScrollOffsets) {
 
   // Before the start_scroll_offset the current time should be 0
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, start_scroll_offset - 10));
+                  gfx::PointF(0, start_scroll_offset - 10));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(0,
                                    timeline->CurrentTime(scroll_tree(), false));
 
   // At the end_scroll_offset the current time should be 100%
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, end_scroll_offset));
+                  gfx::PointF(0, end_scroll_offset));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
 
   // After the end_scroll_offset the current time should be 100%
   SetScrollOffset(&property_trees(), scroller_id(),
-                  gfx::Vector2dF(0, end_scroll_offset + 10));
+                  gfx::PointF(0, end_scroll_offset + 10));
   EXPECT_SCROLL_TIMELINE_TIME_NEAR(ScrollTimeline::kScrollTimelineDurationMs,
                                    timeline->CurrentTime(scroll_tree(), false));
 }

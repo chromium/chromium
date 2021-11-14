@@ -43,8 +43,8 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
     compositor_map_.erase(id);
   }
   void UpdateRootLayerState(SynchronousCompositor* compositor,
-                            const gfx::Vector2dF& total_scroll_offset,
-                            const gfx::Vector2dF& max_scroll_offset,
+                            const gfx::PointF& total_scroll_offset,
+                            const gfx::PointF& max_scroll_offset,
                             const gfx::SizeF& scrollable_size,
                             float page_scale_factor,
                             float min_page_scale_factor,

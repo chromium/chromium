@@ -20,7 +20,7 @@
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -169,7 +169,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void MarkFinishedKeyframeModels(base::TimeTicks monotonic_time);
 
   bool HasElementInActiveList() const;
-  gfx::Vector2dF ScrollOffsetForAnimation() const;
+  gfx::PointF ScrollOffsetForAnimation() const;
   void GenerateEvent(AnimationEvents* events,
                      const KeyframeModel& keyframe_model,
                      AnimationEvent::Type type,

@@ -12,7 +12,7 @@
 
 namespace gfx {
 class Transform;
-class Vector2dF;
+class PointF;
 }
 
 namespace cc {
@@ -52,7 +52,7 @@ class MutatorHostClient {
   virtual void SetElementScrollOffsetMutated(
       ElementId element_id,
       ElementListType list_type,
-      const gfx::Vector2dF& scroll_offset) = 0;
+      const gfx::PointF& scroll_offset) = 0;
 
   // Allows to change IsAnimating value for a set of properties.
   virtual void ElementIsAnimatingChanged(
@@ -66,7 +66,7 @@ class MutatorHostClient {
                                    float maximum_scale) = 0;
 
   virtual void ScrollOffsetAnimationFinished() = 0;
-  virtual gfx::Vector2dF GetScrollOffsetForAnimation(
+  virtual gfx::PointF GetScrollOffsetForAnimation(
       ElementId element_id) const = 0;
 
   virtual void NotifyAnimationWorkletStateChange(

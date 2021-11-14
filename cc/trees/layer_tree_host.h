@@ -507,7 +507,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return pending_commit_state()->display_transform_hint;
   }
 
-  void StartPageScaleAnimation(const gfx::Vector2d& target_offset,
+  void StartPageScaleAnimation(const gfx::Point& target_offset,
                                bool use_anchor,
                                float scale,
                                base::TimeDelta duration);
@@ -742,10 +742,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetElementTransformMutated(ElementId element_id,
                                   ElementListType list_type,
                                   const gfx::Transform& transform) override;
-  void SetElementScrollOffsetMutated(
-      ElementId element_id,
-      ElementListType list_type,
-      const gfx::Vector2dF& scroll_offset) override;
+  void SetElementScrollOffsetMutated(ElementId element_id,
+                                     ElementListType list_type,
+                                     const gfx::PointF& scroll_offset) override;
 
   void ElementIsAnimatingChanged(const PropertyToElementIdMap& element_id_map,
                                  ElementListType list_type,
@@ -760,8 +759,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       PaintWorkletInput::PropertyValue property_value) override {}
 
   void ScrollOffsetAnimationFinished() override {}
-  gfx::Vector2dF GetScrollOffsetForAnimation(
-      ElementId element_id) const override;
+  gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}

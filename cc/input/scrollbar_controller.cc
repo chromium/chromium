@@ -104,7 +104,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
       GetScrollbarPartFromPointerDown(position_in_widget);
   const bool perform_jump_click_on_track =
       scrollbar->JumpOnTrackClick() != jump_key_modifier;
-  scroll_result.scroll_offset = GetScrollOffsetForScrollbarPart(
+  scroll_result.scroll_delta = GetScrollDeltaForScrollbarPart(
       scrollbar_part, perform_jump_click_on_track);
   last_known_pointer_position_ = position_in_widget;
   scrollbar_scroll_is_active_ = true;
@@ -127,18 +127,18 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
     // from the track during a thumb drag. Additionally, if a thumb drag is
     // being initiated *after* a jump click, scroll_position_at_start_ needs
     // to account for that.
-    const float jump_click_thumb_drag_offset =
+    const float jump_click_thumb_drag_delta =
         scrollbar->orientation() == ScrollbarOrientation::HORIZONTAL
-            ? scroll_result.scroll_offset.x()
-            : scroll_result.scroll_offset.y();
+            ? scroll_result.scroll_delta.x()
+            : scroll_result.scroll_delta.y();
     drag_state_->scroll_position_at_start_ =
         scrollbar->current_pos() +
-        (perform_jump_click_on_track ? jump_click_thumb_drag_offset : 0);
+        (perform_jump_click_on_track ? jump_click_thumb_drag_delta : 0);
     drag_state_->scroller_length_at_previous_move =
         scrollbar->scroll_layer_length();
   }
 
-  if (!scroll_result.scroll_offset.IsZero() && !perform_jump_click_on_track) {
+  if (!scroll_result.scroll_delta.IsZero() && !perform_jump_click_on_track) {
     // Thumb drag is the only scrollbar manipulation that cannot produce an
     // autoscroll. All other interactions like clicking on arrows/trackparts
     // have the potential of initiating an autoscroll (if held down for long
@@ -148,7 +148,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerDown(
         std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
             &ScrollbarController::StartAutoScrollAnimation,
             base::Unretained(this),
-            InitialDeltaToAutoscrollVelocity(scroll_result.scroll_offset),
+            InitialDeltaToAutoscrollVelocity(scroll_result.scroll_delta),
             scrollbar_part));
     layer_tree_host_impl_->GetTaskRunner()->PostDelayedTask(
         FROM_HERE, cancelable_autoscroll_task_->callback(),
@@ -232,7 +232,7 @@ ui::ScrollGranularity ScrollbarController::Granularity(
   return ui::ScrollGranularity::kScrollByPixel;
 }
 
-float ScrollbarController::GetScrollDeltaForAbsoluteJump() const {
+float ScrollbarController::GetScrollDistanceForAbsoluteJump() const {
   layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
 
   bool clipped = false;
@@ -261,12 +261,13 @@ float ScrollbarController::GetScrollDeltaForAbsoluteJump() const {
           ? thumb_rect.y()
           : thumb_rect.x();
 
-  const float delta =
+  const float distance =
       round(std::abs(desired_thumb_origin - current_thumb_origin));
-  return delta * GetScrollerToScrollbarRatio() * GetPageScaleFactorForScroll();
+  return distance * GetScrollerToScrollbarRatio() *
+         GetPageScaleFactorForScroll();
 }
 
-float ScrollbarController::GetScrollDeltaForDragPosition(
+float ScrollbarController::GetScrollDistanceForDragPosition(
     const gfx::PointF pointer_position_in_widget) const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
   // Convert the move position to scrollbar layer relative for comparison with
@@ -282,14 +283,14 @@ float ScrollbarController::GetScrollDeltaForDragPosition(
           : scrollbar_relative_position.x() - drag_state_->drag_origin.x();
 
   const float new_offset = pointer_delta * GetScrollerToScrollbarRatio();
-  float scroll_delta = drag_state_->scroll_position_at_start_ + new_offset -
-                       scrollbar->current_pos();
+  float distance = drag_state_->scroll_position_at_start_ + new_offset -
+                   scrollbar->current_pos();
 
   // The scroll delta computed is layer relative. In order to scroll the
   // correct amount, we have to convert the delta to be unscaled (i.e. multiply
   // by the page scale factor), as GSU deltas are always unscaled.
-  scroll_delta *= GetPageScaleFactorForScroll();
-  return scroll_delta;
+  distance *= GetPageScaleFactorForScroll();
+  return distance;
 }
 
 // Performs hit test and prepares scroll deltas that will be used by GSU.
@@ -320,7 +321,7 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
     const float delta =
         scrollbar->current_pos() - drag_state_->scroll_position_at_start_;
     scroll_result.scroll_units = ui::ScrollGranularity::kScrollByPrecisePixel;
-    scroll_result.scroll_offset =
+    scroll_result.scroll_delta =
         scrollbar->orientation() == ScrollbarOrientation::VERTICAL
             ? gfx::Vector2dF(0, -delta)
             : gfx::Vector2dF(-delta, 0);
@@ -342,10 +343,10 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
   // valid ScrollNode.
   DCHECK(target_node);
 
-  float delta = GetScrollDeltaForDragPosition(position_in_widget);
+  float distance = GetScrollDistanceForDragPosition(position_in_widget);
   if (drag_state_->scroller_length_at_previous_move !=
       scrollbar->scroll_layer_length()) {
-    drag_state_->scroller_displacement = delta;
+    drag_state_->scroller_displacement = distance;
     drag_state_->scroller_length_at_previous_move =
         scrollbar->scroll_layer_length();
 
@@ -356,23 +357,23 @@ InputHandlerPointerResult ScrollbarController::HandlePointerMove(
     // scroller expands while a thumb drag is in progress.
     return scroll_result;
   }
-  delta -= drag_state_->scroller_displacement;
+  distance -= drag_state_->scroller_displacement;
 
   // If scroll_offset can't be consumed, there's no point in continuing on.
-  const gfx::Vector2dF scroll_offset(scrollbar->orientation() ==
-                                             ScrollbarOrientation::VERTICAL
-                                         ? gfx::Vector2dF(0, delta)
-                                         : gfx::Vector2dF(delta, 0));
-  const gfx::Vector2dF clamped_scroll_offset =
-      ComputeClampedDelta(*target_node, scroll_offset);
+  const gfx::Vector2dF scroll_delta =
+      scrollbar->orientation() == ScrollbarOrientation::VERTICAL
+          ? gfx::Vector2dF(0, distance)
+          : gfx::Vector2dF(distance, 0);
+  const gfx::Vector2dF clamped_scroll_delta =
+      ComputeClampedDelta(*target_node, scroll_delta);
 
-  if (clamped_scroll_offset.IsZero())
+  if (clamped_scroll_delta.IsZero())
     return scroll_result;
 
   // Thumb drags have more granularity and are purely dependent on the pointer
   // movement. Hence we use kPrecisePixel when dragging the thumb.
   scroll_result.scroll_units = ui::ScrollGranularity::kScrollByPrecisePixel;
-  scroll_result.scroll_offset = clamped_scroll_offset;
+  scroll_result.scroll_delta = clamped_scroll_delta;
   drag_processed_for_current_frame_ = true;
 
   return scroll_result;
@@ -546,13 +547,13 @@ void ScrollbarController::RecomputeAutoscrollStateIfNeeded() {
 
 // Helper to calculate the autoscroll velocity.
 float ScrollbarController::InitialDeltaToAutoscrollVelocity(
-    gfx::Vector2dF scroll_offset) const {
+    gfx::Vector2dF scroll_delta) const {
   DCHECK(captured_scrollbar_metadata_.has_value());
-  const float scroll_delta =
+  const float delta =
       ScrollbarLayer()->orientation() == ScrollbarOrientation::VERTICAL
-          ? scroll_offset.y()
-          : scroll_offset.x();
-  return scroll_delta * kAutoscrollMultiplier;
+          ? scroll_delta.y()
+          : scroll_delta.x();
+  return delta * kAutoscrollMultiplier;
 }
 
 void ScrollbarController::StartAutoScrollAnimation(
@@ -579,17 +580,18 @@ void ScrollbarController::StartAutoScrollAnimation(
   layer_tree_host_impl_->active_tree()->UpdateScrollbarGeometries();
   float scroll_layer_length = scrollbar->scroll_layer_length();
 
-  gfx::Vector2dF current_offset =
+  gfx::PointF current_offset =
       scroll_tree.current_scroll_offset(scroll_node->element_id);
 
   // Determine the max offset for the scroll based on the scrolling direction.
   // Negative scroll velocity indicates backwards scrolling whereas a positive
   // value indicates forwards scrolling.
-  const float target_offset = velocity < 0 ? 0 : scroll_layer_length;
-  const gfx::Vector2dF target_offset_vector =
+  const float target_offset_in_orientation =
+      velocity < 0 ? 0 : scroll_layer_length;
+  const gfx::PointF target_offset_2d =
       scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-          ? gfx::Vector2dF(current_offset.x(), target_offset)
-          : gfx::Vector2dF(target_offset, current_offset.y());
+          ? gfx::PointF(current_offset.x(), target_offset_in_orientation)
+          : gfx::PointF(target_offset_in_orientation, current_offset.y());
 
   autoscroll_state_ = AutoScrollState();
   autoscroll_state_->velocity = velocity;
@@ -601,7 +603,7 @@ void ScrollbarController::StartAutoScrollAnimation(
 
   layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
   layer_tree_host_impl_->AutoScrollAnimationCreate(
-      *scroll_node, target_offset_vector, std::abs(velocity));
+      *scroll_node, target_offset_2d, std::abs(velocity));
 }
 
 // Performs hit test and prepares scroll deltas that will be used by GSE.
@@ -659,7 +661,7 @@ float ScrollbarController::GetViewportLength() const {
   return length / GetPageScaleFactorForScroll();
 }
 
-float ScrollbarController::GetScrollDeltaForPercentBasedScroll() const {
+float ScrollbarController::GetScrollDistanceForPercentBasedScroll() const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
 
   const ScrollNode* scroll_node =
@@ -687,7 +689,7 @@ float ScrollbarController::GetPageScaleFactorForScroll() const {
   return layer_tree_host_impl_->active_tree()->page_scale_factor_for_scroll();
 }
 
-float ScrollbarController::GetScrollDeltaForScrollbarPart(
+float ScrollbarController::GetScrollDistanceForScrollbarPart(
     const ScrollbarPart scrollbar_part,
     const bool jump_key_modifier) const {
   float scroll_delta = 0;
@@ -696,7 +698,7 @@ float ScrollbarController::GetScrollDeltaForScrollbarPart(
     case ScrollbarPart::BACK_BUTTON:
     case ScrollbarPart::FORWARD_BUTTON:
       if (layer_tree_host_impl_->settings().percent_based_scrolling) {
-        scroll_delta = GetScrollDeltaForPercentBasedScroll();
+        scroll_delta = GetScrollDistanceForPercentBasedScroll();
       } else {
         scroll_delta = kPixelsPerLineStep * ScreenSpaceScaleFactor();
       }
@@ -704,7 +706,7 @@ float ScrollbarController::GetScrollDeltaForScrollbarPart(
     case ScrollbarPart::BACK_TRACK:
     case ScrollbarPart::FORWARD_TRACK: {
       if (jump_key_modifier) {
-        scroll_delta = GetScrollDeltaForAbsoluteJump();
+        scroll_delta = GetScrollDistanceForAbsoluteJump();
         break;
       }
       // TODO(savella) Use snapport length instead of viewport length to match
@@ -787,33 +789,33 @@ gfx::Rect ScrollbarController::GetRectForScrollbarPart(
   return gfx::Rect(0, 0);
 }
 
-// Determines the scroll offsets based on the ScrollbarPart and the scrollbar
-// orientation.
-gfx::Vector2dF ScrollbarController::GetScrollOffsetForScrollbarPart(
+// Determines the scroll delta as a gfx::Vector2dF based on the ScrollbarPart
+// and the scrollbar orientation.
+gfx::Vector2dF ScrollbarController::GetScrollDeltaForScrollbarPart(
     const ScrollbarPart scrollbar_part,
     const bool jump_key_modifier) const {
   const ScrollbarLayerImplBase* scrollbar = ScrollbarLayer();
-  float scroll_delta =
-      GetScrollDeltaForScrollbarPart(scrollbar_part, jump_key_modifier);
+  float distance =
+      GetScrollDistanceForScrollbarPart(scrollbar_part, jump_key_modifier);
 
   // See CreateScrollStateForGesture for more information on how these values
   // will be interpreted.
   if (scrollbar_part == ScrollbarPart::BACK_BUTTON) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::Vector2dF(0, -scroll_delta)   // Up arrow
-               : gfx::Vector2dF(-scroll_delta, 0);  // Left arrow
+               ? gfx::Vector2dF(0, -distance)   // Up arrow
+               : gfx::Vector2dF(-distance, 0);  // Left arrow
   } else if (scrollbar_part == ScrollbarPart::FORWARD_BUTTON) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::Vector2dF(0, scroll_delta)   // Down arrow
-               : gfx::Vector2dF(scroll_delta, 0);  // Right arrow
+               ? gfx::Vector2dF(0, distance)   // Down arrow
+               : gfx::Vector2dF(distance, 0);  // Right arrow
   } else if (scrollbar_part == ScrollbarPart::BACK_TRACK) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::Vector2dF(0, -scroll_delta)   // Track click up
-               : gfx::Vector2dF(-scroll_delta, 0);  // Track click left
+               ? gfx::Vector2dF(0, -distance)   // Track click up
+               : gfx::Vector2dF(-distance, 0);  // Track click left
   } else if (scrollbar_part == ScrollbarPart::FORWARD_TRACK) {
     return scrollbar->orientation() == ScrollbarOrientation::VERTICAL
-               ? gfx::Vector2dF(0, scroll_delta)   // Track click down
-               : gfx::Vector2dF(scroll_delta, 0);  // Track click right
+               ? gfx::Vector2dF(0, distance)   // Track click down
+               : gfx::Vector2dF(distance, 0);  // Track click right
   }
 
   return gfx::Vector2dF(0, 0);

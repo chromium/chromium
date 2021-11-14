@@ -61,7 +61,7 @@ TEST(CompositorFrameMetadata, Clone) {
 
   CompositorFrameMetadata metadata;
   metadata.device_scale_factor = 12.3f;
-  metadata.root_scroll_offset = gfx::Vector2dF(4.f, 5.f);
+  metadata.root_scroll_offset = gfx::PointF(4.f, 5.f);
   metadata.page_scale_factor = 6.7f;
   metadata.scrollable_viewport_size = gfx::SizeF(89.0f, 12.3f);
   metadata.content_color_usage = gfx::ContentColorUsage::kHDR;

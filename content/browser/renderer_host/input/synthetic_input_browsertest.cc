@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticInputTest, DISABLED_SlowSmoothScrollWheel) {
   float device_scale_factor =
       web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   scroll_offset_wait.WaitForScrollOffset(
-      gfx::Vector2dF(0.f, 1024.f * device_scale_factor));
+      gfx::PointF(0.f, 1024.f * device_scale_factor));
 
   EXPECT_EQ(1024, EvalJs(shell()->web_contents(),
                          "document.scrollingElement.scrollTop"));

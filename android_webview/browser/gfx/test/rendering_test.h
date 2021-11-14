@@ -51,8 +51,8 @@ class RenderingTest : public testing::Test,
   void OnNewPicture() override;
   void PostInvalidate() override;
   gfx::Point GetLocationOnScreen() override;
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override {}
-  void UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+  void ScrollContainerViewTo(const gfx::Point& new_value) override {}
+  void UpdateScrollState(const gfx::Point& max_scroll_offset,
                          const gfx::SizeF& contents_size_dip,
                          float page_scale_factor,
                          float min_page_scale_factor,

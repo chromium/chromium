@@ -44,7 +44,7 @@ class CONTENT_EXPORT RenderFrameMetadataProvider {
         const cc::RenderFrameMetadata& metadata) = 0;
 #if defined(OS_ANDROID)
     virtual void OnRootScrollOffsetChanged(
-        const gfx::Vector2dF& root_scroll_offset) {}
+        const gfx::PointF& root_scroll_offset) {}
 #endif
   };
 

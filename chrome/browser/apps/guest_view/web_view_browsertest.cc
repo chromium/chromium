@@ -4363,7 +4363,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
   embedder_rect.set_x(0);
   embedder_rect.set_y(0);
 
-  gfx::Vector2dF default_offset;
+  gfx::PointF default_offset;
   embedder_frame_observer.WaitForScrollOffset(default_offset);
 
   // Send scroll gesture to embedder & verify.
@@ -4377,7 +4377,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
         embedder_rect.x() + embedder_rect.width() / 2,
         (embedder_rect.y() + guest_rect.y()) / 2);
 
-    gfx::Vector2dF expected_offset(0.f, scroll_magnitude);
+    gfx::PointF expected_offset(0.f, scroll_magnitude);
 
     content::SimulateMouseEvent(embedder_contents,
                                 blink::WebInputEvent::Type::kMouseMove,
@@ -4433,7 +4433,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
   content::RenderWidgetHostView* guest_host_view =
       guest_contents->GetRenderWidgetHostView();
 
-  gfx::Vector2dF default_offset;
+  gfx::PointF default_offset;
   guest_frame_observer.WaitForScrollOffset(default_offset);
   embedder_frame_observer.WaitForScrollOffset(default_offset);
 
@@ -4538,7 +4538,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
   embedder_rect.set_x(0);
   embedder_rect.set_y(0);
 
-  gfx::Vector2dF default_offset;
+  gfx::PointF default_offset;
   embedder_frame_observer.WaitForScrollOffset(default_offset);
 
   // Send scroll gesture to embedder & verify.
@@ -4550,7 +4550,7 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
         embedder_rect.x() + embedder_rect.width() / 2,
         (embedder_rect.y() + guest_rect.y()) / 2);
 
-    gfx::Vector2dF expected_offset(0.f, gesture_distance);
+    gfx::PointF expected_offset(0.f, gesture_distance);
 
     content::SimulateGestureScrollSequence(
         embedder_contents, embedder_scroll_location,

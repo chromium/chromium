@@ -116,7 +116,7 @@ struct CC_EXPORT TransformNode {
   // Set to true, if the node or it's parent |will_change_transform| is true.
   bool node_or_ancestors_will_change_transform : 1;
 
-  gfx::Vector2dF scroll_offset;
+  gfx::PointF scroll_offset;
 
   // This value stores the snapped amount whenever we snap. If the snap is due
   // to a scroll, we need it to calculate fixed-pos elements adjustment, even

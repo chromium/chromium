@@ -126,7 +126,7 @@ void FakeWindow::OnDrawHardware() {
   DCHECK(on_draw_hardware_pending_);
   on_draw_hardware_pending_ = false;
 
-  view_->PrepareToDraw(gfx::Vector2d(), location_);
+  view_->PrepareToDraw(gfx::Point(), location_);
   hooks_->WillOnDraw();
   bool success = view_->OnDrawHardware();
   hooks_->DidOnDraw(success);

@@ -31,8 +31,8 @@ struct SyncCompositorDemandDrawSwParams {
 
 struct SyncCompositorCommonRendererParams {
   uint32 version = 0;
-  gfx.mojom.Vector2dF total_scroll_offset;
-  gfx.mojom.Vector2dF max_scroll_offset;
+  gfx.mojom.PointF total_scroll_offset;
+  gfx.mojom.PointF max_scroll_offset;
   gfx.mojom.SizeF scrollable_size;
   float page_scale_factor = 0;
   float min_page_scale_factor = 0;
@@ -102,7 +102,7 @@ interface SynchronousCompositor {
                    array<viz.mojom.ReturnedResource> resources);
 
   // Adjust the scroll to the given offset.
-  SetScroll(gfx.mojom.Vector2dF offset);
+  SetScroll(gfx.mojom.PointF offset);
 
   // BeginFrame, update will be pushed via SynchronousCompositorControlHost
   // BeginFrameResponse.

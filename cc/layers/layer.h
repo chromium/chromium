@@ -33,6 +33,7 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -395,16 +396,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // position of its subtree, as well as other layers for which this layer is
   // their scroll parent, and their subtrees) is moved up by the amount of
   // offset specified here.
-  void SetScrollOffset(const gfx::Vector2dF& scroll_offset);
-  gfx::Vector2dF scroll_offset() const {
+  void SetScrollOffset(const gfx::PointF& scroll_offset);
+  gfx::PointF scroll_offset() const {
     return layer_tree_inputs() ? layer_tree_inputs()->scroll_offset
-                               : gfx::Vector2dF();
+                               : gfx::PointF();
   }
 
   // For layer tree mode only.
   // Called internally during commit to update the layer with state from the
   // compositor thread. Not to be called externally by users of this class.
-  void SetScrollOffsetFromImplSide(const gfx::Vector2dF& scroll_offset);
+  void SetScrollOffsetFromImplSide(const gfx::PointF& scroll_offset);
 
   // For layer tree mode only.
   // Marks this layer as being scrollable and needing an associated scroll node,
@@ -480,7 +481,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // which case nothing is called. This is for layer tree mode only. Should use
   // ScrollTree::SetScrollCallbacks() in layer list mode.
   void SetDidScrollCallback(
-      base::RepeatingCallback<void(const gfx::Vector2dF&, const ElementId&)>);
+      base::RepeatingCallback<void(const gfx::PointF&, const ElementId&)>);
 
   // For layer tree mode only.
   // Sets the given |subtree_id| on this layer, so that the layer subtree rooted
@@ -942,7 +943,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     int mirror_count = 0;
 
-    gfx::Vector2dF scroll_offset;
+    gfx::PointF scroll_offset;
     // Size of the scroll container that this layer scrolls in.
     gfx::Size scroll_container_bounds;
 
@@ -950,7 +951,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     //     top left, top right, bottom right, bottom left
     gfx::RoundedCornersF corner_radii;
 
-    base::RepeatingCallback<void(const gfx::Vector2dF&, const ElementId&)>
+    base::RepeatingCallback<void(const gfx::PointF&, const ElementId&)>
         did_scroll_callback;
     std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests;
   };

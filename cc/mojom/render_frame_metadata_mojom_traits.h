@@ -36,7 +36,7 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.root_background_color;
   }
 
-  static absl::optional<gfx::Vector2dF> root_scroll_offset(
+  static absl::optional<gfx::PointF> root_scroll_offset(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.root_scroll_offset;
   }

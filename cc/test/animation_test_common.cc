@@ -246,8 +246,8 @@ std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
 }
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,
-                                        gfx::Vector2dF initial_value,
-                                        gfx::Vector2dF target_value) {
+                                        gfx::PointF initial_value,
+                                        gfx::PointF target_value) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));

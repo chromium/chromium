@@ -68,7 +68,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // The effect will be disabled when the offset is non-zero or overflow is
   // hidden. Note: All dimensions are in device pixels.
   void OnFrameUpdated(const gfx::SizeF& viewport_size,
-                      const gfx::Vector2dF& content_scroll_offset,
+                      const gfx::PointF& content_scroll_offset,
                       bool root_overflow_y_hidden);
 
   // Reset the effect to its inactive state, immediately detaching and

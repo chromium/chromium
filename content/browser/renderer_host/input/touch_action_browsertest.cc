@@ -434,8 +434,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   void CheckScrollOffset(
       bool wait_until_scrolled,
       const gfx::Vector2d& expected_scroll_position_after_scroll) {
-    gfx::Vector2dF default_scroll_offset;
-    gfx::Vector2dF root_scroll_offset =
+    gfx::PointF default_scroll_offset;
+    gfx::PointF root_scroll_offset =
         frame_observer_->LastRenderFrameMetadata().root_scroll_offset.value_or(
             default_scroll_offset);
 

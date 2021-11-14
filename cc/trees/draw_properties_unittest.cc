@@ -309,7 +309,7 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
 }
 
 TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
-  const gfx::Vector2dF kScrollOffset(50, 100);
+  const gfx::PointF kScrollOffset(50, 100);
   const gfx::Vector2dF kScrollDelta(2.34f, 5.67f);
   const gfx::Vector2d kMaxScrollOffset(200, 200);
   const gfx::PointF kScrollLayerPosition(-kScrollOffset.x(),
@@ -4177,7 +4177,7 @@ TEST_F(DrawPropertiesTest, ClipParentScrolledInterveningLayer) {
   CopyProperties(render_surface2, clip_child);
   clip_child->SetClipTreeIndex(clip_parent->clip_tree_index());
 
-  SetScrollOffset(intervening, gfx::Vector2dF(3, 3));
+  SetScrollOffset(intervening, gfx::PointF(3, 3));
   UpdateActiveTreeDrawProperties();
 
   EXPECT_TRUE(GetRenderSurface(root));
@@ -5121,7 +5121,7 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionMainThreadUpdates) {
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 
   // Now the main thread commits the new position of the sticky element.
-  SetScrollOffset(scroller_.get(), gfx::Vector2dF(15, 15));
+  SetScrollOffset(scroller_.get(), gfx::PointF(15, 15));
   // Shift the layer by -offset_for_position_sticky.
   SetPostTranslation(sticky_pos_.get(),
                      gfx::PointF(10, 25) - gfx::PointF(0, 5));
@@ -5192,7 +5192,7 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionCompositedContainer) {
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 
   // Now the main thread commits the new position of the sticky element.
-  SetScrollOffset(scroller_.get(), gfx::Vector2dF(0, 25));
+  SetScrollOffset(scroller_.get(), gfx::PointF(0, 25));
   // Shift the layer by -offset_for_position_sticky.
   SetPostTranslation(sticky_pos_.get(),
                      gfx::PointF(0, 15) - gfx::PointF(0, 5) +
@@ -6365,7 +6365,7 @@ TEST_F(DrawPropertiesTest, UpdateScrollChildPosition) {
   UpdateActiveTreeDrawProperties();
   EXPECT_EQ(gfx::Rect(25, 25), scroll_child->visible_layer_rect());
 
-  SetScrollOffset(scroll_parent, gfx::Vector2dF(0.f, 10.f));
+  SetScrollOffset(scroll_parent, gfx::PointF(0.f, 10.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_EQ(gfx::Rect(0, 5, 25, 25), scroll_child->visible_layer_rect());
 

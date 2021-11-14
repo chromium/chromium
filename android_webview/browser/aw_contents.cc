@@ -1068,7 +1068,7 @@ bool AwContents::OnDraw(JNIEnv* env,
                         jint visible_bottom,
                         jboolean force_auxiliary_bitmap_rendering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  gfx::Vector2d scroll(scroll_x, scroll_y);
+  gfx::Point scroll(scroll_x, scroll_y);
   browser_view_renderer_.PrepareToDraw(
       scroll, gfx::Rect(visible_left, visible_top, visible_right - visible_left,
                         visible_bottom - visible_top));
@@ -1168,7 +1168,7 @@ gfx::Point AwContents::GetLocationOnScreen() {
   return gfx::Point(location[0], location[1]);
 }
 
-void AwContents::ScrollContainerViewTo(const gfx::Vector2d& new_value) {
+void AwContents::ScrollContainerViewTo(const gfx::Point& new_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -1177,7 +1177,7 @@ void AwContents::ScrollContainerViewTo(const gfx::Vector2d& new_value) {
   Java_AwContents_scrollContainerViewTo(env, obj, new_value.x(), new_value.y());
 }
 
-void AwContents::UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+void AwContents::UpdateScrollState(const gfx::Point& max_scroll_offset,
                                    const gfx::SizeF& contents_size_dip,
                                    float page_scale_factor,
                                    float min_page_scale_factor,
@@ -1240,7 +1240,7 @@ void AwContents::ScrollTo(JNIEnv* env,
                           jint x,
                           jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_view_renderer_.ScrollTo(gfx::Vector2d(x, y));
+  browser_view_renderer_.ScrollTo(gfx::Point(x, y));
 }
 
 void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
@@ -1248,7 +1248,7 @@ void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
                                               jint x,
                                               jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_view_renderer_.RestoreScrollAfterTransition(gfx::Vector2d(x, y));
+  browser_view_renderer_.RestoreScrollAfterTransition(gfx::Point(x, y));
 }
 
 void AwContents::SmoothScroll(JNIEnv* env,

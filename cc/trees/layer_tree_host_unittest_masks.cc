@@ -68,7 +68,7 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
     scroll_layer->AddChild(content_layer);
 
     client_.set_bounds(root->bounds());
-    scroll_layer->SetScrollOffset(gfx::Vector2dF(50, 50));
+    scroll_layer->SetScrollOffset(gfx::PointF(50, 50));
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -132,7 +132,7 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOriginWithLayerList
     SetupViewport(root, gfx::Size(50, 50), layer_size);
 
     auto* scroll = layer_tree_host()->OuterViewportScrollLayerForTesting();
-    SetScrollOffset(scroll, gfx::Vector2dF(50, 50));
+    SetScrollOffset(scroll, gfx::PointF(50, 50));
 
     client_.set_bounds(root->bounds());
     auto content_layer = FakePictureLayer::Create(&client_);

@@ -16,7 +16,7 @@ class WebGestureEvent;
 
 namespace gfx {
 class SizeF;
-class Vector2dF;
+class PointF;
 }  // namespace gfx
 
 namespace content {
@@ -55,7 +55,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
 
   // All sizes and offsets are in CSS pixels (except |top_show_pix|)
   // as cached by the renderer.
-  void UpdateScrollInfo(const gfx::Vector2dF& scroll_offset,
+  void UpdateScrollInfo(const gfx::PointF& scroll_offset,
                         float page_scale_factor,
                         const float min_page_scale,
                         const float max_page_scale,
@@ -65,7 +65,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
                         const float top_shown_pix,
                         bool top_changed);
   void UpdateOnTouchDown();
-  void OnRootScrollOffsetChanged(const gfx::Vector2dF& root_scroll_offset);
+  void OnRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset);
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(

@@ -1445,7 +1445,7 @@ void LayerTreeHost::SetPageScaleFactorAndLimits(float page_scale_factor,
   SetNeedsCommit();
 }
 
-void LayerTreeHost::StartPageScaleAnimation(const gfx::Vector2d& target_offset,
+void LayerTreeHost::StartPageScaleAnimation(const gfx::Point& target_offset,
                                             bool use_anchor,
                                             float scale,
                                             base::TimeDelta duration) {
@@ -1961,7 +1961,7 @@ void LayerTreeHost::SetElementTransformMutated(
 void LayerTreeHost::SetElementScrollOffsetMutated(
     ElementId element_id,
     ElementListType list_type,
-    const gfx::Vector2dF& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   // Do nothing. Scroll deltas will be sent from the compositor thread back
   // to the main thread in the same manner as during non-animated
   // compositor-driven scrolling.
@@ -1984,7 +1984,7 @@ void LayerTreeHost::MaximumScaleChanged(ElementId element_id,
   property_trees()->MaximumAnimationScaleChanged(element_id, maximum_scale);
 }
 
-gfx::Vector2dF LayerTreeHost::GetScrollOffsetForAnimation(
+gfx::PointF LayerTreeHost::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   return property_trees()->scroll_tree.current_scroll_offset(element_id);
 }

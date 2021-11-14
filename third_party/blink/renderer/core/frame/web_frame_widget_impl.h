@@ -448,7 +448,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   // If use_anchor is true, destination is a point on the screen that will
   // remain fixed for the duration of the animation.
   // If use_anchor is false, destination is the final top-left scroll position.
-  void StartPageScaleAnimation(const gfx::Vector2d& destination,
+  void StartPageScaleAnimation(const gfx::Point& destination,
                                bool use_anchor,
                                float new_page_scale,
                                base::TimeDelta duration);

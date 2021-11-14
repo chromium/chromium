@@ -38,7 +38,7 @@ void AwPicture::Draw(JNIEnv* env,
     return;
   }
   std::unique_ptr<SoftwareCanvasHolder> canvas_holder =
-      SoftwareCanvasHolder::Create(canvas, gfx::Vector2d(),
+      SoftwareCanvasHolder::Create(canvas, gfx::Point(),
                                    gfx::Size(bounds.width(), bounds.height()),
                                    false);
   if (!canvas_holder || !canvas_holder->GetCanvas()) {

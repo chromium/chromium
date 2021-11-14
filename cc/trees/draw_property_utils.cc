@@ -1192,10 +1192,12 @@ void UpdateElasticOverscroll(
 
   // On other platforms, we modify the translation offset to match the
   // overscroll amount.
-  if (overscroll_elasticity_transform_node->scroll_offset == elastic_overscroll)
+  gfx::PointF overscroll_offset =
+      gfx::PointAtOffsetFromOrigin(elastic_overscroll);
+  if (overscroll_elasticity_transform_node->scroll_offset == overscroll_offset)
     return;
 
-  overscroll_elasticity_transform_node->scroll_offset = elastic_overscroll;
+  overscroll_elasticity_transform_node->scroll_offset = overscroll_offset;
 
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
   property_trees->transform_tree.set_needs_update(true);

@@ -66,7 +66,7 @@ class UI_ANDROID_EXPORT OverscrollGlow {
   // Note: All dimensions are in device pixels.
   void OnFrameUpdated(const gfx::SizeF& viewport_size,
                       const gfx::SizeF& content_size,
-                      const gfx::Vector2dF& content_scroll_offset);
+                      const gfx::PointF& content_scroll_offset);
 
   // Reset the effect to its inactive state, clearing any active effects.
   void Reset();

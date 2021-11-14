@@ -975,8 +975,8 @@ bool ScrollableArea::SnapForEndPosition(const FloatPoint& end_position,
                                         base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(
-          ToGfxVector2dF(end_position), scrolled_x, scrolled_y);
+      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxPointF(end_position),
+                                                      scrolled_x, scrolled_y);
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
 }
@@ -987,7 +987,7 @@ bool ScrollableArea::SnapForDirection(const ScrollOffset& delta,
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          ToGfxVector2dF(current_position), ToGfxVector2dF(delta),
+          ToGfxPointF(current_position), ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
@@ -998,7 +998,7 @@ bool ScrollableArea::SnapForEndAndDirection(const ScrollOffset& delta) {
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          ToGfxVector2dF(current_position), ToGfxVector2dF(delta),
+          ToGfxPointF(current_position), ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy);
 }
@@ -1011,7 +1011,7 @@ void ScrollableArea::SnapAfterLayout() {
   FloatPoint current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForTargetElement(
-          ToGfxVector2dF(current_position));
+          ToGfxPointF(current_position));
 
   PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kInstant);
 }
