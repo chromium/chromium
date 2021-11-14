@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
 <translation id="1851218745569890714">שיחת ועידה בווידאו</translation>
+<translation id="1857850044054738019">צריך לבחור באפשרות הזו אם המכשיר מוחזר למלאי או מחודש
+        לצורך הפצה ללקוח חדש.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום, עוברים להגדרות &gt; ניהול האחסון.</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
 <translation id="4271957103967917607">הצגת מסך מלא</translation>
+<translation id="4275799948641988986">מי ישתמש במכשיר לאחר התיקון?</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
@@ -411,6 +414,7 @@
 <translation id="7297226631177386107">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">המכשיר יועבר לבעלים אחרים</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
@@ -418,6 +422,9 @@
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}many{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
+<translation id="7451112128070628323">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה.
+        לדוגמה: המכשיר מועבר למשתמש אחר
+        באותו ארגון.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7487067081878637334">טכנולוגיה</translation>
 <translation id="7490813197707563893">‏כתובת MAC</translation>
@@ -542,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
+<translation id="9095415590198785865">הבעלות על המכשיר לא תשתנה</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>

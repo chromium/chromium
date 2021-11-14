@@ -2356,6 +2356,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3413122095806433232">Watoaji Vyeti wa Kati:<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Ukubwa:</translation>
 <translation id="3414966631182382431"><ph name="BEGIN_LINK" />Kivinjari chako kinadhibitiwa<ph name="END_LINK" /> na <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Manukuu Papo Hapo - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Onyesha URL kamili kila wakati</translation>
 <translation id="3417835166382867856">Tafuta vichupo</translation>
 <translation id="3417836307470882032">Tumia mfumo wa saa 24</translation>
@@ -4087,6 +4088,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5265562206369321422">Nje ya mtandao kwa zaidi ya wiki moja</translation>
 <translation id="5265797726250773323">Hitilafu imetokea wakati wa kusakinisha</translation>
 <translation id="5266113311903163739">Hitilafu ya Kuleta ya Mamlaka ya Utojai Vyeti</translation>
+<translation id="526622169288322445">Vitendo zaidi kwa ajili ya <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
 <translation id="5275352920323889391">Mbwa</translation>
 <translation id="527605982717517565">Ruhusu <ph name="HOST" /> iendeshe JavaScript kila wakati</translation>
@@ -5468,6 +5470,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6775163072363532304">Vifaa vinavyopatikana vitaonekana hapa.</translation>
 <translation id="6777817260680419853">Imezuia shughuli ya kuelekeza kwingine</translation>
 <translation id="6778737459546443941">Mzazi wako bado hajaiidhinisha</translation>
+<translation id="6779092717724412415">Ili uangazie maandishi kama yalivyo hapa, chagua maandishi yoyote kisha ubofye kulia.</translation>
 <translation id="6779447100905857289">vikapu vyako</translation>
 <translation id="677965093459947883">Ndogo sana</translation>
 <translation id="6781005693196527806">&amp;Dhibiti mitambo ya kutafuta...</translation>
@@ -5614,6 +5617,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6914783257214138813">Mtu yeyote anayeweza kuona faili uliyohamisha ataona manenosiri yako.</translation>
 <translation id="6916590542764765824">Simamia Viendelezi</translation>
 <translation id="6919868320029503575">Manenosiri dhaifu</translation>
+<translation id="6919952941889172531">Ungependa pia kuwasha Kipengele cha Kuvinjari Salama Kilichoboreshwa kwa ajili ya wasifu huu wa Chrome?</translation>
 <translation id="6920989436227028121">Fungua kama kichupo cha kawaida</translation>
 <translation id="6921104647315081813">Futa shughuli</translation>
 <translation id="692114467174262153">Imeshindwa kufungua <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6283,6 +6287,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="7625823789272218216">Kichupo Kipya Kushoto</translation>
 <translation id="7628201176665550262">Kiwango cha Kuonyesha Upya</translation>
 <translation id="7629827748548208700">Kichupo: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Kifaa hiki kinadhibitiwa na <ph name="MANAGER" /> na unahitajika kuingia katika akaunti kila wakati.</translation>
 <translation id="7631014249255418691">Imehifadhi nakala za programu na faili za Linux</translation>
 <translation id="7631205654593498032">Unapounganisha vifaa vyako, unakubali kwamba <ph name="DEVICE_TYPE" /> yako inaweza:</translation>
 <translation id="7631887513477658702">Fungua Faili za Aina Hii Kil&amp;a Wakati</translation>
@@ -7180,6 +7185,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8540136935098276800">Weka URL yenye muundo sahihi</translation>
 <translation id="8540503336857689453">Kwa sababu za usalama, hatupendekezi kutumia mtandao uliofichwa.</translation>
 <translation id="854071720451629801">Tia alama kuwa Imesomwa</translation>
+<translation id="8540942859441851323">Kipengele cha kutumia mitandao ya ng'ambo kinahitajika na mtoa huduma</translation>
 <translation id="8541462173655894684">Haikupata printa zozote kwenye seva ya kuchapisha</translation>
 <translation id="8541838361296720865">Bonyeza swichi au kitufe cha kibodi ili ukikabidhi kitendo cha “<ph name="ACTION" />”</translation>
 <translation id="8542618328173222274">Uliza wakati tovuti inataka kutumia data au vifaa vyako vya uhalisia pepe</translation>

@@ -260,6 +260,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2561519700418191927">Pratonton video</translation>
 <translation id="2567385386134582609">IMEJ</translation>
+<translation id="2567545343356994513">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya</translation>
 <translation id="2571711316400087311">Tawarkan untuk menghantar halaman dalam bahasa lain kepada Google Terjemah</translation>
 <translation id="2581165646603367611">Tindakan ini akan menghapuskan kuki, cache dan data tapak yang lain yang Chrome anggap tidak penting.</translation>
 <translation id="2587052924345400782">Versi lebih baharu tersedia</translation>
@@ -487,6 +488,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="395377504920307820">Gunakan tanpa akaun</translation>
 <translation id="3958287878205277013">Untuk mengosongkan sejarah penyemakan imbas Inkognito daripada peranti anda, tutup semua tab Inkognito.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome akan memuatkan halaman anda apabila sudah sedia}other{Chrome akan memuatkan halaman anda apabila sudah sedia}}</translation>
+<translation id="3962119236270174787">Perlindungan standard daripada laman web, muat turun dan sambungan yang diketahui berbahaya</translation>
 <translation id="3962957115499249330">Anda akan melihat pemberitahuan apabila muat turun ini dimulakan pada Wi-Fi.</translation>
 <translation id="3963007978381181125">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay. Hanya orang yang mempunyai ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu menetapkan semula penyegerakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome tidak dapat menyemak kata laluan anda</translation>
@@ -952,6 +954,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Buka kunci Inkognito</translation>
 <translation id="663674369910034433">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK1" />Penyegerakan<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />perkhidmatan Google<ph name="END_LINK2" />.</translation>
+<translation id="6640207029842583248">Sekat sepanjang masa</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6643649862576733715">Isih mengikut jumlah penjimatan data</translation>
 <translation id="6648459603387803038">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>
@@ -1078,6 +1081,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7437998757836447326">Log keluar dari Chrome</translation>
 <translation id="7438641746574390233">Apabila mod Ringkas dihidupkan, Chrome menggunakan pelayan Google untuk memuatkan halaman dengan lebih pantas. Mod Ringkas menulis semula halaman yang sangat perlahan untuk memuatkan kandungan yang penting sahaja. Mod Ringkas tidak digunakan pada tab Incognito.</translation>
+<translation id="7443901082822119557">Semasa dalam mod inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin rosak.</translation>
 <translation id="7444811645081526538">Lagi kategori</translation>
 <translation id="7453467225369441013">Mengelog anda keluar daripada kebanyakan tapak. Anda tidak akan dilog keluar daripada Akaun Google anda.</translation>
 <translation id="7454641608352164238">Tidak cukup ruang</translation>
@@ -1185,6 +1189,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="799576009106109668">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
+<translation id="8006818846907410687">Sekat semasa menggunakan Inkognito</translation>
 <translation id="8013372441983637696">Selain itu, kosongkan data Chrome anda daripada peranti ini</translation>
 <translation id="8015452622527143194">Kembalikan semua yg ada pd halaman kpd saiz lalai</translation>
 <translation id="8026334261755873520">Kosongkan data semakan imbas</translation>
@@ -1232,6 +1237,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8223642481677794647">Menu kad suapan</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="825412236959742607">Halaman ini menggunakan terlalu banyak memori, jadi Chrome mengalih keluar sesetengah kandungan.</translation>
+<translation id="8255617931166444521">Laman hanya boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada laman mereka sendiri sahaja</translation>
 <translation id="8260126382462817229">Cuba log masuk semula</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="82619448491672958">Lihat tab lain</translation>

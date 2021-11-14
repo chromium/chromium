@@ -156,6 +156,7 @@
 <translation id="1422930527989633628">‏האתר יכול לבקש הרשאה לחפש מכשירי Bluetooth בקרבת מקום</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1428146450423315676">מערים 7</translation>
+<translation id="142858679511221695">משתמש בענן</translation>
 <translation id="1428729058023778569">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
@@ -712,6 +713,7 @@
 <translation id="3329013043687509092">רווייה</translation>
 <translation id="3333762389743153920">לא עומד בדרישות להגדרה ככרטיס וירטואלי</translation>
 <translation id="3338095232262050444">מאובטח</translation>
+<translation id="3339446062576134663">‏ענן (Ash)</translation>
 <translation id="3355823806454867987">‏שינוי הגדרות שרת Proxy...</translation>
 <translation id="3360103848165129075">גיליון פרטי התשלום</translation>
 <translation id="3361596688432910856">‏Chrome <ph name="BEGIN_EMPHASIS" />לא ישמור<ph name="END_EMPHASIS" /> את המידע הבא:
@@ -734,6 +736,7 @@
 <translation id="3380365263193509176">שגיאה לא ידועה</translation>
 <translation id="3380864720620200369">מספר לקוח:</translation>
 <translation id="3381668585148405088">אימות הרכישה</translation>
+<translation id="3383566085871012386">סדר העדיפות הנוכחי</translation>
 <translation id="3387261909427947069">אמצעי תשלום</translation>
 <translation id="3391030046425686457">כתובת למשלוח</translation>
 <translation id="3391482648489541560">עריכת קבצים</translation>
@@ -1403,6 +1406,7 @@ Del</translation>
 <translation id="5478437291406423475">B6/C4 (Envelope)‎</translation>
 <translation id="5481076368049295676">ייתכן שהתוכן הזה מכיל אמצעים שינסו להתקין תוכנה מסוכנת, שגונבת או מוחקת את המידע שלך. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">הוספה של כתובת חוקית</translation>
+<translation id="5485973315555778056">מכונה בענן</translation>
 <translation id="5490432419156082418">כתובות ועוד</translation>
 <translation id="5492298309214877701">כתובת האתר הזה באינטראנט של החברה, הארגון או מוסד הלימודים, זהה לכתובת
 של אתר חיצוני.
@@ -1433,6 +1437,7 @@ Del</translation>
 <translation id="5571083550517324815">לא ניתן לבצע איסוף מהכתובת הזו. עליך לבחור כתובת אחרת.</translation>
 <translation id="5580958916614886209">יש לבדוק את חודש התפוגה ולנסות שוב</translation>
 <translation id="5586446728396275693">לא נשמרו כתובות</translation>
+<translation id="5587987780934666589">משתמש בפלטפורמה</translation>
 <translation id="5593349413089863479">החיבור לא לגמרי מאובטח</translation>
 <translation id="5595485650161345191">עריכת כתובת</translation>
 <translation id="5598944008576757369">בחירת אמצעי תשלום</translation>
@@ -2117,6 +2122,7 @@ Del</translation>
 <translation id="7953569069500808819">הידוק קצוות בחלק העליון</translation>
 <translation id="7956713633345437162">סימניות לנייד</translation>
 <translation id="7961015016161918242">אף פעם</translation>
+<translation id="7962467575542381659">מכונה בפלטפורמה</translation>
 <translation id="7966803981046576691">סוג חשבון של העבודה</translation>
 <translation id="79682505114836835">הערך "<ph name="VALUE" />" הוא צבע הקסדצימלי לא חוקי.</translation>
 <translation id="7968982339740310781">הצגת פרטים</translation>
