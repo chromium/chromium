@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,13 +44,15 @@ ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
 }
 
 void SpeechRecognitionPrivateStartFunction::OnStart(
+    speech::SpeechRecognitionType type,
     absl::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(error.value()));
     return;
   }
 
-  Respond(NoArguments());
+  Respond(OneArgument(base::Value(api::speech_recognition_private::ToString(
+      speech::SpeechRecognitionTypeToApiType(type)))));
 }
 
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -80,7 +81,7 @@ PrefService* GetActiveUserPrefs() {
 // such as managing the speech recognition service.
 class DictationBaseTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<SpeechRecognitionType> {
+      public ::testing::WithParamInterface<speech::SpeechRecognitionType> {
  protected:
   DictationBaseTest() : test_helper_(GetParam()) {}
   ~DictationBaseTest() override = default;
@@ -93,7 +94,7 @@ class DictationBaseTest
         test_helper_.GetEnabledFeatures();
     std::vector<base::Feature> disabled_features =
         test_helper_.GetDisabledFeatures();
-    if (GetParam() == SpeechRecognitionType::kOnDevice) {
+    if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
       enabled_features.push_back(
           ::features::kExperimentalAccessibilityDictationOffline);
     } else {
@@ -114,7 +115,7 @@ class DictationBaseTest
   }
 
   void TearDownOnMainThread() override {
-    if (GetParam() == SpeechRecognitionType::kNetwork)
+    if (GetParam() == speech::SpeechRecognitionType::kNetwork)
       content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
     InProcessBrowserTest::TearDownOnMainThread();
@@ -171,7 +172,7 @@ class DictationTest : public DictationBaseTest {
   void EnableChromeVox() { GetManager()->EnableSpokenFeedback(true); }
 
   void SendSpeechResult(const std::string& result, bool is_final) {
-    if (GetParam() == SpeechRecognitionType::kNetwork && !is_final) {
+    if (GetParam() == speech::SpeechRecognitionType::kNetwork && !is_final) {
       // FakeSpeechRecognitionManager can only send final results,
       // so if this isn't final just send to Dictation directly.
       GetManager()->dictation_->OnSpeechResult(base::ASCIIToUTF16(result),
@@ -227,13 +228,15 @@ class DictationTest : public DictationBaseTest {
   ui::CompositionText empty_composition_text_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   ToggleDictation();
@@ -441,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     const std::string locale = it.first;
     bool works_offline = it.second.works_offline;
     bool installed = it.second.installed;
-    if (GetParam() == SpeechRecognitionType::kOnDevice &&
+    if (GetParam() == speech::SpeechRecognitionType::kOnDevice &&
         locale == speech::kUsEnglishLocale) {
       // Currently, the only locale supported by SODA is en-US. It should work
       // offline and be installed.
@@ -453,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     }
   }
 
-  if (GetParam() == SpeechRecognitionType::kOnDevice) {
+  if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
     // Uninstall SODA and all language packs.
     speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
   } else {
@@ -579,13 +582,15 @@ class DictationExtensionTest : public DictationBaseTest {
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationExtensionTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationExtensionTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationExtensionTest, StartsAndStopsRecognition) {
   ToggleDictationWithKeystroke();
@@ -744,13 +749,15 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         DictationCommandsExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationCommandsExtensionTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         DictationCommandsExtensionTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationCommandsExtensionTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, TypesCommands) {
   std::string expected_text = "";

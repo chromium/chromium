@@ -7,6 +7,12 @@
 [platforms=("chromeos"), implemented_in="chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"]
 
 namespace speechRecognitionPrivate {
+  // Possible types of speech recognition.
+  enum SpeechRecognitionType {
+    onDevice,
+    network
+  };
+
   // Interface for an onStop event.
   dictionary SpeechRecognitionStopEvent {
     // Optional client ID.
@@ -49,8 +55,10 @@ namespace speechRecognitionPrivate {
   };
 
   // Called when speech recognition has begun listening to the user's audio.
-  callback OnStartCallback = void();
-  // Called when speech recogntion has stopped listening to the user's audio.
+  // The callback's parameter specifies which type of speech recognition
+  // is being used.
+  callback OnStartCallback = void(SpeechRecognitionType type);
+  // Called when speech recognition has stopped listening to the user's audio.
   callback OnStopCallback = void();
 
   interface Functions {

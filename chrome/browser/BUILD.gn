@@ -4814,6 +4814,8 @@ static_library("browser") {
       "speech/network_speech_recognizer.h",
       "speech/on_device_speech_recognizer.cc",
       "speech/on_device_speech_recognizer.h",
+      "speech/speech_recognition_constants.cc",
+      "speech/speech_recognition_constants.h",
       "speech/speech_recognizer.cc",
       "speech/speech_recognizer.h",
       "speech/speech_recognizer_delegate.h",
@@ -7543,12 +7545,9 @@ static_library("test_support") {
       "sessions/tab_restore_service_load_waiter.h",
       "speech/fake_speech_recognition_service.cc",
       "speech/fake_speech_recognition_service.h",
-      "speech/speech_recognition_test_helper.cc",
-      "speech/speech_recognition_test_helper.h",
       "ui/tabs/tab_activity_simulator.cc",
       "ui/tabs/tab_activity_simulator.h",
     ]
-    deps += [ "//components/soda" ]
   }
 
   if (is_chromeos_ash) {
@@ -7597,6 +7596,8 @@ static_library("test_support") {
       "ash/policy/external_data/cloud_external_data_manager_base_test_util.h",
       "sharesheet/sharesheet_test_util.cc",
       "sharesheet/sharesheet_test_util.h",
+      "speech/speech_recognition_test_helper.cc",
+      "speech/speech_recognition_test_helper.h",
       "ui/app_list/test/chrome_app_list_test_support.cc",
       "ui/app_list/test/chrome_app_list_test_support.h",
       "ui/app_list/test/test_app_list_controller.cc",
@@ -7615,6 +7616,7 @@ static_library("test_support") {
       "//chromeos/disks",
       "//chromeos/login/auth",
       "//components/session_manager/core",
+      "//components/soda",
       "//components/webapk:proto",
       "//extensions/browser/api/messaging",
       "//ui/base:test_support",

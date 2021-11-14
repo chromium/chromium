@@ -28,16 +28,28 @@ class SpeechRecognitionPrivateApiTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         SpeechRecognitionPrivateApiTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    SpeechRecognitionPrivateApiTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         SpeechRecognitionPrivateApiTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    SpeechRecognitionPrivateApiTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Simple) {
   ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/simple"))
+      << message_;
+}
+
+// An end-to-end test that starts speech recognition and ensures that the
+// callback receives the correct boolean parameter for specifying on-device or
+// network speech.
+IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, OnStart) {
+  SetCustomArg(api::speech_recognition_private::ToString(
+      speech::SpeechRecognitionTypeToApiType(GetParam())));
+  ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/on_start"))
       << message_;
 }
 

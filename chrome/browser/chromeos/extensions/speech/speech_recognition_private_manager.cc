@@ -132,13 +132,13 @@ void SpeechRecognitionPrivateManager::HandleStart(
     const std::string& key,
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   GetSpeechRecognizer(key)->HandleStart(locale, interim_results,
                                         std::move(callback));
 }
 
 void SpeechRecognitionPrivateManager::HandleStop(const std::string& key,
-                                                 ApiCallback callback) {
+                                                 OnStopCallback callback) {
   GetSpeechRecognizer(key)->HandleStop(std::move(callback));
 }
 

@@ -31,7 +31,7 @@ void SpeechRecognitionPrivateBaseTest::SetUpOnMainThread() {
 }
 
 void SpeechRecognitionPrivateBaseTest::TearDownOnMainThread() {
-  if (GetParam() == SpeechRecognitionType::kNetwork)
+  if (GetParam() == speech::SpeechRecognitionType::kNetwork)
     content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
 
   ExtensionApiTest::TearDownOnMainThread();

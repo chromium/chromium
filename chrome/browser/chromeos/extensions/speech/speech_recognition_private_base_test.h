@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognition_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/features/feature_channel.h"
@@ -27,7 +28,7 @@ namespace extensions {
 // needs infrastructure from both this class and the ExtensionApiTest to run.
 class SpeechRecognitionPrivateBaseTest
     : public ExtensionApiTest,
-      public ::testing::WithParamInterface<SpeechRecognitionType> {
+      public ::testing::WithParamInterface<speech::SpeechRecognitionType> {
  protected:
   SpeechRecognitionPrivateBaseTest();
   ~SpeechRecognitionPrivateBaseTest() override;

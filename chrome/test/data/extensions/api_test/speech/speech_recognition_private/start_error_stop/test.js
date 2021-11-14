@@ -7,7 +7,7 @@
     chrome.speechRecognitionPrivate.onError.addListener((event) => {
       chrome.test.assertEq(
           'A speech recognition error occurred', event.message);
-      resolve()
+      resolve();
     });
   });
 

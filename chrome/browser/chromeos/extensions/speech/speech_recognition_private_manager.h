@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_delegate.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,7 +30,10 @@ class SpeechRecognitionPrivateRecognizer;
 class SpeechRecognitionPrivateManager
     : public KeyedService,
       public SpeechRecognitionPrivateDelegate {
-  using ApiCallback =
+  using OnStartCallback =
+      base::OnceCallback<void(speech::SpeechRecognitionType type,
+                              absl::optional<std::string> error)>;
+  using OnStopCallback =
       base::OnceCallback<void(absl::optional<std::string> error)>;
 
  public:
@@ -52,9 +56,9 @@ class SpeechRecognitionPrivateManager
   void HandleStart(const std::string& key,
                    absl::optional<std::string> locale,
                    absl::optional<bool> interim_results,
-                   ApiCallback callback);
+                   OnStartCallback callback);
   // Handles a call to stop speech recognition.
-  void HandleStop(const std::string& key, ApiCallback callback);
+  void HandleStop(const std::string& key, OnStopCallback callback);
 
  private:
   friend class SpeechRecognitionPrivateManagerTest;

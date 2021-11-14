@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_base_test.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 
@@ -45,7 +46,8 @@ class SpeechRecognitionPrivateManagerTest
       const std::string& key,
       absl::optional<std::string> locale,
       absl::optional<bool> interim_results,
-      base::OnceCallback<void(absl::optional<std::string>)> on_start_callback) {
+      base::OnceCallback<void(speech::SpeechRecognitionType,
+                              absl::optional<std::string>)> on_start_callback) {
     manager_->HandleStart(key, locale, interim_results,
                           std::move(on_start_callback));
   }
@@ -81,13 +83,15 @@ class SpeechRecognitionPrivateManagerTest
   SpeechRecognitionPrivateManager* manager_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Network,
-                         SpeechRecognitionPrivateManagerTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    SpeechRecognitionPrivateManagerTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
 
-INSTANTIATE_TEST_SUITE_P(OnDevice,
-                         SpeechRecognitionPrivateManagerTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    SpeechRecognitionPrivateManagerTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, CreateKey) {
   ASSERT_EQ("Testing", CreateKey("Testing", absl::optional<int>()));

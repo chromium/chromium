@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "components/soda/constants.h"
 
@@ -27,7 +28,10 @@ class SpeechRecognitionPrivateDelegate;
 // events. It is also responsible for deciding whether to use the on-device or
 // network speech recognition.
 class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
-  using ApiCallback =
+  using OnStartCallback =
+      base::OnceCallback<void(speech::SpeechRecognitionType type,
+                              absl::optional<std::string> error)>;
+  using OnStopCallback =
       base::OnceCallback<void(absl::optional<std::string> error)>;
 
  public:
@@ -48,10 +52,10 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   // Handles a call to start speech recognition.
   void HandleStart(absl::optional<std::string> locale,
                    absl::optional<bool> interim_results,
-                   ApiCallback callback);
+                   OnStartCallback callback);
   // Handles a call to stop speech recognition. The callback accepts an
   // optional string specifying an error message, if any.
-  void HandleStop(ApiCallback callback);
+  void HandleStop(OnStopCallback callback);
 
   std::string locale() { return locale_; }
   bool interim_results() { return interim_results_; }
@@ -64,10 +68,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void RecognizerOff();
 
   // Updates properties used for speech recognition.
-  void MaybeUpdateProperties(
-      absl::optional<std::string> locale,
-      absl::optional<bool> interim_results,
-      base::OnceCallback<void(absl::optional<std::string>)> callback);
+  void MaybeUpdateProperties(absl::optional<std::string> locale,
+                             absl::optional<bool> interim_results,
+                             OnStartCallback callback);
 
   base::WeakPtr<SpeechRecognitionPrivateRecognizer> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -76,9 +79,13 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   SpeechRecognizerStatus current_state_ = SPEECH_RECOGNIZER_OFF;
   std::string locale_ = speech::kUsEnglishLocale;
   bool interim_results_ = false;
+  // The type of speech recognition being used. Default to kNetwork for
+  // initialization purposes. `type_` will always be assigned before speech
+  // recognition starts.
+  speech::SpeechRecognitionType type_ = speech::SpeechRecognitionType::kNetwork;
   // A callback that is run when speech recognition starts. Note, this is
   // updated whenever HandleStart() is called.
-  ApiCallback on_start_callback_;
+  OnStartCallback on_start_callback_;
   // Delegate that helps handle speech recognition events. `delegate_` is
   // required to outlive this object.
   SpeechRecognitionPrivateDelegate* const delegate_;

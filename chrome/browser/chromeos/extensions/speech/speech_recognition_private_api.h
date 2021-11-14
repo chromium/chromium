@@ -8,6 +8,10 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
+namespace speech {
+enum class SpeechRecognitionType;
+}  // namespace speech
+
 namespace extensions {
 
 // An API function that starts speech recognition.
@@ -22,7 +26,8 @@ class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
 
  private:
   // A callback that is run when the speech recognition service starts.
-  void OnStart(absl::optional<std::string> error);
+  void OnStart(speech::SpeechRecognitionType type,
+               absl::optional<std::string> error);
 };
 
 // An API function that stops speech recognition.
