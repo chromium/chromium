@@ -102,6 +102,8 @@ class IDNSpoofChecker {
 
   IDNSpoofChecker();
   ~IDNSpoofChecker();
+  IDNSpoofChecker(const IDNSpoofChecker&) = delete;
+  IDNSpoofChecker& operator=(const IDNSpoofChecker&) = delete;
 
   // Returns kSafe if |label| is safe to display as Unicode. Some of the checks
   // depend on the TLD of the full domain name, so this function also takes
@@ -214,9 +216,6 @@ class IDNSpoofChecker {
 
   // List of scripts containing whole-script-confusable information.
   std::vector<std::unique_ptr<WholeScriptConfusable>> wholescriptconfusables_;
-
-  IDNSpoofChecker(const IDNSpoofChecker&) = delete;
-  void operator=(const IDNSpoofChecker&) = delete;
 };
 
 }  // namespace url_formatter

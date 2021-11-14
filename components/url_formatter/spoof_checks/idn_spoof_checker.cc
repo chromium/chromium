@@ -38,7 +38,7 @@ uint8_t BitLength(uint32_t input) {
 class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
  public:
   using net::extras::PreloadDecoder::PreloadDecoder;
-  ~TopDomainPreloadDecoder() override {}
+  ~TopDomainPreloadDecoder() override = default;
 
   bool ReadEntry(net::extras::PreloadDecoder::BitReader* reader,
                  const std::string& search,
