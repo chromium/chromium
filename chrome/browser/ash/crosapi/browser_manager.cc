@@ -264,12 +264,13 @@ BrowserManager* BrowserManager::Get() {
 
 BrowserManager::BrowserManager(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : BrowserManager(manager, g_browser_process->component_updater()) {}
+    : BrowserManager(std::make_unique<BrowserLoader>(manager),
+                     g_browser_process->component_updater()) {}
 
 BrowserManager::BrowserManager(
-    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    std::unique_ptr<BrowserLoader> browser_loader,
     component_updater::ComponentUpdateService* update_service)
-    : component_manager_(manager),
+    : browser_loader_(std::move(browser_loader)),
       component_update_service_(update_service),
       environment_provider_(std::make_unique<EnvironmentProvider>()) {
   DCHECK(!g_instance);
@@ -464,14 +465,7 @@ void BrowserManager::InitializeAndStart() {
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  // May be null in tests.
-  if (!component_manager_)
-    return;
-
   PrepareLacrosPolicies();
-
-  DCHECK(!browser_loader_);
-  browser_loader_ = std::make_unique<BrowserLoader>(component_manager_);
 
   // Must be checked after user session start because it depends on user type.
   if (browser_util::IsLacrosEnabled()) {

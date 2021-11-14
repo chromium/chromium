@@ -34,7 +34,7 @@ class BrowserLoader {
   BrowserLoader(const BrowserLoader&) = delete;
   BrowserLoader& operator=(const BrowserLoader&) = delete;
 
-  ~BrowserLoader();
+  virtual ~BrowserLoader();
 
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
@@ -42,11 +42,11 @@ class BrowserLoader {
   // which is either 'rootfs' or 'stateful'.
   using LoadCompletionCallback =
       base::OnceCallback<void(const base::FilePath&, LacrosSelection)>;
-  void Load(LoadCompletionCallback callback);
+  virtual void Load(LoadCompletionCallback callback);
 
   // Starts to unload lacros-chrome binary.
   // Note that this triggers to remove the user directory for lacros-chrome.
-  void Unload();
+  virtual void Unload();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,

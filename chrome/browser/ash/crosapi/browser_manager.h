@@ -62,7 +62,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   explicit BrowserManager(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
   // Constructor for testing.
-  BrowserManager(scoped_refptr<component_updater::CrOSComponentManager> manager,
+  BrowserManager(std::unique_ptr<BrowserLoader> browser_loader,
                  ComponentUpdateService* update_service);
 
   BrowserManager(const BrowserManager&) = delete;
@@ -374,13 +374,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   State state_ = State::NOT_INITIALIZED;
 
-  // May be null in tests.
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+  std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // May be null in tests.
   ComponentUpdateService* const component_update_service_;
-
-  std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;

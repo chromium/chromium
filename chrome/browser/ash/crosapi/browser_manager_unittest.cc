@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -16,12 +17,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::component_updater::FakeCrOSComponentManager;
 using ::component_updater::MockComponentUpdateService;
+using testing::_;
 using update_client::UpdateClient;
 using user_manager::User;
 
@@ -31,10 +35,9 @@ namespace {
 
 class BrowserManagerFake : public BrowserManager {
  public:
-  BrowserManagerFake(
-      scoped_refptr<component_updater::CrOSComponentManager> manager,
-      component_updater::ComponentUpdateService* update_service)
-      : BrowserManager(manager, update_service) {}
+  BrowserManagerFake(std::unique_ptr<BrowserLoader> browser_loader,
+                     component_updater::ComponentUpdateService* update_service)
+      : BrowserManager(std::move(browser_loader), update_service) {}
   ~BrowserManagerFake() override = default;
   void Start(
       browser_util::InitialBrowserAction initial_browser_action) override {
@@ -53,6 +56,19 @@ class BrowserManagerFake : public BrowserManager {
 
 }  // namespace
 
+class MockBrowserLoader : public BrowserLoader {
+ public:
+  MockBrowserLoader(
+      scoped_refptr<component_updater::CrOSComponentManager> manager)
+      : BrowserLoader(manager) {}
+  MockBrowserLoader(const MockBrowserLoader&) = delete;
+  MockBrowserLoader& operator=(const MockBrowserLoader&) = delete;
+  ~MockBrowserLoader() override = default;
+
+  MOCK_METHOD1(Load, void(LoadCompletionCallback));
+  MOCK_METHOD0(Unload, void());
+};
+
 class BrowserManagerTest : public testing::Test {
  public:
   BrowserManagerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -65,9 +81,14 @@ class BrowserManagerTest : public testing::Test {
 
     auto fake_cros_component_manager =
         base::MakeRefCounted<FakeCrOSComponentManager>();
-    component_update_service_ = std::make_unique<MockComponentUpdateService>();
+    std::unique_ptr<MockBrowserLoader> browser_loader =
+        std::make_unique<testing::StrictMock<MockBrowserLoader>>(
+            fake_cros_component_manager);
+    browser_loader_ = browser_loader.get();
+    component_update_service_ =
+        std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
     fake_browser_manager_ = std::make_unique<BrowserManagerFake>(
-        fake_cros_component_manager, component_update_service_.get());
+        std::move(browser_loader), component_update_service_.get());
   }
 
   void AddRegularUser(const std::string& email) {
@@ -84,9 +105,11 @@ class BrowserManagerTest : public testing::Test {
   // The order of these members is relevant for both construction and
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
+  session_manager::SessionManager session_manager_;
   TestingProfile testing_profile_;
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  MockBrowserLoader* browser_loader_;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
 
@@ -129,6 +152,45 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   keep_alive.reset();
   fake_browser_manager_->SetStatePublic(State::STOPPED);
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
+}
+
+TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
+  AddRegularUser("user@test.com");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  browser_util::SetProfileMigrationCompletedForUser(
+      local_state_.Get(), chromeos::ProfileHelper::Get()
+                              ->GetUserByProfile(&testing_profile_)
+                              ->username_hash());
+  EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(base::FilePath("/run/lacros"),
+                                browser_util::LacrosSelection::kRootfs);
+      });
+  fake_browser_manager_->InitializeAndStart();
+
+  // Set the state of the browser manager as stopped, which would match the
+  // state after the browser mounted an image, ran, and was terminated.
+  using State = BrowserManagerFake::State;
+  fake_browser_manager_->SetStatePublic(State::STOPPED);
+
+  const std::string lacros_component_id =
+      browser_util::kLacrosDogfoodDevInfo.crx_id;
+  static_cast<component_updater::ComponentUpdateService::Observer*>(
+      fake_browser_manager_.get())
+      ->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
+                lacros_component_id);
+
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(
+            base::FilePath("/run/imageloader-lacros-dogfood-dev/97.0.4676/"),
+            browser_util::LacrosSelection::kStateful);
+      });
+  fake_browser_manager_->NewWindow(false);
 }
 
 }  // namespace crosapi

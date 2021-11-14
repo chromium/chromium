@@ -6588,6 +6588,7 @@ test("unit_tests") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/resources/vector_icons",
       "//ash/strings",
+      "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/system_extensions:unit_tests",
       "//chrome/browser/chromeos:test_support",
       "//chrome/browser/nearby_sharing/certificates:test_support",
