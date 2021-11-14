@@ -584,7 +584,7 @@
   'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R94-14150.74.0',
+      'cros_img': 'atlas-release/R94-14150.87.0',
     },
     'identifier': 'ATLAS_STABLE',
   },
@@ -598,7 +598,7 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R97-14324.5.0',
+      'cros_img': 'eve-release/R97-14324.8.0',
     },
     'identifier': 'EVE_DEV',
   },
@@ -612,7 +612,7 @@
   'CROS_EVE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R94-14150.74.0',
+      'cros_img': 'eve-release/R94-14150.87.0',
     },
     'identifier': 'EVE_STABLE',
   },
@@ -633,7 +633,7 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R97-14324.5.0',
+      'cros_img': 'octopus-release/R97-14324.8.0',
     },
     'identifier': 'OCTOPUS_DEV',
   },
@@ -647,7 +647,7 @@
   'CROS_OCTOPUS_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R94-14150.74.0',
+      'cros_img': 'octopus-release/R94-14150.87.0',
     },
     'identifier': 'OCTOPUS_STABLE',
   },
