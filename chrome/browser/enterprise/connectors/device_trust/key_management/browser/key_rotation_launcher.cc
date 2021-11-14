@@ -19,4 +19,6 @@ std::unique_ptr<KeyRotationLauncher> KeyRotationLauncher::Create(
                                                    device_management_service);
 }
 
+KeyRotationLauncher::~KeyRotationLauncher() = default;
+
 }  // namespace enterprise_connectors

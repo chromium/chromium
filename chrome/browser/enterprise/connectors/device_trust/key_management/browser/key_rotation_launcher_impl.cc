@@ -26,9 +26,7 @@ KeyRotationLauncherImpl::KeyRotationLauncherImpl(
 }
 KeyRotationLauncherImpl::~KeyRotationLauncherImpl() = default;
 
-bool KeyRotationLauncherImpl::LaunchKeyRotation(
-    const std::string& nonce,
-    KeyRotationCommand::Callback callback) {
+bool KeyRotationLauncherImpl::LaunchKeyRotation(const std::string& nonce) {
   if (!dm_token_storage_ || !device_management_service_) {
     return false;
   }
@@ -53,7 +51,7 @@ bool KeyRotationLauncherImpl::LaunchKeyRotation(
 
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url, nonce};
   return KeyRotationCommandFactory::GetInstance()->CreateCommand()->Trigger(
-      params, std::move(callback));
+      params);
 }
 
 }  // namespace enterprise_connectors
