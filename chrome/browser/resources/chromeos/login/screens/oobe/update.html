@@ -55,7 +55,7 @@
       </p>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/updating.svg">
+            srcset="images/updating.svg" aria-hidden="true">
       </div>
       <div slot="back-navigation">
         <oobe-back-button id="cellular-permission-back" inverse
@@ -76,7 +76,7 @@
       </paper-progress>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/updating.svg">
+            srcset="images/updating.svg" aria-hidden="true">
       </div>
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog footer-shrinkable id="update-in-progress-dialog"
@@ -99,7 +99,7 @@
           class="slide-view" slot="content">
         <oobe-slide is-warning>
           <img slot="slide-img" class="update-illustration oobe-illustration"
-              srcset="images/update-charge.svg">
+              srcset="images/update-charge.svg" aria-hidden="true">
           <div slot="title">
             [[i18nDynamic(locale, 'batteryWarningTitle')]]
           </div>
@@ -116,14 +116,14 @@
             selected-button-label="slideSelectedButtonLabel"
             unselected-button-label="slideUnselectedButtonLabel">
           <oobe-slide slot="slides">
-            <img slot="slide-img"
+            <img slot="slide-img" aria-hidden="true"
                 class="update-illustration oobe-illustration"
                 srcset="images/update-no-waiting.svg">
             <div slot="title">[[i18nDynamic(locale, 'slideUpdateTitle')]]</div>
             <div slot="text">[[i18nDynamic(locale, 'slideUpdateText')]]</div>
           </oobe-slide>
           <oobe-slide slot="slides">
-            <img slot="slide-img"
+            <img slot="slide-img" aria-hidden="true"
                 class="update-illustration oobe-illustration"
                 srcset="images/update-antivirus.svg">
             <div slot="title">
@@ -134,14 +134,14 @@
             </div>
           </oobe-slide>
           <oobe-slide slot="slides">
-            <img slot="slide-img"
+            <img slot="slide-img" aria-hidden="true"
                 class="update-illustration oobe-illustration"
                 srcset="images/update-apps.svg">
             <div slot="title">[[i18nDynamic(locale, 'slideAppsTitle')]]</div>
             <div slot="text">[[i18nDynamic(locale, 'slideAppsText')]]</div>
           </oobe-slide>
           <oobe-slide slot="slides">
-            <img slot="slide-img"
+            <img slot="slide-img" aria-hidden="true"
                 class="update-illustration oobe-illustration"
                 srcset="images/google-accounts.svg">
             <div slot="title">

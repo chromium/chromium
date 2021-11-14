@@ -108,7 +108,7 @@
         [[i18nDynamic(locale, 'enableDebuggingDoneMessage')]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img class="success-icon"
+        <img class="success-icon" aria-hidden="true"
             src="chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS">
       </div>
       <div slot="bottom-buttons">
@@ -129,7 +129,8 @@
         [[i18nDynamic(locale, 'enableDebuggingErrorMessage')]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img src="/images/error.svg" class="oobe-illustration">
+        <img src="images/error.svg"
+            class="oobe-illustration" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="errorOkButton" inverse class="focus-on-show"
