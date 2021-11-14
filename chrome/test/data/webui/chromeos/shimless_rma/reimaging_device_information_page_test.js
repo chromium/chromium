@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeDeviceRegions, fakeDeviceSkus} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingDeviceInformationPageElement} from 'chrome://shimless-rma/reimaging_device_information_page.js';
+import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
@@ -26,7 +26,7 @@ function suppressedComponentOnSelectedChange_(component) {
 }
 
 export function reimagingDeviceInformationPageTest() {
-  /** @type {?ReimagingDeviceInformationPageElement} */
+  /** @type {?ReimagingDeviceInformationPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -59,7 +59,7 @@ export function reimagingDeviceInformationPageTest() {
     service.setGetSkuListResult(fakeDeviceSkus);
     service.setGetOriginalSkuResult(1);
 
-    component = /** @type {!ReimagingDeviceInformationPageElement} */ (
+    component = /** @type {!ReimagingDeviceInformationPage} */ (
         document.createElement('reimaging-device-information-page'));
     assertTrue(!!component);
     document.body.appendChild(component);

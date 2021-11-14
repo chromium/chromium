@@ -35,14 +35,13 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Please confirm device information</h1>
-    <p>Change device information as needed.</p>
+    <h1>[[i18n('confirmDeviceInfoTitle')]]</h1>
+    <div>[[i18n('confirmDeviceInfoInstructions')]]</div>
   </div>
   <div slot="body">
     <div class="input-row">
       <label id="serialNumberLabel" class="cr-form-field-label">
-        Serial number:
+        [[i18n('confirmDeviceInfoSerialNumberLabel')]]
       </label>
       <div class="input-holder">
         <cr-input id="serialNumber" placeholder="Enter Serial Number"
@@ -51,12 +50,14 @@
         <cr-button id="resetSerialNumber"
             on-click="onResetSerialNumberButtonClicked_"
             disabled="[[disableResetSerialNumber_]]">
-          Reset
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
       </div>
     </div>
     <div class="input-row">
-      <label id="regionLabel" class="cr-form-field-label">Region:</label>
+      <label id="regionLabel" class="cr-form-field-label">
+        [[i18n('confirmDeviceInfoRegionLabel')]]
+      </label>
       <div class="input-holder">
         <select id="regionSelect" class="md-select"
             on-change="onSelectedRegionChange_" aria-labelledby="regionLabel">
@@ -68,12 +69,14 @@
         </select>
         <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
             disabled="[[disableResetRegion_]]">
-          Reset
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
       </div>
     </div>
     <div>
-      <label id="skuLabel" class="cr-form-field-label">SKU:</label>
+      <label id="skuLabel" class="cr-form-field-label">
+        [[i18n('confirmDeviceInfoSkuLabel')]]
+      </label>
       <div class="input-holder">
         <select id="skuSelect" class="md-select"
             on-change="onSelectedSkuChange_" aria-labelledby="skuLabel">
@@ -85,15 +88,13 @@
         </select>
         <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
             disabled="[[disableResetSku_]]">
-          Reset
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
       </div>
     </div>
     <div class="sku-warning">
       <iron-icon icon="shimless-icon:warning"></iron-icon>
-      The SKU should only be changed if the new component(s) are different
-      from the ones they replaced. For example, a touchscreen replacing a
-      non-touchscreen, or memory being upgraded from 8GB to 16GB.
+      [[i18n('confirmDeviceInfoSkuWarning')]]
     </p>
   </div>
 </base-page>

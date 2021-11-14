@@ -2364,6 +2364,28 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE" translateable="false" desc="Message to inform user hardware write protection has been enabled and RMA is ready to continue.">
         Hardware write protection enabled. Click 'Next' to continue.
       </message>
+      <!-- Confirm device information page -->
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_TITLE" translateable="false" desc="The title for the page for confirming the device info.">
+        Please confirm device information
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_INSTRUCTIONS" translateable="false" desc="The instructions for the page for confirming the device info.">
+        Change device information as needed.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SERIAL_NUMBER_LABEL" translateable="false" desc="The label for the text input showing the device's serial number.">
+        Serial number
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_REGION_LABEL" translateable="false" desc="The label for the text input showing the device's current region.">
+        Region
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_LABEL" translateable="false" desc="The label for the text input showing the device's SKU.">
+        SKU
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_RESET_BUTTON_LABEL" translateable="false" desc="The label for the button that resets the text input.">
+        Reset
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING" translateable="false" desc="The text warning explaining when the device's SKU should be changed.">
+        The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
+      </message>
     </messages>
   </release>
 </grit>
