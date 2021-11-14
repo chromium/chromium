@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -28,6 +29,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -249,6 +251,45 @@ gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
+gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
+    const gfx::Rect& element_bounds,
+    const gfx::Rect& max_bounds_for_popup,
+    const gfx::Size& preferred_size) {
+  views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
+      GetWidget()->GetRootView()->GetBorder());
+  DCHECK(border);
+
+  gfx::Rect bubble_bounds;
+
+  // Deduce the arrow and the position.
+  views::BubbleBorder::Arrow arrow = GetOptimalBubblePlacement(
+      /*content_area_bounds=*/max_bounds_for_popup,
+      /*element_bounds=*/element_bounds,
+      /*bubble_preferred_size=*/preferred_size,
+      /*right_to_left=*/delegate()->IsRTL(),
+      /*scrollbar_width=*/gfx::scrollbar_size(),
+      /*maximum_pixel_offset_to_center=*/
+      autofill::features::kAutofillMaximumPixelsToMoveSuggestionopupToCenter
+          .Get(),
+      /*maximum_width_percentage_to_center=*/
+      autofill::features::
+          kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter.Get(),
+      /*bubble_bounds=*/bubble_bounds);
+
+  // Those values are not supported for adding an arrow.
+  // Currenrly, they can not be returned by GetOptimalBubblePlacement().
+  DCHECK(arrow != views::BubbleBorder::Arrow::NONE);
+  DCHECK(arrow != views::BubbleBorder::Arrow::FLOAT);
+
+  // Set the arrow position to the border.
+  border->set_arrow(arrow);
+  border->set_visible_arrow(true);
+  border->AddArrowToBubbleCornerAndPointTowardsAnchor(
+      element_bounds, /*move_bubble_to_add_arrow=*/true, bubble_bounds);
+
+  return bubble_bounds;
+}
+
 bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
@@ -284,9 +325,15 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
     return false;
   }
 
-  gfx::Rect popup_bounds = CalculatePopupBounds(
-      preferred_size, max_bounds_for_popup, element_bounds, delegate()->IsRTL(),
-      /*horizontally_centered=*/false);
+  gfx::Rect popup_bounds =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCenterAlignedSuggestions)
+          ? GetOptionalPositionAndPlaceArrowOnBubble(
+                element_bounds, max_bounds_for_popup, preferred_size)
+          : CalculatePopupBounds(preferred_size, max_bounds_for_popup,
+                                 element_bounds, delegate()->IsRTL(),
+                                 /*horizontally_centered=*/false);
+
   // Account for the scroll view's border so that the content has enough space.
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);

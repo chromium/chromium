@@ -22,6 +22,10 @@ namespace gfx {
 class Point;
 }
 
+namespace views {
+class BubbleBorder;
+}
+
 namespace autofill {
 
 // Class that deals with the event handling for Autofill-style popups. This
@@ -89,6 +93,14 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
   // Returns the border to be applied to the popup.
   virtual std::unique_ptr<views::Border> CreateBorder();
+
+  // Returns the optimal bounds to place the bubble with |preferred_size| and
+  // places an arrow on the bubble border to point towards |element_bounds|
+  // within |max_bounds_for_popup|.
+  gfx::Rect GetOptionalPositionAndPlaceArrowOnBubble(
+      const gfx::Rect& element_bounds,
+      const gfx::Rect& max_bounds_for_popup,
+      const gfx::Size& preferred_size);
 
  private:
   friend class AutofillPopupBaseViewTest;
