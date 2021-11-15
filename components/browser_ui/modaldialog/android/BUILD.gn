@@ -30,8 +30,10 @@ android_resources("java_resources") {
     "java/res/layout/modal_dialog_title.xml",
     "java/res/layout/modal_dialog_view.xml",
     "java/res/layout/permission_dialog.xml",
+    "java/res/values-large/themes.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
+    "java/res/values/themes.xml",
   ]
 
   deps = [

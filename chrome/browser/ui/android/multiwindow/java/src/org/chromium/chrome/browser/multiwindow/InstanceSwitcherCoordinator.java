@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -76,7 +78,6 @@ public class InstanceSwitcherCoordinator {
     private PropertyModel mDialog;
     private PropertyModel mConfirmDialog;
     private InstanceInfo mItemToDelete;
-    private boolean mIsShowingConfirmationMessage;
     private PropertyModel mNewWindowModel;
     private boolean mNewWindowEnabled;
 
@@ -152,21 +153,8 @@ public class InstanceSwitcherCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 switch (buttonType) {
-                    case ModalDialogProperties.ButtonType.POSITIVE:
-                        assert mIsShowingConfirmationMessage;
-                        assert mItemToDelete != null;
-                        CheckBox skipConfirm =
-                                (CheckBox) mDialogView.findViewById(R.id.no_more_check);
-                        if (skipConfirm.isChecked()) setSkipCloseConfirmation();
-                        hideConfirmationMessage();
-                        removeInstance(mItemToDelete);
-                        break;
                     case ModalDialogProperties.ButtonType.NEGATIVE:
                         dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                        break;
-                    case ModalDialogProperties.ButtonType.TITLE_ICON:
-                        assert mIsShowingConfirmationMessage;
-                        hideConfirmationMessage();
                         break;
                 }
             }
@@ -178,10 +166,9 @@ public class InstanceSwitcherCoordinator {
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                 .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
                 .with(ModalDialogProperties.TITLE, title)
-                .with(ModalDialogProperties.BUTTON_STYLES,
-                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, null)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
+                .with(ModalDialogProperties.DIALOG_WHEN_LARGE, true)
                 .build();
     }
 
@@ -284,28 +271,36 @@ public class InstanceSwitcherCoordinator {
 
     private void showConfirmationMessage(InstanceInfo item) {
         mItemToDelete = item;
-        Resources res = mContext.getResources();
-        String header = res.getString(R.string.instance_switcher_close_confirm_header);
-        String closeButton = res.getString(R.string.close);
-        mDialog.set(ModalDialogProperties.TITLE, header);
-        mDialog.set(ModalDialogProperties.TITLE_ICON, mArrowBackIcon);
-        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, closeButton);
-        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, res.getString(R.string.cancel));
-        TextView messageView = (TextView) mDialogView.findViewById(R.id.message);
-        messageView.setText(mUiUtils.getConfirmationMessage(item));
-        mDialogView.findViewById(R.id.list_view).setVisibility(View.GONE);
-        mDialogView.findViewById(R.id.close_confirm).setVisibility(View.VISIBLE);
-        mIsShowingConfirmationMessage = true;
-    }
+        int style = R.style.Theme_Chromium_Multiwindow_CloseConfirmDialog;
+        Dialog dialog = new Dialog(mContext, style);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setContentView(R.layout.close_confirmation_dialog);
 
-    private void hideConfirmationMessage() {
         Resources res = mContext.getResources();
-        mDialog.set(ModalDialogProperties.TITLE, res.getString(R.string.instance_switcher_header));
-        mDialog.set(ModalDialogProperties.TITLE_ICON, null);
-        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "");
-        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, res.getString(R.string.cancel));
-        mDialogView.findViewById(R.id.list_view).setVisibility(View.VISIBLE);
-        mDialogView.findViewById(R.id.close_confirm).setVisibility(View.GONE);
-        mIsShowingConfirmationMessage = false;
+        ImageView iconView = (ImageView) dialog.findViewById(R.id.title_icon);
+        iconView.setImageDrawable(mArrowBackIcon);
+        iconView.setOnClickListener(v -> dialog.dismiss());
+
+        String title = res.getString(R.string.instance_switcher_close_confirm_header);
+        ((TextView) dialog.findViewById(R.id.title)).setText(title);
+        TextView messageView = (TextView) dialog.findViewById(R.id.message);
+        messageView.setText(mUiUtils.getConfirmationMessage(item));
+
+        TextView positiveButton = (TextView) dialog.findViewById(R.id.positive_button);
+        positiveButton.setText(res.getString(R.string.close));
+        positiveButton.setOnClickListener(v -> {
+            assert mItemToDelete != null;
+            CheckBox skipConfirm = (CheckBox) dialog.findViewById(R.id.no_more_check);
+            if (skipConfirm.isChecked()) setSkipCloseConfirmation();
+            dialog.dismiss();
+            removeInstance(mItemToDelete);
+        });
+        TextView negativeButton = (TextView) dialog.findViewById(R.id.negative_button);
+        negativeButton.setText(res.getString(R.string.cancel));
+        negativeButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+        });
+        dialog.show();
     }
 }

@@ -144,9 +144,17 @@ public class ModalDialogProperties {
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
     /**
-     * Whether the dialog is of fullscreen style.
+     * Whether the dialog is of fullscreen style. Both {@code FULLSCREEN_DIALOG} and
+     * {@code DIALOG_WHEN_LARGE} cannot be set to true.
      */
     public static final ReadableBooleanPropertyKey FULLSCREEN_DIALOG =
+            new ReadableBooleanPropertyKey();
+
+    /**
+     * Whether the dialog is of DialogWhenLarge style i.e. fullscreen on phone, and dialog on large
+     * screen. Both {@code FULLSCREEN_DIALOG} and {@code DIALOG_WHEN_LARGE} cannot be set to true.
+     */
+    public static final ReadableBooleanPropertyKey DIALOG_WHEN_LARGE =
             new ReadableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
@@ -154,5 +162,5 @@ public class ModalDialogProperties {
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
             FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
-            FULLSCREEN_DIALOG};
+            FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE};
 }
