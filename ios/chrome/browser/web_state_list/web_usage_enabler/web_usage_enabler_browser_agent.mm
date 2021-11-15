@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,12 +14,18 @@ BROWSER_USER_DATA_KEY_IMPL(WebUsageEnablerBrowserAgent)
 
 WebUsageEnablerBrowserAgent::WebUsageEnablerBrowserAgent(Browser* browser)
     : browser_(browser) {
-  browser_->AddObserver(this);
-  browser_->GetWebStateList()->AddObserver(this);
-  UpdateWebUsageForAllWebStates();
+  browser_observation_.Observe(browser_);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list_observation_.Observe(browser->GetWebStateList());
+
+  // All the BrowserAgent are attached to the Browser during the creation,
+  // the WebStateList must be empty at this point.
+  DCHECK(web_state_list->empty()) << "WebUsageEnablerBrowserAgent created for "
+                                     "a Browser with a non-empty WebStateList.";
 }
 
-WebUsageEnablerBrowserAgent::~WebUsageEnablerBrowserAgent() {}
+WebUsageEnablerBrowserAgent::~WebUsageEnablerBrowserAgent() = default;
 
 bool WebUsageEnablerBrowserAgent::IsWebUsageEnabled() const {
   return web_usage_enabled_;
@@ -30,6 +34,7 @@ bool WebUsageEnablerBrowserAgent::IsWebUsageEnabled() const {
 void WebUsageEnablerBrowserAgent::SetWebUsageEnabled(bool web_usage_enabled) {
   if (web_usage_enabled_ == web_usage_enabled)
     return;
+
   web_usage_enabled_ = web_usage_enabled;
   UpdateWebUsageForAllWebStates();
 }
@@ -44,25 +49,27 @@ void WebUsageEnablerBrowserAgent::SetTriggersInitialLoad(
 }
 
 void WebUsageEnablerBrowserAgent::UpdateWebUsageForAllWebStates() {
-  if (!browser_)
-    return;
   WebStateList* web_state_list = browser_->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    web_state->SetWebUsageEnabled(web_usage_enabled_);
+    UpdateWebUsageForAddedWebState(web_state, /*triggers_initial_load=*/false);
   }
 }
 
 void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
-    web::WebState* web_state) {
-  web_state->SetWebUsageEnabled(web_usage_enabled_);
-  if (web_usage_enabled_ && triggers_initial_load_)
-    web_state->GetNavigationManager()->LoadIfNecessary();
+    web::WebState* web_state,
+    bool triggers_initial_load) {
+  if (web_state->IsRealized()) {
+    web_state->SetWebUsageEnabled(web_usage_enabled_);
+    if (web_usage_enabled_ && triggers_initial_load)
+      web_state->GetNavigationManager()->LoadIfNecessary();
+  }
 }
 
 void WebUsageEnablerBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser_->GetWebStateList()->RemoveObserver(this);
-  browser_->RemoveObserver(this);
+  web_state_observations_.RemoveAllObservations();
+  web_state_list_observation_.Reset();
+  browser_observation_.Reset();
 }
 
 void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
@@ -70,7 +77,8 @@ void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  UpdateWebUsageForAddedWebState(web_state);
+  web_state_observations_.AddObservation(web_state);
+  UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
@@ -78,5 +86,22 @@ void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int index) {
-  UpdateWebUsageForAddedWebState(new_web_state);
+  web_state_observations_.RemoveObservation(old_web_state);
+  web_state_observations_.AddObservation(new_web_state);
+  UpdateWebUsageForAddedWebState(new_web_state, triggers_initial_load_);
+}
+
+void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  web_state_observations_.RemoveObservation(web_state);
+}
+
+void WebUsageEnablerBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
+}
+
+void WebUsageEnablerBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observations_.RemoveObservation(web_state);
 }
