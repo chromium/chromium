@@ -202,12 +202,9 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
     // The initiator should be set.
     EXPECT_EQ(frame_origin_, observed_request.request_initiator);
 
-    if (is_for_seller_) {
-      // Seller requests are made to base URLs specified by the publisher page.
-      // These URLs are generally cross-origin to the publisher, so need to
-      // always use CORS.
-      EXPECT_EQ(network::mojom::RequestMode::kCors, observed_request.mode);
+    EXPECT_EQ(network::mojom::RequestMode::kNoCors, observed_request.mode);
 
+    if (is_for_seller_) {
       if (original_accept_header == kAcceptJavascript) {
         // Seller worklet Javascript requests use the renderer's untrusted
         // URLLoaderFactory, so inherit security parameters from there.
@@ -228,7 +225,6 @@ class ActionUrlLoaderFactoryProxyTest : public testing::Test {
       // Bidder worklet requests use a trusted URLLoaderFactory, so need to set
       // their own security-related parameters.
 
-      EXPECT_EQ(network::mojom::RequestMode::kNoCors, observed_request.mode);
       EXPECT_TRUE(trusted_factory_used);
 
       ASSERT_TRUE(observed_request.trusted_params);
@@ -367,10 +363,34 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
         "https://host.test/"
         "trusted_signals?hostname=top.test&keys=jabberwocky,wakkawakka",
         kAcceptJson, ExpectedResponse::kAllow);
+    TryMakeRequest(
+        "https://host.test/"
+        "trusted_signals?hostname=top.test"
+        "&renderUrls=https%3A%2F%2Furl.test%2F,https%3A%2F%2Furl2.test%2F",
+        kAcceptJson, ExpectedResponse::kAllow);
+    TryMakeRequest(
+        "https://host.test/"
+        "trusted_signals?hostname=top.test"
+        "&componentAdRenderUrls=https%3A%2F%2Furl3.test%2F,https%3A%2F%2Furl4."
+        "test%2F",
+        kAcceptJson, ExpectedResponse::kAllow);
+    TryMakeRequest(
+        "https://host.test/"
+        "trusted_signals?hostname=top.test"
+        "&renderUrls=https%3A%2F%2Furl.test%2F,https%3A%2F%2Furl2.test%2F"
+        "&componentAdRenderUrls=https%3A%2F%2Furl3.test%2F,https%3A%2F%2Furl4."
+        "test%2F",
+        kAcceptJson, ExpectedResponse::kAllow);
 
-    // This is currently allowed, though not really needed.
-    TryMakeRequest("https://host.test/trusted_signals?hostname=top.test&keys=",
-                   kAcceptJson, ExpectedResponse::kAllow);
+    // No query parameters.
+    TryMakeRequest("https://host.test/trusted_signals", kAcceptJson,
+                   ExpectedResponse::kReject);
+
+    // Extra characters before query parameters.
+    TryMakeRequest(
+        "https://host.test/trusted_signals/foo"
+        "?hostname=top.test&keys=jabberwocky,wakkawakka",
+        kAcceptJson, ExpectedResponse::kReject);
 
     // Wrong hostname / No hostname.
     TryMakeRequest(
@@ -381,34 +401,25 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
         kAcceptJson, ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/trusted_signals?keys=jabberwocky",
                    kAcceptJson, ExpectedResponse::kReject);
+    TryMakeRequest(
+        "https://host.test/"
+        "trusted_signals?renderUrls=https%3A%2F%2Furl.test%2F",
+        kAcceptJson, ExpectedResponse::kReject);
 
     // Wrong order (should technically be ok, but it's not what the worklet
-    // processes actually request, so no need to accept it)/
+    // processes actually request, so no need to accept it).
     TryMakeRequest(
         "https://host.test/trusted_signals?keys=jabberwocky&hostname=top.test",
         kAcceptJson, ExpectedResponse::kReject);
+    TryMakeRequest(
+        "https://host.test/"
+        "trusted_signals?renderUrls=https%3A%2F%2Furl.test%2F&hostname=top."
+        "test",
+        kAcceptJson, ExpectedResponse::kReject);
 
-    // No keys.
+    // No other parameters.
     TryMakeRequest("https://host.test/trusted_signals?hostname=top.test",
                    kAcceptJson, ExpectedResponse::kReject);
-    TryMakeRequest("https://host.test/trusted_signals?hostname=top.test&",
-                   kAcceptJson, ExpectedResponse::kReject);
-    TryMakeRequest("https://host.test/trusted_signals?hostname=top.test&keys",
-                   kAcceptJson, ExpectedResponse::kReject);
-
-    // Extra query parameters.
-    TryMakeRequest(
-        "https://host.test/"
-        "trusted_signals?hostname=top.test&keys=jabberwocky&values=foo",
-        kAcceptJson, ExpectedResponse::kReject);
-    TryMakeRequest(
-        "https://host.test/"
-        "trusted_signals?hostname=top.test&values=foo&keys=jabberwocky",
-        kAcceptJson, ExpectedResponse::kReject);
-    TryMakeRequest(
-        "https://host.test/"
-        "trusted_signals?values=foo&hostname=top.test&keys=jabberwocky",
-        kAcceptJson, ExpectedResponse::kReject);
 
     // Fragments.
     TryMakeRequest(
@@ -417,12 +428,6 @@ TEST_F(ActionUrlLoaderFactoryProxyTest, TrustedSignalsUrl) {
     TryMakeRequest(
         "https://host.test/"
         "trusted_signals?hostname=top.test&keys=jabberwocky#foo",
-        kAcceptJson, ExpectedResponse::kReject);
-
-    // Extra equals signs aren't allowed - keys can have them, but must be
-    // escaped.
-    TryMakeRequest(
-        "https://host.test/trusted_signals?hostname=top.test&keys=jabber=wocky",
         kAcceptJson, ExpectedResponse::kReject);
 
     // Escaped #, &, and = are all allowed.

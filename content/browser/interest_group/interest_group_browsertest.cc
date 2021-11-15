@@ -1811,16 +1811,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
-    if (!request->trusted_params) {
-      // Requests for render-provided URLs use an empty trusted params value and
-      // enable CORS (and should use the RenderFrameHosts's URLLoaderFactory,
-      // which is validated in the next test).
-      EXPECT_EQ(network::mojom::RequestMode::kCors, request->mode);
-    } else {
-      // Requests for interest-group provided URLs are cross-origin, and set
-      // trusted params to use the right cache shard, since they use a trusted
-      // URLLoaderFactory.
-      EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    if (request->trusted_params) {
+      // Requests for interest-group provided URLs are cross-origin to the
+      // publisher page, and set trusted params to use the right cache shard,
+      // using a trusted URLLoaderFactory.
       const net::IsolationInfo& isolation_info =
           request->trusted_params->isolation_info;
       EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
@@ -1948,16 +1943,11 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
-    if (!request->trusted_params) {
-      // Requests for render-provided URLs use an empty trusted params value and
-      // enable CORS (and should use the RenderFrameHosts's URLLoaderFactory,
-      // which is validated in the next test).
-      EXPECT_EQ(network::mojom::RequestMode::kCors, request->mode);
-    } else {
-      // Requests for interest-group provided URLs are cross-origin, and set
-      // trusted params to use the right cache shard, since they use a trusted
-      // URLLoaderFactory.
-      EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    if (request->trusted_params) {
+      // Requests for interest-group provided URLs are cross-origin to the
+      // publisher page, and set trusted params to use the right cache shard,
+      // using a trusted URLLoaderFactory.
       const net::IsolationInfo& isolation_info =
           request->trusted_params->isolation_info;
       EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
@@ -2039,13 +2029,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
   ASSERT_TRUE(
       NavigateToURL(shell(), https_server_->GetURL(kPublisher, "/echo")));
 
-  // Run auction with a seller script missing an "Access-Control-Allow-Origin"
-  // header. The request for the seller script should fail, and so should the
-  // auction.
   GURL seller_logic_url =
       https_server_->GetURL(kSeller, "/interest_group/decision_logic.js");
   url::Origin seller_logic_origin = url::Origin::Create(seller_logic_url);
-  EXPECT_EQ(nullptr,
+  ASSERT_EQ("https://example.com/render",
             RunAuctionAndWait(JsReplace(
                 R"(
 {
@@ -2059,24 +2046,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
                 )",
                 seller_logic_origin, seller_logic_url, bidder_origin)));
 
-  // Run auction with a seller script with an "Access-Control-Allow-Origin"
-  // header. The auction should succeed.
-  seller_logic_url = https_server_->GetURL(
-      kSeller, "/interest_group/decision_logic_cross_origin.js");
-  ASSERT_EQ("https://example.com/render",
-            RunAuctionAndWait(JsReplace(
-                R"(
-{
-  seller: $1,
-  decisionLogicUrl: $2,
-  interestGroupBuyers: [$3],
-  auctionSignals: {x: 1},
-  sellerSignals: {yet: 'more', info: 1},
-  perBuyerSignals: {$3: {even: 'more', x: 4.5}}
-}
-                )",
-                seller_logic_origin, seller_logic_url,
-                url::Origin::Create(bidder_url))));
   // Reporting urls should be fetched after an auction succeeded.
   WaitForURL(https_server_->GetURL("/echoall?report_seller"));
   WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
@@ -2115,8 +2084,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
     std::string top_frame_path;
     const char* seller_path;
   } kTestCases[] = {
-      {0, "/echo",
-       "/interest_group/decision_logic_expect_top_frame_a_test_cross_site.js"},
+      {0, "/echo", "/interest_group/decision_logic_expect_top_frame_a_test.js"},
       {1,
        base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s)",
                           kOtherHost),
@@ -2234,7 +2202,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
     const char* seller_path;
   } kTestCases[] = {
       {0, "/fenced_frames/basic.html",
-       "/interest_group/decision_logic_expect_top_frame_a_test_cross_site.js"},
+       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
       {1,
        base::StringPrintf(
            "/cross_site_iframe_factory.html?a.test(%s)",
@@ -3561,24 +3529,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->decision_logic_url = embedded_test_server()->GetURL(
       "b.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(config->decision_logic_url.SchemeIs(url::kHttpScheme));
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
-
-  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
-                       SellerDoesntMatchFrameOrigin) {
-  GURL test_url_b = https_server_->GetURL("b.test", "/echo");
-  ASSERT_TRUE(test_url_b.SchemeIs(url::kHttpsScheme));
-  url::Origin test_origin_b = url::Origin::Create(test_url_b);
-
-  // Frame is `test_origin_a`, which doesn't match seller `test_origin_b`, so
-  // the auction fails.
-  auto config = blink::mojom::AuctionAdConfig::New();
-  config->seller = test_origin_b;
-  config->decision_logic_url =
-      https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
   config->interest_group_buyers->set_buyers({test_origin_a_});
 
