@@ -83,6 +83,12 @@ luci.project(
             groups = "project-chromium-admins",
         ),
     ],
+    bindings = [
+        luci.binding(
+            roles = "role/configs.validator",
+            groups = "project-chromium-try-task-accounts",
+        ),
+    ],
 )
 
 luci.cq(
