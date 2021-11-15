@@ -54,12 +54,14 @@ bool RequestsAreEqual(
     const enterprise_management::UploadEuiccInfoRequest& lhs,
     const enterprise_management::UploadEuiccInfoRequest& rhs) {
   return lhs.euicc_count() == rhs.euicc_count() &&
-         std::equal(
-             std::begin(lhs.esim_profiles()), std::end(lhs.esim_profiles()),
-             std::begin(rhs.esim_profiles()), [](const auto& u, const auto& v) {
-               return std::tie(u.iccid(), u.smdp_address()) ==
-                      std::tie(v.iccid(), v.smdp_address());
-             });
+         std::equal(std::begin(lhs.esim_profiles()),
+                    std::end(lhs.esim_profiles()),
+                    std::begin(rhs.esim_profiles()),
+                    [](const auto& u, const auto& v) {
+                      return std::tie(u.iccid(), u.smdp_address()) ==
+                             std::tie(v.iccid(), v.smdp_address());
+                    }) &&
+         lhs.clear_profile_list() == rhs.clear_profile_list();
 }
 
 const char kFakeObjectPath[] = "object-path";
@@ -68,11 +70,10 @@ const char kFakeEid[] = "12";
 const char kEmptyEuiccStatus[] =
     R"(
 {
-  "clear_profile_list":false,"esim_profiles":[],"euicc_count":0
+  "esim_profiles":[],"euicc_count":0
 })";
 const char kEuiccStatusWithOneProfile[] =
     R"({
-        "clear_profile_list":false,
         "esim_profiles":
           [
             {"iccid":"iccid-1","smdp_address":"smdp-1"}
@@ -81,7 +82,6 @@ const char kEuiccStatusWithOneProfile[] =
        })";
 const char kEuiccStatusWithTwoProfiles[] =
     R"({
-        "clear_profile_list":false,
         "esim_profiles":
           [
             {"iccid":"iccid-1","smdp_address":"smdp-1"},
@@ -89,6 +89,11 @@ const char kEuiccStatusWithTwoProfiles[] =
           ],
         "euicc_count":3
        })";
+const char kEuiccStatusAfterReset[] =
+    R"(
+{
+  "esim_profiles":[],"euicc_count":2
+})";
 
 const char kDefaultProfilePath[] = "/profile/default";
 
@@ -117,6 +122,7 @@ const EuiccTestData kSetupTwoEsimProfiles = {
         {kCellularDevicePath, "guid-1", "iccid-1", "smdp-1", true},
         {kCellularDevicePath2, "guid-2", "iccid-2", "smdp-2", true},
     }};
+const EuiccTestData kSetupAfterReset = {2, {}};
 
 }  // namespace
 
@@ -163,6 +169,7 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   void SetUpDeviceProfiles(const EuiccTestData& data) {
     // Create |data.euicc_count| fake EUICCs.
+    chromeos::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
       chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
           dbus::ObjectPath(kFakeObjectPath), kFakeEid, /*is_active=*/true,
@@ -171,9 +178,9 @@ class EuiccStatusUploaderTest : public testing::Test {
 
     ash::ShillServiceClient::TestInterface* shill_service_client =
         ash::ShillServiceClient::Get()->GetTestInterface();
+    shill_service_client->ClearServices();
 
     base::Value onc_config(base::Value::Type::LIST);
-
     for (const auto& test_profile : data.profiles) {
       shill_service_client->AddService(
           test_profile.service_path, test_profile.guid, /*name=*/"cellular",
@@ -215,18 +222,29 @@ class EuiccStatusUploaderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void ValidateUploadedStatus(const std::string& expected_status_str) {
+  void ValidateUploadedStatus(const std::string& expected_status_str,
+                              bool clear_profile_list) {
     base::Value expected_status = base::test::ParseJson(expected_status_str);
     EXPECT_EQ(expected_status, *GetStoredPref());
     EXPECT_TRUE(cloud_policy_client_.GetLastRequest());
-    EXPECT_TRUE(RequestsAreEqual(
-        *EuiccStatusUploader::ConstructRequestFromStatus(expected_status),
-        *cloud_policy_client_.GetLastRequest()));
+    EXPECT_TRUE(
+        RequestsAreEqual(*EuiccStatusUploader::ConstructRequestFromStatus(
+                             expected_status, clear_profile_list),
+                         *cloud_policy_client_.GetLastRequest()));
   }
 
   void SetLastUploadedValue(const std::string& last_value) {
     local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPref,
                      base::test::ParseJson(last_value));
+  }
+
+  void ExecuteResetCommand(EuiccStatusUploader* status_uploader) {
+    SetUpDeviceProfiles(kSetupAfterReset);
+
+    // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
+    // directly.
+    static_cast<chromeos::HermesEuiccClient::Observer*>(status_uploader)
+        ->OnEuiccReset(dbus::ObjectPath());
   }
 
   int GetRequestCount() { return cloud_policy_client_.num_requests(); }
@@ -250,7 +268,7 @@ TEST_F(EuiccStatusUploaderTest, EmptySetup) {
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEmptyEuiccStatus);
+  ValidateUploadedStatus(kEmptyEuiccStatus, /*clear_profile_list=*/false);
 }
 
 TEST_F(EuiccStatusUploaderTest, ServerError) {
@@ -280,7 +298,8 @@ TEST_F(EuiccStatusUploaderTest, Basic) {
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile);
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
 }
 
 TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
@@ -298,7 +317,8 @@ TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
   EXPECT_EQ(GetRequestCount(), 2);
 
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithTwoProfiles);
+  ValidateUploadedStatus(kEuiccStatusWithTwoProfiles,
+                         /*clear_profile_list=*/false);
 }
 
 TEST_F(EuiccStatusUploaderTest, SameValueAsBefore) {
@@ -322,7 +342,37 @@ TEST_F(EuiccStatusUploaderTest, NewValue) {
 
   auto status_uploader = CreateStatusUploader();
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile);
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+}
+
+TEST_F(EuiccStatusUploaderTest, ResetRequest) {
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  // Set up a value different from one that was previously uploaded.
+  SetUpDeviceProfiles(kSetupOneEsimProfile);
+  SetLastUploadedValue(kEmptyEuiccStatus);
+
+  auto status_uploader = CreateStatusUploader();
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+
+  // Reset remote command was received and executed.
+  ExecuteResetCommand(status_uploader.get());
+  // Request has been sent.
+  EXPECT_EQ(GetRequestCount(), 3);
+
+  ValidateUploadedStatus(kEuiccStatusAfterReset,
+                         /*clear_profile_list=*/true);
+
+  // Send the reset command again.
+  ExecuteResetCommand(status_uploader.get());
+  // Request will be force-sent again because we've received a reset command..
+  EXPECT_EQ(GetRequestCount(), 4);
+
+  ValidateUploadedStatus(kEuiccStatusAfterReset,
+                         /*clear_profile_list=*/true);
 }
 
 }  // namespace policy

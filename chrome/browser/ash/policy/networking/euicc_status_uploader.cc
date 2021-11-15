@@ -26,7 +26,6 @@ const char kLastUploadedEuiccStatusESimProfilesKey[] = "esim_profiles";
 const char kLastUploadedEuiccStatusESimProfilesIccidKey[] = "iccid";
 const char kLastUploadedEuiccStatusESimProfilesSmdpAddressKey[] =
     "smdp_address";
-const char kLastUploadedEuiccStatusClearProfileListKey[] = "clear_profile_list";
 const net::BackoffEntry::Policy kBackOffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying
     // exponential back-off rules.
@@ -56,6 +55,8 @@ const net::BackoffEntry::Policy kBackOffPolicy = {
 // static
 const char EuiccStatusUploader::kLastUploadedEuiccStatusPref[] =
     "esim.last_upload_euicc_status";
+const char EuiccStatusUploader::kShouldSendClearProfilesRequestPref[] =
+    "esim.should_clear_profile_list";
 
 EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
                                          PrefService* local_state)
@@ -65,9 +66,9 @@ EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
   chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->AddObserver(this);
+  chromeos::HermesEuiccClient::Get()->AddObserver(this);
   chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
       this, FROM_HERE);
-
   MaybeUploadStatus();
 }
 
@@ -77,6 +78,8 @@ EuiccStatusUploader::~EuiccStatusUploader() {
       ->RemoveObserver(this);
   chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
       this, FROM_HERE);
+  if (chromeos::HermesEuiccClient::Get())
+    chromeos::HermesEuiccClient::Get()->RemoveObserver(this);
 }
 
 // static
@@ -84,11 +87,14 @@ void EuiccStatusUploader::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kLastUploadedEuiccStatusPref,
                                    PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(kShouldSendClearProfilesRequestPref,
+                                /*default_value=*/false);
 }
 
 // static
 std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>
-EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status) {
+EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status,
+                                                bool clear_profile_list) {
   auto upload_request =
       std::make_unique<enterprise_management::UploadEuiccInfoRequest>();
   upload_request->set_euicc_count(
@@ -105,9 +111,7 @@ EuiccStatusUploader::ConstructRequestFromStatus(const base::Value& status) {
         kLastUploadedEuiccStatusESimProfilesSmdpAddressKey));
     mutable_esim_profiles->Add(std::move(esim_profile_info));
   }
-
-  upload_request->set_clear_profile_list(
-      status.FindBoolKey(kLastUploadedEuiccStatusClearProfileListKey).value());
+  upload_request->set_clear_profile_list(clear_profile_list);
   return upload_request;
 }
 
@@ -116,6 +120,14 @@ void EuiccStatusUploader::PoliciesApplied(const std::string& userhash) {
 }
 
 void EuiccStatusUploader::NetworkListChanged() {
+  MaybeUploadStatus();
+}
+
+void EuiccStatusUploader::OnEuiccReset(const dbus::ObjectPath& euicc_path) {
+  // Remember that we should clear the profile list in the next upload. This
+  // ensures that profile list will be eventually cleared even if the immediate
+  // uploads do not succeed.
+  local_state_->SetBoolean(kShouldSendClearProfilesRequestPref, true);
   MaybeUploadStatus();
 }
 
@@ -172,9 +184,6 @@ base::Value EuiccStatusUploader::GetCurrentEuiccStatus() {
 
   status.SetPath(kLastUploadedEuiccStatusESimProfilesKey,
                  std::move(esim_profiles));
-  // TODO(crbug.com/1231305): Set this to true when clear request was triggered.
-  status.SetBoolKey(kLastUploadedEuiccStatusClearProfileListKey, false);
-
   return status;
 }
 
@@ -182,6 +191,12 @@ void EuiccStatusUploader::MaybeUploadStatus() {
   const base::Value* last_uploaded_pref =
       local_state_->Get(kLastUploadedEuiccStatusPref);
   auto current_state = GetCurrentEuiccStatus();
+
+  // Force send the status if reset request was received.
+  if (local_state_->GetBoolean(kShouldSendClearProfilesRequestPref)) {
+    UploadStatus(std::move(current_state));
+    return;
+  }
 
   if (attempted_upload_status_ == current_state) {
     // We attempted to upload this status, but failed.
@@ -209,7 +224,9 @@ void EuiccStatusUploader::UploadStatus(base::Value status) {
   currently_uploading_ = true;
   attempted_upload_status_ = std::move(status);
 
-  auto upload_request = ConstructRequestFromStatus(attempted_upload_status_);
+  auto upload_request = ConstructRequestFromStatus(
+      attempted_upload_status_,
+      local_state_->GetBoolean(kShouldSendClearProfilesRequestPref));
   client_->UploadEuiccInfo(
       std::move(upload_request),
       base::BindOnce(&EuiccStatusUploader::OnStatusUploaded,
@@ -227,10 +244,15 @@ void EuiccStatusUploader::OnStatusUploaded(bool success) {
   }
 
   VLOG(1) << "EUICC status successfully uploaded.";
-  local_state_->Set(kLastUploadedEuiccStatusPref, attempted_upload_status_);
+
+  // Remember the last uploaded status to not upload it again.
+  local_state_->Set(kLastUploadedEuiccStatusPref,
+                    std::move(attempted_upload_status_));
+  // Clean out the local state preference to not send |clear_profile_list| =
+  // true multiple times.
+  local_state_->ClearPref(kShouldSendClearProfilesRequestPref);
   attempted_upload_status_.DictClear();
-  // TODO(apotapchuk): Clean up reset profile list local state pref if it was
-  // set to true.
+
   MaybeUploadStatus();
   return;
 }
