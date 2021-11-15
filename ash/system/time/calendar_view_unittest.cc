@@ -635,10 +635,18 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(1.0f, header()->layer()->opacity());
-  task_environment()->FastForwardBy(base::Milliseconds(250));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
+  // To prevent flakiness, fast forward until the header changes (see
+  // crbug/1270161). The second animation starts after the header is updated to
+  // the new month.
+  while (u"November" != month_header()->GetText()) {
+    task_environment()->FastForwardBy(base::Milliseconds(80));
+  }
+  // The opacity is updated to 0 after the first animation ends.
   EXPECT_EQ(0.0f, header()->layer()->opacity());
 
-  // Now the header is updated to the new month and year before it starts to
+  // Now the header is updated to the new month and year before it starts
   // showing up.
   EXPECT_EQ(u"November", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
@@ -646,11 +654,13 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   // The Opacity is back from 0.0f to 1.0 after 200ms delay duration.
   task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(0.0f, header()->layer()->opacity());
-  task_environment()->FastForwardBy(base::Milliseconds(250));
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
 
   // Gives it a duration to let the animation finish.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+
+  // The header is still with the updated new month after all animation
+  // finished.
   EXPECT_EQ(u"November", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
