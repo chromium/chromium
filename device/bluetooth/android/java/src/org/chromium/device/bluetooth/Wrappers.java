@@ -389,6 +389,10 @@ class Wrappers {
             mGatt.close();
         }
 
+        public boolean requestMtu(int mtu) {
+            return mGatt.requestMtu(mtu);
+        }
+
         public void discoverServices() {
             mGatt.discoverServices();
         }
@@ -485,6 +489,11 @@ class Wrappers {
         }
 
         @Override
+        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+            mWrapperCallback.onMtuChanged(mtu, status);
+        }
+
+        @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             mWrapperCallback.onServicesDiscovered(status);
         }
@@ -512,6 +521,7 @@ class Wrappers {
         public abstract void onDescriptorWrite(
                 BluetoothGattDescriptorWrapper descriptor, int status);
         public abstract void onConnectionStateChange(int status, int newState);
+        public abstract void onMtuChanged(int mtu, int status);
         public abstract void onServicesDiscovered(int status);
     }
 

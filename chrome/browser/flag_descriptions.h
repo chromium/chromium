@@ -2065,6 +2065,9 @@ extern const char kVoiceButtonInTopToolbarDescription[];
 extern const char kWalletRequiresFirstSyncSetupCompleteName[];
 extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 
+extern const char kWebBluetoothRequestLargerMtuName[];
+extern const char kWebBluetoothRequestLargerMtuDescription[];
+
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 

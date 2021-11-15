@@ -3595,6 +3595,12 @@ const char kWalletRequiresFirstSyncSetupCompleteDescription[] =
     "first-sync-setup to be complete. Only has an effect if "
     "enable-autofill-account-wallet-storage is also enabled.";
 
+const char kWebBluetoothRequestLargerMtuName[] =
+    "Request larger MTU for Web Bluetooth";
+const char kWebBluetoothRequestLargerMtuDescription[] =
+    "Controls whether Web Bluetooth should request for a larger ATT MTU so "
+    "that more information can be exchanged per transmission.";
+
 const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";

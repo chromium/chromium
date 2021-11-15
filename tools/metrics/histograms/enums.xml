@@ -50923,6 +50923,7 @@ from previous Chrome versions.
   <int value="-323508281" label="VrWebInputEditing:disabled"/>
   <int value="-322937746" label="disable-desktop-capture-picker-new-ui"/>
   <int value="-322827131" label="tab-management-experiment-type-basil"/>
+  <int value="-322684763" label="WebBluetoothRequestLargerMtu:disabled"/>
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-319235277" label="ShareMenu:disabled"/>
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>
@@ -51665,6 +51666,7 @@ from previous Chrome versions.
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>
+  <int value="265449858" label="WebBluetoothRequestLargerMtu:enabled"/>
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>

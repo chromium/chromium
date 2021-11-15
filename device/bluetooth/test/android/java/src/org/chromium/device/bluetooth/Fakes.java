@@ -580,6 +580,11 @@ class Fakes {
         }
 
         @Override
+        public boolean requestMtu(int mtu) {
+            return false;
+        }
+
+        @Override
         public void discoverServices() {
             nativeOnFakeBluetoothGattDiscoverServices(mDevice.mAdapter.mNativeBluetoothTestAndroid);
         }

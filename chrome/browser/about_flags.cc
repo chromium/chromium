@@ -7762,6 +7762,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kLargeFaviconFromGoogle,
                                     kLargeFaviconFromGoogleVariations,
                                     "LargeFaviconFromGoogle")},
+#if defined(OS_ANDROID)
+    {"web-bluetooth-request-larger-mtu",
+     flag_descriptions::kWebBluetoothRequestLargerMtuName,
+     flag_descriptions::kWebBluetoothRequestLargerMtuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kWebBluetoothRequestLargerMtu)},
+#endif  // defined(OS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
