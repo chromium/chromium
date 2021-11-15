@@ -14814,6 +14814,11 @@ Called by update_net_error_codes.py.-->
     button on the alert. This is a subset of &quot;Waiting alert popped
     up&quot;.
   </int>
+  <int value="6" label="URL copied">
+    Recorded when image data format is not recognized and the URL of the image
+    is copied instead of its data. This is a subset of &quot;Try copying fetched
+    image&quot;.
+  </int>
 </enum>
 
 <enum name="ContextMenuIOSGetImageDataByJsResult">
