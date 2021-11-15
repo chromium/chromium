@@ -52,7 +52,6 @@ component("printing_base") {
     public_configs = [ ":cups" ]
   }
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINTING_BASE_IMPL" ]
 
@@ -107,7 +106,6 @@ component("metafile") {
     "metafile_skia.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   defines = [ "IS_PRINTING_METAFILE_IMPL" ]
   public_deps = [
     ":native_drawing_context",
@@ -163,7 +161,6 @@ component("printing") {
     "pwg_raster_settings.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
 
@@ -277,7 +274,6 @@ static_library("test_support") {
     "test_printing_context.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   public_deps = [
     "//printing",
     "//printing/backend:test_support",
@@ -322,7 +318,6 @@ test("printing_unittests") {
     "units_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":printing",
     ":test_support",

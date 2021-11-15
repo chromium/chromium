@@ -33,7 +33,6 @@ component("backend") {
   ]
 
   public_configs = []
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINT_BACKEND_IMPL" ]
 
@@ -151,7 +150,6 @@ source_set("test_support") {
     "test_print_backend.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":backend",
     "//base",

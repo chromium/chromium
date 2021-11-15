@@ -496,10 +496,7 @@ component("views") {
   ]
 
   sources += get_target_outputs(":views_vector_icons")
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:noshadowing",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
   defines = [ "VIEWS_IMPLEMENTATION" ]
 
   deps = [

@@ -457,6 +457,8 @@ source_set("platform_impl_shared_file") {
     ":platform_public_types",
     "//third_party/abseil-cpp:absl",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
 # src/cpp/platform/public

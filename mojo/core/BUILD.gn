@@ -177,7 +177,6 @@ template("core_impl_source_set") {
       defines += [ "MOJO_CORE_LEGACY_PROTOCOL" ]
     }
 
-    configs += [ "//build/config/compiler:noshadowing" ]
     if (!is_debug && !optimize_for_size) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]

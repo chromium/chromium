@@ -10,10 +10,6 @@ static_library("android_system_error_page") {
     "error_page_populator.h",
   ]
 
-  configs += [
-    "//build/config/compiler:noshadowing",
-  ]
-
   deps = [
     "//base",
     "//base:i18n",
