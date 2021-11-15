@@ -98,7 +98,8 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   switch (page_node->GetLoadingState()) {
     // Loading is complete or stalled.
     case PageNode::LoadingState::kLoadingNotStarted:
@@ -117,6 +118,16 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading starts.
     case PageNode::LoadingState::kLoading: {
+      if (previous_state == PageNode::LoadingState::kLoadedBusy) {
+        // The PageNode remained in |page_nodes_loading_| when it transitioned
+        // from |kLoading| to |kLoadedBusy|, so no change is necessary when it
+        // transitions back to |kLoading|.
+        DCHECK(base::Contains(page_nodes_loading_, page_node));
+        DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+        DCHECK(!FindPageNodeToLoadData(page_node));
+        return;
+      }
+
       // The PageNode started loading because of this policy or because of
       // external factors (e.g. user-initiated). In either case, remove the
       // PageNode from the set of PageNodes for which a load needs to be
@@ -135,9 +146,11 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading is progressing.
     case PageNode::LoadingState::kLoadedBusy: {
-      // This PageNode should have been added to |page_nodes_loading_| when it
+      // The PageNode should have been added to |page_nodes_loading_| when it
       // transitioned to |kLoading|.
       DCHECK(base::Contains(page_nodes_loading_, page_node));
+      DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+      DCHECK(!FindPageNodeToLoadData(page_node));
       return;
     }
   }

@@ -102,7 +102,8 @@ class PageFreezingPolicy : public GraphObserver,
       const PageNode* page_node,
       absl::optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserver:

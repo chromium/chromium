@@ -109,7 +109,9 @@ void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   }
 }
 
-void BFCachePolicy::OnLoadingStateChanged(const PageNode* page_node) {
+void BFCachePolicy::OnLoadingStateChanged(
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   if (delay_to_flush_background_tab_.InSeconds() < 0)
     return;
 

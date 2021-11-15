@@ -304,7 +304,8 @@ class PageNodeImpl
       is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
-  ObservedProperty::NotifiesOnlyOnChanges<
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      LoadingState,
       LoadingState,
       &PageNodeObserver::OnLoadingStateChanged>
       loading_state_ GUARDED_BY_CONTEXT(sequence_checker_){

@@ -397,6 +397,50 @@ bool PageLoadTrackerDecorator::Data::DestroyForTesting(
 void PageLoadTrackerDecorator::Data::SetLoadIdleState(
     PageNodeImpl* page_node,
     LoadIdleState load_idle_state) {
+  // Check that this is a valid state transition.
+  switch (load_idle_state_) {
+    case LoadIdleState::kWaitingForNavigation:
+      DCHECK(load_idle_state == LoadIdleState::kWaitingForNavigation ||
+             load_idle_state == LoadIdleState::kLoading ||
+             load_idle_state == LoadIdleState::kWaitingForNavigationTimedOut ||
+             load_idle_state == LoadIdleState::kLoadedAndIdle)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+    case LoadIdleState::kWaitingForNavigationTimedOut:
+      DCHECK(load_idle_state == LoadIdleState::kLoading ||
+             load_idle_state == LoadIdleState::kLoadedAndIdle)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+    case LoadIdleState::kLoading:
+      DCHECK(load_idle_state == LoadIdleState::kLoadedNotIdling ||
+             load_idle_state == LoadIdleState::kLoadedAndIdling)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+    case LoadIdleState::kLoadedNotIdling:
+      DCHECK(load_idle_state == LoadIdleState::kLoadedAndIdling ||
+             load_idle_state == LoadIdleState::kLoadedAndIdle ||
+             load_idle_state == LoadIdleState::kWaitingForNavigation)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+    case LoadIdleState::kLoadedAndIdling:
+      DCHECK(load_idle_state == LoadIdleState::kLoadedNotIdling ||
+             load_idle_state == LoadIdleState::kLoadedAndIdle ||
+             load_idle_state == LoadIdleState::kWaitingForNavigation)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+    case LoadIdleState::kLoadedAndIdle:
+      DCHECK(load_idle_state == LoadIdleState::kWaitingForNavigation)
+          << "Transition from " << ToString(load_idle_state_) << " to "
+          << ToString(load_idle_state);
+      break;
+  }
+
+  // Apply the state transition.
   load_idle_state_ = load_idle_state;
 
   switch (load_idle_state_) {

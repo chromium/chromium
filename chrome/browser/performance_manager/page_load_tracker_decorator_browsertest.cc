@@ -74,7 +74,8 @@ class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
   }
 
   // PageNodeObserver:
-  void OnLoadingStateChanged(const PageNode* page_node) override {
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override {
     EXPECT_EQ(page_node_.get(), page_node);
 
     if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {

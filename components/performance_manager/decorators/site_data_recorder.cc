@@ -314,7 +314,9 @@ void SiteDataRecorder::OnMainFrameUrlChanged(const PageNode* page_node) {
                               page_node->IsVisible());
 }
 
-void SiteDataRecorder::OnLoadingStateChanged(const PageNode* page_node) {
+void SiteDataRecorder::OnLoadingStateChanged(
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* data = GetSiteDataNodeDataFromPageNode(page_node);
   data->OnIsLoadedIdleChanged(IsLoadedIdle(page_node->GetLoadingState()));

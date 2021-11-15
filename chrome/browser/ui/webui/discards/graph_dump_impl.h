@@ -132,7 +132,8 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnLoadingStateChanged(
-      const performance_manager::PageNode* page_node) override {}
+      const performance_manager::PageNode* page_node,
+      performance_manager::PageNode::LoadingState previous_state) override {}
   // Ignored.
   void OnUkmSourceIdChanged(
       const performance_manager::PageNode* page_node) override {}

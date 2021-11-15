@@ -256,7 +256,8 @@ class PageNodeObserver {
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
   // Invoked when the GetLoadingState property changes.
-  virtual void OnLoadingStateChanged(const PageNode* page_node) = 0;
+  virtual void OnLoadingStateChanged(const PageNode* page_node,
+                                     PageNode::LoadingState previous_state) = 0;
 
   // Invoked when the UkmSourceId property changes.
   virtual void OnUkmSourceIdChanged(const PageNode* page_node) = 0;
@@ -328,7 +329,8 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
       EmbeddingType previous_embedding_type) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
-  void OnLoadingStateChanged(const PageNode* page_node) override {}
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override {}
   void OnUkmSourceIdChanged(const PageNode* page_node) override {}
   void OnPageLifecycleStateChanged(const PageNode* page_node) override {}
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override {}

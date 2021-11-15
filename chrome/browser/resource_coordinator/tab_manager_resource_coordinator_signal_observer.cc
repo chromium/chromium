@@ -36,7 +36,8 @@ TabManager::ResourceCoordinatorSignalObserver::
     ~ResourceCoordinatorSignalObserver() = default;
 
 void TabManager::ResourceCoordinatorSignalObserver::OnLoadingStateChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   // Forward the notification over to the UI thread when the page stops loading.
   if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
     content::GetUIThreadTaskRunner({})->PostTask(

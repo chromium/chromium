@@ -45,7 +45,8 @@ class BFCachePolicy : public GraphOwned,
 
   // PageNodeObserver:
   void OnIsVisibleChanged(const PageNode* page_node) override;
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // SystemNodeObserver:
