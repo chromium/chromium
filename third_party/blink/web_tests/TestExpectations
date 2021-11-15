@@ -5401,9 +5401,6 @@ crbug.com/836300 fast/css3-text/css3-text-decoration/text-decoration-skip-ink-li
 # Sheriff 2020-01-14
 crbug.com/1041973 external/wpt/html/semantics/forms/constraints/form-validation-reportValidity.html [ Failure Pass ]
 
-# Disable for landing devtools changes
-crbug.com/1006759 http/tests/devtools/console/argument-hints.js [ Failure Pass ]
-
 # Failing origin trial for css properties test
 crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-declaration.html [ Failure ]
 

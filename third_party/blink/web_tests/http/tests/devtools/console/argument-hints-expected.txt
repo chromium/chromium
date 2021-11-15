@@ -43,8 +43,7 @@ boundMathLog(
 x
 
 CSS.supports(
-conditionText
-property,value
+null
 
 Uint8Array.from(
 arrayLike,?mapfn,?thisArg
