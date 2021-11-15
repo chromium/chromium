@@ -600,6 +600,7 @@
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Din enhed er låst</translation>
 <translation id="1612019740169791082">Din container er ikke konfigureret til at understøtte ændringer af diskstørrelsen. Du kan justere den mængde plads, der skal reserveres til Linux, ved at sikkerhedskopiere og derefter gendanne i en ny container.</translation>
+<translation id="1613019471223620622">Vis adgangskoden for <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Du har muligvis opbrugt den tilladte mobildatamængde. Gå til aktiveringsportalen for <ph name="NAME" /> for at købe mere data.</translation>
 <translation id="161460670679785907">Din telefon kan ikke registreres</translation>
 <translation id="1615337439947999338">Gem på din Google-konto (<ph name="EMAIL" />)</translation>
@@ -1216,6 +1217,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Unavngiven mediekilde</translation>
 <translation id="2224444042887712269">Denne indstilling tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Der skal vælges mindst ét album i kunstgalleriet</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
@@ -3340,6 +3342,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4444304522807523469">Få adgang til dokumentscannere, der er forbundet via USB eller det lokale netværk</translation>
 <translation id="4444512841222467874">Hvis der ikke frigives lagerplads, fjernes brugere og data muligvis automatisk.</translation>
 <translation id="4446933390699670756">Spejlet</translation>
+<translation id="4448914100439890108">Skjul adgangskoden for <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Dit brugernavn tilhører din organisations virksomhedskonto. Hvis du vil tilmelde enheder på kontoen, skal du først bekræfte ejerskab af domænet i Administrationskonsol. Du skal have administratorrettigheder på kontoen for at bekræfte.</translation>
 <translation id="4449996769074858870">Denne fane afspiller lyd.</translation>
 <translation id="4450274068924249931">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv. Hvis du aktiverer pauseskærmen, forbliver skærmen tændt under opladning.</translation>
@@ -3864,6 +3867,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5009463889040999939">Profilen omdøbes. Dette kan tage et par minutter.</translation>
 <translation id="5010043101506446253">Certificeringsautoritet</translation>
 <translation id="5015344424288992913">Identificerer proxy...</translation>
+<translation id="5016491575926936899">Du kan sende sms-beskeder fra din computer, dele din internetforbindelse, svare i samtalenotifikationer og låse din <ph name="DEVICE_TYPE" /> op med din telefon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Du kan navigere på sider med en tekstmarkør. Tryk på Ctrl+søgetasten+7 for at deaktivere.</translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
 <translation id="5018207570537526145">Åbn udvidelsens website</translation>
@@ -4453,6 +4457,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5638309510554459422">Find udvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Opdater denne side, og hold markøren for at se flere valgmuligheder</translation>
 <translation id="5640133431808313291">Administrer sikkerhedsnøgler</translation>
+<translation id="5641608986289282154">Kom i gang med at bruge <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL-underskriver</translation>
 <translation id="5643321261065707929">Forbrugsafregnet netværk</translation>
 <translation id="5643620609347735571">Ryd og fortsæt</translation>

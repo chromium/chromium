@@ -602,6 +602,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="161042844686301425">Cianova</translation>
 <translation id="1611432201750675208">Naprava je zaklenjena</translation>
 <translation id="1612019740169791082">Vsebnik ni konfiguriran za podporo spreminjanja velikosti diska. Če želite prilagoditi količino prostora, ki je rezerviran za Linux, ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
+<translation id="1613019471223620622">Prikaz gesla za uporabniško ime <ph name="USERNAME" /> v domeni <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Morda ste porabili dovoljeno količino prenosa podatkov v mobilnem omrežju. Večjo količino podatkov lahko kupite na portalu za aktiviranje <ph name="NAME" />.</translation>
 <translation id="161460670679785907">Ni mogoče zaznati vašega telefona</translation>
 <translation id="1615337439947999338">Shrani v računu Google (<ph name="EMAIL" />)</translation>
@@ -1218,6 +1219,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2220529011494928058">Prijavite težavo</translation>
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Neimenovan vir predstavnosti</translation>
 <translation id="2224444042887712269">Ta nastavitev se nanaša na uporabnika <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Izbrati morate najmanj en album iz umetnostne galerije.</translation>
 <translation id="2224551243087462610">Uredi ime mape</translation>
@@ -3342,6 +3344,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4444304522807523469">Dostop do optičnih bralnikov, priklopljenih prek USB-ja ali povezanih v lokalno omrežje.</translation>
 <translation id="4444512841222467874">Če ne sprostite prostora, bodo uporabniki in podatki morda samodejno odstranjeni.</translation>
 <translation id="4446933390699670756">Zrcaljeno</translation>
+<translation id="4448914100439890108">Skrivanje gesla za uporabniško ime <ph name="USERNAME" /> v domeni <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Uporabniško ime pripada računu podjetja organizacije. Če želite včlaniti naprave v račun, najprej v konzoli Admin console preverite lastništvo domene. Če ga boste želeli preveriti, boste potrebovali skrbniške pravice v računu.</translation>
 <translation id="4449996769074858870">Na tem zavihku se predvaja zvok.</translation>
 <translation id="4450274068924249931">Ko je zaslon nedejaven, prikaži fotografije, uro, vreme in podatke o predstavnosti. Če omogočite ohranjevalnik zaslona, bo zaslon vklopljen med polnjenjem.</translation>
@@ -3866,6 +3869,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5009463889040999939">Preimenovanje profila. To lahko traja nekaj minut.</translation>
 <translation id="5010043101506446253">Overitelj potrdila</translation>
 <translation id="5015344424288992913">Razrešujem proxy ...</translation>
+<translation id="5016491575926936899">Iz računalnika lahko pošiljate sporočila SMS, delite internetno povezavo, odgovarjate na obvestila v pogovorih in odklenete napravo <ph name="DEVICE_TYPE" /> s telefonom.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Po straneh se lahko premikate s kazalcem besedila. Pritisnite Ctrl + Search + 7 za izklop.</translation>
 <translation id="5017828934289857214">Opomni me pozneje</translation>
 <translation id="5018207570537526145">Odpri spletno mesto razširitve</translation>
@@ -4458,6 +4462,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5638309510554459422">Poiščite razširitve in teme v <ph name="BEGIN_LINK" />Spletni trgovini Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Vnovično nalaganje te strani, pridržite za prikaz več možnosti</translation>
 <translation id="5640133431808313291">Upravljanje varnostnih ključev</translation>
+<translation id="5641608986289282154">Začnite uporabljati sistem <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Podpisnik seznama ukinjenih potrdil</translation>
 <translation id="5643321261065707929">Omrežje z omejenim prenosom podatkov</translation>
 <translation id="5643620609347735571">Počisti in nadaljuj</translation>

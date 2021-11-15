@@ -158,6 +158,8 @@
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="3583278742022654445">Svag signalstyrke. Prøv at rykke tættere på kilden til Wi-Fi-signalet.</translation>
 <translation id="3595596368722241419">Batteri helt opladet</translation>
+<translation id="360089215033199597">Det anbefales at oprette forbindelse til Wi-Fi for at gøre reparationsprocessen nemmere.
+        Dit netværk gemmes.</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
@@ -478,6 +480,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
+<translation id="8217675307824400706">Få forbindelse</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>

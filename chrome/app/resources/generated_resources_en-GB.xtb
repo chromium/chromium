@@ -4098,6 +4098,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5265562206369321422">Offline for more than a week</translation>
 <translation id="5265797726250773323">Error while installing</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
+<translation id="526622169288322445">More actions for <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Print Failed</translation>
 <translation id="5275352920323889391">Dog</translation>
 <translation id="527605982717517565">Always allow JavaScript on <ph name="HOST" /></translation>
@@ -5482,6 +5483,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6775163072363532304">Available devices will appear here.</translation>
 <translation id="6777817260680419853">Redirect blocked</translation>
 <translation id="6778737459546443941">Your parent hasn't approved it yet</translation>
+<translation id="6779092717724412415">To create a highlight like this one, select any text and right-click.</translation>
 <translation id="6779447100905857289">your baskets</translation>
 <translation id="677965093459947883">Very small</translation>
 <translation id="6781005693196527806">&amp;Manage search engines…</translation>
@@ -5628,6 +5630,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6914783257214138813">Your passwords will be visible to anyone who can see the exported file.</translation>
 <translation id="6916590542764765824">Manage Extensions</translation>
 <translation id="6919868320029503575">Weak passwords</translation>
+<translation id="6919952941889172531">Also turn on Enhanced Safe Browsing for this Chrome profile?</translation>
 <translation id="6920989436227028121">Open as standard tab</translation>
 <translation id="6921104647315081813">Clear activities</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> could not be opened</translation>
@@ -6297,6 +6300,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7625823789272218216">New Tab to the Left</translation>
 <translation id="7628201176665550262">Refresh rate</translation>
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">This device is managed by <ph name="MANAGER" /> and requires you to sign in every time.</translation>
 <translation id="7631014249255418691">Linux apps &amp; files have been successfully backed up</translation>
 <translation id="7631205654593498032">When you connect your devices, you agree that your <ph name="DEVICE_TYPE" /> can:</translation>
 <translation id="7631887513477658702">&amp;Always Open Files of This Type</translation>

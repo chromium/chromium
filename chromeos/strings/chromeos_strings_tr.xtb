@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1851218745569890714">Video Konferansı</translation>
+<translation id="1857850044054738019">Cihaz yeni bir müşteriye dağıtılmak üzere yenileniyor veya tekrar stoklara ekleniyorsa bu seçeneği belirleyin.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
@@ -197,6 +198,7 @@
 <translation id="4244962993387259361">Bellek testi yapmak için en az 500 MB boş alana ihtiyacınız var. Yer açmak için Ayarlar &gt; Depolama alanı yönetimi bölümüne gidin.</translation>
 <translation id="4258281355379922695">HTTP Gecikmesi</translation>
 <translation id="4271957103967917607">Tam Ekran görüntüle</translation>
+<translation id="4275799948641988986">Cihaz onarıldıktan sonra kim tarafından kullanılacak?</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
@@ -413,6 +415,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7297226631177386107">HTTPS web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Cihazın sahibi değişir</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
@@ -420,6 +423,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
+<translation id="7451112128070628323">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7487067081878637334">Teknoloji</translation>
 <translation id="7490813197707563893">MAC adresi</translation>
@@ -544,6 +548,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
+<translation id="9095415590198785865">Cihazın sahibi değişmez</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>

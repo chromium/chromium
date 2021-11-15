@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Tilpasset</translation>
 <translation id="1197267115302279827">Flyt bogmærker</translation>
 <translation id="1201402288615127009">Næste</translation>
+<translation id="1202892408424955784">Produkter, du følger</translation>
 <translation id="1204037785786432551">Download link</translation>
 <translation id="1206892813135768548">Kopiér linktekst</translation>
 <translation id="1208340532756947324">Aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Kontakter Google. Dette kan tage et øjeblik…</translation>
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1448440926884431741">Organiser de produkter, du holder øje med, i Bogmærker</translation>
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
 <translation id="1466383950273130737">Vælg sprog i Chrome</translation>
 <translation id="147113415845704694">Prøv at sige "Hvordan er vejret i dag?"</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre sprog</translation>
+<translation id="1894023287452300670">Hold øje med prisen her</translation>
 <translation id="1905320231301365059">De filer, du downloader i inkognitotilstand, kan stadig ses af alle, der bruger denne enhed.</translation>
 <translation id="1910950723001426294">Listen over delingsindstillinger er lukket.</translation>
 <translation id="1918175104945982129">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i halv højde</translation>
@@ -345,6 +348,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3029704984691124060">Adgangssætningerne stemmer ikke overens</translation>
 <translation id="3031225630520268969">Brugerflade for samtykke i forbindelse med stemmesøgning i Assistent</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjælp<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
 <translation id="3046945242843292318">Nå hurtigere frem til dette website næste gang</translation>
 <translation id="305593374596241526">Placering er slået fra. Du kan aktivere den i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
@@ -502,6 +506,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
 <translation id="4045764304651014138">Brugsdata</translation>
+<translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Du finder de tilgængelige valgmuligheder øverst på skærmen</translation>
 <translation id="4062305924942672200">Juridiske oplysninger</translation>
@@ -555,6 +560,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4409271659088619928">Dine standardsøgemaskine er <ph name="DSE" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
 <translation id="4411535500181276704">Lite-tilstand</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
+<translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4450672886426705087">Søgeresultater fra Google.</translation>
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
@@ -752,6 +758,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
+<translation id="555816257274242153">Der holdes ikke længere øje med prisen</translation>
 <translation id="5561549206367097665">Venter på netværk…</translation>
 <translation id="5568069709869097550">Kan ikke logge ind</translation>
 <translation id="55737423895878184">Placering og notifikationer er tilladt</translation>
@@ -802,9 +809,11 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5833984609253377421">Del link</translation>
 <translation id="5834764604050996579">Hvis du vil scanne en QR-kode, skal du give Chrome tilladelse til at bruge dit kamera</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Organiser de produkter, du holder øje med, i Bogmærker ved hjælp af mappeikonet</translation>
 <translation id="5853623416121554550">sat på pause</translation>
 <translation id="5854512288214985237">Der sendes hverken statistik eller nedbrudsrapporter til Google</translation>
 <translation id="5855546874025048181">Juster: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Noget gik galt. Overvåg pris kunne ikke opdateres.</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5862731021271217234">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder</translation>
@@ -861,6 +870,7 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 <translation id="6140912465461743537">Land/region</translation>
 <translation id="6141988275892716286">Bekræft download</translation>
 <translation id="614940544461990577">Prøv at:</translation>
+<translation id="6150320133806434356">Bogmærket er gemt</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> sparet data</translation>
 <translation id="6159729262978459665">Ryder historikken fra alle synkroniserede enheder.</translation>
@@ -875,6 +885,7 @@ Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i u
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
 <translation id="6277522088822131679">Der opstod et problem med udskrivning af siden. Prøv igen.</translation>
+<translation id="6277722725779679269">Overvåg pris kunne ikke opdateres</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Du kan sende faner mellem enheder, hvor du er logget ind på den samme Google-konto</translation>
@@ -908,6 +919,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6411219469806822692">Du kan ikke komme højere op. Prøv at starte højere oppe på siden.</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="641643625718530986">Udskriv…</translation>
+<translation id="6422857128426228781">Her finder du de produkter, du holder øje med</translation>
 <translation id="6433501201775827830">Vælg en søgemaskine</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6437478888915024427">Sideoplysninger</translation>
@@ -984,6 +996,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6817747507826986771">Del hurtigt denne side. Hold fingeren nede for at redigere denne genvej.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, fane, valgt</translation>
+<translation id="6828070228333235514">Stop med at holde øje med prisen</translation>
 <translation id="6846298663435243399">Indlæser…</translation>
 <translation id="6850409657436465440">Der downloades stadig</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> faner blev lukket</translation>
@@ -1297,6 +1310,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8571213806525832805">Seneste 4 uger</translation>
 <translation id="8572344201470131220">Billedet blev kopieret</translation>
 <translation id="8583805026567836021">Kontodataene ryddes</translation>
+<translation id="859046281437143747">Hold øje med prisen ved hjælp af knappen Flere valgmuligheder</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
 <translation id="8602358303461588329">Log ind i Chrome, lukket.</translation>
 <translation id="860282621117673749">Underretninger om prisfald</translation>

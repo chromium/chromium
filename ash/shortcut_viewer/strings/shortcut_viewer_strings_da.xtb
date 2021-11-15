@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 til 8</translation>
 <translation id="3837047332182291558">Skru op for tastaturets lys (gælder kun for tastaturer med bagbelyste taster)</translation>
 <translation id="3949671998904569433">komma</translation>
+<translation id="3976707995992061296">Bestem, om det aktive vindue er tildelt alle skriveborde</translation>
 <translation id="3976863468609830880">Klik på det sidste ikon på din hylde</translation>
 <translation id="3994783594793697310">Nulstil zoomniveauet på skærmen</translation>
 <translation id="4026843240379844265">Flyt det aktive vindue fra skærm til skærm</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Zoom ind på skærmen</translation>
 <translation id="634687982629734605">Skift fokus mellem: Statusområdet (hvor dit kontobillede vises), applisten, adresselinjen, bogmærkelinjen (hvis den er synlig), den åbne webside og downloadlinjen (hvis den er synlig). Hvis der vises en fokuserbar dialogboks, skal fokus flyttes til den i stedet.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Aktivér det 1. til det 8. skrivebord.</translation>
 <translation id="6395172954772765143">Markér teksten til slutningen af linjen</translation>
 <translation id="6425378783626925378">Klik på ikon 1-8 på din hylde</translation>
 <translation id="6435207348963613811">Fremhæv det forrige element på din hylde</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Vis skjulte filer i appen Filer</translation>
 <translation id="8717459106217102612">Markér det forrige ord eller bogstav</translation>
 <translation id="8727232706774971183">Se dine notifikationer</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 til 8</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8881584919399569791">Flyt det aktive vindue til skrivebordet til venstre</translation>
 <translation id="88986195241502842">Gå en side ned</translation>

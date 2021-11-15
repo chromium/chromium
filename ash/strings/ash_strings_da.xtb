@@ -119,6 +119,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1743570585616704562">Ikke genkendt</translation>
 <translation id="1746730358044914197">Indtastningsmetoder konfigureres af din administrator.</translation>
 <translation id="1747827819627189109">Skærmtastaturet er aktiveret</translation>
+<translation id="1750088060796401187">Maks. <ph name="MAX_DESK_LIMIT" /> skriveborde er tilladt. Fjern et skrivebord for at åbne et nyt.</translation>
 <translation id="1761222317188459878">Slå netværksforbindelse til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+punktum er blevet ændret. Hvis du vil bruge Insert-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace.</translation>
 <translation id="1771761307086386028">Rul til højre</translation>

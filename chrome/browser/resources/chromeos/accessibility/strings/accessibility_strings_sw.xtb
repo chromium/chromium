@@ -69,6 +69,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="1354356357730355833">nakili</translation>
 <translation id="135978014023467274">Kifaa chako kimesasishwa kitumie ChromeVox 63!</translation>
 <translation id="1360699455582016846">Bofya kipengee kilicho chini ya ufunguo wa ruta cha <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">nenda kwenye herufi inayofuata</translation>
 <translation id="1377925789329510816">Hiki ndicho kichwa cha mwisho. Bonyeza Search+H uende kwenye kichwa cha kwanza, au Search+Shift+H uende kwenye kichwa cha pili kwenye ukurasa huu.</translation>
 <translation id="138218114945450791">Samawati Isiyokolea</translation>
 <translation id="1383876407941801731">Tafuta</translation>
@@ -213,6 +214,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2450814015951372393">Kisanduku cha kuteua</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
 <translation id="2462626033734746142">Vitufe kadhaa vya mviringo</translation>
+<translation id="2467741090055146971">acha kuchagua</translation>
 <translation id="2471138580042810658">Kichwa 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{nyota}other{nyota #}}</translation>
 <translation id="2490721194269245365">Kahawia Hafifu</translation>
@@ -565,6 +567,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="4854380505292502090">Hakuna wijeti ya maudhui iliyotangulia</translation>
 <translation id="4855927945655956315">Vitufe Muhimu: 'Control'</translation>
 <translation id="4862744964787595316">Si herufi nzito</translation>
+<translation id="4865995900839719272">nenda kwenye mstari uliotangulia</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Washa uwekaji kumbukumbu ya TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, kichupo</translation>
 <translation id="5308380583665731573">Unganisha</translation>
 <translation id="5310788376443009632">limeondolewa:</translation>
+<translation id="5316825363044614340">nenda kwenye mstari unaofuata</translation>
 <translation id="5320727453979144100">Hali ya kunata imewashwa</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{koma}other{koma #}}</translation>
 <translation id="532485153932049746">Muundo wa maandishi
@@ -902,6 +906,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Hakuna sehemu ya fomu iliyotangulia</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">usaidizi</translation>
 <translation id="7317017974771324508">imechagua baadhi</translation>
 <translation id="7322442671176251901">Kuchunguza kwa kugusa</translation>
 <translation id="7344012264516629579">Amri zingine za kuruka ni pamoja na kuruka kulingana na kiungo, kitufe, kisanduku cha kuteua na nyinginezo. Unaweza kupata orodha kamili ya amri za kuruka kwenye menyu za ChromeVox, unazoweza kufungua kwa kubonyeza vitufe vya Utafutaji an Nukta.</translation>
@@ -1129,6 +1134,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="9014206344398081366">Mafunzo ya ChromeVox</translation>
 <translation id="9040132695316389094">Kichwa cha 1</translation>
 <translation id="9061884144798498064">Chagua jedwali la breli ya vitone 8:</translation>
+<translation id="9063946545000394379">nenda kwenye herufi iliyotangulia</translation>
 <translation id="9065283790526219006">+dirisha ibukizi</translation>
 <translation id="9065912140022662363">Hakuna kitufe cha mviringo kinachofuata</translation>
 <translation id="9067522039955793016">Nafasi ya kugawa kurasa</translation>

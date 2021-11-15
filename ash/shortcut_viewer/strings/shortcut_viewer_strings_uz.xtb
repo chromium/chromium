@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 va 8 orasida</translation>
 <translation id="3837047332182291558">Klaviaturani yorqinlashtirish (faqat chiroqli klaviaturalar uchun)</translation>
 <translation id="3949671998904569433">vergul</translation>
+<translation id="3976707995992061296">Barcha ish stollaridagi faol oyna tugmasi</translation>
 <translation id="3976863468609830880">Javondagi oxirgi ikonkani bosish</translation>
 <translation id="3994783594793697310">Ekranning asl masshtabini tiklash</translation>
 <translation id="4026843240379844265">Faol oynani ekranlararo almashtirish</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Ekran masshtabini kattalashtirish</translation>
 <translation id="634687982629734605">Panelni faollashtirish: Holat qatori (hisob rasmi ko‘rinadigan), launcher, manzil qatori, xatcho‘plar (agar ko‘rinsa), yuklanmalar panelini ochuvchi sahifa (agar ko‘rinsa) Agar fokuslanadigan oyna chiqsa, fokusni unga oʻtkazing.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Barcha (1-8) ish stollarida faollashtirish.</translation>
 <translation id="6395172954772765143">Matnni qator oxirigacha belgilash</translation>
 <translation id="6425378783626925378">Javondagi ikonkalarni bosish (1 va 8 orasida)</translation>
 <translation id="6435207348963613811">Javondagi avvalgi elementni belgilash</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Fayllar ilovasidagi yashirin fayllarni ko‘rish</translation>
 <translation id="8717459106217102612">Avvalgi so‘z yoki harfni belgilash</translation>
 <translation id="8727232706774971183">Bildirishnomalarni ko‘rish</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 va 8 orasida</translation>
 <translation id="8855885154700222542">Butun ekran rejimi tugmasi</translation>
 <translation id="8881584919399569791">Faol oynani ish stolining chap tomoniga joylash</translation>
 <translation id="88986195241502842">Pastki sahifa</translation>

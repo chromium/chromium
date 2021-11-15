@@ -4082,6 +4082,7 @@
 <translation id="5265562206369321422">אופליין במשך יותר משבוע</translation>
 <translation id="5265797726250773323">קרתה שגיאה במהלך ההתקנה</translation>
 <translation id="5266113311903163739">שגיאת ייבוא של רשות אישורים</translation>
+<translation id="526622169288322445">עוד פעולות לגבי <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">ההדפסה נכשלה</translation>
 <translation id="5275352920323889391">כלב</translation>
 <translation id="527605982717517565">‏לאפשר תמיד JavaScript ב-<ph name="HOST" /></translation>
@@ -5458,6 +5459,7 @@
 <translation id="6775163072363532304">כאן יופיעו מכשירים זמינים.</translation>
 <translation id="6777817260680419853">הפניה לכתובת אתר אחרת נחסמה</translation>
 <translation id="6778737459546443941">ההורה ששאלת עדיין לא אישר זאת</translation>
+<translation id="6779092717724412415">כדי ליצור הדגשה דומה, בוחרים טקסט כלשהו ולוחצים לחיצה ימנית.</translation>
 <translation id="6779447100905857289">עגלות הקניות שלך</translation>
 <translation id="677965093459947883">קטן מאוד</translation>
 <translation id="6781005693196527806">&amp;ניהול מנועי החיפוש…</translation>
@@ -6273,6 +6275,7 @@
 <translation id="7625823789272218216">כרטיסייה חדשה מצד ימין</translation>
 <translation id="7628201176665550262">קצב רענון</translation>
 <translation id="7629827748548208700">כרטיסייה: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">המכשיר הזה מנוהל על ידי <ph name="MANAGER" />, וכדי להשתמש בו צריך להיכנס לחשבון בכל פעם.</translation>
 <translation id="7631014249255418691">‏הקבצים והאפליקציות של Linux עברו גיבוי בהצלחה.</translation>
 <translation id="7631205654593498032">חיבור המכשירים מבטא את הסכמתך לכך שה-<ph name="DEVICE_TYPE" /> יוכל לבצע את הפעולות הבאות:</translation>
 <translation id="7631887513477658702">&amp;פתיחת קבצים מסוג זה תמיד</translation>

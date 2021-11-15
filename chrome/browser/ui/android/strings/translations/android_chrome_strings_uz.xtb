@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Boshqa</translation>
 <translation id="1197267115302279827">Xatcho‘plarni ko‘chirib o‘tkazish</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
+<translation id="1202892408424955784">Kuzatiladigan mahsulotlar</translation>
 <translation id="1204037785786432551">Havola kontentini yuklab olish</translation>
 <translation id="1206892813135768548">Havola matnini nusxalash</translation>
 <translation id="1208340532756947324">Barcha qurilmalarda sinxronlash va o‘zingizga moslash uchun sinxronizatsiyani yoqing</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Google bilan aloqa o‘rnatilmoqda. Iltimos, kuting…</translation>
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1430915738399379752">Chop etish</translation>
+<translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1466383950273130737">Chrome tilini tanlang</translation>
 <translation id="147113415845704694">“Bugungi ob-havo qanday?” deb soʻrang</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
 <translation id="1883903952484604915">Fayllarim</translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
+<translation id="1894023287452300670">Narxni shu yerdan kuzating</translation>
 <translation id="1905320231301365059">Inkognito rejimida yuklab olingan fayllar hali ham bu qurilma foydalanuvchilariga koʻrinadi.</translation>
 <translation id="1910950723001426294">Ruxsat parametrlari roʻyxati yopildi.</translation>
 <translation id="1918175104945982129">Assistent ovozli qidiruv paneli interfeysi yarim hajmda ochildi</translation>
@@ -346,6 +349,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3029704984691124060">Kodli iboralar bir xil emas</translation>
 <translation id="3031225630520268969">Assistent ovozli qidiruv paneli interfeysi</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3037517125981011456">Chrome orqali kirish oynasi chiqadi</translation>
 <translation id="3046945242843292318">Keyingi safar bu saytga tezroq kirish</translation>
 <translation id="305593374596241526">Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
@@ -504,6 +508,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4016425174436051808">Obuna qilinmadi. Xatolik yuz berdi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# soat}other{# soat}}</translation>
 <translation id="4045764304651014138">Foydalanish statistikasi</translation>
+<translation id="405399507749852140">Har qaysi saytda narxi tushganda xabar olish</translation>
 <translation id="4056223980640387499">Sepiya</translation>
 <translation id="4060598801229743805">Parametrlar ekranning yuqoriroq qismida joylashgan</translation>
 <translation id="4062305924942672200">Yuridik ma’lumot</translation>
@@ -557,6 +562,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4409271659088619928">Qidiruv tizimingiz: <ph name="DSE" />. Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi koʻrsatmalarni oching.</translation>
 <translation id="4411535500181276704">Lite rejimi</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
+<translation id="4425140285732600465">Narxi kuzatiladi. Har qaysi saytda narxi tushganda xabar olish.</translation>
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4450672886426705087">Google orqali qidiruv natijalari.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> nomli varaqni yopish</translation>
@@ -754,6 +760,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
 <translation id="5555525474779371165">Saytlarni xavfsiz kezish himoyasini tanlang</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
+<translation id="555816257274242153">Narx kuzatuvi toʻxtatildi</translation>
 <translation id="5561549206367097665">Tarmoq kutilmoqda...</translation>
 <translation id="5568069709869097550">Kirish amalga oshmadi</translation>
 <translation id="55737423895878184">Joylashuv xizmati va bildirishnomalarga ruxsat berildi</translation>
@@ -804,9 +811,11 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5833984609253377421">Havolani ulashish</translation>
 <translation id="5834764604050996579">Chrome QR kodni skanerlashi uchun kameradan foydalanishga ruxsat bering</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Kuzatiladigan mahsulotlarni bukmarklarda jild belgisi orqali tartiblang</translation>
 <translation id="5853623416121554550">pauza qilindi</translation>
 <translation id="5854512288214985237">Googlega hech qanday statistika yoki ishdan chiqish hisoboti yuborilmagan</translation>
 <translation id="5855546874025048181">Aniqlashtirish: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Xatolik yuz berdi. Kuzatiladigan narx yangilanmadi.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5862731021271217234">Boshqa qurilmalardagi brauzer sahifalarini ko‘rish uchun sinxronizatsiyani yoqing</translation>
@@ -863,6 +872,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda 
 <translation id="6140912465461743537">Mamlakat/mintaqa</translation>
 <translation id="6141988275892716286">Yuklanishni tasdiqlang</translation>
 <translation id="614940544461990577">Quyidagilarni bajaring:</translation>
+<translation id="6150320133806434356">Bukmark saqlandi</translation>
 <translation id="6154478581116148741">Bu qurilmadan parollaringizni eksport qilish uchun Sozlamalarda ekran qulfi yoniq bo‘lishi kerak.</translation>
 <translation id="6159335304067198720">Ma’lumotlar tejami: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Sinxronlangan barcha qurilmalardagi brauzer tarixini tozalaydi.</translation>
@@ -877,6 +887,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda 
 Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda reklama e’lonlari ko‘rsatilishi mumkin. Boshqa saytlar esa brauzer faoliyati haqidagi ma’lumotlarni (m-n, xavfsizlikni mustahkamlash, kontent ko‘rsatish, reklama taqdimoti, statistik hisobotlar yasash kabi) to‘plashda va bu ma’lumotlardan foydalanishda davom etmoqda.</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6277522088822131679">Sahifani chop etishda muammo yuzaga keldi. Qayta urinib ko‘ring.</translation>
+<translation id="6277722725779679269">Kuzatiladigan narx yangilanmadi</translation>
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6292420053234093573">Chromeni ishlatish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va Chrome OS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz.</translation>
 <translation id="6294610283659775533">Varaqlarni bir xil Google hisobidan kirilgan qurilmalararo yuborish mumkin</translation>
@@ -910,6 +921,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6411219469806822692">Bundan tepasi olinmaydi. Sahifaning yuqori qismidan qayta boshlang.</translation>
 <translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="641643625718530986">Chop etish…</translation>
+<translation id="6422857128426228781">Kuzatiladigan mahsulotlar shu yerda chiqadi</translation>
 <translation id="6433501201775827830">Qidiruv tizimini tanlang</translation>
 <translation id="6434309073475700221">Bekor qilish</translation>
 <translation id="6437478888915024427">Sahifa haqida</translation>
@@ -987,6 +999,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6817747507826986771">Bu sahifani tezda ulashish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="6820686453637990663">CVC kod</translation>
 <translation id="6824899148643461612">Varaq tanlandi: <ph name="TAB_TITLE" /></translation>
+<translation id="6828070228333235514">Narx kuzatuvini toʻxtatish</translation>
 <translation id="6846298663435243399">Yuklanmoqda…</translation>
 <translation id="6850409657436465440">Fayl hali ham yuklab olinmoqda</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ta varaq yopildi</translation>
@@ -1303,6 +1316,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8571213806525832805">Oxirgi 4 hafta</translation>
 <translation id="8572344201470131220">Rasmdan nusxa olindi</translation>
 <translation id="8583805026567836021">Hisob ma’lumotlari tozalanmoqda</translation>
+<translation id="859046281437143747">Yana tugmasi orqali narxlarni kuzatish mumkin</translation>
 <translation id="860043288473659153">Karta egasining ismi</translation>
 <translation id="8602358303461588329">Chrome hisobiga kirish, yopildi.</translation>
 <translation id="860282621117673749">Narx tushishi signallari</translation>

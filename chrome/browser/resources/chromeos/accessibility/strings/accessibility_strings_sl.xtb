@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{oglati zaklepaj}one{# oglati zaklepaj}two{# oglata zaklepaja}few{# oglati zaklepaji}other{# oglatih zaklepajev}}</translation>
 <translation id="3494946239022273294">elmen</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{vprašaj}one{# vprašaj}two{# vprašaja}few{# vprašaji}other{# vprašajev}}</translation>
+<translation id="3505359110822747654">Strnitev menije za ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{strešica}one{# strešica}two{# strešici}few{# strešice}other{# strešic}}</translation>
 <translation id="352577523970648069">Besedilno polje, ki ga je mogoče urejati</translation>
 <translation id="3538907380453898475">sznmopisov</translation>

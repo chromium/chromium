@@ -119,6 +119,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1743570585616704562">Ni prepoznano</translation>
 <translation id="1746730358044914197">Načine vnosa konfigurira skrbnik.</translation>
 <translation id="1747827819627189109">Zaslonska tipkovnica omogočena</translation>
+<translation id="1750088060796401187">Dovoljenih je samo toliko namizij: <ph name="MAX_DESK_LIMIT" />. Odstranite namizje, če želite odpreti novega.</translation>
 <translation id="1761222317188459878">Preklop omrežne povezave. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Bližnjica na tipkovnici <ph name="LAUNCHER_KEY_NAME" /> + pika je spremenjena. Če želite uporabiti tipko za vstavljanje, pritisnite tipko <ph name="LAUNCHER_KEY_NAME" /> + Shift + vračalko.</translation>
 <translation id="1771761307086386028">Pomik desno</translation>

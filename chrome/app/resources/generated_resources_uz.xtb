@@ -594,6 +594,7 @@
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611432201750675208">Qurilmangiz qulflangan</translation>
 <translation id="1612019740169791082">Konteyneringiz disk hajmini oʻzgartirish uchun moʻljallanmagan. Diskdagi Linux uchun ajratilgan joyni kengaytirish uchun konteynerni zaxiralang va keyin yangi konteynerda tiklang.</translation>
+<translation id="1613019471223620622"><ph name="DOMAIN" /> saytidagi <ph name="USERNAME" /> parolini chiqarish</translation>
 <translation id="1614511179807650956">Siz belgilangan trafik miqdorini tugatdingiz shekilli. Yana trafik sotib olish uchun <ph name="NAME" /> portaliga tashrif buyuring.</translation>
 <translation id="161460670679785907">Telefoningiz topilmadi</translation>
 <translation id="1615337439947999338">Google (<ph name="EMAIL" />) hisobingizga saqlash</translation>
@@ -1202,6 +1203,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Nomsiz media manba</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
 <translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
 <translation id="2224551243087462610">Jild nomini o‘zgartirish</translation>
@@ -1218,6 +1220,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2232751457155581899">Saytlar kamerangiz joylashuvini kuzatishga ruxsat soʻray oladi</translation>
 <translation id="2232876851878324699">Faylda import qilinmagan bir sertifikat mavjud:</translation>
 <translation id="2233502537820838181">&amp;Tafsilotlar</translation>
+<translation id="223356358902285214">Veb va ilovalardagi faoliyat tarixi</translation>
 <translation id="2234876718134438132">Sinxronizatsiya va Google xizmatlari</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
 <translation id="2238379619048995541">Protsessorning turli chastotadagi faoliyati ma’lumotlari</translation>
@@ -1907,6 +1910,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> hozir qulanadi.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.</translation>
 <translation id="2923234477033317484">Bu hisobni olib tashlash</translation>
+<translation id="2923644930701689793">Telefon kamerasi olgan rasmlarga ruxsat</translation>
 <translation id="2926085873880284723">Standart yorliqlarni tiklash</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> mos emas.</translation>
 <translation id="2927017729816812676">Kesh xotirasi</translation>
@@ -2347,6 +2351,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3413122095806433232">Sertifikatlash markazi noshiri: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Hajmi:</translation>
 <translation id="3414966631182382431">Brauzeringiz <ph name="MANAGER" /> <ph name="BEGIN_LINK" />tomonidan boshqariladi<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">Jonli izoh - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Doim butun URL manzillar chiqarilsin</translation>
 <translation id="3417835166382867856">Varaqlar ichidan qidirish</translation>
 <translation id="3417836307470882032">24 soatlik format</translation>
@@ -3098,6 +3103,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> foydalanuvchisining ba`zi sozlamalari multi-kirish (bir nechta hisobdan) vaqtida hisobingizga ta`sir qiladi.</translation>
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4170314459383239649">Chiqish vaqtida tozalansin</translation>
+<translation id="417096670996204801">Profilni tanlang</translation>
 <translation id="4175137578744761569">Och pushti va oq</translation>
 <translation id="4175737294868205930">Doimiy xotira ombori</translation>
 <translation id="4176463684765177261">O‘chirib qo‘yilgan</translation>
@@ -3326,6 +3332,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4444304522807523469">USB-port yoki tarmoq orqali ulanilgan skanerga ruxsat</translation>
 <translation id="4444512841222467874">Yetarli bo‘sh joy bo‘lmasa, foydalanuvchilar va ularning ma’lumotlari avtomatik o‘chirilishi mumkin.</translation>
 <translation id="4446933390699670756">Aks rejimi</translation>
+<translation id="4448914100439890108"><ph name="DOMAIN" /> saytidagi <ph name="USERNAME" /> parolini berkitish</translation>
 <translation id="4449948729197510913">Bu login tashkilotingiz korporativ hisobiga tegishli. Qurilmalarni hisobga qayd qilish uchun avval Administrator konsoli orqali domenga egalik huquqini tasdiqlang. Tasdiqlash uchun hisobingizda boshqaruv vakolatlari bo'lishi kerak.</translation>
 <translation id="4449996769074858870">Bu ichki oynada audio ijro etilmoqda.</translation>
 <translation id="4450274068924249931">Qurilma kutish rejimiga oʻtganda rasmlar, vaqt, ob-havo va media axboroti chiqsin. Ekran lavhasi yoqilsa, quvvatlash vaqtida displey yoniq turadi.</translation>
@@ -3850,6 +3857,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5009463889040999939">Profil qayta nomlanmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="5010043101506446253">Sertifikat markazi</translation>
 <translation id="5015344424288992913">Proksi-server aniqlanmoqda...</translation>
+<translation id="5016491575926936899">Kompyuterdan SMS yuborish, internet aloqangizni ulashish va chatlarda xabarlarga javob yozishingiz mumkin. Shuningdek, telefon yordamida <ph name="DEVICE_TYPE" /> qurilmasining qulfini ochishingiz ham mumkin.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Sahifalarni matn kursori bilan kezish mumkin. Rejimdan chiqish uchun Ctrl+Search+F7 tugmalarini bosing.</translation>
 <translation id="5017828934289857214">Keyinroq eslatilsin</translation>
 <translation id="5018207570537526145">Kengaytma saytini ochish</translation>
@@ -4440,6 +4448,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome internet-do‘konidan<ph name="END_LINK" /> kengaytma va mavzularni topish</translation>
 <translation id="5639549361331209298">Sahifani yangilash (bosib tursangiz, qo‘shimcha parametrlarni ko‘rishingiz mumkin)</translation>
 <translation id="5640133431808313291">Elektron kalitlarni boshqarish</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" /> ishlatishni boshlang</translation>
 <translation id="5642508497713047">CRL imzolovchisi</translation>
 <translation id="5643321261065707929">Trafik hisoblanadigan tarmoq</translation>
 <translation id="5643620609347735571">Tozalash va davom etish</translation>
@@ -7177,6 +7186,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8540136935098276800">URL manzilni xatosiz kiriting</translation>
 <translation id="8540503336857689453">Xavfsizlik maqsadlarida yashirin tarmoqlardan foydalanish tavsiya etilmaydi.</translation>
 <translation id="854071720451629801">Oʻqilgan deb belgilash</translation>
+<translation id="8540942859441851323">Tarmoq operatori rouming aloqasini talab qildi</translation>
 <translation id="8541462173655894684">Bosma serverda hech qanday printer topilmadi</translation>
 <translation id="8541838361296720865">“<ph name="ACTION" />” amali uchun belgilanadigan kalit yoki klaviatura tugmasini bosing</translation>
 <translation id="8542618328173222274">Sayt virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin</translation>

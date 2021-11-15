@@ -159,6 +159,8 @@
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="3583278742022654445">Signal darajasi zaif. Wi-Fi signal manbasiga yaqinlashtiring.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
+<translation id="360089215033199597">Taʼmirlash jarayoni oson boʻlishi uchun Wi-Fi orqali ulanish tavsiya etiladi.
+        Tarmoq saqlanib qoladi.</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> sinovi</translation>
@@ -482,6 +484,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="816013303019725643">Ochish kodini kiriting:</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
+<translation id="8217675307824400706">Internetga ulaning</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>

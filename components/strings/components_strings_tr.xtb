@@ -156,6 +156,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1422930527989633628">Yakındaki Bluetooth cihazları bulmak isteyebilir</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1428146450423315676">Yığınlayıcı 7</translation>
+<translation id="142858679511221695">Bulut kullanıcısı</translation>
 <translation id="1428729058023778569">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
@@ -709,6 +710,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3329013043687509092">Doygunluk</translation>
 <translation id="3333762389743153920">Sanal kart için uygun değil</translation>
 <translation id="3338095232262050444">Güvenli</translation>
+<translation id="3339446062576134663">Bulut (Ash)</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="3360103848165129075">Ödeme işleyici sayfası</translation>
 <translation id="3361596688432910856">Chrome aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
@@ -731,6 +733,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3380365263193509176">Bilinmeyen hata</translation>
 <translation id="3380864720620200369">İstemci Kimliği:</translation>
 <translation id="3381668585148405088">Satın alma işleminizi doğrulayın</translation>
+<translation id="3383566085871012386">Mevcut öncelik sırası</translation>
 <translation id="3387261909427947069">Ödeme Yöntemleri</translation>
 <translation id="3391030046425686457">Teslimat adresi</translation>
 <translation id="3391482648489541560">dosya düzenleme</translation>
@@ -1394,6 +1397,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5478437291406423475">B6/C4 (Zarf)</translation>
 <translation id="5481076368049295676">Bu içerik, cihazınıza bilgilerinizi çalabilecek veya silebilecek tehlikeli yazılımlar yüklemeye çalışabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Geçerli adres ekleyin</translation>
+<translation id="5485973315555778056">Bulut makinesi</translation>
 <translation id="5490432419156082418">Adresler ve Daha Fazlası</translation>
 <translation id="5492298309214877701">Şirket, kuruluş veya okul intranet'indeki bu site harici bir web sitesiyle aynı URL'ye sahip.
     <ph name="LINE_BREAK" />
@@ -1423,6 +1427,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5571083550517324815">Bu adresten alım yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
 <translation id="5586446728396275693">Kaydedilmiş adres yok</translation>
+<translation id="5587987780934666589">Platform kullanıcısı</translation>
 <translation id="5593349413089863479">Bağlantı tam olarak güvenli değil</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
 <translation id="5598944008576757369">Ödeme Yöntemi Seç</translation>
@@ -2107,6 +2112,7 @@ Ek ayrıntılar:
 <translation id="7953569069500808819">Üstte kenar dikişi</translation>
 <translation id="7956713633345437162">Mobil yer işaretleri</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
+<translation id="7962467575542381659">Platform makinesi</translation>
 <translation id="7966803981046576691">İş hesap türü</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" değeri, geçersiz bir onaltılık renk.</translation>
 <translation id="7968982339740310781">Ayrıntıları görüntüle</translation>

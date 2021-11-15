@@ -159,6 +159,8 @@
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
 <translation id="3583278742022654445">လိုင်းဆွဲအား မကောင်းပါ။ Wi-Fi လိုင်းရင်းမြစ် အနီးသို့ ရွှေ့ကြည့်ပါ။</translation>
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
+<translation id="360089215033199597">ပြင်ဆင်မှု ပိုမိုလွယ်ကူစေရန်အတွက် Wi-Fi ချိတ်ဆက်ရန် အကြံပြုပါသည်။
+        သင်၏ကွန်ရက်ကို သိမ်းပါမည်။</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
@@ -187,6 +189,7 @@
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="4111761024568264522">USB တာ့ချ်ပက်</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
+<translation id="4140251671072434548">RMA ဆာဗာ လော့ခ်ဖွင့်ပါ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
@@ -477,8 +480,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8132480444149501833">ကွန်ရက်ဒေတာ ရေတွက်စနစ်များ တောင်းဆိုရန်</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">လော့ခ်ဖွင့်ရန်ကုဒ် ထည့်ပါ-</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
+<translation id="8217675307824400706">ချိတ်ဆက်လိုက်ပါ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
