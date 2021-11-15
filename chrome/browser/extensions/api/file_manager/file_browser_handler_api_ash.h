@@ -9,18 +9,18 @@
 // Note that the target file is never actually created by this function, even
 // if the selected path doesn't exist.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FILE_BROWSER_HANDLER_API_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FILE_BROWSER_HANDLER_API_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_FILE_MANAGER_FILE_BROWSER_HANDLER_API_ASH_H_
+#define CHROME_BROWSER_EXTENSIONS_API_FILE_MANAGER_FILE_BROWSER_HANDLER_API_ASH_H_
 
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
+#include "chrome/browser/extensions/api/file_manager/file_browser_handler_api.h"
 #include "extensions/browser/extension_function.h"
 
 class Browser;
-class FileBrowserHandlerInternalSelectFileFunction;
+class FileBrowserHandlerInternalSelectFileFunctionAsh;
 
 namespace file_manager {
 
@@ -28,7 +28,7 @@ namespace util {
 struct EntryDefinition;
 }
 
-// Interface that is used by FileBrowserHandlerInternalSelectFileFunction to
+// Interface that is used by FileBrowserHandlerInternalSelectFileFunctionAsh to
 // select the file path that should be reported back to the extension function
 // caller.  Nobody will take the ownership of the interface implementation, so
 // it should delete itself once it's done.
@@ -57,42 +57,41 @@ class FileSelector {
       const base::FilePath& suggested_name,
       const std::vector<std::string>& allowed_extensions,
       Browser* browser,
-      FileBrowserHandlerInternalSelectFileFunction* function) = 0;
+      FileBrowserHandlerInternalSelectFileFunctionAsh* function) = 0;
 };
 
-// Interface that is used by FileBrowserHandlerInternalSelectFileFunction to
+// Interface that is used by FileBrowserHandlerInternalSelectFileFunctionAsh to
 // create a FileSelector it can use to select a file path.
 class FileSelectorFactory {
  public:
   virtual ~FileSelectorFactory() = default;
 
   // Creates a FileSelector instance for the
-  // FileBrowserHandlerInternalSelectFileFunction.
+  // FileBrowserHandlerInternalSelectFileFunctionAsh.
   virtual FileSelector* CreateFileSelector() const = 0;
 };
 
 }  // namespace file_manager
 
-
 // Note that this class is not in 'file_manager' class to be consistent with
 // all other extension functions registered in
 // chrome/common/extensions/api/generated_api.cc being in the global namespace.
 //
-// The fileBrowserHandlerInternal.selectFile extension function implementation.
-// See the file description for more info.
-class FileBrowserHandlerInternalSelectFileFunction
-    : public extensions::LoggedExtensionFunction {
+// The fileBrowserHandlerInternal.selectFile extension function implementation
+// for ash. See the file description for more info.
+class FileBrowserHandlerInternalSelectFileFunctionAsh
+    : public FileBrowserHandlerInternalSelectFileFunction {
  public:
   // Default constructor used in production code.
   // It will create its own FileSelectorFactory implementation, and set the
   // value of |user_gesture_check_enabled| to true.
-  FileBrowserHandlerInternalSelectFileFunction();
+  FileBrowserHandlerInternalSelectFileFunctionAsh();
 
   // This constructor should be used only in tests to inject test file selector
   // factory and to allow extension function to run even if it hasn't been
   // invoked by user gesture.
   // Created object will take the ownership of the |file_selector_factory|.
-  FileBrowserHandlerInternalSelectFileFunction(
+  FileBrowserHandlerInternalSelectFileFunctionAsh(
       file_manager::FileSelectorFactory* file_selector_factory,
       bool enable_user_gesture_check);
 
@@ -106,7 +105,7 @@ class FileBrowserHandlerInternalSelectFileFunction
 
  protected:
   // The class is ref counted, so destructor should not be public.
-  ~FileBrowserHandlerInternalSelectFileFunction() override;
+  ~FileBrowserHandlerInternalSelectFileFunctionAsh() override;
 
   // ExtensionFunction implementation.
   // Runs the extension function implementation.
@@ -137,10 +136,7 @@ class FileBrowserHandlerInternalSelectFileFunction
 
   // List of permissions and paths that have to be granted for the selected
   // files.
-  std::vector<std::pair<base::FilePath, int> > permissions_to_grant_;
-
-  DECLARE_EXTENSION_FUNCTION("fileBrowserHandlerInternal.selectFile",
-                             FILEBROWSERHANDLERINTERNAL_SELECTFILE)
+  std::vector<std::pair<base::FilePath, int>> permissions_to_grant_;
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_FILE_BROWSER_HANDLER_API_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_FILE_MANAGER_FILE_BROWSER_HANDLER_API_ASH_H_

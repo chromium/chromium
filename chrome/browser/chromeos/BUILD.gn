@@ -3326,8 +3326,6 @@ source_set("chromeos") {
     "extensions/file_manager/event_router.h",
     "extensions/file_manager/event_router_factory.cc",
     "extensions/file_manager/event_router_factory.h",
-    "extensions/file_manager/file_browser_handler_api.cc",
-    "extensions/file_manager/file_browser_handler_api.h",
     "extensions/file_manager/file_manager_private_api_functions.h",
     "extensions/file_manager/file_stream_md5_digester.cc",
     "extensions/file_manager/file_stream_md5_digester.h",

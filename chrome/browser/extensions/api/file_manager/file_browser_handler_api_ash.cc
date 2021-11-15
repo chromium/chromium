@@ -10,10 +10,11 @@
 //  - Display 'save as' dialog using FileSelectorImpl which waits for the user
 //    feedback.
 //  - Once the user selects the file path (or cancels the selection),
-//    FileSelectorImpl notifies FileBrowserHandlerInternalSelectFileFunction of
-//    the selection result by calling FileHandlerSelectFile::OnFilePathSelected.
+//    FileSelectorImpl notifies FileBrowserHandlerInternalSelectFileFunctionAsh
+//    of the selection result by calling
+//    FileHandlerSelectFile::OnFilePathSelected.
 //  - If the selection was canceled,
-//    FileBrowserHandlerInternalSelectFileFunction returns reporting failure.
+//    FileBrowserHandlerInternalSelectFileFunctionAsh returns reporting failure.
 //  - If the file path was selected, the function opens external file system
 //    needed to create FileEntry object for the selected path
 //    (opening file system will create file system name and root url for the
@@ -28,7 +29,7 @@
 //  - After the required file access permissions are granted, result object is
 //    created and returned back.
 
-#include "chrome/browser/chromeos/extensions/file_manager/file_browser_handler_api.h"
+#include "chrome/browser/extensions/api/file_manager/file_browser_handler_api_ash.h"
 
 #include <stddef.h>
 
@@ -124,7 +125,7 @@ class FileSelectorImpl : public FileSelector,
       const base::FilePath& suggested_name,
       const std::vector<std::string>& allowed_extensions,
       Browser* browser,
-      FileBrowserHandlerInternalSelectFileFunction* function) override;
+      FileBrowserHandlerInternalSelectFileFunctionAsh* function) override;
 
   // ui::SelectFileDialog::Listener overrides.
   void FileSelected(const base::FilePath& path,
@@ -160,7 +161,7 @@ class FileSelectorImpl : public FileSelector,
   scoped_refptr<ui::SelectFileDialog> dialog_;
 
   // Extension function that uses the selector.
-  scoped_refptr<FileBrowserHandlerInternalSelectFileFunction> function_;
+  scoped_refptr<FileBrowserHandlerInternalSelectFileFunctionAsh> function_;
 };
 
 FileSelectorImpl::FileSelectorImpl() = default;
@@ -177,7 +178,7 @@ void FileSelectorImpl::SelectFile(
     const base::FilePath& suggested_name,
     const std::vector<std::string>& allowed_extensions,
     Browser* browser,
-    FileBrowserHandlerInternalSelectFileFunction* function) {
+    FileBrowserHandlerInternalSelectFileFunctionAsh* function) {
   // We will hold reference to the function until it is notified of selection
   // result.
   function_ = function;
@@ -226,8 +227,9 @@ bool FileSelectorImpl::StartSelectFile(
   return dialog_->IsRunning(browser->window()->GetNativeWindow());
 }
 
-void FileSelectorImpl::FileSelected(
-    const base::FilePath& path, int index, void* params) {
+void FileSelectorImpl::FileSelected(const base::FilePath& path,
+                                    int index,
+                                    void* params) {
   SendResponse(true, path);
   delete this;
 }
@@ -239,8 +241,7 @@ void FileSelectorImpl::MultiFilesSelected(
   NOTREACHED();
 }
 
-void FileSelectorImpl::FileSelectionCanceled(
-    void* params) {
+void FileSelectorImpl::FileSelectionCanceled(void* params) {
   SendResponse(false, base::FilePath());
   delete this;
 }
@@ -274,26 +275,25 @@ class FileSelectorFactoryImpl : public FileSelectorFactory {
 
 }  // namespace
 
-FileBrowserHandlerInternalSelectFileFunction::
-    FileBrowserHandlerInternalSelectFileFunction()
-        : file_selector_factory_(new FileSelectorFactoryImpl()),
-          user_gesture_check_enabled_(true) {
-}
+FileBrowserHandlerInternalSelectFileFunctionAsh::
+    FileBrowserHandlerInternalSelectFileFunctionAsh()
+    : file_selector_factory_(new FileSelectorFactoryImpl()),
+      user_gesture_check_enabled_(true) {}
 
-FileBrowserHandlerInternalSelectFileFunction::
-    FileBrowserHandlerInternalSelectFileFunction(
+FileBrowserHandlerInternalSelectFileFunctionAsh::
+    FileBrowserHandlerInternalSelectFileFunctionAsh(
         FileSelectorFactory* file_selector_factory,
         bool enable_user_gesture_check)
-        : file_selector_factory_(file_selector_factory),
-          user_gesture_check_enabled_(enable_user_gesture_check) {
+    : file_selector_factory_(file_selector_factory),
+      user_gesture_check_enabled_(enable_user_gesture_check) {
   DCHECK(file_selector_factory);
 }
 
-FileBrowserHandlerInternalSelectFileFunction::
-    ~FileBrowserHandlerInternalSelectFileFunction() = default;
+FileBrowserHandlerInternalSelectFileFunctionAsh::
+    ~FileBrowserHandlerInternalSelectFileFunctionAsh() = default;
 
 ExtensionFunction::ResponseAction
-FileBrowserHandlerInternalSelectFileFunction::Run() {
+FileBrowserHandlerInternalSelectFileFunctionAsh::Run() {
   std::unique_ptr<SelectFile::Params> params(
       SelectFile::Params::Create(args()));
 
@@ -313,7 +313,7 @@ FileBrowserHandlerInternalSelectFileFunction::Run() {
   return RespondLater();
 }
 
-void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
+void FileBrowserHandlerInternalSelectFileFunctionAsh::OnFilePathSelected(
     bool success,
     const base::FilePath& full_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -351,17 +351,17 @@ void FileBrowserHandlerInternalSelectFileFunction::OnFilePathSelected(
       file_manager::util::GetFileSystemContextForSourceURL(profile,
                                                            source_url()),
       caller_origin, file_definition,
-      base::BindOnce(
-          &FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition,
-          this));
+      base::BindOnce(&FileBrowserHandlerInternalSelectFileFunctionAsh::
+                         RespondEntryDefinition,
+                     this));
 }
 
-void FileBrowserHandlerInternalSelectFileFunction::RespondEntryDefinition(
+void FileBrowserHandlerInternalSelectFileFunctionAsh::RespondEntryDefinition(
     const EntryDefinition& entry_definition) {
   RespondWith(entry_definition, true);
 }
 
-void FileBrowserHandlerInternalSelectFileFunction::RespondWith(
+void FileBrowserHandlerInternalSelectFileFunctionAsh::RespondWith(
     const EntryDefinition& entry_definition,
     bool success) {
   std::unique_ptr<SelectFile::Results::Result> result(
@@ -381,4 +381,11 @@ void FileBrowserHandlerInternalSelectFileFunction::RespondWith(
   }
 
   Respond(ArgumentList(SelectFile::Results::Create(*result)));
+}
+
+template <>
+scoped_refptr<ExtensionFunction>
+NewExtensionFunction<FileBrowserHandlerInternalSelectFileFunction>() {
+  return base::MakeRefCounted<
+      FileBrowserHandlerInternalSelectFileFunctionAsh>();
 }
