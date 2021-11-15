@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Win Win7 Win10.20h2 ]
+# tags: [ Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Skip ]
 
@@ -294,11 +294,6 @@ crbug.com/1126305 wpt_internal/prerender/* [ Skip ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
 crbug.com/1126305 http/tests/inspector-protocol/prerender/* [ Skip ]
 crbug.com/1126305 virtual/prerender/http/tests/inspector-protocol/prerender/* [ Pass ]
-
-## prerender test: the File System Access API is not supported on Android ##
-crbug.com/1182032 [ Android ] virtual/prerender/wpt_internal/prerender/restriction-local-file-system-access.https.html [ Skip ]
-## prerender test: Notification constructor is not supported on Android ##
-crbug.com/1198110 [ Android ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-notification.https.html [ Skip ]
 
 # These tests require BFCache, which is currently disabled by default on Desktop.
 # Keep this in sync with VirtualTestSuites.
@@ -1812,7 +1807,7 @@ crbug.com/432129 html/marquee/marquee-scroll.html [ Failure Pass ]
 crbug.com/326139 crbug.com/390125 media/video-frame-accurate-seek.html [ Failure Pass ]
 crbug.com/421283 html/marquee/marquee-scrollamount.html [ Failure Pass ]
 
-# TODO(oshima): Mac Android are currently not supported.
+# TODO(oshima): Mac is currently not supported.
 crbug.com/567837 [ Mac ] virtual/scalefactor200withzoom/fast/hidpi/static/* [ Skip ]
 
 # TODO(oshima): Move the event scaling code to eventSender and remove this.
@@ -2115,12 +2110,9 @@ crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-003.h
 
 crbug.com/524160 [ Debug ] http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-default-buffers.html [ Timeout ]
 
-# On these platforms (all but Android) media tests don't currently use gpu-accelerated (proprietary) codecs, so no
-# benefit to running them again with gpu acceleration enabled.
-crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
-crbug.com/555703 [ Mac ] virtual/media-gpu-accelerated/* [ Skip ]
-crbug.com/555703 [ Win ] virtual/media-gpu-accelerated/* [ Skip ]
-crbug.com/555703 [ Fuchsia ] virtual/media-gpu-accelerated/* [ Skip ]
+# On all platforms media tests don't currently use gpu-accelerated (proprietary)
+# codecs, so no benefit to running them again with gpu acceleration enabled.
+crbug.com/555703 virtual/media-gpu-accelerated/* [ Skip ]
 
 crbug.com/467477 fast/multicol/vertical-rl/nested-columns.html [ Failure ]
 crbug.com/1262980 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Pass Timeout ]
@@ -4977,8 +4969,7 @@ crbug.com/919272 external/wpt/resource-timing/resource-timing.html [ Skip ]
 # Sheriff 2019-01-03
 crbug.com/918905 external/wpt/css/css-sizing/block-size-with-min-or-max-content-table-1b.html [ Failure Pass ]
 
-# Android doesn't support H264/AVC1 encoding.
-# Some other bots are built without H264/AVC1 encoding support.
+# Some bots are built without H264/AVC1 encoding support.
 crbug.com/719023 fast/mediarecorder/MediaRecorder-isTypeSupported-avc1.html [ Failure Pass ]
 crbug.com/719023 media_capabilities/encodingInfo-avc1.html [ Failure Pass ]
 
