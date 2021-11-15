@@ -776,6 +776,7 @@ void NearbyNotificationManager::ShowProgress(
   notification.set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   notification.set_title(GetProgressNotificationTitle(share_target));
   notification.set_never_timeout(true);
+  notification.set_pinned(true);
   notification.set_priority(message_center::NotificationPriority::MAX_PRIORITY);
 
   // Show 0% progress while waiting for remote device to accept.

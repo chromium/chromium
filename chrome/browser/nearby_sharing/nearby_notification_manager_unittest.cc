@@ -409,6 +409,7 @@ TEST_F(NearbyNotificationManagerTest, ShowProgress_ShowsNotification) {
   EXPECT_TRUE(notification.icon().IsEmpty());
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_TRUE(notification.never_timeout());
+  EXPECT_TRUE(notification.pinned());
   EXPECT_FALSE(notification.renotify());
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
