@@ -332,6 +332,20 @@ TEST(ParseNameTest, RFC2253FormatLargeOid) {
   ASSERT_EQ("2.61.6.1.3233.1.1466.0=#74657374", output);
 }
 
+TEST(ParseNameTest, RFC2253FormatInvalidOid) {
+  // Same DER as RFC2253FormatLargeOid but with the last byte of the OID
+  // replaced with 0x80, which ends the OID with a truncated multi-byte
+  // component.
+  const uint8_t der[] = {0x30, 0x16, 0x31, 0x14, 0x30, 0x12, 0x06, 0x0a,
+                         0x81, 0x0d, 0x06, 0x01, 0x99, 0x21, 0x01, 0x8b,
+                         0x3a, 0x80, 0x13, 0x04, 0x74, 0x65, 0x73, 0x74};
+  der::Input rdn_input(der);
+  RDNSequence rdn;
+  ASSERT_TRUE(ParseName(rdn_input, &rdn));
+  std::string output;
+  EXPECT_FALSE(ConvertToRFC2253(rdn, &output));
+}
+
 TEST(ParseNameTest, RFC2253FormatUTF8) {
   const uint8_t der[] = {0x30, 0x12, 0x31, 0x10, 0x30, 0x0e, 0x06,
                          0x03, 0x55, 0x04, 0x04, 0x13, 0x07, 0x4c,

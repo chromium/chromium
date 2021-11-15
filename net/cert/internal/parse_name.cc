@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/third_party/icu/icu_utf.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net {
 
@@ -64,37 +66,15 @@ bool ConvertUniversalStringValue(const der::Input& in, std::string* out) {
   return true;
 }
 
-std::string OidToString(const uint8_t* data, size_t len) {
-  std::string out;
-  size_t index = 0;
-  while (index < len) {
-    uint64_t value = 0;
-    while ((data[index] & 0x80) == 0x80 && index < len) {
-      value = value << 7 | (data[index] & 0x7F);
-      index += 1;
-    }
-    if (index >= len)
-      return std::string();
-    value = value << 7 | (data[index] & 0x7F);
-    index += 1;
-
-    if (out.empty()) {
-      uint8_t first = 0;
-      if (value < 40) {
-        first = 0;
-      } else if (value < 80) {
-        first = 1;
-        value -= 40;
-      } else {
-        first = 2;
-        value -= 80;
-      }
-      out = base::NumberToString(first);
-    }
-    out += "." + base::NumberToString(value);
-  }
-
-  return out;
+// Returns a string containing the dotted numeric form of |oid|, or an empty
+// string on error.
+std::string OidToString(der::Input oid) {
+  CBS cbs;
+  CBS_init(&cbs, oid.UnsafeData(), oid.Length());
+  bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
+  if (!text)
+    return std::string();
+  return text.get();
 }
 
 }  // namespace
@@ -290,7 +270,7 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
   } else if (type == TypeGivenNameOid()) {
     type_string = "GN";
   } else {
-    type_string = OidToString(type.UnsafeData(), type.Length());
+    type_string = OidToString(type);
     if (type_string.empty())
       return false;
     value_string = "#" + base::HexEncode(value.UnsafeData(), value.Length());
