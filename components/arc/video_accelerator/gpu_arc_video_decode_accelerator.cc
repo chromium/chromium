@@ -103,11 +103,17 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Normally |initialized_instance_count_| should always be > 0 if vda_ is set,
-  // but if it isn't and we underflow then we won't be able to create any new
-  // decoder forever (b/173700103). So let's use an extra check to avoid this...
-  if (vda_ && initialized_instance_count_ > 0)
-    initialized_instance_count_--;
+  if (vda_) {
+    // Destroy |vda_| now in case it needs to use *|this| during tear-down.
+    vda_.reset();
+
+    // Normally |initialized_instance_count_| should always be > 0 if vda_ is
+    // set, but if it isn't and we underflow then we won't be able to create any
+    // new decoder forever (b/173700103). So let's use an extra check to avoid
+    // this...
+    if (initialized_instance_count_ > 0)
+      initialized_instance_count_--;
+  }
   DCHECK_GT(instance_count_, 0);
   instance_count_--;
 }
