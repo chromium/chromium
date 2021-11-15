@@ -30,6 +30,7 @@ enum InstanceState {
 class Instance {
  public:
   // InstanceKey is the unique key for the instance.
+  // TODO(crbug.com/1251501): InstanceKey will be removed soon.
   class InstanceKey {
    public:
     // Create an InstanceKey for an app instance backed by a WebContents.
@@ -38,6 +39,7 @@ class Instance {
     // Create an InstanceKey for any non-web app type.
     static InstanceKey ForWindowBasedApp(aura::Window* window);
 
+    InstanceKey() = default;
     InstanceKey(const InstanceKey& instance_key) = default;
     InstanceKey(InstanceKey&& instance_key) = default;
     ~InstanceKey() = default;
@@ -65,21 +67,24 @@ class Instance {
     // window. Instance itself doesn't observe the window. The window's observer
     // is responsible to delete Instance from InstanceRegistry when the window
     // is destroyed.
-    aura::Window* window_;
+    aura::Window* window_ = nullptr;
 
     // Whether the app is a WebContents backed app. Will eventually be replaced
     // by an ID representing the WebContents which may live remotely.
-    bool is_web_contents_backed_;
+    bool is_web_contents_backed_ = false;
   };
 
-  Instance(const std::string& app_id, const base::UnguessableToken& id);
+  Instance(const std::string& app_id,
+           const base::UnguessableToken& instance_id,
+           aura::Window* window);
+
   // TODO(crbug.com/1251501): Deprecated. Implement updating the instance
   // registry using instance ID as a key.
   Instance(const std::string& app_id, InstanceKey&& instance_key);
-  ~Instance();
 
   Instance(const Instance&) = delete;
   Instance& operator=(const Instance&) = delete;
+  ~Instance();
 
   std::unique_ptr<Instance> Clone();
 
@@ -89,25 +94,28 @@ class Instance {
   void SetWindow(aura::Window* window);
 
   const std::string& AppId() const { return app_id_; }
-  const base::UnguessableToken& Id() const { return id_; }
+  const base::UnguessableToken& InstanceId() const { return instance_id_; }
+  aura::Window* Window() const { return window_; }
   const InstanceKey& GetInstanceKey() const { return instance_key_; }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
   const base::Time& LastUpdatedTime() const { return last_updated_time_; }
   content::BrowserContext* BrowserContext() const { return browser_context_; }
-  aura::Window* Window() const { return window_; }
 
  private:
-  std::string app_id_;
-  const base::UnguessableToken id_;
+  friend class InstanceTest;
+
+  const std::string app_id_;
+  base::UnguessableToken instance_id_;
+  aura::Window* window_ = nullptr;
+
   // TODO(crbug.com/1251501): Deprecated field. Implement updating the instance
   // registry using instance ID as a key.
   InstanceKey instance_key_;
   std::string launch_id_;
-  InstanceState state_;
+  InstanceState state_ = InstanceState::kUnknown;
   base::Time last_updated_time_;
   content::BrowserContext* browser_context_ = nullptr;
-  aura::Window* window_{nullptr};
 };
 
 std::ostream& operator<<(std::ostream& os,

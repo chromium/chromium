@@ -60,26 +60,21 @@ Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
   state_ = InstanceState::kUnknown;
 }
 
-Instance::Instance(const std::string& app_id, const base::UnguessableToken& id)
-    : app_id_(app_id),
-      id_(id),
-      instance_key_(InstanceKey::ForWindowBasedApp(nullptr)),
-      state_(InstanceState::kUnknown) {}
+Instance::Instance(const std::string& app_id,
+                   const base::UnguessableToken& instance_id,
+                   aura::Window* window)
+    : app_id_(app_id), instance_id_(instance_id), window_(window) {}
 
 Instance::~Instance() = default;
 
 std::unique_ptr<Instance> Instance::Clone() {
-  std::unique_ptr<Instance> instance;
-  if (this->Id()) {
-    instance = std::make_unique<Instance>(this->AppId(), this->Id());
-  } else {
-    instance = std::make_unique<Instance>(
-        this->AppId(), apps::Instance::InstanceKey(this->GetInstanceKey()));
-  }
+  std::unique_ptr<Instance> instance = std::make_unique<Instance>(
+      this->AppId(), this->InstanceId(), this->Window());
+
+  instance->instance_key_ = apps::Instance::InstanceKey(this->GetInstanceKey());
   instance->SetLaunchId(this->LaunchId());
   instance->UpdateState(this->State(), this->LastUpdatedTime());
   instance->SetBrowserContext(this->BrowserContext());
-  instance->SetWindow(this->Window());
   return instance;
 }
 

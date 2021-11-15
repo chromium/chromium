@@ -60,7 +60,7 @@ void InstanceRegistry::OnInstances(const Instances& deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   for (auto& delta : deltas) {
-    if (delta->Id()) {
+    if (delta->InstanceId()) {
       // TODO(crbug.com/1251501): Implement updating the instance registry using
       // instance ID as a key.
       continue;
@@ -147,7 +147,7 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
   // OninstanceUpdate is called for each updates, and notify the observers for
   // every de-duplicated delta. Also update the states for every delta.
   for (const auto& d_iter : deltas) {
-    if (d_iter->Id()) {
+    if (d_iter->InstanceId()) {
       // TODO(crbug.com/1251501): Implement updating the instance registry using
       // instance ID as a key.
       continue;

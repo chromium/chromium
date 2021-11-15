@@ -301,6 +301,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "instance_registry_unittest.cc",
+      "instance_unittest.cc",
       "instance_update_unittest.cc",
     ]
 

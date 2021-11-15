@@ -24,6 +24,9 @@ specific_include_rules = {
     "+ui/aura/test/test_window_delegate.h",
     "+chrome/test/base/testing_profile.h",
   ],
+  "instance_unittest\.cc": [
+    "+chrome/test/base/testing_profile.h",
+  ],
   "instance_update_unittest\.cc": [
     "+chrome/test/base/testing_profile.h",
   ],
