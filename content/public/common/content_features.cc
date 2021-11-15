@@ -1088,8 +1088,13 @@ const base::Feature kBindingManagementWaiveCpu{
 const base::Feature kOnDemandAccessibilityEvents{
     "OnDemandAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Request Desktop Site per-site setting for Android.
+// Refer to the launch bug (https://crbug.com/1244979) for more information.
+const base::Feature kRequestDesktopSiteExceptions{
+    "RequestDesktopSiteExceptions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Request Desktop Site global setting for Android.
-// Refer to the launch bug (crbug.com/1107601) for more information.
+// Refer to the launch bug (https://crbug.com/1107601) for more information.
 const base::Feature kRequestDesktopSiteGlobal{
     "RequestDesktopSiteGlobal", base::FEATURE_DISABLED_BY_DEFAULT};
 

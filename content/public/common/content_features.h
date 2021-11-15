@@ -277,6 +277,7 @@ CONTENT_EXPORT extern const base::Feature
 CONTENT_EXPORT extern const base::Feature kBigLittleScheduling;
 CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
+CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteGlobal;
 CONTENT_EXPORT extern const base::Feature kUserMediaScreenCapturing;
 CONTENT_EXPORT extern const base::Feature kWarmUpNetworkProcess;

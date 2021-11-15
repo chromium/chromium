@@ -1972,6 +1972,9 @@ extern const char kRelatedSearchesSimplifiedUxDescription[];
 extern const char kRelatedSearchesUiName[];
 extern const char kRelatedSearchesUiDescription[];
 
+extern const char kRequestDesktopSiteExceptionsName[];
+extern const char kRequestDesktopSiteExceptionsDescription[];
+
 extern const char kRequestDesktopSiteGlobalName[];
 extern const char kRequestDesktopSiteGlobalDescription[];
 

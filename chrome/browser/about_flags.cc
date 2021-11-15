@@ -7769,6 +7769,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWebBluetoothRequestLargerMtu)},
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_ANDROID)
+    {"request-desktop-site-exceptions",
+     flag_descriptions::kRequestDesktopSiteExceptionsName,
+     flag_descriptions::kRequestDesktopSiteExceptionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteExceptions)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

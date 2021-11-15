@@ -25,6 +25,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBindingManagementWaiveCpu,
     &features::kOnDemandAccessibilityEvents,
     &features::kProcessSharingWithStrictSiteInstances,
+    &features::kRequestDesktopSiteExceptions,
     &features::kRequestDesktopSiteGlobal,
     &features::kWebAuth,
     &features::kWebBluetoothNewPermissionsBackend,

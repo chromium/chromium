@@ -52559,6 +52559,7 @@ from previous Chrome versions.
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
   <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>
+  <int value="915402820" label="RequestDesktopSiteExceptions:disabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>
   <int value="917285134" label="AutofillAddressProfileSavePrompt:enabled"/>
   <int value="917561046" label="ConversionMeasurement:disabled"/>
@@ -53066,6 +53067,7 @@ from previous Chrome versions.
   <int value="1291966558" label="ScrollAnchoring:disabled"/>
   <int value="1292091029" label="OmniboxOneClickUnelide:disabled"/>
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
+  <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
   <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>

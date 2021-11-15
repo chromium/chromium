@@ -4694,6 +4694,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "request-desktop-site-exceptions",
+    "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "request-desktop-site-for-tablets",
     "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
     "expiry_milestone": 96

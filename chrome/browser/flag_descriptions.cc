@@ -3422,6 +3422,13 @@ const char kRelatedSearchesUiDescription[] =
     "regardless of whether they are safe or useful. This requires the Related "
     "Searches feature flag to also be enabled.";
 
+const char kRequestDesktopSiteExceptionsName[] =
+    "Per-site setting to request desktop site on Android.";
+const char kRequestDesktopSiteExceptionsDescription[] =
+    "An option in `Site settings` to request the desktop version of websites "
+    "based on site level settings. Flag request-desktop-site-global "
+    "needs to be enabled when enabling this flag.";
+
 const char kRequestDesktopSiteGlobalName[] =
     "Global setting to request desktop site on Android.";
 const char kRequestDesktopSiteGlobalDescription[] =
