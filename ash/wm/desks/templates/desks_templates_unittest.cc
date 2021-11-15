@@ -1089,18 +1089,6 @@ TEST_F(DesksTemplatesTest, DesksBarReturnsToZeroState) {
 // Tests that the unsupported apps dialog is shown when a user attempts to save
 // an active desk with unsupported apps.
 TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
-  // `OpenOverviewAndSaveTemplate()` waits for the ui after it clicks on the
-  // save template button. This will hang if a dialog is shown so we use this
-  // helper function instead.
-  auto open_overview_and_save_template = [this]() {
-    auto* root = Shell::Get()->GetPrimaryRootWindow();
-    ToggleOverview();
-    WaitForUI();
-    auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
-    ASSERT_TRUE(save_template->IsVisible());
-    ClickOnView(save_template->GetContentsView());
-  };
-
   // Create a crostini window.
   auto crostini_window = CreateTestWindow();
   crostini_window->SetProperty(aura::client::kAppType,
@@ -1111,11 +1099,16 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 
   // Open overview and click on the save template button. The unsupported apps
   // dialog should show up.
-  open_overview_and_save_template();
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  ToggleOverview();
+  WaitForUI();
+  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
+  ASSERT_TRUE(save_template->IsVisible());
+  ClickOnView(save_template->GetContentsView());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
-  // Decline the dialog. We should be out of overview now and no template should
-  // have been saved.
+  // Decline the dialog. We should stay in overview and no template should have
+  // been saved.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
   dialog_controller->dialog_widget()
       ->widget_delegate()
@@ -1123,21 +1116,24 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
       ->CancelDialog();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
-  EXPECT_FALSE(GetOverviewSession());
+  EXPECT_TRUE(GetOverviewSession());
 
-  // Open overview again and click on the save template button. The unsupported
-  // apps dialog should show up.
-  open_overview_and_save_template();
+  // Click on the save template button again. The unsupported apps dialog should
+  // show up.
+  ClickOnView(save_template->GetContentsView());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
-  // Accept the dialog. The template should have been saved.
+  // Accept the dialog. The template should have been saved and the templates
+  // grid should now be shown.
   dialog_controller = DesksTemplatesDialogController::Get();
   dialog_controller->dialog_widget()
       ->widget_delegate()
       ->AsDialogDelegate()
       ->AcceptDialog();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetOverviewSession());
+  WaitForUI();
+  EXPECT_TRUE(GetOverviewSession());
+  EXPECT_TRUE(GetOverviewGridList()[0]->desks_templates_grid_widget());
+
   ASSERT_EQ(1ul, GetAllEntries().size());
 }
 
