@@ -224,6 +224,13 @@ public class PlayerManager {
      * - In any other case, we can't add accessibility support.
      */
     private void initializeAccessibility() {
+        // Early exit if already closed.
+        if (mRootFrameCoordinator == null
+                || mRootFrameCoordinator.getViewportForAccessibility() == null) {
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
         if (mNativeAxTree == 0) {
             mListener.onAccessibilityNotSupported();
             return;
