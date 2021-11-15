@@ -4096,6 +4096,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="5265562206369321422">Akuxhunyiwe ku-inthanethi ngaphezulu kweviki</translation>
 <translation id="5265797726250773323">Iphutha ngenkathi ifaka</translation>
 <translation id="5266113311903163739">Iphutha lokungenisa igunya lesitifiketi</translation>
+<translation id="526622169288322445">Izenzo ezengeziwe ze-<ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Ukuphrinta kuhlulekile</translation>
 <translation id="5275352920323889391">Inja</translation>
 <translation id="527605982717517565">Hlala uvumela i-JavaScript ku-<ph name="HOST" /></translation>
@@ -5483,6 +5484,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6775163072363532304">Amadivayisi atholakalayo azobonakala lapha.</translation>
 <translation id="6777817260680419853">Ukuqondiswa kabusha kuvinjiwe</translation>
 <translation id="6778737459546443941">Umzali wakho akakuvumanga okwamanje</translation>
+<translation id="6779092717724412415">Ukuze wenze okugqamile njengalokhu, khetha noma yimuphi umbhalo bese uchofoza kwesokudla.</translation>
 <translation id="6779447100905857289">amakalishi akho</translation>
 <translation id="677965093459947883">Incane kakhulu</translation>
 <translation id="6781005693196527806">&amp;Phatha izinjini zokusesha...</translation>
@@ -6298,6 +6300,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7625823789272218216">Ithebhu Entsha Ngakwesobunxele</translation>
 <translation id="7628201176665550262">Isilinganiso sokuvuselela</translation>
 <translation id="7629827748548208700">Ithebhu: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Le divayisi iphethwe yi-<ph name="MANAGER" /> futhi kudingeka ukuba ungene ngemvume ngaso sonke isikhathi.</translation>
 <translation id="7631014249255418691">Izinhlelo zokusebenza namafayela e-Linux kwenziwe isipele ngempumelelo</translation>
 <translation id="7631205654593498032">Uma uxhumanisa amadivayisi akho, uyavuma ukuthi i-<ph name="DEVICE_TYPE" /> yakho ingakwazi:</translation>
 <translation id="7631887513477658702">Hlala uvula amafayela walolu hlobo</translation>

@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">I-Chrome</translation>
 <translation id="1792647875738159689">Ikhansela ukuskena</translation>
 <translation id="1851218745569890714">Inkomfa ngevidiyo</translation>
+<translation id="1857850044054738019">Khetha le nketho uma idivayisi ifakwa kabusha noma ivuselelwa mayelana
+         nokusatshalaliswa kwekhasimende elisha.</translation>
 <translation id="1874612839560830905">I-MTU</translation>
 <translation id="1887850431809612466">Ukubuyekeza kwezingxenyekazi zekhompuyutha</translation>
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
@@ -76,6 +78,7 @@
 <translation id="2016697457005847575">Zama izinyathelo zokuxazulula inkinga</translation>
 <translation id="202500043506723828">I-EID</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
+<translation id="2104796393919810494">Iqedile ukulungisa</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, uhlobo lwe-<ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Kuno-<ph name="AVAILABLE_MEMORY" /> GB kokungu-<ph name="TOTAL_MEMORY" /> GB otholakalayo</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -198,6 +201,7 @@
 <translation id="4244962993387259361">Udinga okungenani u-500 MB okhululekile ukwenza ukuhlola Kwenkumbulo. Ukuze ukhulule isikhala, iya kokuthi Amasethingi &gt; Ukuphathwa kwesitoreji</translation>
 <translation id="4258281355379922695">Ukubambezeleka kwe-HTTP</translation>
 <translation id="4271957103967917607">Buka Isikrini Esigcwele</translation>
+<translation id="4275799948641988986">Ngemva kokulungiswa, ubani ozobe esebenzisa idivayisi?</translation>
 <translation id="4297501883039923494">Imile - Iphutha elingaziwa</translation>
 <translation id="4300073214558989">Izithombe <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Akuqaliswanga</translation>
@@ -413,6 +417,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7297226631177386107">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTPS</translation>
 <translation id="7302860742311162920">I-ICCID</translation>
 <translation id="7305884605064981971">I-EDGE</translation>
+<translation id="7309920310754476121">Idivayisi izoya kumnikazi ohlukile</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Amadivayisi Enethiwekhi</translation>
 <translation id="7359657277149375382">Uhlobo lwefayela</translation>
@@ -420,6 +425,9 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Ukuskena kuqedile. Ikhasi eli-1 liskeniwe}one{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}other{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}}</translation>
+<translation id="7451112128070628323">Khetha le nketho uma ubunikazi bedivayisi bungashintshi.
+        Ngokwesibonelo, idivayisi idluliselwa kumuntu ohlukile
+         ngaphakathi kwenhlangano.</translation>
 <translation id="7469648432129124067">Iphothali itholakele</translation>
 <translation id="7487067081878637334">Ubuchwepheshe</translation>
 <translation id="7490813197707563893">Ikheli le-MAC</translation>
@@ -545,6 +553,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="9073281213608662541">I-PAP</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
 <translation id="9088306295921699330">Ukusetshenziswa kwamanje</translation>
+<translation id="9095415590198785865">Idivayisi izoya kumnikazi ofanayo</translation>
 <translation id="9095775724867566971">I-Pluginvm</translation>
 <translation id="910415269708673980">Vuselela ithikithi le-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Iskena ikhasi <ph name="PAGE_NUMBER" /></translation>

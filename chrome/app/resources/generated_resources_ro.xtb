@@ -597,6 +597,7 @@
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Dispozitivul este blocat</translation>
 <translation id="1612019740169791082">Containerul nu este configurat pentru a accepta redimensionarea discului. Pentru a ajusta spațiul rezervat pentru Linux, fă-i backup și restabilește-l într-un container nou.</translation>
+<translation id="1613019471223620622">Afișează parola pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Este posibil să fi epuizat datele mobile puse la dispoziție. Accesează portalul de activare <ph name="NAME" /> pentru a cumpăra mai multe date.</translation>
 <translation id="161460670679785907">Nu se poate detecta telefonul</translation>
 <translation id="1615337439947999338">Salvează în Contul Google (<ph name="EMAIL" />)</translation>
@@ -1204,6 +1205,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Sursă media nedenumită</translation>
 <translation id="2224444042887712269">Setarea aparține utilizatorului <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Trebuie să selectezi cel puțin un album din Galeria de imagini</translation>
 <translation id="2224551243087462610">Editați numele dosarului</translation>
@@ -3325,6 +3327,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4444304522807523469">Accesează scanerele de documente atașate prin USB sau dintr-o rețea locală</translation>
 <translation id="4444512841222467874">Dacă nu se eliberează spațiu, este posibil ca utilizatorii și datele să fie eliminate automat.</translation>
 <translation id="4446933390699670756">Oglindit</translation>
+<translation id="4448914100439890108">Ascunde parola pentru <ph name="USERNAME" /> pe <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Numele tău de utilizator aparține contului de companie al organizației. Pentru a înregistra dispozitive în cont, mai întâi confirmă calitatea de proprietar al domeniului din Consola de administrare. Pentru confirmare, vei avea nevoie de privilegii administrative în cont.</translation>
 <translation id="4449996769074858870">Această filă redă fișiere audio.</translation>
 <translation id="4450274068924249931">Când ecranul este inactiv, se afișează fotografii, ora, vremea și știri. Dacă activezi screensaverul, ecranul va rămâne activ în timpul încărcării.</translation>
@@ -3848,6 +3851,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5009463889040999939">Se redenumește profilul. Poate dura câteva minute.</translation>
 <translation id="5010043101506446253">Autoritate de certificare</translation>
 <translation id="5015344424288992913">Se rezolvă proxy-ul...</translation>
+<translation id="5016491575926936899">Poți să trimiți mesaje text de pe computer, să permiți accesul la conexiunea de internet, să răspunzi la notificări privind conversațiile și să deblochezi <ph name="DEVICE_TYPE" /> cu telefonul.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Poți să navighezi în pagini folosind cursorul pentru text. Apasă Ctrl + tasta de căutare + 7 pentru a-l dezactiva.</translation>
 <translation id="5017828934289857214">Amintește-mi mai târziu</translation>
 <translation id="5018207570537526145">Deschide site-ul extensiei</translation>
@@ -4438,6 +4442,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5638309510554459422">Găsește extensii și teme în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Reîncărcați această pagină. Țineți apăsat pentru a vedea mai multe opțiuni</translation>
 <translation id="5640133431808313291">Gestionează cheile de securitate</translation>
+<translation id="5641608986289282154">Începe să utilizezi <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Semnatar CRL</translation>
 <translation id="5643321261065707929">Rețea contorizată</translation>
 <translation id="5643620609347735571">Șterge și continuă</translation>

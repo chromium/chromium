@@ -599,6 +599,7 @@
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611432201750675208">기기가 잠겼습니다</translation>
 <translation id="1612019740169791082">컨테이너가 디스크 크기 조정을 지원하도록 구성되지 않았습니다. Linux에 예약되는 공간 크기를 조정하려면 백업한 후 새로운 컨테이너로 복원하세요.</translation>
+<translation id="1613019471223620622"><ph name="DOMAIN" />에서 <ph name="USERNAME" /> 비밀번호 표시</translation>
 <translation id="1614511179807650956">할당된 모바일 데이터를 모두 사용한 것 같습니다. 추가 데이터를 구입하려면 <ph name="NAME" /> 활성화 포털을 방문하세요.</translation>
 <translation id="161460670679785907">휴대전화를 인식할 수 없습니다</translation>
 <translation id="1615337439947999338">내 Google 계정(<ph name="EMAIL" />)에 저장</translation>
@@ -1215,6 +1216,7 @@
 <translation id="2220529011494928058">문제 신고</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">이름이 지정되지 않은 미디어 소스</translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
 <translation id="222447520299472966">아트 갤러리 앨범을 하나 이상 선택해야 합니다.</translation>
 <translation id="2224551243087462610">폴더 이름 수정</translation>
@@ -3337,6 +3339,7 @@
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
 <translation id="4446933390699670756">미러링</translation>
+<translation id="4448914100439890108"><ph name="DOMAIN" />에서 <ph name="USERNAME" /> 비밀번호 숨기기</translation>
 <translation id="4449948729197510913">사용자 이름이 조직의 회사 계정에 속합니다. 기기를 계정에 등록하려면 먼저 관리 콘솔에서 도메인 소유권을 인증하세요. 인증하려면 계정에서 관리자 권한이 있어야 합니다.</translation>
 <translation id="4449996769074858870">이 탭은 오디오를 재생합니다.</translation>
 <translation id="4450274068924249931">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다. 화면 보호기를 사용 설정하면 충전하는 동안에도 디스플레이가 켠 상태로 유지됩니다.</translation>
@@ -3860,6 +3863,7 @@
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5010043101506446253">인증 기관</translation>
 <translation id="5015344424288992913">프록시 알아내는 중...</translation>
+<translation id="5016491575926936899">컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 대화 알림에 답장을 보내고, 휴대전화로 <ph name="DEVICE_TYPE" /> 기기의 잠금을 해제할 수 있습니다.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 Ctrl+Search+7을 누르세요.</translation>
 <translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5018207570537526145">확장 프로그램 웹사이트 열기</translation>
@@ -4449,6 +4453,7 @@
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />에서 확장 프로그램과 테마를 찾아보세요</translation>
 <translation id="5639549361331209298">옵션을 더 보려면 이 페이지를 새로고친 다음 누르기</translation>
 <translation id="5640133431808313291">보안 키 관리</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" /> 사용 시작</translation>
 <translation id="5642508497713047">CRL 서명자</translation>
 <translation id="5643321261065707929">종량제 네트워크</translation>
 <translation id="5643620609347735571">삭제하고 계속</translation>

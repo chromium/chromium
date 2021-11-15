@@ -159,6 +159,8 @@
 <translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="3583278742022654445">দুর্বল সিগন্যাল। ওয়াই-ফাই সিগন্যাল সোর্সের কাছাকাছি যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
+<translation id="360089215033199597">রিপেয়ার করার প্রসেসটি সহজ করার জন্য ওয়াই-ফাইয়ে কানেক্ট করার সাজেশন দেওয়া হয়।
+        আপনার নেটওয়ার্ক সেভ করা হবে।</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
@@ -187,6 +189,7 @@
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
 <translation id="4111761024568264522">ইউএসবি টাচপ্যাড</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
+<translation id="4140251671072434548">RMA সার্ভার আনলক পারফর্ম করুন</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
@@ -477,8 +480,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8132480444149501833">ট্রাফিক কাউন্টার্স-এর অনুরোধ করুন</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">আনলক করার কোডটি লিখুন:</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
+<translation id="8217675307824400706">কানেক্ট হন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8246209727385807362">অজানা পরিষেবা প্রদানকারী</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>

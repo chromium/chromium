@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1851218745569890714">کنفرانس ویدیویی</translation>
+<translation id="1857850044054738019">اگر دستگاه در انبار دوباره موجود می‌شود یا برای توزیع به مشتری جدید
+        مرمت می‌شود، این گزینه را انتخاب کنید.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">بازبینی سخت‌افزار</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
@@ -199,6 +201,7 @@
 <translation id="4244962993387259361">برای اجرای «آزمایش حافظه»، حداقل به ۵۰۰ مگابایت فضای آزاد نیاز دارید. برای آزاد کردن فضا، به «تنظیمات &gt; مدیریت فضای ذخیره‌سازی» بروید.</translation>
 <translation id="4258281355379922695">‏تأخیر HTTP</translation>
 <translation id="4271957103967917607">مشاهده در حالت تمام صفحه</translation>
+<translation id="4275799948641988986">بعداز تعمیر، چه کسی از دستگاه استفاده خواهد کرد؟</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
 <translation id="4378373042927530923">اجرا نشد</translation>
@@ -263,6 +266,7 @@
 <translation id="5049856988445523908">سیم‌کارت قفل است (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">نام گروه</translation>
 <translation id="5051044138948155788">فقط این صفحه باقی مانده است. با این کار، به صفحه شروع اسکن هدایت می‌شوید.</translation>
+<translation id="5061169534910302641">به‌روزرسانی نسخه و بازراه‌اندازی</translation>
 <translation id="5088172560898466307">نام سرور میزبان</translation>
 <translation id="5089810972385038852">ایالت</translation>
 <translation id="5142961317498132443">اصالت‌سنجی</translation>
@@ -414,6 +418,7 @@
 <translation id="7297226631177386107">‏نمی‌توان ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">دستگاه به مالک دیگری منتقل خواهد شد</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7359657277149375382">نوع فایل</translation>
@@ -421,6 +426,9 @@
 <translation id="7415801143053185905">‏تأخیر خیلی زیاد HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
+<translation id="7451112128070628323">اگر مالکیت دستگاه تغییر نمی‌کد، این گزینه را انتخاب کنید.
+        برای مثال، دستگاه به شخص دیگری 
+        در همان سازمان انتقال می‌یابد.</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7487067081878637334">فناوری</translation>
 <translation id="7490813197707563893">نشانی واد</translation>
@@ -547,6 +555,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9088306295921699330">مصرف فعلی</translation>
+<translation id="9095415590198785865">دستگاه به همان مالک قبلی ارائه خواهد شد</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">بازخوانی بلیت برای <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" /></translation>

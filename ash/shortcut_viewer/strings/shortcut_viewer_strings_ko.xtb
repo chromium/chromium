@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1부터 8</translation>
 <translation id="3837047332182291558">키보드 밝게(백라이트 키보드만 해당)</translation>
 <translation id="3949671998904569433">쉼표</translation>
+<translation id="3976707995992061296">모든 데스크에 활성 창 할당 여부 전환</translation>
 <translation id="3976863468609830880">실행기의 마지막 아이콘 클릭</translation>
 <translation id="3994783594793697310">확대/축소 레벨 재설정</translation>
 <translation id="4026843240379844265">디스플레이 간 활성 창 이동</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">화면 확대</translation>
 <translation id="634687982629734605">상태 영역(계정 사진이 표시되는 곳), 런처, 주소 표시줄, 북마크바(표시된 경우), 열려 있는 웹페이지, 다운로드바(표시된 경우) 사이에 포커스를 전환합니다. 포커스 가능한 대화상자가 표시되면 그곳으로 포커스를 대신 이동합니다.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">1번~8번 데스크 활성화</translation>
 <translation id="6395172954772765143">텍스트 행 끝부분까지 선택</translation>
 <translation id="6425378783626925378">실행기의 아이콘 1~8 클릭</translation>
 <translation id="6435207348963613811">실행기의 이전 항목 강조표시</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">파일 앱에 숨겨진 파일 표시하기</translation>
 <translation id="8717459106217102612">이전 단어 또는 글자를 선택</translation>
 <translation id="8727232706774971183">알림 확인</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" />1~8</translation>
 <translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8881584919399569791">활성 창을 왼쪽 데스크로 옮깁니다.</translation>
 <translation id="88986195241502842">페이지 아래로</translation>

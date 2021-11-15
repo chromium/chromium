@@ -156,6 +156,8 @@
 <translation id="357889014807611375">wifi met datalimiet</translation>
 <translation id="3583278742022654445">Zwak signaal. Ga dichter bij de wifi-signaalbron staan.</translation>
 <translation id="3595596368722241419">Batterij is vol</translation>
+<translation id="360089215033199597">Verbinding met wifi wordt aanbevolen om het reparatieproces makkelijker te maken.
+        Je netwerk wordt opgeslagen.</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -184,6 +186,7 @@
 <translation id="409427325554347132">Testgegevens opslaan</translation>
 <translation id="4111761024568264522">USB-touchpad</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
+<translation id="4140251671072434548">RMA Server Unlock uitvoeren</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
@@ -469,8 +472,10 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Verkeerstellers aanvragen</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Geef de ontgrendelingscode op:</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
+<translation id="8217675307824400706">Verbinding maken</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
 <translation id="8286154143153872371">Maak verbinding met een netwerk en laad de pagina opnieuw om de achtergrond te bekijken.</translation>

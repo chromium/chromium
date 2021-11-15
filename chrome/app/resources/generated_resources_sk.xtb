@@ -1223,6 +1223,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2232751457155581899">Weby môžu žiadať o sledovanie polohy vašej kamery</translation>
 <translation id="2232876851878324699">Súbor obsahoval jeden certifikát, ktorý nebol importovaný:</translation>
 <translation id="2233502537820838181">Ďalšie &amp;informácie</translation>
+<translation id="223356358902285214">Aktivita na internete a v aplikáciách</translation>
 <translation id="2234876718134438132">Synchronizácia a služby Googlu</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2238379619048995541">Údaje stavu frekvencie</translation>
@@ -1909,6 +1910,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="2923006468155067296">Vaše zariadenie <ph name="DEVICE_TYPE" /> bude teraz uzamknuté.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.</translation>
 <translation id="2923234477033317484">Odstrániť tento účet</translation>
+<translation id="2923644930701689793">Prístup k snímkam telefónu</translation>
 <translation id="2926085873880284723">Obnoviť predvolené skratky</translation>
 <translation id="2926620265753325858">Zariadenie <ph name="DEVICE_NAME" /> nie je podporované.</translation>
 <translation id="2927017729816812676">Úložisko vyrovnávacej pamäte</translation>
@@ -3100,6 +3102,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4168015872538332605">Používateľ <ph name="PRIMARY_EMAIL" /> s vami zdieľa niektoré svoje nastavenia. Tieto nastavenia váš účet ovplyvnia iba počas používania viacnásobného prihlásenia.</translation>
 <translation id="4169535189173047238">Nepovoliť</translation>
 <translation id="4170314459383239649">Vymazať po ukončení</translation>
+<translation id="417096670996204801">Výber profilu</translation>
 <translation id="4175137578744761569">Svetlofialová a biela</translation>
 <translation id="4175737294868205930">Trvalé úložisko</translation>
 <translation id="4176463684765177261">Deaktivované</translation>

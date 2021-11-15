@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканерлеу тоқтатылуда</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
+<translation id="1857850044054738019">Жаңа клиентке сату үшін құрылғы қоймаға қайтарылған немесе жөнделген болса, осы опцияны таңдаңыз.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Жабдық нұсқасы</translation>
 <translation id="1905710495812624430">Максималды рұқсат етілетін әрекеттер шегінен асып кетті.</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">Сынақ мәліметтерін сақтау</translation>
 <translation id="4111761024568264522">USB сенсорлық тақтасы</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
+<translation id="4140251671072434548">RMA серверінің құлпын ашыңыз</translation>
 <translation id="4145784616224233563">HTTP брандмауэрі</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Сканеріңіз қосылып тұруы керек және желі немесе тікелей қосылым арқылы қолжетімді болуы тиіс.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Жад тексерісін іске қосу үшін кемінде 500 МБ бос орын керек. Орын босату үшін, "Параметрлер &gt; Жадты басқару" бөліміне өтіңіз.</translation>
 <translation id="4258281355379922695">HTTP кідірісі</translation>
 <translation id="4271957103967917607">Толық экран режимі</translation>
+<translation id="4275799948641988986">Құрылғыны жөндегеннен кейін кім пайдаланады?</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
@@ -409,6 +412,7 @@
 <translation id="7297226631177386107">Брандмауэр арқылы HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Құрылғы басқа иеге өтеді.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
 <translation id="7359657277149375382">Файл түрі</translation>
@@ -416,6 +420,7 @@
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
+<translation id="7451112128070628323">Бұл құрылғының иесі өзгермесе (мысалы, құрылғы ұйымдағы басқа адамға берілсе), осы опцияны таңдаңыз.</translation>
 <translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>
@@ -467,6 +472,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Құлыпты ашу кодын енгізіңіз:</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
@@ -540,6 +546,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
+<translation id="9095415590198785865">Құрылғы сол иеге өтеді.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>

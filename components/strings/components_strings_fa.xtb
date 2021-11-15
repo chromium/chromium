@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
 <translation id="1428146450423315676">پشته‌ساز ۷</translation>
+<translation id="142858679511221695">کاربر ابری</translation>
 <translation id="1428729058023778569">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">اشباع رنگ</translation>
 <translation id="3333762389743153920">برای کارت مجازی واجدشرایط نیست</translation>
 <translation id="3338095232262050444">ایمن</translation>
+<translation id="3339446062576134663">‏ابر (Ash)</translation>
 <translation id="3355823806454867987">تغییر تنظیمات پروکسی...</translation>
 <translation id="3360103848165129075">برگ کنترل‌کننده پرداخت</translation>
 <translation id="3361596688432910856">‏Chrome اطلاعات زیر را <ph name="BEGIN_EMPHASIS" />ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
@@ -742,6 +744,7 @@
 <translation id="3380365263193509176">خطای ناشناس</translation>
 <translation id="3380864720620200369">شناسه سرویس‌گیرنده:</translation>
 <translation id="3381668585148405088">به تأیید رساندن خرید</translation>
+<translation id="3383566085871012386">ترتیب اولویت کنونی</translation>
 <translation id="3387261909427947069">روش‌های پرداخت</translation>
 <translation id="3391030046425686457">نشانی ارسال</translation>
 <translation id="3391482648489541560">ویرایش فایل</translation>
@@ -1411,6 +1414,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">شاید این محتوا تلاش کند نرم‌افزار خطرناکی در دستگاهتان نصب کند که اطلاعاتتان را به سرقت برد یا حذف کند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">نشانی معتبری اضافه کنید</translation>
+<translation id="5485973315555778056">ماشین ابری</translation>
 <translation id="5490432419156082418">نشانی‌ها و سایر موارد</translation>
 <translation id="5492298309214877701">نشانی وب این سایت در اینترانت شرکت، سازمان یا محل تحصیل با نشانی وب یک وب‌سایت خارجی یکسان است.
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@
 <translation id="5571083550517324815">تحویل گرفتن از این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="5580958916614886209">ماه انقضا را بررسی و دوباره امتحان کنید</translation>
 <translation id="5586446728396275693">نشانی ذخیره‌شده‌ای وجود ندارد</translation>
+<translation id="5587987780934666589">کاربر پلاتفرم</translation>
 <translation id="5593349413089863479">اتصال کاملاً امن نیست</translation>
 <translation id="5595485650161345191">ویرایش آدرس</translation>
 <translation id="5598944008576757369">انتخاب روش پرداخت</translation>
@@ -2128,6 +2133,7 @@
 <translation id="7953569069500808819">دوختن لبه بالا</translation>
 <translation id="7956713633345437162">نشانک‌های تلفن‌ همراه</translation>
 <translation id="7961015016161918242">هرگز</translation>
+<translation id="7962467575542381659">ماشین پلاتفرم</translation>
 <translation id="7966803981046576691">نوع حساب کار</translation>
 <translation id="79682505114836835">‏مقدار «<ph name="VALUE" />» رنگ hex نامعتبر است.</translation>
 <translation id="7968982339740310781">مشاهدهٔ جزئیات</translation>

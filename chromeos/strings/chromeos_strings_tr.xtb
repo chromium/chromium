@@ -158,6 +158,8 @@
 <translation id="357889014807611375">sayaçlı kablosuz ağ</translation>
 <translation id="3583278742022654445">Düşük sinyal gücü. Kablosuz sinyal kaynağına yaklaşmayı deneyin.</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
+<translation id="360089215033199597">Onarım sürecini kolaylaştırmak için kablosuz ağa bağlanmanız önerilir.
+        Ağınız kaydedilir.</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
@@ -186,6 +188,7 @@
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
+<translation id="4140251671072434548">RMA Sunucu Kilidini Açma İşlemi Yapın</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
@@ -475,8 +478,10 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Kilidi açma kodunu girin:</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
+<translation id="8217675307824400706">Bağlanın</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
 <translation id="8286154143153872371">Duvar kağıdını görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>

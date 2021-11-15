@@ -1670,6 +1670,10 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 
       Als je het beleid niet instelt, is het beleid <ph name="ASK_GEOLOCATION_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="2922511125678964398">Toestaan dat captive portal-verificatie proxyinstellingen negeert</translation>
+<translation id="2931888116345994552">Hiermee zet je componentupdates voor alle componenten in <ph name="PRODUCT_NAME" /> aan als het beleid wordt toegepast of niet is ingesteld.
+
+      Als je het beleid niet toepast, staan updates voor componenten uit. Bepaalde componenten zijn wel uitgesloten van dit beleid. Updates voor componenten worden niet uitgezet als deze geen uitvoerbare code bevatten en essentieel zijn voor de beveiliging van de browser.
+      Voorbeelden van dergelijke componenten zijn Certificate Revocation Lists en subresource-filters.</translation>
 <translation id="2939988360019366928">Toestaan dat de meest recente resultaten van <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> in een zijvenster van de browser worden getoond</translation>
 <translation id="2940127076681735544">Als je dit beleid instelt op een geldige URL, downloadt <ph name="PRODUCT_NAME" /> de lijst met sites van die URL en worden de regels toegepast alsof ze zijn ingesteld met het <ph name="SITELIST_POLICY_NAME" />-beleid.
 
@@ -2718,6 +2722,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> uitgezet.</translation>
 <translation id="4203879074082863035">Gebruikers zien alleen printers op de toelatingslijst</translation>
+<translation id="4204327073692415353">De gebruiker niet vragen om een clientcertificaat te selecteren op het inlogscherm</translation>
 <translation id="4205316772333487392">Het gebruik van SafeSearch op Google Zoeken afdwingen</translation>
 <translation id="4209297478239988291">Zet de toegankelijkheidsfunctie voor automatisch klikken aan.
 
@@ -5381,6 +5386,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7477231245051133709">Toegankelijkheidsfunctie voor monogeluid aanzetten</translation>
 <translation id="7477239290070847560">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
+<translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
@@ -5472,6 +5478,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
+<translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
 <translation id="7590188804371204512">Beheert de installatie van externe extensies.
 
       Als je deze instelling aanzet, wordt de installatie van externe extensies geblokkeerd.

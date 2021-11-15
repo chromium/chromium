@@ -156,6 +156,8 @@
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="3583278742022654445">Cигнал начар. Wi-Fi сигналынын булагына жакыныраак жылып көрүңүз.</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
+<translation id="360089215033199597">Оңдоо процессин жеңилдетүү үчүн Wi-Fi'га туташуу сунушталат.
+        Тармагыңыз сакталат.</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
 <translation id="3606583719724308068">HTTPS вебсайттары үчүн күтүү убакыты жогору</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
@@ -474,6 +476,7 @@
 <translation id="816013303019725643">Кулпуну ачуу кодун киргизүү:</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8217675307824400706">Туташыңыз</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
 <translation id="8286154143153872371">Тушкагазды көрүү үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>

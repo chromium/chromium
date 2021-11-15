@@ -2365,6 +2365,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3413122095806433232">Izdajatelji overiteljev potrdil: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3414966631182382431">Vaš <ph name="BEGIN_LINK" />brskalnik upravlja<ph name="END_LINK" /> domena <ph name="MANAGER" />.</translation>
+<translation id="341589277604221596">Samodejni podnapisi – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Vedno pokaži celotne URL-je</translation>
 <translation id="3417835166382867856">Iskanje zavihkov</translation>
 <translation id="3417836307470882032">Vojaški zapis časa</translation>
@@ -7201,6 +7202,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8540136935098276800">Vnesite pravilno oblikovan URL</translation>
 <translation id="8540503336857689453">Zaradi varnostnih razlogov ne priporočamo uporabe skritega omrežja.</translation>
 <translation id="854071720451629801">Označi kot prebrano</translation>
+<translation id="8540942859441851323">Gostovanje zahteva ponudnik</translation>
 <translation id="8541462173655894684">V tiskalnem strežniku ni bil najden noben tiskalnik.</translation>
 <translation id="8541838361296720865">Pritisnite stikalo ali tipko na tipkovnici, če ga oziroma jo želite dodeliti dejanju »<ph name="ACTION" />«.</translation>
 <translation id="8542618328173222274">Vprašaj, ko želi spletno mesto uporabljati naprave/podatke za navidezno resničnost</translation>

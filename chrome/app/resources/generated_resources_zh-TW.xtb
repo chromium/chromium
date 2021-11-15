@@ -1221,6 +1221,7 @@
 <translation id="2232751457155581899">網站可要求追蹤你的攝影機位置</translation>
 <translation id="2232876851878324699">檔案含有一個憑證，但無法匯入：</translation>
 <translation id="2233502537820838181">更多資訊(&amp;M)</translation>
+<translation id="223356358902285214">網路和應用程式活動</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238379619048995541">頻率狀態資料</translation>
@@ -1907,6 +1908,7 @@
 <translation id="2923006468155067296">系統會立即鎖定 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。</translation>
 <translation id="2923234477033317484">移除這個帳戶</translation>
+<translation id="2923644930701689793">存取手機的相機膠卷</translation>
 <translation id="2926085873880284723">還原預設捷徑</translation>
 <translation id="2926620265753325858">不支援「<ph name="DEVICE_NAME" />」。</translation>
 <translation id="2927017729816812676">快取儲存空間</translation>
@@ -2347,6 +2349,7 @@
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">空間大小：</translation>
 <translation id="3414966631182382431">你的<ph name="BEGIN_LINK" />瀏覽器是由 <ph name="MANAGER" /> 管理<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">即時字幕 - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">一律顯示完整網址</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3417836307470882032">24 小時制</translation>
@@ -3097,6 +3100,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與你共用。不過只有使用多重登入時，這些設定才會影響你的帳戶。</translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
+<translation id="417096670996204801">選擇設定檔</translation>
 <translation id="4175137578744761569">淺紫色與白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
 <translation id="4176463684765177261">已停用</translation>
@@ -7179,6 +7183,7 @@
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="8540503336857689453">基於安全考量，建議你不要使用隱藏的網路。</translation>
 <translation id="854071720451629801">標示為已讀取</translation>
+<translation id="8540942859441851323">服務供應商要求使用漫遊服務</translation>
 <translation id="8541462173655894684">在列印伺服器上找不到任何印表機</translation>
 <translation id="8541838361296720865">按下外接切換裝置或鍵盤按鍵，即可為其指派「<ph name="ACTION" />」</translation>
 <translation id="8542618328173222274">網站必須先詢問你，才能使用你的虛擬實境裝置和資料</translation>

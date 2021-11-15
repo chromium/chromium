@@ -119,6 +119,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1743570585616704562">Tanınmadı</translation>
 <translation id="1746730358044914197">Giriş yöntemleri, yöneticiniz tarafından yapılandırılır.</translation>
 <translation id="1747827819627189109">Dokunmatik klavye etkin</translation>
+<translation id="1750088060796401187">Yalnızca <ph name="MAX_DESK_LIMIT" /> masaya izin verilir. Yenisini açmak için bir masayı kaldırın.</translation>
 <translation id="1761222317188459878">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>

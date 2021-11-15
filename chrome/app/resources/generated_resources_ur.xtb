@@ -596,6 +596,7 @@
 <translation id="161042844686301425">سیان</translation>
 <translation id="1611432201750675208">آپ کا آلہ مقفل ہے</translation>
 <translation id="1612019740169791082">‏آپ کا کنٹینر ڈسک کی سائز تبدیل کرنے کو سپورٹ کرنے کے لئے کنفیگر نہیں کیا گیا ہے۔ Linux کے لیے مختص کی گئی جگہ کی مقدار کو ایڈجسٹ کرنے کے لیے بیک اپ لیں اور اسے نئے کنٹینر میں بحال کریں۔</translation>
+<translation id="1613019471223620622"><ph name="DOMAIN" /> پر <ph name="USERNAME" /> کیلئے پاس ورڈ دکھائیں</translation>
 <translation id="1614511179807650956">ممکن ہے آپ نے اپنا موبائل ڈیٹا الاؤنس استعمال کر لیا ہو۔ مزید ڈیٹا خریدنے کیلئے <ph name="NAME" /> کی فعالیت کا پورٹل ملاحظہ کریں</translation>
 <translation id="161460670679785907">آپ کے فون کا پتہ لگانے سے قاصر</translation>
 <translation id="1615337439947999338">‏اپنے Google اکاؤنٹ میں محفوظ کریں (<ph name="EMAIL" />)</translation>
@@ -1203,6 +1204,7 @@
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">بے نام میڈیا ماخذ</translation>
 <translation id="2224444042887712269">یہ ترتیب <ph name="OWNER_EMAIL" /> سے متعلق ہے۔</translation>
 <translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
 <translation id="2224551243087462610">فولڈر کے نام میں ترمیم کریں</translation>
@@ -3323,6 +3325,7 @@
 <translation id="4444304522807523469">‏USB کے ذریعے یا مقامی نیٹ ورک پر منسلک دستاویز اسکینرز تک رسائی حاصل کریں</translation>
 <translation id="4444512841222467874">اگر جگہ دستیاب نہیں کرائی جاتی ہے تو صارفین اور ڈیٹا کو خودکار طور پر ہٹایا جا سکتا ہے۔</translation>
 <translation id="4446933390699670756">معکوس کردہ</translation>
+<translation id="4448914100439890108"><ph name="DOMAIN" /> پر <ph name="USERNAME" /> کیلئے پاس ورڈ چھپائیں</translation>
 <translation id="4449948729197510913">‏آپ کے صارف نام کا تعلق آپ کی تنظیم کے انٹرپرائز اکاؤنٹ سے ہے۔ اکاؤنٹ میں آلات کا اندراج کرنے کیلئے، پہلے Admin Console میں ڈومین کی ملکیت کی توثیق کریں۔ توثیق کرنے کے لئے آپ کو اکاؤنٹ پر انتظامی مراعات کی ضرورت ہوگی۔</translation>
 <translation id="4449996769074858870">یہ ٹیب آڈیو کو چلا رہا ہے۔</translation>
 <translation id="4450274068924249931">اسکرین معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔ اسکرین سیور کو فعال کرنے سے چارجنگ کے دوران آپ کا ڈسپلے آن رہے گا۔</translation>
@@ -3846,6 +3849,7 @@
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5010043101506446253">سرٹیفکیٹ اتھارٹی</translation>
 <translation id="5015344424288992913">پراکسی کو حل کیا جا رہا ہے…</translation>
+<translation id="5016491575926936899">آپ اپنے کمپیوٹر سے ٹیکسٹ بھیج، اپنے انٹرنیٹ کنکشن کا اشتراک، گفتگو کی اطلاعات کا جواب اور اپنے فون کے ساتھ اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کر سکتے ہیں۔<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl+Search+7 دبائیں۔</translation>
 <translation id="5017828934289857214">مجھے بعد میں یاد دلائیں</translation>
 <translation id="5018207570537526145">ایکسٹینشن ویب سائٹ کھولیں</translation>
@@ -4435,6 +4439,7 @@
 <translation id="5638309510554459422">‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> میں ایکسٹینشنز اور تھیمز تلاش کریں</translation>
 <translation id="5639549361331209298">اس صفحہ کو دوبارہ لوڈ کریں، مزید اختیارات دیکھنے کیلئے روکیں</translation>
 <translation id="5640133431808313291">سیکیورٹی کلیدوں کا نظم کریں</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" /> استعمال کرنا شروع کریں</translation>
 <translation id="5642508497713047">‏CRL سائنر</translation>
 <translation id="5643321261065707929">میٹرڈ نیٹ ورک</translation>
 <translation id="5643620609347735571">صاف کریں اور جاری رکھیں</translation>

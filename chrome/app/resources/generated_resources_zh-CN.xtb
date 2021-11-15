@@ -593,6 +593,7 @@
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
 <translation id="1612019740169791082">您的容器配置不支持调整磁盘空间大小。若要调整预留给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
+<translation id="1613019471223620622">显示 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="1614511179807650956">您的移动数据流量配额可能已经用完。若想购买更多流量，请前往“<ph name="NAME" />”激活门户网站</translation>
 <translation id="161460670679785907">检测不到您的手机</translation>
 <translation id="1615337439947999338">保存到您的 Google 帐号 (<ph name="EMAIL" />) 中</translation>
@@ -1200,6 +1201,7 @@
 <translation id="2220529011494928058">报告问题</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">未命名的媒体来源</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
@@ -3319,6 +3321,7 @@
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
 <translation id="4444512841222467874">如果没有可用空间，系统可能会自动移除用户和数据。</translation>
 <translation id="4446933390699670756">镜像</translation>
+<translation id="4448914100439890108">隐藏 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="4449948729197510913">您的用户名属于贵单位的企业帐号。如需将设备注册到该帐号，请先在管理控制台中验证域名所有权。您需要拥有该帐号的管理员权限才能进行验证。</translation>
 <translation id="4449996769074858870">该标签页正在播放音频。</translation>
 <translation id="4450274068924249931">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息。启用屏保功能会使您的显示屏在充电期间保持开启状态。</translation>
@@ -3842,6 +3845,7 @@
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
 <translation id="5010043101506446253">证书授权中心</translation>
 <translation id="5015344424288992913">正在解析代理...</translation>
+<translation id="5016491575926936899">您可以在计算机上收发短信、共享互联网连接、回复对话通知，还可以用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">您可以使用文本光标浏览网页。按 Ctrl + 搜索键 + 7 可关闭。</translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
 <translation id="5018207570537526145">打开扩展程序网站</translation>
@@ -4432,6 +4436,7 @@
 <translation id="5638309510554459422">在 <ph name="BEGIN_LINK" />Chrome 网上应用店<ph name="END_LINK" />中查找扩展程序和主题背景</translation>
 <translation id="5639549361331209298">重新加载此网页，按下可查看更多选项</translation>
 <translation id="5640133431808313291">管理安全密钥</translation>
+<translation id="5641608986289282154">开始使用 <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5643321261065707929">按流量计费的网络</translation>
 <translation id="5643620609347735571">清除并继续</translation>

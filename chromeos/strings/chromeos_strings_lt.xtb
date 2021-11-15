@@ -76,6 +76,7 @@
 <translation id="2016697457005847575">Išbandykite trikčių šalinimo veiksmus</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
+<translation id="2104796393919810494">Baigta taisyti</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
@@ -156,6 +157,8 @@
 <translation id="357889014807611375">matuojamas „Wi-Fi“ tinklas</translation>
 <translation id="3583278742022654445">Silpnas signalas. Pabandykite prieiti arčiau „Wi-Fi“ signalo šaltinio.</translation>
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
+<translation id="360089215033199597">Kad taisymo procesas būtų paprastesnis, rekomenduojama prisijungti prie „Wi-Fi“.
+        Jūsų tinklas bus išsaugotas.</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
@@ -472,6 +475,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
+<translation id="8217675307824400706">Prisijungimas</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
 <translation id="8286154143153872371">Jei norite peržiūrėti ekrano foną, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>

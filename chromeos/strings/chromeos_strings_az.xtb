@@ -157,6 +157,8 @@
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="3583278742022654445">Siqnal gücü zəifdir. Wi-Fi siqnal mənbəyinə yaxınlaşmağa çalışın.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
+<translation id="360089215033199597">Təmir prosesini asanlaşdırmaq üçün Wi-Fi şəbəkəsinə qoşulmaq tövsiyə olunur.
+        Şəbəkəniz yadda saxlanılacaq.</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
@@ -478,6 +480,7 @@
 <translation id="816013303019725643">Kiliddən çıxarma kodunu daxil edin:</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
+<translation id="8217675307824400706">Qoşulun</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8246209727385807362">Naməlum operator</translation>
 <translation id="8286154143153872371">Divar kağızı görmək üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>

@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3583278742022654445">Semnal slab. Apropie-te de sursa semnalului Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
+<translation id="360089215033199597">Conectarea la Wi-Fi este recomandată pentru a simplifica procesul de reparare.
+        Rețeaua se va salva.</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
@@ -186,6 +188,7 @@
 <translation id="409427325554347132">Salvează detaliile testului</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
+<translation id="4140251671072434548">Deblocați serverul RMA</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Scanerul trebuie să fie pornit și disponibil prin rețea sau prin conexiune directă</translation>
@@ -476,8 +479,10 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Introduceți codul de deblocare:</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
+<translation id="8217675307824400706">Conectează-te</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8246209727385807362">Operator necunoscut</translation>
 <translation id="8286154143153872371">Conectează-te la o rețea și reîncarcă pagina pentru a vedea imaginea de fundal.</translation>

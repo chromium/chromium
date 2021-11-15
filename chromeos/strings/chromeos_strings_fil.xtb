@@ -78,6 +78,7 @@
 <translation id="2016697457005847575">Subukan ang mga hakbang sa pag-troubleshoot</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
+<translation id="2104796393919810494">Kumpleto na ang pag-repair</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, bersyon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB sa <ph name="TOTAL_MEMORY" /> GB ang available</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -244,6 +245,7 @@
 <translation id="4813345808229079766">Pagkonekta</translation>
 <translation id="4832079907277790330">Pumili ng folder sa Files app...</translation>
 <translation id="4835901797422965222">Walang aktibong network</translation>
+<translation id="4839698083503556542">Gumawa ng pelikula mo</translation>
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
 <translation id="4848429997038228357">TUMATAKBO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>

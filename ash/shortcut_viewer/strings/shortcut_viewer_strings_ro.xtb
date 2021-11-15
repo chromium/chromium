@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 până la 8</translation>
 <translation id="3837047332182291558">Mărește luminozitatea tastaturii (numai pentru tastaturi cu iluminare)</translation>
 <translation id="3949671998904569433">virgulă</translation>
+<translation id="3976707995992061296">Activează dacă fereastra activă este atribuită tuturor desktopurilor</translation>
 <translation id="3976863468609830880">Dă clic pe ultima pictograma de pe raft</translation>
 <translation id="3994783594793697310">Resetează nivelul de zoom al afișajului</translation>
 <translation id="4026843240379844265">Mută fereastra activă de pe un ecran pe altul</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Mărire</translation>
 <translation id="634687982629734605">Comută focalizarea între: zona de stare (unde apare fotografia contului), Lansator, bara de adrese, bara de marcaje (dacă este vizibilă), pagina web deschisă și bara de descărcări (dacă este vizibilă). Dacă se afișează o casetă de dialog focalizabilă, mută focalizarea pe aceasta.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Activează desktopurile cu numere între 1 și 8.</translation>
 <translation id="6395172954772765143">Selectează textul până la capătul rândului</translation>
 <translation id="6425378783626925378">Dă clic pe pictogramele 1 – 8 de pe raft</translation>
 <translation id="6435207348963613811">Evidențiază elementul anterior de pe raft</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Afișează fișiere ascunse din aplicația Fișiere</translation>
 <translation id="8717459106217102612">Selectează cuvântul anterior sau litera anterioară</translation>
 <translation id="8727232706774971183">Vezi notificările</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 până la 8</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8881584919399569791">Mută fereastra activă pe desktopul din stânga</translation>
 <translation id="88986195241502842">O pagină mai jos</translation>

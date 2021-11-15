@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
+<translation id="1857850044054738019">デバイスを保管または修理して新しい顧客に配布する場合は、このオプションを選択します。</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ハードウェア リビジョン</translation>
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
@@ -196,6 +197,7 @@
 <translation id="4244962993387259361">メモリテストを実行するには 500 MB 以上の空き容量が必要です。空き容量を増やすには、[設定] &gt; [ストレージ管理] に移動します。</translation>
 <translation id="4258281355379922695">HTTP レイテンシ</translation>
 <translation id="4271957103967917607">全画面表示</translation>
+<translation id="4275799948641988986">修理したデバイスは誰が使いますか？</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4378373042927530923">未実行</translation>
@@ -260,6 +262,7 @@
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
 <translation id="5051044138948155788">これは存在する唯一のページです。削除すると、スキャンのスタート画面に戻ります。</translation>
+<translation id="5061169534910302641">バージョンを更新して再起動</translation>
 <translation id="5088172560898466307">サーバーのホスト名</translation>
 <translation id="5089810972385038852">都道府県 / 州</translation>
 <translation id="5142961317498132443">認証</translation>
@@ -411,6 +414,7 @@
 <translation id="7297226631177386107">ファイアウォールを介して HTTPS ウェブサイトに接続できません</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">デバイスの所有者が変わる場合</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7359657277149375382">ファイル形式</translation>
@@ -418,6 +422,8 @@
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
+<translation id="7451112128070628323">デバイスの所有者が変わらない場合は、このオプションを選択します。
+        たとえば、組織内の他の人がデバイスを使う場合などです。</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7487067081878637334">テクノロジー</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>
@@ -542,6 +548,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
+<translation id="9095415590198785865">デバイスの所有者が変わらない場合</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>

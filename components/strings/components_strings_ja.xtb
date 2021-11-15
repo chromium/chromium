@@ -156,6 +156,7 @@
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1428146450423315676">スタッカー 7</translation>
+<translation id="142858679511221695">クラウド ユーザー</translation>
 <translation id="1428729058023778569">この警告は、サイトが HTTPS に対応していない場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1432581352905426595">検索エンジンの管理</translation>
@@ -708,6 +709,7 @@
 <translation id="3329013043687509092">彩度</translation>
 <translation id="3333762389743153920">仮想カードは使用できません</translation>
 <translation id="3338095232262050444">保護された通信</translation>
+<translation id="3339446062576134663">クラウド（Ash）</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
 <translation id="3361596688432910856">Chrome には、<ph name="BEGIN_EMPHASIS" />次の情報は<ph name="END_EMPHASIS" />保存されません。
@@ -730,6 +732,7 @@
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3380864720620200369">クライアント ID:</translation>
 <translation id="3381668585148405088">購入の確認</translation>
+<translation id="3383566085871012386">現在の優先順位</translation>
 <translation id="3387261909427947069">お支払い方法</translation>
 <translation id="3391030046425686457">配送先住所</translation>
 <translation id="3391482648489541560">ファイルの編集</translation>
@@ -1392,6 +1395,7 @@
 <translation id="5478437291406423475">B6 / C4（封筒）</translation>
 <translation id="5481076368049295676">アクセス先のコンテンツによって、個人情報を入手したり削除したりする危険なソフトウェアがインストールされる可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">有効なアドレスを追加</translation>
+<translation id="5485973315555778056">クラウドマシン</translation>
 <translation id="5490432419156082418">住所やその他の情報</translation>
 <translation id="5492298309214877701">このサイトは企業、団体、または学校のイントラネット上にありますが、外部のウェブサイトと同じ URL が使用されています。
     <ph name="LINE_BREAK" />
@@ -1421,6 +1425,7 @@
 <translation id="5571083550517324815">この住所での受け取りはできません。別の住所を選択してください。</translation>
 <translation id="5580958916614886209">有効期限の「月」を確認してもう一度お試しください</translation>
 <translation id="5586446728396275693">保存されている住所がありません</translation>
+<translation id="5587987780934666589">プラットフォーム ユーザー</translation>
 <translation id="5593349413089863479">接続は完全には保護されていません</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5598944008576757369">お支払い方法を選択</translation>
@@ -2105,6 +2110,7 @@
 <translation id="7953569069500808819">端綴じ（上）</translation>
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
+<translation id="7962467575542381659">プラットフォーム マシン</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
 <translation id="79682505114836835">値「<ph name="VALUE" />」は無効な 16 進数色コードです。</translation>
 <translation id="7968982339740310781">詳細を表示</translation>

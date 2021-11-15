@@ -596,6 +596,7 @@
 <translation id="161042844686301425">සියන්</translation>
 <translation id="1611432201750675208">ඔබේ උපාංගය අගුලු වැටී ඇත</translation>
 <translation id="1612019740169791082">ඔබේ බහාලුම තැටි ප්‍රතිප්‍රමාණවලට සහාය දැක්වීමට වින්‍යාස කර නැත. Linux වෙත වෙන් කරන ලද ඉඩ ප්‍රමාණය සීරුමාරු කිරීමට, උපස්ථ කර අනතුරුව නව බහාලුමකට ප්‍රතිසාධනය කරන්න.</translation>
+<translation id="1613019471223620622"><ph name="DOMAIN" /> හි <ph name="USERNAME" /> සඳහා මුරපදය පෙන්වන්න</translation>
 <translation id="1614511179807650956">ඔබ ඔබේ ජංගම දත්ත ප්‍රමාණය භාවිත කර අවසන්ව විය හැක. <ph name="NAME" /> සක්‍රීයකරණ ද්වාරයට ගොස් දත්ත මිලදී ගන්න.</translation>
 <translation id="161460670679785907">ඔබේ දුරකථනය හඳුනා ගත නොහැකිය</translation>
 <translation id="1615337439947999338">ඔබගේ Google ගිණුම (<ph name="EMAIL" />) තුළ සුරකින්න</translation>
@@ -1204,6 +1205,7 @@
 <translation id="2220529011494928058">ගැටළුවක් වාර්තා කරන්න...</translation>
 <translation id="2220572644011485463">PIN අංකය හෝ මුරපදය</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">නම් නොකළ මාධ්‍ය මූලාශ්‍රය</translation>
 <translation id="2224444042887712269">මෙම පසුතල අයත් <ph name="OWNER_EMAIL" />හටය.</translation>
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
 <translation id="2224551243087462610">ෆෝල්ඩර නම සංස්කරණය කරන්න</translation>
@@ -3328,6 +3330,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4444304522807523469">ඔස්සේ සම්බන්ධ කර ඇති හෝ USB පෙදෙසි ජාලයේ ඇති ලේඛන පරිලෝකන යන්ත්‍ර ප්‍රවේශ කරන්න</translation>
 <translation id="4444512841222467874">ඉඩ ලබා ගත හැකි බවට පත් කළ නොහැකි නම්, පරිශීලකයන් සහ දත්ත ස්වයංක්‍රියව ඉවත් කිරීමට හැකිය.</translation>
 <translation id="4446933390699670756">පිළිඹිබු කරන ලදී</translation>
+<translation id="4448914100439890108"><ph name="DOMAIN" /> හි <ph name="USERNAME" /> සඳහා මුරපදය සඟවන්න</translation>
 <translation id="4449948729197510913">ඔබේ පරිශීලක නාමය ඔබේ සංවිධානයේ ව්‍යවසාය ගිණුමට අයත් වෙයි. ගිණුමට උපාංග ලියාපදිංචි කිරීමට, පළමුව පරිපාලන කොන්සෝලය තුළ වසම් හිමිකාරීත්වය සත්‍යාපන කරන්න. සත්‍යාපන කිරීමට ඔබට ගිණුම වෙත පරිපාලන වරප්‍රසාද අවශ්‍ය වෙයි.</translation>
 <translation id="4449996769074858870">මෙම ටැබයේ ශ්‍රව්‍ය වාදනයක් සිදුවේ.</translation>
 <translation id="4450274068924249931">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වන්න. තිර සුරැකුම සබල කිරීම ආරෝපණය වන අතරතුර ඔබගේ සංදර්ශකය දිගටම පවත්වා ගනු ඇත.</translation>
@@ -3851,6 +3854,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5009463889040999939">පැතිකඩ යළි නම් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="5010043101506446253">සහතික බලධාරී</translation>
 <translation id="5015344424288992913">ප්‍රොක්සිය විසඳමින්...</translation>
+<translation id="5016491575926936899">ඔබට ඔබගේ පරිගණකයෙන් පෙළ පණිවිඩ යැවීමට, ඔබගේ අන්තර්ජාල සබැඳුම බෙදා ගැනීමට, සංවාද දැනුම්දීමට පිළිතුරු දීමට සහ ඔබගේ දුරකථනය සමගින් ඔබගේ <ph name="DEVICE_TYPE" /> අගුලු හැරීමට හැකිය.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">ඔබට පෙළ කර්සරයක් සමගින් පිටුවල සංචාලනය කළ හැකිය. ක්‍රියාවිරහිත කිරීමට Ctrl+Search+7 ඔබන්න.</translation>
 <translation id="5017828934289857214">මට පසුව සිහිකැඳවන්න</translation>
 <translation id="5018207570537526145">දිගු වෙබ් අඩවිය විවෘත කරන්න</translation>
@@ -4442,6 +4446,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> තුළ දිගු සහ තේමාවන් සොයා ගන්න</translation>
 <translation id="5639549361331209298">මෙම පිටුව ප්‍රවේශනය කරන්න, තවත් අභිරුචි බැලීමට අල්ලාගෙන සිටින්න</translation>
 <translation id="5640133431808313291">ආරක්‍ෂක යතුරු කළමනා කරන්න</translation>
+<translation id="5641608986289282154"><ph name="DEVICE_OS" /> භාවිත කිරීම ආරම්භ කරන්න</translation>
 <translation id="5642508497713047">CRL Signer</translation>
 <translation id="5643321261065707929">මනුගත ජාලය</translation>
 <translation id="5643620609347735571">හිස් කර දිගටම පවත්වාගෙන යන්න</translation>

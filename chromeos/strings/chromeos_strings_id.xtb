@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
+<translation id="360089215033199597">Sebaiknya hubungkan ke Wi-Fi untuk mempermudah proses perbaikan.
+        Jaringan Anda akan disimpan.</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
@@ -241,6 +243,7 @@
 <translation id="4813345808229079766">Sambungan</translation>
 <translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
 <translation id="4835901797422965222">Tidak ada jaringan yang aktif</translation>
+<translation id="4839698083503556542">Buat film Anda sendiri</translation>
 <translation id="484790837831576105">(Android) Resolusi DNS</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}other{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}}</translation>
@@ -477,6 +480,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
+<translation id="8217675307824400706">Hubungkan</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
 <translation id="8286154143153872371">Hubungkan ke jaringan dan muat ulang halaman untuk melihat wallpaper.</translation>

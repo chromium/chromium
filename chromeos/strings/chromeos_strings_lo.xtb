@@ -76,6 +76,7 @@
 <translation id="2016697457005847575">ກະລຸນາລອງເຮັດຂັ້ນຕອນການແກ້ໄຂບັນຫາ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
+<translation id="2104796393919810494">ສ້ອມແປງສຳເລັດແລ້ວ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ຫວ່າງ <ph name="AVAILABLE_MEMORY" /> GB ຈາກທັງໝົດ <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
 <translation id="4111761024568264522">ແຜ່ນສໍາຜັດ USB</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
+<translation id="4140251671072434548">ດຳເນີນການປົດລັອກເຊີບເວີ RMA</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
@@ -471,6 +473,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">ໃສ່ລະຫັດປົດລັອກ:</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>

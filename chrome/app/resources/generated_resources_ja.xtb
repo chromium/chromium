@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">サイトに MIDI デバイスへの接続を許可しない</translation>
 <translation id="1088654056000736875">お使いのパソコンから有害なソフトウェアを削除しています...</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
+<translation id="1089606299949659462">確認が終わりました</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
@@ -805,6 +806,7 @@
     <ph name="LINE_BREAKS2" />
     他のデバイスのアプリやコンテンツに影響はありません。</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
+<translation id="1810366086647840386">イメージ サーバー</translation>
 <translation id="1813278315230285598">サービス</translation>
 <translation id="18139523105317219">EDI パーティ名</translation>
 <translation id="1815083418640426271">プレーン テキストとして貼り付ける</translation>
@@ -1371,6 +1373,7 @@
 <translation id="2381499968174336913">共有タブのプレビュー</translation>
 <translation id="2381756643783702095">送信する前に確認する（推奨）</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2390782873446084770">Wi-Fi 同期</translation>
 <translation id="2391419135980381625">標準フォント</translation>
@@ -1428,6 +1431,7 @@
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454247629720664989">キーワード</translation>
 <translation id="2454264884354864965">カメラはオフです</translation>
+<translation id="2454524890947537054">ウェブサイトへのアクセスを承認しますか？</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> のファイルのコピーを求めています。</translation>
 <translation id="2457842160081795172">現在のチャンネルは <ph name="CHANNEL_NAME" /> です</translation>
@@ -1745,6 +1749,7 @@
 <translation id="2773802008104670137">この種類のファイルはパソコンに危害を及ぼす可能性があります。</translation>
 <translation id="2775104091073479743">指紋を編集</translation>
 <translation id="2776560192867872731"><ph name="DEVICE_NAME" /> のデバイス名を変更</translation>
+<translation id="2777251078198759550">このコンテナを削除</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Linux アプリケーションのインストール中にエラーが発生しました</translation>
 <translation id="2783298271312924866">ダウンロード済み</translation>
@@ -1826,10 +1831,12 @@
 <translation id="2851728849045278002">エラーが発生しました。クリックして詳細をご確認ください。</translation>
 <translation id="285241945869362924">音声と動画の字幕を自動的に作成します。音声と字幕がデバイスの外部に送信されることはありません。</translation>
 <translation id="2854896010770911740">サードパーティの Cookie を削除</translation>
+<translation id="2856776373509145513">新しいコンテナの作成</translation>
 <translation id="2858138569776157458">上位のサイト</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
 <translation id="2861941300086904918">ネイティブ クライアント セキュリティ マネージャ</translation>
 <translation id="2862815659905780618">Linux 開発環境を削除</translation>
+<translation id="2864272167277395865">デバイスを選択してください:</translation>
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
 <translation id="2865919525181940183">現在画面に表示されているプログラムのスクリーンショット</translation>
 <translation id="286674810810214575">電源を確認しています...</translation>
@@ -2395,6 +2402,7 @@
 <translation id="3458794975359644386">共有を停止できませんでした</translation>
 <translation id="3459509316159669723">印刷</translation>
 <translation id="3459697287128633276">お使いのアカウントで Google Play ストアにアクセスするには、ID プロバイダの認証を受けてください。</translation>
+<translation id="3461766685318630278">他のコンテナを作成、削除します。</translation>
 <translation id="3462311546193741693">ほとんどのサイトからログアウトします。ただし、同期データを削除できるように Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="3462413494201477527">アカウントの設定をキャンセルしますか？</translation>
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
@@ -3237,6 +3245,7 @@
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4366138410738374926">印刷を開始しました</translation>
 <translation id="4369121877634339065">画像をドラッグして検索</translation>
+<translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4373966964907728675">デスクトップをキャスト中</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
@@ -3926,6 +3935,7 @@
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" /> からスマートフォンを切断します。以降、自動接続は行われなくなります。</translation>
 <translation id="5117930984404104619">他の拡張機能の動作を監視（アクセスした URL を含む）</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" /> にアクセスするには、ここをクリックしてください</translation>
 <translation id="5121052518313988218">お使いの Linux コンテナのオペレーティング システムはサポートが終了しています。セキュリティ アップデートやバグの修正が提供されなくなり、現在動作している機能が予期せず動作しなくなる可能性があります。引き続き Linux を使用するには、最新のバージョンにアップグレードしてください。</translation>
 <translation id="5121130586824819730">ハード ディスクがいっぱいです。別の場所に保存するか、ハード ディスクの空き容量を増やしてください。</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
@@ -4034,6 +4044,7 @@
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
 <translation id="5236374273162681467">これらのパスワードを Google アカウントに移動すると、お持ちのすべてのデバイスで簡単に使用できるようになります</translation>
+<translation id="523862956770478816">サイトの権限</translation>
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
@@ -4307,6 +4318,7 @@
 <translation id="5526745900034778153">同期を再開するにはもう一度ログインしてください</translation>
 <translation id="5527463195266282916">拡張機能のダウングレードが試行されました。</translation>
 <translation id="5527474464531963247">別のネットワークも選択できます。</translation>
+<translation id="5528295196101251711">VM 名</translation>
 <translation id="5532223876348815659">グローバル</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> が次の許可を求めています</translation>
 <translation id="5534304873398226603">写真または動画を破棄</translation>
@@ -4660,6 +4672,7 @@
     <ph name="LINE_BREAK" />
     この画像は Chromebook のログイン画面とロック画面に表示されます。</translation>
 <translation id="5925147183566400388">CPS（認証実施規定）ポインタ</translation>
+<translation id="592740088639760830">このコンテナを停止</translation>
 <translation id="592880897588170157">PDF ファイルを Chrome で自動的に開く代わりにダウンロードする</translation>
 <translation id="592919310198008711">拡張機能をクリックしたとき</translation>
 <translation id="5932124097031739492">Linux のアップグレードが完了しました。</translation>
@@ -5198,6 +5211,7 @@
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
 <translation id="6499143127267478107">プロキシ スクリプト内のホストを解決しています...</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> が次のファイルを開く許可を求めています:</translation>
+<translation id="6501957628055559556">すべてのコンテナ</translation>
 <translation id="650266656685499220">アルバムを作成するには、Google フォトにアクセスします</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="650457560773015827">左ボタン</translation>
@@ -5311,6 +5325,7 @@
 <translation id="6619243162837544323">ネットワークの状態</translation>
 <translation id="6619801788773578757">キオスク アプリケーションを追加</translation>
 <translation id="6619990499523117484">PIN を確認してください</translation>
+<translation id="6620254580880484313">コンテナ名</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> はデリケートなコンテンツまたは危険なコンテンツです。所有者に修正するよう依頼してください。</translation>
@@ -5321,6 +5336,7 @@
 <translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
 <translation id="6635956300022133031">テキスト読み上げ用の音声を選択してカスタマイズします</translation>
+<translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
 <translation id="6640268266988685324">開いているタブ</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
@@ -6083,6 +6099,7 @@
 <translation id="7450761244949417357">まもなく <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
 <translation id="7453008956351770337">このプリンタを選択すると、次の拡張機能にプリンタへのアクセスを許可することになります。</translation>
 <translation id="7454548535253569100">ポータル: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">他のコンテナの管理</translation>
 <translation id="7456142309650173560">Dev</translation>
 <translation id="7456847797759667638">場所を開く...</translation>
 <translation id="7457384018036134905">Chrome OS の設定で言語を管理する</translation>
@@ -6596,6 +6613,7 @@
 <translation id="7946586320617670168">保護されている発行元でなければなりません</translation>
 <translation id="794676567536738329">許可の確認</translation>
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
 <translation id="7951265006188088697">Google Pay のお支払い方法を追加、管理するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="795282463722894016">復元が完了しました</translation>
@@ -7661,6 +7679,7 @@
 <translation id="9053893665344928494">選択内容を保存</translation>
 <translation id="9055636786322918818">RC4 暗号化を適用します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> さんが次のコンテンツへのアクセスをリクエストしています:</translation>
 <translation id="9057354806206861646">更新スケジュール</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
@@ -7748,6 +7767,7 @@
 <translation id="9139258866388561662">ダウンロードを完了するには <ph name="WEB_DRIVE" /> にログインしてください</translation>
 <translation id="9139988741193276691">Linux は設定中です</translation>
 <translation id="9140067245205650184">サポートされていない機能フラグ <ph name="BAD_FLAG" /> が使用されています。これにより、安全性とセキュリティが損なわれます。</translation>
+<translation id="9142637293078737510">イメージ エイリアス</translation>
 <translation id="9143298529634201539">候補を削除しますか？</translation>
 <translation id="9147392381910171771">オプション(&amp;O)</translation>
 <translation id="9148058034647219655">終了</translation>

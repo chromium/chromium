@@ -119,6 +119,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1743570585616704562">Neatpažinta</translation>
 <translation id="1746730358044914197">Įvesties metodus konfigūruoja jūsų administratorius.</translation>
 <translation id="1747827819627189109">Ekrano klaviatūra įgalinta</translation>
+<translation id="1750088060796401187">Leidžiama tik tiek darbalaukių: <ph name="MAX_DESK_LIMIT" />. Pašalinkite darbalaukį, kad atidarytumėte naują.</translation>
 <translation id="1761222317188459878">Perjungti tinklo ryšį. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + taškas. Jei norite naudoti klavišą „Insert“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + antrojo lygio klavišą + naikinimo klavišą.</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>

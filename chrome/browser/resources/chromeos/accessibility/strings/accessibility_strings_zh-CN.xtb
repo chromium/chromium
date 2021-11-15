@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{1个右方括号}other{#个右方括号}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{1个问号}other{#个问号}}</translation>
+<translation id="3505359110822747654">收起 ChromeVox 菜单</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{1个插入符号}other{#个插入符号}}</translation>
 <translation id="352577523970648069">可编辑的文本字段</translation>
 <translation id="3538907380453898475">说明表</translation>

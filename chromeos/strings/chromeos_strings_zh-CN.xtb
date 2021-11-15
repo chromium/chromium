@@ -158,6 +158,8 @@
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="3583278742022654445">信号强度较弱。请尝试移到离 Wi-Fi 信号源更近的地方。</translation>
 <translation id="3595596368722241419">电池已充满</translation>
+<translation id="360089215033199597">为简化维修过程，建议您连接到 Wi-Fi。
+        系统会保存您的网络信息。</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
@@ -478,6 +480,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
+<translation id="8217675307824400706">连接到网络</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
 <translation id="8286154143153872371">若要查看壁纸，请连接到网络并重新加载这个页面。</translation>

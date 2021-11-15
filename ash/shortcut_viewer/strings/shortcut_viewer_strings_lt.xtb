@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> nuo 1 iki 8</translation>
 <translation id="3837047332182291558">Pašviesinti klaviatūrą (skirta tik klaviatūroms su foniniu apšvietimu)</translation>
 <translation id="3949671998904569433">kablelis</translation>
+<translation id="3976707995992061296">Perjunkite, ar aktyvus langas priskiriamas visiems darbalaukiams</translation>
 <translation id="3976863468609830880">Spustelėti paskutinę piktogramą lentynoje</translation>
 <translation id="3994783594793697310">Iš naujo nustatyti ekrano mastelio keitimo lygį</translation>
 <translation id="4026843240379844265">Aktyvaus lango perkėlimas iš vieno ekrano į kitą</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Artinti ekraną</translation>
 <translation id="634687982629734605">Suaktyvinti šiuos elementus: būsenos sritį (kur rodoma paskyros nuotrauka), Paleidimo priemonės adreso juostą, žymių juostą (jei rodoma), atidarytą tinklalapį ir atsisiuntimų juostą (jei rodoma). Jei rodomas suaktyvinamas dialogo langas, suaktyvinkite jį.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Suaktyvinkite pirmą–aštuntą darbalaukius.</translation>
 <translation id="6395172954772765143">Pasirinkti tekstą iki eilutės pabaigos</translation>
 <translation id="6425378783626925378">Spustelėti 1–8 piktogramas lentynoje</translation>
 <translation id="6435207348963613811">Paryškinti ankstesnį elementą lentynoje</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Pateikti paslėptus failus Failų programoje</translation>
 <translation id="8717459106217102612">Pasirinkti ankstesnį žodį ar raidę</translation>
 <translation id="8727232706774971183">Žiūrėti pranešimus</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> nuo 1 iki 8</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8881584919399569791">Aktyvus langas perkeliamas į pultą kairėje</translation>
 <translation id="88986195241502842">Puslapiu žemyn</translation>

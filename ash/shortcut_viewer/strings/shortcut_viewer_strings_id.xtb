@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 sampai 8</translation>
 <translation id="3837047332182291558">Mencerahkan keyboard (khusus keyboard dengan lampu latar)</translation>
 <translation id="3949671998904569433">koma</translation>
+<translation id="3976707995992061296">Mengaktifkan/menonaktifkan apakah jendela yang aktif akan ditetapkan ke semua desktop</translation>
 <translation id="3976863468609830880">Mengklik ikon terakhir di rak</translation>
 <translation id="3994783594793697310">Mereset tingkat perbesar/perkecil tampilan</translation>
 <translation id="4026843240379844265">Memindahkan jendela aktif dari satu layar ke layar lainnya</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Menampilkan fitur Perbesar</translation>
 <translation id="634687982629734605">Beralih fokus antara: Area status (tempat foto akun muncul), Peluncur, Kolom URL, Kolom bookmark (jika terlihat), Halaman yang terbuka, dan Kotak download (jika terlihat). Jika muncul dialog yang dapat difokuskan, pindahkan fokus ke sana.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Mengaktifkan desktop 1 sampai 8.</translation>
 <translation id="6395172954772765143">Memilih teks sampai akhir baris</translation>
 <translation id="6425378783626925378">Mengklik ikon 1-8 di rak</translation>
 <translation id="6435207348963613811">Menandai item sebelumnya di rak</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Menampilkan file tersembunyi dalam aplikasi File</translation>
 <translation id="8717459106217102612">Memilih kata atau huruf sebelumnya</translation>
 <translation id="8727232706774971183">Melihat notifikasi</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 sampai 8</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8881584919399569791">Pindahkan jendela aktif ke halaman kerja di sebelah kiri</translation>
 <translation id="88986195241502842">Page down</translation>

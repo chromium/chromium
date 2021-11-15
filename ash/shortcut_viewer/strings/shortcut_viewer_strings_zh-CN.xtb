@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 至 8</translation>
 <translation id="3837047332182291558">调亮键盘（仅适用于背光键盘）</translation>
 <translation id="3949671998904569433">逗号</translation>
+<translation id="3976707995992061296">切换是否将使用中的窗口分配到所有桌面</translation>
 <translation id="3976863468609830880">点击任务栏中的最后一个图标</translation>
 <translation id="3994783594793697310">重置显示内容的缩放级别</translation>
 <translation id="4026843240379844265">在各个显示屏之间移动活动窗口</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">放大显示内容</translation>
 <translation id="634687982629734605">在以下元素之间切换焦点：状态区（其中显示了您的帐号头像）、启动器、地址栏、书签栏（若显示）、打开的网页、下载内容栏（若显示）。如果屏幕上显示了一个可聚焦的对话框，该命令会改为将焦点移至那里。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">启用第 1-8 个桌面</translation>
 <translation id="6395172954772765143">选择直到行尾的文字</translation>
 <translation id="6425378783626925378">点击任务栏中的第 1-8 个图标</translation>
 <translation id="6435207348963613811">突出显示任务栏中的上一项</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">在“文件”应用中显示处于隐藏状态的文件</translation>
 <translation id="8717459106217102612">选择上一个字词或字母</translation>
 <translation id="8727232706774971183">查看通知</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 至 8</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8881584919399569791">将活动窗口移至左侧的桌面</translation>
 <translation id="88986195241502842">向下翻页</translation>

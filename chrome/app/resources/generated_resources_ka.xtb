@@ -1221,6 +1221,7 @@
 <translation id="2232751457155581899">საიტებს შეუძლია თქვენი კამერის პოზიციისთვის თვალის მიდევნების თხოვნა</translation>
 <translation id="2232876851878324699">ფაილი შეიცავდა ერთ სერტიფიკატს, რომელიც არ დაიმპორტდა:</translation>
 <translation id="2233502537820838181">&amp;დამატებითი ინფორმაცია</translation>
+<translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
 <translation id="2234876718134438132">სინქრონიზაციის/Google სერვისები</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2238379619048995541">სიხშირის მდგომარეობის მონაცემები</translation>
@@ -1907,6 +1908,7 @@
 <translation id="2923006468155067296">თქვენი <ph name="DEVICE_TYPE" /> ახლა ჩაიკეტება.
 <ph name="DOMAIN" /> მოითხოვს, რომ თქვენი სმარტ-ბარათი ჩასმული იყოს.</translation>
 <translation id="2923234477033317484">ამ ანგარიშის ამოშლა</translation>
+<translation id="2923644930701689793">იქონიეთ წვდომა თქვენი ტელეფონის კამერის ალბომზე</translation>
 <translation id="2926085873880284723">ნაგულისხმევი მალსახმობების აღდგენა</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> მხარდაუჭერელია.</translation>
 <translation id="2927017729816812676">ქეშის მეხსიერება</translation>
@@ -3097,6 +3099,7 @@
 <translation id="4168015872538332605">გაგიზიარეთ ზოგიერთი პარამეტრი რომელიც.მიეკუთვნება <ph name="PRIMARY_EMAIL" />. ეს პარამეტრები იმოქმედებს თქვენს ანგარიშზე მხოლოდ მაშინ, როდესაც გამოყენებთ მრავლობით შესვლას.</translation>
 <translation id="4169535189173047238">აკრძალვა</translation>
 <translation id="4170314459383239649">გასუფთავება გასვლისას</translation>
+<translation id="417096670996204801">აირჩიეთ პროფილი</translation>
 <translation id="4175137578744761569">ღია მეწამული და თეთრი</translation>
 <translation id="4175737294868205930">მუდმივი მეხსიერება</translation>
 <translation id="4176463684765177261">გამორთული</translation>

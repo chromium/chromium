@@ -598,6 +598,7 @@
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611432201750675208">Perangkat Anda terkunci</translation>
 <translation id="1612019740169791082">Container Anda tidak dikonfigurasi untuk mendukung perubahan ukuran disk. Untuk menyesuaikan jumlah ruang yang telah ditetapkan untuk Linux, cadangkan lalu pulihkan ke dalam container baru.</translation>
+<translation id="1613019471223620622">Tampilkan sandi untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Kuota Anda yang diizinkan mungkin telah habis. Kunjungi portal aktivasi <ph name="NAME" /> untuk membeli kuota lagi</translation>
 <translation id="161460670679785907">Tidak dapat mendeteksi ponsel Anda</translation>
 <translation id="1615337439947999338">Simpan di Akun Google Anda (<ph name="EMAIL" />)</translation>
@@ -1213,6 +1214,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Sumber media tidak bernama</translation>
 <translation id="2224444042887712269">Setelan ini adalah milik <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Minimal satu album Galeri seni harus dipilih</translation>
 <translation id="2224551243087462610">Edit nama folder</translation>
@@ -3329,6 +3331,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4444304522807523469">Mengakses pemindai dokumen yang terpasang melalui USB atau pada jaringan lokal</translation>
 <translation id="4444512841222467874">Jika ruang penyimpanan tidak tersedia, pengguna dan data mungkin otomatis dihapus.</translation>
 <translation id="4446933390699670756">Dicerminkan</translation>
+<translation id="4448914100439890108">Sembunyikan sandi untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Nama pengguna Anda tercakup dalam akun perusahaan organisasi Anda. Untuk mendaftarkan perangkat ke akun tersebut, verifikasi kepemilikan domain di konsol Admin terlebih dulu. Anda akan memerlukan hak istimewa administrator pada akun untuk melakukan verifikasi.</translation>
 <translation id="4449996769074858870">Tab ini memutar audio.</translation>
 <translation id="4450274068924249931">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan berita. Mengaktifkan screensaver akan membuat layar tetap menyala saat pengisian daya.</translation>
@@ -3853,6 +3856,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5009463889040999939">Mengganti nama profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="5010043101506446253">Otoritas sertifikat</translation>
 <translation id="5015344424288992913">Mengontak proxy...</translation>
+<translation id="5016491575926936899">Anda dapat mengirim SMS dari komputer, membagikan koneksi internet, membalas notifikasi percakapan, dan membuka kunci <ph name="DEVICE_TYPE" /> dengan ponsel Anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Anda dapat membuka halaman dengan kursor teks. Tekan Ctrl+Search+7 untuk menonaktifkan.</translation>
 <translation id="5017828934289857214">Ingatkan Saya Nanti</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
@@ -4438,6 +4442,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5638309510554459422">Temukan ekstensi dan tema di <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat ulang halaman ini, tahan untuk melihat opsi lainnya</translation>
 <translation id="5640133431808313291">Kelola kunci keamanan</translation>
+<translation id="5641608986289282154">Mulai menggunakan <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Penandatangan CRL</translation>
 <translation id="5643321261065707929">Jaringan berbayar</translation>
 <translation id="5643620609347735571">Hapus dan lanjutkan</translation>
@@ -5604,6 +5609,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6914783257214138813">Sandi akan terlihat oleh orang yang dapat melihat file yang diekspor.</translation>
 <translation id="6916590542764765824">Kelola Ekstensi</translation>
 <translation id="6919868320029503575">Sandi lemah</translation>
+<translation id="6919952941889172531">Juga aktifkan Safe Browsing yang Disempurnakan untuk profil Chrome ini?</translation>
 <translation id="6920989436227028121">Buka sebagai tab biasa</translation>
 <translation id="6921104647315081813">Hapus log aktivitas</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> tidak dapat dibuka</translation>

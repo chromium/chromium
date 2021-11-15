@@ -1675,6 +1675,10 @@
 
       如果此政策未设置，则意味着 <ph name="ASK_GEOLOCATION_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
 <translation id="2922511125678964398">允许强制门户身份验证忽略代理设置</translation>
+<translation id="2931888116345994552">如果此政策未设置或已启用，即意味着允许更新 <ph name="PRODUCT_NAME" /> 中的所有组件。
+
+      如果此政策已停用，则无法更新组件。不过，某些组件不受此政策限制：只要相应组件不含可执行的代码，并且对浏览器的安全性至关重要，系统就不会禁止更新该组件。
+      这类组件包括证书吊销列表、子资源过滤器，等等。</translation>
 <translation id="2939988360019366928">允许在浏览器侧边栏中显示最近的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果</translation>
 <translation id="2940127076681735544">如果此政策设为一个有效网址，<ph name="PRODUCT_NAME" /> 就会从该网址下载网站列表，并参照 <ph name="SITELIST_POLICY_NAME" /> 政策的设定应用相应规则。
 
@@ -2721,6 +2725,7 @@
 
       如果此政策已停用，系统会关闭 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="4203879074082863035">系统仅会向用户显示白名单中的打印机</translation>
+<translation id="4204327073692415353">不提示用户在登录屏幕上选择客户端证书</translation>
 <translation id="4205316772333487392">强制在 Google 搜索中使用安全搜索功能</translation>
 <translation id="4209297478239988291">启用“自动点击”无障碍功能。
 
@@ -5418,6 +5423,7 @@
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
+<translation id="7486205887492534734">当登录屏幕上有多份证书匹配时，提示用户做出选择</translation>
 <translation id="7491720878670299691">轮询网络数据并检查是否发生事件的时间间隔。所允许的最低时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（1 分钟）。</translation>
@@ -5515,6 +5521,7 @@
 
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
       如果此政策已停用，系统将停用快速解答单位换算功能。</translation>
+<translation id="7587345076013230465">当登录屏幕上有多份客户端证书与自动选择政策匹配时，提示用户做出选择</translation>
 <translation id="7590188804371204512">控制外部扩展程序的安装。
 
       启用此设置会禁止安装外部扩展程序。

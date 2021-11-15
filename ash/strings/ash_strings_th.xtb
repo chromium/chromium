@@ -373,6 +373,7 @@
 <translation id="3630697955794050612">ปิดอยู่</translation>
 <translation id="3631369015426612114">อนุญาตให้มีการแจ้งเตือนจากรายการต่อไปนี้</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
+<translation id="3640092422335864171">บันทึก <ph name="NAME" /></translation>
 <translation id="3649505501900178324">พ้นกำหนดการอัปเดต</translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">การบันทึกเสียงจากไมโครโฟน</translation>
@@ -455,6 +456,7 @@
 <translation id="4215497585250573029">การตั้งค่า VPN</translation>
 <translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
+<translation id="4223947355273782392">บันทึก <ph name="NAME" /> ลงใน <ph name="EMAIL" /> เพื่อให้จับคู่กับอุปกรณ์อื่นๆ ได้รวดเร็วยิ่งขึ้น</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>

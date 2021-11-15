@@ -28,6 +28,7 @@
 <translation id="1981611865800294956">&amp;Chromium OS тутумун жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="2008474315282236005">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2020032459870799438">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Chromium таржымалын Google кызматтарын жекелештирүү үчүн колдонуп же колдонбоону тандаңыз</translation>
 <translation id="2174178932569897599">Chromium'ду ыңгайлаштыруу</translation>
 <translation id="2185166961232948079">Chromium – Тармакка кирүү – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өзүлөрү каалагандай орнотуп алышат.</translation>
@@ -39,6 +40,7 @@
 <translation id="2401032172288869980">Chromium'га бул сайтта камера менен микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="2483889755041906834">Chromium'да</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
+<translation id="251127392410688874">Chromium ачык тармакты коргоодо сайттарга кайчылаш көз салуудан кантип коргой турганын көрүңүз</translation>
 <translation id="2535480412977113886">Аккаунтуңуздун кирүү чоо-жайлары эскирип калгандыктан, Chromium OS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="2560420686485554789">Файлдарды жүктөп алуу үчүн Chromium сактагычка мүмкүнчүлүк алышы керек</translation>
 <translation id="2572494885440352020">Chromium Жардамчы</translation>
@@ -225,6 +227,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="7339898014177206373">Жаңы терезе</translation>
 <translation id="734373864078049451">Веб, кыстармаларыңыз жана Chromium'дагы жеке дайын-даректериңиз бул жерде жайгашкан.</translation>
 <translation id="7349591376906416160">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
+<translation id="7398989605938454041">Chromium профилдери менен Chromium'дагы маалыматты өзүнчө сактай аласыз. Бул жумуш менен эс алууну бири-бири менен аралаштырбоого жардам берет.</translation>
 <translation id="7448255348454382571">Chromium OS'ту өчүрүп-күйгүзүңүз</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Иштеп чыгуучулар үчүн</translation>
 <translation id="7451052299415159299">Бул сайтта иштөө үчүн Chromium камераңызды колдонушу керек</translation>
@@ -245,6 +248,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="7828947555739565424">Бул түзмөктөгү аккаунт менен Chromium профили мурунтан эле түзүлгөн</translation>
 <translation id="7857220146454061152">Chromium жаңыртууларын алып туруу үчүн OS X 10.11 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде OS X 10.10 версиясы колдонулууда.</translation>
 <translation id="7867198900892795913">Chromium акыркы версиясына жаңыртылбай койду, андыктан жаңы функциялар менен коопсуздук оңдоолорун пайдалана албай калдыңыз.</translation>
+<translation id="788352880609666695">Бул Chromium профили үчүн төмөнкү аккаунттар жеткиликтүү</translation>
 <translation id="7898472181347242998">Түзмөгүңүздүн жаңыртылганын текшерүү үчүн <ph name="LINK_BEGIN" />Chromium OS Жөндөөлөрүнө<ph name="LINK_END" /> өтүңүз</translation>
 <translation id="7937630085815544518">Chromium'га <ph name="USER_EMAIL_ADDRESS" /> катары кирдиңиз. Ушул аккаунт менен кайра кириңиз.</translation>
 <translation id="7975919845073681630">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
@@ -257,6 +261,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="8290862415967981663">Бул файл кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="8330519371938183845">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештирүү үчүн аккаунтуңузга кириңиз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> мурда Chromium'ду пайдаланчу</translation>
+<translation id="8357820681460164151">Chromium серепчисиндеги файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium 1 күндүн ичинде кайра иштетилет}other{Chromium # күндүн ичинде кайра иштетилет}}</translation>
 <translation id="8453117565092476964">Орноткуч архиви бузулган же жараксыз. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="8493179195440786826">Chromium эскирип калган.</translation>
