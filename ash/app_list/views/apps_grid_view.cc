@@ -319,8 +319,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
 
-  context_menu_ =
-      std::make_unique<AppsGridContextMenu>(app_list_view_delegate_);
+  context_menu_ = std::make_unique<AppsGridContextMenu>();
   set_context_menu_controller(context_menu_.get());
 }
 

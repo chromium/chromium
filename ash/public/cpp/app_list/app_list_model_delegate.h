@@ -46,6 +46,13 @@ class AppListModelDelegate {
   virtual void RequestMoveItemToRoot(std::string id,
                                      syncer::StringOrdinal target_position) = 0;
 
+  // Invoked when app list sort is requested.
+  virtual void RequestAppListSort(AppListSortOrder order) = 0;
+
+  // Invoked when the ash side requests to revert the app list temporary sort
+  // order (i.e. the order that has not been committed yet).
+  virtual void RequestAppListSortRevert() = 0;
+
  protected:
   virtual ~AppListModelDelegate() = default;
 };

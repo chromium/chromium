@@ -103,13 +103,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   virtual void GetContextMenuModel(const std::string& id,
                                    GetContextMenuModelCallback callback) = 0;
 
-  // Sorts app list items (including apps and folders) with the given order.
-  virtual void SortAppList(AppListSortOrder order) = 0;
-
-  // Reverts the app list temporary sort order (i.e. the order that has not been
-  // committed yet) if any.
-  virtual void RevertAppListSort() = 0;
-
   // Returns an animation observer if the |target_state| is interesting to the
   // delegate.
   virtual ui::ImplicitAnimationObserver* GetAnimationObserver(

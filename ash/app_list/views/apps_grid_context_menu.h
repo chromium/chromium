@@ -19,8 +19,6 @@ class MenuRunner;
 
 namespace ash {
 
-class AppListViewDelegate;
-
 // This class is the context menu controller used by AppsGridView, responsible
 // for building, running the menu and executing the commands.
 class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
@@ -38,7 +36,7 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
     kReorderByNameReverseAlphabetical
   };
 
-  explicit AppsGridContextMenu(AppListViewDelegate* delegate_);
+  AppsGridContextMenu();
   AppsGridContextMenu(const AppsGridContextMenu&) = delete;
   AppsGridContextMenu& operator=(const AppsGridContextMenu&) = delete;
   ~AppsGridContextMenu() override;
@@ -65,8 +63,6 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
   // Called when the context menu is closed. Used as a callback for
   // `menu_model_adapter_`.
   void OnMenuClosed();
-
-  AppListViewDelegate* const delegate_;
 
   // The context menu model and its adapter for AppsGridView.
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;

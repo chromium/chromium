@@ -128,10 +128,6 @@ class AppListModelUpdater {
   // For SearchModel:
   virtual bool SearchEngineIsGoogle() = 0;
 
-  // Methods for handle model updates in ash:
-  virtual void OnSortRequested(ash::AppListSortOrder order) = 0;
-  virtual void OnSortRevertRequested() = 0;
-
   // Notifies when the app list gets hidden.
   virtual void OnAppListHidden() = 0;
 

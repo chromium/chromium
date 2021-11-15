@@ -64,8 +64,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   syncer::StringOrdinal CalculatePositionForNewItem(
       const ChromeAppListItem& new_item) override;
   size_t BadgedItemCount() override;
-  void OnSortRequested(ash::AppListSortOrder order) override {}
-  void OnSortRevertRequested() override {}
 
   // For SearchModel:
   bool SearchEngineIsGoogle() override;

@@ -101,10 +101,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       bool update_folder) override;
   void NotifyProcessSyncChangesFinished() override;
 
-  // Methods to handle model update from ash:
-  void OnSortRequested(ash::AppListSortOrder order) override;
-  void OnSortRevertRequested() override;
-
   void OnAppListHidden() override;
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
@@ -124,6 +120,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                                ash::RequestMoveToFolderReason reason) override;
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override;
+  void RequestAppListSort(ash::AppListSortOrder order) override;
+  void RequestAppListSortRevert() override;
 
   // Returns the temporary sort order.
   ash::AppListSortOrder GetTemporarySortOrderForTest() const;

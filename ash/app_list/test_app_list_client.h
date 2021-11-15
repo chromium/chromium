@@ -54,8 +54,6 @@ class TestAppListClient : public AppListClient {
   void OnAppListVisibilityChanged(bool visible) override {}
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override {}
-  void OnAppListSortRequested(int profile_id, AppListSortOrder order) override;
-  void OnAppListSortRevertRequested(int profile_id) override {}
   void OnQuickSettingsChanged(
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}
@@ -80,11 +78,6 @@ class TestAppListClient : public AppListClient {
     return last_opened_search_result_;
   }
 
-  // Returns the app list sort status.
-  AppListSortOrder requested_sort_order() const {
-    return requested_sort_order_.value_or(AppListSortOrder::kCustom);
-  }
-
   using SearchResultActionId = std::pair<std::string, int>;
   std::vector<SearchResultActionId> GetAndClearInvokedResultActions();
 
@@ -94,9 +87,6 @@ class TestAppListClient : public AppListClient {
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;
   std::string last_opened_search_result_;
-
-  // The last sort order requested using `OnAppListSortRequested()`.
-  absl::optional<AppListSortOrder> requested_sort_order_;
 };
 
 }  // namespace ash

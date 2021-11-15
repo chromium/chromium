@@ -552,25 +552,6 @@ void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
   requested_model_updater->LoadAppIcon(app_id);
 }
 
-void AppListClientImpl::OnAppListSortRequested(int profile_id,
-                                               ash::AppListSortOrder order) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->OnSortRequested(order);
-}
-
-void AppListClientImpl::OnAppListSortRevertRequested(int profile_id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->OnSortRevertRequested();
-}
-
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.

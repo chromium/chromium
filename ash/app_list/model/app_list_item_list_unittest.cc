@@ -47,6 +47,8 @@ class AppListItemListWithUpdater : public AppListModelDelegate {
                                RequestMoveToFolderReason reason) override {}
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override {}
+  void RequestAppListSort(AppListSortOrder order) override {}
+  void RequestAppListSortRevert() override {}
 
   AppListItemList* item_list() { return item_list_.get(); }
 

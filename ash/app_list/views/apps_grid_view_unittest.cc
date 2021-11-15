@@ -4168,8 +4168,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
 
   AppsGridContextMenu* context_menu = apps_grid_view_->context_menu_for_test();
   EXPECT_FALSE(context_menu->IsMenuShowing());
-  EXPECT_EQ(AppListSortOrder::kCustom,
-            GetTestAppListClient()->requested_sort_order());
+  EXPECT_EQ(AppListSortOrder::kCustom, model_->requested_sort_order());
 
   // Get a point in `apps_grid_view_` that doesn't have an item on it.
   const gfx::Point empty_space =
@@ -4197,7 +4196,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
                                              .CenterPoint();
   SimulateLeftClickOrTapAt(alphabetical_option);
   EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
-            GetTestAppListClient()->requested_sort_order());
+            model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
 
   // Open the menu again to test the reverse alphabetical sort option.
@@ -4220,7 +4219,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
                                         .CenterPoint();
   SimulateLeftClickOrTapAt(reverse_option);
   EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
-            GetTestAppListClient()->requested_sort_order());
+            model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
 }
 

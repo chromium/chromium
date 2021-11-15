@@ -4,8 +4,10 @@
 
 #include "ash/app_list/views/apps_grid_context_menu.h"
 
-#include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,8 +17,7 @@
 
 namespace ash {
 
-AppsGridContextMenu::AppsGridContextMenu(AppListViewDelegate* delegate)
-    : delegate_(delegate) {}
+AppsGridContextMenu::AppsGridContextMenu() = default;
 
 AppsGridContextMenu::~AppsGridContextMenu() = default;
 
@@ -27,10 +28,12 @@ bool AppsGridContextMenu::IsMenuShowing() const {
 void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case AppsGridCommandId::kReorderByNameAlphabetical:
-      delegate_->SortAppList(AppListSortOrder::kNameAlphabetical);
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kNameAlphabetical);
       break;
     case AppsGridCommandId::kReorderByNameReverseAlphabetical:
-      delegate_->SortAppList(AppListSortOrder::kNameReverseAlphabetical);
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kNameReverseAlphabetical);
       break;
     default:
       NOTREACHED();

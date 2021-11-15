@@ -132,6 +132,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Creates and adds an empty folder item with the provided ID.
   void AddFolderItemForTest(const std::string& folder_id);
 
+  AppListModelDelegate* delegate() { return delegate_; }
+
   AppListItemList* top_level_item_list() const {
     return top_level_item_list_.get();
   }
@@ -195,7 +197,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
                            const syncer::StringOrdinal& new_position);
 
   // Used to initiate updates on app list items from the ash side.
-  AppListModelDelegate* const app_list_model_delegate_;
+  AppListModelDelegate* const delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

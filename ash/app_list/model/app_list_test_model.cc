@@ -70,6 +70,8 @@ void AppListTestModel::AppListTestItem::SetPosition(
 AppListTestModel::AppListTestModel()
     : AppListModel(/*app_list_model_delegate=*/this) {}
 
+AppListTestModel::~AppListTestModel() = default;
+
 AppListItem* AppListTestModel::AddItem(AppListItem* item) {
   return AppListModel::AddItem(base::WrapUnique(item));
 }
@@ -129,6 +131,14 @@ void AppListTestModel::RequestMoveItemToRoot(
     metadata->position = target_position;
     SetItemMetadata(id, std::move(metadata));
   }
+}
+
+void AppListTestModel::RequestAppListSort(AppListSortOrder order) {
+  requested_sort_order_ = order;
+}
+
+void AppListTestModel::RequestAppListSortRevert() {
+  requested_sort_order_.reset();
 }
 
 AppListItem* AppListTestModel::AddItemToFolder(AppListItem* item,

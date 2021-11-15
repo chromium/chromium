@@ -97,7 +97,8 @@ TEST_F(TemporaryAppListSortTest, SortUponTemporaryOrder) {
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
 
   // Sort apps with name alphabetical order.
-  GetModelUpdater()->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  GetChromeModelUpdater()->RequestAppListSort(
+      ash::AppListSortOrder::kNameAlphabetical);
 
   // The permanent sort order does not change while the temporary order updates.
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
@@ -112,7 +113,8 @@ TEST_F(TemporaryAppListSortTest, SortUponTemporaryOrder) {
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
 
   // Sort again without exiting temporary sort.
-  GetModelUpdater()->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  GetChromeModelUpdater()->RequestAppListSort(
+      ash::AppListSortOrder::kNameAlphabetical);
 
   // Verify sort orders and app positions.
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
@@ -123,7 +125,8 @@ TEST_F(TemporaryAppListSortTest, SortUponTemporaryOrder) {
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
 
   // Sort again without exiting temporary sort.
-  GetModelUpdater()->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  GetChromeModelUpdater()->RequestAppListSort(
+      ash::AppListSortOrder::kNameAlphabetical);
 
   // Verify sort orders and app positions.
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
@@ -156,7 +159,8 @@ TEST_F(TemporaryAppListSortTest, CommitNameOrder) {
   InstallExtension(app3.get());
 
   // Sort with name alphabetical order.
-  GetModelUpdater()->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  GetChromeModelUpdater()->RequestAppListSort(
+      ash::AppListSortOrder::kNameAlphabetical);
 
   // Verify that the permanent sort order and the permanent app positions do
   // not change.
@@ -201,14 +205,14 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItem) {
   // Sort apps with name alphabetical order, commit the temporary order then
   // verify the state.
   ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3, kItemId4}));
 
   // Sort with name reverse alphabetical order without committing.
-  model_updater->OnSortRequested(
+  model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
             std::vector<std::string>({kItemId4, kItemId3, kItemId2, kItemId1}));
@@ -256,15 +260,15 @@ TEST_F(TemporaryAppListSortTest, RevertNameOrder) {
 
   // Sort apps with name alphabetical order, commit the temporary order then
   // verify the state.
-  AppListModelUpdater* model_updater = GetModelUpdater();
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
 
   // Sort with name reverse alphabetical order without committing.
-  model_updater->OnSortRequested(
+  model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
@@ -272,7 +276,7 @@ TEST_F(TemporaryAppListSortTest, RevertNameOrder) {
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
 
   // Revert the temporary sort order.
-  model_updater->OnSortRevertRequested();
+  model_updater->RequestAppListSortRevert();
 
   // Verify the following things:
   // (1) The app list is not under temporary sort.
@@ -310,8 +314,8 @@ TEST_F(TemporaryAppListSortTest, AppListHidden) {
   InstallExtension(app3.get());
 
   // Sort with name alphabetical order.
-  AppListModelUpdater* model_updater = GetModelUpdater();
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
 
   // Verify that the permanent sort order and the permanent app positions do
   // not change.
@@ -365,12 +369,12 @@ TEST_F(TemporaryAppListSortTest, HandlePositionSyncUpdate) {
   InstallExtension(app4.get());
 
   // Sort with the name alphabetical order.
-  AppListModelUpdater* model_updater = GetModelUpdater();
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
 
   // Sort with the name reverse alphabetical order without committing.
-  model_updater->OnSortRequested(
+  model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3, kItemId4}));
@@ -427,14 +431,13 @@ TEST_F(TemporaryAppListSortTest, HandleItemMerge) {
   InstallExtension(app4.get());
 
   // Sort with the name alphabetical order.
-  ChromeAppListModelUpdater* model_updater =
-      static_cast<ChromeAppListModelUpdater*>(GetModelUpdater());
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
 
   // Sort with the name reverse alphabetical order without committing. The
   // permanent sort order and the permanent item positions should not change.
-  model_updater->OnSortRequested(
+  model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3, kItemId4}));
@@ -480,8 +483,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
   // Add one folder containing two apps.
   // Emulate to merge two items into a folder.
   const std::string kFolderItemId = GenerateId("folder_id");
-  ChromeAppListModelUpdater* model_updater =
-      static_cast<ChromeAppListModelUpdater*>(GetModelUpdater());
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
   std::unique_ptr<ChromeAppListItem> folder_item =
       std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId,
                                           model_updater);
@@ -531,7 +533,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
   InstallExtension(app3.get());
 
   // Sort with the name alphabetical order and commit.
-  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  model_updater->RequestAppListSort(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
   EXPECT_EQ(
       std::vector<std::string>({kFolderItemId, kItemId1, kItemId2, kItemId3,
@@ -539,7 +541,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
       GetOrderedItemIdsFromSyncableService());
 
   // Sort with the name reverse alphabetical order without committing.
-  model_updater->OnSortRequested(
+  model_updater->RequestAppListSort(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(

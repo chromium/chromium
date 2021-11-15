@@ -25,6 +25,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -205,7 +206,10 @@ class RedoButton : public SortUiControl {
   void RevertAppListSort() {
     views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTION_TRIGGERED);
-    delegate_->RevertAppListSort();
+    AppListModelProvider::Get()
+        ->model()
+        ->delegate()
+        ->RequestAppListSortRevert();
   }
 };
 
@@ -245,9 +249,9 @@ class SortButton : public SortUiControl {
   void LauncherSortTriggered() {
     views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTION_TRIGGERED);
-    delegate_->SortAppList(is_alphabetical_
-                               ? AppListSortOrder::kNameAlphabetical
-                               : AppListSortOrder::kNameReverseAlphabetical);
+    AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+        is_alphabetical_ ? AppListSortOrder::kNameAlphabetical
+                         : AppListSortOrder::kNameReverseAlphabetical);
   }
 
   // If true, apps are sorted by the app name alphabetical order; otherwise,
