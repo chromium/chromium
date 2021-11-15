@@ -262,6 +262,10 @@ class Entitlements(object):
 
   def LoadDefaults(self, defaults):
     for key, value in defaults.items():
+      # TODO(crbug.com/1270127): Re-enable this entitlement after verifying
+      # that it doesn't increase memory usage.
+      if key == "com.apple.developer.kernel.extended-virtual-addressing":
+        continue
       if key not in self._data:
         self._data[key] = value
 
