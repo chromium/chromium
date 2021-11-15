@@ -469,6 +469,9 @@ crbug.com/1221258 [ android ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
 # Pixel tests are flakily asserting in GPU process on SkiaRenderer/Vulkan
 crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
 
+# WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
+crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
