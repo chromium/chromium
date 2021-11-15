@@ -2768,7 +2768,13 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, Save) {
+// Flaky, http://crbug.com/1269103
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Save DISABLED_Save
+#else
+#define MAYBE_Save Save
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveTest, MAYBE_Save) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("edited.pdf");
@@ -2831,7 +2837,13 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, SaveWithPolicy) {
+// Flaky, http://crbug.com/1269147
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
+#else
+#define MAYBE_SaveWithPolicy SaveWithPolicy
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("combobox_form.pdf");
@@ -2848,8 +2860,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, SaveWithPolicy) {
   WaitForSavedPdf(save_path);
 }
 
+// Flaky, http://crbug.com/1269105
+#if defined(OS_LINUX)
+#define MAYBE_SaveWithPolicyUniqueNumberSuffix \
+  DISABLED_SaveWithPolicyUniqueNumberSuffix
+#else
+#define MAYBE_SaveWithPolicyUniqueNumberSuffix SaveWithPolicyUniqueNumberSuffix
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
-                       SaveWithPolicyUniqueNumberSuffix) {
+                       MAYBE_SaveWithPolicyUniqueNumberSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
