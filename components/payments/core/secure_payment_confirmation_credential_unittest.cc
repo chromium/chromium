@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,21 +11,21 @@ namespace payments {
 
 // Regression test for https://crbug.com/1122764#c10 - ensure we are recording
 // the correct credential ID size.
-TEST(SecurePaymentConfirmationInstrumentTest, CredentialIdSizeHistogram) {
+TEST(SecurePaymentConfirmationCredentialTest, CredentialIdSizeHistogram) {
   const std::string rp_id = "relyingparty.com";
 
   base::HistogramTester histogram_tester;
 
   std::vector<uint8_t> credential_id(8);
-  SecurePaymentConfirmationInstrument i1(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i1(credential_id, rp_id);
   credential_id = std::vector<uint8_t>(64);
-  SecurePaymentConfirmationInstrument i2(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i2(credential_id, rp_id);
   credential_id = std::vector<uint8_t>(120);
-  SecurePaymentConfirmationInstrument i3(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i3(credential_id, rp_id);
   credential_id = std::vector<uint8_t>(1024);
-  SecurePaymentConfirmationInstrument i4(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i4(credential_id, rp_id);
   credential_id = std::vector<uint8_t>(9000);
-  SecurePaymentConfirmationInstrument i5(credential_id, rp_id);
+  SecurePaymentConfirmationCredential i5(credential_id, rp_id);
 
   const std::string kHistogram =
       "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes";

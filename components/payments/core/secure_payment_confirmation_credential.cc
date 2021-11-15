@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 
 #include <utility>
 
@@ -10,10 +10,10 @@
 
 namespace payments {
 
-SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument() =
+SecurePaymentConfirmationCredential::SecurePaymentConfirmationCredential() =
     default;
 
-SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
+SecurePaymentConfirmationCredential::SecurePaymentConfirmationCredential(
     std::vector<uint8_t> credential_id,
     const std::string& relying_party_id)
     : credential_id(std::move(credential_id)),
@@ -25,10 +25,10 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
       this->credential_id.size());
 }
 
-SecurePaymentConfirmationInstrument::~SecurePaymentConfirmationInstrument() =
+SecurePaymentConfirmationCredential::~SecurePaymentConfirmationCredential() =
     default;
 
-bool SecurePaymentConfirmationInstrument::IsValid() const {
+bool SecurePaymentConfirmationCredential::IsValid() const {
   return !credential_id.empty() && !relying_party_id.empty();
 }
 

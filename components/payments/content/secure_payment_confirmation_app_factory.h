@@ -15,7 +15,7 @@
 
 namespace payments {
 
-struct SecurePaymentConfirmationInstrument;
+struct SecurePaymentConfirmationCredential;
 
 class SecurePaymentConfirmationAppFactory
     : public PaymentAppFactory,
@@ -49,14 +49,14 @@ class SecurePaymentConfirmationAppFactory
       bool is_available);
 
   void OnAppIcon(
-      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
       std::unique_ptr<Request> request,
       const SkBitmap& icon);
 
   // Called after downloading the icon whose URL was passed into PaymentRequest
   // API.
   void DidDownloadIcon(
-      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
       std::unique_ptr<Request> request,
       int request_id,
       int unused_http_status_code,

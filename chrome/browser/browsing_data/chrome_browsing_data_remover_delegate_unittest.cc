@@ -605,18 +605,18 @@ class RemovePasswordsTester {
       mock_field_info_store_;
 };
 
-class RemoveSecurePaymentConfirmationInstrumentsTester {
+class RemoveSecurePaymentConfirmationCredentialsTester {
  public:
   using MockWrapper = testing::NiceMock<payments::MockWebDataServiceWrapper>;
   using MockService =
       testing::NiceMock<payments::MockPaymentManifestWebDataService>;
-  explicit RemoveSecurePaymentConfirmationInstrumentsTester(
+  explicit RemoveSecurePaymentConfirmationCredentialsTester(
       TestingProfile* testing_profile) {
     webdata_services::WebDataServiceWrapperFactory::GetInstance()
         ->SetTestingFactory(
             testing_profile,
             base::BindRepeating(
-                &RemoveSecurePaymentConfirmationInstrumentsTester::
+                &RemoveSecurePaymentConfirmationCredentialsTester::
                     BuildServiceWapper,
                 base::Unretained(this)));
   }
@@ -629,8 +629,8 @@ class RemoveSecurePaymentConfirmationInstrumentsTester {
     return std::move(wrapper);
   }
 
-  void ExpectCallClearSecurePaymentConfirmationInstruments(int times) {
-    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationInstruments)
+  void ExpectCallClearSecurePaymentConfirmationCredentials(int times) {
+    EXPECT_CALL(*service_.get(), ClearSecurePaymentConfirmationCredentials)
         .Times(times)
         .WillRepeatedly(testing::WithArg<2>([](base::OnceClosure completion) {
           base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
@@ -3285,12 +3285,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateLiteVideoTest,
                                       true, 1);
 }
 
-// Verify that clearing secure payment confirmation instruments data works.
+// Verify that clearing secure payment confirmation credentials data works.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveSecurePaymentConfirmationInstruments) {
+       RemoveSecurePaymentConfirmationCredentials) {
   GetProfile()->CreateWebDataService();
-  RemoveSecurePaymentConfirmationInstrumentsTester tester(GetProfile());
-  tester.ExpectCallClearSecurePaymentConfirmationInstruments(1);
+  RemoveSecurePaymentConfirmationCredentialsTester tester(GetProfile());
+  tester.ExpectCallClearSecurePaymentConfirmationCredentials(1);
 
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);

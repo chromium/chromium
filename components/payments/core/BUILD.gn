@@ -57,8 +57,8 @@ static_library("core") {
     "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
-    "secure_payment_confirmation_instrument.cc",
-    "secure_payment_confirmation_instrument.h",
+    "secure_payment_confirmation_credential.cc",
+    "secure_payment_confirmation_credential.h",
     "secure_payment_confirmation_metrics.cc",
     "secure_payment_confirmation_metrics.h",
     "sizes.h",
@@ -172,7 +172,7 @@ source_set("unit_tests") {
     "payment_method_data_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
-    "secure_payment_confirmation_instrument_unittest.cc",
+    "secure_payment_confirmation_credential_unittest.cc",
     "url_util_unittest.cc",
   ]
 

@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -51,7 +51,7 @@ void PaymentCredential::StorePaymentCredential(
       credential_id.empty() || rp_id.empty()) {
     Reset();
     std::move(callback).Run(
-        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
+        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
     return;
   }
 
@@ -61,8 +61,8 @@ void PaymentCredential::StorePaymentCredential(
   storage_callback_ = std::move(callback);
   state_ = State::kStoringCredential;
   data_service_request_handle_ =
-      web_data_service_->AddSecurePaymentConfirmationInstrument(
-          std::make_unique<SecurePaymentConfirmationInstrument>(credential_id,
+      web_data_service_->AddSecurePaymentConfirmationCredential(
+          std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
                                                                 rp_id),
           /*consumer=*/this);
 }
@@ -82,7 +82,7 @@ void PaymentCredential::OnWebDataServiceRequestDone(
   std::move(callback).Run(
       static_cast<WDResult<bool>*>(result.get())->GetValue()
           ? mojom::PaymentCredentialStorageStatus::SUCCESS
-          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
+          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
 }
 
 void PaymentCredential::DidStartNavigation(
@@ -145,7 +145,7 @@ void PaymentCredential::Reset() {
     if (storage_callback_) {
       std::move(storage_callback_)
           .Run(mojom::PaymentCredentialStorageStatus::
-                   FAILED_TO_STORE_INSTRUMENT);
+                   FAILED_TO_STORE_CREDENTIAL);
     }
   }
 

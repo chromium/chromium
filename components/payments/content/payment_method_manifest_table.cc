@@ -9,7 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -96,7 +96,7 @@ void PaymentMethodManifestTable::RemoveExpiredData() {
   s.Run();
 }
 
-bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationInstruments(
+bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationCredentials(
     base::Time begin,
     base::Time end) {
   sql::Statement s(db_->GetUniqueStatement(
@@ -159,9 +159,9 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
   return web_app_ids;
 }
 
-bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
-    const SecurePaymentConfirmationInstrument& instrument) {
-  if (!instrument.IsValid())
+bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
+    const SecurePaymentConfirmationCredential& credential) {
+  if (!credential.IsValid())
     return false;
 
   sql::Transaction transaction(db_);
@@ -176,8 +176,8 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
                                 "WHERE credential_id=? "
                                 "AND relying_party_id<>?"));
     int index = 0;
-    s0.BindBlob(index++, instrument.credential_id);
-    s0.BindString(index++, instrument.relying_party_id);
+    s0.BindBlob(index++, credential.credential_id);
+    s0.BindString(index++, credential.relying_party_id);
     if (s0.Step())
       return false;
   }
@@ -186,7 +186,7 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
     sql::Statement s1(db_->GetUniqueStatement(
         "DELETE FROM secure_payment_confirmation_instrument "
         "WHERE credential_id=?"));
-    s1.BindBlob(0, instrument.credential_id);
+    s1.BindBlob(0, credential.credential_id);
 
     if (!s1.Run())
       return false;
@@ -198,8 +198,8 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
         "(credential_id, relying_party_id, label, icon, date_created) "
         "VALUES (?, ?, ?, ?, ?)"));
     int index = 0;
-    s2.BindBlob(index++, instrument.credential_id);
-    s2.BindString(index++, instrument.relying_party_id);
+    s2.BindBlob(index++, credential.credential_id);
+    s2.BindString(index++, credential.relying_party_id);
     s2.BindString(index++, std::string());
     s2.BindBlob(index++, std::vector<uint8_t>());
     s2.BindInt64(index++,
@@ -215,16 +215,16 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationInstrument(
   return true;
 }
 
-std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>
-PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
+std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
     std::vector<std::vector<uint8_t>> credential_ids) {
-  std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>> instruments;
+  std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
   sql::Statement s(
       db_->GetUniqueStatement("SELECT relying_party_id "
                               "FROM secure_payment_confirmation_instrument "
                               "WHERE credential_id=?"));
-  // The `credential_id` temporary variable is not `const` because of the
-  // `std::move()` on line 231.
+  // The `credential_id` temporary variable is not `const` because it is
+  // std::move()'d into the credential below.
   for (auto& credential_id : credential_ids) {
     s.Reset(true);
     if (credential_id.empty())
@@ -235,19 +235,19 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationInstruments(
     if (!s.Step())
       continue;
 
-    auto instrument = std::make_unique<SecurePaymentConfirmationInstrument>();
-    instrument->credential_id = std::move(credential_id);
+    auto credential = std::make_unique<SecurePaymentConfirmationCredential>();
+    credential->credential_id = std::move(credential_id);
 
     int index = 0;
-    instrument->relying_party_id = s.ColumnString(index++);
+    credential->relying_party_id = s.ColumnString(index++);
 
-    if (!instrument->IsValid())
+    if (!credential->IsValid())
       continue;
 
-    instruments.push_back(std::move(instrument));
+    credentials.push_back(std::move(credential));
   }
 
-  return instruments;
+  return credentials;
 }
 
 bool PaymentMethodManifestTable::ExecuteForTest(const char* sql) {

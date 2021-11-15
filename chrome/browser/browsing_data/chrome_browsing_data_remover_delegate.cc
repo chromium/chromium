@@ -821,10 +821,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             GetPaymentManifestWebDataServiceForBrowserContext(
                 profile_, ServiceAccessType::EXPLICIT_ACCESS);
     if (web_data_service) {
-      web_data_service->ClearSecurePaymentConfirmationInstruments(
+      web_data_service->ClearSecurePaymentConfirmationCredentials(
           delete_begin_, delete_end_,
           CreateTaskCompletionClosure(
-              TracingDataType::kSecurePaymentConfirmationInstruments));
+              TracingDataType::kSecurePaymentConfirmationCredentials));
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

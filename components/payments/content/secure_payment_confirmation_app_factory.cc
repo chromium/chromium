@@ -21,7 +21,7 @@
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/payments/core/sizes.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "components/webdata/common/web_data_results.h"
@@ -144,7 +144,7 @@ void SecurePaymentConfirmationAppFactory::
   request->delegate->SetCanMakePaymentEvenWithoutApps();
 
   WebDataServiceBase::Handle handle =
-      request->web_data_service->GetSecurePaymentConfirmationInstruments(
+      request->web_data_service->GetSecurePaymentConfirmationCredentials(
           std::move(request->mojo_request->credential_ids), this);
   requests_[handle] = std::move(request);
 }
@@ -233,24 +233,24 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
     return;
   }
 
-  std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>
-      instruments = static_cast<WDResult<
-          std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>>*>(
+  std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+      credentials = static_cast<WDResult<
+          std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
                         result.get())
                         ->GetValue();
-  std::unique_ptr<SecurePaymentConfirmationInstrument> instrument;
+  std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 
-  // For the pilot phase, arbitrarily use the first matching instrument.
-  // TODO(https://crbug.com/1110320): Handle multiple instruments.
-  if (!instruments.empty())
-    instrument = std::move(instruments.front());
+  // For the pilot phase, arbitrarily use the first matching credential.
+  // TODO(https://crbug.com/1110320): Handle multiple credentials.
+  if (!credentials.empty())
+    credential = std::move(credentials.front());
 
-  // Download the (possibly) updated icon for the payment instrument. The
-  // download URL was passed into the PaymentRequest API.
+  // Download the icon for the payment instrument. The download URL was passed
+  // into the PaymentRequest API.
   //
-  // Perform this download regardless of whether there is an instrument on
-  // file, so the server that hosts the image cannot detect presence of the
-  // instrument on file.
+  // Perform this download regardless of whether there is a matching
+  // credential, so that the server that hosts the image cannot detect presence
+  // of the credential on file.
   auto* request_ptr = request.get();
   gfx::Size preferred_size(kSecurePaymentConfirmationInstrumentIconWidthPx,
                            kSecurePaymentConfirmationInstrumentIconHeightPx);
@@ -263,12 +263,12 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
           0,      // no max size
           false,  // normal cache policy (a.k.a. do not bypass cache)
           base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadIcon,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
+                         weak_ptr_factory_.GetWeakPtr(), std::move(credential),
                          std::move(request)));
 }
 
 void SecurePaymentConfirmationAppFactory::OnAppIcon(
-    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     std::unique_ptr<Request> request,
     const SkBitmap& icon) {
   DCHECK(request);
@@ -277,9 +277,9 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
 
   // In the case of a failed icon download/decode, we reject the show() promise
   // without showing any user UX. To avoid a privacy leak here, we MUST do this
-  // check ahead of checking whether any credential matched (the 'instrument'
-  // argument to this function), as otherwise an attacker could deliberately
-  // pass an invalid icon and do a timing attack to see if a credential matches.
+  // check ahead of checking whether any credential matched, as otherwise an
+  // attacker could deliberately pass an invalid icon and do a timing attack to
+  // see if a credential matches.
   if (icon.drawsNothing()) {
     request->delegate->OnPaymentAppCreationError(
         errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
@@ -287,7 +287,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
     return;
   }
 
-  if (!request->delegate->GetSpec() || !request->authenticator || !instrument) {
+  if (!request->delegate->GetSpec() || !request->authenticator || !credential) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -297,9 +297,9 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
-          request->web_contents(), instrument->relying_party_id,
+          request->web_contents(), credential->relying_party_id,
           std::make_unique<SkBitmap>(icon), label,
-          std::move(instrument->credential_id),
+          std::move(credential->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator)));
@@ -308,7 +308,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
 }
 
 void SecurePaymentConfirmationAppFactory::DidDownloadIcon(
-    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     std::unique_ptr<Request> request,
     int request_id,
     int unused_http_status_code,
@@ -320,7 +320,7 @@ void SecurePaymentConfirmationAppFactory::DidDownloadIcon(
       request->pending_icon_download_request_id.has_value() &&
       request->pending_icon_download_request_id.value() == request_id &&
       !bitmaps.empty();
-  OnAppIcon(std::move(instrument), std::move(request),
+  OnAppIcon(std::move(credential), std::move(request),
             has_icon ? bitmaps.front() : SkBitmap());
 }
 
