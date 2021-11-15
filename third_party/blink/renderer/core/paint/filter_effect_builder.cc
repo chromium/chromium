@@ -146,7 +146,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
   for (FilterOperation* filter_operation : operations.Operations()) {
     FilterEffect* effect = nullptr;
     switch (filter_operation->GetType()) {
-      case FilterOperation::REFERENCE: {
+      case FilterOperation::kReference: {
         auto& reference_operation =
             To<ReferenceFilterOperation>(*filter_operation);
         Filter* reference_filter =
@@ -162,7 +162,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         reference_operation.SetFilter(reference_filter);
         break;
       }
-      case FilterOperation::GRAYSCALE: {
+      case FilterOperation::kGrayscale: {
         Vector<float> input_parameters = GrayscaleMatrix(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount());
         effect = MakeGarbageCollected<FEColorMatrix>(
@@ -170,7 +170,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::SEPIA: {
+      case FilterOperation::kSepia: {
         Vector<float> input_parameters = SepiaMatrix(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount());
         effect = MakeGarbageCollected<FEColorMatrix>(
@@ -178,7 +178,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::SATURATE: {
+      case FilterOperation::kSaturate: {
         Vector<float> input_parameters;
         input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
@@ -187,7 +187,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::HUE_ROTATE: {
+      case FilterOperation::kHueRotate: {
         Vector<float> input_parameters;
         input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
@@ -196,14 +196,14 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::LUMINANCE_TO_ALPHA: {
+      case FilterOperation::kLuminanceToAlpha: {
         Vector<float> input_parameters;
         effect = MakeGarbageCollected<FEColorMatrix>(
             parent_filter, FECOLORMATRIX_TYPE_LUMINANCETOALPHA,
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::COLOR_MATRIX: {
+      case FilterOperation::kColorMatrix: {
         Vector<float> input_parameters =
             To<ColorMatrixFilterOperation>(filter_operation)->Values();
         effect = MakeGarbageCollected<FEColorMatrix>(
@@ -211,7 +211,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
-      case FilterOperation::INVERT: {
+      case FilterOperation::kInvert: {
         BasicComponentTransferFilterOperation* component_transfer_operation =
             To<BasicComponentTransferFilterOperation>(filter_operation);
         ComponentTransferFunction transfer_function;
@@ -229,7 +229,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             transfer_function, null_function);
         break;
       }
-      case FilterOperation::OPACITY: {
+      case FilterOperation::kOpacity: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_TABLE;
         Vector<float> transfer_parameters;
@@ -245,7 +245,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             transfer_function);
         break;
       }
-      case FilterOperation::BRIGHTNESS: {
+      case FilterOperation::kBrightness: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
         transfer_function.slope = ClampTo<float>(
@@ -259,7 +259,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             transfer_function, null_function);
         break;
       }
-      case FilterOperation::CONTRAST: {
+      case FilterOperation::kContrast: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
         float amount = ClampTo<float>(
@@ -274,7 +274,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             transfer_function, null_function);
         break;
       }
-      case FilterOperation::BLUR: {
+      case FilterOperation::kBlur: {
         float std_deviation = FloatValueForLength(
             To<BlurFilterOperation>(filter_operation)->StdDeviation(), 0);
         std_deviation *= shorthand_scale_;
@@ -282,7 +282,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             parent_filter, std_deviation, std_deviation);
         break;
       }
-      case FilterOperation::DROP_SHADOW: {
+      case FilterOperation::kDropShadow: {
         const ShadowData& shadow =
             To<DropShadowFilterOperation>(*filter_operation).Shadow();
         FloatPoint offset = shadow.Location().ScaledBy(shorthand_scale_);
@@ -292,14 +292,14 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             shadow.GetColor().GetColor(), 1);
         break;
       }
-      case FilterOperation::BOX_REFLECT: {
+      case FilterOperation::kBoxReflect: {
         BoxReflectFilterOperation* box_reflect_operation =
             To<BoxReflectFilterOperation>(filter_operation);
         effect = MakeGarbageCollected<FEBoxReflect>(
             parent_filter, box_reflect_operation->Reflection());
         break;
       }
-      case FilterOperation::CONVOLVE_MATRIX: {
+      case FilterOperation::kConvolveMatrix: {
         ConvolveMatrixFilterOperation* convolve_matrix_operation =
             To<ConvolveMatrixFilterOperation>(filter_operation);
         effect = MakeGarbageCollected<FEConvolveMatrix>(
@@ -312,7 +312,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             convolve_matrix_operation->KernelMatrix());
         break;
       }
-      case FilterOperation::COMPONENT_TRANSFER: {
+      case FilterOperation::kComponentTransfer: {
         ComponentTransferFilterOperation* component_transfer_operation =
             To<ComponentTransferFilterOperation>(filter_operation);
         effect = MakeGarbageCollected<FEComponentTransfer>(
@@ -327,7 +327,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
     }
 
     if (effect) {
-      if (filter_operation->GetType() != FilterOperation::REFERENCE) {
+      if (filter_operation->GetType() != FilterOperation::kReference) {
         // Unlike SVG, filters applied here should not clip to their primitive
         // subregions.
         effect->SetClipsToBounds(false);
@@ -349,7 +349,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
   CompositorFilterOperations filters;
   for (FilterOperation* op : operations.Operations()) {
     switch (op->GetType()) {
-      case FilterOperation::REFERENCE: {
+      case FilterOperation::kReference: {
         auto& reference_operation = To<ReferenceFilterOperation>(*op);
         Filter* reference_filter =
             BuildReferenceFilter(reference_operation, nullptr);
@@ -370,22 +370,22 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         reference_operation.SetFilter(reference_filter);
         break;
       }
-      case FilterOperation::GRAYSCALE:
-      case FilterOperation::SEPIA:
-      case FilterOperation::SATURATE:
-      case FilterOperation::HUE_ROTATE: {
+      case FilterOperation::kGrayscale:
+      case FilterOperation::kSepia:
+      case FilterOperation::kSaturate:
+      case FilterOperation::kHueRotate: {
         float amount = To<BasicColorMatrixFilterOperation>(*op).Amount();
         switch (op->GetType()) {
-          case FilterOperation::GRAYSCALE:
+          case FilterOperation::kGrayscale:
             filters.AppendGrayscaleFilter(amount);
             break;
-          case FilterOperation::SEPIA:
+          case FilterOperation::kSepia:
             filters.AppendSepiaFilter(amount);
             break;
-          case FilterOperation::SATURATE:
+          case FilterOperation::kSaturate:
             filters.AppendSaturateFilter(amount);
             break;
-          case FilterOperation::HUE_ROTATE:
+          case FilterOperation::kHueRotate:
             filters.AppendHueRotateFilter(amount);
             break;
           default:
@@ -393,34 +393,34 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         }
         break;
       }
-      case FilterOperation::LUMINANCE_TO_ALPHA:
-      case FilterOperation::CONVOLVE_MATRIX:
-      case FilterOperation::COMPONENT_TRANSFER:
+      case FilterOperation::kLuminanceToAlpha:
+      case FilterOperation::kConvolveMatrix:
+      case FilterOperation::kComponentTransfer:
         // These filter types only exist for Canvas filters.
         NOTREACHED();
         break;
-      case FilterOperation::COLOR_MATRIX: {
+      case FilterOperation::kColorMatrix: {
         Vector<float> matrix_values =
             To<ColorMatrixFilterOperation>(*op).Values();
         filters.AppendColorMatrixFilter(matrix_values);
         break;
       }
-      case FilterOperation::INVERT:
-      case FilterOperation::OPACITY:
-      case FilterOperation::BRIGHTNESS:
-      case FilterOperation::CONTRAST: {
+      case FilterOperation::kInvert:
+      case FilterOperation::kOpacity:
+      case FilterOperation::kBrightness:
+      case FilterOperation::kContrast: {
         float amount = To<BasicComponentTransferFilterOperation>(*op).Amount();
         switch (op->GetType()) {
-          case FilterOperation::INVERT:
+          case FilterOperation::kInvert:
             filters.AppendInvertFilter(amount);
             break;
-          case FilterOperation::OPACITY:
+          case FilterOperation::kOpacity:
             filters.AppendOpacityFilter(amount);
             break;
-          case FilterOperation::BRIGHTNESS:
+          case FilterOperation::kBrightness:
             filters.AppendBrightnessFilter(amount);
             break;
-          case FilterOperation::CONTRAST:
+          case FilterOperation::kContrast:
             filters.AppendContrastFilter(amount);
             break;
           default:
@@ -428,14 +428,14 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         }
         break;
       }
-      case FilterOperation::BLUR: {
+      case FilterOperation::kBlur: {
         float pixel_radius =
             To<BlurFilterOperation>(*op).StdDeviation().GetFloatValue();
         pixel_radius *= shorthand_scale_;
         filters.AppendBlurFilter(pixel_radius, blur_tile_mode_);
         break;
       }
-      case FilterOperation::DROP_SHADOW: {
+      case FilterOperation::kDropShadow: {
         const ShadowData& shadow = To<DropShadowFilterOperation>(*op).Shadow();
         gfx::Point floored_offset =
             FlooredIntPoint(shadow.Location().ScaledBy(shorthand_scale_));
@@ -444,7 +444,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
                                        shadow.GetColor().GetColor());
         break;
       }
-      case FilterOperation::BOX_REFLECT: {
+      case FilterOperation::kBoxReflect: {
         // TODO(jbroman): Consider explaining box reflect to the compositor,
         // instead of calling this a "reference filter".
         const auto& reflection =
@@ -453,7 +453,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
             paint_filter_builder::BuildBoxReflectFilter(reflection, nullptr));
         break;
       }
-      case FilterOperation::NONE:
+      case FilterOperation::kNone:
         break;
     }
   }

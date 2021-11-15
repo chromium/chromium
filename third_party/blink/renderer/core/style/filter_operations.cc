@@ -94,20 +94,20 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 bool FilterOperations::HasReferenceFilter() const {
   return std::any_of(
       operations_.begin(), operations_.end(), [](const auto& operation) {
-        return operation->GetType() == FilterOperation::REFERENCE;
+        return operation->GetType() == FilterOperation::kReference;
       });
 }
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::REFERENCE)
+    if (operation->GetType() == FilterOperation::kReference)
       To<ReferenceFilterOperation>(*operation).AddClient(client);
   }
 }
 
 void FilterOperations::RemoveClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::REFERENCE)
+    if (operation->GetType() == FilterOperation::kReference)
       To<ReferenceFilterOperation>(*operation).RemoveClient(client);
   }
 }

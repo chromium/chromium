@@ -45,7 +45,7 @@ ColorMatrixFilterOperation* ResolveColorMatrix(
   }
 
   return MakeGarbageCollected<ColorMatrixFilterOperation>(
-      *values, FilterOperation::COLOR_MATRIX);
+      *values, FilterOperation::kColorMatrix);
 }
 
 struct KernelMatrix {
@@ -193,17 +193,17 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
             filter_dict.Get<IDLDouble>("values", exception_state).value_or(0);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
-                amount, FilterOperation::HUE_ROTATE));
+                amount, FilterOperation::kHueRotate));
       } else if (type == "saturate") {
         double amount =
             filter_dict.Get<IDLDouble>("values", exception_state).value_or(0);
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
-                amount, FilterOperation::SATURATE));
+                amount, FilterOperation::kSaturate));
       } else if (type == "luminanceToAlpha") {
         operations.Operations().push_back(
             MakeGarbageCollected<BasicColorMatrixFilterOperation>(
-                0, FilterOperation::LUMINANCE_TO_ALPHA));
+                0, FilterOperation::kLuminanceToAlpha));
       } else if (auto* color_matrix_operation =
                      ResolveColorMatrix(filter_dict, exception_state)) {
         operations.Operations().push_back(color_matrix_operation);

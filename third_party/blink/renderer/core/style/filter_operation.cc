@@ -49,7 +49,7 @@ FloatRect ReferenceFilterOperation::MapRect(const FloatRect& rect) const {
 
 ReferenceFilterOperation::ReferenceFilterOperation(const AtomicString& url,
                                                    SVGResource* resource)
-    : FilterOperation(REFERENCE), url_(url), resource_(resource) {}
+    : FilterOperation(kReference), url_(url), resource_(resource) {}
 
 void ReferenceFilterOperation::AddClient(SVGResourceClient& client) {
   if (resource_)
