@@ -93,9 +93,12 @@ void PersistentDesksBarController::RegisterProfilePrefs(
 
 // static
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeVisible() {
-  return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-             features::kBentoBar.name,
-             base::FeatureList::OVERRIDE_ENABLE_FEATURE) ||
+  // Only check whether the feature is overridden from command line if the
+  // FeatureList is initialized.
+  const base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  return (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
+                              features::kBentoBar.name,
+                              base::FeatureList::OVERRIDE_ENABLE_FEATURE)) ||
          (features::IsBentoBarEnabled() &&
           desks_restore_util::HasPrimaryUserUsedDesksRecently());
 }
