@@ -3895,6 +3895,83 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
         'Broken .*MIGRATE_OBSOLETE_.*_PREFS markers in browser_prefs.cc.',
         errors[0].message)
 
+class MPArchApiUsage(unittest.TestCase):
+  def _assert_notify(self, expect_cc, msg, local_path, new_contents):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+    mock_input_api.files = [
+        MockFile(local_path, new_contents),
+    ]
+    PRESUBMIT.CheckMPArchApiUsage(mock_input_api, mock_output_api)
+    self.assertEqual(
+        expect_cc,
+        'mparch-reviews+watch@chromium.org' in mock_output_api.more_cc,
+        msg)
+
+  def testNotify(self):
+    self._assert_notify(
+        True,
+        'Introduce WCO and WCUD',
+        'chrome/my_feature.h',
+        ['class MyFeature',
+         '    : public content::WebContentsObserver,',
+         '      public content::WebContentsUserData<MyFeature> {};',
+        ])
+    self._assert_notify(
+        True,
+        'Introduce WCO override',
+        'chrome/my_feature.h',
+        ['void DidFinishNavigation(',
+         '    content::NavigationHandle* navigation_handle) override;',
+        ])
+    self._assert_notify(
+        True,
+        'Introduce IsInMainFrame',
+        'chrome/my_feature.cc',
+        ['void DoSomething(content::NavigationHandle* navigation_handle) {',
+         '  if (navigation_handle->IsInMainFrame())',
+         '    all_of_our_page_state.reset();',
+         '}',
+        ])
+    self._assert_notify(
+        True,
+        'Introduce WC::FromRenderFrameHost',
+        'chrome/my_feature.cc',
+        ['void DoSomething(content::RenderFrameHost* rfh) {',
+         '  auto* wc = content::WebContents::FromRenderFrameHost(rfh);',
+         '  ChangeTabState(wc);',
+         '}',
+        ])
+
+  def testNoNotify(self):
+    self._assert_notify(
+        False,
+        'No API usage',
+        'chrome/my_feature.cc',
+        ['void DoSomething() {',
+         '  // TODO: Something',
+         '}',
+        ])
+    # Something under a top level directory we're not concerned about happens
+    # to share a name with a content API.
+    self._assert_notify(
+        False,
+        'Uninteresting top level directory',
+        'third_party/my_dep/my_code.cc',
+        ['bool HasParent(Node* node) {',
+         '  return node->GetParent();',
+         '}',
+        ])
+    # We're not concerned with usage in test code.
+    self._assert_notify(
+        False,
+        'Usage in test code',
+        'chrome/my_feature_unittest.cc',
+        ['TEST_F(MyFeatureTest, DoesSomething) {',
+         '  EXPECT_TRUE(web_contents()->GetMainFrame());',
+         '}',
+        ])
+
 
 if __name__ == '__main__':
   unittest.main()

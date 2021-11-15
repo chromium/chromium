@@ -5323,3 +5323,85 @@ def CheckConsistentGrdChanges(input_api, output_api):
               output_api.PresubmitError('Problem on {grd}:{i} - {msg}'.format(
                   grd=grd.LocalPath(), i=i + 1, msg=msg)))
   return errors
+
+def CheckMPArchApiUsage(input_api, output_api):
+  """CC the MPArch watchlist if the CL uses an API that is ambiguous in the
+  presence of MPArch features such as bfcache, prerendering, and fenced frames.
+  """
+
+  # Only consider top-level directories that (1) can use content APIs, (2)
+  # apply to desktop or android chrome, and (3) are known to have a significant
+  # number of uses of the APIs of concern.
+  files_to_check = (
+    r'^(chrome|components|content|extensions)[\\/].+%s' %
+        _IMPLEMENTATION_EXTENSIONS,
+    r'^(chrome|components|content|extensions)[\\/].+%s' % _HEADER_EXTENSIONS,
+  )
+  files_to_skip=(_EXCLUDED_PATHS +
+                 _TEST_CODE_EXCLUDED_PATHS +
+                 input_api.DEFAULT_FILES_TO_SKIP)
+  source_file_filter = lambda f: input_api.FilterSourceFile(
+    f, files_to_check=files_to_check, files_to_skip=files_to_skip)
+
+  # Note that since these are are just regular expressions and we don't have
+  # the compiler's AST, we could have spurious matches (e.g. an unrelated class
+  # could have a method named IsInMainFrame).
+  concerning_class_pattern = input_api.re.compile(
+      r'WebContentsObserver|WebContentsUserData')
+  # A subset of WebContentsObserver overrides where there's particular risk for
+  # confusing tab and page level operations and data (e.g. incorrectly
+  # resetting page state in DidFinishNavigation).
+  concerning_wco_methods = [
+     'DidStartNavigation',
+     'ReadyToCommitNavigation',
+     'DidFinishNavigation',
+     'RenderViewReady',
+     'RenderViewDeleted',
+     'RenderViewHostChanged',
+     'DocumentAvailableInMainFrame',
+     'DocumentOnLoadCompletedInMainFrame',
+     'DOMContentLoaded',
+     'DidFinishLoad',
+  ]
+  concerning_nav_handle_methods = [
+      'IsInMainFrame',
+  ]
+  concerning_web_contents_methods = [
+      'ForEachFrame',
+      'GetAllFrames',
+      'FromRenderFrameHost',
+      'FromRenderViewHost',
+      'GetMainFrame',
+      'GetRenderViewHost',
+  ]
+  concerning_rfh_methods = [
+      'GetParent',
+      'GetMainFrame',
+      'GetFrameTreeNodeId',
+  ]
+  concerning_method_pattern = input_api.re.compile(
+     r'(' +
+     r'|'.join(
+         item
+         for sublist in [concerning_wco_methods,
+                         concerning_nav_handle_methods,
+                         concerning_web_contents_methods,
+                         concerning_rfh_methods]
+         for item in sublist) +
+     r')\(')
+
+  uses_concerning_api = False
+  for f in input_api.AffectedFiles(include_deletes=False,
+                                   file_filter=source_file_filter):
+    for line_num, line in f.ChangedContents():
+      if (concerning_class_pattern.search(line) or
+          concerning_method_pattern.search(line)):
+        uses_concerning_api = True
+        break
+    if uses_concerning_api:
+      break
+
+  if uses_concerning_api:
+    output_api.AppendCC('mparch-reviews+watch@chromium.org')
+
+  return []

@@ -169,7 +169,7 @@ class MockOutputApi(object):
     self.more_cc = []
 
   def AppendCC(self, more_cc):
-    self.more_cc.extend(more_cc)
+    self.more_cc.append(more_cc)
 
 
 class MockFile(object):
