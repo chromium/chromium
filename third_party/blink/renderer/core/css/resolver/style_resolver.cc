@@ -1215,6 +1215,9 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   if (initial_data)
     initial_style->SetInitialData(std::move(initial_data));
 
+  if (frame && frame->IsInert())
+    initial_style->SetIsForcedInert();
+
   return initial_style;
 }
 

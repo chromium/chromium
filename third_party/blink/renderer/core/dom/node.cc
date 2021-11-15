@@ -1365,33 +1365,9 @@ bool Node::ShouldHaveFocusAppearance() const {
 
 // TODO(crbug.com/692360): Remove this method.
 bool Node::IsInert() const {
-  DCHECK(!IsShadowRoot());
-  if (!isConnected())
-    return true;
-
-  if (this != GetDocument()) {
-    const Element* modal_element = GetDocument().ActiveModalDialog();
-    if (!modal_element)
-      modal_element = Fullscreen::FullscreenElementFrom(GetDocument());
-    if (modal_element && !FlatTreeTraversal::ContainsIncludingPseudoElement(
-                             *modal_element, *this)) {
-      return true;
-    }
-  }
-
-  if (RuntimeEnabledFeatures::InertAttributeEnabled()) {
-    const auto* element = DynamicTo<Element>(this);
-    if (!element)
-      element = FlatTreeTraversal::ParentElement(*this);
-
-    while (element) {
-      if (element->FastHasAttribute(html_names::kInertAttr) &&
-          element->IsHTMLElement())
-        return true;
-      element = FlatTreeTraversal::ParentElement(*element);
-    }
-  }
-  return GetDocument().GetFrame() && GetDocument().GetFrame()->IsInert();
+  if (const ComputedStyle* style = GetComputedStyle())
+    return style->IsInert();
+  return false;
 }
 
 LinkHighlightCandidate Node::IsLinkHighlightCandidate() const {

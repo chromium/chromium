@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -93,11 +94,22 @@ static void SetFocusForDialog(HTMLDialogElement* dialog) {
   doc.TopDocument().FinalizeAutofocus();
 }
 
-static void InertSubtreesChanged(Document& document) {
-  // SetIsInert recurses through subframes to propagate the inert bit.
-  if (document.GetFrame()) {
-    document.GetFrame()->SetIsInert(document.LocalOwner() &&
-                                    document.LocalOwner()->IsInert());
+static void InertSubtreesChanged(Document& document,
+                                 Element* old_modal_dialog) {
+  Element* new_modal_dialog = document.ActiveModalDialog();
+  if (old_modal_dialog == new_modal_dialog)
+    return;
+
+  // Update IsInert() flags.
+  Element* maybe_root = old_modal_dialog && new_modal_dialog
+                            ? nullptr
+                            : document.documentElement();
+  for (Element* element : {maybe_root, old_modal_dialog, new_modal_dialog}) {
+    if (!element)
+      continue;
+    element->SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kDialog));
   }
 
   // When a modal dialog opens or closes, nodes all over the accessibility
@@ -123,10 +135,10 @@ void HTMLDialogElement::close(const String& return_value) {
   SetBooleanAttribute(html_names::kOpenAttr, false);
   SetIsModal(false);
 
-  HTMLDialogElement* active_modal_dialog = GetDocument().ActiveModalDialog();
-  GetDocument().RemoveFromTopLayer(this);
-  if (active_modal_dialog == this)
-    InertSubtreesChanged(GetDocument());
+  Document& document = GetDocument();
+  HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
+  document.RemoveFromTopLayer(this);
+  InertSubtreesChanged(document, old_modal_dialog);
 
   if (!return_value.IsNull())
     return_value_ = return_value;
@@ -190,36 +202,41 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
     return;
   }
 
+  Document& document = GetDocument();
+  HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
+
   // See comment in |Fullscreen::RequestFullscreen|.
   if (Fullscreen::IsInFullscreenElementStack(*this)) {
-    UseCounter::Count(GetDocument(),
+    UseCounter::Count(document,
                       WebFeature::kShowModalForElementInFullscreenStack);
   }
 
   // Showing a <dialog> should hide all open popups.
   if (RuntimeEnabledFeatures::HTMLPopupElementEnabled()) {
-    GetDocument().HideAllPopupsUntil(nullptr);
+    document.HideAllPopupsUntil(nullptr);
   }
 
-  GetDocument().AddToTopLayer(this);
+  document.AddToTopLayer(this);
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
   SetIsModal(true);
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // Throw away the AX cache first, so the subsequent steps don't have a chance
   // of queuing up AX events on objects that would be invalidated when the cache
   // is thrown away.
-  InertSubtreesChanged(GetDocument());
+  InertSubtreesChanged(document, old_modal_dialog);
 
-  previously_focused_element_ = GetDocument().FocusedElement();
+  previously_focused_element_ = document.FocusedElement();
 
   SetFocusForDialog(this);
 }
 
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
+  Document& document = GetDocument();
+  HTMLDialogElement* old_modal_dialog = document.ActiveModalDialog();
   HTMLElement::RemovedFrom(insertion_point);
-  InertSubtreesChanged(GetDocument());
+  InertSubtreesChanged(document, old_modal_dialog);
   SetIsModal(false);
 }
 

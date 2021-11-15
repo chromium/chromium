@@ -937,18 +937,15 @@ void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {
 }
 
 void LocalFrame::SetIsInert(bool inert) {
+  if (is_inert_ == inert)
+    return;
   is_inert_ = inert;
-  PropagateInertToChildFrames();
-}
-
-void LocalFrame::PropagateInertToChildFrames() {
-  for (Frame* child = Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    // is_inert_ means that this Frame is inert because of a modal dialog or
-    // inert element in an ancestor Frame. Otherwise, decide whether a child
-    // Frame element is inert because of an element in this Frame.
-    child->SetIsInert(is_inert_ ||
-                      To<HTMLFrameOwnerElement>(child->Owner())->IsInert());
+  if (Document* document = GetDocument()) {
+    if (Element* root = document->documentElement()) {
+      root->SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kFrame));
+    }
   }
 }
 

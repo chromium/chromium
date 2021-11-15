@@ -295,7 +295,8 @@ bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
       name == html_names::kContenteditableAttr ||
       name == html_names::kHiddenAttr || name == html_names::kLangAttr ||
       name.Matches(xml_names::kLangAttr) ||
-      name == html_names::kDraggableAttr || name == html_names::kDirAttr)
+      name == html_names::kDraggableAttr || name == html_names::kDirAttr ||
+      name == html_names::kInertAttr)
     return true;
   return Element::IsPresentationAttribute(name);
 }
@@ -406,8 +407,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnDirAttrChanged},
       {html_names::kFormAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnFormAttrChanged},
-      {html_names::kInertAttr, WebFeature::kInertAttribute, kNoEvent,
-       &HTMLElement::OnInertAttrChanged},
       {html_names::kLangAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnLangAttrChanged},
       {html_names::kNonceAttr, kNoWebFeature, kNoEvent,
@@ -1906,17 +1905,6 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
 void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().FormAttributeChanged();
-}
-
-void HTMLElement::OnInertAttrChanged(
-    const AttributeModificationParams& params) {
-  // The |PropagateInertToChildFrames()| function might need to walk the flat
-  // tree to check for inert parent elements. So update slot assignments here.
-  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
-  if (GetDocument().GetFrame()) {
-    GetDocument().GetFrame()->SetIsInert(GetDocument().LocalOwner() &&
-                                         GetDocument().LocalOwner()->IsInert());
-  }
 }
 
 void HTMLElement::OnLangAttrChanged(const AttributeModificationParams& params) {

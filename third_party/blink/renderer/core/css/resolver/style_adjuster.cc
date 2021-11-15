@@ -44,9 +44,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -677,6 +679,31 @@ static void AdjustStateForContentVisibility(ComputedStyle& style,
   context->AdjustElementStyle(&style);
 }
 
+static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
+  if (!element || style.IsForcedInert())
+    return;
+
+  if (RuntimeEnabledFeatures::InertAttributeEnabled() &&
+      element->FastHasAttribute(html_names::kInertAttr) &&
+      element->IsHTMLElement()) {
+    style.SetIsForcedInert();
+    return;
+  }
+
+  Document& document = element->GetDocument();
+  const Element* modal_element = document.ActiveModalDialog();
+  if (!modal_element)
+    modal_element = Fullscreen::FullscreenElementFrom(document);
+  if (modal_element == element) {
+    style.SetIsInert(false);
+    return;
+  }
+  if (modal_element && element == document.documentElement()) {
+    style.SetIsInert(true);
+    return;
+  }
+}
+
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
   if (!style.InForcedColorsMode() ||
       style.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
@@ -817,6 +844,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, style);
+
+  AdjustStyleForInert(style, element);
 
   AdjustStyleForEditing(style);
 

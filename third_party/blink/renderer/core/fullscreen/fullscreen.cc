@@ -101,11 +101,15 @@ void FullscreenElementChanged(Document& document,
         true);
   }
 
-  if (document.GetFrame()) {
-    // SetIsInert recurses through subframes to propagate the inert bit as
-    // needed.
-    document.GetFrame()->SetIsInert(document.LocalOwner() &&
-                                    document.LocalOwner()->IsInert());
+  // Update IsInert() flags.
+  Element* maybe_root =
+      old_element && new_element ? nullptr : document.documentElement();
+  for (Element* element : {maybe_root, old_element, new_element}) {
+    if (!element)
+      continue;
+    element->SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
   }
 
   // Any element not contained by the fullscreen element is inert (see

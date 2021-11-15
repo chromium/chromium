@@ -1167,5 +1167,24 @@
       field_template: "monotonic_flag",
       default_value: "false",
     },
+    {
+      // https://html.spec.whatwg.org/multipage/interaction.html#inert
+      // The inertness is represented with one of these values:
+      // - 'none' means that the node is not inert (the default).
+      // - 'overridable' means that the node is inert, and descendants will
+      //    inherit by default, but may change their inertness to e.g. 'none'.
+      // - 'forced' means that that the node is inert, and its decendants
+      //   won't be able to change their inertness to something else.
+      // ComputedStyle doesn't directly expose the inertness. Instead, use
+      // IsInert(), SetIsInert(bool), IsForcedInert() or SetIsForcedInert().
+      name: "Inertness",
+      inherited: true,
+      field_template: "keyword",
+      type_name: "Inertness",
+      keywords: ["none", "overridable", "forced"],
+      default_value: "none",
+      field_group: "*",
+      computed_style_custom_functions: ["getter", "setter"],
+    },
   ],
 }

@@ -740,8 +740,6 @@ class CORE_EXPORT LocalFrame final
   void EnableNavigation() { --navigation_disable_count_; }
   void DisableNavigation() { ++navigation_disable_count_; }
 
-  void PropagateInertToChildFrames();
-
   // Internal implementation for starting and ending paint preview capture.
   // `capturing` is true when capture starts and false when it ends.
   void SetInvalidationForCapture(bool capturing);

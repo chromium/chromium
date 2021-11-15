@@ -2167,6 +2167,20 @@ class ComputedStyle : public ComputedStyleBase,
     }
   }
 
+  // Inertness utility functions.
+  bool IsInert() const { return InertnessInternal() != Inertness::kNone; }
+  void SetIsInert(bool is_inert) {
+    if (InertnessInternal() == Inertness::kForced) {
+      DCHECK(is_inert);
+      return;
+    }
+    SetInertnessInternal(is_inert ? Inertness::kOverridable : Inertness::kNone);
+  }
+  bool IsForcedInert() const {
+    return InertnessInternal() == Inertness::kForced;
+  }
+  void SetIsForcedInert() { SetInertnessInternal(Inertness::kForced); }
+
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   void ApplyTextDecorations(const Color& parent_text_decoration_color,

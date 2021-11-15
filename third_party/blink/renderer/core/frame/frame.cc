@@ -357,8 +357,8 @@ void Frame::SetOwner(FrameOwner* owner) {
 void Frame::UpdateInertIfPossible() {
   if (auto* frame_owner_element =
           DynamicTo<HTMLFrameOwnerElement>(owner_.Get())) {
-    if (frame_owner_element->IsInert())
-      SetIsInert(true);
+    const ComputedStyle* style = frame_owner_element->GetComputedStyle();
+    SetIsInert(style && style->IsInert());
   }
 }
 

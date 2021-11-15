@@ -245,9 +245,17 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
                                            const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
+  const ComputedStyle& new_style = StyleRef();
+
+  bool was_inert = old_style && old_style->IsInert();
+  bool is_inert = new_style.IsInert();
+  if (was_inert != is_inert) {
+    if (Frame* frame = GetFrameOwnerElement()->ContentFrame())
+      frame->SetIsInert(is_inert);
+  }
 
   if (EmbeddedContentView* embedded_content_view = GetEmbeddedContentView()) {
-    if (StyleRef().Visibility() != EVisibility::kVisible) {
+    if (new_style.Visibility() != EVisibility::kVisible) {
       embedded_content_view->Hide();
     } else {
       embedded_content_view->Show();
@@ -258,11 +266,11 @@ void LayoutEmbeddedContent::StyleDidChange(StyleDifference diff,
   if (!frame_owner)
     return;
 
-  if (old_style && StyleRef().UsedColorScheme() != old_style->UsedColorScheme())
-    frame_owner->SetColorScheme(StyleRef().UsedColorScheme());
+  if (old_style && new_style.UsedColorScheme() != old_style->UsedColorScheme())
+    frame_owner->SetColorScheme(new_style.UsedColorScheme());
 
   if (old_style &&
-      StyleRef().VisibleToHitTesting() == old_style->VisibleToHitTesting()) {
+      new_style.VisibleToHitTesting() == old_style->VisibleToHitTesting()) {
     return;
   }
 
