@@ -81,9 +81,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   // to a consecutive maximum.
   base::RepeatingTimer refresh_timer_;
 
-  // Counter for the number of consecutive "refresh frames" requested.
-  int consecutive_refresh_count_;
-
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
   bool expecting_a_refresh_frame_;
