@@ -145,6 +145,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 return "push_notifications_list";
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return "protected_media_identifier_permission_list";
+            case ContentSettingsType.REQUEST_DESKTOP_SITE:
+                return "request_desktop_site_permission_list";
             case ContentSettingsType.SENSORS:
                 return "sensors_permission_list";
             case ContentSettingsType.VR:
