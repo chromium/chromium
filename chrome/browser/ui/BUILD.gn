@@ -2137,6 +2137,8 @@ static_library("ui") {
       "ash/network/tether_notification_presenter.h",
       "ash/notification_badge_color_cache.cc",
       "ash/notification_badge_color_cache.h",
+      "ash/projector/pending_screencast_manager.cc",
+      "ash/projector/pending_screencast_manager.h",
       "ash/projector/projector_app_client_impl.cc",
       "ash/projector/projector_app_client_impl.h",
       "ash/projector/projector_client_impl.cc",
