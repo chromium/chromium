@@ -94,6 +94,13 @@ class RemoteAppsManager
               bool add_to_front,
               AddAppCallback callback);
 
+  // Adds a folder if the specified folder is missing in `model_updater_`.
+  void MaybeAddFolder(const std::string& folder_id);
+
+  // Returns a const pointer to the info of the specified app. If the app does
+  // not exist, returns a nullptr.
+  const RemoteAppsModel::AppInfo* GetAppInfo(const std::string& app_id) const;
+
   // Deletes the app with id |id|.
   // Deleting a non-existent app will result in an error.
   RemoteAppsError DeleteApp(const std::string& id);

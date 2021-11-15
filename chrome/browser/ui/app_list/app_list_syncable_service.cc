@@ -30,6 +30,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_model_builder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -207,24 +208,6 @@ bool IsSystemCreatedSyncFolder(
     return false;
   return (folder_item.item_id == ash::kOemFolderId ||
           folder_item.item_id == ash::kCrostiniFolderId);
-}
-
-// Generates app list item meta data from the given sync item.
-std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(
-    const AppListSyncableService::SyncItem& sync_item) {
-  auto item_meta_data = std::make_unique<ash::AppListItemMetadata>();
-  item_meta_data->id = sync_item.item_id;
-  item_meta_data->position = sync_item.item_ordinal;
-  item_meta_data->is_folder =
-      (sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER);
-  item_meta_data->is_page_break =
-      (sync_item.item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
-  item_meta_data->name = sync_item.item_name;
-  item_meta_data->folder_id = sync_item.parent_id;
-
-  if (IsSystemCreatedSyncFolder(sync_item))
-    item_meta_data->is_persistent = true;
-  return item_meta_data;
 }
 
 }  // namespace
@@ -1716,7 +1699,9 @@ void AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
   auto new_folder_item = std::make_unique<ChromeAppListItem>(
       profile_, folder_id, model_updater_.get());
   new_folder_item->SetMetadata(
-      GenerateItemMetadataFromSyncItem(*folder_sync_item));
+      app_list::GenerateItemMetadataFromSyncItem(*folder_sync_item));
+  if (IsSystemCreatedSyncFolder(*folder_sync_item))
+    new_folder_item->SetIsPersistent(true);
   model_updater_->AddItem(std::move(new_folder_item));
 }
 

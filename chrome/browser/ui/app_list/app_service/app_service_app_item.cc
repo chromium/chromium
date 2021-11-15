@@ -41,11 +41,21 @@ AppServiceAppItem::AppServiceAppItem(
     InitFromSync(sync_item);
   } else {
     syncer::StringOrdinal default_position;
-    if (app_type_ == apps::mojom::AppType::kRemote &&
-        ash::RemoteAppsManagerFactory::GetForProfile(profile)->ShouldAddToFront(
-            app_update.AppId())) {
-      default_position = model_updater->GetPositionBeforeFirstItem();
-    } else {
+
+    if (app_type_ == apps::mojom::AppType::kRemote) {
+      // Handle the case that the app under construction is a remote app.
+      ash::RemoteAppsManager* remote_manager =
+          ash::RemoteAppsManagerFactory::GetForProfile(profile);
+      if (remote_manager->ShouldAddToFront(app_update.AppId()))
+        default_position = model_updater->GetPositionBeforeFirstItem();
+
+      const ash::RemoteAppsModel::AppInfo* app_info =
+          remote_manager->GetAppInfo(app_update.AppId());
+      if (app_info)
+        SetChromeFolderId(app_info->folder_id);
+    }
+
+    if (!default_position.IsValid()) {
       default_position = CalculateDefaultPositionIfApplicable(model_updater);
     }
     SetPosition(default_position);

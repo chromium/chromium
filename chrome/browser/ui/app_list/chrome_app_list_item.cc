@@ -135,6 +135,8 @@ void ChromeAppListItem::InitFromSync(
   // Only set the name from the sync item if it is empty.
   if (name().empty())
     SetName(sync_item->item_name);
+
+  SetChromeFolderId(sync_item->parent_id);
 }
 
 syncer::StringOrdinal ChromeAppListItem::CalculateDefaultPositionIfApplicable(
