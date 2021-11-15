@@ -25,6 +25,8 @@ module ax.mojom;
 // If unspecified, the attribute is used across web and native on multiple
 // platforms.
 
+// Keep these values in sync with AXEventType in
+// tools/metrics/histograms/enums.xml.
 // Next version: 1
 // Next value: 59
 [Extensible, Stable, Uuid="686e661e-f8c7-4214-8713-1f66d95d3ffa"]

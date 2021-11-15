@@ -468,6 +468,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendAccessibilityEventsToManager(
       const AXEventNotificationDetails& details);
 
+  // This is called when accessibility events arrive from renderer to browser.
+  // This could cause eviction if the page is in back/forward cache. Returns
+  // true if the eviction happens, and otherwise calls
+  // |RenderFrameHost::IsInactiveAndDisallowActivation()| and returns the value
+  // from there.
+  bool IsInactiveAndDisallowActivationForAXEvents(
+      const std::vector<ui::AXEvent>& events);
+
   void EvictFromBackForwardCacheWithReason(
       BackForwardCacheMetrics::NotRestoredReason reason);
   void EvictFromBackForwardCacheWithReasons(

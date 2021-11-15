@@ -21,6 +21,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "ui/accessibility/ax_event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -430,6 +431,13 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
         "BackForwardCache.HistoryNavigationOutcome."
         "DisallowActivationReason",
         reason);
+  }
+
+  for (const ax::mojom::Event event : page_store_result_->ax_events()) {
+    base::UmaHistogramSparse(
+        "BackForwardCache.HistoryNavigationOutcome."
+        "AXEventType",
+        static_cast<int>(event));
   }
 
   if (!DidSwapBrowsingInstance()) {

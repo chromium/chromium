@@ -5790,6 +5790,20 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
   }
 }
 
+bool RenderFrameHostImpl::IsInactiveAndDisallowActivationForAXEvents(
+    const std::vector<ui::AXEvent>& events) {
+  if (lifecycle_state_ != LifecycleStateImpl::kInBackForwardCache) {
+    return IsInactiveAndDisallowActivation(
+        DisallowActivationReasonId::kAXEvent);
+  }
+  // If the lifecycle state is |LifecycleStateImpl::kInBackForwardCache|, we
+  // cannot handle accessibility events any more. We should evict the entry.
+  BackForwardCacheCanStoreDocumentResult can_store;
+  can_store.NoDueToAXEvents(events);
+  EvictFromBackForwardCacheWithReasons(can_store);
+  return true;
+}
+
 void RenderFrameHostImpl::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   EvictFromBackForwardCacheWithReason(
@@ -7129,10 +7143,9 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
   if (accessibility_mode.is_mode_off() ||
-      IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent)) {
+      IsInactiveAndDisallowActivationForAXEvents(updates_and_events->events)) {
     return;
   }
-
   if (accessibility_mode.has_mode(ui::AXMode::kNativeAPIs))
     GetOrCreateBrowserAccessibilityManager();
 

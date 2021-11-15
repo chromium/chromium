@@ -358,6 +358,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="BackForwardCache.HistoryNavigationOutcome.NotRestoredDueToAccessibility.AXEventType"
+    enum="AXEventType" expires_after="2022-10-31">
+  <owner>yuzus@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    For history navigations, records the AX event type that caused
+    RenderFrameHost::IsInactiveAndDisallowActivation calls. The value refers to
+    AX enum in ui/accessibility/ax_enums.mojom.
+
+    The metric is recorded when a history navigation commits and emits the
+    breakdown of a specific bucket in HistoryNavigationOutcome.NotRestoredReason
+    (AXEvent). Compare this with BackForwardCache.HistoryNavigationOutcome,
+    which contains the total number of navigations which were not cached.
+
+    This is recorded for all websites regardless whether back-forward cache is
+    enabled or not.
+  </summary>
+</histogram>
+
 <histogram name="BackForwardCache.HistoryNavigationOutcome.NotRestoredReason"
     enum="BackForwardCacheNotRestoredReason" expires_after="2022-04-24">
   <owner>hajimehoshi@chromium.org</owner>
