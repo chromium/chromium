@@ -85,7 +85,16 @@ void FontCache::SetSystemFontFamily(const AtomicString&) {}
 sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
     const FontDescription& font_description,
     const char* locale_family_name) {
-  const char* bcp47 = font_description.LocaleOrDefault().LocaleForSkFontMgr();
+  // TODO(crbug.com/1252383, crbug.com/1237860, crbug.com/1233315): Skia handles
+  // "und-" by simple string matches, and falls back to the first
+  // `fallbackFor="serif"` in the `fonts.xml`. Because all non-CJK languages use
+  // "und-" in the AOSP `fonts.xml`, apply locale-specific typeface only to CJK
+  // to work around this problem.
+  const LayoutLocale& locale = font_description.LocaleOrDefault();
+  if (!locale.HasScriptForHan())
+    return nullptr;
+
+  const char* bcp47 = locale.LocaleForSkFontMgr();
   DCHECK(bcp47);
   SkFontMgr* font_manager =
       font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();

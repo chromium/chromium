@@ -82,6 +82,15 @@ TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
   EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
 }
 
+// Check non-CJK locales do not create locale-specific typeface.
+// TODO(crbug.com/1233315 crbug.com/1237860): Locale-specific serif is supported
+// only for CJK until these issues were fixed.
+TEST_F(FontCacheAndroidTest, LocaleSpecificTypefaceOnlyForCJK) {
+  EXPECT_EQ(CreateSerifTypeface(LayoutLocale::Get("en")), nullptr);
+  // We can't test CJK locales return non-nullptr because not all devices on all
+  // versions of Android have CJK serif fonts.
+}
+
 TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   FontDescription english;
   english.SetLocale(LayoutLocale::Get("en"));
