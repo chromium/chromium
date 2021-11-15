@@ -170,6 +170,10 @@ class SystemWebAppDelegate {
       const GURL& url,
       const apps::AppLaunchParams& params) const;
 
+  // Whether |url| which is outside the normal Navigation Scope should be
+  // considered part of this System App.
+  virtual bool IsUrlInSystemAppScope(const GURL& url) const;
+
  protected:
   SystemAppType type_;
   std::string internal_name_;
