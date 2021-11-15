@@ -1026,8 +1026,8 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     SetWindowGeometry(bounds_in_dip);
     AckConfigure(serial);
     root_surface()->Commit();
-  } else if (pending_bounds_dip_ ==
-                 gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()) &&
+  } else if (gfx::ScaleToRoundedRect(pending_bounds_dip_, window_scale()) ==
+                 GetBounds() &&
              pending_configures_.empty()) {
     // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
     // is empty, implying that the window is already rendering at
@@ -1064,15 +1064,15 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
 
 bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px,
                                             float scale_factor) {
-  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / scale_factor);
   auto result =
       std::find_if(pending_configures_.begin(), pending_configures_.end(),
-                   [&size_dip](auto& configure) {
-                     return size_dip == configure.bounds_dip.size();
+                   [&size_px, &scale_factor](auto& configure) {
+                     return gfx::ScaleToRoundedSize(configure.bounds_dip.size(),
+                                                    scale_factor) == size_px;
                    });
 
   if (result != pending_configures_.end()) {
-    SetWindowGeometry(gfx::Rect(size_dip));
+    SetWindowGeometry(result->bounds_dip);
     AckConfigure(result->serial);
     connection()->ScheduleFlush();
     pending_configures_.erase(pending_configures_.begin(), ++result);
