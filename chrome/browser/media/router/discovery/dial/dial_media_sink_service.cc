@@ -37,6 +37,15 @@ void DialMediaSinkService::Start(
                                 base::Unretained(impl_.get())));
 }
 
+void DialMediaSinkService::OnUserGesture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(impl_);
+
+  impl_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::OnUserGesture,
+                                base::Unretained(impl_.get())));
+}
+
 std::unique_ptr<DialMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
 DialMediaSinkService::CreateImpl(
     const OnSinksDiscoveredCallback& sink_discovery_cb) {

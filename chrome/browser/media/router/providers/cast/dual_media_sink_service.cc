@@ -58,6 +58,9 @@ void DualMediaSinkService::OnUserGesture() {
   // TODO(imcheng): Move this call into CastMediaRouteProvider.
   if (cast_media_sink_service_)
     cast_media_sink_service_->OnUserGesture();
+
+  if (dial_media_sink_service_)
+    dial_media_sink_service_->OnUserGesture();
 }
 
 void DualMediaSinkService::StartMdnsDiscovery() {
