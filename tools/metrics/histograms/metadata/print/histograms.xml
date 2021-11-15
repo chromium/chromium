@@ -166,7 +166,6 @@ chromium-metrics-reviews@google.com.
     XXX Removed 10/2020 as it is launched and no longer needed for analysis.
   </obsolete>
   <owner>thestig@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
   <summary>
     The average size of a page in the printed document when the source is HTML.
   </summary>

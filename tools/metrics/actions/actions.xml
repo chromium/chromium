@@ -1235,7 +1235,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Toggle_High_Contrast">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
   <description>
     Metric recorded when the user toggles Chrome OS High Contrast mode with the
     keyboard accelerator.
@@ -1291,7 +1292,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_Toggle_Spoken_Feedback">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
   <description>Toggles Spoken Feedback (ChromeVox)</description>
 </action>
 
@@ -1377,14 +1379,14 @@ should be able to be added at any place in this file.
 <action name="Accessibility.Autoclick">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>A user has used autoclick to perform an action.</description>
 </action>
 
 <action name="Accessibility.Autoclick.ChangeScrollPoint">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user has changed the position at which a scroll will occur by performing a
     dwell at the new scroll point.
@@ -1394,7 +1396,7 @@ should be able to be added at any place in this file.
 <action name="Accessibility.Autoclick.ScrollMenu.CloseButton">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user has closed the autoclick Scroll menu using the close button within
     the menu bubble.
@@ -1408,7 +1410,6 @@ should be able to be added at any place in this file.
   </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
   <description>A user has opened the autoclick tray menu.</description>
 </action>
 
@@ -1418,15 +1419,15 @@ should be able to be added at any place in this file.
   </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
   <description>
     A user has used the autoclick tray menu to open Autoclick settings.
   </description>
 </action>
 
 <action name="Accessibility.CaretBrowsing.AcceptDialog">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user pressed the caret browsing shortcut and then enabled the feature by
     confirming in the dialog.
@@ -1434,8 +1435,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.CaretBrowsing.CancelDialog">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user pressed the caret browsing shortcut and then cancelled without
     enabling caret browsing.
@@ -1443,22 +1445,25 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.CaretBrowsing.DisableWithKeyboard">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user disabled caret browsing using keyboard shortcuts.
   </description>
 </action>
 
 <action name="Accessibility.CaretBrowsing.DisableWithSettings">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>A user disabled caret browsing using settings.</description>
 </action>
 
 <action name="Accessibility.CaretBrowsing.DoNotAsk">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user enabled caret browsing and checked the box to never be prompted
     again.
@@ -1466,8 +1471,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.CaretBrowsing.EnableWithKeyboard">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user enabled caret browsing using the keyboard shortcut directly, when
     they had already opted into not showing the confirmation dialog.
@@ -1475,14 +1481,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.CaretBrowsing.EnableWithSettings">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>A user enabled caret browsing using settings.</description>
 </action>
 
 <action name="Accessibility.CaretBrowsing.ShowDialog">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>emilyscharff@google.com</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user pressed the caret browsing shortcut and the confirmation dialog was
     shown.
@@ -1492,6 +1500,7 @@ should be able to be added at any place in this file.
 <action
     name="Accessibility.ChromeVox.BluetoothBrailleDisplayConnectedButtonClick">
   <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user with spoken feedback enabled has connected a bluetooth
     braille display by clicking the connect button or selected one from a
@@ -1500,7 +1509,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.ChromeVox.Jump">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user with spoken feedback enabled has executed any jump action,
     like jumping to the next heading on a web page.
@@ -1508,7 +1518,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.ChromeVox.Navigate">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user with spoken feedback enabled has executed any navigation
     action, like navigating to the next object on the screen.
@@ -1516,7 +1527,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.ChromeVox.ToggleNextOff">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user with spoken feedback enabled manually toggles ChromeVox
     Next off.
@@ -1524,7 +1536,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.ChromeVox.ToggleNextOn">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user with spoken feedback enabled manually toggles ChromeVox
     Next on.
@@ -1534,7 +1547,7 @@ should be able to be added at any place in this file.
 <action name="Accessibility.CrosAutoclick.TrayMenu.ChangePosition">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A user has tapped the button to change the position of the autoclick bubble
     menu.
@@ -1543,6 +1556,8 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.CrosSelectToSpeak.CancelSpeech">
   <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user manually cancels Select To Speak while it is speaking.
   </description>
@@ -1550,6 +1565,8 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.CrosSelectToSpeak.LoadSettings">
   <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user loads the Select To Speak settings page.
   </description>
@@ -1557,11 +1574,17 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.CrosSelectToSpeak.PauseSpeech">
   <owner>ajitnarayanan@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>A Chrome OS user manually pauses Select To Speak.</description>
 </action>
 
 <action name="Accessibility.CrosSelectToSpeak.ResumeSpeech">
   <owner>ajitnarayanan@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     A Chrome OS user manually resumes Select To Speak after pausing.
   </description>
@@ -1569,12 +1592,15 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.CrosSelectToSpeak.StartSpeech">
   <owner>katie@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>A Chrome OS user manually starts Select To Speak.</description>
 </action>
 
 <action name="Accessibility.NativeApi.DoDefault">
   <owner>aleventhal@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     The DoDefault action (for example, to click on a button or link) has been
     called on an accessibility node using a native accessibility API.
@@ -1587,7 +1613,7 @@ should be able to be added at any place in this file.
     on the number of user actions that can be reported in a single log.
   </obsolete>
   <owner>aleventhal@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>
     The HitTest action has been called on an accessibility node using a native
     accessibility API.
@@ -1596,7 +1622,8 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.NativeApi.ScrollToMakeVisible">
   <owner>aleventhal@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     The ScrollToMakeVisible action has been called on an accessibility node
     using a native accessibility API.
@@ -1605,7 +1632,8 @@ should be able to be added at any place in this file.
 
 <action name="Accessibility.NativeApi.SetFocus">
   <owner>aleventhal@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     The SetFocus action has been called on an accessibility node using a native
     accessibility API.
@@ -1613,7 +1641,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accessibility.TwoFingersHeldDown">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
   <description>
     Metric recorded on Chrome OS when the user holds down two fingers on a touch
     screen for more than the minimum number of seconds to trigger a countdown.
@@ -18674,34 +18703,34 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_AccessibilityCaretHighlight_Disable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Disable caret highlighting</description>
 </action>
 
 <action name="Options_AccessibilityCaretHighlight_Enable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Enable caret highlighting</description>
 </action>
 
 <action name="Options_AccessibilityCursorHighlight_Disable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>
     Settings: Accessibility: Disable cursor highlighting
   </description>
 </action>
 
 <action name="Options_AccessibilityCursorHighlight_Enable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Enable cursor highlighting</description>
 </action>
 
 <action name="Options_AccessibilityFocusHighlight_Disable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Disable focus highlighting</description>
 </action>
 
 <action name="Options_AccessibilityFocusHighlight_Enable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Enable focus highlighting</description>
 </action>
 
@@ -18786,12 +18815,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_AccessibilitySelectToSpeak_Disable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Disable select-to-speak</description>
 </action>
 
 <action name="Options_AccessibilitySelectToSpeak_Enable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Enable select-to-speak</description>
 </action>
 
@@ -18816,12 +18845,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_AccessibilitySwitchAccess_Disable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Disable Switch Access</description>
 </action>
 
 <action name="Options_AccessibilitySwitchAccess_Enable">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Settings: Accessibility: Enable Switch Access</description>
 </action>
 
@@ -26251,13 +26280,13 @@ should be able to be added at any place in this file.
 
 <action name="StatusArea_AutoClickDisabled">
   <owner>katie@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>User disabled autoclick from the SystemTray</description>
 </action>
 
 <action name="StatusArea_AutoClickEnabled">
   <owner>katie@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>User enabled autoclick from the SystemTray</description>
 </action>
 
@@ -28172,24 +28201,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TextToSpeech.Pause">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Synthesized speech is paused.</description>
 </action>
 
 <action name="TextToSpeech.Resume">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Synthesized speech is resumed after being paused.</description>
 </action>
 
 <action name="TextToSpeech.Speak">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>
     A single utterance is spoken using synthesized text-to-speech.
   </description>
 </action>
 
 <action name="TextToSpeech.Stop" not_user_triggered="true">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <description>Synthesized speech is stopped.</description>
 </action>
 

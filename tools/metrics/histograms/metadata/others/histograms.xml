@@ -12092,7 +12092,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PDF.IsTagged" enum="BooleanIsTagged"
     expires_after="2022-04-17">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Tracks documents opened in the PDF viewer that are Tagged PDFs.

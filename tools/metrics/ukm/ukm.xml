@@ -105,7 +105,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.ImageDescriptions">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks automatic image descriptions provided to blind users.
   </summary>
@@ -149,7 +150,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.Renderer">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks the amount of time sending accessibility events from web renderers.
   </summary>
@@ -15700,7 +15702,7 @@ be describing additional metrics about the same event.
 <event name="ReaderModeActivated" singular="True">
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <summary>
     Recorded after a user activates Reader Mode for a given page.
   </summary>
@@ -15722,7 +15724,7 @@ be describing additional metrics about the same event.
 <event name="ReaderModeReceivedDistillability">
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <summary>
     Recorded when the Reader Mode badge receives a result from the
     distillability service.

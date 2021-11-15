@@ -1409,7 +1409,7 @@
   },
   {
     "name": "enable-aria-element-reflection",
-    "owners": [ "aboxhall", "chrishall", "meredithl" ],
+    "owners": [ "aleventhal", "//third_party/blink/renderer/modules/accessibility/OWNERS" ],
     "expiry_milestone": 98
   },
   {
