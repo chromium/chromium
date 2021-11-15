@@ -271,6 +271,9 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"(width: 100px) and ((width: 200px) and (width: 300px)) and (width: "
        "400px)",
        nullptr},
+      {"not (width: 100px)", nullptr},
+      {"(width: 100px) and (not (width: 200px))", nullptr},
+      {"(width: 100px) and not (width: 200px)", "not all"},
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {
@@ -301,6 +304,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(device-posture:none)", "not all"},
       {"(width: 100px) or (width: 200px)", "not all"},
       {"((width: 100px))", "not all"},
+      {"not (orientation)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 

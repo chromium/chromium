@@ -97,6 +97,9 @@ class CORE_EXPORT MediaQueryParser {
 
   bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
 
+  // True if <media-not> is enabled.
+  bool IsNotKeywordEnabled() const;
+
   ParserType parser_type_;
   scoped_refptr<MediaQuerySet> query_set_;
   CSSParserMode mode_;

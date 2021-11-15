@@ -145,6 +145,16 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(
     CSSParserTokenRange& range,
     ConditionMode mode) {
+  // <media-not>
+  if (IsNotKeywordEnabled() && ConsumeIfIdent(range, "not")) {
+    if (auto node = ConsumeInParens(range))
+      return std::make_unique<MediaQueryNotExpNode>(std::move(node));
+    return nullptr;
+  }
+
+  // Otherwise:
+  // <media-in-parens> [ <media-and>* | <media-or>* ]
+
   std::unique_ptr<MediaQueryExpNode> result = ConsumeInParens(range);
   if (!result)
     return nullptr;
@@ -198,15 +208,13 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(
   DCHECK_EQ(parser_type_, kMediaConditionParser);
   DCHECK(!range.AtEnd());
 
-  MediaQuery::RestrictorType restrictor =
-      ConsumeIfIdent(range, "not") ? MediaQuery::kNot : MediaQuery::kNone;
   std::unique_ptr<MediaQueryExpNode> node = ConsumeCondition(range);
 
   if (!node || !range.AtEnd()) {
     query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
   } else {
     query_set_->AddMediaQuery(std::make_unique<MediaQuery>(
-        restrictor, media_type_names::kAll, std::move(node)));
+        MediaQuery::kNone, media_type_names::kAll, std::move(node)));
   }
 
   return query_set_;
@@ -215,15 +223,13 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(
 std::unique_ptr<MediaQuery> MediaQueryParser::ConsumeQuery(
     CSSParserTokenRange& range) {
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
+  CSSParserTokenRange original_range = range;
 
+  // First try to parse following grammar:
+  //
+  // [ not | only ]? <media-type> [ and <media-condition-without-or> ]?
   MediaQuery::RestrictorType restrictor = ConsumeRestrictor(range);
   String type = ConsumeType(range);
-
-  // If present, a restrictor *must* be followed by a type.
-  if (restrictor != MediaQuery::kNone) {
-    if (type.IsNull())
-      return nullptr;
-  }
 
   if (!type.IsNull()) {
     if (!ConsumeIfIdent(range, "and"))
@@ -232,10 +238,12 @@ std::unique_ptr<MediaQuery> MediaQueryParser::ConsumeQuery(
       return std::make_unique<MediaQuery>(restrictor, type, std::move(node));
     return nullptr;
   }
+  range = original_range;
 
+  // Otherwise, <media-condition>
   if (auto node = ConsumeCondition(range)) {
-    return std::make_unique<MediaQuery>(restrictor, media_type_names::kAll,
-                                        std::move(node));
+    return std::make_unique<MediaQuery>(
+        MediaQuery::kNone, media_type_names::kAll, std::move(node));
   }
   return nullptr;
 }
@@ -270,6 +278,14 @@ bool MediaQueryParser::IsMediaFeatureAllowedInMode(
     const String& media_feature) const {
   return mode_ == kUASheetMode ||
          media_feature != media_feature_names::kImmersiveMediaFeature;
+}
+
+bool MediaQueryParser::IsNotKeywordEnabled() const {
+  // Support for 'not' was shipped for kMediaConditionParser before
+  // RuntimeEnabledFeatures::CSSMediaQueries4 existed, hence it's always
+  // enabled for that parser type.
+  return (parser_type_ == kMediaConditionParser) ||
+         RuntimeEnabledFeatures::CSSMediaQueries4Enabled();
 }
 
 }  // namespace blink
