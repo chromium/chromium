@@ -94,10 +94,6 @@ class WebAppInstallTaskTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());

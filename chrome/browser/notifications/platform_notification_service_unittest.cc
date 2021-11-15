@@ -91,6 +91,9 @@ class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_builder.SetIsMainProfile(true);
+#endif
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
@@ -412,13 +415,6 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
     : public PlatformNotificationServiceTest {
-  void SetUp() override {
-    PlatformNotificationServiceTest::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_->SetIsMainProfile(true);
-#endif
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsNotificationIconAndTitle};

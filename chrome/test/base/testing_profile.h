@@ -144,6 +144,11 @@ class TestingProfile : public Profile {
     // Set the value to be returned by Profile::IsNewProfile().
     void SetIsNewProfile(bool is_new_profile);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Set the value to be returned by Profile::IsMainProfile().
+    void SetIsMainProfile(bool is_main_profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     // Sets the supervised user ID (which is empty by default). If it is set to
     // a non-empty string, the profile is supervised.
     void SetSupervisedUserId(const std::string& supervised_user_id);
@@ -192,6 +197,9 @@ class TestingProfile : public Profile {
     bool guest_session_ = false;
     bool allows_browser_windows_ = true;
     bool is_new_profile_ = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    bool is_main_profile_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
@@ -231,6 +239,9 @@ class TestingProfile : public Profile {
       bool guest_session,
       bool allows_browser_windows,
       bool is_new_profile,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      bool is_main_profile,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
@@ -256,13 +267,17 @@ class TestingProfile : public Profile {
   // TODO(crbug.com/1106699): Remove this API and adopt the Builder instead.
   void CreateWebDataService();
 
+  // Note: Calling the Builder methods instead is preferred.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Allow setting the return value of IsMainProfile().
+  void SetIsMainProfile(bool is_main_profile);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Allow setting a profile as Guest after-the-fact to simplify some tests.
   void SetGuestSession(bool guest);
 
   // Allow setting the return value of IsNewProfile.
   void SetIsNewProfile(bool is_new_profile);
-
-  sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
   // Called on the parent of an OffTheRecord |otr_profile|. Usually called from
   // the constructor of an OffTheRecord TestingProfile, but can also be used by
@@ -271,6 +286,8 @@ class TestingProfile : public Profile {
   void SetOffTheRecordProfile(std::unique_ptr<Profile> otr_profile);
 
   void SetSupervisedUserId(const std::string& id);
+
+  sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
   // content::BrowserContext
   base::FilePath GetPath() override;
@@ -285,7 +302,6 @@ class TestingProfile : public Profile {
   bool IsOffTheRecord() const final;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
-  void SetIsMainProfile(bool is_main_profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;

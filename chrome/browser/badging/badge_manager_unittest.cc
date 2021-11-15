@@ -63,11 +63,11 @@ class BadgeManagerUnittest : public ::testing::Test {
   ~BadgeManagerUnittest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-
+    TestingProfile::Builder builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_->SetIsMainProfile(true);
+    builder.SetIsMainProfile(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
 
     fake_registry_controller_ =
         std::make_unique<web_app::FakeWebAppRegistryController>();

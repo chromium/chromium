@@ -37,7 +37,11 @@ class ChromeRenderViewHostTestHarness
   virtual TestingProfile::TestingFactories GetTestingFactories() const;
 
   // Creates a TestingProfile to use as the browser context.
-  std::unique_ptr<TestingProfile> CreateTestingProfile();
+  std::unique_ptr<TestingProfile> CreateTestingProfile(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      bool is_main_profile = false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
 
   // content::RenderViewHostTestHarness.
   std::unique_ptr<content::BrowserContext> CreateBrowserContext() final;

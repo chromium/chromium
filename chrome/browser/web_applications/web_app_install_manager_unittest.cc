@@ -170,10 +170,6 @@ class WebAppInstallManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
 

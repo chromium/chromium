@@ -290,10 +290,6 @@ class ExternallyManagedAppInstallTaskTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
 
     auto* provider = FakeWebAppProvider::Get(profile());

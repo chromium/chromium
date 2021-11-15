@@ -146,15 +146,14 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   // Helper that creates simple test profile.
   std::unique_ptr<TestingProfile> CreateProfile(bool is_guest = false) {
     TestingProfile::Builder profile_builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     if (is_guest) {
       profile_builder.SetGuestSession();
     }
 
-    std::unique_ptr<TestingProfile> profile = profile_builder.Build();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return profile;
+    return profile_builder.Build();
   }
 
 #if defined(OS_CHROMEOS)

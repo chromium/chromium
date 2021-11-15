@@ -84,10 +84,11 @@ class AppLauncherHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    testing_profile_ = TestingProfile::Builder().Build();
+    TestingProfile::Builder builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    testing_profile_->SetIsMainProfile(true);
-#endif
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    testing_profile_ = builder.Build();
 
     os_hooks_suppress_ =
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();

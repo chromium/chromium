@@ -504,10 +504,6 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile());
     ASSERT_TRUE(web_app_provider_);
 

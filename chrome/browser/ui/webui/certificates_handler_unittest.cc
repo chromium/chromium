@@ -20,10 +20,6 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
     web_ui_.set_web_contents(web_contents());
     cert_handler_.set_web_ui(&web_ui_);
     pref_service_ = profile()->GetTestingPrefService();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
 #if defined(OS_CHROMEOS)
