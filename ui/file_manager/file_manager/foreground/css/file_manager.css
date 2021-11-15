@@ -2986,6 +2986,7 @@ files-tooltip:not(:defined) {
 }
 
 #banners > *:not([hidden]) {
+  background-color: var(--cros-bg-color-elevation-1);
   border-radius: 8px;
   box-shadow: var(--cros-elevation-1-shadow);
   height: auto;
