@@ -4,6 +4,7 @@
 
 import("//build/config/ozone.gni")
 import("//build/config/sysroot.gni")
+import("//build/config/ui.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
 clang_toolchain("clang_ppc64") {
