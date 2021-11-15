@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
 
 namespace content {

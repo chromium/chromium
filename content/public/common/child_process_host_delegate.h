@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_COMMON_CHILD_PROCESS_HOST_DELEGATE_H_
 
 #include "base/process/process.h"
-#include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"

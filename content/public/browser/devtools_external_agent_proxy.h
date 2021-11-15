@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_DEVTOOLS_EXTERNAL_AGENT_PROXY_H_
 
 #include "base/containers/span.h"
-#include "content/common/content_export.h"
 
 namespace content {
 

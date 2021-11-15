@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

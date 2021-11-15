@@ -7,7 +7,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/video_frame.h"

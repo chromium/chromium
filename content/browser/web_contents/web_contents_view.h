@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"

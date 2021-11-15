@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"

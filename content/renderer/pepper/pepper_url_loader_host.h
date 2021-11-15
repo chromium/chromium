@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "content/common/content_export.h"
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
 #include "ppapi/shared_impl/url_request_info_data.h"

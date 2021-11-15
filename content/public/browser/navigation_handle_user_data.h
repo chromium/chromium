@@ -7,7 +7,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace content {

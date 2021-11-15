@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
