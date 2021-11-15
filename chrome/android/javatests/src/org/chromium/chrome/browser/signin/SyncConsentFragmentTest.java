@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -73,7 +74,6 @@ import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 import java.io.IOException;
 import java.util.List;
@@ -125,9 +125,8 @@ public class SyncConsentFragmentTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public final ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public final BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =

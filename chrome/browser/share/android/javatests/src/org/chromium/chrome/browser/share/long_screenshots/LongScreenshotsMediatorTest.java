@@ -20,15 +20,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 /** Tests for the LongScreenshotsMediator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -41,9 +40,8 @@ public class LongScreenshotsMediatorTest {
     private LongScreenshotsMediator mMediator;
 
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Mock
     private View mView;

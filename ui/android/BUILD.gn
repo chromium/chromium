@@ -421,7 +421,6 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/DummyUiActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
-    "javatests/src/org/chromium/ui/test/util/ThemedDummyUiActivityTestRule.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIf.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIfSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/UiRestriction.java",

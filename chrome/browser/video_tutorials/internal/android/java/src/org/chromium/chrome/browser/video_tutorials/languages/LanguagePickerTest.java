@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.R;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 /**
  * Tests for {@link LanguagePickerCoordinator}.
@@ -41,9 +41,8 @@ import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class LanguagePickerTest {
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     private Activity mActivity;
     private View mContentView;

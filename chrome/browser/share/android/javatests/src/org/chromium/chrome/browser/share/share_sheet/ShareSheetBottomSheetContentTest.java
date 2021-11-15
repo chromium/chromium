@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -48,7 +49,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -62,9 +62,8 @@ public final class ShareSheetBottomSheetContentTest {
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Mock
     private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;

@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
@@ -58,7 +59,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -73,9 +73,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();
