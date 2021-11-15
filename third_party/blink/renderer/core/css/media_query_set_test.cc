@@ -236,6 +236,25 @@ TEST(MediaQuerySetTest, Basic) {
   }
 }
 
+TEST(MediaQuerySetTest, CSSMediaQueries4) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  MediaQuerySetTestCase test_cases[] = {
+      {"(width: 100px) or (width: 200px)", nullptr},
+      {"(width: 100px)or (width: 200px)", "(width: 100px) or (width: 200px)"},
+      {"(width: 100px) or (width: 200px) or (color)", nullptr},
+      {"screen and (width: 100px) or (width: 200px)", "not all"},
+      {"(height: 100px) and (width: 100px) or (width: 200px)", "not all"},
+      {"(height: 100px) or (width: 100px) and (width: 200px)", "not all"},
+      {"(width: 100px) or (max-width: 50%)", "not all"},
+  };
+
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    SCOPED_TRACE(String(test.input));
+    TestMediaQuery(test, *MediaQuerySet::Create(test.input, nullptr));
+  }
+}
+
 TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   ScopedForcedColorsForTest forced_colors_flag(false);
   ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
@@ -256,6 +275,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(horizontal-viewport-segments: 1)", "not all"},
       {"(vertical-viewport-segments: 1)", "not all"},
       {"(device-posture:none)", "not all"},
+      {"(width: 100px) or (width: 200px)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
@@ -267,6 +287,8 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
 }
 
 TEST(MediaQuerySetTest, QueriedAxes) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), QueriedAxes("(color)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("(width)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("(height)"));
@@ -275,6 +297,8 @@ TEST(MediaQuerySetTest, QueriedAxes) {
             QueriedAxes("(color), (height)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
             QueriedAxes("(width) and (height)"));
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
+            QueriedAxes("(width) or (height)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
             QueriedAxes("(color) and (width) and (height)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),

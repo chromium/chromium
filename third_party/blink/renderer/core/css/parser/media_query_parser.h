@@ -59,11 +59,20 @@ class CORE_EXPORT MediaQueryParser {
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
   std::unique_ptr<MediaQueryExpNode> ConsumeFeature(CSSParserTokenRange&);
 
+  enum class ConditionMode {
+    // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
+    kNormal,
+    // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition-without-or
+    kWithoutOr,
+  };
+
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
   //
   // TODO(crbug.com/962417): Only a limited form of the grammar is
   // currently supported.
-  std::unique_ptr<MediaQueryExpNode> ConsumeCondition(CSSParserTokenRange&);
+  std::unique_ptr<MediaQueryExpNode> ConsumeCondition(
+      CSSParserTokenRange&,
+      ConditionMode = ConditionMode::kNormal);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
   //

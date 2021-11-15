@@ -1098,4 +1098,26 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   }
 }
 
+TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+  data.viewport_height = 500;
+
+  MediaQueryEvaluatorTestCase test_cases[] = {
+      {"(width: 1px) or (width: 2px)", false},
+      {"(width: 1px) or (width: 2px) or (width: 3px)", false},
+      {"(width: 500px) or (width: 2px) or (width: 3px)", true},
+      {"(width: 1px) or (width: 500px) or (width: 3px)", true},
+      {"(width: 1px) or (width: 2px) or (width: 500px)", true},
+      {nullptr, false}  // Do not remove the terminator line.
+  };
+
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(media_values);
+
+  TestMQEvaluator(test_cases, media_query_evaluator);
+}
+
 }  // namespace blink

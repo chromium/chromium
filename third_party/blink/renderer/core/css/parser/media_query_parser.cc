@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -142,17 +143,29 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(
-    CSSParserTokenRange& range) {
+    CSSParserTokenRange& range,
+    ConditionMode mode) {
   std::unique_ptr<MediaQueryExpNode> result = ConsumeFeature(range);
   if (!result)
     return nullptr;
 
-  while (ConsumeIfIdent(range, "and")) {
-    std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
-    if (!feature)
-      return nullptr;
-    result = std::make_unique<MediaQueryAndExpNode>(std::move(result),
-                                                    std::move(feature));
+  if (AtIdent(range.Peek(), "and")) {
+    while (ConsumeIfIdent(range, "and")) {
+      std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
+      if (!feature)
+        return nullptr;
+      result = std::make_unique<MediaQueryAndExpNode>(std::move(result),
+                                                      std::move(feature));
+    }
+  } else if (AtIdent(range.Peek(), "or") && mode == ConditionMode::kNormal &&
+             RuntimeEnabledFeatures::CSSMediaQueries4Enabled()) {
+    while (ConsumeIfIdent(range, "or")) {
+      std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
+      if (!feature)
+        return nullptr;
+      result = std::make_unique<MediaQueryOrExpNode>(std::move(result),
+                                                     std::move(feature));
+    }
   }
 
   return result;
@@ -193,15 +206,16 @@ std::unique_ptr<MediaQuery> MediaQueryParser::ConsumeQuery(
   if (!type.IsNull()) {
     if (!ConsumeIfIdent(range, "and"))
       return std::make_unique<MediaQuery>(restrictor, type, nullptr);
-  } else {
-    type = media_type_names::kAll;
+    if (auto node = ConsumeCondition(range, ConditionMode::kWithoutOr))
+      return std::make_unique<MediaQuery>(restrictor, type, std::move(node));
+    return nullptr;
   }
 
-  std::unique_ptr<MediaQueryExpNode> node = ConsumeCondition(range);
-  if (!node)
-    return nullptr;
-
-  return std::make_unique<MediaQuery>(restrictor, type, std::move(node));
+  if (auto node = ConsumeCondition(range)) {
+    return std::make_unique<MediaQuery>(restrictor, media_type_names::kAll,
+                                        std::move(node));
+  }
+  return nullptr;
 }
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
