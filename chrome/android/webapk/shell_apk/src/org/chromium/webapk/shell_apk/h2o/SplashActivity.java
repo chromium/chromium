@@ -61,7 +61,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         boolean androidSSplashSuccess = false;
-        if (isAtLeastS() && getIntent().hasCategory("android.intent.category.LAUNCHER")) {
+        if (androidSSplashScreenEnabled() && isAtLeastS()) {
             // When launched with a data Intent, the splash screen is created, but
             // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
             // Fall back to manually creating out own splash screen in that case.
@@ -292,5 +292,10 @@ public class SplashActivity extends Activity {
      */
     static boolean isAtLeastS() {
         return Build.VERSION.SDK_INT >= 31;
+    }
+
+    /** Whether we enable integration with Android S splash screens. */
+    static boolean androidSSplashScreenEnabled() {
+        return false;
     }
 }

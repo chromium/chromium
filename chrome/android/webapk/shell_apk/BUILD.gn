@@ -224,6 +224,7 @@ template("webapk_tmpl") {
       "res/values-v17/styles.xml",
       "res/values-v24/default_enabled_activity.xml",
       "res/values-v31/dimens.xml",
+      "res/values-v31/styles.xml",
       "res/values-xhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxxhdpi/is_splash_icon_maskable_bool.xml",
