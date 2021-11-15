@@ -358,7 +358,6 @@
 #include "chrome/browser/chromeos/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/fileapi/mtp_file_system_backend_delegate.h"
-#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -459,6 +458,7 @@
 #if !defined(OS_ANDROID)
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #else
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #endif
@@ -4826,20 +4826,10 @@ class SpecialAccessFileURLLoaderFactory
   int child_id_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 bool IsSystemFeatureDisabled(policy::SystemFeature system_feature) {
-  PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)  // Sometimes it's not available in tests.
-    return false;
-
-  const base::ListValue* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return false;
-
-  const auto disabled_system_features =
-      disabled_system_features_pref->GetList();
-  return base::Contains(disabled_system_features, base::Value(system_feature));
+  return policy::SystemFeaturesDisableListPolicyHandler::
+      IsSystemFeatureDisabled(system_feature, g_browser_process->local_state());
 }
 
 bool IsSystemFeatureURLDisabled(const GURL& url) {
@@ -4849,25 +4839,23 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   // chrome://os-settings/pwa.html shouldn't be replaced to let the settings app
   // installation complete successfully.
   if (url.DomainIs(chrome::kChromeUIOSSettingsHost) &&
-      url.path() != "/pwa.html" &&
-      IsSystemFeatureDisabled(policy::SystemFeature::kOsSettings)) {
-    return true;
+      url.path() != "/pwa.html") {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kOsSettings);
   }
 
-  if (url.DomainIs(chrome::kChromeUISettingsHost) &&
-      IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings)) {
-    return true;
+  if (url.DomainIs(chrome::kChromeUISettingsHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings);
   }
 
-  if (url.DomainIs(ash::kChromeUIScanningAppHost) &&
-      IsSystemFeatureDisabled(policy::SystemFeature::kScanning)) {
-    return true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (url.DomainIs(ash::kChromeUIScanningAppHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kScanning);
   }
 
-  if (url.DomainIs(ash::kChromeUICameraAppHost) &&
-      IsSystemFeatureDisabled(policy::SystemFeature::kCamera)) {
-    return true;
+  if (url.DomainIs(ash::kChromeUICameraAppHost)) {
+    return IsSystemFeatureDisabled(policy::SystemFeature::kCamera);
   }
+#endif
 
   return false;
 }
@@ -5628,12 +5616,13 @@ bool ChromeContentBrowserClient::HandleWebUI(
       *url = GURL(chrome::kChromeUINewTabURL);
     }
   }
+#endif
 
+#if defined(OS_CHROMEOS)
   if (IsSystemFeatureURLDisabled(*url)) {
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUIAppDisabledHost, "");
     return true;
   }
-
 #endif
 
   return true;

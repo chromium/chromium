@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/prefs/pref_service.h"
 
 class PrefValueMap;
 class PrefRegistrySimple;
@@ -61,6 +62,8 @@ class SystemFeaturesDisableListPolicyHandler
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static SystemFeature GetSystemFeatureFromAppId(const std::string& app_id);
+  static bool IsSystemFeatureDisabled(SystemFeature feature,
+                                      PrefService* const pref_service);
 
  protected:
   // ListPolicyHandler:

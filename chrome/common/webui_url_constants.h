@@ -137,6 +137,7 @@ extern const char kChromeUIOfflineInternalsHost[];
 extern const char kChromeUIOmniboxHost[];
 extern const char kChromeUIOmniboxURL[];
 #if defined(OS_CHROMEOS)
+extern const char kChromeUIAppDisabledURL[];
 extern const char kChromeUIOsCroshAppURL[];
 extern const char kChromeUIOsFlagsAppURL[];
 extern const char kChromeUIOsUrlAppURL[];
@@ -243,7 +244,6 @@ extern const char kChromeUIArcPowerControlURL[];
 extern const char kChromeUIAssistantOptInHost[];
 extern const char kChromeUIAssistantOptInURL[];
 extern const char kChromeUIAppDisabledHost[];
-extern const char kChromeUIAppDisabledURL[];
 extern const char kChromeUIAudioHost[];
 extern const char kChromeUIAudioURL[];
 extern const char kChromeUIBluetoothPairingHost[];

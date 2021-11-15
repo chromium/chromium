@@ -212,11 +212,11 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // took to select the command.
   void LogMenuMetrics(int command_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Disables/Enables the settings item based on kSystemFeaturesDisableList
   // pref.
   void UpdateSettingsItemState();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(OS_CHROMEOS)
 
   // Time menu has been open. Used by LogMenuMetrics() to record the time
   // to action when the user selects a menu item.

@@ -135,6 +135,7 @@ const char kChromeUINewTabURL[] = "chrome://newtab/";
 const char kChromeUIOmniboxHost[] = "omnibox";
 const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
 #if defined(OS_CHROMEOS)
+const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
 const char kChromeUIOsCroshAppURL[] = "chrome://crosh/";
 const char kChromeUIOsFlagsAppURL[] = "chrome://flags/";
 const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
@@ -253,7 +254,6 @@ const char kChromeUIArcPowerControlHost[] = "arc-power-control";
 const char kChromeUIArcPowerControlURL[] = "chrome://arc-power-control/";
 const char kChromeUIAssistantOptInHost[] = "assistant-optin";
 const char kChromeUIAssistantOptInURL[] = "chrome://assistant-optin/";
-const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
 const char kChromeUIAudioHost[] = "audio";
 const char kChromeUIAudioURL[] = "chrome://audio/";
 const char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";

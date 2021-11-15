@@ -67,15 +67,6 @@ std::string GetAppDisabledErrorPage() {
 }
 
 bool IsAppDisabled(const std::string& app_id) {
-  PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)
-    return false;
-
-  const base::ListValue* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return false;
-
   policy::SystemFeature system_feature =
       policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
           app_id);
@@ -83,9 +74,8 @@ bool IsAppDisabled(const std::string& app_id) {
   if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
     return false;
 
-  const auto disabled_system_features =
-      disabled_system_features_pref->GetList();
-  return base::Contains(disabled_system_features, base::Value(system_feature));
+  return policy::SystemFeaturesDisableListPolicyHandler::
+      IsSystemFeatureDisabled(system_feature, g_browser_process->local_state());
 }
 
 // Usually we want to only capture navigations from clicking a link. For a

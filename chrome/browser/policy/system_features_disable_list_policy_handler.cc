@@ -54,6 +54,22 @@ SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
   return SystemFeature::kUnknownSystemFeature;
 }
 
+bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
+    SystemFeature feature,
+    PrefService* const pref_service) {
+  if (!pref_service)  // Sometimes it's not available in tests.
+    return false;
+
+  const base::ListValue* disabled_system_features_pref =
+      pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
+  if (!disabled_system_features_pref)
+    return false;
+
+  const auto disabled_system_features =
+      disabled_system_features_pref->GetList();
+  return base::Contains(disabled_system_features, base::Value(feature));
+}
+
 void SystemFeaturesDisableListPolicyHandler::ApplyList(
     base::Value filtered_list,
     PrefValueMap* prefs) {
