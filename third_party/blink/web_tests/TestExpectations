@@ -7330,3 +7330,7 @@ crbug.com/1268947 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/de
 crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Mac ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+
+# Sheriff 2021-11-15
+crbug.com/1270295 [ Mac11 ] external/wpt/css/css-lists/foo-counter-reversed-009a.html [ Failure Pass ]
+crbug.com/1270295 [ Mac11 ] external/wpt/css/css-lists/foo-counter-reversed-006e.html [ Failure Pass ]
