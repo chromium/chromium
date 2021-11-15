@@ -3614,6 +3614,8 @@ static_library("test_support") {
     "../ash/borealis/testing/callback_factory.h",
     "../ash/borealis/testing/dbus.cc",
     "../ash/borealis/testing/dbus.h",
+    "../ash/borealis/testing/features.cc",
+    "../ash/borealis/testing/features.h",
     "../ash/borealis/testing/widgets.cc",
     "../ash/borealis/testing/widgets.h",
     "../ash/cert_provisioning/mock_cert_provisioning_scheduler.cc",

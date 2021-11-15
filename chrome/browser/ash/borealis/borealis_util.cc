@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
+#include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -19,6 +20,8 @@ namespace borealis {
 const char kBorealisAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
 const char kBorealisMainAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
 const char kBorealisDlcName[] = "borealis-dlc";
+const char kAllowedScheme[] = "c3RlYW0=";
+const base::StringPiece kURLAllowlist[] = {"Ly9zdG9yZS8=", "Ly9ydW4v"};
 // TODO(b/174282035): Potentially update regex when other strings
 // are updated.
 const char kBorealisAppIdRegex[] = "([^/]+\\d+)";
@@ -128,4 +131,25 @@ void FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
       std::move(url_callback));
 }
 
+bool IsExternalURLAllowed(const GURL& url) {
+  std::string decoded_scheme;
+  if (!base::Base64Decode(kAllowedScheme, &decoded_scheme)) {
+    LOG(ERROR) << "Failed to decode allowed scheme (" << kAllowedScheme << ")";
+    return false;
+  }
+  if (url.scheme() != decoded_scheme) {
+    return false;
+  }
+  for (auto& allowed_url : kURLAllowlist) {
+    std::string decoded_url;
+    if (!base::Base64Decode(allowed_url, &decoded_url)) {
+      LOG(ERROR) << "Failed to decode allowed url (" << allowed_url << ")";
+      continue;
+    }
+    if (base::StartsWith(url.GetContent(), decoded_url)) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace borealis

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
@@ -28,6 +29,10 @@ extern const char kBorealisMainAppId[];
 extern const char kBorealisDlcName[];
 // The regex used for extracting the Borealis app ID of an application.
 extern const char kBorealisAppIdRegex[];
+// Base64-encoded allowed x-scheme for Borealis apps.
+extern const char kAllowedScheme[];
+// Base64-encoded allow list of URLs that can be handled by Borealis apps.
+extern const base::StringPiece kURLAllowlist[];
 
 // Shows the Borealis installer (borealis_installer_view).
 void ShowBorealisInstallerView(Profile* profile);
@@ -52,6 +57,10 @@ void FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
                      const std::string& app_id,
                      const std::string& window_title,
                      base::OnceCallback<void(GURL)> url_callback);
+
+// Checks that a given URL has the allowed scheme and that its contents starts
+// with one of the URLs in the allowlist.
+bool IsExternalURLAllowed(const GURL& url);
 
 }  // namespace borealis
 
