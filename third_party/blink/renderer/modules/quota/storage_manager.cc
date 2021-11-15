@@ -62,9 +62,6 @@ void QueryStorageUsageAndQuotaCallback(
   // exposing obsoleted/proprietary storage systems, but also report when
   // those systems are in use.
   StorageUsageDetails* details = StorageUsageDetails::Create();
-  if (usage_breakdown->appcache) {
-    details->setApplicationCache(usage_breakdown->appcache);
-  }
   if (usage_breakdown->indexedDatabase) {
     details->setIndexedDB(usage_breakdown->indexedDatabase);
   }

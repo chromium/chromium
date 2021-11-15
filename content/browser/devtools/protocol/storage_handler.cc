@@ -49,8 +49,6 @@ UsageListInitializer initializers[] = {
     {Storage::StorageTypeEnum::File_systems,
      &blink::mojom::UsageBreakdown::fileSystem},
     {Storage::StorageTypeEnum::Websql, &blink::mojom::UsageBreakdown::webSql},
-    {Storage::StorageTypeEnum::Appcache,
-     &blink::mojom::UsageBreakdown::appcache},
     {Storage::StorageTypeEnum::Indexeddb,
      &blink::mojom::UsageBreakdown::indexedDatabase},
     {Storage::StorageTypeEnum::Cache_storage,
