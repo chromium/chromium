@@ -18,5 +18,5 @@ const base::Feature kAccountPoliciesLoadedWithoutSync{
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enable support for account consistency across multiple profiles.
 const base::Feature kMultiProfileAccountConsistency{
-    "MultiProfileAccountConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MultiProfileAccountConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif

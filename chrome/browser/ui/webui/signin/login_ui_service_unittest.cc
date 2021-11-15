@@ -6,9 +6,12 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -112,6 +115,12 @@ class LoginUIServiceExtensionLoginPromptTest
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    // TODO(https://crbug.com/1253768): Fix extension login prompt on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+      GTEST_SKIP();
+#endif
 
     service_ = std::make_unique<LoginUIService>(profile());
     model_ = browser()->tab_strip_model();

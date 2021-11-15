@@ -144,9 +144,15 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // The system and (original profile of the) guest profiles are not regular.
   const bool is_regular_profile = profile->IsRegularProfile();
+  const bool use_profile_account_manager =
+      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency) &&
+      is_regular_profile &&
+      // `ProfileManager` may be null in tests, and is required for account
+      // consistency.
+      g_browser_process->profile_manager();
+
   params.account_manager_facade =
-      (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency) &&
-       is_regular_profile)
+      use_profile_account_manager
           ? ProfileAccountManagerFactory::GetForProfile(profile)
           : GetAccountManagerFacade(profile->GetPath().value());
   params.is_regular_profile = is_regular_profile;
