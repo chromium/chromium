@@ -3789,4 +3789,28 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   EXPECT_EQ(std::string(),
             controller_->GetDailyRefreshCollectionId(account_id_1));
 }
+
+TEST_F(WallpaperControllerWallpaperWebUiTest,
+       UpdateWallpaperOnColorModeChanged) {
+  SimulateUserLogin(account_id_1);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  ClearWallpaperCount();
+  controller_->SetOnlineWallpaper(
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            kDummyCollectionId, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/true,
+                            /*daily_refresh_enabled=*/false),
+      base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  controller_->OnColorModeChanged(true);
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(2, GetWallpaperCount());
+}
 }  // namespace ash

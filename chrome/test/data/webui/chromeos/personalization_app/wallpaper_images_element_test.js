@@ -145,7 +145,7 @@ export function WallpaperImagesTest() {
   });
 
   test('display dark/light tile for personalization hub', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+    loadTimeData.overrideValues({isDarkLightModeEnabled: true});
     personalizationStore.data.backdrop.images = {
       'id_0': wallpaperProvider.images,
       'id_1': [

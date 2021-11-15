@@ -369,9 +369,9 @@ export class WallpaperImages extends WithPersonalizationStore {
       const imageArr =
           /** @type {!Array<!ash.personalizationApp.mojom.WallpaperImage>} */ (
               this.images_[collectionId]);
-      const isPersonalizationHubEnabled =
-          loadTimeData.getBoolean('isPersonalizationHubEnabled');
-      if (isPersonalizationHubEnabled) {
+      const isDarkLightModeEnabled =
+          loadTimeData.getBoolean('isDarkLightModeEnabled');
+      if (isDarkLightModeEnabled) {
         sendImageTilesFunction(
             iframe.contentWindow,
             getDarkLightImageTiles(this.isDarkModeActive_, imageArr));

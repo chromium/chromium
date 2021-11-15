@@ -1517,11 +1517,13 @@ void WallpaperControllerImpl::OnRootWindowAdded(aura::Window* root_window) {
 void WallpaperControllerImpl::OnShellInitialized() {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->overview_controller()->AddObserver(this);
+  Shell::Get()->ash_color_provider()->AddObserver(this);
 }
 
 void WallpaperControllerImpl::OnShellDestroying() {
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
+  Shell::Get()->ash_color_provider()->RemoveObserver(this);
 }
 
 void WallpaperControllerImpl::OnWallpaperResized() {
@@ -1580,6 +1582,39 @@ void WallpaperControllerImpl::OnTabletModeStarted() {
 
 void WallpaperControllerImpl::OnTabletModeEnded() {
   RepaintWallpaper();
+}
+
+void WallpaperControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted())
+    return;
+  AccountId account_id = GetActiveAccountId();
+  WallpaperInfo local_info;
+  if (!GetLocalWallpaperInfo(account_id, &local_info))
+    return;
+
+  bool daily_refresh_enabled = local_info.type == WallpaperType::kDaily;
+
+  switch (local_info.type) {
+    case WallpaperType::kDaily:
+    case WallpaperType::kOnline:
+      // TODO(b/205035933): Handle setting the right variant.
+      SetOnlineWallpaper(
+          OnlineWallpaperParams{account_id, local_info.asset_id,
+                                GURL(local_info.location),
+                                local_info.collection_id, local_info.layout,
+                                /*preview_mode=*/false,
+                                /*from_user=*/false, daily_refresh_enabled},
+          base::DoNothing());
+      break;
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return;
+  }
 }
 
 void WallpaperControllerImpl::OnNativeThemeUpdated(

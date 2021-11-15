@@ -106,6 +106,9 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isPersonalizationHubEnabled",
                      features::IsPersonalizationHubEnabled());
+
+  source->AddBoolean("isDarkLightModeEnabled",
+                     features::IsDarkLightModeEnabled());
 }
 
 }  // namespace

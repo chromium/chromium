@@ -14,6 +14,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -80,7 +81,8 @@ class ASH_EXPORT WallpaperControllerImpl
       public TabletModeObserver,
       public OverviewObserver,
       public ui::CompositorLockClient,
-      public ui::NativeThemeObserver {
+      public ui::NativeThemeObserver,
+      public ColorModeObserver {
  public:
   enum WallpaperResolution {
     WALLPAPER_RESOLUTION_LARGE,
@@ -326,6 +328,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
