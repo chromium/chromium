@@ -11,6 +11,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/frame/event_page_show_persisted.h"
+#include "third_party/blink/public/common/page/page_lifecycle_state_updater.h"
 
 namespace {
 constexpr base::TimeDelta kBackForwardCacheTimeoutInSeconds = base::Seconds(3);
@@ -173,23 +174,13 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
   // TODO(https://crbug.com/1234634): Remove this |if|.
   if (restoring_main_frame_from_back_forward_cache) {
     DCHECK(last_state_sent_to_renderer_);
-    if (last_state_sent_to_renderer_) {
-      // This logic detects whether the page is being restored from back-forward
-      // cache or not, and is the same as
-      //   * WebViewImpl::SetPageLifecycleStateInternal and
-      //   * Page::DispatchedPagehidePersistedAndStillHidden
-      // in Blink.
-      bool new_state_shown = new_state->pagehide_dispatch ==
-                             blink::mojom::PagehideDispatch::kNotDispatched;
-      bool old_state_hidden = last_state_sent_to_renderer_->pagehide_dispatch !=
-                              blink::mojom::PagehideDispatch::kNotDispatched;
-      if (new_state_shown && old_state_hidden) {
-        blink::RecordUMAEventPageShowPersisted(
-            blink::EventPageShowPersisted::kYesInBrowser);
-        new_state->should_dispatch_pageshow_for_debugging = true;
-      } else {
-        NOTREACHED();
-      }
+    if (blink::IsRestoredFromBackForwardCache(last_state_sent_to_renderer_,
+                                              new_state)) {
+      blink::RecordUMAEventPageShowPersisted(
+          blink::EventPageShowPersisted::kYesInBrowser);
+      new_state->should_dispatch_pageshow_for_debugging = true;
+    } else {
+      NOTREACHED();
     }
   }
 

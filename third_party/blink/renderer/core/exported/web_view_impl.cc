@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/common/page/page_lifecycle_state_updater.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
@@ -2341,6 +2342,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (!page)
     return;
   auto& old_state = page->GetPageLifecycleState();
+
   bool storing_in_bfcache = new_state->is_in_back_forward_cache &&
                             !old_state->is_in_back_forward_cache;
   bool restoring_from_bfcache = !new_state->is_in_back_forward_cache &&
@@ -2358,9 +2360,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
        mojom::blink::PagehideDispatch::kNotDispatched) &&
       !GetPage()->DispatchedPagehideAndStillHidden();
   bool dispatching_pageshow =
-      (new_state->pagehide_dispatch ==
-       mojom::blink::PagehideDispatch::kNotDispatched) &&
-      GetPage()->DispatchedPagehideAndStillHidden();
+      IsRestoredFromBackForwardCache(old_state, new_state);
   bool eviction_changed =
       new_state->eviction_enabled != old_state->eviction_enabled;
 
