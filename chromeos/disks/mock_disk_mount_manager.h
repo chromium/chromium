@@ -27,41 +27,55 @@ class MockDiskMountManager : public DiskMountManager {
   MockDiskMountManager(const MockDiskMountManager&) = delete;
   MockDiskMountManager& operator=(const MockDiskMountManager&) = delete;
 
-  virtual ~MockDiskMountManager();
+  ~MockDiskMountManager() override;
 
   // DiskMountManager override.
-  MOCK_METHOD0(Init, void(void));
   void AddObserver(DiskMountManager::Observer*) override;
   void RemoveObserver(DiskMountManager::Observer*) override;
-  MOCK_CONST_METHOD0(disks, const DiskMountManager::DiskMap&(void));
-  MOCK_CONST_METHOD1(FindDiskBySourcePath, const Disk*(const std::string&));
-  MOCK_CONST_METHOD0(mount_points,
-                     const DiskMountManager::MountPointMap&(void));
-  MOCK_METHOD2(EnsureMountInfoRefreshed,
-               void(EnsureMountInfoRefreshedCallback, bool));
-  MOCK_METHOD6(MountPath,
-               void(const std::string&,
-                    const std::string&,
-                    const std::string&,
-                    const std::vector<std::string>&,
-                    MountType,
-                    MountAccessMode));
-  MOCK_METHOD2(UnmountPath,
-               void(const std::string&, DiskMountManager::UnmountPathCallback));
-  MOCK_METHOD1(RemountAllRemovableDrives, void(MountAccessMode));
-  MOCK_METHOD3(FormatMountedDevice,
-               void(const std::string&,
-                    FormatFileSystemType,
-                    const std::string&));
-  MOCK_METHOD3(SinglePartitionFormatDevice,
-               void(const std::string&,
-                    FormatFileSystemType,
-                    const std::string&));
-  MOCK_METHOD2(RenameMountedDevice,
-               void(const std::string&, const std::string&));
-  MOCK_METHOD2(UnmountDeviceRecursively,
-               void(const std::string&,
-                    DiskMountManager::UnmountDeviceRecursivelyCallbackType));
+  MOCK_METHOD(const DiskMountManager::DiskMap&, disks, (), (const, override));
+  MOCK_METHOD(const Disk*,
+              FindDiskBySourcePath,
+              (const std::string&),
+              (const, override));
+  MOCK_METHOD(const DiskMountManager::MountPointMap&,
+              mount_points,
+              (),
+              (const, override));
+  MOCK_METHOD(void,
+              EnsureMountInfoRefreshed,
+              (EnsureMountInfoRefreshedCallback, bool),
+              (override));
+  MOCK_METHOD(void,
+              MountPath,
+              (const std::string&,
+               const std::string&,
+               const std::string&,
+               const std::vector<std::string>&,
+               MountType,
+               MountAccessMode),
+              (override));
+  MOCK_METHOD(void,
+              UnmountPath,
+              (const std::string&, DiskMountManager::UnmountPathCallback),
+              (override));
+  MOCK_METHOD(void, RemountAllRemovableDrives, (MountAccessMode), (override));
+  MOCK_METHOD(void,
+              FormatMountedDevice,
+              (const std::string&, FormatFileSystemType, const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              SinglePartitionFormatDevice,
+              (const std::string&, FormatFileSystemType, const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              RenameMountedDevice,
+              (const std::string&, const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              UnmountDeviceRecursively,
+              (const std::string&,
+               DiskMountManager::UnmountDeviceRecursivelyCallbackType),
+              (override));
 
   // Invokes fake device insert events.
   void NotifyDeviceInsertEvents();
