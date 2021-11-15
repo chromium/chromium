@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
@@ -14,21 +15,18 @@ namespace blink {
 const base::Feature kReclaimInactiveWebCodecs{"ReclaimInactiveWebCodecs",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-namespace {
-constexpr base::TimeDelta kInactivityReclamationThreshold = base::Minutes(1);
-
-constexpr base::TimeDelta kTimerPeriod = base::Seconds(30);
-}  // namespace
+constexpr base::TimeDelta ReclaimableCodec::kInactivityReclamationThreshold;
+constexpr base::TimeDelta ReclaimableCodec::kTimerPeriod;
 
 ReclaimableCodec::ReclaimableCodec()
-    : last_activity_(base::TimeTicks::Now()),
+    : tick_clock_(base::DefaultTickClock::GetInstance()),
+      last_activity_(tick_clock_->NowTicks()),
       activity_timer_(Thread::Current()->GetTaskRunner(),
                       this,
-                      &ReclaimableCodec::ActivityTimerFired) {
-}
+                      &ReclaimableCodec::ActivityTimerFired) {}
 
 void ReclaimableCodec::MarkCodecActive() {
-  last_activity_ = base::TimeTicks::Now();
+  last_activity_ = tick_clock_->NowTicks();
   last_tick_was_inactive_ = false;
   StartTimer();
 }
@@ -36,6 +34,10 @@ void ReclaimableCodec::MarkCodecActive() {
 void ReclaimableCodec::SimulateCodecReclaimedForTesting() {
   OnCodecReclaimed(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kQuotaExceededError, "Codec reclaimed for testing."));
+}
+
+void ReclaimableCodec::SimulateActivityTimerFiredForTesting() {
+  ActivityTimerFired(nullptr);
 }
 
 void ReclaimableCodec::PauseCodecReclamation() {
@@ -53,9 +55,8 @@ void ReclaimableCodec::StartTimer() {
 void ReclaimableCodec::ActivityTimerFired(TimerBase*) {
   DCHECK(base::FeatureList::IsEnabled(kReclaimInactiveWebCodecs));
 
-  auto time_inactive = base::TimeTicks::Now() - last_activity_;
-
-  bool is_inactive = time_inactive < kInactivityReclamationThreshold;
+  auto time_inactive = tick_clock_->NowTicks() - last_activity_;
+  bool is_inactive = time_inactive >= kInactivityReclamationThreshold;
 
   // Do not immediately reclaim. Make sure the codec is inactive for 2 ticks.
   // Otherwise, tabs that were suspended could see their codecs reclaimed
@@ -67,7 +68,8 @@ void ReclaimableCodec::ActivityTimerFired(TimerBase*) {
         "Codec reclaimed due to inactivity."));
   }
 
-  last_tick_was_inactive_ = is_inactive;
+  last_tick_was_inactive_ =
+      time_inactive >= (kInactivityReclamationThreshold / 2);
 }
 
 void ReclaimableCodec::Trace(Visitor* visitor) const {
