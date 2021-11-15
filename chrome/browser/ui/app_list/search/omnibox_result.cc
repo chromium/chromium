@@ -524,7 +524,7 @@ void OmniboxResult::SetZeroSuggestionActions() {
     std::u16string button_tooltip;
     bool visible_on_hover = false;
     const int kImageButtonIconSize =
-        ash::SharedAppListConfig::instance().search_list_badge_icon_dimension();
+        ash::SharedAppListConfig::instance().search_list_icon_dimension();
 
     switch (button_action) {
       case ash::SearchResultActionType::kRemove:

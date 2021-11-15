@@ -61,7 +61,7 @@ class SearchResultImageButton : public views::ImageButton {
   // views::ImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  void SetButtonImage(const gfx::ImageSkia& source, int icon_dimension);
+  void SetButtonImage(const gfx::ImageSkia& source);
 
   int GetButtonRadius() const;
   const char* GetClassName() const override;
@@ -115,8 +115,7 @@ SearchResultImageButton::SearchResultImageButton(
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
-  SetButtonImage(action.image,
-                 SharedAppListConfig::instance().search_list_icon_dimension());
+  SetButtonImage(action.image);
 
   SetAccessibleName(action.tooltip_text);
 
@@ -166,12 +165,8 @@ void SearchResultImageButton::OnPaintBackground(gfx::Canvas* canvas) {
   }
 }
 
-void SearchResultImageButton::SetButtonImage(const gfx::ImageSkia& source,
-                                             int icon_dimension) {
-  SetImage(views::ImageButton::STATE_NORMAL,
-           gfx::ImageSkiaOperations::CreateResizedImage(
-               source, skia::ImageOperations::RESIZE_BEST,
-               gfx::Size(icon_dimension, icon_dimension)));
+void SearchResultImageButton::SetButtonImage(const gfx::ImageSkia& source) {
+  SetImage(views::ImageButton::STATE_NORMAL, source);
 }
 
 int SearchResultImageButton::GetButtonRadius() const {
