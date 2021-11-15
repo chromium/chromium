@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -583,6 +584,9 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
+  std::unique_ptr<base::StatisticsRecorder> statistics_recorder =
+      base::StatisticsRecorder::CreateTemporaryForTesting();
+  base::HistogramTester histogram_tester;
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -612,16 +616,13 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   internal_observer->observe(target1);
   internal_observer->observe(target2);
   Compositor().BeginFrame();
-  base::HistogramBase* internal_count_histogram =
-      base::StatisticsRecorder::FindHistogram(
-          "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP");
-  ASSERT_TRUE(internal_count_histogram);
-  EXPECT_EQ(internal_count_histogram->SnapshotSamples()->GetCount(2), 1);
-  base::HistogramBase* javascript_count_histogram =
-      base::StatisticsRecorder::FindHistogram(
-          "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP");
-  ASSERT_TRUE(javascript_count_histogram);
-  EXPECT_EQ(javascript_count_histogram->SnapshotSamples()->sum(), 0);
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
+            2);
+  EXPECT_EQ(
+      histogram_tester.GetTotalSum(
+          "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
+      0);
 
   TestIntersectionObserverDelegate* javascript_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(
@@ -632,7 +633,12 @@ TEST_F(LocalFrameUkmAggregatorSimTest, IntersectionObserverCounts) {
   javascript_observer->observe(target1);
   javascript_observer->observe(target2);
   Compositor().BeginFrame();
-  EXPECT_EQ(internal_count_histogram->SnapshotSamples()->GetCount(2), 2);
-  EXPECT_EQ(javascript_count_histogram->SnapshotSamples()->GetCount(2), 1);
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
+            4);
+  EXPECT_EQ(
+      histogram_tester.GetTotalSum(
+          "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
+      2);
 }
 }  // namespace blink
