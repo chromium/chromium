@@ -22,6 +22,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/guid.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -1381,16 +1383,58 @@ TEST_P(ScrollingTest, NonFastScrollableRegionWithBorder) {
             gfx::Rect(0, 0, 120, 120));
 }
 
-TEST_P(ScrollingTest, ProduceCropIdRegionCaptureData) {
-  ScopedRegionCaptureForTest(true);
-  SetupHttpsTestURL("produce-crop-id.html");
+TEST_P(ScrollingTest, ElementRegionCaptureData) {
+  LoadHTML(R"HTML(
+              <head>
+                <style type="text/css">
+                  body {
+                    height: 2000px;
+                  }
+                  #scrollable {
+                    margin-top: 50px;
+                    margin-left: 50px;
+                    width: 200px;
+                    height: 200px;
+                    overflow: scroll;
+                  }
+                  #content {
+                    width: 1000px;
+                    height: 1000px;
+                  }
+                </style>
+              </head>
+
+              <body>
+                <div id="scrollable">
+                  <div id="content"></div>
+                </div>
+              </body>
+            )HTML");
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById("scrollable");
+  Element* content_element =
+      GetFrame()->GetDocument()->getElementById("content");
+
+  const RegionCaptureCropId scrollable_id(
+      GUIDToToken(base::GUID::GenerateRandomV4()));
+  const RegionCaptureCropId content_id(
+      GUIDToToken(base::GUID::GenerateRandomV4()));
+
+  scrollable_element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(scrollable_id));
+  content_element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(content_id));
+  ForceFullCompositingUpdate();
 
   const cc::Layer* container_layer =
       RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
           ? MainFrameScrollingContentsLayer()
           : LayerByDOMElementId("scrollable");
-  const auto* contents_layer =
+  const cc::Layer* contents_layer =
       ScrollingContentsLayerByDOMElementId("scrollable");
+  ASSERT_TRUE(container_layer);
+  ASSERT_TRUE(contents_layer);
 
   const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& container_bounds =
       container_layer->capture_bounds().bounds();
@@ -1399,10 +1443,12 @@ TEST_P(ScrollingTest, ProduceCropIdRegionCaptureData) {
 
   EXPECT_EQ(1u, container_bounds.size());
   EXPECT_FALSE(container_bounds.begin()->first.is_zero());
+  EXPECT_EQ(scrollable_id.value(), container_bounds.begin()->first);
   EXPECT_EQ((gfx::Size{200, 200}), container_bounds.begin()->second.size());
 
   EXPECT_EQ(1u, contents_bounds.size());
   EXPECT_FALSE(contents_bounds.begin()->first.is_zero());
+  EXPECT_EQ(content_id.value(), contents_bounds.begin()->first);
   EXPECT_EQ((gfx::Rect{0, 0, 1000, 1000}), contents_bounds.begin()->second);
 }
 
