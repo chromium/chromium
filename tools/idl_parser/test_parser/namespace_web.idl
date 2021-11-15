@@ -25,6 +25,9 @@ namespace MyNamespace { };
 
 /** TREE
  *Namespace(MyNamespace2)
+ *  Const(FOO)
+ *    PrimitiveType(long)
+ *    Value() = "1"
  *  Operation(fooLong)
  *    Arguments()
  *    Type()
@@ -38,6 +41,7 @@ namespace MyNamespace { };
  *      PrimitiveType(void)
  */
 namespace MyNamespace2 {
+  const long FOO = 1;
   long fooLong();
   void voidArgLong(long arg);
 };
