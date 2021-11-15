@@ -30,6 +30,11 @@
       $i18n{privacyReviewPromoStartButton}
     </cr-button>
   </div>
-  <img id="banner" aria-hidden="true"
-      src="chrome://settings/images/privacy_review_promo_banner.svg">
+  <picture>
+    <source class="banner"
+        srcset="./images/privacy_review/promo_banner_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img class="banner" alt=""
+        src="./images/privacy_review/promo_banner.svg">
+  </picture>
 </div>

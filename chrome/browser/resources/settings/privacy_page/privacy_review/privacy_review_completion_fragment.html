@@ -40,8 +40,13 @@
   }
 </style>
 <div class="header">
-  <img aria-hidden="true"
-      src="chrome://settings/images/privacy_review_completion_banner.svg">
+  <picture>
+    <source
+        srcset="./images/privacy_review/completion_banner_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt=""
+        src="./images/privacy_review/completion_banner.svg">
+  </picture>
   <div class="headline">$i18n{privacyReviewCompletionCardHeader}</div>
   <div class="cr-secondary-text">
     $i18n{privacyReviewCompletionCardSubHeader}
@@ -50,10 +55,10 @@
 <div id="privacySandboxRow" class="info-row">
   <picture>
     <source class="info-row-graphic"
-        srcset="./images/privacy_review_privacy_sandbox_graphic_dark.svg"
+        srcset="./images/privacy_review/privacy_sandbox_graphic_dark.svg"
         media="(prefers-color-scheme: dark)">
     <img class="info-row-graphic" alt=""
-        src="./images/privacy_review_privacy_sandbox_graphic.svg">
+        src="./images/privacy_review/privacy_sandbox_graphic.svg">
   </picture>
   <cr-link-row class="info-row-description" external
       label="$i18n{privacyReviewCompletionCardPrivacySandboxLabel}"
@@ -67,10 +72,10 @@
 <div id="waaRow" class="info-row" hidden="[[!shouldShowWaa_]]">
   <picture>
     <source class="info-row-graphic"
-        srcset="./images/privacy_review_waa_graphic_dark.svg"
+        srcset="./images/privacy_review/waa_graphic_dark.svg"
         media="(prefers-color-scheme: dark)">
     <img class="info-row-graphic" alt=""
-        src="./images/privacy_review_waa_graphic.svg">
+        src="./images/privacy_review/waa_graphic.svg">
   </picture>
   <cr-link-row class="info-row-description" external
       label="$i18n{privacyReviewCompletionCardWaaLabel}"
