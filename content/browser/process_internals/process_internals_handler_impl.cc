@@ -69,8 +69,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           ? absl::make_optional(site_instance->GetSiteInfo().process_lock_url())
           : absl::nullopt;
 
-  frame_info->site_instance->is_origin_keyed =
-      site_instance->GetSiteInfo().is_origin_keyed();
+  frame_info->site_instance->requires_origin_keyed_process =
+      site_instance->GetSiteInfo().requires_origin_keyed_process();
 
   for (size_t i = 0; i < frame->child_count(); ++i) {
     frame_info->subframes.push_back(RenderFrameHostToFrameInfo(

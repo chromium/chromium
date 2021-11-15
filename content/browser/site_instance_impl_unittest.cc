@@ -62,13 +62,13 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 }
 
 SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
-                              bool is_origin_keyed) {
-  return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
-                  is_origin_keyed, CreateStoragePartitionConfigForTesting(),
-                  WebExposedIsolationInfo::CreateNonIsolated(),
-                  false /* is_guest */,
-                  false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */, false /* is_pdf */);
+                              bool requires_origin_keyed_process) {
+  return SiteInfo(
+      GURL("https://www.foo.com"), process_lock_url,
+      requires_origin_keyed_process, CreateStoragePartitionConfigForTesting(),
+      WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 }  // namespace
@@ -219,20 +219,22 @@ class SiteInstanceTest : public testing::Test {
 // Test SiteInfos with identical site URLs but various lock URLs, including
 // variations of each that are origin keyed ("ok").
 TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
-  auto site_info_1 = CreateSimpleSiteInfo(GURL("https://foo.com"),
-                                          false /* is_origin_keyed */);
-  auto site_info_1ok =
-      CreateSimpleSiteInfo(GURL("https://foo.com"), true /* is_origin_keyed */);
-  auto site_info_2 = CreateSimpleSiteInfo(GURL("https://www.foo.com"),
-                                          false /* is_origin_keyed */);
-  auto site_info_2ok = CreateSimpleSiteInfo(GURL("https://www.foo.com"),
-                                            true /* is_origin_keyed */);
-  auto site_info_3 = CreateSimpleSiteInfo(GURL("https://sub.foo.com"),
-                                          false /* is_origin_keyed */);
-  auto site_info_3ok = CreateSimpleSiteInfo(GURL("https://sub.foo.com"),
-                                            true /* is_origin_keyed */);
-  auto site_info_4 = CreateSimpleSiteInfo(GURL(), false /* is_origin_keyed */);
-  auto site_info_4ok = CreateSimpleSiteInfo(GURL(), true /* is_origin_keyed */);
+  auto site_info_1 = CreateSimpleSiteInfo(
+      GURL("https://foo.com"), false /* requires_origin_keyed_process */);
+  auto site_info_1ok = CreateSimpleSiteInfo(
+      GURL("https://foo.com"), true /* requires_origin_keyed_process */);
+  auto site_info_2 = CreateSimpleSiteInfo(
+      GURL("https://www.foo.com"), false /* requires_origin_keyed_process */);
+  auto site_info_2ok = CreateSimpleSiteInfo(
+      GURL("https://www.foo.com"), true /* requires_origin_keyed_process */);
+  auto site_info_3 = CreateSimpleSiteInfo(
+      GURL("https://sub.foo.com"), false /* requires_origin_keyed_process */);
+  auto site_info_3ok = CreateSimpleSiteInfo(
+      GURL("https://sub.foo.com"), true /* requires_origin_keyed_process */);
+  auto site_info_4 =
+      CreateSimpleSiteInfo(GURL(), false /* requires_origin_keyed_process */);
+  auto site_info_4ok =
+      CreateSimpleSiteInfo(GURL(), true /* requires_origin_keyed_process */);
 
   // Test IsSamePrincipalWith.
   EXPECT_TRUE(site_info_1.IsSamePrincipalWith(site_info_1));
@@ -272,7 +274,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_isolation_request = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* is_origin_keyed */, CreateStoragePartitionConfigForTesting(),
+      false /* requires_origin_keyed_process */,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       true /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */);
@@ -285,7 +288,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_jit_disabled = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* is_origin_keyed */, CreateStoragePartitionConfigForTesting(),
+      false /* requires_origin_keyed_process */,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       true /* is_jit_disabled */, false /* is_pdf */);
@@ -296,7 +300,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_pdf = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* is_origin_keyed */, CreateStoragePartitionConfigForTesting(),
+      false /* requires_origin_keyed_process */,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, true /* is_pdf */);
@@ -350,8 +355,8 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
     // Make sure std::map treated the different SiteInfo's as distinct.
     EXPECT_EQ(6u, test_map.size());
 
-    // Test that std::map::find() looks up the correct key with is_origin_keyed
-    // == true.
+    // Test that std::map::find() looks up the correct key with
+    // requires_origin_keyed_process == true.
     auto it1 = test_map.find(site_info_1ok);
     EXPECT_NE(it1, test_map.end());
     EXPECT_EQ(11, it1->second);
@@ -395,7 +400,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   {
     std::set<SiteInfo> test_set;
 
-    // Set tests, testing is_origin_keyed.
+    // Set tests, testing requires_origin_keyed_process.
     test_set.insert(site_info_1);
     test_set.insert(site_info_2);
     test_set.insert(site_info_4);
@@ -742,7 +747,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
 
   SiteInfo expected_site_info(
       app_url /* site_url */, nonapp_site_url /* process_lock_url */,
-      false /* is_origin_keyed */, CreateStoragePartitionConfigForTesting(),
+      false /* requires_origin_keyed_process */,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */);
@@ -1539,7 +1545,8 @@ TEST_F(SiteInstanceTest, OriginalURL) {
 
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
-      false /* is_origin_keyed */, CreateStoragePartitionConfigForTesting(),
+      false /* requires_origin_keyed_process */,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */);
@@ -1587,7 +1594,7 @@ namespace {
 
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock(SiteInfo(
-      GURL(url), GURL(url), false /* is_origin_keyed */,
+      GURL(url), GURL(url), false /* requires_origin_keyed_process */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,

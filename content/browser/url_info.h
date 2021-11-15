@@ -37,8 +37,9 @@ namespace content {
 //
 // To check whether a frame ends up in a site-isolated process, use
 // SiteInfo::RequiresDedicatedProcess() on its SiteInstance's SiteInfo.  To
-// check whether a frame ends up being origin-isolated (e.g., due to the
-// Origin-Agent-Cluster header), use SiteInfo::is_origin_keyed().
+// check whether a frame ends up being origin-isolated in a separate process
+// (e.g., due to the Origin-Agent-Cluster header), use
+// SiteInfo::requires_origin_keyed_process().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
 class UrlInfoInit;
@@ -49,12 +50,19 @@ struct CONTENT_EXPORT UrlInfo {
   enum OriginIsolationRequest {
     // No isolated has been requested.
     kNone = 0,
-    // The Origin-Agent-Cluster header is requesting origin-keyed isolation for
-    // `url`'s origin.
+    // The Origin-Agent-Cluster header is requesting OAC isolation for `url`'s
+    // origin in the renderer. If granted, this is tracked for consistency in
+    // ChildProcessSecurityPolicyImpl. If kRequiresOriginKeyedProcess is not
+    // set, then this only affects the renderer.
     kOriginAgentCluster = (1 << 0),
+    // If kOriginAgentCluster is set, the following bit triggers an origin-keyed
+    // process for `url`'s origin. If kRequiresOriginKeyedProcess is not set and
+    // kOriginAgentCluster is,  then OAC will be logical only, i.e. implemented
+    // in the renderer via a separate AgentCluster.
+    kRequiresOriginKeyedProcess = (1 << 1),
     // The Cross-Origin-Opener-Policy header has triggered a hint to turn on
     // site isolation for `url`'s site.
-    kCOOP = (1 << 1)
+    kCOOP = (1 << 2)
   };
 
   UrlInfo();  // Needed for inclusion in SiteInstanceDescriptor.
@@ -68,11 +76,18 @@ struct CONTENT_EXPORT UrlInfo {
                                   absl::optional<StoragePartitionConfig>
                                       storage_partition_config = absl::nullopt);
 
-  // Returns whether this UrlInfo is requesting origin-keyed isolation for
-  // `url`'s origin due to the OriginAgentCluster header.
-  bool requests_origin_agent_cluster_isolation() const {
+  // Returns whether this UrlInfo is requesting an origin-keyed agent cluster
+  // for `url`'s origin due to the OriginAgentCluster header.
+  bool requests_origin_agent_cluster() const {
     return (origin_isolation_request &
             OriginIsolationRequest::kOriginAgentCluster);
+  }
+
+  // Returns whether this UrlInfo is requesting an origin-keyed process for
+  // for `url`'s origin due to the OriginAgentCluster header.
+  bool requests_origin_keyed_process() const {
+    return (origin_isolation_request &
+            OriginIsolationRequest::kRequiresOriginKeyedProcess);
   }
 
   // Returns whether this UrlInfo is requesting isolation in response to the

@@ -269,7 +269,8 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
   if (is_equal && site_info_.has_value()) {
     is_equal =
         site_info_->process_lock_url() == rhs.site_info_->process_lock_url() &&
-        site_info_->is_origin_keyed() == rhs.site_info_->is_origin_keyed() &&
+        site_info_->requires_origin_keyed_process() ==
+            rhs.site_info_->requires_origin_keyed_process() &&
         site_info_->is_pdf() == rhs.site_info_->is_pdf() &&
         (site_info_->web_exposed_isolation_info() ==
          rhs.site_info_->web_exposed_isolation_info());
@@ -283,15 +284,15 @@ bool ProcessLock::operator!=(const ProcessLock& rhs) const {
 }
 
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
-  const auto this_is_origin_keyed = is_origin_keyed();
+  const auto this_is_origin_keyed_process = is_origin_keyed_process();
   const auto this_is_pdf = is_pdf();
   const auto this_web_exposed_isolation_info = web_exposed_isolation_info();
-  const auto rhs_is_origin_keyed = is_origin_keyed();
+  const auto rhs_is_origin_keyed_process = is_origin_keyed_process();
   const auto rhs_is_pdf = rhs.is_pdf();
   const auto rhs_web_exposed_isolation_info = web_exposed_isolation_info();
-  return std::tie(lock_url(), this_is_origin_keyed, this_is_pdf,
+  return std::tie(lock_url(), this_is_origin_keyed_process, this_is_pdf,
                   this_web_exposed_isolation_info) <
-         std::tie(rhs.lock_url(), rhs_is_origin_keyed, rhs_is_pdf,
+         std::tie(rhs.lock_url(), rhs_is_origin_keyed_process, rhs_is_pdf,
                   rhs_web_exposed_isolation_info);
 }
 
@@ -301,7 +302,7 @@ std::string ProcessLock::ToString() const {
   if (site_info_.has_value()) {
     ret += lock_url().possibly_invalid_spec();
 
-    if (is_origin_keyed())
+    if (is_origin_keyed_process())
       ret += " origin-keyed";
 
     if (is_pdf())
@@ -415,6 +416,18 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   return policy->CanAccessDataForOrigin(child_id_, origin);
 }
+
+ChildProcessSecurityPolicyImpl::OriginAgentClusterOptInEntry::
+    OriginAgentClusterOptInEntry(
+        const OriginAgentClusterIsolationState& oac_isolation_state_in,
+        const url::Origin& origin_in)
+    : oac_isolation_state(oac_isolation_state_in), origin(origin_in) {}
+
+ChildProcessSecurityPolicyImpl::OriginAgentClusterOptInEntry::
+    OriginAgentClusterOptInEntry(const OriginAgentClusterOptInEntry&) = default;
+
+ChildProcessSecurityPolicyImpl::OriginAgentClusterOptInEntry::
+    ~OriginAgentClusterOptInEntry() = default;
 
 // The SecurityState class is used to maintain per-child process security state
 // information.
@@ -1789,7 +1802,13 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
               failure_reason += "[origin vs site mismatch] ";
             }
           } else {
-            failure_reason += "lock_mismatch:is_origin_keyed ";
+            // TODO(wjmaclean,alexmos): Apparently this might not be true
+            // anymore, since is_pdf() and web_exposed_isolation_info() have
+            // been added to the ProcessLock. We need to update the code here to
+            // differentiate these cases, as well as adding documentation (or
+            // some other mechanism) to prevent these getting out of sync in
+            // future.
+            failure_reason += "lock_mismatch:requires_origin_keyed_process ";
           }
         } else {
           // Citadel-style enforcement - an unlocked process should not be
@@ -2177,7 +2196,7 @@ bool ChildProcessSecurityPolicyImpl::IsIsolatedSiteFromSource(
 bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
-    bool origin_requests_isolation,
+    bool requests_origin_keyed_process,
     url::Origin* result) {
   // GetSiteForOrigin() is used to look up the site URL of |origin| to speed
   // up the isolated origin lookup.  This only performs a straightforward
@@ -2187,14 +2206,14 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
   // very careful about using GetSiteForOrigin() elsewhere, and consider
   // whether you should be using GetSiteForURL() instead.
   return GetMatchingProcessIsolatedOrigin(
-      isolation_context, origin, origin_requests_isolation,
+      isolation_context, origin, requests_origin_keyed_process,
       SiteInfo::GetSiteForOrigin(origin), result);
 }
 
 bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
-    bool origin_requests_isolation,
+    bool requests_origin_keyed_process,
     const GURL& site_url,
     url::Origin* result) {
   DCHECK(IsRunningOnExpectedThread());
@@ -2230,11 +2249,19 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
     // IsProcessIsolationForOriginAgentClusterEnabled() returns false; in that
     // case a SiteInstanceGroup will allow a logical group of SiteInstances that
     // live same-process.
-    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() &&
-        ShouldOriginGetOptInIsolation(isolation_context, origin,
-                                      origin_requests_isolation)) {
-      *result = origin;
-      return true;
+    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+      OriginAgentClusterIsolationState oac_isolation_state_request =
+          requests_origin_keyed_process
+              ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                    true /* requires_origin_keyed_process */)
+              : OriginAgentClusterIsolationState::CreateNonIsolated();
+      OriginAgentClusterIsolationState oac_isolation_state_result =
+          ShouldOriginGetOptInIsolation(isolation_context, origin,
+                                        oac_isolation_state_request);
+      if (oac_isolation_state_result.requires_origin_keyed_process()) {
+        *result = origin;
+        return true;
+      }
     }
   }
 
@@ -2302,12 +2329,13 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
   return found;
 }
 
-bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
+OriginAgentClusterIsolationState
+ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
-    bool origin_requests_isolation) {
+    const OriginAgentClusterIsolationState& requested_isolation_state) {
   if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
-    return false;
+    return OriginAgentClusterIsolationState::CreateNonIsolated();
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
   // See if the same origin exists in the BrowsingInstance already, and if so
@@ -2324,8 +2352,13 @@ bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
     auto it_isolated =
         origin_isolation_by_browsing_instance_.find(browsing_instance_id);
     if (it_isolated != origin_isolation_by_browsing_instance_.end()) {
-      if (base::Contains(it_isolated->second, origin))
-        return true;
+      auto it =
+          std::find_if(it_isolated->second.begin(), it_isolated->second.end(),
+                       [&origin](const OriginAgentClusterOptInEntry entry) {
+                         return entry.origin == origin;
+                       });
+      if (it != it_isolated->second.end())
+        return it->oac_isolation_state;
     }
     // Look for |origin| in the non-isolated list.
     auto it_non_isolated =
@@ -2334,13 +2367,15 @@ bool ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
     if (it_non_isolated !=
         origin_isolation_non_isolated_by_browsing_instance_.end()) {
       if (base::Contains(it_non_isolated->second, origin))
-        return false;
+        return OriginAgentClusterIsolationState::CreateNonIsolated();
     }
   }
 
   // If we get to this point, then |origin| is neither opted-in nor opted-out.
-  // At this point we allow opting in if it's requested.
-  return origin_requests_isolation;
+  // At this point we allow opting in if it's requested. This is true for
+  // either logical OriginAgentCluster, or OriginAgentCluster with an
+  // origin-keyed process.
+  return requested_isolation_state;
 }
 
 bool ChildProcessSecurityPolicyImpl::HasOriginEverRequestedOptInIsolation(
@@ -2388,11 +2423,17 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
   // walks (when the origin won't be in this list yet), but it matters during
   // frame removal (when we don't want to add an opted-in origin to the
   // non-isolated list when its frame is removed).
+  // TODO(wjmaclean): Add a lookup helper function to simplify the callsites
+  // that do lookup. https://crbug.com/1269748.
   auto it_opt_in =
       origin_isolation_by_browsing_instance_.find(browsing_instance_id);
-  if (it_opt_in != origin_isolation_by_browsing_instance_.end() &&
-      base::Contains(it_opt_in->second, origin)) {
-    return;
+  if (it_opt_in != origin_isolation_by_browsing_instance_.end()) {
+    auto it = std::find_if(it_opt_in->second.begin(), it_opt_in->second.end(),
+                           [&origin](const OriginAgentClusterOptInEntry entry) {
+                             return entry.origin == origin;
+                           });
+    if (it != it_opt_in->second.end())
+      return;
   }
 
   std::vector<url::Origin>& non_isolated_origins =
@@ -2474,14 +2515,15 @@ void ChildProcessSecurityPolicyImpl::
 void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
-    bool is_origin_keyed,
+    bool is_origin_agent_cluster,
+    bool requires_origin_keyed_process,
     IsolatedOriginSource source) {
   // We ought to have validated the origin prior to getting here.  If the
   // origin isn't valid at this point, something has gone wrong.  Note that the
   // origin-keyed OriginAgentCluster isolated origins have slightly different
   // validation requirements.
   bool is_valid_origin =
-      is_origin_keyed
+      requires_origin_keyed_process
           ? IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)
           : IsolatedOriginUtil::IsValidIsolatedOrigin(origin);
   CHECK(is_valid_origin) << "Trying to isolate invalid origin: " << origin;
@@ -2499,7 +2541,7 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
 
   // For site-keyed isolation, add `origin` to the isolated_origins_ map (which
   // supports subdomain matching).
-  if (!is_origin_keyed) {
+  if (!is_origin_agent_cluster) {
     // Ensure that `origin` is a site (scheme + eTLD+1) rather than any origin.
     auto site_origin = url::Origin::Create(SiteInfo::GetSiteForOrigin(origin));
     CHECK_EQ(origin, site_origin);
@@ -2525,15 +2567,20 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
   auto it = origin_isolation_by_browsing_instance_.find(browsing_instance_id);
   if (it == origin_isolation_by_browsing_instance_.end()) {
     std::tie(it, std::ignore) = origin_isolation_by_browsing_instance_.emplace(
-        browsing_instance_id, std::vector<url::Origin>());
+        browsing_instance_id, std::vector<OriginAgentClusterOptInEntry>());
   }
 
   // We only support adding new entries, not modifying existing ones. If at
   // some point in the future we allow isolation status to change during the
   // lifetime of a BrowsingInstance, then this will need to be updated.
-  if (std::find(it->second.begin(), it->second.end(), origin) ==
-      it->second.end()) {
-    it->second.push_back(origin);
+  if (std::find_if(it->second.begin(), it->second.end(),
+                   [&origin](const OriginAgentClusterOptInEntry entry) {
+                     return entry.origin == origin;
+                   }) == it->second.end()) {
+    it->second.emplace_back(
+        OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+            requires_origin_keyed_process),
+        origin);
   }
 }
 

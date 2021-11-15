@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_split.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -71,12 +72,12 @@ GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
 // static
 SiteInfo SiteInfo::CreateForErrorPage(
     const StoragePartitionConfig storage_partition_config) {
-  return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
-                  false /* is_origin_keyed */, storage_partition_config,
-                  WebExposedIsolationInfo::CreateNonIsolated(),
-                  false /* is_guest */,
-                  false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */, false /* is_pdf */);
+  return SiteInfo(
+      GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
+      false /* requires_origin_keyed_process */, storage_partition_config,
+      WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 // static
@@ -91,8 +92,9 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
 
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
-                  false /* is_origin_keyed */, storage_partition_config,
-                  web_exposed_isolation_info, false /* is_guest */,
+                  false /* requires_origin_keyed_process */,
+                  storage_partition_config, web_exposed_isolation_info,
+                  false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
                   is_jit_disabled, false /* is_pdf */);
 }
@@ -104,7 +106,7 @@ SiteInfo SiteInfo::CreateForGuest(BrowserContext* browser_context,
   // do for user provided URLs. Callers expect GetSiteURL() to return the
   // value they provide in |guest_site_url|.
   return SiteInfo(
-      guest_site_url, guest_site_url, false /* is_origin_keyed */,
+      guest_site_url, guest_site_url, false /* requires_origin_keyed_process */,
       GetStoragePartitionConfigForUrl(browser_context, guest_site_url,
                                       /*is_site_url=*/true),
       WebExposedIsolationInfo::CreateNonIsolated(), true /* is_guest */,
@@ -169,26 +171,36 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
     DCHECK(!url_info.web_exposed_isolation_info.is_isolated());
     return CreateForErrorPage(storage_partition_config.value());
   }
-  // We should only set |is_origin_keyed| if we are actually creating separate
-  // SiteInstances for OAC isolation. When we do same-process OAC, we don't do
-  // that at present.
+  // We should only set |requires_origin_keyed_process| if we are actually
+  // creating separate SiteInstances for OAC isolation. When we do same-process
+  // OAC, we don't do that at present.
   // TODO(wjmaclean): Once SiteInstanceGroups are fully implemented, we should
   // be able to give spOAC origins their own SiteInstance.
   // https://crbug.com/1195535
-  bool is_origin_keyed =
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() &&
-      ChildProcessSecurityPolicyImpl::GetInstance()
-          ->ShouldOriginGetOptInIsolation(
-              isolation_context, url::Origin::Create(url_info.url),
-              url_info.requests_origin_agent_cluster_isolation());
+  OriginAgentClusterIsolationState requested_isolation_state =
+      url_info.requests_origin_agent_cluster()
+          ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                url_info.requests_origin_keyed_process())
+          : OriginAgentClusterIsolationState::CreateNonIsolated();
 
-  // If there is a COOP isolation request, propagate it to SiteInfo.  This will
-  // be used later when determining a suitable SiteInstance and
-  // BrowsingInstance for this SiteInfo.
+  bool requires_origin_keyed_process = false;
+  if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    requires_origin_keyed_process =
+        policy
+            ->ShouldOriginGetOptInIsolation(isolation_context,
+                                            url::Origin::Create(url_info.url),
+                                            requested_isolation_state)
+            .requires_origin_keyed_process();
+  }
+
+  // If there is a COOP isolation request, propagate it to SiteInfo.
+  // This will be used later when determining a suitable SiteInstance
+  // and BrowsingInstance for this SiteInfo.
   bool does_site_request_dedicated_process_for_coop =
       url_info.requests_coop_isolation();
 
-  return SiteInfo(site_url, lock_url, is_origin_keyed,
+  return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
                   storage_partition_config.value(),
                   url_info.web_exposed_isolation_info, false /* is_guest */,
                   does_site_request_dedicated_process_for_coop, is_jitless,
@@ -203,7 +215,7 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 
 SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
-                   bool is_origin_keyed,
+                   bool requires_origin_keyed_process,
                    const StoragePartitionConfig storage_partition_config,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
@@ -212,7 +224,7 @@ SiteInfo::SiteInfo(const GURL& site_url,
                    bool is_pdf)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
-      is_origin_keyed_(is_origin_keyed),
+      requires_origin_keyed_process_(requires_origin_keyed_process),
       storage_partition_config_(storage_partition_config),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
@@ -228,7 +240,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
     : SiteInfo(
           /*site_url=*/GURL(),
           /*process_lock_url=*/GURL(),
-          /*is_origin_keyed=*/false,
+          /*requires_origin_keyed_process=*/false,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(),
           /*is_guest=*/false,
@@ -246,7 +258,15 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // COOP isolation request.
   return std::tie(site_info.site_url_.possibly_invalid_spec(),
                   site_info.process_lock_url_.possibly_invalid_spec(),
-                  site_info.is_origin_keyed_,
+                  // Here we only compare |requires_origin_keyed_process_| since
+                  // we currently don't create SiteInfos where
+                  // |is_origin_agent_cluster_| differs from
+                  // |requires_origin_keyed_process_|. In fact, we don't even
+                  // have |is_origin_agent_cluster| in SiteInfo at this time,
+                  // but that could change.
+                  // TODO(wjmaclean): Update this if we ever start to create
+                  // separate SiteInfos for same-process OriginAgentCluster.
+                  site_info.requires_origin_keyed_process_,
                   site_info.storage_partition_config_,
                   site_info.web_exposed_isolation_info_, site_info.is_guest_,
                   site_info.is_jit_disabled_, site_info.is_pdf_);
@@ -262,7 +282,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
   bool is_match =
       site_url_ == other.site_url_ &&
       process_lock_url_ == other.process_lock_url_ &&
-      is_origin_keyed_ == other.is_origin_keyed_ &&
+      requires_origin_keyed_process_ == other.requires_origin_keyed_process_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
       is_guest_ == other.is_guest_ &&
@@ -300,7 +320,7 @@ std::string SiteInfo::GetDebugString() const {
   else if (process_lock_url_ != site_url_)
     debug_string += ", locked to " + process_lock_url_.possibly_invalid_spec();
 
-  if (is_origin_keyed_)
+  if (requires_origin_keyed_process_)
     debug_string += ", origin-keyed";
 
   if (web_exposed_isolation_info_.is_isolated()) {
@@ -357,7 +377,7 @@ bool SiteInfo::RequiresDedicatedProcess(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->IsIsolatedOrigin(isolation_context,
                                url::Origin::Create(site_url_),
-                               is_origin_keyed_)) {
+                               requires_origin_keyed_process_)) {
     return true;
   }
 
@@ -488,7 +508,7 @@ void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("site_url", site_url());
   dict.Add("process_lock_url", process_lock_url());
-  dict.Add("is_origin_keyed", is_origin_keyed_);
+  dict.Add("requires_origin_keyed_process", requires_origin_keyed_process_);
   dict.Add("is_guest", is_guest_);
 }
 
@@ -583,7 +603,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     url::Origin isolated_origin;
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin,
-            real_url_info.requests_origin_agent_cluster_isolation(), site_url,
+            real_url_info.requests_origin_agent_cluster(), site_url,
             &isolated_origin)) {
       return isolated_origin.GetURL();
     }

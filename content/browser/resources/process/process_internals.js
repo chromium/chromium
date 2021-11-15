@@ -108,7 +108,7 @@ function frameToTreeItem(frame) {
   if (frame.siteInstance.processLockUrl) {
     itemLabel += `, lock:${frame.siteInstance.processLockUrl.url}`;
   }
-  if (frame.siteInstance.isOriginKeyed) {
+  if (frame.siteInstance.requiresOriginKeyedProcess) {
     itemLabel += ', origin-keyed';
   }
   if (frame.lastCommittedUrl) {

@@ -465,7 +465,7 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   // BrowsingInstance can script each other.
   browsing_instance_->RegisterSiteInstance(this);
 
-  if (site_info_.is_origin_keyed()) {
+  if (site_info_.requires_origin_keyed_process()) {
     // Track this origin's isolation in the current BrowsingInstance.  This is
     // needed to consistently isolate future navigations to this origin in this
     // BrowsingInstance, even if its opt-in status changes later.
@@ -480,7 +480,8 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // being the only call site.
     policy->AddIsolatedOriginForBrowsingInstance(
         browsing_instance_->isolation_context(), origin,
-        true /* is_origin_keyed */,
+        true /* is_origin_agent_cluster */,
+        true /* requires_origin_keyed_process */,
         ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 
@@ -492,14 +493,16 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // lock URL would already correspond to a site (since we isolate sites, not
     // origins, by default), but this isn't always the case.  For example, this
     // SiteInstance could be isolated with the origin granularity due to
-    // Origin-Agent-Cluster (see site_info_.is_origin_keyed() above).
+    // Origin-Agent-Cluster (see site_info_.requires_origin_keyed_process()
+    // above).
     url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
     GURL site(SiteInfo::GetSiteForOrigin(origin));
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
     policy->AddIsolatedOriginForBrowsingInstance(
         browsing_instance_->isolation_context(), url::Origin::Create(site),
-        false /* is_origin_keyed */,
+        false /* is_origin_agent_cluster */,
+        false /* requires_origin_keyed_process */,
         ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 
@@ -1029,11 +1032,10 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   url::Origin dest_isolated_origin;
   bool src_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, src_origin,
-      real_src_url_info.requests_origin_agent_cluster_isolation(),
-      &src_isolated_origin);
+      real_src_url_info.requests_origin_keyed_process(), &src_isolated_origin);
   bool dest_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, dest_origin,
-      real_dest_url_info.requests_origin_agent_cluster_isolation(),
+      real_dest_url_info.requests_origin_keyed_process(),
       &dest_isolated_origin);
   if (src_origin_is_isolated || dest_origin_is_isolated) {
     // Compare most specific matching origins to ensure that a subdomain of an

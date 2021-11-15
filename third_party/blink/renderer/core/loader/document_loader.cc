@@ -1998,12 +1998,12 @@ bool HasPotentialUniversalAccessPrivilege(LocalFrame* frame) {
 
 WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
                                      SecurityOrigin* origin,
-                                     bool is_origin_keyed) {
+                                     bool is_origin_agent_cluster) {
   // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
   // dynamically change.
   return frame->window_agent_factory().GetAgentForOrigin(
       HasPotentialUniversalAccessPrivilege(frame),
-      V8PerIsolateData::MainThreadIsolate(), origin, is_origin_keyed);
+      V8PerIsolateData::MainThreadIsolate(), origin, is_origin_agent_cluster);
 }
 
 // Inheriting cases use their agent's "is origin-keyed" value, which is set

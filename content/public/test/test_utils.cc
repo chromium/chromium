@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
@@ -206,13 +207,17 @@ bool AreAllSitesIsolatedForTesting() {
   return SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
 }
 
-bool ShouldOriginGetOptInIsolation(SiteInstance* site_instance,
-                                   const url::Origin& origin) {
+bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
+                                          const url::Origin& origin) {
+  OriginAgentClusterIsolationState origin_requests_isolation(
+      OriginAgentClusterIsolationState::CreateNonIsolated());
+
   return static_cast<ChildProcessSecurityPolicyImpl*>(
              ChildProcessSecurityPolicy::GetInstance())
       ->ShouldOriginGetOptInIsolation(
           static_cast<SiteInstanceImpl*>(site_instance)->GetIsolationContext(),
-          origin, false /* origin_requests_isolation */);
+          origin, origin_requests_isolation)
+      .is_origin_agent_cluster();
 }
 
 bool AreDefaultSiteInstancesEnabled() {

@@ -19,9 +19,10 @@ struct SiteInstanceInfo {
   // The URL to which the SiteInstance's process is locked.
   url.mojom.Url? process_lock_url;
 
-  // Specifies whether the SiteInstance is origin-keyed.  This is true for
-  // opt-in origin isolation, false otherwise.
-  bool is_origin_keyed;
+  // Specifies whether the SiteInstance requires an origin-keyed process. This
+  // is true for opt-in origin isolation via the OriginAgentCluster header,
+  // false otherwise.
+  bool requires_origin_keyed_process;
 };
 
 // Basic information describing a frame and all of its subframes.

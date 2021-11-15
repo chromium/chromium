@@ -1246,8 +1246,8 @@ TEST_F(OptInOriginIsolationPolicyTest, BelowThreshold) {
   // isolation in Blink, and should still be tracked by
   // ChildProcessSecurityPolicy to ensure consistent OAC behavior for this
   // origin within this BrowsingInstance.
-  EXPECT_TRUE(
-      ShouldOriginGetOptInIsolation(site_instance, url::Origin::Create(kUrl)));
+  EXPECT_TRUE(IsOriginAgentClusterEnabledForOrigin(site_instance,
+                                                   url::Origin::Create(kUrl)));
 }
 
 // Counterpart to the test above, but verifies that opt-in origin isolation is

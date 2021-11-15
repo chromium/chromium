@@ -18,7 +18,10 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       origin(init.origin_),
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
-      is_pdf(init.is_pdf_) {}
+      is_pdf(init.is_pdf_) {
+  // An origin-keyed process can only be used for origin-keyed agent clusters.
+  DCHECK(!requests_origin_keyed_process() || requests_origin_agent_cluster());
+}
 
 UrlInfo::~UrlInfo() = default;
 

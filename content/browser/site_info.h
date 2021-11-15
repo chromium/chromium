@@ -113,7 +113,7 @@ class CONTENT_EXPORT SiteInfo {
   // accordingly.
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
-           bool is_origin_keyed,
+           bool requires_origin_keyed_process,
            const StoragePartitionConfig storage_partition_config,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest,
@@ -157,8 +157,8 @@ class CONTENT_EXPORT SiteInfo {
   //                if the SiteInstance's process isn't going to be locked.
   const GURL& process_lock_url() const { return process_lock_url_; }
 
-  // Returns whether this SiteInfo is specific to an origin rather than a site,
-  // such as due to opt-in origin isolation. This resolves an ambiguity of
+  // Returns whether this SiteInfo requires an origin-keyed process, such as for
+  // an OriginAgentCluster response header. This resolves an ambiguity of
   // whether a process with a lock_url() like "https://foo.example" is allowed
   // to include "https://sub.foo.example" or not. In opt-in isolation, it is
   // possible for example.com to be isolated, and sub.example.com not be
@@ -166,7 +166,9 @@ class CONTENT_EXPORT SiteInfo {
   // example.com, then sub.example.com is also (automatically) isolated.
   // Also note that opt-in isolated origins will include ports (if non-default)
   // in their site urls.
-  bool is_origin_keyed() const { return is_origin_keyed_; }
+  bool requires_origin_keyed_process() const {
+    return requires_origin_keyed_process_;
+  }
 
   // Returns the web-exposed isolation status of pages hosted by the
   // SiteInstance. The level of isolation which a page opts-into has
@@ -297,11 +299,12 @@ class CONTENT_EXPORT SiteInfo {
   // a site URL that is computed without the use of effective URLs.
   GURL process_lock_url_;
 
-  // Indicates whether this SiteInfo is specific to a single origin, rather than
-  // including all subdomains of that origin. Only used for opt-in origin
-  // isolation. In contrast, the site-level URLs that are typically used in
-  // SiteInfo include subdomains, as do command-line isolated origins.
-  bool is_origin_keyed_ = false;
+  // Indicates whether this SiteInfo is specific to a single origin and requires
+  // an origin-keyed process, rather than including all subdomains of that
+  // origin. Only used for OriginAgentCluster header opt-ins. In contrast, the
+  // site-level URLs that are typically used in SiteInfo include subdomains, as
+  // do command-line isolated origins.
+  bool requires_origin_keyed_process_ = false;
 
   // The StoragePartitionConfig to use when loading content belonging to this
   // SiteInfo.

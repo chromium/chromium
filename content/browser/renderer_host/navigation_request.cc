@@ -44,6 +44,7 @@
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/browser/renderer_host/cookie_utils.h"
@@ -2599,10 +2600,17 @@ void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
   // SiteInstance to add the origin as OAC, so we do it manually here.
   url::Origin origin = url::Origin::Create(url);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->ShouldOriginGetOptInIsolation(isolation_context, origin,
-                                            true /* is_requested */)) {
+  OriginAgentClusterIsolationState isolation_state =
+      policy->ShouldOriginGetOptInIsolation(
+          isolation_context, origin,
+          OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+              false /* requires_origin_keyed_process */));
+
+  if (isolation_state.is_origin_agent_cluster() &&
+      !isolation_state.requires_origin_keyed_process()) {
     policy->AddIsolatedOriginForBrowsingInstance(
-        isolation_context, origin, true /* is_origin_keyed */,
+        isolation_context, origin, true /* is_origin_agent_cluster */,
+        false /* requires_origin_keyed_process */,
         ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 }
@@ -2635,16 +2643,31 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult(
           : url::Origin::Create(common_params_->url);
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
-  const bool got_isolated = policy->ShouldOriginGetOptInIsolation(
-      isolation_context, origin, is_requested);
+
+  bool requires_origin_keyed_process =
+      is_requested &&
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
+
+  OriginAgentClusterIsolationState requested_isolation_state =
+      is_requested /* is_origin_agent_cluster */
+          ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                requires_origin_keyed_process)
+          : OriginAgentClusterIsolationState::CreateNonIsolated();
+
+  const bool got_origin_agent_cluster =
+      policy
+          ->ShouldOriginGetOptInIsolation(isolation_context, origin,
+                                          requested_isolation_state)
+          .is_origin_agent_cluster();
 
   if (is_requested) {
     origin_agent_cluster_end_result_ =
-        got_isolated ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
-                     : OriginAgentClusterEndResult::kRequestedButNotOriginKeyed;
+        got_origin_agent_cluster
+            ? OriginAgentClusterEndResult::kRequestedAndOriginKeyed
+            : OriginAgentClusterEndResult::kRequestedButNotOriginKeyed;
   } else {
     origin_agent_cluster_end_result_ =
-        got_isolated
+        got_origin_agent_cluster
             ? OriginAgentClusterEndResult::kNotRequestedButOriginKeyed
             : OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
   }
@@ -2786,8 +2809,16 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // active simultaneously for the same navigation.
   uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
 
-  if (IsOptInIsolationRequested())
+  // TODO(wjmaclean): allow kOriginAgentCluster to be set independently of
+  // kRequiresOriginKeyedProcess, to allow for logical OAC even when
+  // process-isolation for origins is available.
+  if (IsOptInIsolationRequested()) {
     isolation_flags |= UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
+    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+      isolation_flags |=
+          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
+    }
+  }
 
   if (ShouldRequestSiteIsolationForCOOP())
     isolation_flags |= UrlInfo::OriginIsolationRequest::kCOOP;
