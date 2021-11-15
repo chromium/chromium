@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 #include <algorithm>
 
@@ -29,7 +29,7 @@
 namespace blink {
 
 // static
-WebAudioDeviceFactory* WebAudioDeviceFactory::factory_ = nullptr;
+AudioDeviceFactory* AudioDeviceFactory::factory_ = nullptr;
 
 namespace {
 
@@ -81,12 +81,12 @@ scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
   DCHECK(!params.processing_id.has_value());
   return AudioRendererMixerManager::GetInstance().CreateInput(
       frame_token, params.session_id, params.device_id,
-      WebAudioDeviceFactory::GetSourceLatencyType(source_type));
+      AudioDeviceFactory::GetSourceLatencyType(source_type));
 }
 
 }  // namespace
 
-media::AudioLatency::LatencyType WebAudioDeviceFactory::GetSourceLatencyType(
+media::AudioLatency::LatencyType AudioDeviceFactory::GetSourceLatencyType(
     blink::WebAudioDeviceSourceType source) {
   switch (source) {
     case blink::WebAudioDeviceSourceType::kWebAudioInteractive:
@@ -107,7 +107,7 @@ media::AudioLatency::LatencyType WebAudioDeviceFactory::GetSourceLatencyType(
 }
 
 scoped_refptr<media::AudioRendererSink>
-WebAudioDeviceFactory::NewAudioRendererMixerSink(
+AudioDeviceFactory::NewAudioRendererMixerSink(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   // AudioRendererMixer sinks are always used asynchronously and thus can
@@ -117,7 +117,7 @@ WebAudioDeviceFactory::NewAudioRendererMixerSink(
 
 // static
 scoped_refptr<media::AudioRendererSink>
-WebAudioDeviceFactory::NewAudioRendererSink(
+AudioDeviceFactory::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
@@ -143,7 +143,7 @@ WebAudioDeviceFactory::NewAudioRendererSink(
 
 // static
 scoped_refptr<media::SwitchableAudioRendererSink>
-WebAudioDeviceFactory::NewSwitchableAudioRendererSink(
+AudioDeviceFactory::NewSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
@@ -166,7 +166,7 @@ WebAudioDeviceFactory::NewSwitchableAudioRendererSink(
 
 // static
 scoped_refptr<media::AudioCapturerSource>
-WebAudioDeviceFactory::NewAudioCapturerSource(
+AudioDeviceFactory::NewAudioCapturerSource(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
   if (factory_) {
@@ -185,7 +185,7 @@ WebAudioDeviceFactory::NewAudioCapturerSource(
 }
 
 // static
-media::OutputDeviceInfo WebAudioDeviceFactory::GetOutputDeviceInfo(
+media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
@@ -196,24 +196,24 @@ media::OutputDeviceInfo WebAudioDeviceFactory::GetOutputDeviceInfo(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-      base::BindRepeating(&WebAudioDeviceFactory::NewAudioRendererSink,
+      base::BindRepeating(&AudioDeviceFactory::NewAudioRendererSink,
                           blink::WebAudioDeviceSourceType::kNone),
       kDeleteTimeout);
   return cache->GetSinkInfo(frame_token, params.session_id, params.device_id);
 }
 
-WebAudioDeviceFactory::WebAudioDeviceFactory() {
+AudioDeviceFactory::AudioDeviceFactory() {
   DCHECK(!factory_) << "Can't register two factories at once.";
   factory_ = this;
 }
 
-WebAudioDeviceFactory::~WebAudioDeviceFactory() {
+AudioDeviceFactory::~AudioDeviceFactory() {
   factory_ = nullptr;
 }
 
 // static
 scoped_refptr<media::AudioRendererSink>
-WebAudioDeviceFactory::NewFinalAudioRendererSink(
+AudioDeviceFactory::NewFinalAudioRendererSink(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {

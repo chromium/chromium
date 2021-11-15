@@ -68,7 +68,7 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
       // using FuchsiaAudioOutputDevice for WebRTC.
       return nullptr;
 
-    // kNone is used in WebAudioDeviceFactory::GetOutputDeviceInfo() to get
+    // kNone is used in AudioDeviceFactory::GetOutputDeviceInfo() to get
     // default output device params.
     case blink::WebAudioDeviceSourceType::kNone:
       break;

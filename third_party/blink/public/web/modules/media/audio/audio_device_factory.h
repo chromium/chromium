@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,10 +28,10 @@ namespace blink {
 // to provide specialized implementations.
 // TODO(crbug.com/1255249): Rename the class and probably split it into
 // AudioRendererSinkFactory and AudioCapturerSourceFactory.
-class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
+class BLINK_MODULES_EXPORT AudioDeviceFactory {
  public:
-  WebAudioDeviceFactory(const WebAudioDeviceFactory&) = delete;
-  WebAudioDeviceFactory& operator=(const WebAudioDeviceFactory&) = delete;
+  AudioDeviceFactory(const AudioDeviceFactory&) = delete;
+  AudioDeviceFactory& operator=(const AudioDeviceFactory&) = delete;
 
   // Maps the source type to the audio latency it requires.
   static media::AudioLatency::LatencyType GetSourceLatencyType(
@@ -78,8 +78,8 @@ class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
       const media::AudioSourceParameters& params);
 
  protected:
-  WebAudioDeviceFactory();
-  virtual ~WebAudioDeviceFactory();
+  AudioDeviceFactory();
+  virtual ~AudioDeviceFactory();
 
   // You can derive from this class and specify an implementation for these
   // functions to provide alternate audio device implementations.
@@ -112,7 +112,7 @@ class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
  private:
   // The current globally registered factory. This is NULL when we should
   // create the default AudioRendererSinks.
-  static WebAudioDeviceFactory* factory_;
+  static AudioDeviceFactory* factory_;
 
   static scoped_refptr<media::AudioRendererSink> NewFinalAudioRendererSink(
       const LocalFrameToken& frame_token,
@@ -122,4 +122,4 @@ class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_DEVICE_FACTORY_H_

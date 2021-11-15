@@ -10,7 +10,7 @@
 #include "media/audio/audio_sink_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 namespace media {
 class AudioCapturerSource;
@@ -21,7 +21,7 @@ class SwitchableAudioRendererSink;
 namespace chromecast {
 namespace media {
 
-class CastAudioDeviceFactory final : public blink::WebAudioDeviceFactory {
+class CastAudioDeviceFactory final : public blink::AudioDeviceFactory {
  public:
   CastAudioDeviceFactory();
 
