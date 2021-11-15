@@ -35,6 +35,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
   GetAnnotatedVisitsToCluster(
       HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+      base::Time begin_time,
       base::Time end_time,
       size_t max_count,
       Callback callback);
@@ -51,13 +52,19 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // returned for clustering. It's used in the DB thread as each filtered visit
   // will need to fetch its `referring_visit_of_redirect_chain_start`.
   HistoryClustersService::IncompleteVisitMap incomplete_visit_map_;
+  // The lower bound of the begin times used in the history requests for
+  // completed visits. This is a lower bound time of all the visits fetched,
+  // though the visit count cap may be reached before we've queried all the way
+  // to `begin_time_limit_`.
+  base::Time begin_time_limit_;
   // The end time used in the initial history request for completed visits.
-  // This is the upper bound time of all the visits we fetched.
+  // This is the upper bound time of all the visits fetched.
   base::Time original_end_time_;
   // The end time used to continue the query onto the "next page".
-  // This is the lower bound time of all the visits we fetched.
+  // This is the lower bound time of all the visits fetched.
   base::Time continuation_end_time_;
-  // True if we have exhausted all of History.
+  // True if we have exhausted history up to `begin_time_limit_` or all of
+  // History; i.e., we didn't hit the visit count cap.
   bool exhausted_history_ = false;
   // This task stops fetching days of History once we've hit this soft cap,
   // which is controlled by the UI. Note there is a separate

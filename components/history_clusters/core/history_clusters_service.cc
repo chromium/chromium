@@ -366,6 +366,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
 
 void HistoryClustersService::QueryClusters(
     const std::string& query,
+    base::Time begin_time,
     base::Time end_time,
     const size_t max_count,
     QueryClustersCallback callback,
@@ -403,7 +404,8 @@ void HistoryClustersService::QueryClusters(
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
-          incomplete_visit_context_annotations_, end_time, max_visit_count,
+          incomplete_visit_context_annotations_, begin_time, end_time,
+          max_visit_count,
           base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
                          weak_ptr_factory_.GetWeakPtr(), query,
                          std::move(callback))),
@@ -432,15 +434,18 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // (The cache_query_task_tracker_ should also do this.)
     all_keywords_cache_timestamp_ = base::Time::Now();
 
+    // Query for 30 days of clusters since older visits won't have keywords.
+    const auto begin_time = base::Time::Now() - base::Days(30);
     // TODO(tommycli): This `QueryClusters()` correctly returns only clusters
-    // with `should_show_on_prominent_ui_surfaces` set to true because the
-    // `query` parameter is set to empty. However, it would be nice if this
-    // was more explicit, rather than just a happy coincidence. Likely the real
-    // solution will be to explicitly ask the backend for this bag of keywords.
+    //  with `should_show_on_prominent_ui_surfaces` set to true because the
+    //  `query` parameter is set to empty. However, it would be nice if this
+    //  was more explicit, rather than just a happy coincidence. Likely the real
+    //  solution will be to explicitly ask the backend for this bag of keywords.
     QueryClusters(
-        /*query=*/"", /*end_time=*/base::Time(), kMaxCountForKeywordCacheBatch,
+        /*query=*/"", begin_time, /*end_time=*/
+        base::Time(), kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), begin_time,
                        std::make_unique<std::set<std::u16string>>()),
         &cache_query_task_tracker_);
   }
@@ -526,6 +531,7 @@ void HistoryClustersService::ClearKeywordCache() {
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
+    base::Time begin_time,
     std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
     QueryClustersResult result) {
   // Copy keywords from every cluster into a the accumulator set.
@@ -542,15 +548,21 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // If there's still more to get, ask for another batch of keywords.
   if (result.continuation_end_time) {
     QueryClusters(
-        /*query=*/"", *result.continuation_end_time,
+        /*query=*/"", begin_time, *result.continuation_end_time,
         kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), begin_time,
                        // Pass on the accumulator set to the next callback.
                        std::move(keyword_accumulator)),
         &cache_query_task_tracker_);
     return;
   }
+
+  // TODO(manukh) Even though `keyword_accumulator` is a `std::set`, we still
+  //  often end up with duplicate keywords since different strings in the
+  //  accumulator may contain the same words. We should add a metric to measure
+  //  the keyword cache size and consider preventing duplicate keywords being
+  //  inserted.
 
   // We've got all the keywords now, time to populate the cache.
   all_keywords_cache_.clear();
