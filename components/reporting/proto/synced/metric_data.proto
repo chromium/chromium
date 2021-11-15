@@ -79,9 +79,25 @@ message NetworksTelemetry {
   optional HttpsLatencyRoutineData https_latency_data = 2;
 }
 
+// Information about keylocker. This is supported on Intel CPUs.
+message KeylockerInfo {
+  // If keylocker is supported on the devices CPUs.
+  optional bool supported = 1;
+  // If keylocker is configured on the devices CPUs.
+  optional bool configured = 2;
+}
+
+message CpuInfo {
+  // Information about keylocker for the devices CPUs.
+  optional KeylockerInfo keylocker_info = 1;
+}
+
 // Data that is considered immutable, should only be reported on startup and
 // policy enablment.
-message InfoData {}
+message InfoData {
+  // CPU info for the device.
+  optional CpuInfo cpu_info = 1;
+}
 
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.

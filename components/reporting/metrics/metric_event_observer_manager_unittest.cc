@@ -16,7 +16,7 @@
 #include "components/reporting/metrics/fake_reporting_settings.h"
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/metrics/metric_report_queue.h"
-#include "components/reporting/proto/metric_data.pb.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {

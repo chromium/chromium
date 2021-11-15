@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/sampler.h"
-#include "components/reporting/proto/metric_data.pb.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
 

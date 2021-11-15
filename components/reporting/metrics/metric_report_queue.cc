@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/reporting_settings.h"
-#include "components/reporting/proto/metric_data.pb.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
