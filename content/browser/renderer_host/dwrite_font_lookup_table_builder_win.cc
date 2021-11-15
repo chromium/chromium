@@ -190,7 +190,8 @@ void DWriteFontLookupTableBuilder::InitializeDirectWrite() {
   }
 }
 
-std::string DWriteFontLookupTableBuilder::ComputePersistenceHash() {
+std::string DWriteFontLookupTableBuilder::ComputePersistenceHash(
+    const std::string& browser_version) {
   // Build a hash from DWrite product version, browser major version and font
   // names and file paths as stored in the registry. The browser major version
   // is included to ensure that the cache is rebuild at least once for every
@@ -218,9 +219,7 @@ std::string DWriteFontLookupTableBuilder::ComputePersistenceHash() {
     to_hash.append(base::WideToUTF8(it.Value()));
   }
 
-  // Recreating version_info::GetMajorVersion as it is not linkable here.
-  base::Version full_version = base::Version(
-      GetContentClient()->browser()->GetUserAgentMetadata().full_version);
+  base::Version full_version = base::Version(browser_version);
 
   // Version can be an empty string on trybots.
   if (full_version.IsValid()) {
@@ -358,13 +357,16 @@ void DWriteFontLookupTableBuilder::
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
+  std::string browser_version =
+      GetContentClient()->browser()->GetUserAgentMetadata().full_version;
   results_collection_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable,
-                     base::Unretained(this)));
+                     base::Unretained(this), browser_version));
 }
 
-void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
+void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable(
+    const std::string& browser_version) {
   TRACE_EVENT0("dwrite,fonts",
                "DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable");
   DCHECK(!HasDWriteUniqueFontLookups());
@@ -378,7 +380,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
         !font_table.ParseFromArray(font_table_memory_.mapping.memory(),
                                    font_table_memory_.mapping.size()) ||
         font_table.stored_for_platform_version_identifier() !=
-            ComputePersistenceHash();
+            ComputePersistenceHash(browser_version);
 
     UMA_HISTOGRAM_BOOLEAN("DirectWrite.Fonts.Proxy.LookupTableDiskCacheHit",
                           !update_needed);
@@ -400,7 +402,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable() {
   // persisting the table to disk and identifying whether an update to the
   // table is needed when loading it back.
   font_unique_name_table_->set_stored_for_platform_version_identifier(
-      ComputePersistenceHash());
+      ComputePersistenceHash(browser_version));
 
   {
     base::ScopedBlockingCall scoped_blocking_call(

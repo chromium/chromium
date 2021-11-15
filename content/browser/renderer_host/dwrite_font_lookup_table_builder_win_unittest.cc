@@ -176,7 +176,10 @@ TEST_F(DWriteFontLookupTableBuilderTest, RepeatedScheduling) {
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, FontsHash) {
-  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash().size(), 0u);
+  ASSERT_GT(
+      font_lookup_table_builder_->ComputePersistenceHash("6.0.1.2").size(), 0u);
+  // Validate an empty string doesn't cause problems.
+  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash("").size(), 0u);
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
