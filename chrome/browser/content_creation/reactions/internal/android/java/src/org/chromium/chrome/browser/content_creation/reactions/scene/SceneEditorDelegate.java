@@ -27,4 +27,14 @@ interface SceneEditorDelegate {
      * Marks the given {@link ReactionLayout}'s active status as {@code isActive}.
      */
     void markActiveStatus(ReactionLayout reactionLayout, boolean isActive);
+
+    /**
+     * Invoked when a reaction is dragged across the editing surface.
+     */
+    void reactionWasMoved();
+
+    /**
+     * Invoked when the scale / rotate editing control of a reaction is interacted with.
+     */
+    void reactionWasAdjusted();
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -56,6 +57,10 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private boolean mDialogViewCreated;
     private boolean mAssetsFetched;
 
+    private long mDialogOpenedTime;
+    private long mAssetFetchStartTime;
+    private long mGenerationStartTime;
+
     /**
      * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
      * Lightweight Reactions scene.
@@ -86,6 +91,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mReactionService.getReactions((reactions) -> {
             assert reactions.size() > 0;
             mAvailableReactions = reactions;
+            mAssetFetchStartTime = System.currentTimeMillis();
             mMediator.fetchAssetsAndGetThumbnails(reactions, this::onAssetsFetched);
         });
     }
@@ -111,6 +117,11 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private void onAssetsFetched(Bitmap[] thumbnails) {
         assert thumbnails != null;
         assert thumbnails.length == mAvailableReactions.size();
+
+        // TODO(crbug.com/1268474): Detect asset fetch errors, and don't record a success in that
+        // case
+        LightweightReactionsMetrics.recordAssetsFetched(
+                /*success=*/true, System.currentTimeMillis() - mAssetFetchStartTime);
 
         mAssetsFetched = true;
         mThumbnails = thumbnails;
@@ -153,9 +164,19 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
                 : mActivity.getResources().getConfiguration().locale;
     }
 
+    /**
+     * Returns the time elapsed since the Lightweight Reactions dialog was opened.
+     */
+    private long getTimeSinceOpened() {
+        return System.currentTimeMillis() - mDialogOpenedTime;
+    }
+
     // LightweightReactionsCoordinator implementation.
     @Override
     public void showDialog() {
+        mDialogOpenedTime = System.currentTimeMillis();
+        LightweightReactionsMetrics.recordDialogOpened();
+
         FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
         mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
     }
@@ -170,11 +191,22 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     // ToolbarControlsDelegate implementation.
     @Override
     public void cancelButtonTapped() {
+        LightweightReactionsMetrics.recordDialogDismissed(getTimeSinceOpened());
+        LightweightReactionsMetrics.recordEditingMetrics(/*tappedDone=*/false,
+                mSceneCoordinator.getNbReactionsAdded(), mSceneCoordinator.getNbTypeChange(),
+                mSceneCoordinator.getNbRotateScale(), mSceneCoordinator.getNbDuplicate(),
+                mSceneCoordinator.getNbDelete(), mSceneCoordinator.getNbMove());
         mDialog.dismiss();
     }
 
     @Override
     public void doneButtonTapped() {
+        LightweightReactionsMetrics.recordEditingDone(getTimeSinceOpened());
+        LightweightReactionsMetrics.recordEditingMetrics(/*tappedDone=*/true,
+                mSceneCoordinator.getNbReactionsAdded(), mSceneCoordinator.getNbTypeChange(),
+                mSceneCoordinator.getNbRotateScale(), mSceneCoordinator.getNbDuplicate(),
+                mSceneCoordinator.getNbDelete(), mSceneCoordinator.getNbMove());
+
         GifGeneratorHost gifHost = new GifGeneratorHost() {
             @Override
             public void prepareFrame(Callback<Void> cb) {
@@ -188,14 +220,30 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         };
 
         mSceneCoordinator.clearSelection();
+        mGenerationStartTime = System.currentTimeMillis();
         mMediator.generateGif(gifHost, mSceneCoordinator.getFrameCount(),
                 mSceneCoordinator.getWidth(), mSceneCoordinator.getHeight(), (imageUri) -> {
+                    LightweightReactionsMetrics.recordGifGenerated(getTimeSinceOpened(),
+                            imageUri != null, System.currentTimeMillis() - mGenerationStartTime);
                     final String sheetTitle = getShareSheetTitle();
                     ShareParams params =
                             new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, /*url=*/"")
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
                                     .setFileContentType(GIF_MIME_TYPE)
+                                    .setCallback(new ShareParams.TargetChosenCallback() {
+                                        @Override
+                                        public void onTargetChosen(ComponentName chosenComponent) {
+                                            LightweightReactionsMetrics.recordGifShared(
+                                                    getTimeSinceOpened(), chosenComponent);
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            LightweightReactionsMetrics.recordGifNotShared(
+                                                    getTimeSinceOpened());
+                                        }
+                                    })
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();

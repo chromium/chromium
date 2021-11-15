@@ -25,6 +25,134 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="LightweightReactions.AssetsFetchDuration" units="ms"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to download all assets during dialog
+    initialization.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.AssetsFetchSuccess" enum="BooleanSuccess"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the Lightweight Reactions assets were successfully
+    downloaded.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.Editing.Tapped{Button}.NumberOf{Action}"
+    units="times" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the total number of times (across all reactions) the user performed
+    editing action {Action} during GIF editing, for cases where the user ended
+    up tapping the {Button} button.
+  </summary>
+  <token key="Action">
+    <variant name="Delete"
+        summary="Number of times the user deleted a reaction from the scene."/>
+    <variant name="Duplicate"
+        summary="Number of times the user duplicated a reaction."/>
+    <variant name="Move"
+        summary="Number of times the user moved a reaction by dragging it
+                 around the scene."/>
+    <variant name="ReactionsAdded"
+        summary="Number of times the user added a new reaction to the scene
+                 from the Toolbar."/>
+    <variant name="RotateScale"
+        summary="Number of times the user rotated or scaled a reaction."/>
+    <variant name="TypeChanges"
+        summary="Number of times the user changed an existing reaction's
+                 type."/>
+  </token>
+  <token key="Button">
+    <variant name="Cancel" summary="Cancel"/>
+    <variant name="Done" summary="Done"/>
+  </token>
+</histogram>
+
+<histogram name="LightweightReactions.EditingDone" enum="BooleanContinueChoice"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the user completed their GIF editing by tapping the Done
+    button. Enum value &quot;CONTINUE&quot; means the user tapped Done;
+    &quot;CANCEL&quot; means the user tapped Cancel.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.Funnel" enum="LightweightReactionsFunnel"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the step of the Lightweight Reaction usage funnel that the user
+    reaches.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationDuration" units="ms"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to generate and encode the user's GIF.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationSuccess"
+    enum="BooleanSuccess" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the GIF was successfully generated and encoded.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifShared" enum="BooleanShared"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>Records whether the GIF was shared in the Share Sheet.</summary>
+</histogram>
+
+<histogram name="LightweightReactions.ShareDestination"
+    enum="NoteShareDestination" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the destination type (first or third party) for the shared GIF.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.TimeTo{Action}" units="ms"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to accomplish {Action} from the time the
+    Lightweight Reactions dialog was shown.
+  </summary>
+  <token key="Action">
+    <variant name=".DismissDialog"
+        summary="The user tapped the Cancel button during GIF editing."/>
+    <variant name=".DismissShare"
+        summary="The user dismissed the Share Sheet before sharing their GIF."/>
+    <variant name=".FinishEditing"
+        summary="The user tapped the Done button after editing their GIF."/>
+    <variant name=".GenerateGif" summary="The GIF was generated."/>
+    <variant name=".ShareGif"
+        summary="The user shared their GIF in the Share Sheet."/>
+  </token>
+</histogram>
+
 <histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
     expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>

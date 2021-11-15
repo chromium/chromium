@@ -47446,6 +47446,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="yes"/>
 </enum>
 
+<enum name="LightweightReactionsFunnel">
+  <int value="0" label="LR dialog opened"/>
+  <int value="1" label="Editing done (tapped Next)"/>
+  <int value="2" label="GIF generated"/>
+  <int value="3" label="GIF shared"/>
+</enum>
+
 <enum name="LinkGenerationCopiedLinkType">
   <int value="0" label="Copied from new right-click menu generation"/>
   <int value="1" label="Copied from existing highlight right-click menu"/>

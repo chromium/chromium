@@ -114,6 +114,7 @@ class ReactionLayout extends RelativeLayout {
                         (RelativeLayout.LayoutParams) ReactionLayout.this.getLayoutParams();
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mSceneEditorDelegate.reactionWasMoved();
                         mBaseX = motionEvent.getRawX() - layoutParams.leftMargin;
                         mBaseY = motionEvent.getRawY() - layoutParams.topMargin;
                         mHeight = layoutParams.height;
@@ -157,6 +158,7 @@ class ReactionLayout extends RelativeLayout {
                 float y = motionEvent.getRawY();
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mSceneEditorDelegate.reactionWasAdjusted();
                         mBaseAngle = ReactionLayout.this.getRotation();
                         mBaseX = x;
                         mBaseY = y;
