@@ -62,6 +62,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       return kR16G16_unorm_SkColorType;
     // Use kN32_SkColorType if there is no corresponding SkColorType.
     case LUMINANCE_F16:
+      return kN32_SkColorType;
     case RG_88:
       return kR8G8_unorm_SkColorType;
     case BGRX_8888:
