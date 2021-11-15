@@ -822,9 +822,20 @@ bool SiteInstanceImpl::IsPdf() {
   return site_info_.is_pdf();
 }
 
+const StoragePartitionConfig& SiteInstanceImpl::GetStoragePartitionConfig() {
+  if (!has_site_) {
+    // Note: `site_info_` has not been set yet. This is ok as long as the
+    // StoragePartition of this SiteInstance does not change when `site_info_`
+    // is actually set. Enable the verification code in SetSiteInfoInternal()
+    // to verify that the storage partition info does not change.
+    verify_storage_partition_info_ = true;
+  }
+  return site_info_.storage_partition_config();
+}
+
 std::string SiteInstanceImpl::GetPartitionDomain(
     StoragePartitionImpl* storage_partition) {
-  auto storage_partition_config = site_info_.storage_partition_config();
+  auto storage_partition_config = GetStoragePartitionConfig();
 
   // The DCHECK here is to allow the trybots to detect any attempt to introduce
   // new code that violates this assumption.

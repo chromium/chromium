@@ -14,6 +14,7 @@
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance_process_assignment.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -139,6 +140,9 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   //   i.e. an origin with the host "deeply.nested.subdomain.example.com"
   //   corresponds to a site URL with the host "example.com".
   virtual const GURL& GetSiteURL() = 0;
+
+  // Get the StoragePartitionConfig used by this SiteInstance.
+  virtual const StoragePartitionConfig& GetStoragePartitionConfig() = 0;
 
   // Gets a SiteInstance for the given URL that shares the current
   // BrowsingInstance, creating a new SiteInstance if necessary.  This ensures

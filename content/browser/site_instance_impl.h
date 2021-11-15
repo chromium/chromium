@@ -136,6 +136,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   RenderProcessHost* GetProcess() override;
   BrowserContext* GetBrowserContext() override;
   const GURL& GetSiteURL() override;
+  const StoragePartitionConfig& GetStoragePartitionConfig() override;
   scoped_refptr<SiteInstance> GetRelatedSiteInstance(const GURL& url) override;
   bool IsRelatedSiteInstance(const SiteInstance* instance) override;
   size_t GetRelatedActiveContentsCount() override;

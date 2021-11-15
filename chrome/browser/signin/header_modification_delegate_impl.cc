@@ -135,16 +135,16 @@ bool HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
 
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
           contents->GetMainFrame()->GetProcess()->GetID())) {
-    GURL identity_api_site =
-        extensions::WebViewGuest::GetSiteForGuestPartitionConfig(
-            extensions::WebAuthFlow::GetWebViewPartitionConfig(
-                extensions::WebAuthFlow::GET_AUTH_TOKEN,
-                contents->GetBrowserContext()));
-    if (contents->GetSiteInstance()->GetSiteURL() != identity_api_site)
+    auto identity_api_config =
+        extensions::WebAuthFlow::GetWebViewPartitionConfig(
+            extensions::WebAuthFlow::GET_AUTH_TOKEN,
+            contents->GetBrowserContext());
+    if (contents->GetSiteInstance()->GetStoragePartitionConfig() !=
+        identity_api_config)
       return true;
 
-    // If the site URL matches, but |contents| is not using a guest
-    // SiteInstance, then there is likely a serious bug.
+    // If the StoragePartitionConfig matches, but |contents| is not using a
+    // guest SiteInstance, then there is likely a serious bug.
     CHECK(contents->GetSiteInstance()->IsGuest());
   }
   return false;

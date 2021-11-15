@@ -15,8 +15,6 @@
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/web_contents.h"
 
-class GURL;
-
 namespace base {
 class DictionaryValue;
 }
@@ -24,6 +22,7 @@ class DictionaryValue;
 namespace content {
 class BrowserContext;
 class SiteInstance;
+class StoragePartitionConfig;
 }
 
 namespace guest_view {
@@ -122,7 +121,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       const content::WebContents::CreateParams& create_params);
 
   content::SiteInstance* GetGuestSiteInstance(
-      const GURL& guest_site);
+      const content::StoragePartitionConfig& storage_partition_config);
 
   content::WebContents* GetGuestByInstanceID(int owner_process_id,
                                              int element_instance_id);

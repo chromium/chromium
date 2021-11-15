@@ -170,9 +170,10 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
   return "unknown";
 }
 
-std::string GetStoragePartitionIdFromSiteURL(const GURL& site_url) {
-  const std::string& partition_id = site_url.query();
-  bool persist_storage = site_url.path().find("persist") != std::string::npos;
+std::string GetStoragePartitionIdFromPartitionConfig(
+    const content::StoragePartitionConfig& storage_partition_config) {
+  const auto& partition_id = storage_partition_config.partition_name();
+  bool persist_storage = !storage_partition_config.in_memory();
   return (persist_storage ? webview::kPersistPrefix : "") + partition_id;
 }
 
@@ -441,7 +442,7 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
   auto* guest_view_manager =
       GuestViewManager::FromBrowserContext(browser_context());
   scoped_refptr<content::SiteInstance> guest_site_instance =
-      guest_view_manager->GetGuestSiteInstance(guest_site);
+      guest_view_manager->GetGuestSiteInstance(partition_config);
   if (!guest_site_instance) {
     // Create the SiteInstance in a new BrowsingInstance, which will ensure
     // that webview tags are also not allowed to send messages across
@@ -701,11 +702,10 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
   GuestViewManager* guest_manager =
       GuestViewManager::FromBrowserContext(browser_context());
   // Set the attach params to use the same partition as the opener.
-  // We pull the partition information from the site's URL, which is of the
-  // form guest://site/{persist}?{partition_name}.
-  const GURL& site_url = web_contents()->GetSiteInstance()->GetSiteURL();
+  const auto storage_partition_config =
+      web_contents()->GetSiteInstance()->GetStoragePartitionConfig();
   const std::string storage_partition_id =
-      GetStoragePartitionIdFromSiteURL(site_url);
+      GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
   base::DictionaryValue create_params;
   create_params.SetString(webview::kStoragePartitionId, storage_partition_id);
 
@@ -1039,14 +1039,12 @@ void WebViewGuest::ReportFrameNameChange(const std::string& name) {
 }
 
 void WebViewGuest::PushWebViewStateToIOThread() {
-  const GURL& site_url = web_contents()->GetSiteInstance()->GetSiteURL();
-  content::StoragePartitionConfig storage_partition_config =
-      content::StoragePartitionConfig::CreateDefault(browser_context());
-  if (!GetGuestPartitionConfigForSite(browser_context(), site_url,
-                                      &storage_partition_config)) {
+  if (!web_contents()->GetSiteInstance()->IsGuest()) {
     NOTREACHED();
     return;
   }
+  auto storage_partition_config =
+      web_contents()->GetSiteInstance()->GetStoragePartitionConfig();
 
   WebViewRendererState::WebViewInfo web_view_info;
   web_view_info.embedder_process_id =
@@ -1568,8 +1566,10 @@ void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
   const NewWindowInfo& new_window_info = it->second;
 
   // Retrieve the opener partition info if we have it.
-  const GURL& site_url = new_contents->GetSiteInstance()->GetSiteURL();
-  std::string storage_partition_id = GetStoragePartitionIdFromSiteURL(site_url);
+  const auto storage_partition_config =
+      new_contents->GetSiteInstance()->GetStoragePartitionConfig();
+  std::string storage_partition_id =
+      GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
 
   base::DictionaryValue request_info;
   request_info.SetInteger(webview::kInitialHeight, initial_bounds.height());
