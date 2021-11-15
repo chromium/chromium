@@ -306,7 +306,7 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // A circular button which when clicked will open the context menu of the
   // persistent desks bar. Note that this button will only be created when
-  // BentoBar is enabled.
+  // persistent desks bar should be shown.
   PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
 
   // ScrollView callback subscriptions.

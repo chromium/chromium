@@ -25,6 +25,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
@@ -347,7 +348,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                           base::Unretained(this)),
       /*is_left_arrow=*/false, this));
 
-  if (features::IsBentoBarEnabled()) {
+  if (PersistentDesksBarController::ShouldPersistentDesksBarBeVisible()) {
     vertical_dots_button_ =
         AddChildView(std::make_unique<PersistentDesksBarVerticalDotsButton>());
     vertical_dots_button_->SetPaintToLayer();
