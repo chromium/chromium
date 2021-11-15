@@ -2327,8 +2327,7 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
       FuzzyForSkiaOnlyPixelComparator(renderer_type())));
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_FastPassColorFilterAlphaTranslation) {
+TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -3758,8 +3757,6 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
       cc::ExactPixelComparator(/*discard_alpha=*/true)));
 }
 
-// Trilinear filtering is only supported in the gl renderer.
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
@@ -4844,8 +4841,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   }
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerOnRenderPass) {
+TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kInset = 20;
   constexpr int kCornerRadius = 20;
@@ -4905,8 +4901,7 @@ TEST_P(RendererPixelTest, DISABLED_RoundedCornerOnRenderPass) {
                                  cc::FuzzyPixelOffByOneComparator(true)));
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultiRadii) {
+TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr gfx::RoundedCornersF kCornerRadii(5, 15, 25, 35);
   constexpr int kInset = 20;
@@ -4960,8 +4955,7 @@ TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultiRadii) {
   }
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultipleQads) {
+TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   const gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr gfx::RoundedCornersF kCornerRadiiUL(5, 0, 0, 0);
   constexpr gfx::RoundedCornersF kCornerRadiiUR(0, 15, 0, 0);
