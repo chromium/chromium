@@ -14,8 +14,11 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setCustomCallback('saveAsMHTML',
       function(name, request, callback, response) {
-    if (response)
+    var requestId;
+    if (response) {
+      requestId = response.requestId;
       response = CreateBlob(response.mhtmlFilePath, response.mhtmlFileLength);
+    }
 
     try {
       callback(response);
@@ -23,9 +26,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       handleUncaughtException(
           'Error in chrome.pageCapture.saveAsMHTML callback', e, request.stack);
     } finally {
-      // Notify the browser. Now that the blob is referenced from JavaScript,
-      // the browser can drop its reference to it.
-      SendResponseAck(request.id);
+      if (requestId) {
+        // If we received a blob, notify the browser. Now that the blob is
+        // referenced from JavaScript, the browser can drop its reference to
+        // it.
+        SendResponseAck(requestId);
+      }
     }
   });
 });
