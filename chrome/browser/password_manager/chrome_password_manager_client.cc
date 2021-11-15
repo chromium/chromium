@@ -602,10 +602,6 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
         ->GetForBrowserContext(web_contents()->GetBrowserContext())
         ->PrewarmCache();
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChange)) {
-    was_leak_dialog_shown_ = true;
-  }
 
   if (messages::IsPasswordMessagesUiEnabled()) {
     save_password_message_delegate_.DismissSavePasswordPrompt();
@@ -709,12 +705,6 @@ bool ChromePasswordManagerClient::WasLastNavigationHTTPError() const {
     return true;
   return false;
 }
-
-#if defined(OS_ANDROID)
-bool ChromePasswordManagerClient::WasCredentialLeakDialogShown() const {
-  return was_leak_dialog_shown_;
-}
-#endif  // defined(OS_ANDROID)
 
 net::CertStatus ChromePasswordManagerClient::GetMainFrameCertStatus() const {
   content::NavigationEntry* entry =

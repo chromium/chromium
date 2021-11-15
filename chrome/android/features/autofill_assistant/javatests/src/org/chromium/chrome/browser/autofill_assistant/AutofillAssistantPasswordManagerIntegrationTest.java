@@ -18,8 +18,6 @@ import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCss
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -40,7 +38,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordChangeLauncher;
-import org.chromium.chrome.browser.password_manager.PasswordManagerClientBridgeForTesting;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -62,22 +59,6 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
 
     private WebContents getWebContents() {
         return mTestRule.getWebContents();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerClientBridgeForTesting.setLeakDialogWasShownForTesting(
-                                getWebContents(), true));
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> PasswordManagerClientBridgeForTesting.setLeakDialogWasShownForTesting(
-                                getWebContents(), false));
     }
 
     /**

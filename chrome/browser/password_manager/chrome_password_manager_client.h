@@ -185,10 +185,6 @@ class ChromePasswordManagerClient
   password_manager::SyncState GetPasswordSyncState() const override;
   bool WasLastNavigationHTTPError() const override;
 
-#if defined(OS_ANDROID)
-  bool WasCredentialLeakDialogShown() const override;
-#endif  // defined(OS_ANDROID)
-
   net::CertStatus GetMainFrameCertStatus() const override;
   void PromptUserToEnableAutosignin() override;
   bool IsIncognito() const override;
@@ -303,10 +299,6 @@ class ChromePasswordManagerClient
   password_manager::CredentialCache* GetCredentialCacheForTesting() {
     return &credential_cache_;
   }
-
-  void SetCredentialLeakDialogWasShownForTesting(bool value) {
-    was_leak_dialog_shown_ = value;
-  }
 #endif
 
   // AutofillAssistantRuntimeObserver:
@@ -388,10 +380,6 @@ class ChromePasswordManagerClient
   // event is triggered. It is sent to password reuse detection manager and
   // reset when ime finish composing text event is triggered.
   std::u16string last_composing_text_;
-
-  // Whether a leak warning was shown. Used only for tests or when
-  // kPasswordChange feature is enabled.
-  bool was_leak_dialog_shown_ = false;
 
   SavePasswordMessageDelegate save_password_message_delegate_;
   GeneratedPasswordSavedMessageDelegate
