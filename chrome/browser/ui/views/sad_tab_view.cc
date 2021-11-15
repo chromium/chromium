@@ -530,7 +530,8 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
       CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
-    auto* list_view = AddChildView(std::make_unique<BulletedLabelListView>());
+    auto* list_view =
+        container->AddChildView(std::make_unique<BulletedLabelListView>());
     for (const auto& id : bullet_string_ids)
       list_view->AddLabel(l10n_util::GetStringUTF16(id));
     list_view->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(2, 1));
