@@ -222,6 +222,14 @@ template("system_webview_apk_or_module_tmpl") {
       resource_exclusion_regex += "|" + weblayer_resource_exclusion_regex
     }
 
+    # We only optimize resources for bundles since APKs are not shipped.
+    # Resources only live in the base module atm as such we only need to set
+    # these on the base module
+    if (_is_bundle_module) {
+      # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
+      short_resource_paths = !is_java_debug
+    }
+
     if (!_is_bundle_module) {
       # Used as an additional apk in test scripts.
       never_incremental = true
