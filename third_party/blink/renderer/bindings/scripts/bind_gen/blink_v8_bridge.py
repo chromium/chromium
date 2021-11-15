@@ -34,7 +34,7 @@ def blink_class_name(idl_definition):
         return "V8{}".format(idl_definition.identifier)
     elif isinstance(idl_definition, web_idl.ObservableArray):
         return "V8ObservableArray{}".format(
-            idl_definition.idl_type.element_type.
+            idl_definition.element_type.
             type_name_with_extended_attribute_key_values)
     elif isinstance(idl_definition, web_idl.Union):
         # Technically this name is not guaranteed to be unique because
