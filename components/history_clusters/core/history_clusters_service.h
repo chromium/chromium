@@ -164,6 +164,7 @@ class HistoryClustersService : public KeyedService {
   void PopulateClusterKeywordCache(
       base::Time begin_time,
       std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
+      query_parser::QueryWordVector* cache,
       QueryClustersResult result);
 
   // Internally used callback for `QueryClusters()`.
@@ -196,6 +197,20 @@ class HistoryClustersService : public KeyedService {
   // TODO(tommycli): Make a smarter mechanism for regenerating the cache.
   query_parser::QueryWordVector all_keywords_cache_;
   base::Time all_keywords_cache_timestamp_;
+
+  // Like above, but will represent the clusters newer than
+  // `all_keywords_cache_timestamp_` I.e., this will contain up to 2 hours of
+  // clusters. This can be up to 10 seconds stale. We use a separate cache that
+  // can repeatedly be cleared and recreated instead of incrementally adding
+  // keywords to `all_keywords_cache_` because doing the latter might:
+  //  1) Give a different set of keywords since cluster keywords aren't
+  //     necessarily a union of the individual visits' keywords.
+  //  2) Exclude keywords since keywords of size-1 clusters are not cached.
+  // TODO(manukh) This is a "band aid" fix to missing keywords for recent
+  //  visits.
+  query_parser::QueryWordVector short_keyword_cache_;
+  base::Time short_keyword_cache_timestamp_;
+
   base::CancelableTaskTracker cache_query_task_tracker_;
 
   // A list of observers for this service.

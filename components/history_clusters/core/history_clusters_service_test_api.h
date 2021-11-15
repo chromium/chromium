@@ -49,6 +49,14 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->backend_ = std::move(backend);
   }
 
+  void SetAllKeywordsCacheTimestamp(base::Time time) {
+    history_clusters_service_->all_keywords_cache_timestamp_ = time;
+  }
+
+  void SetShortKeywordCacheTimestamp(base::Time time) {
+    history_clusters_service_->short_keyword_cache_timestamp_ = time;
+  }
+
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };

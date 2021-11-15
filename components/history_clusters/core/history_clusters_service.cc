@@ -432,6 +432,10 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
   if (base::SysInfo::IsLowEndDevice())
     return false;
 
+  // If `all_keywords_cache_` is older than 2 hours, update it with the keywords
+  // of all clusters. Otherwise, update `short_keyword_cache_` with the
+  // keywords of only the clusters not represented in all_keywords_cache_.
+
   // 2 hour threshold chosen arbitrarily for cache refresh time.
   if ((base::Time::Now() - all_keywords_cache_timestamp_) > base::Hours(2) &&
       !cache_query_task_tracker_.HasTrackedTasks()) {
@@ -451,7 +455,33 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         base::Time(), kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
-                       std::make_unique<std::set<std::u16string>>()),
+                       std::make_unique<std::set<std::u16string>>(),
+                       &all_keywords_cache_),
+        &cache_query_task_tracker_);
+
+    // Once `all_keywords_cache_` has been updated, we could clear
+    // `short_keyword_cache_` as its keywords will be contained in
+    // `all_keywords_cache_`. However, since `all_keywords_cache_` is updated
+    // asynchronously, we don't clear `short_keyword_cache_` to avoid
+    // introducing another layer of callbacks.
+
+  } else if (!cache_query_task_tracker_.HasTrackedTasks() &&
+             (base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
+                 10 &&
+             (base::Time::Now() - short_keyword_cache_timestamp_).InSeconds() >
+                 10) {
+    // Update the timestamp right away, to prevent this from running again.
+    short_keyword_cache_timestamp_ = base::Time::Now();
+
+    QueryClusters(
+        /*query=*/"",
+        /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
+        base::Time(), kMaxCountForKeywordCacheBatch,
+        base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       all_keywords_cache_timestamp_,
+                       std::make_unique<std::set<std::u16string>>(),
+                       &short_keyword_cache_),
         &cache_query_task_tracker_);
   }
 
@@ -461,6 +491,9 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
       &query_nodes);
 
   return query_parser::QueryParser::DoesQueryMatch(all_keywords_cache_,
+                                                   query_nodes,
+                                                   /*exact=*/true) ||
+         query_parser::QueryParser::DoesQueryMatch(short_keyword_cache_,
                                                    query_nodes,
                                                    /*exact=*/true);
 }
@@ -531,13 +564,16 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
 
 void HistoryClustersService::ClearKeywordCache() {
   all_keywords_cache_timestamp_ = base::Time();
+  short_keyword_cache_timestamp_ = base::Time();
   all_keywords_cache_.clear();
+  short_keyword_cache_.clear();
   cache_query_task_tracker_.TryCancelAll();
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
     base::Time begin_time,
     std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
+    query_parser::QueryWordVector* cache,
     QueryClustersResult result) {
   // Copy keywords from every cluster into a the accumulator set.
   for (auto& cluster : result.clusters) {
@@ -558,7 +594,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
                        // Pass on the accumulator set to the next callback.
-                       std::move(keyword_accumulator)),
+                       std::move(keyword_accumulator), cache),
         &cache_query_task_tracker_);
     return;
   }
@@ -570,11 +606,11 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   //  inserted.
 
   // We've got all the keywords now, time to populate the cache.
-  all_keywords_cache_.clear();
+  cache->clear();
   for (auto& keyword : *keyword_accumulator) {
     // Each `keyword` may itself have multiple terms that we need to extract.
     query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
-                                                 &all_keywords_cache_);
+                                                 cache);
   }
 }
 

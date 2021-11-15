@@ -842,6 +842,50 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
+TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
+  auto minutes_ago = [](int minutes) {
+    return base::Time::Now() - base::Minutes(minutes);
+  };
+
+  // Set up the cache timestamps.
+  history_clusters_service_test_api_->SetAllKeywordsCacheTimestamp(
+      minutes_ago(60));
+  history_clusters_service_test_api_->SetShortKeywordCacheTimestamp(
+      minutes_ago(15));
+
+  // Set up the visit timestamps.
+  // Visits newer than both cache timestamps should be reclustered.
+  AddIncompleteVisit(1, 1, minutes_ago(5));
+  // Visits older than the secondary cache timestamp should be reclustered.
+  AddIncompleteVisit(2, 2, minutes_ago(30));
+  // Visits older than the primary cache timestamp should not be reclustered.
+  AddIncompleteVisit(3, 3, minutes_ago(70));
+
+  // Kick off cluster request and verify the correct visits are sent.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+  test_clustering_backend_->WaitForGetClustersCall();
+  std::vector<history::AnnotatedVisit> visits =
+      test_clustering_backend_->LastClusteredVisits();
+  ASSERT_EQ(visits.size(), 2u);
+  EXPECT_EQ(visits[0].visit_row.visit_id, 1);
+  EXPECT_EQ(visits[1].visit_row.visit_id, 2);
+
+  // Send the cluster response and verify the keyword was cached.
+  std::vector<history::Cluster> clusters2;
+  clusters2.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(1),
+                           test_clustering_backend_->GetVisitById(2),
+                       },
+                       {u"peach", u""},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  test_clustering_backend_->FulfillCallback(clusters2);
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
+
 }  // namespace
 
 }  // namespace history_clusters
