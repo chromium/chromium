@@ -116,7 +116,7 @@
 
         <cr-link-row id="sync-setup"
             start-icon="cr:sync"
-            label="[[getSyncRowLabel_()]]"
+            label="$i18n{syncAndNonPersonalizedServices}"
             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
             on-click="onSyncTap_"
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -157,7 +157,7 @@
       -->
       <template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]">
         <template is="dom-if" route-path="/osSync">
-          <settings-subpage page-title="$i18n{osSyncPageTitle}"
+          <settings-subpage page-title="$i18n{syncAndNonPersonalizedServices}"
               learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
             <os-sync-controls sync-status="[[syncStatus]]"
                 profile-icon-url="[[profileIconUrl_]]"

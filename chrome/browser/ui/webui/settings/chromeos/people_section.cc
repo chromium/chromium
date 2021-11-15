@@ -636,7 +636,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"lockScreenFingerprintTitle",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE},
       {"manageOtherPeople", IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE},
-      {"osSyncPageTitle", IDS_OS_SETTINGS_SYNC_PAGE_TITLE},
       {"syncAndNonPersonalizedServices",
        IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
       {"syncDisconnectConfirm", IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM},
@@ -807,15 +806,17 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSyncDeprecated,
                             kSyncDeprecatedSettings, generator);
+
+  // TODO(crbug.com/1227417): Remove after SyncSettingsCategorization launch.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE,
       mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncDeprecated,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSyncDeprecatedAdvancedSubpagePath);
 
-  // OS sync.
+  // Page with OS-specific sync data types.
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_SYNC_PAGE_TITLE, mojom::Subpage::kSync,
+      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSync,
       mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSyncSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,

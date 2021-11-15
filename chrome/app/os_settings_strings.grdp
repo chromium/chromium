@@ -235,9 +235,6 @@
      =1 {1 Google Account}
      other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
-    Sync your settings
-  </message>
   <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across Chrome OS devices.">
     Turn on
   </message>

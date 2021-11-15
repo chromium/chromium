@@ -341,18 +341,6 @@ Polymer({
    * @return {string}
    * @private
    */
-  getSyncRowLabel_() {
-    if (this.syncSettingsCategorizationEnabled_) {
-      return this.i18n('osSyncPageTitle');
-    } else {
-      return this.i18n('syncAndNonPersonalizedServices');
-    }
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
   getSyncAndGoogleServicesSubtext_() {
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
