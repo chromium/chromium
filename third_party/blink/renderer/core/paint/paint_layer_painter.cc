@@ -74,6 +74,25 @@ bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   return false;
 }
 
+PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
+                                                   const LayoutBox& box) {
+  PhysicalRect contents_visual_rect = box.PhysicalContentsVisualOverflowRect();
+  contents_visual_rect.Move(fragment.PaintOffset());
+  const auto* replaced_transform =
+      fragment.PaintProperties()
+          ? fragment.PaintProperties()->ReplacedContentTransform()
+          : nullptr;
+  if (replaced_transform) {
+    FloatRect float_contents_visual_rect(contents_visual_rect);
+    GeometryMapper::SourceToDestinationRect(*replaced_transform->Parent(),
+                                            *replaced_transform,
+                                            float_contents_visual_rect);
+    contents_visual_rect =
+        PhysicalRect::EnclosingRect(float_contents_visual_rect);
+  }
+  return contents_visual_rect;
+}
+
 PaintResult PaintLayerPainter::Paint(
     GraphicsContext& context,
     const PaintLayerPaintingInfo& painting_info,
@@ -467,9 +486,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
 
       bool cull_rect_intersects_contents = true;
       if (const auto* box = DynamicTo<LayoutBox>(object)) {
-        PhysicalRect contents_visual_rect =
-            box->PhysicalContentsVisualOverflowRect();
-        contents_visual_rect.Move(object.FirstFragment().PaintOffset());
+        PhysicalRect contents_visual_rect(
+            ContentsVisualRect(object.FirstFragment(), *box));
         PhysicalRect contents_cull_rect(
             object.FirstFragment().GetContentsCullRect().Rect());
         cull_rect_intersects_contents =

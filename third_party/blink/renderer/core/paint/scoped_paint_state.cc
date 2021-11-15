@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 
 namespace blink {
 
@@ -74,8 +75,7 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
         fragment_to_paint_->GetContentsCullRect());
     if (box.Layer()->PreviousPaintResult() == kFullyPainted) {
       PhysicalRect contents_visual_rect =
-          box.PhysicalContentsVisualOverflowRect();
-      contents_visual_rect.Move(fragment_to_paint_->PaintOffset());
+          PaintLayerPainter::ContentsVisualRect(*fragment_to_paint_, box);
       if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
                .Contains(contents_visual_rect)) {
         box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
