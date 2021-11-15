@@ -76,10 +76,10 @@ class UploadFileElementReaderTest : public testing::TestWithParam<bool>,
           length, expected_modification_time);
     }
 
-    // The base::File::FLAG_SHARE_DELETE lets the file be deleted without the
-    // test fixture waiting on it to be closed.
+    // The base::File::FLAG_WIN_SHARE_DELETE lets the file be deleted without
+    // the test fixture waiting on it to be closed.
     int open_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-                     base::File::FLAG_SHARE_DELETE;
+                     base::File::FLAG_WIN_SHARE_DELETE;
 #if defined(OS_WIN)
     // On Windows, file must be opened for asynchronous operation.
     open_flags |= base::File::FLAG_ASYNC;

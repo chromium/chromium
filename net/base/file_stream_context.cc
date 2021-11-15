@@ -178,7 +178,7 @@ FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
     // we are always adding SHARE_DELETE flag to accommodate such use case.
     // TODO(rvargas): This sounds like a bug, as deleting the file would
     // presumably happen on the wrong thread. There should be an async delete.
-    open_flags |= base::File::FLAG_SHARE_DELETE;
+    open_flags |= base::File::FLAG_WIN_SHARE_DELETE;
     file.Initialize(path, open_flags);
 #if defined(OS_ANDROID)
   }
