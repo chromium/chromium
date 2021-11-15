@@ -28,7 +28,7 @@ TEST(PaintPreviewFileStreamTest, TestWriteRead) {
   EXPECT_FALSE(wstream.DidWriteFail());
   base::File read_file(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_EXCLUSIVE_READ);
+                                      base::File::FLAG_WIN_EXCLUSIVE_READ);
   FileRStream rstream(std::move(read_file));
   EXPECT_FALSE(rstream.isAtEnd());
   std::vector<uint8_t> read_data(test_data.size(), 0xFF);
@@ -124,7 +124,7 @@ TEST(PaintPreviewFileStreamTest, TestSkip) {
   wstream.Close();
   base::File read_file(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_EXCLUSIVE_READ);
+                                      base::File::FLAG_WIN_EXCLUSIVE_READ);
   FileRStream rstream(std::move(read_file));
   EXPECT_FALSE(rstream.isAtEnd());
   EXPECT_EQ(rstream.read(nullptr, test_data.size()), test_data.size());
@@ -145,7 +145,7 @@ TEST(PaintPreviewFileStreamTest, TestReadAndSkip) {
   wstream.Close();
   base::File read_file(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_EXCLUSIVE_READ);
+                                      base::File::FLAG_WIN_EXCLUSIVE_READ);
   const size_t kSkipBytes = 3;
   FileRStream rstream(std::move(read_file));
   EXPECT_FALSE(rstream.isAtEnd());
