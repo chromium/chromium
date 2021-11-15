@@ -413,15 +413,6 @@ static bool VerifyCodec(const CodecInfo* codec_info,
         audio_codecs->push_back(codec_info->tag);
       return true;
     case CodecInfo::VIDEO:
-#if defined(OS_ANDROID)
-      // TODO(wolenetz, dalecurtis): This should instead use MimeUtil() to avoid
-      // duplication of subtle Android behavior.  http://crbug.com/587303.
-      if (codec_info->tag == CodecInfo::HISTOGRAM_H264 &&
-          !media::HasPlatformDecoderSupport()) {
-        return false;
-      }
-#endif
-
       if (video_codecs)
         video_codecs->push_back(codec_info->tag);
       return true;

@@ -57,7 +57,6 @@ class MEDIA_EXPORT MimeUtil {
   // Platform configuration structure.  Controls which codecs are supported at
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
-    bool has_platform_decoders = false;
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
     bool has_platform_dv_decoder = false;
 #endif

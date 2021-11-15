@@ -508,15 +508,6 @@ void KeySystemsImpl::AddSupportedKeySystems(
         << "Key system '" << properties->GetKeySystemName()
         << "' already registered";
 
-#if defined(OS_ANDROID)
-    // Ensure that the renderer can access the decoders necessary to use the
-    // key system.
-    if (!properties->UseAesDecryptor() && !HasPlatformDecoderSupport()) {
-      DLOG(WARNING) << properties->GetKeySystemName() << " not registered";
-      continue;
-    }
-#endif  // defined(OS_ANDROID)
-
     DVLOG(1) << __func__
              << ": Adding key system:" << properties->GetKeySystemName();
     key_system_properties_map_[properties->GetKeySystemName()] =

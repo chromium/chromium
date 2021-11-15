@@ -53,12 +53,6 @@ namespace media {
 
 namespace {
 
-#define SKIP_TEST_IF_NOT_SUPPORTED() \
-  do {                               \
-    if (!IsSupported())              \
-      return;                        \
-  } while (0)
-
 // The number of packets to read and then decode from each file.
 const size_t kDecodeRuns = 3;
 
@@ -154,24 +148,6 @@ class AudioDecoderTest
   }
 
  protected:
-  bool IsSupported() const {
-#if defined(OS_ANDROID)
-    if (decoder_type_ == MEDIA_CODEC) {
-      if (!MediaCodecUtil::IsMediaCodecAvailable()) {
-        VLOG(0) << "Could not run test - no MediaCodec on device.";
-        return false;
-      }
-      if (params_.codec == AudioCodec::kOpus &&
-          base::android::BuildInfo::GetInstance()->sdk_int() <
-              base::android::SDK_VERSION_LOLLIPOP) {
-        VLOG(0) << "Could not run test - Opus is not supported";
-        return false;
-      }
-    }
-#endif
-    return true;
-  }
-
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     ASSERT_FALSE(pending_decode_);
     pending_decode_ = true;
@@ -341,28 +317,13 @@ class AudioDecoderTest
     return base::MD5DigestToBase16(digest);
   }
 
-  // Android MediaCodec returns wrong timestamps (shifted one frame forward)
-  // for AAC before Android L. Skip the timestamp check in this situation.
-  bool SkipBufferTimestampCheck() const {
-#if defined(OS_ANDROID)
-    return (base::android::BuildInfo::GetInstance()->sdk_int() <
-            base::android::SDK_VERSION_LOLLIPOP) &&
-           decoder_type_ == MEDIA_CODEC && params_.codec == AudioCodec::kAAC;
-#else
-    return false;
-#endif
-  }
-
   void ExpectDecodedAudio(size_t i, const std::string& exact_hash) {
     CHECK_LT(i, decoded_audio_.size());
     const scoped_refptr<AudioBuffer>& buffer = decoded_audio_[i];
 
     const DecodedBufferExpectations& sample_info = params_.expectations[i];
 
-    // Android MediaCodec returns wrong timestamps (shifted one frame forward)
-    // for AAC before Android L. Ignore sample_info.timestamp in this situation.
-    if (!SkipBufferTimestampCheck())
-      EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
+    EXPECT_EQ(sample_info.timestamp, buffer->timestamp().InMicroseconds());
     EXPECT_EQ(sample_info.duration, buffer->duration().InMicroseconds());
     EXPECT_FALSE(buffer->end_of_stream());
 
@@ -544,37 +505,31 @@ const TestParams kFFmpegTestParams[] = {
 };
 
 TEST_P(AudioDecoderTest, Initialize) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterInitialize) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Use a different TestParams to reinitialize the decoder.
   set_params(kReinitializeTestParams);
 
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 
   // Use a different TestParams to reinitialize the decoder.
   set_params(kReinitializeTestParams);
 
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   Reset();
@@ -582,14 +537,12 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
   // Use a different TestParams to reinitialize the decoder.
   set_params(kReinitializeTestParams);
 
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
 // Verifies decode audio as well as the Decode() -> Reset() sequence.
 TEST_P(AudioDecoderTest, ProduceAudioSamples) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
   // Run the test multiple times with a seek back to the beginning in between.
@@ -630,20 +583,17 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
 }
 
 TEST_P(AudioDecoderTest, Decode) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
   EXPECT_TRUE(last_decode_status().is_ok());
 }
 
 TEST_P(AudioDecoderTest, Reset) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Reset();
 }
 
 TEST_P(AudioDecoderTest, NoTimestamp) {
-  SKIP_TEST_IF_NOT_SUPPORTED();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(0));
   buffer->set_timestamp(kNoTimestamp);

@@ -95,14 +95,6 @@ CastContentRendererClient::CastContentRendererClient()
       activity_url_filter_manager_(
           std::make_unique<CastActivityUrlFilterManager>()) {
 #if defined(OS_ANDROID)
-  DCHECK(::media::MediaCodecUtil::IsMediaCodecAvailable())
-      << "MediaCodec is not available!";
-  // Platform decoder support must be enabled before we set the
-  // IsCodecSupportedCB because the latter instantiates the lazy MimeUtil
-  // instance, which caches the platform decoder supported state when it is
-  // constructed.
-  ::media::EnablePlatformDecoderSupport();
-
   // Registers a custom content::AudioDeviceFactory
   cast_audio_device_factory_ =
       std::make_unique<media::CastAudioDeviceFactory>();

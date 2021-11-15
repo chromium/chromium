@@ -110,7 +110,6 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // Buffer queue recorder interface.
   SLAndroidSimpleBufferQueueItf simple_buffer_queue_;
 
-  SLDataFormat_PCM format_;
   SLAndroidDataFormat_PCM_EX float_format_;
 
   // Audio buffers that are allocated during Open() based on parameters given

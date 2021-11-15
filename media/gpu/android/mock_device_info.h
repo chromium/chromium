@@ -29,7 +29,7 @@ class MockDeviceInfo : public DeviceInfo {
   MOCK_METHOD1(CodecNeedsFlushWorkaround, bool(MediaCodecBridge* codec));
   MOCK_METHOD0(IsAsyncApiSupported, bool());
   MOCK_METHOD1(AddSupportedCodecProfileLevels,
-               bool(std::vector<CodecProfileLevel>*));
+               void(std::vector<CodecProfileLevel>*));
 };
 
 }  // namespace media

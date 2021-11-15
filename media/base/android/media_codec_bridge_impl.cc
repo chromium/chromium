@@ -183,9 +183,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString()
            << " media_crypto:" << media_crypto.obj();
 
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
-
   const std::string mime =
       MediaCodecUtil::CodecToAndroidMimeType(config.codec());
   if (mime.empty())
@@ -225,9 +222,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
 // static
 std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
     const VideoCodecConfig& config) {
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
-
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(config.codec);
   if (mime.empty())
     return nullptr;
@@ -266,9 +260,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
     int frame_rate,
     int i_frame_interval,
     int color_format) {
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
-
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   if (mime.empty())
     return nullptr;

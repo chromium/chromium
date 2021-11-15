@@ -378,32 +378,6 @@ void MediaFactory::SetupMojo() {
   DCHECK(interface_broker_);
 }
 
-#if defined(OS_ANDROID)
-// Returns true if the MediaPlayerRenderer should be used for playback, false
-// if the default renderer should be used instead.
-//
-// Note that HLS and MP4 detection are pre-redirect and path-based. It is
-// possible to load such a URL and find different content.
-bool UseMediaPlayerRenderer(const GURL& url) {
-  // Always use the default renderer for playing blob URLs.
-  if (url.SchemeIsBlob())
-    return false;
-
-  // Don't use the default renderer if the container likely contains a codec we
-  // can't decode in software and platform decoders are not available.
-  if (!media::HasPlatformDecoderSupport()) {
-    // Assume that "mp4" means H264. Without platform decoder support we cannot
-    // play it with the default renderer so use MediaPlayerRenderer.
-    // http://crbug.com/642988.
-    if (base::ToLowerASCII(url.spec()).find("mp4") != std::string::npos)
-      return true;
-  }
-
-  // Otherwise, use the default renderer.
-  return false;
-}
-#endif  // defined(OS_ANDROID)
-
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     blink::WebMediaPlayerClient* client,
@@ -611,7 +585,6 @@ MediaFactory::CreateRendererFactorySelector(
 
   auto factory_selector = std::make_unique<media::RendererFactorySelector>();
   bool is_base_renderer_factory_set = false;
-  bool use_media_player_renderer = false;
 
   auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
       render_frame_, media_log, decoder_factory,
@@ -624,13 +597,9 @@ MediaFactory::CreateRendererFactorySelector(
   }
 
 #if defined(OS_ANDROID)
-  use_media_player_renderer = UseMediaPlayerRenderer(url);
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_ANDROID)
   DCHECK(interface_broker_);
 
-  // MediaPlayerRendererClientFactory setup.
+  // MediaPlayerRendererClientFactory setup. It is used for HLS playback.
   auto media_player_factory =
       std::make_unique<MediaPlayerRendererClientFactory>(
           render_thread->compositor_task_runner(), CreateMojoRendererFactory(),
@@ -640,16 +609,10 @@ MediaFactory::CreateRendererFactorySelector(
               render_thread->GetStreamTexureFactory(),
               render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia)));
 
-  if (!is_base_renderer_factory_set && use_media_player_renderer) {
-    factory_selector->AddBaseFactory(RendererType::kMediaPlayer,
-                                     std::move(media_player_factory));
-    is_base_renderer_factory_set = true;
-  } else {
-    // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
-    // might fallback to it if the final redirected URL is an HLS url.
-    factory_selector->AddFactory(RendererType::kMediaPlayer,
-                                 std::move(media_player_factory));
-  }
+  // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
+  // might fallback to it if the final redirected URL is an HLS url.
+  factory_selector->AddFactory(RendererType::kMediaPlayer,
+                               std::move(media_player_factory));
 
   // FlingingRendererClientFactory (FRCF) setup.
   auto flinging_factory = std::make_unique<FlingingRendererClientFactory>(
@@ -671,7 +634,6 @@ MediaFactory::CreateRendererFactorySelector(
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
-  DCHECK(!use_media_player_renderer);
   if (!is_base_renderer_factory_set &&
       renderer_media_playback_options.is_mojo_renderer_enabled()) {
     is_base_renderer_factory_set = true;
@@ -692,7 +654,7 @@ MediaFactory::CreateRendererFactorySelector(
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 
 #if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
-  DCHECK(!is_base_renderer_factory_set && !use_media_player_renderer);
+  DCHECK(!is_base_renderer_factory_set);
   is_base_renderer_factory_set = true;
   factory_selector->AddBaseFactory(
       RendererType::kCast,
@@ -785,7 +747,6 @@ MediaFactory::CreateRendererFactorySelector(
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
   if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
     DCHECK(!is_base_renderer_factory_set);
-    DCHECK(!use_media_player_renderer);
     is_base_renderer_factory_set = true;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
@@ -818,7 +779,6 @@ MediaFactory::CreateRendererFactorySelector(
     // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if
     // this method were significantly refactored to split things up by
     // Android/non-Android/Cast/etc...
-    DCHECK(!use_media_player_renderer);
     is_base_renderer_factory_set = true;
     auto default_factory = CreateDefaultRendererFactory(
         media_log, decoder_factory, render_thread, render_frame_);

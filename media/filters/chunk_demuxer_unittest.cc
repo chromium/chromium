@@ -2837,14 +2837,7 @@ TEST_F(ChunkDemuxerTest, CodecPrefixMatching) {
   ChunkDemuxer::Status expected = ChunkDemuxer::kNotSupported;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-
-#if defined(OS_ANDROID)
-  if (HasPlatformDecoderSupport())
-    expected = ChunkDemuxer::kOk;
-#else
   expected = ChunkDemuxer::kOk;
-#endif  // defined(OS_ANDROID)
-
 #else
   EXPECT_MEDIA_LOG(CodecUnsupportedInContainer("avc1.4D4041", "video/mp4"));
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

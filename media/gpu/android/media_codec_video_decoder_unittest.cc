@@ -990,8 +990,7 @@ static std::vector<VideoCodec> GetTestList() {
   std::vector<VideoCodec> test_codecs;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (MediaCodecUtil::IsMediaCodecAvailable())
-    test_codecs.push_back(VideoCodec::kH264);
+  test_codecs.push_back(VideoCodec::kH264);
 #endif
 
   if (MediaCodecUtil::IsVp8DecoderAvailable())
@@ -1004,10 +1003,8 @@ static std::vector<VideoCodec> GetTestList() {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-static std::vector<VideoCodec> GetH264IfAvailable() {
-  return MediaCodecUtil::IsMediaCodecAvailable()
-             ? std::vector<VideoCodec>(1, VideoCodec::kH264)
-             : std::vector<VideoCodec>();
+static std::vector<VideoCodec> GetH264() {
+  return std::vector<VideoCodec>(1, VideoCodec::kH264);
 }
 #endif
 
@@ -1038,7 +1035,7 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderTest,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderH264Test,
                          MediaCodecVideoDecoderH264Test,
-                         testing::ValuesIn(GetH264IfAvailable()));
+                         testing::ValuesIn(GetH264()));
 #endif
 
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,

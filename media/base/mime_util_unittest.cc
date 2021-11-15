@@ -76,7 +76,6 @@ static void RunCodecSupportTest(const MimeUtil::PlatformInfo& states_to_vary,
       CreateTestVector(states_to_vary.name, test_states.name)
 
   // Stuff states to test into vectors for easy for_each() iteration.
-  MAKE_TEST_VECTOR(has_platform_decoders);
   MAKE_TEST_VECTOR(has_platform_vp8_decoder);
   MAKE_TEST_VECTOR(has_platform_vp9_decoder);
   MAKE_TEST_VECTOR(has_platform_opus_decoder);
@@ -90,22 +89,20 @@ static void RunCodecSupportTest(const MimeUtil::PlatformInfo& states_to_vary,
     info.name = name##_states[name##_index];
 #define RUN_TEST_VECTOR_END() }
 
-  RUN_TEST_VECTOR_BEGIN(has_platform_decoders)
   RUN_TEST_VECTOR_BEGIN(has_platform_vp8_decoder)
   RUN_TEST_VECTOR_BEGIN(has_platform_vp9_decoder)
   RUN_TEST_VECTOR_BEGIN(has_platform_opus_decoder)
   for (int codec = MimeUtil::INVALID_CODEC; codec <= MimeUtil::LAST_CODEC;
        ++codec) {
     SCOPED_TRACE(base::StringPrintf(
-        "has_platform_decoders=%d, has_platform_vp8_decoder=%d, "
+        "has_platform_vp8_decoder=%d, "
         "has_platform_opus_decoder=%d, "
         "has_platform_vp9_decoder=%d, "
         "codec=%d",
-        info.has_platform_decoders, info.has_platform_vp8_decoder,
-        info.has_platform_opus_decoder, info.has_platform_vp9_decoder, codec));
+        info.has_platform_vp8_decoder, info.has_platform_opus_decoder,
+        info.has_platform_vp9_decoder, codec));
     test_func(info, static_cast<MimeUtil::Codec>(codec));
   }
-  RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
   RUN_TEST_VECTOR_END()
@@ -121,7 +118,6 @@ static MimeUtil::PlatformInfo VaryAllFields() {
   states_to_vary.has_platform_vp8_decoder = true;
   states_to_vary.has_platform_vp9_decoder = true;
   states_to_vary.has_platform_opus_decoder = true;
-  states_to_vary.has_platform_decoders = true;
   return states_to_vary;
 }
 
@@ -527,33 +523,11 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
 #endif
 }
 
-TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecsFailWithoutPlatformSupport) {
-  // Vary all parameters except |has_platform_decoders|.
-  MimeUtil::PlatformInfo states_to_vary = VaryAllFields();
-  states_to_vary.has_platform_decoders = false;
-
-  // Disable platform decoders.
-  MimeUtil::PlatformInfo test_states;
-  test_states.has_platform_decoders = false;
-
-  // Every codec should fail since platform support is missing and we've
-  // requested encrypted codecs.
-  RunCodecSupportTest(
-      states_to_vary, test_states,
-      [](const MimeUtil::PlatformInfo& info, MimeUtil::Codec codec) {
-        EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
-            codec, kTestMimeType, true, VIDEO_CODEC_PROFILE_UNKNOWN, info));
-      });
-}
-
 TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
-  // Vary all parameters except |has_platform_decoders|.
+  // Vary all parameters.
   MimeUtil::PlatformInfo states_to_vary = VaryAllFields();
-  states_to_vary.has_platform_decoders = false;
 
-  // Enable platform decoders.
   MimeUtil::PlatformInfo test_states;
-  test_states.has_platform_decoders = true;
 
   RunCodecSupportTest(
       states_to_vary, test_states,
@@ -652,14 +626,12 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           // These codecs are only supported if platform decoders are supported.
           case MimeUtil::MPEG4_XHE_AAC:
-            EXPECT_EQ(info.has_platform_decoders, result);
+            EXPECT_TRUE(result);
             break;
 
           case MimeUtil::HEVC:
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-            EXPECT_EQ(
-                info.has_platform_decoders && info.has_platform_hevc_decoder,
-                result);
+            EXPECT_EQ(info.has_platform_hevc_decoder, result);
 #else
             EXPECT_FALSE(result);
 #endif
@@ -698,13 +670,8 @@ TEST(IsCodecSupportedOnAndroidTest, OpusOggSupport) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 TEST(IsCodecSupportedOnAndroidTest, HEVCSupport) {
   MimeUtil::PlatformInfo info;
-  info.has_platform_decoders = false;
   info.has_platform_hevc_decoder = false;
 
-  EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
-      MimeUtil::HEVC, kTestMimeType, false, VIDEO_CODEC_PROFILE_UNKNOWN, info));
-
-  info.has_platform_decoders = true;
   EXPECT_FALSE(MimeUtil::IsCodecSupportedOnAndroid(
       MimeUtil::HEVC, kTestMimeType, false, VIDEO_CODEC_PROFILE_UNKNOWN, info));
 

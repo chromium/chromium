@@ -366,15 +366,10 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     // Use the client's input parameters if they are valid.
     sample_rate = input_params.sample_rate();
 
-    // Pre-Lollipop devices don't support > stereo OpenSLES output and the
     // AudioManager APIs for GetOptimalOutputFrameSize() don't support channel
     // layouts greater than stereo unless low latency audio is supported.
-    if (input_params.channels() <= 2 ||
-        (base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_LOLLIPOP &&
-         IsAudioLowLatencySupported())) {
+    if (input_params.channels() <= 2 || IsAudioLowLatencySupported())
       channel_layout = input_params.channel_layout();
-    }
 
     // For high latency playback on supported platforms, pass through the
     // requested buffer size; this provides significant power savings (~25%) and

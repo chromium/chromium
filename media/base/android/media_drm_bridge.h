@@ -57,11 +57,6 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   using MediaCryptoReadyCB = MediaCryptoContext::MediaCryptoReadyCB;
 
-  // Checks whether MediaDRM is available and usable, including for decoding.
-  // All other static methods check IsAvailable() or equivalent internally.
-  // There is no need to check IsAvailable() explicitly before calling them.
-  static bool IsAvailable();
-
   // Checks whether |key_system| is supported.
   static bool IsKeySystemSupported(const std::string& key_system);
 
