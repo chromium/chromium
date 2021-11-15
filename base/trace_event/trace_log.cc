@@ -1283,6 +1283,25 @@ bool TraceLog::HasAsyncEnabledStateObserver(
   return Contains(async_observers_, listener);
 }
 
+void TraceLog::AddIncrementalStateObserver(IncrementalStateObserver* listener) {
+  AutoLock lock(observers_lock_);
+  incremental_state_observers_.push_back(listener);
+}
+
+void TraceLog::RemoveIncrementalStateObserver(
+    IncrementalStateObserver* listener) {
+  AutoLock lock(observers_lock_);
+  incremental_state_observers_.erase(
+      ranges::remove(incremental_state_observers_, listener),
+      incremental_state_observers_.end());
+}
+
+void TraceLog::OnIncrementalStateCleared() {
+  AutoLock lock(observers_lock_);
+  for (IncrementalStateObserver* observer : incremental_state_observers_)
+    observer->OnIncrementalStateCleared();
+}
+
 TraceLogStatus TraceLog::GetStatus() const {
   AutoLock lock(lock_);
   TraceLogStatus result;

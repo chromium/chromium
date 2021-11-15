@@ -20,7 +20,8 @@ class TracedPowerMode {
   TracedPowerMode(const TracedPowerMode&) = delete;
   TracedPowerMode(TracedPowerMode&&);
 
-  void OnTraceLogEnabled() const;
+  void OnTraceLogEnabled();
+  void OnIncrementalStateCleared();
 
   void SetMode(PowerMode);
   PowerMode mode() const { return mode_; }
@@ -29,6 +30,7 @@ class TracedPowerMode {
   const char* name_;
   const void* trace_id_;
   PowerMode mode_;
+  bool incremental_state_cleared_ = false;
 };
 
 }  // namespace power_scheduler

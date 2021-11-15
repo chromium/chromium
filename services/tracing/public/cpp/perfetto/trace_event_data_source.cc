@@ -1212,6 +1212,7 @@ void TraceEventDataSource::Flush(
 void TraceEventDataSource::ClearIncrementalState() {
   TrackEventThreadLocalEventSink::ClearIncrementalState();
   EmitTrackDescriptor();
+  base::trace_event::TraceLog::GetInstance()->OnIncrementalStateCleared();
 }
 
 std::unique_ptr<perfetto::TraceWriter>

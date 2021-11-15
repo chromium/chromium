@@ -27,16 +27,30 @@ TracedPowerMode::TracedPowerMode(TracedPowerMode&& other)
   other.name_ = nullptr;
 }
 
-void TracedPowerMode::OnTraceLogEnabled() const {
+void TracedPowerMode::OnTraceLogEnabled() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("power", name_, trace_id_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("power", PowerModeToString(mode_),
                                     trace_id_);
+  incremental_state_cleared_ = false;
+}
+
+void TracedPowerMode::OnIncrementalStateCleared() {
+  incremental_state_cleared_ = true;
 }
 
 void TracedPowerMode::SetMode(PowerMode mode) {
   if (mode_ == mode)
     return;
   TRACE_EVENT_NESTABLE_ASYNC_END0("power", PowerModeToString(mode_), trace_id_);
+  if (incremental_state_cleared_) {
+    // Restart the top-level event to ensure track names remain correct in ring
+    // buffer traces.
+    // TODO(eseckler): Use perfetto::Track with a custom name here instead once
+    // supported by slow reports (b/205542316).
+    TRACE_EVENT_NESTABLE_ASYNC_END0("power", name_, trace_id_);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("power", name_, trace_id_);
+    incremental_state_cleared_ = false;
+  }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("power", PowerModeToString(mode),
                                     trace_id_);
   mode_ = mode;
