@@ -21,14 +21,12 @@ AttributionReport GetReport(base::Time impression_time,
                             base::TimeDelta expiry = kDefaultExpiry,
                             StorableSource::SourceType source_type =
                                 StorableSource::SourceType::kNavigation) {
-  base::Time report_time = conversion_time;
-  return AttributionReport(SourceBuilder(impression_time)
-                               .SetExpiry(expiry)
-                               .SetSourceType(source_type)
-                               .Build(),
-                           /*trigger_data=*/123, conversion_time, report_time,
-                           /*priority=*/0,
-                           /*conversion_id=*/absl::nullopt);
+  return ReportBuilder(SourceBuilder(impression_time)
+                           .SetExpiry(expiry)
+                           .SetSourceType(source_type)
+                           .Build())
+      .SetConversionTime(conversion_time)
+      .Build();
 }
 
 }  // namespace

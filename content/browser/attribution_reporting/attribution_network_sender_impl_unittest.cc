@@ -6,12 +6,10 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/circular_deque.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -41,15 +39,8 @@ using ::testing::IsEmpty;
 const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
 
-// Create a simple report where impression data/conversion data/conversion id
-// are all the same.
-AttributionReport GetReport(int64_t conversion_id) {
-  return AttributionReport(
-      SourceBuilder(base::Time()).SetSourceEventId(conversion_id).Build(),
-      /*trigger_data=*/conversion_id,
-      /*conversion_time=*/base::Time(),
-      /*report_time=*/base::Time(), /*priority=*/0,
-      AttributionReport::Id(conversion_id));
+AttributionReport DefaultReport() {
+  return ReportBuilder(SourceBuilder(base::Time()).Build()).Build();
 }
 
 }  // namespace
@@ -74,9 +65,9 @@ class AttributionNetworkSenderTest : public testing::Test {
  protected:
   size_t num_reports_sent() const { return sent_reports_.size(); }
 
-  base::circular_deque<SentReportInfo> sent_reports_;
+  std::vector<SentReportInfo> sent_reports_;
 
-  // |task_enviorment_| must be initialized first.
+  // |task_environment_| must be initialized first.
   content::BrowserTaskEnvironment task_environment_;
 
   // Unique ptr so it can be reset during testing.
@@ -93,7 +84,7 @@ class AttributionNetworkSenderTest : public testing::Test {
 
 TEST_F(AttributionNetworkSenderTest,
        ConversionReportReceived_NetworkRequestMade) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, base::DoNothing());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -101,7 +92,7 @@ TEST_F(AttributionNetworkSenderTest,
 }
 
 TEST_F(AttributionNetworkSenderTest, LoadFlags) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   int load_flags =
       test_url_loader_factory_.GetPendingRequest(0)->request.load_flags;
@@ -110,10 +101,8 @@ TEST_F(AttributionNetworkSenderTest, LoadFlags) {
 }
 
 TEST_F(AttributionNetworkSenderTest, Isolation) {
-  network_sender_->SendReport(GetReport(/*conversion_id=*/1),
-                              GetSentCallback());
-  network_sender_->SendReport(GetReport(/*conversion_id=*/1),
-                              GetSentCallback());
+  network_sender_->SendReport(DefaultReport(), GetSentCallback());
+  network_sender_->SendReport(DefaultReport(), GetSentCallback());
 
   const network::ResourceRequest& request1 =
       test_url_loader_factory_.GetPendingRequest(0)->request;
@@ -150,11 +139,8 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
                           .SetSourceEventId(100)
                           .SetSourceType(test_case.source_type)
                           .Build();
-    AttributionReport report(impression,
-                             /*trigger_data=*/5,
-                             /*conversion_time=*/base::Time(),
-                             /*report_time=*/base::Time(),
-                             /*priority=*/0, AttributionReport::Id(1));
+    AttributionReport report =
+        ReportBuilder(impression).SetTriggerData(5).Build();
     network_sender_->SendReport(report, base::DoNothing());
 
     const network::ResourceRequest* pending_request;
@@ -170,15 +156,10 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
 TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   auto impression =
       SourceBuilder(base::Time())
-          .SetSourceEventId(1)
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .Build();
-  AttributionReport report(impression,
-                           /*trigger_data=*/1,
-                           /*conversion_time=*/base::Time(),
-                           /*report_time=*/base::Time(),
-                           /*priority=*/0, AttributionReport::Id(1));
+  AttributionReport report = ReportBuilder(impression).Build();
   network_sender_->SendReport(report, base::DoNothing());
 
   const network::ResourceRequest* pending_request;
@@ -196,7 +177,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
 }
 
 TEST_F(AttributionNetworkSenderTest, ReportSent_CallbackFired) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -208,7 +189,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_CallbackFired) {
 }
 
 TEST_F(AttributionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   network_sender_.reset();
@@ -218,7 +199,7 @@ TEST_F(AttributionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
 }
 
 TEST_F(AttributionNetworkSenderTest, ReportRequestHangs_TimesOut) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -254,7 +235,7 @@ TEST_F(AttributionNetworkSenderTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    auto report = GetReport(/*conversion_id=*/1);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -281,7 +262,7 @@ TEST_F(AttributionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
       network::TestURLLoaderFactory::ResponseProduceFlags::
           kSendHeadersOnNetworkError);
 
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
 
   // Ensure the request was replied to.
@@ -293,7 +274,7 @@ TEST_F(AttributionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
 
 TEST_F(AttributionNetworkSenderTest,
        ReportRequestFailsWithHttpError_ShouldRetryNotSet) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -310,7 +291,7 @@ TEST_F(AttributionNetworkSenderTest,
   {
     base::HistogramTester histograms;
 
-    auto report = GetReport(/*conversion_id=*/1);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -341,7 +322,7 @@ TEST_F(AttributionNetworkSenderTest,
   {
     base::HistogramTester histograms;
 
-    auto report = GetReport(/*conversion_id=*/2);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
@@ -363,7 +344,7 @@ TEST_F(AttributionNetworkSenderTest,
 
 TEST_F(AttributionNetworkSenderTest,
        ReportResultsInHttpError_SentCallbackRuns) {
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_THAT(sent_reports_, IsEmpty());
 
@@ -379,7 +360,7 @@ TEST_F(AttributionNetworkSenderTest,
 
 TEST_F(AttributionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
   for (int i = 0; i < 10; i++) {
-    auto report = GetReport(/*conversion_id=*/i);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
   }
   EXPECT_EQ(10, test_url_loader_factory_.NumPending());
@@ -387,8 +368,6 @@ TEST_F(AttributionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
   // Send reports out of order to guarantee that callback conversion_ids are
   // properly handled.
   for (int i = 9; i >= 0; i--) {
-    std::string report_id = base::NumberToString(i);
-
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
   }
@@ -400,7 +379,7 @@ TEST_F(AttributionNetworkSenderTest, ErrorHistogram) {
   // All OK.
   {
     base::HistogramTester histograms;
-    auto report = GetReport(/*conversion_id=*/1);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
@@ -412,7 +391,7 @@ TEST_F(AttributionNetworkSenderTest, ErrorHistogram) {
   // Internal error.
   {
     base::HistogramTester histograms;
-    auto report = GetReport(/*conversion_id=*/2);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -425,7 +404,7 @@ TEST_F(AttributionNetworkSenderTest, ErrorHistogram) {
   }
   {
     base::HistogramTester histograms;
-    auto report = GetReport(/*conversion_id=*/3);
+    auto report = DefaultReport();
     network_sender_->SendReport(report, GetSentCallback());
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, std::string(), net::HTTP_UNAUTHORIZED));
@@ -439,7 +418,7 @@ TEST_F(AttributionNetworkSenderTest, ErrorHistogram) {
 
 TEST_F(AttributionNetworkSenderTest, TimeFromConversionToReportSendHistogram) {
   base::HistogramTester histograms;
-  auto report = GetReport(/*conversion_id=*/1);
+  auto report = DefaultReport();
   report.report_time = base::Time() + base::Hours(5);
   network_sender_->SendReport(report, GetSentCallback());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(

@@ -321,6 +321,35 @@ class TriggerBuilder {
   absl::optional<int64_t> dedup_key_ = absl::nullopt;
 };
 
+// Helper class to construct an `AttributionReport` for tests using default
+// data.
+class ReportBuilder {
+ public:
+  explicit ReportBuilder(StorableSource source);
+  ~ReportBuilder();
+
+  ReportBuilder& SetTriggerData(uint64_t trigger_data) WARN_UNUSED_RESULT;
+
+  ReportBuilder& SetConversionTime(base::Time time) WARN_UNUSED_RESULT;
+
+  ReportBuilder& SetReportTime(base::Time time) WARN_UNUSED_RESULT;
+
+  ReportBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+
+  ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id)
+      WARN_UNUSED_RESULT;
+
+  AttributionReport Build() const WARN_UNUSED_RESULT;
+
+ private:
+  StorableSource source_;
+  uint64_t trigger_data_ = 0;
+  base::Time conversion_time_;
+  base::Time report_time_;
+  int64_t priority_ = 0;
+  absl::optional<AttributionReport::Id> report_id_;
+};
+
 bool operator==(const StorableSource& a, const StorableSource& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);

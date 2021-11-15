@@ -291,12 +291,12 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   auto conversion = DefaultTrigger();
   attribution_manager_->HandleTrigger(conversion);
 
-  AttributionReport expected_report(
-      impression, conversion.trigger_data(),
-      /*conversion_time=*/clock().Now(),
-      /*report_time=*/clock().Now() + kFirstReportingWindow,
-      /*priority=*/0,
-      /*conversion_id=*/absl::nullopt);
+  AttributionReport expected_report =
+      ReportBuilder(impression)
+          .SetTriggerData(conversion.trigger_data())
+          .SetConversionTime(clock().Now())
+          .SetReportTime(clock().Now() + kFirstReportingWindow)
+          .Build();
 
   base::RunLoop run_loop;
   auto reports_callback =

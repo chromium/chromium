@@ -356,6 +356,42 @@ StorableTrigger TriggerBuilder::Build() const {
                          priority_, dedup_key_);
 }
 
+ReportBuilder::ReportBuilder(StorableSource source)
+    : source_(std::move(source)) {}
+
+ReportBuilder::~ReportBuilder() = default;
+
+ReportBuilder& ReportBuilder::SetTriggerData(uint64_t trigger_data) {
+  trigger_data_ = trigger_data;
+  return *this;
+}
+
+ReportBuilder& ReportBuilder::SetConversionTime(base::Time time) {
+  conversion_time_ = time;
+  return *this;
+}
+
+ReportBuilder& ReportBuilder::SetReportTime(base::Time time) {
+  report_time_ = time;
+  return *this;
+}
+
+ReportBuilder& ReportBuilder::SetPriority(int64_t priority) {
+  priority_ = priority;
+  return *this;
+}
+
+ReportBuilder& ReportBuilder::SetReportId(
+    absl::optional<AttributionReport::Id> id) {
+  report_id_ = id;
+  return *this;
+}
+
+AttributionReport ReportBuilder::Build() const {
+  return AttributionReport(source_, trigger_data_, conversion_time_,
+                           report_time_, priority_, report_id_);
+}
+
 // Custom comparator for `StorableSource` that does not take impression IDs
 // into account.
 bool operator==(const StorableSource& a, const StorableSource& b) {

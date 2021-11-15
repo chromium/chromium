@@ -44,18 +44,15 @@ class RateLimitTableTest : public testing::Test {
       StorableSource::Id impression_id = StorableSource::Id(0),
       StorableSource::SourceType source_type =
           StorableSource::SourceType::kNavigation) {
-    return AttributionReport(
-        SourceBuilder(clock()->Now())
-            .SetImpressionOrigin(std::move(impression_origin))
-            .SetConversionOrigin(std::move(conversion_origin))
-            .SetImpressionId(impression_id)
-            .SetSourceType(source_type)
-            .Build(),
-        /*trigger_data=*/0,
-        /*conversion_time=*/clock()->Now(),
-        /*report_time=*/clock()->Now(),
-        /*priority=*/0,
-        /*conversion_id=*/absl::nullopt);
+    return ReportBuilder(SourceBuilder(clock()->Now())
+                             .SetImpressionOrigin(std::move(impression_origin))
+                             .SetConversionOrigin(std::move(conversion_origin))
+                             .SetImpressionId(impression_id)
+                             .SetSourceType(source_type)
+                             .Build())
+        .SetConversionTime(clock()->Now())
+        .SetReportTime(clock()->Now())
+        .Build();
   }
 
   size_t GetRateLimitRows(sql::Database* db) {

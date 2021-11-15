@@ -71,13 +71,13 @@ class AttributionStorageTest : public testing::Test {
   // the current timestamp.
   AttributionReport GetExpectedReport(const StorableSource& impression,
                                       const StorableTrigger& conversion) {
-    AttributionReport report(impression, conversion.trigger_data(),
-                             /*conversion_time=*/clock_.Now(),
-                             /*report_time=*/impression.impression_time() +
-                                 base::Milliseconds(kReportTime),
-                             conversion.priority(),
-                             /*conversion_id=*/absl::nullopt);
-    return report;
+    return ReportBuilder(impression)
+        .SetTriggerData(conversion.trigger_data())
+        .SetConversionTime(clock_.Now())
+        .SetReportTime(impression.impression_time() +
+                       base::Milliseconds(kReportTime))
+        .SetPriority(conversion.priority())
+        .Build();
   }
 
   CreateReportStatus MaybeCreateAndStoreReport(
@@ -1180,12 +1180,12 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           .Build();
   storage()->StoreSource(impression);
 
-  const AttributionReport expected_report(
-      impression, /*trigger_data=*/7,
-      /*conversion_time=*/clock()->Now(),
-      /*report_time=*/clock()->Now() + base::Milliseconds(kReportTime),
-      /*priority=*/0,
-      /*conversion_id=*/absl::nullopt);
+  const AttributionReport expected_report =
+      ReportBuilder(impression)
+          .SetTriggerData(7)
+          .SetConversionTime(clock()->Now())
+          .SetReportTime(clock()->Now() + base::Milliseconds(kReportTime))
+          .Build();
 
   clock()->Advance(base::Milliseconds(kReportTime));
 

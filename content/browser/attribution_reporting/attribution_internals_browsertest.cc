@@ -309,37 +309,33 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   OverrideWebUIAttributionManager();
 
-  manager_.NotifyReportSent(SentReportInfo(
-      AttributionReport(SourceBuilder(now).SetSourceEventId(100).Build(),
-                        /*trigger_data=*/5,
-                        /*conversion_time=*/now,
-                        /*report_time=*/now + base::Hours(3),
-                        /*priority=*/0, AttributionReport::Id(2)),
-      SentReportInfo::Status::kSent,
-      /*http_response_code=*/200));
-  manager_.SetReportsForWebUI({AttributionReport(
-      SourceBuilder(now)
-          .SetSourceEventId(200)
-          .SetSourceType(StorableSource::SourceType::kEvent)
-          .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
-          .Build(),
-      /*trigger_data=*/7, /*conversion_time=*/now,
-      /*report_time=*/now, /*priority=*/13, AttributionReport::Id(1))});
+  manager_.NotifyReportSent(
+      SentReportInfo(ReportBuilder(SourceBuilder(now).Build())
+                         .SetReportTime(now + base::Hours(3))
+                         .Build(),
+                     SentReportInfo::Status::kSent,
+                     /*http_response_code=*/200));
+  manager_.SetReportsForWebUI(
+      {ReportBuilder(
+           SourceBuilder(now)
+               .SetSourceType(StorableSource::SourceType::kEvent)
+               .SetAttributionLogic(StorableSource::AttributionLogic::kFalsely)
+               .Build())
+           .SetReportTime(now)
+           .SetPriority(13)
+           .Build()});
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
       CreateReportStatus::kPriorityTooLow,
-      AttributionReport(SourceBuilder(now).Build(),
-                        /*trigger_data=*/8,
-                        /*conversion_time=*/now,
-                        /*report_time=*/now + base::Hours(1),
-                        /*priority=*/11, AttributionReport::Id(3))));
+      ReportBuilder(SourceBuilder(now).Build())
+          .SetReportTime(now + base::Hours(1))
+          .SetPriority(11)
+          .Build()));
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
       CreateReportStatus::kDroppedForNoise,
-      AttributionReport(SourceBuilder(now).Build(),
-                        /*trigger_data=*/9,
-                        /*conversion_time=*/now,
-                        /*report_time=*/now + base::Hours(2),
-                        /*priority=*/12,
-                        /*conversion_id=*/absl::nullopt)));
+      ReportBuilder(SourceBuilder(now).Build())
+          .SetReportTime(now + base::Hours(2))
+          .SetPriority(12)
+          .Build()));
 
   {
     static constexpr char wait_script[] = R"(
@@ -442,10 +438,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   OverrideWebUIAttributionManager();
 
-  AttributionReport report(SourceBuilder(now).SetSourceEventId(100).Build(),
-                           /*trigger_data=*/0, /*conversion_time=*/now,
-                           /*report_time=*/now, /*priority=*/7,
-                           AttributionReport::Id(1));
+  AttributionReport report = ReportBuilder(SourceBuilder(now).Build())
+                                 .SetReportTime(now)
+                                 .SetPriority(7)
+                                 .Build();
   manager_.SetReportsForWebUI({report});
   report.report_time += base::Hours(1);
   manager_.NotifyReportSent(SentReportInfo(report,
@@ -486,11 +482,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  AttributionReport report(
-      SourceBuilder(base::Time::Now()).SetSourceEventId(100).Build(),
-      /*trigger_data=*/0, /*conversion_time=*/base::Time::Now(),
-      /*report_time=*/base::Time::Now(), /*priority=*/7,
-      AttributionReport::Id(1));
+  AttributionReport report =
+      ReportBuilder(SourceBuilder(base::Time::Now()).Build())
+          .SetPriority(7)
+          .Build();
   manager_.SetReportsForWebUI({report});
   OverrideWebUIAttributionManager();
 

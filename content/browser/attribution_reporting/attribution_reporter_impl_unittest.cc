@@ -37,9 +37,11 @@ AttributionReport GetReport(base::Time conversion_time,
                             AttributionReport::Id conversion_id) {
   // Construct impressions with a null impression time as it is not used for
   // reporting.
-  return AttributionReport(SourceBuilder(base::Time()).Build(),
-                           /*trigger_data=*/0, conversion_time, report_time,
-                           /*priority=*/0, conversion_id);
+  return ReportBuilder(SourceBuilder(base::Time()).Build())
+      .SetConversionTime(conversion_time)
+      .SetReportTime(report_time)
+      .SetReportId(conversion_id)
+      .Build();
 }
 
 // NetworkSender that keep track of the last sent report id.
@@ -270,12 +272,9 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
       SetBrowserClientForTesting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
-      absl::make_optional(
-          url::Origin::Create(GURL("https://impression.example"))),
-      absl::make_optional(
-          url::Origin::Create(GURL("https://conversion.example"))),
-      absl::make_optional(
-          url::Origin::Create(GURL("https://reporting.example"))));
+      url::Origin::Create(GURL("https://impression.example")),
+      url::Origin::Create(GURL("https://conversion.example")),
+      url::Origin::Create(GURL("https://reporting.example")));
 
   struct {
     GURL impression_origin;
@@ -301,9 +300,10 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
             .SetReportingOrigin(url::Origin::Create(test_case.reporting_origin))
             .Build();
     std::vector<AttributionReport> reports{
-        AttributionReport(std::move(impression),
-                          /*trigger_data=*/0, clock().Now(), clock().Now(),
-                          /*priority=*/0, AttributionReport::Id(1))};
+        ReportBuilder(std::move(impression))
+            .SetReportTime(clock().Now())
+            .SetReportId(AttributionReport::Id(1))
+            .Build()};
     reporter_->AddReportsToQueue(std::move(reports));
 
     // Fast forward by 0, as we yield the thread when a report is scheduled to
