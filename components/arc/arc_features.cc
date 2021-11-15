@@ -74,6 +74,10 @@ const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
     "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls ARC mouse wheel smooth scroll compatibility feature.
+const base::Feature kMouseWheelSmoothScroll{"ArcMouseWheelSmoothScroll",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental 64-bit native bridge support for ARC on boards that
 // have 64-bit native bridge support available but not yet enabled.
 const base::Feature kNativeBridge64BitSupportExperimentFeature{
@@ -91,13 +95,9 @@ const base::Feature kNativeBridgeToggleFeature{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled, tracing raw files are saved in order to help debug failures.
-const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls ARC touch mode mouse compatibility feature.
-const base::Feature kTouchModeMouse{"ArcTouchModeMouse",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+// Controls ARC right click long press compatibility feature.
+const base::Feature kRightClickLongPress{"ArcRightClickLongPress",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
@@ -114,6 +114,10 @@ const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
 // add ArcRtVcpuQuadCore there. Otherwise, the test will start failing.
 const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, tracing raw files are saved in order to help debug failures.
+const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
 const base::Feature kUsbDeviceDefaultAttachToArcVm{

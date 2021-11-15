@@ -7,8 +7,8 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/ignore_result.h"
-#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/arc/arc_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
 
@@ -17,6 +17,16 @@ namespace arc {
 namespace {
 // In Android, the default long press threshold is 500ms.
 constexpr base::TimeDelta kLongPressInterval = base::Milliseconds(700);
+
+// The scale from MouseWheelEvent's |y_offset| to ScrollEvent's |y_offset|.
+// TODO(b/202679170): Verify that this value is working well, as the value was
+// chosen tentatively.
+constexpr int kWheelToSmoothScrollScale = 3;
+
+// The total time from the first simulated smooth scroll event to the last one.
+constexpr base::TimeDelta kSmoothScrollTimeout = base::Milliseconds(500);
+// The interval between simulated smooth scroll events.
+constexpr base::TimeDelta kSmoothScrollEventInterval = base::Milliseconds(20);
 }  // namespace
 
 TouchModeMouseRewriter::TouchModeMouseRewriter() = default;
@@ -95,6 +105,29 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
   if (!found)
     return SendEvent(continuation, &event);
 
+  if (base::FeatureList::IsEnabled(arc::kMouseWheelSmoothScroll) &&
+      event.IsMouseWheelEvent()) {
+    const ui::MouseWheelEvent& wheel_event = *event.AsMouseWheelEvent();
+    const bool started = !scroll_timeout_.is_zero();
+    scroll_y_offset_ += kWheelToSmoothScrollScale * wheel_event.y_offset();
+    scroll_timeout_ = kSmoothScrollTimeout;
+    if (started) {
+      ui::ScrollEvent fling_cancel_event(
+          ui::ET_SCROLL_FLING_CANCEL, wheel_event.location_f(),
+          wheel_event.root_location_f(), wheel_event.time_stamp(), 0, 0, 0, 0,
+          0, 0);
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&TouchModeMouseRewriter::SendScrollEvent,
+                                    weak_ptr_factory_.GetWeakPtr(), wheel_event,
+                                    continuation));
+      return SendEvent(continuation, &fling_cancel_event);
+    }
+    return DiscardEvent(continuation);
+  }
+
+  if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress))
+    return SendEvent(continuation, &event);
+
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();
   if (mouse_event.IsRightMouseButton()) {
     // 1. If there is already an ongoing simulated long press, discard the
@@ -151,6 +184,35 @@ void TouchModeMouseRewriter::SendReleaseEvent(
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
   ignore_result(SendEvent(continuation, &release_event));
+}
+
+void TouchModeMouseRewriter::SendScrollEvent(
+    const ui::MouseWheelEvent& original_event,
+    const Continuation continuation) {
+  if (scroll_timeout_.is_zero())
+    return;
+  const int step =
+      scroll_y_offset_ * (kSmoothScrollEventInterval / scroll_timeout_);
+  ui::ScrollEvent scroll_event(ui::ET_SCROLL, original_event.location_f(),
+                               original_event.root_location_f(),
+                               ui::EventTimeForNow(), 0, 0, step, 0, step, 1);
+  ignore_result(SendEvent(continuation, &scroll_event));
+  scroll_y_offset_ -= step;
+  scroll_timeout_ -= kSmoothScrollEventInterval;
+  if (scroll_timeout_.is_zero()) {
+    ui::ScrollEvent fling_start_event(ui::ET_SCROLL_FLING_START,
+                                      original_event.location_f(),
+                                      original_event.root_location_f(),
+                                      ui::EventTimeForNow(), 0, 0, 0, 0, 0, 0);
+    ignore_result(SendEvent(continuation, &fling_start_event));
+  } else {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TouchModeMouseRewriter::SendScrollEvent,
+                       weak_ptr_factory_.GetWeakPtr(), original_event,
+                       continuation),
+        kSmoothScrollEventInterval);
+  }
 }
 
 }  // namespace arc

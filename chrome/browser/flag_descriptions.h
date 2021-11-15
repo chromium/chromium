@@ -2326,20 +2326,23 @@ extern const char kArcFilePickerExperimentDescription[];
 extern const char kArcKeyboardShortcutHelperIntegrationName[];
 extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 
+extern const char kArcMouseWheelSmoothScrollName[];
+extern const char kArcMouseWheelSmoothScrollDescription[];
+
 extern const char kArcNativeBridgeToggleName[];
 extern const char kArcNativeBridgeToggleDescription[];
 
 extern const char kArcNativeBridge64BitSupportExperimentName[];
 extern const char kArcNativeBridge64BitSupportExperimentDescription[];
 
+extern const char kArcRightClickLongPressName[];
+extern const char kArcRightClickLongPressDescription[];
+
 extern const char kArcRtVcpuDualCoreName[];
 extern const char kArcRtVcpuDualCoreDesc[];
 
 extern const char kArcRtVcpuQuadCoreName[];
 extern const char kArcRtVcpuQuadCoreDesc[];
-
-extern const char kArcTouchModeMouseName[];
-extern const char kArcTouchModeMouseDescription[];
 
 extern const char kArcUsbDeviceDefaultAttachToVmName[];
 extern const char kArcUsbDeviceDefaultAttachToVmDescription[];

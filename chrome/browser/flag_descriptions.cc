@@ -4033,6 +4033,12 @@ const char kArcKeyboardShortcutHelperIntegrationName[] =
 const char kArcKeyboardShortcutHelperIntegrationDescription[] =
     "Shows keyboard shortcuts from Android apps in Chrome OS Shortcut Viewer";
 
+const char kArcMouseWheelSmoothScrollName[] =
+    "Enable ARC mouse wheel smooth scroll compatibility feature.";
+const char kArcMouseWheelSmoothScrollDescription[] =
+    "Mouse wheel will be converted to simulated smooth scroll in phone-"
+    "optimized Android apps.";
+
 const char kArcNativeBridgeToggleName[] =
     "Toggle between native bridge implementations for ARC";
 const char kArcNativeBridgeToggleDescription[] =
@@ -4042,6 +4048,12 @@ const char kArcNativeBridge64BitSupportExperimentName[] =
     "Enable experimental 64-bit native bridge support for ARC";
 const char kArcNativeBridge64BitSupportExperimentDescription[] =
     "Enable experimental 64-bit native bridge support for ARC where available.";
+
+const char kArcRightClickLongPressName[] =
+    "Enable ARC right click long press compatibility feature.";
+const char kArcRightClickLongPressDescription[] =
+    "Right click will be converted to simulated long press in phone-optimized "
+    "Android apps.";
 
 const char kArcRtVcpuDualCoreName[] =
     "Enable ARC real time vcpu on a device with 2 logical cores online.";
@@ -4054,11 +4066,6 @@ const char kArcRtVcpuQuadCoreName[] =
 const char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vcpu on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
-
-const char kArcTouchModeMouseName[] =
-    "Enable ARC touch mode mouse compatibility feature.";
-const char kArcTouchModeMouseDescription[] =
-    "Simulate certain touch events for phone-optimized Android apps.";
 
 const char kArcUsbDeviceDefaultAttachToVmName[] =
     "Attach unclaimed USB devices to ARCVM";

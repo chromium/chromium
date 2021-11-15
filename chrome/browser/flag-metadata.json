@@ -206,8 +206,13 @@
   },
   {
     "name": "arc-keyboard-shortcut-helper-integration",
-    "owners": [ "tetsui" ],
+    "owners": [ "yhanada", "mduggan" ],
     "expiry_milestone": 97
+  },
+  {
+    "name": "arc-mouse-wheel-smooth-scroll",
+    "owners": [ "yhanada", "mduggan" ],
+    "expiry_milestone": 100
   },
   {
     "name": "arc-native-bridge-64bit-support-experiment",
@@ -224,6 +229,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "arc-right-click-long-press",
+    "owners": [ "yhanada", "mduggan" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho" ],
     "expiry_milestone": 100
@@ -231,11 +241,6 @@
   {
     "name": "arc-rt-vcpu-quad-core",
     "owners": [ "kansho" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "arc-touch-mode-mouse",
-    "owners": [ "tetsui" ],
     "expiry_milestone": 100
   },
   {

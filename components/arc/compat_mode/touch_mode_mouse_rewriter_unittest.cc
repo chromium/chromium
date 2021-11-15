@@ -4,6 +4,9 @@
 
 #include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/arc/arc_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -49,6 +52,27 @@ class LongPressReceiverView : public views::View {
   int release_count_ = 0;
 };
 
+class ScrollReceiverView : public views::View {
+ public:
+  void OnScrollEvent(ui::ScrollEvent* event) override {
+    if (event->type() == ui::ET_SCROLL_FLING_START)
+      fling_started_ = true;
+    else if (event->type() == ui::ET_SCROLL_FLING_CANCEL)
+      fling_cancelled_ = true;
+    else if (event->type() == ui::ET_SCROLL)
+      smooth_scrolled_ = true;
+  }
+
+  bool fling_started() const { return fling_started_; }
+  bool fling_cancelled() const { return fling_cancelled_; }
+  bool smooth_scrolled() const { return smooth_scrolled_; }
+
+ private:
+  bool fling_started_ = false;
+  bool fling_cancelled_ = false;
+  bool smooth_scrolled_ = false;
+};
+
 }  // namespace
 
 class TouchModeMouseRewriterTest : public views::ViewsTestBase {
@@ -57,6 +81,15 @@ class TouchModeMouseRewriterTest : public views::ViewsTestBase {
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~TouchModeMouseRewriterTest() override = default;
+
+  void SetUp() override {
+    views::ViewsTestBase::SetUp();
+
+    feature_list_.InitWithFeatures(
+        {arc::kRightClickLongPress, arc::kMouseWheelSmoothScroll}, {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
@@ -250,6 +283,37 @@ TEST_F(TouchModeMouseRewriterTest, RightClickedTwice) {
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_EQ(1, view->press_count());
   EXPECT_EQ(1, view->release_count());
+
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
+}
+
+TEST_F(TouchModeMouseRewriterTest, WheelScrollConvertedToSmoothScroll) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+  ScrollReceiverView* view =
+      widget->SetContentsView(std::make_unique<ScrollReceiverView>());
+  widget->Show();
+
+  TouchModeMouseRewriter touch_mode_mouse_rewriter;
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  EXPECT_FALSE(view->fling_cancelled());
+  EXPECT_FALSE(view->smooth_scrolled());
+  EXPECT_FALSE(view->fling_started());
+
+  generator.MoveMouseWheel(0, 10);
+  generator.MoveMouseWheel(0, 10);
+  base::RunLoop().RunUntilIdle();
+  // Smooth scrolling started.
+  EXPECT_TRUE(view->fling_cancelled());
+  EXPECT_TRUE(view->smooth_scrolled());
+  EXPECT_FALSE(view->fling_started());
+
+  // Smooth scrolling ended.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(view->fling_cancelled());
+  EXPECT_TRUE(view->smooth_scrolled());
+  EXPECT_TRUE(view->fling_started());
 
   touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }

@@ -182,7 +182,8 @@ ArcResizeLockManager::ArcResizeLockManager(
     : compat_mode_button_controller_(
           std::make_unique<CompatModeButtonController>()),
       touch_mode_mouse_rewriter_(
-          base::FeatureList::IsEnabled(arc::kTouchModeMouse)
+          base::FeatureList::IsEnabled(arc::kRightClickLongPress) ||
+                  base::FeatureList::IsEnabled(arc::kMouseWheelSmoothScroll)
               ? std::make_unique<TouchModeMouseRewriter>()
               : nullptr) {
   if (aura::Env::HasInstance())
