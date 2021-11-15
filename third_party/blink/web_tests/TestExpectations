@@ -7287,11 +7287,11 @@ crbug.com/1264753 [ Mac10.12 ] external/wpt/referrer-policy/gen/srcdoc.meta/stri
 crbug.com/1264753 [ Mac10.13 ] external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
 crbug.com/1264753 [ Mac10.12 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
 crbug.com/1264753 [ Mac10.13 ] virtual/plz-dedicated-worker/external/wpt/referrer-policy/gen/srcdoc.meta/strict-origin/iframe-tag.http.html [ Failure ]
-# crbug.com/1264775 [ Mac11-arm64 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
+crbug.com/1264775 [ Mac11-arm64 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
 crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
-# crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
+crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
 
 # Sheriff 2021-11-02
 crbug.com/1265924 [ Fuchsia ] synthetic_gestures/smooth-scroll-tiny-delta.html [ Failure Pass ]
@@ -7325,9 +7325,6 @@ crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-pick
 # Sheriff 2021-11-10
 crbug.com/1268963 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
 crbug.com/1268947 [ Linux ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
-
-# Temporarily disable to unblock a WebRTC roll
-crbug.com/webrtc/13377 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
 
 # Sheriff 2021-11-12
 crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
