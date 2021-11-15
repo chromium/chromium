@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -195,6 +196,12 @@ void HandleBadMessage(const std::string& error) {
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();
+}
+
+std::string ReadFirstPartySetsFile(base::File sets_file) {
+  std::string raw_sets;
+  base::ScopedFILE file(FileToFILE(std::move(sets_file), "r"));
+  return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
 }
 
 }  // namespace
@@ -781,7 +788,15 @@ void NetworkService::BindTestInterface(
   }
 }
 
-void NetworkService::SetFirstPartySets(const std::string& raw_sets) {
+void NetworkService::SetFirstPartySets(base::File sets_file) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ReadFirstPartySetsFile, std::move(sets_file)),
+      base::BindOnce(&NetworkService::OnReadFirstPartySetsFile,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void NetworkService::OnReadFirstPartySetsFile(const std::string& raw_sets) {
   bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
   if (is_v1_format) {
     // The file is a single list of records; V1 format.

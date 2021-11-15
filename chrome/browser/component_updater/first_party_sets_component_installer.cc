@@ -41,21 +41,8 @@ constexpr char kFirstPartySetsManifestName[] = "First-Party Sets";
 constexpr base::FilePath::CharType kFirstPartySetsRelativeInstallDir[] =
     FILE_PATH_LITERAL("FirstPartySetsPreloaded");
 
-// Reads the sets as raw JSON from their storage file, returning the raw sets on
-// success and nullopt on failure.
-absl::optional<std::string> LoadSetsFromDisk(const base::FilePath& pb_path) {
-  if (pb_path.empty())
-    return absl::nullopt;
-
-  VLOG(1) << "Reading First-Party Sets from file: " << pb_path.value();
-  std::string result;
-  if (!base::ReadFileToString(pb_path, &result)) {
-    // The file won't exist on new installations, so this is not always an
-    // error.
-    VLOG(1) << "Failed reading from " << pb_path.value();
-    return absl::nullopt;
-  }
-  return result;
+base::File OpenFile(const base::FilePath& pb_path) {
+  return base::File(pb_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
 base::FilePath& GetConfigPathInstance() {
@@ -68,22 +55,15 @@ base::FilePath& GetConfigPathInstance() {
 // * the `kFirstPartySets` feature is enabled; and
 // * the component was read successfully.
 void SetFirstPartySetsConfig(
-    const base::RepeatingCallback<void(const std::string&)>& on_sets_ready) {
-  if (GetConfigPathInstance().empty() ||
-      !net::cookie_util::IsFirstPartySetsEnabled()) {
+    base::OnceCallback<void(base::File)> on_sets_ready) {
+  const base::FilePath instance_path = GetConfigPathInstance();
+  if (instance_path.empty() || !net::cookie_util::IsFirstPartySetsEnabled()) {
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadSetsFromDisk, GetConfigPathInstance()),
-      base::BindOnce(
-          [](base::RepeatingCallback<void(const std::string&)> on_sets_ready,
-             absl::optional<std::string> raw_sets) {
-            if (raw_sets.has_value())
-              on_sets_ready.Run(*raw_sets);
-          },
-          on_sets_ready));
+      base::BindOnce(&OpenFile, instance_path), std::move(on_sets_ready));
 }
 
 std::string BoolToString(bool b) {
@@ -96,12 +76,12 @@ namespace component_updater {
 
 // static
 void FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
-    const base::RepeatingCallback<void(const std::string&)>& on_sets_ready) {
-  SetFirstPartySetsConfig(on_sets_ready);
+    base::OnceCallback<void(base::File)> on_sets_ready) {
+  SetFirstPartySetsConfig(std::move(on_sets_ready));
 }
 
 FirstPartySetsComponentInstallerPolicy::FirstPartySetsComponentInstallerPolicy(
-    base::RepeatingCallback<void(const std::string&)> on_sets_ready)
+    base::RepeatingCallback<void(base::File)> on_sets_ready)
     : on_sets_ready_(std::move(on_sets_ready)) {}
 
 FirstPartySetsComponentInstallerPolicy::
@@ -204,11 +184,11 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
 
   base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-          /*on_sets_ready=*/base::BindRepeating(
-              [](const std ::string& raw_sets) {
-                VLOG(1) << "Received Sets: \"" << raw_sets << "\"";
-                content::GetNetworkService()->SetFirstPartySets(raw_sets);
-              })))
+          /*on_sets_ready=*/base::BindRepeating([](base::File sets_file) {
+            VLOG(1) << "Received First-Party Sets";
+            content::GetNetworkService()->SetFirstPartySets(
+                std::move(sets_file));
+          })))
       ->Register(cus, base::OnceClosure());
 }
 

@@ -1177,13 +1177,19 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
 
 TEST_F(NetworkServiceTestWithService,
        SetPersistedFirstPartySetsAndGetCurrentSets) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath sets_file_path(temp_dir.GetPath().AppendASCII("sets_file"));
+  ASSERT_TRUE(base::WriteFile(sets_file_path, ""));
+
   base::RunLoop run_loop;
   network_service_->SetPersistedFirstPartySetsAndGetCurrentSets(
       "", base::BindLambdaForTesting([&](const std::string& got) {
         EXPECT_EQ(got, "{}");
         run_loop.Quit();
       }));
-  network_service_->SetFirstPartySets("");
+  network_service_->SetFirstPartySets(base::File(
+      sets_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ));
   run_loop.Run();
 }
 
