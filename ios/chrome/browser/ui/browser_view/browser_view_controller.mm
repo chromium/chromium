@@ -351,8 +351,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // button.
   BookmarkInteractionController* _bookmarkInteractionController;
 
-  // Coordinator for displaying alerts.
-  AlertCoordinator* _alertCoordinator;
+  // Coordinator for displaying alerts for the net export tab helper.
+  AlertCoordinator* _alertCoordinatorForNetExport;
 
   // Coordinator for displaying Sad Tab.
   SadTabCoordinator* _sadTabCoordinator;
@@ -393,9 +393,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Bridges C++ WebStateListObserver methods to this BrowserViewController.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
-  // Presenter for in-product help bubbles.
-  BubblePresenter* _bubblePresenter;
-
   // The disabler that prevents the toolbar from being scrolled offscreen when
   // the thumb strip is visible.
   std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
@@ -406,8 +403,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Activates/deactivates the object. This will enable/disable the ability for
 // this object to browse, and to have live UIWebViews associated with it. While
-// not active, the UI will not react to changes in the tab model, so generally
-// an inactive BVC should not be visible.
+// not active, the UI will not react to changes in the active web state, so
+// generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
 // The Browser whose UI is managed by this instance.
 @property(nonatomic, assign) Browser* browser;
@@ -550,106 +547,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The coordinator for all NTPs in the BVC. Only used if kSingleNtp is enabled.
 @property(nonatomic, strong) NewTabPageCoordinator* ntpCoordinator;
 
-// BVC initialization
-// ------------------
-// If the BVC is initialized with a valid browser state & tab model immediately,
-// the path is straightforward: functionality is enabled, and the UI is built
-// when -viewDidLoad is called.
-// If the BVC is initialized without a browser state or tab model, the tab model
-// and browser state may or may not be provided before -viewDidLoad is called.
-// In most cases, they will not, to improve startup performance.
-// In order to handle this, initialization of various aspects of BVC have been
-// broken out into the following functions, which have expectations (enforced
-// with DCHECKs) regarding |self.browserState|, |self.browser|, and [self
-// isViewLoaded].
-
-// Updates non-view-related functionality with the given browser and tab
-// model.
-// Does not matter whether or not the view has been loaded.
-- (void)updateWithBrowser:(Browser*)browser;
-// On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
-// the status bar to mimic this layout.
-- (void)installFakeStatusBar;
-// Builds the UI parts of tab strip and the toolbar.  Does not matter whether
-// or not browser state and tab model are valid.
-- (void)buildToolbarAndTabStrip;
-// Sets up the constraints on the toolbar.
-- (void)addConstraintsToToolbar;
-// Updates view-related functionality with the given tab model and browser
-// state. The view must have been loaded.  Uses |self.browserState| and
-// |self.browser|.
-- (void)addUIFunctionalityForBrowserAndBrowserState;
-// Sets the correct frame and hierarchy for subviews and helper views.  Only
-// insert views on |initialLayout|.
-- (void)setUpViewLayout:(BOOL)initialLayout;
-// Makes |webState| the currently visible WebState, displaying its view.
-- (void)displayWebState:(web::WebState*)webState;
-// Initializes the bookmark interaction controller if not already initialized.
-- (void)initializeBookmarkInteractionController;
-
-// UI Configuration, update and Layout
-// -----------------------------------
-// Updates the toolbar display based on the current tab.
-- (void)updateToolbar;
-// Starts or stops broadcasting the toolbar UI and main content UI depending on
-// whether the BVC is visible and active.
-- (void)updateBroadcastState;
-// Dismisses popups and modal dialogs that are displayed above the BVC upon size
-// changes (e.g. rotation, resizing,…) or when the accessibility escape gesture
-// is performed.
-// TODO(crbug.com/522721): Support size changes for all popups and modal
-// dialogs.
-- (void)dismissPopups;
-// Returns the footer view if one exists (e.g. the voice search bar).
-- (UIView*)footerView;
-// Returns the appropriate frame for the NTP.
-- (CGRect)ntpFrameForWebState:(web::WebState*)webState;
-// Sets the frame for the headers.
-- (void)setFramesForHeaders:(NSArray<HeaderDefinition*>*)headers
-                   atOffset:(CGFloat)headerOffset;
-
-// Alerts
-// ------
-// Shows a self-dismissing snackbar displaying |message|.
-- (void)showSnackbar:(NSString*)message;
-// Shows an alert dialog with |title| and |message|.
-- (void)showErrorAlertWithStringTitle:(NSString*)title
-                              message:(NSString*)message;
-
-// Tap Handling
-// ------------
-// Record the last tap point based on the |originPoint| (if any) passed in
-// command.
-- (void)setLastTapPointFromCommand:(CGPoint)originPoint;
-// Returns the last stored |_lastTapPoint| if it's been set within the past
-// second.
-- (CGPoint)lastTapPoint;
-// Store the tap CGPoint in |_lastTapPoint| and the current timestamp.
-- (void)saveContentAreaTapLocation:(UIGestureRecognizer*)gestureRecognizer;
-
-// Tab creation and selection
-// --------------------------
-// Add all delegates to the provided |webState|.
-- (void)installDelegatesForWebState:(web::WebState*)webState;
-// Remove delegates from the provided |webState|.
-- (void)uninstallDelegatesForWebState:(web::WebState*)webState;
-// Called when a |webState| is selected in the WebStateList. Make any required
-// view changes. The notification will not be sent when the |webState| is
-// already the selected WebState. |notifyToolbar| indicates whether the toolbar
-// is notified that the webState has changed.
-- (void)webStateSelected:(web::WebState*)webState
-           notifyToolbar:(BOOL)notifyToolbar;
-
-// Voice Search
-// ------------
-// Lazily instantiates |_voiceSearchController|.
-- (void)ensureVoiceSearchControllerCreated;
-
-// Reading List
-// ------------
-// Adds the given urls to the reading list.
-- (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs;
-
 // The thumb strip's pan gesture handler that will be added to the toolbar and
 // tab strip.
 @property(nonatomic, weak)
@@ -703,17 +600,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [self updateWithBrowser:browser];
   }
   return self;
-}
-
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil {
-  NOTREACHED();
-  return nil;
-}
-
-- (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NOTREACHED();
-  return nil;
 }
 
 - (void)dealloc {
@@ -1423,7 +1309,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  // If the tab model and browser state are valid, finish initialization.
+  // If the browser and browser state are valid, finish initialization.
   if (self.browser && self.browserState)
     [self addUIFunctionalityForBrowserAndBrowserState];
 
@@ -1824,7 +1710,22 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - ** Private BVC Methods **
 
 #pragma mark - Private Methods: BVC Initialization
+// BVC initialization
+// ------------------
+// If the BVC is initialized with a valid browser state & browser immediately,
+// the path is straightforward: functionality is enabled, and the UI is built
+// when -viewDidLoad is called.
+// If the BVC is initialized without a browser state or browser, the browser
+// and browser state may or may not be provided before -viewDidLoad is called.
+// In most cases, they will not, to improve startup performance.
+// In order to handle this, initialization of various aspects of BVC have been
+// broken out into the following functions, which have expectations (enforced
+// with DCHECKs) regarding |self.browserState|, |self.browser|, and [self
+// isViewLoaded].
 
+// Updates non-view-related functionality with the given browser and tab
+// model.
+// Does not matter whether or not the view has been loaded.
 - (void)updateWithBrowser:(Browser*)browser {
   DCHECK(browser);
   DCHECK(!self.browser);
@@ -1859,6 +1760,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+// On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
+// the status bar to mimic this layout.
 - (void)installFakeStatusBar {
   // This method is called when the view is loaded and when the thumb strip is
   // installed via addAnimatee -> didAnimateViewReveal-> installFakeStatusBar.
@@ -1894,7 +1797,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// Create the UI elements.  May or may not have valid browser state & tab model.
+// Builds the UI parts of tab strip and the toolbar. Does not matter whether
+// or not browser state and browser are valid.
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
   DCHECK(!_locationBarModelDelegate);
@@ -2040,6 +1944,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   ]];
 }
 
+// Sets up the constraints on the toolbar.
 - (void)addConstraintsToPrimaryToolbar {
   NSLayoutYAxisAnchor* topAnchor;
   // On iPad, the toolbar is underneath the tab strip.
@@ -2143,8 +2048,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [[self view] layoutIfNeeded];
 }
 
-// Enable functionality that only makes sense if the views are loaded and
-// both browser state and browser are valid.
+// Updates view-related functionality with the given browser and browser
+// state. The view must have been loaded.  Uses |self.browserState| and
+// |self.browser|.
 - (void)addUIFunctionalityForBrowserAndBrowserState {
   DCHECK(self.browserState);
   DCHECK(_locationBarModel);
@@ -2216,7 +2122,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _fakeStatusBarView.frame = fakeStatusBarFrame;
 }
 
-// Set the frame for the various views. View must be loaded.
+// Sets the correct frame and hierarchy for subviews and helper views.  Only
+// insert views on |initialLayout|.
 - (void)setUpViewLayout:(BOOL)initialLayout {
   DCHECK([self isViewLoaded]);
 
@@ -2358,6 +2265,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self updateOverlayContainerOrder];
 }
 
+// Makes |webState| the currently visible WebState, displaying its view.
 - (void)displayWebState:(web::WebState*)webState {
   DCHECK(webState);
   [self loadViewIfNeeded];
@@ -2431,6 +2339,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   webState->WasShown();
 }
 
+// Initializes the bookmark interaction controller if not already initialized.
 - (void)initializeBookmarkInteractionController {
   if (_bookmarkInteractionController)
     return;
@@ -2507,10 +2416,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.primaryToolbarCoordinator.viewController.view setHidden:hideToolbar];
 }
 
+// Starts or stops broadcasting the toolbar UI and main content UI depending on
+// whether the BVC is visible and active.
 - (void)updateBroadcastState {
   self.broadcasting = self.active && self.viewVisible;
 }
 
+// Dismisses popups and modal dialogs that are displayed above the BVC upon size
+// changes (e.g. rotation, resizing,…) or when the accessibility escape gesture
+// is performed.
+// TODO(crbug.com/522721): Support size changes for all popups and modal
+// dialogs.
 - (void)dismissPopups {
   // The dispatcher may not be fully connected during shutdown, so selectors may
   // be unrecognized.
@@ -2520,10 +2436,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.helpHandler hideAllHelpBubbles];
 }
 
+// Returns the footer view if one exists (e.g. the voice search bar).
 - (UIView*)footerView {
   return self.secondaryToolbarCoordinator.viewController.view;
 }
 
+// Returns the appropriate frame for the NTP.
 - (CGRect)ntpFrameForWebState:(web::WebState*)webState {
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   DCHECK(NTPHelper && NTPHelper->IsActive());
@@ -2542,6 +2460,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
 }
 
+// Sets the frame for the headers.
 - (void)setFramesForHeaders:(NSArray<HeaderDefinition*>*)headers
                    atOffset:(CGFloat)headerOffset {
   CGFloat height = self.headerOffset;
@@ -2590,29 +2509,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return webState->GetView();
 }
 
-#pragma mark - Private Methods: Alerts
-
-- (void)showErrorAlertWithStringTitle:(NSString*)title
-                              message:(NSString*)message {
-  // Dismiss current alert.
-  [_alertCoordinator stop];
-
-  _alertCoordinator = [_dependencyFactory alertCoordinatorWithTitle:title
-                                                            message:message
-                                                     viewController:self];
-  [_alertCoordinator start];
-}
-
-- (void)showSnackbar:(NSString*)text {
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
-  message.accessibilityLabel = text;
-  message.duration = 2.0;
-  message.category = kBrowserViewControllerSnackbarCategory;
-  [self.dispatcher showSnackbarMessage:message];
-}
-
 #pragma mark - Private Methods: Tap handling
 
+// Record the last tap point based on the |originPoint| (if any) passed in
+// command.
 - (void)setLastTapPointFromCommand:(CGPoint)originPoint {
   if (CGPointEqualToPoint(originPoint, CGPointZero)) {
     _lastTapPoint = CGPointZero;
@@ -2623,6 +2523,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _lastTapTime = CACurrentMediaTime();
 }
 
+// Returns the last stored |_lastTapPoint| if it's been set within the past
+// second.
 - (CGPoint)lastTapPoint {
   if (CACurrentMediaTime() - _lastTapTime < 1) {
     return _lastTapPoint;
@@ -2630,6 +2532,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return CGPointZero;
 }
 
+// Store the tap CGPoint in |_lastTapPoint| and the current timestamp.
 - (void)saveContentAreaTapLocation:(UIGestureRecognizer*)gestureRecognizer {
   if (_isShutdown) {
     return;
@@ -2652,6 +2555,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Tab creation and selection
 
+// Add all delegates to the provided |webState|.
 - (void)installDelegatesForWebState:(web::WebState*)webState {
   // Unregistration happens when the WebState is removed from the WebStateList.
 
@@ -2710,6 +2614,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+// Remove delegates from the provided |webState|.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
   // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
   if (PasswordTabHelper* passwordTabHelper =
@@ -2747,6 +2652,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
+// Called when a |webState| is selected in the WebStateList. Make any required
+// view changes. The notification will not be sent when the |webState| is
+// already the selected WebState. |notifyToolbar| indicates whether the toolbar
+// is notified that the webState has changed.
 - (void)webStateSelected:(web::WebState*)webState
            notifyToolbar:(BOOL)notifyToolbar {
   DCHECK(webState);
@@ -2775,6 +2684,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Voice Search
 
+// Lazily instantiates |_voiceSearchController|.
 - (void)ensureVoiceSearchControllerCreated {
   if (_voiceSearchController)
     return;
@@ -2789,6 +2699,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Reading List
 
+// Adds the given urls to the reading list.
 - (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs {
   for (URLWithTitle* urlWithTitle in URLs) {
     [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
@@ -2797,8 +2708,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.dispatcher triggerToolsMenuButtonAnimation];
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [self showSnackbar:l10n_util::GetNSString(
-                         IDS_IOS_READING_LIST_SNACKBAR_MESSAGE)];
+
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
+  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  message.accessibilityLabel = text;
+  message.duration = 2.0;
+  message.category = kBrowserViewControllerSnackbarCategory;
+  [self.dispatcher showSnackbarMessage:message];
 }
 
 - (void)addURLToReadingList:(const GURL&)URL withTitle:(NSString*)title {
@@ -4465,7 +4382,15 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         l10n_util::GetNSString([context emailNotConfiguredAlertTitleId]);
     NSString* alertMessage =
         l10n_util::GetNSString([context emailNotConfiguredAlertMessageId]);
-    [self showErrorAlertWithStringTitle:alertTitle message:alertMessage];
+
+    // Dismiss current alert, if any.
+    [_alertCoordinatorForNetExport stop];
+
+    _alertCoordinatorForNetExport =
+        [_dependencyFactory alertCoordinatorWithTitle:alertTitle
+                                              message:alertMessage
+                                       viewController:self];
+    [_alertCoordinatorForNetExport start];
     return;
   }
   MFMailComposeViewController* mailViewController =
