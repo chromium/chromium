@@ -1951,22 +1951,36 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
 
   EXPECT_EQ(extra_layer, spanner->Parent());
   EXPECT_EQ(columns, spanner->ContainingLayer());
-  EXPECT_EQ(columns, extra_layer->Parent()->Parent());
-  EXPECT_EQ(columns, extra_layer->ContainingLayer()->Parent());
-
-  EXPECT_EQ(PhysicalOffset(0, 0), spanner->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(50, 50),
-            spanner->GetLayoutObject().OffsetForInFlowPosition());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(columns, extra_layer->Parent());
+    EXPECT_EQ(columns, extra_layer->ContainingLayer());
+    EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              spanner->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(100, 100),
+              extra_layer->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(-100, 100),
+              extra_layer->VisualOffsetFromAncestor(columns));
+  } else {
+    EXPECT_EQ(columns, extra_layer->Parent()->Parent());
+    EXPECT_EQ(columns, extra_layer->ContainingLayer()->Parent());
+    EXPECT_EQ(PhysicalOffset(0, 0), spanner->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(50, 50),
+              spanner->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              extra_layer->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(100, 100),
+              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
+    // -60 = 2nd-column-x(40) - scroll-offset-x(200) + x-location(100)
+    // 20 = y-location(100) - column-height(80)
+    EXPECT_EQ(PhysicalOffset(-60, 20),
+              extra_layer->VisualOffsetFromAncestor(columns));
+  }
 
   EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), extra_layer->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(100, 100),
-            extra_layer->GetLayoutObject().OffsetForInFlowPosition());
-  // -60 = 2nd-column-x(40) - scroll-offset-x(200) + x-location(100)
-  // 20 = y-location(100) - column-height(80)
-  EXPECT_EQ(PhysicalOffset(-60, 20),
-            extra_layer->VisualOffsetFromAncestor(columns));
   EXPECT_EQ(PhysicalOffset(-150, 50),
             spanner->VisualOffsetFromAncestor(columns));
 }
