@@ -216,6 +216,7 @@ vs-chromium-project.txt
 /data
 /delegate_execute
 /device/serial/device_serial_mojo.xml
+/docs/website
 /google_apis/gcm/gcm.xml
 /google_apis/internal
 /googleurl
