@@ -9,6 +9,12 @@
 #include "chromeos/dbus/fwupd/fake_fwupd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+const char kFakeDeviceIdForTesting[] = "0123";
+
+}  // namespace
+
 namespace ash {
 
 class FirmwareUpdateManagerTest : public testing::Test {
@@ -23,6 +29,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return firmware_update_manager_.on_device_list_response_count_for_testing_;
   }
 
+  int GetOnUpdatesResponseCallbackCallCountForTesting() {
+    return firmware_update_manager_.on_update_list_response_count_for_testing_;
+  }
+
   chromeos::FakeFwupdClient dbus_client_;
   FirmwareUpdateManager firmware_update_manager_;
 };
@@ -33,6 +43,13 @@ TEST_F(FirmwareUpdateManagerTest, RequestDeviceList) {
   EXPECT_EQ(1, GetOnDevicesResponseCallbackCallCountForTesting());
   firmware_update_manager_.RequestDevices();
   EXPECT_EQ(2, GetOnDevicesResponseCallbackCallCountForTesting());
+}
+
+// TODO(swifton): Rewrite this test with an observer.
+TEST_F(FirmwareUpdateManagerTest, RequestUpdateList) {
+  EXPECT_EQ(0, GetOnUpdatesResponseCallbackCallCountForTesting());
+  firmware_update_manager_.RequestUpdates(kFakeDeviceIdForTesting);
+  EXPECT_EQ(1, GetOnUpdatesResponseCallbackCallCountForTesting());
 }
 
 }  // namespace ash

@@ -21,6 +21,8 @@ component("fwupd") {
     "fwupd_client.h",
     "fwupd_device.cc",
     "fwupd_device.h",
+    "fwupd_update.cc",
+    "fwupd_update.h",
   ]
 }
 

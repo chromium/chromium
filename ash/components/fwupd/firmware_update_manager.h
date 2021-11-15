@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "chromeos/dbus/fwupd/fwupd_update.h"
 #include "dbus/message.h"
 
 namespace ash {
@@ -17,11 +18,17 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
  public:
   // Query the fwupd DBus client for currently connected devices.
   void RequestDevices();
+  // Query the fwupd DBus client for updates for a certain device.
+  void RequestUpdates(const std::string& device_id);
 
   // FwupdClient::Observer:
   // When the fwupd DBus client gets a response with devices from fwupd,
   // it calls this function and passes the response.
   void OnDeviceListResponse(chromeos::FwupdDeviceList* devices) override;
+
+  // When the fwupd DBus client gets a response with updates from fwupd,
+  // it calls this function and passes the response.
+  void OnUpdateListResponse(chromeos::FwupdUpdateList* updates) override;
 
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
@@ -33,9 +40,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
  protected:
   friend class FirmwareUpdateManagerTest;
-  // Temporary auxiliary variable for testing.
+  // Temporary auxiliary variables for testing.
   // TODO(swifton): Replace with mock observers.
   int on_device_list_response_count_for_testing_ = 0;
+  int on_update_list_response_count_for_testing_ = 0;
 };
 }  // namespace ash
 

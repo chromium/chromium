@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "chromeos/dbus/fwupd/fwupd_update.h"
 #include "dbus/message.h"
 
 namespace chromeos {
@@ -21,6 +22,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
    public:
     ~Observer() override = default;
     virtual void OnDeviceListResponse(FwupdDeviceList* devices) = 0;
+    virtual void OnUpdateListResponse(FwupdUpdateList* updates) = 0;
   };
 
   void AddObserver(Observer* observer);
@@ -38,8 +40,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   // Returns the global instance if initialized. May return null.
   static FwupdClient* Get();
 
-  // Query fwupd for upgrades that are available for a particular device.
-  virtual void RequestUpgrades(std::string device_id) = 0;
+  // Query fwupd for updates that are available for a particular device.
+  virtual void RequestUpdates(const std::string& device_id) = 0;
 
   // Query fwupd for devices that are currently connected.
   virtual void RequestDevices() = 0;
@@ -51,7 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
   // TODO(swifton): Replace this with an observer.
   bool client_is_in_testing_mode_ = false;
   int device_signal_call_count_for_testing_ = 0;
-  int request_upgrades_callback_call_count_for_testing_ = 0;
 
   base::ObserverList<Observer> observers_;
 };

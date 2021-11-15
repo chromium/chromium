@@ -41,11 +41,22 @@ void FirmwareUpdateManager::RequestDevices() {
   chromeos::FwupdClient::Get()->RequestDevices();
 }
 
+void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
+  chromeos::FwupdClient::Get()->RequestUpdates(device_id);
+}
+
 void FirmwareUpdateManager::OnDeviceListResponse(
     chromeos::FwupdDeviceList* devices) {
   DCHECK(devices);
   // TODO(swifton): This is a stub implementation.
   ++on_device_list_response_count_for_testing_;
+}
+
+void FirmwareUpdateManager::OnUpdateListResponse(
+    chromeos::FwupdUpdateList* updates) {
+  DCHECK(updates);
+  // TODO(swifton): This is a stub implementation.
+  ++on_update_list_response_count_for_testing_;
 }
 
 }  // namespace ash

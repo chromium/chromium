@@ -51,14 +51,16 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void RequestUpgrades(std::string device_id) override {
+  void RequestUpdates(const std::string& device_id) override {
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
     dbus::MessageWriter writer(&method_call);
+
     writer.AppendString(device_id);
+
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&FwupdClientImpl::RequestUpgradesCallback,
+        base::BindOnce(&FwupdClientImpl::RequestUpdatesCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -88,31 +90,80 @@ class FwupdClientImpl : public FwupdClient {
       dbus::MessageReader entry_reader(nullptr);
       dbus::MessageReader variant_reader(nullptr);
       std::string key;
-      std::string value;
+      std::string value_string;
+      uint32_t value_uint = 0;
 
       const bool success = array_reader.PopDictEntry(&entry_reader) &&
                            entry_reader.PopString(&key) &&
-                           entry_reader.PopVariant(&variant_reader) &&
-                           variant_reader.PopString(&value);
+                           entry_reader.PopVariant(&variant_reader);
 
-      if (success)
-        result->SetKey(key, base::Value(value));
-      else
-        LOG(ERROR) << "Failed to get a dictionary entry.";
+      if (!success) {
+        LOG(ERROR) << "Failed to get a dictionary entry. ";
+        return nullptr;
+      }
+
+      // Values in the response can have different types. The fields we are
+      // interested in, are all either strings (s) or uint32 (u). Some fields in
+      // the response have other types, but we don't use them, so we just skip
+      // them.
+      if (variant_reader.GetDataSignature() == "u") {
+        variant_reader.PopUint32(&value_uint);
+        // Value doesn't support unsigned numbers, so this has to be converted
+        // to int.
+        result->SetKey(key, base::Value((int)value_uint));
+      } else if (variant_reader.GetDataSignature() == "s") {
+        variant_reader.PopString(&value_string);
+        result->SetKey(key, base::Value(value_string));
+      }
     }
     return result;
   }
 
-  void RequestUpgradesCallback(dbus::Response* response,
-                               dbus::ErrorResponse* error_response) {
+  void RequestUpdatesCallback(dbus::Response* response,
+                              dbus::ErrorResponse* error_response) {
     if (!response) {
       LOG(ERROR) << "No Dbus response received from fwupd.";
       return;
     }
 
-    // TODO(swifton): This is a stub implementation. Replace this with a
-    // callback call for FirmwareUpdateHandler when it's implemented.
-    ++request_upgrades_callback_call_count_for_testing_;
+    dbus::MessageReader reader(response);
+    dbus::MessageReader array_reader(nullptr);
+
+    if (!reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Failed to parse string from DBus Signal";
+      return;
+    }
+
+    auto updates = std::make_unique<FwupdUpdateList>();
+
+    while (array_reader.HasMoreData()) {
+      // Parse update description.
+      std::unique_ptr<base::DictionaryValue> dict =
+          PopStringToStringDictionary(&array_reader);
+      if (!dict) {
+        LOG(ERROR) << "Failed to parse the update description.";
+        return;
+      }
+
+      const auto* version = dict->FindKey("Version");
+      const auto* description = dict->FindKey("Description");
+      const auto* priority = dict->FindKey("Urgency");
+
+      // The keys "Version", "Description" and "Urgency" must exist in the
+      // dictionary.
+      const bool success = version && description && priority;
+      if (!success) {
+        LOG(ERROR) << "Update version, description or priority is not found.";
+        return;
+      }
+
+      updates->emplace_back(version->GetString(), description->GetString(),
+                            priority->GetInt());
+    }
+
+    for (auto& observer : observers_) {
+      observer.OnUpdateListResponse(updates.get());
+    }
   }
 
   void RequestDevicesCallback(dbus::Response* response,
@@ -134,8 +185,8 @@ class FwupdClientImpl : public FwupdClient {
 
     while (array_reader.HasMoreData()) {
       // Parse device description.
-      std::unique_ptr<base::DictionaryValue> dict(
-          PopStringToStringDictionary(&array_reader));
+      std::unique_ptr<base::DictionaryValue> dict =
+          PopStringToStringDictionary(&array_reader);
       if (!dict) {
         LOG(ERROR) << "Failed to parse the device description.";
         return;
@@ -144,12 +195,14 @@ class FwupdClientImpl : public FwupdClient {
       const auto* id = dict->FindKey("DeviceId");
       const auto* name = dict->FindKey("Name");
 
-      if (id && name) {
-        devices->push_back(FwupdDevice(id->GetString(), name->GetString()));
-      } else {
+      // The keys "DeviceId" and "Name" must exist in the dictionary.
+      const bool success = id && name;
+      if (!success) {
         LOG(ERROR) << "No device id or name found.";
         return;
       }
+
+      devices->emplace_back(id->GetString(), name->GetString());
     }
 
     for (auto& observer : observers_)
