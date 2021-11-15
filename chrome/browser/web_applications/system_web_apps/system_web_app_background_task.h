@@ -68,8 +68,8 @@ class SystemAppBackgroundTask {
   // couple minutes instead of setting their start timers to the same time.
   static const int kInitialWaitForBackgroundTasksSeconds = 120;
 
-  // User idle for 2 minutes
-  static const int kIdleThresholdSeconds = 120;
+  // User idle for 1 minute.
+  static const int kIdleThresholdSeconds = 60;
 
   // Else, poll every 30 seconds
   static const int kIdlePollIntervalSeconds = 30;
