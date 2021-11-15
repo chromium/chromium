@@ -252,14 +252,13 @@
 #endif
 
 #if defined(OS_WIN)
-#include <shobjidl.h>
-#include <wrl/client.h>
 #include "base/win/windows_version.h"
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #include "chrome/browser/win/jumplist.h"
 #include "chrome/browser/win/jumplist_factory.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/win/hwnd_util.h"
 #include "ui/native_theme/native_theme_win.h"
 #include "ui/views/win/scoped_fullscreen_visibility.h"
 
@@ -1148,30 +1147,17 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 #elif defined(OS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return true;
-
   Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager;
-  if (!SUCCEEDED(::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr,
+  if (!SUCCEEDED(::CoCreateInstance(_uuidof(VirtualDesktopManager), nullptr,
                                     CLSCTX_ALL,
                                     IID_PPV_ARGS(&virtual_desktop_manager)))) {
     return true;
   }
-
-  BOOL on_current_desktop;
-  if (FAILED(virtual_desktop_manager->IsWindowOnCurrentVirtualDesktop(
-          native_win->GetHost()->GetAcceleratedWidget(),
-          &on_current_desktop)) ||
-      on_current_desktop) {
-    return true;
-  }
-
-  // IsWindowOnCurrentVirtualDesktop() is flaky for newly opened windows,
-  // which causes test flakiness. Occasionally, it incorrectly says a window
-  // is not on the current virtual desktop when it is. In this situation,
-  // it also returns GUID_NULL for the desktop id.
-  GUID workspace_guid;
-  return !SUCCEEDED(virtual_desktop_manager->GetWindowDesktopId(
-             native_win->GetHost()->GetAcceleratedWidget(), &workspace_guid)) ||
-         workspace_guid == GUID_NULL;
+  // If a IVirtualDesktopManager method failed, we assume the window is on
+  // the current virtual desktop.
+  return gfx::IsWindowOnCurrentVirtualDesktop(
+             native_win->GetHost()->GetAcceleratedWidget(),
+             virtual_desktop_manager) != false;
 #else
   return true;
 #endif  // defined(OS_CHROMEOS)
