@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/sequence_checker.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/same_party_context.h"
@@ -159,6 +160,8 @@ class FirstPartySets {
   bool persisted_sets_ready_ = false;
   bool component_sets_ready_ = false;
   bool manual_sets_ready_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The callback runs after the site state clearing is completed.
   base::OnceCallback<void(const std::string&)> on_site_data_cleared_;
