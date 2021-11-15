@@ -883,9 +883,9 @@ bool LoopbackServer::LoadStateFromFile() {
 
   // Ensures local sync file can be opened, read, and is not being written to.
   // Also makes sure file will not be written to during serialization.
-  base::File state_file(persistent_file_, base::File::FLAG_OPEN |
-                                              base::File::FLAG_READ |
-                                              base::File::FLAG_EXCLUSIVE_WRITE);
+  base::File state_file(persistent_file_,
+                        base::File::FLAG_OPEN | base::File::FLAG_READ |
+                            base::File::FLAG_WIN_EXCLUSIVE_WRITE);
   base::File::Error state_file_error = state_file.error_details();
 
   if (state_file_error != base::File::FILE_OK) {
