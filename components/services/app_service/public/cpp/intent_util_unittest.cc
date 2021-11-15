@@ -525,6 +525,23 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
   file->mime_type = mime_type_mpeg;
   intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter));
+
+  std::string file_ext_dot_mp3 = ".mp3";
+  auto file_filter_dot = apps_util::CreateFileFilterForView(
+      mime_type_mp3, file_ext_dot_mp3, "label");
+
+  // The whole extension must match, not just the end.
+  file->url = test_url("abc.extramp3");
+  file->mime_type = mime_type_mpeg;
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
+
+  // Check that the filter behaves the same with and without a leading ".".
+  file->url = test_url("abc.mp3");
+  file->mime_type = mime_type_mpeg;
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
 }
 
 TEST_F(IntentUtilTest, FileWithTitleText) {
