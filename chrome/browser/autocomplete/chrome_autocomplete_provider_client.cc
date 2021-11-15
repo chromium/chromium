@@ -75,6 +75,7 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -402,17 +403,10 @@ bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
 
 bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {
 #if !defined(OS_ANDROID)
-  // This logic is gated only to avoid requiring chrome/browser/ui/browser.h
-  // (see includes at top, some also gated on !defined(OS_ANDROID)) for
-  // a feature that is currently only for desktop platforms. If pedals are
-  // implemented on Android, or if browser.h gets included for some other
-  // reason, we can use this implementation without the #if directive.
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    return browser->command_controller()->IsCommandEnabled(IDC_SHARING_HUB);
-  }
-#endif  // !defined(OS_ANDROID)
+  return sharing_hub::SharingHubOmniboxEnabled(profile_);
+#else
   return false;
+#endif
 }
 
 void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
