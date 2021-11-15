@@ -104,7 +104,7 @@ def get_ninja_jobs_options():
 
 def get_default_gn_args(target_os, is_release):
   gn_args = 'target_os="' + target_os + ('" enable_websockets=false '
-      'disable_file_support=true disable_ftp_support=true '
+      'disable_file_support=true '
       'disable_brotli_filter=false '
       'is_component_build=false '
       'use_crash_key_stubs=true '

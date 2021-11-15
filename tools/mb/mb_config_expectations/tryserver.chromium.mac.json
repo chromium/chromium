@@ -292,7 +292,6 @@
       ],
       "disable_brotli_filter": false,
       "disable_file_support": true,
-      "disable_ftp_support": true,
       "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
