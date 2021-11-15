@@ -1167,6 +1167,7 @@
         'DeviceKerberosEncryptionTypes',
         'DeviceGpoCacheLifetime',
         'DeviceAuthDataCacheLifetime',
+        'ChromadToCloudMigrationEnabled',
       ]
     },
     {
@@ -9876,6 +9877,40 @@
       Leaving the policy unset means cached authentication data can be reused for up to 73 hours.
 
       Note: Restarting the device clears the cache. Even ephemeral users' realm data is cached. Turn off the cache to prevent the tracing of an ephemeral user's realm.''',
+    },
+    {
+      'name': 'ChromadToCloudMigrationEnabled',
+      'owners': ['fsandrade@chromium.org', 'file://chrome/browser/ash/authpolicy/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the migration of <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices into cloud management.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the migration of <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices into cloud management.',
+        },
+      ],
+      'supported_on': ['chrome_os:98-'],
+      'supported_chrome_os_management': ['active_directory'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'example_value': False,
+      'default': False,
+      'id': 927,
+      'caption': '''Enable the migration of Chromad devices into cloud management''',
+      'tags': [],
+      'desc': '''Enable the migration of <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> managed devices into cloud management. This policy allows for a remote start of a touchless migration of multiple devices in a company. Additionally, the migration will be as transparent as possible to the end users.
+
+      If this policy is enabled and the enrollment ID has already been uploaded to the DMServer, a remote device powerwash will be triggered.
+
+      If this policy is disabled or not set, the remote device powerwash is not trigged, independently of the enrollment ID upload status.
+
+      This check is triggered whenever the login screen is loaded, then retried every hour (if the device stays on the login screen). This prevents the migration from starting in the middle of a user session, causing potential problems to end users.''',
     },
     {
       'name': 'CloudPrintSubmitEnabled',
@@ -29218,6 +29253,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceLoginScreenPromptOnMultipleMatchingCertificates': 'login_screen_prompt_on_multiple_matching_certificates.value',
     'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored',
     'DeviceI18nShortcutsEnabled': 'device_i18n_shortcuts_enabled.enabled',
+    'ChromadToCloudMigrationEnabled': 'chromad_to_cloud_migration_enabled.value',
   },
   'policy_atomic_group_definitions': [
     {
@@ -29680,6 +29716,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'DeviceKerberosEncryptionTypes',
         'DeviceGpoCacheLifetime',
         'DeviceAuthDataCacheLifetime',
+        'ChromadToCloudMigrationEnabled',
       ]
     },
     {
@@ -29726,6 +29763,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 926,
+  'highest_id_currently_used': 927,
   'highest_atomic_group_id_currently_used': 41
 }

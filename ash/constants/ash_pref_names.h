@@ -396,6 +396,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPreconfiguredDeskTemplates[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kProjectorCreationFlowEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kChromadToCloudMigrationEnabled[];
 }  // namespace prefs
 }  // namespace ash
 

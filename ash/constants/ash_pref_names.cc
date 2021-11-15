@@ -140,7 +140,7 @@ const char kSuggestedContentEnabled[] = "settings.suggested_content_enabled";
 // the Chrome OS launcher.
 const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
 
-// Dictioanry pref to store data on the distribution of provider relevance
+// Dictionary pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
 const char kLauncherSearchNormalizerParameters[] =
     "launcher.search_normalizer_parameters";
@@ -699,7 +699,7 @@ const char kQuickUnlockPinSecret[] = "quick_unlock.pin.secret";
 const char kQuickUnlockTimeout[] = "quick_unlock_timeout";
 
 // Dictionary prefs in local state that keeps information about detachable
-// bases - for exmaple the last used base per user.
+// bases - for example the last used base per user.
 const char kDetachableBaseDevices[] = "ash.detachable_base.devices";
 
 // Pref storing the number of sessions in which Assistant onboarding was shown.
@@ -841,7 +841,7 @@ const char kNextImeShortcutReminderDismissed[] =
 // legacy shortcuts.
 const char kDeviceI18nShortcutsEnabled[] = "ash.device_i18n_shortcuts_enabled";
 
-// An integet pref that tracks how many times the user has been shown the
+// An integer pref that tracks how many times the user has been shown the
 // notification about shortcuts changing.
 const char kImprovedShortcutsNotificationShownCount[] =
     "ash.improved_shortcuts_notification_shown_count";
@@ -870,6 +870,11 @@ const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
 // flow during onboarding.
 const char kProjectorCreationFlowEnabled[] =
     "ash.projector.creationFlowEnabled";
+
+// A boolean pref that indicates whether the migration of Chromad devices to
+// cloud management can be started.
+const char kChromadToCloudMigrationEnabled[] =
+    "ash.chromad_to_cloud_migration_enabled";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

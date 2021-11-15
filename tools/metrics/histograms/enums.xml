@@ -27118,6 +27118,7 @@ Called by update_document_policy_enum.py.-->
   <int value="924" label="UserAgentClientHintsGREASEUpdateEnabled"/>
   <int value="925" label="DeviceI18nShortcutsEnabled"/>
   <int value="926" label="HistoryClustersVisible"/>
+  <int value="927" label="ChromadToCloudMigrationEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

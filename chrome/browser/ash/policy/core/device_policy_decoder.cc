@@ -1782,6 +1782,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_chromad_to_cloud_migration_enabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.chromad_to_cloud_migration_enabled());
+    if (container.has_value()) {
+      policies->Set(key::kChromadToCloudMigrationEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
+
   if (policy.has_device_unaffiliated_crostini_allowed()) {
     const em::DeviceUnaffiliatedCrostiniAllowedProto& container(
         policy.device_unaffiliated_crostini_allowed());
