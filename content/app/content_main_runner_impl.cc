@@ -787,7 +787,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   }
 #endif
 
-  RegisterContentSchemes();
+  RegisterContentSchemes(delegate_->ShouldLockSchemeRegistry());
   ContentClientInitializer::Set(process_type, delegate_);
 
 #if !defined(OS_ANDROID)

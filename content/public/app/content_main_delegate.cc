@@ -42,6 +42,10 @@ bool ContentMainDelegate::ShouldHandleConsoleControlEvents() {
 }
 #endif
 
+bool ContentMainDelegate::ShouldLockSchemeRegistry() {
+  return true;
+}
+
 bool ContentMainDelegate::ShouldCreateFeatureList() {
   return true;
 }

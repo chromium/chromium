@@ -15,8 +15,11 @@ namespace content {
 // Called near the beginning of startup to register URL schemes that should be
 // parsed as "standard" or "referrer" with the src/url/ library, then locks the
 // sets of schemes down. The embedder can add additional schemes by
-// overriding the ContentClient::AddAdditionalSchemes method.
-CONTENT_EXPORT void RegisterContentSchemes();
+// overriding the ContentClient::AddAdditionalSchemes method. Embedders can
+// optionally keep the scheme registry unlocked by setting should_lock_registry
+// to false, making it their responsibility to ensure that it is not accessed
+// in a way that would cause potential thread-safety issues.
+CONTENT_EXPORT void RegisterContentSchemes(bool should_lock_registry = true);
 
 // Re-initializes schemes for tests.
 CONTENT_EXPORT void ReRegisterContentSchemesForTests();

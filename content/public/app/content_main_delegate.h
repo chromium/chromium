@@ -73,6 +73,20 @@ class CONTENT_EXPORT ContentMainDelegate {
   // returning initialization error code. Default behavior is CHECK(false).
   virtual int TerminateForFatalInitializationError();
 
+  // Allows the embedder to prevent locking the scheme registry. The scheme
+  // registry is the list of URL schemes we recognize, with some additional
+  // information about each scheme such as whether it expects a host. The
+  // scheme registry is not thread-safe, so by default it is locked before any
+  // threads are created to ensure single-threaded access. An embedder can
+  // override this to prevent the scheme registry from being locked during
+  // startup, but if they do so then they are responsible for making sure that
+  // the registry is only accessed in a thread-safe way, and for calling
+  // url::LockSchemeRegistries() when initialization is complete. If possible,
+  // prefer registering additional schemes through
+  // ContentClient::AddAdditionalSchemes over preventing the scheme registry
+  // from being locked.
+  virtual bool ShouldLockSchemeRegistry();
+
   // Allows the embedder to perform platform-specific initialization before
   // BrowserMain() is invoked (i.e. before BrowserMainRunner, BrowserMainLoop,
   // BrowserMainParts, etc. are created).

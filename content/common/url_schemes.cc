@@ -49,7 +49,7 @@ std::vector<std::string>& GetMutableServiceWorkerSchemes() {
 
 }  // namespace
 
-void RegisterContentSchemes() {
+void RegisterContentSchemes(bool should_lock_registry) {
   // On Android and in tests, schemes may have been registered already.
   if (g_registered_url_schemes)
     return;
@@ -109,7 +109,8 @@ void RegisterContentSchemes() {
   // threadsafe so must be called when GURL isn't used on any other thread. This
   // is really easy to mess up, so we say that all calls to Add*Scheme in Chrome
   // must be inside this function.
-  url::LockSchemeRegistries();
+  if (should_lock_registry)
+    url::LockSchemeRegistries();
 
   // Combine the default savable schemes with the additional ones given.
   GetMutableSavableSchemes().assign(std::begin(kDefaultSavableSchemes),
