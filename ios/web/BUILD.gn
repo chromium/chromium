@@ -40,6 +40,7 @@ source_set("web") {
     ":navigation_resources",
     ":plugin_placeholder_js",
     ":resources",
+    ":share_workaround_js",
     ":threads",
     "//base",
     "//components/leveldb_proto",
@@ -624,7 +625,6 @@ js_compile_bundle("all_frames_web_bundle") {
   sources = [
     "web_state/js/resources/all_frames_web_bundle.js",
     "web_state/js/resources/cookie.js",
-    "web_state/js/resources/share_workaround.js",
   ]
 }
 
@@ -633,6 +633,13 @@ js_compile_bundle("plugin_placeholder_js") {
   closure_entry_point = "__crWeb.pluginPlaceholder"
 
   sources = [ "web_state/js/resources/plugin_placeholder.js" ]
+}
+
+js_compile_bundle("share_workaround_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.shareWorkaround"
+
+  sources = [ "web_state/js/resources/share_workaround.js" ]
 }
 
 js_compile_bundle("base_js") {

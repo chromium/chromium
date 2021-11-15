@@ -12,4 +12,3 @@ goog.provide('__crWeb.allFramesWebBundle');
 // JavaScriptFeature. Please see the documentation at
 // //ios/web/public/js_messaging/README.md
 goog.require('__crWeb.cookie');
-goog.require('__crWeb.shareWorkaround');
