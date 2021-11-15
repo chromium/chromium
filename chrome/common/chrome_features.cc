@@ -946,7 +946,7 @@ const base::Feature kChromeOSSharingHub{"ChromeOSSharingHub",
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kSharesheetCopyToClipboard{
-    "SharesheetCopyToClipboard", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SharesheetCopyToClipboard", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_ANDROID)
