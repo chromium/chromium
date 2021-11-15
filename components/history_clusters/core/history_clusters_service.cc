@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/elapsed_timer.h"
@@ -426,6 +427,10 @@ void HistoryClustersService::RemoveVisits(
 bool HistoryClustersService::DoesQueryMatchAnyCluster(
     const std::string& query) {
   if (!base::FeatureList::IsEnabled(kJourneys))
+    return false;
+
+  // We don't want any omnibox jank for low-end devices.
+  if (base::SysInfo::IsLowEndDevice())
     return false;
 
   // 2 hour threshold chosen arbitrarily for cache refresh time.
