@@ -302,7 +302,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   // mode.
   item.textFieldEnabled = (self.credentialType == CredentialTypeNew);
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
-  item.hideIcon = YES;
+  item.hideIcon = (self.credentialType != CredentialTypeNew);
   item.keyboardType = UIKeyboardTypeURL;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
@@ -329,7 +329,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     item.textFieldEnabled = self.tableView.editing;
     item.hideIcon = !self.tableView.editing;
     item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
-    item.returnKeyType = UIReturnKeyDone;
     item.delegate = self;
   } else {
     item.textFieldEnabled = NO;
@@ -340,6 +339,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           password_manager::features::kSupportForAddPasswordsInSettings)) {
     item.textFieldPlaceholder = l10n_util::GetNSString(
         IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT);
+    item.hideIcon = NO;
   }
   return item;
 }
@@ -359,8 +359,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
   item.textFieldEnabled =
       (self.credentialType == CredentialTypeNew) || self.tableView.editing;
-  item.hideIcon =
-      (self.credentialType == CredentialTypeNew) || !self.tableView.editing;
+  if (self.credentialType == CredentialTypeNew) {
+    item.hideIcon = NO;
+  } else {
+    item.hideIcon = !self.tableView.editing;
+  }
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.keyboardType = UIKeyboardTypeURL;
   item.returnKeyType = UIReturnKeyDone;
@@ -627,7 +630,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
-    case ItemTypeWebsite:
+    case ItemTypeWebsite: {
+      if (self.credentialType == CredentialTypeNew) {
+        TableViewTextEditCell* textFieldCell =
+            base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+        textFieldCell.textField.delegate = self;
+      }
+      break;
+    }
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeDuplicateCredentialMessage:
@@ -695,11 +705,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           if (self.usernameTextItem &&
               [self.usernameTextItem.textFieldValue length] > 0) {
             self.usernameTextItem.hasValidText = NO;
-            self.usernameTextItem.hideIcon = NO;
             [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
           } else {
             self.websiteTextItem.hasValidText = NO;
-            self.websiteTextItem.hideIcon = NO;
             [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
           }
         }
@@ -710,9 +718,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           [self removeSectionWithIdentifier:SectionIdentifierDuplicate
                            withRowAnimation:UITableViewRowAnimationTop];
           self.usernameTextItem.hasValidText = YES;
-          self.usernameTextItem.hideIcon = YES;
           self.websiteTextItem.hasValidText = YES;
-          self.websiteTextItem.hideIcon = YES;
           [self reconfigureCellsForItems:@[
             self.websiteTextItem, self.usernameTextItem
           ]];
@@ -761,17 +767,20 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  // Check if the item is equal to the current username or password item as when
-  // editing finished reloadData is called.
   if (tableViewItem == self.websiteTextItem) {
+    if (!self.isDuplicatedCredential) {
+      self.websiteTextItem.hasValidText = [self checkIfValidSite];
+    }
     if ([self.websiteTextItem.textFieldValue length] > 0 &&
         [self.delegate isTLDMissing]) {
       [self showTLDMissingSection];
+      self.websiteTextItem.hasValidText = NO;
     }
     [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
   } else if (tableViewItem == self.usernameTextItem) {
     [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
   } else if (tableViewItem == self.passwordTextItem) {
+    self.passwordTextItem.hasValidText = [self checkIfValidPassword];
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   }
 }
@@ -959,9 +968,16 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (BOOL)checkIfValidSite {
   BOOL siteEmpty = [self.websiteTextItem.textFieldValue length] == 0;
-  self.websiteTextItem.hasValidText = !siteEmpty;
-
-  [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
+  if (self.credentialType == CredentialTypeNew) {
+    if (!siteEmpty && !self.isTLDMissingMessageShown &&
+        !self.isDuplicatedCredential) {
+      self.websiteTextItem.hasValidText = YES;
+      [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
+    }
+  } else {
+    self.websiteTextItem.hasValidText = !siteEmpty;
+    [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
+  }
   return !siteEmpty;
 }
 
@@ -974,10 +990,18 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   BOOL showUsernameAlreadyUsed =
       usernameChanged && [self.delegate isUsernameReused:newUsernameValue];
 
+  if (self.credentialType == CredentialTypeNew) {
+    if (!self.isDuplicatedCredential) {
+      self.usernameTextItem.hasValidText = YES;
+      [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
+    }
+  } else {
+    self.usernameTextItem.hasValidText = !showUsernameAlreadyUsed;
+    [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
+  }
   self.usernameTextItem.hasValidText = !showUsernameAlreadyUsed;
   self.usernameTextItem.identifyingIconEnabled = showUsernameAlreadyUsed;
 
-  [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
   return !showUsernameAlreadyUsed;
 }
 
@@ -986,9 +1010,16 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   DCHECK(self.password.password || (self.credentialType == CredentialTypeNew));
 
   BOOL passwordEmpty = [self.passwordTextItem.textFieldValue length] == 0;
-  self.passwordTextItem.hasValidText = !passwordEmpty;
+  if (self.credentialType == CredentialTypeNew) {
+    if (!passwordEmpty) {
+      self.passwordTextItem.hasValidText = YES;
+      [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+    }
+  } else {
+    self.passwordTextItem.hasValidText = !passwordEmpty;
+    [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+  }
 
-  [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   return !passwordEmpty;
 }
 
@@ -1038,7 +1069,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (void)toggleNavigationBarRightButtonItem {
   self.navigationItem.rightBarButtonItem.enabled =
       !self.isDuplicatedCredential && self.shouldEnableSave &&
-      [self.delegate isURLValid];
+      [self.delegate isURLValid] && !self.isTLDMissingMessageShown;
 }
 
 // Shows the section with the error message for top-level domain missing.

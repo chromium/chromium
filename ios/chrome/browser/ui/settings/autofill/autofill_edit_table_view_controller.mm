@@ -99,19 +99,19 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
   DCHECK([_currentEditingCell textField] == textField);
-  [self moveToAnotherCellWithOffset:1];
+  [self moveToAnotherTextFieldWithOffset:1];
   return NO;
 }
 
 #pragma mark - FormInputAccessoryViewDelegate
 
 - (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
-  [self moveToAnotherCellWithOffset:1];
+  [self moveToAnotherTextFieldWithOffset:1];
 }
 
 - (void)formInputAccessoryViewDidTapPreviousButton:
     (FormInputAccessoryView*)sender {
-  [self moveToAnotherCellWithOffset:-1];
+  [self moveToAnotherTextFieldWithOffset:-1];
 }
 
 - (void)formInputAccessoryViewDidTapCloseButton:
@@ -174,19 +174,49 @@
   return YES;
 }
 
-- (void)moveToAnotherCellWithOffset:(NSInteger)offset {
+- (void)moveToAnotherTextFieldWithOffset:(NSInteger)offset {
   NSIndexPath* cellPath = [self indexPathForCurrentTextField];
   DCHECK(cellPath);
-  NSIndexPath* nextCellPath = [self indexForCellPathWithOffset:offset
-                                                      fromPath:cellPath];
 
-  if (!nextCellPath || ![self isItemAtIndexPathTextEditCell:nextCellPath]) {
-    [[_currentEditingCell textField] resignFirstResponder];
-  } else {
+  NSInteger cellSection = [cellPath section];
+  NSInteger nextCellRow = [cellPath row] + offset;
+  BOOL nextTextFieldFound = NO;
+
+  while (cellSection >= 0 && cellSection < [self.tableView numberOfSections]) {
+    while (nextCellRow >= 0 &&
+           nextCellRow < [self.tableView numberOfRowsInSection:cellSection]) {
+      NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
+                                                      inSection:cellSection];
+      if ([self isItemAtIndexPathTextEditCell:cellIndexPath]) {
+        nextTextFieldFound = YES;
+        break;
+      }
+      nextCellRow += offset;
+    }
+
+    if (nextTextFieldFound) {
+      break;
+    }
+
+    cellSection += offset;
+    if (offset > 0) {
+      nextCellRow = 0;
+    } else {
+      if (cellSection >= 0) {
+        nextCellRow = [self.tableView numberOfRowsInSection:cellSection] - 1;
+      }
+    }
+  }
+
+  if (nextTextFieldFound) {
+    NSIndexPath* cellIndexPath = [NSIndexPath indexPathForRow:nextCellRow
+                                                    inSection:cellSection];
     TableViewTextEditCell* nextCell =
         base::mac::ObjCCastStrict<TableViewTextEditCell>(
-            [self.tableView cellForRowAtIndexPath:nextCellPath]);
+            [self.tableView cellForRowAtIndexPath:cellIndexPath]);
     [nextCell.textField becomeFirstResponder];
+  } else {
+    [[_currentEditingCell textField] resignFirstResponder];
   }
 }
 
