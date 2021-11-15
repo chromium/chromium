@@ -1433,44 +1433,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
-// Tests that the histogram for security level is recorded correctly for HTTPS
-// pages.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
-                       HTTPSSecurityLevelHistogram) {
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
-  const char kHistogramName[] = "Security.SecurityLevel.CryptographicScheme";
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  {
-    base::HistogramTester histograms;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server_.GetURL("/title1.html")));
-    histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-  }
-
-  // Load mixed content and check that the histogram is recorded correctly.
-  {
-    base::HistogramTester histograms;
-    SecurityStyleTestObserver observer(contents);
-    EXPECT_TRUE(content::ExecuteScript(contents,
-                                       "var i = document.createElement('img');"
-                                       "i.src = 'http://example.test';"
-                                       "document.body.appendChild(i);"));
-    observer.WaitForDidChangeVisibleSecurityState();
-    histograms.ExpectUniqueSample(kHistogramName, security_state::WARNING, 1);
-  }
-
-  // Navigate away and the histogram should be recorded exactly once again, when
-  // the new navigation commits.
-  {
-    base::HistogramTester histograms;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server_.GetURL("/title2.html")));
-    histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-  }
-}
-
 // Tests that the security level form submission histogram is logged correctly.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, FormSecurityLevelHistogram) {
   const char kHistogramName[] = "Security.SecurityLevel.FormSubmission";

@@ -93,6 +93,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.Certificate.AndroidAIAFetchError" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     The net error code returned after attempting an AIA fetch on Android.
@@ -187,6 +190,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.Certificate.VerificationSuccessAfterAIAFetchingNeeded"
     enum="BooleanSuccess" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Whether or not certificate verification was successful after attempting AIA
@@ -198,6 +204,9 @@ chromium-metrics-reviews@google.com.
 <histogram base="true"
     name="Net.CertificateTransparency.ConnectionComplianceStatus2"
     enum="CTComplianceStatus" expires_after="M85">
+  <obsolete>
+    Expired in M85, code removed in M98
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="CertificateTransparencyProtocol" -->
 
   <owner>estark@chromium.org</owner>
@@ -215,6 +224,9 @@ chromium-metrics-reviews@google.com.
 <histogram base="true"
     name="Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2"
     enum="CTComplianceStatus" expires_after="M85">
+  <obsolete>
+    Expired in M85, code removed in M98
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="CertificateTransparencyProtocol" -->
 
   <owner>estark@chromium.org</owner>
@@ -231,6 +243,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.CertificateTransparency.CTRequiredRequestComplianceStatus"
     enum="CTComplianceStatus" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     The compliance of each HTTP request with the Certificate Transparency
@@ -246,6 +261,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Net.CertificateTransparency.EVCompliance2"
     enum="CTComplianceStatus" expires_after="M85">
+  <obsolete>
+    Expired in M85, code removed in M98
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="CertificateTransparencyProtocol" -->
 
   <owner>estark@chromium.org</owner>
@@ -260,6 +278,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.CertificateTransparency.RequestComplianceStatus"
     enum="CTComplianceStatus" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     The compliance of each HTTP request with the Certificate Transparency
@@ -302,9 +323,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertificateTransparency.SCTOrigin" enum="SCTOrigin"
-    expires_after="M95">
+    expires_after="2022-05-01">
   <owner>estark@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     The origin breakdown of Signed Certificate Timestamps (SCTs). Emitted once
     for every SCT when first validated, which means 0 or more times during every
@@ -1777,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ExpectCT.HeaderPresentOnResponse" units="BooleanPresent"
-    expires_after="M95">
+    expires_after="2022-05-01">
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1788,6 +1809,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.ExpectCTHeader.ParseSuccess" enum="BooleanSuccess"
     expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Sites can send an Expect-CT header to Chrome to indicate that they intend
@@ -1800,6 +1824,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.ExpectCTHeader.PolicyComplianceOnConnectionSetup"
     enum="CTComplianceStatus" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Sites can send an Expect-CT header to Chrome to indicate that they intend
@@ -1812,6 +1839,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.ExpectCTHeader.PolicyComplianceOnHeaderProcessing"
     enum="CTComplianceStatus" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Sites can send an Expect-CT header to Chrome to indicate that they intend
@@ -5826,6 +5856,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.URLRequest.ReferrerPolicyHeaderPresentOnRedirect"
     enum="BooleanPresent" expires_after="M85">
+  <obsolete>
+    Expired in M85, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Records the usage of the Referrer-Policy header on redirect responses. This

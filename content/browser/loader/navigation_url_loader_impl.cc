@@ -147,14 +147,6 @@ class NavigationLoaderInterceptorBrowserContainer
 base::LazyInstance<NavigationURLLoaderImpl::URLLoaderFactoryInterceptor>::Leaky
     g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
 
-size_t GetCertificateChainsSizeInKB(const net::SSLInfo& ssl_info) {
-  base::Pickle cert_pickle;
-  ssl_info.cert->Persist(&cert_pickle);
-  base::Pickle unverified_cert_pickle;
-  ssl_info.unverified_cert->Persist(&unverified_cert_pickle);
-  return (cert_pickle.size() + unverified_cert_pickle.size()) / 1000;
-}
-
 const net::NetworkTrafficAnnotationTag kNavigationUrlLoaderTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("navigation_url_loader", R"(
       semantics {
@@ -921,10 +913,6 @@ void NavigationURLLoaderImpl::OnReceiveCachedMetadata(
 
 void NavigationURLLoaderImpl::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Navigation.URLLoaderNetworkService.OnCompleteHasSSLInfo",
-      status.ssl_info.has_value());
-
   // Successful load must have used OnResponseStarted first. In this case, the
   // URLLoaderClient has already been transferred to the renderer process and
   // OnComplete is not expected to be called here.
@@ -933,12 +921,6 @@ void NavigationURLLoaderImpl::OnComplete(
                                url_.spec());
     base::debug::DumpWithoutCrashing();
     return;
-  }
-
-  if (status.ssl_info.has_value()) {
-    UMA_HISTOGRAM_MEMORY_KB(
-        "Navigation.URLLoaderNetworkService.OnCompleteCertificateChainsSize",
-        GetCertificateChainsSizeInKB(status.ssl_info.value()));
   }
 
   // If the default loader (network) was used to handle the URL load request

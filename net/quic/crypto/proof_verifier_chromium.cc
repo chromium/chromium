@@ -526,25 +526,6 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           CERT_STATUS_CT_COMPLIANCE_FAILED;
       verify_details_->cert_verify_result.cert_status &= ~CERT_STATUS_IS_EV;
     }
-
-    // Record the CT compliance status for connections with EV certificates,
-    // to distinguish how often EV status is being dropped due to failing CT
-    // compliance.
-    if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Net.CertificateTransparency.EVCompliance2.QUIC",
-          cert_verify_result.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
-
-  // Record the CT compliance of every connection to get an overall picture of
-  // how many connections are CT-compliant.
-  if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.CertificateTransparency.ConnectionComplianceStatus2.QUIC",
-        verify_details_->cert_verify_result.policy_compliance,
-        ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
@@ -557,19 +538,6 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           cert_verify_result.policy_compliance,
           proof_verifier_->network_isolation_key_);
-  if (ct_requirement_status != TransportSecurityState::CT_NOT_REQUIRED) {
-    if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-      // Record the CT compliance of connections for which compliance is
-      // required; this helps answer the question: "Of all connections that
-      // are supposed to be serving valid CT information, how many fail to do
-      // so?"
-      UMA_HISTOGRAM_ENUMERATION(
-          "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
-          "QUIC",
-          cert_verify_result.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
 
   if (sct_auditing_delegate_ &&
       sct_auditing_delegate_->IsSCTAuditingEnabled()) {

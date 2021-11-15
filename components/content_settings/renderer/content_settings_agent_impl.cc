@@ -90,9 +90,6 @@ absl::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
   return absl::nullopt;
 }
 
-void ContentSettingsAgentImpl::Delegate::PassiveInsecureContentFound(
-    const blink::WebURL&) {}
-
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
     bool should_allowlist,
@@ -435,11 +432,6 @@ bool ContentSettingsAgentImpl::AllowPopupsAndRedirects(bool default_value) {
              content_setting_rules_->popup_redirect_rules, frame,
              url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL()) ==
          CONTENT_SETTING_ALLOW;
-}
-
-void ContentSettingsAgentImpl::PassiveInsecureContentFound(
-    const blink::WebURL& resource_url) {
-  delegate_->PassiveInsecureContentFound(resource_url);
 }
 
 bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {

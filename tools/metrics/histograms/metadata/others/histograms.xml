@@ -16512,6 +16512,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SSL.CertificateErrorReportFailure" enum="NetErrorCodes"
     expires_after="M81">
+  <obsolete>
+    Removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Users can opt in to send reports of certificate validation errors to Google.
@@ -16521,6 +16524,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SSL.ExpectCTReportFailure2" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Sites can opt in to Expect CT, a reporting feature that sends a report
@@ -16532,6 +16538,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SSL.ExpectCTReportSendingAttempt" units="units"
     expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Sites can opt in to Expect CT, a reporting feature that sends a report
@@ -16543,6 +16552,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SSL.InsecureContent" enum="InsecureContentType"
     expires_after="2020-02-23">
+  <obsolete>
+    Expired in 02/2020. Code removed in M98.
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     Keeps track of various insecure content events, such as loading an HTTP

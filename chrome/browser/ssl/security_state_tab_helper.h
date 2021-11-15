@@ -39,7 +39,6 @@ class SecurityStateTabHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidChangeVisibleSecurityState() override;
 
   // Used by tests to specify a callback to be called when
   // GetVisibleSecurityState() is called.

@@ -1350,24 +1350,6 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           CERT_STATUS_CT_COMPLIANCE_FAILED;
       server_cert_verify_result_.cert_status &= ~CERT_STATUS_IS_EV;
     }
-
-    // Record the CT compliance status for connections with EV certificates,
-    // to distinguish how often EV status is being dropped due to failing CT
-    // compliance.
-    if (server_cert_verify_result_.is_issued_by_known_root) {
-      UMA_HISTOGRAM_ENUMERATION("Net.CertificateTransparency.EVCompliance2.SSL",
-                                server_cert_verify_result_.policy_compliance,
-                                ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
-
-  // Record the CT compliance of every connection to get an overall picture of
-  // how many connections are CT-compliant.
-  if (server_cert_verify_result_.is_issued_by_known_root) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.CertificateTransparency.ConnectionComplianceStatus2.SSL",
-        server_cert_verify_result_.policy_compliance,
-        ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
@@ -1379,19 +1361,6 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           server_cert_verify_result_.policy_compliance,
           ssl_config_.network_isolation_key);
-  if (ct_requirement_status != TransportSecurityState::CT_NOT_REQUIRED) {
-    if (server_cert_verify_result_.is_issued_by_known_root) {
-      // Record the CT compliance of connections for which compliance is
-      // required; this helps answer the question: "Of all connections that
-      // are supposed to be serving valid CT information, how many fail to do
-      // so?"
-      UMA_HISTOGRAM_ENUMERATION(
-          "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
-          "SSL",
-          server_cert_verify_result_.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
 
   if (context_->sct_auditing_delegate() &&
       context_->sct_auditing_delegate()->IsSCTAuditingEnabled()) {

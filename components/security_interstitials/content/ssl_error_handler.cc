@@ -975,11 +975,6 @@ void SSLErrorHandler::HandleCertDateInvalidError() {
 
 void SSLErrorHandler::HandleCertDateInvalidErrorImpl(
     base::TimeTicks started_handling_error) {
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "interstitial.ssl_error_handler.cert_date_error_delay",
-      base::TimeTicks::Now() - started_handling_error, base::Milliseconds(1),
-      base::Seconds(4), 50);
-
   timer_.Stop();
   base::Clock* testing_clock = g_config.Pointer()->clock();
   const base::Time now =

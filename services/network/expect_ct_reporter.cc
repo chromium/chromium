@@ -12,8 +12,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -194,8 +192,6 @@ void ExpectCTReporter::OnExpectCTFailed(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("SSL.ExpectCTReportSendingAttempt", true);
-
   SendPreflight(report_uri, serialized_report, network_isolation_key);
 }
 
@@ -290,7 +286,6 @@ void ExpectCTReporter::SendPreflight(
 void ExpectCTReporter::OnReportFailure(const GURL& report_uri,
                                        int net_error,
                                        int http_response_code) {
-  base::UmaHistogramSparse("SSL.ExpectCTReportFailure2", -net_error);
   if (!failure_callback_.is_null())
     failure_callback_.Run();
 }

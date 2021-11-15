@@ -8383,11 +8383,6 @@ class RecurrentInterstitialBrowserTest : public CertVerifierBrowserTest {
 // multiple times.
 IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
                        RecurrentInterstitial) {
-  const char kRecurrentInterstitialHistogram[] =
-      "interstitial.ssl_overridable.is_recurrent_error";
-  const char kRecurrentInterstitialActionHistogram[] =
-      "interstitial.ssl_recurrent_error.action";
-
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   ASSERT_TRUE(https_server.Start());
   mock_cert_verifier()->set_default_result(
@@ -8398,7 +8393,6 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
           browser()->profile()->GetSSLHostStateDelegate());
   state->ResetRecurrentErrorCountForTesting();
 
-  base::HistogramTester histograms;
   state->SetRecurrentInterstitialThresholdForTesting(2);
 
   // Use different hostnames for the two test cases to avoid the clickthrough
@@ -8409,16 +8403,11 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
   WaitForInterstitial(tab);
   ExpectInterstitialElementHidden(tab, "recurrent-error-message",
                                   true /* expect_hidden */);
-  histograms.ExpectUniqueSample(kRecurrentInterstitialHistogram, false, 1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForInterstitial(tab);
   ExpectInterstitialElementHidden(tab, "recurrent-error-message",
                                   false /* expect_hidden */);
-  histograms.ExpectBucketCount(kRecurrentInterstitialHistogram, true, 1);
-  histograms.ExpectUniqueSample(
-      kRecurrentInterstitialActionHistogram,
-      SSLErrorControllerClient::RecurrentErrorAction::kShow, 1);
 
   // Proceed through the interstitial and observe that the histogram is
   // recorded correctly.
@@ -8426,9 +8415,6 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
   ASSERT_TRUE(content::ExecuteScript(
       tab, "window.certificateErrorPageController.proceed();"));
   nav_observer.Wait();
-  histograms.ExpectBucketCount(
-      kRecurrentInterstitialActionHistogram,
-      SSLErrorControllerClient::RecurrentErrorAction::kProceed, 1);
 }
 
 // Tests that mixed content is tracked by origin, not by URL. This is tested by

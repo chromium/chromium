@@ -137,33 +137,6 @@ void LogTrustAnchor(const net::HashValueVector& spki_hashes) {
   base::UmaHistogramSparse("Net.Certificate.TrustAnchor.Request", id);
 }
 
-// Records per-request histograms relating to Certificate Transparency
-// compliance.
-void RecordCTHistograms(const net::SSLInfo& ssl_info) {
-  if (ssl_info.ct_policy_compliance ==
-      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE) {
-    return;
-  }
-  if (!ssl_info.is_issued_by_known_root)
-    return;
-
-  // Connections with major errors other than CERTIFICATE_TRANSPARENCY_REQUIRED
-  // would have failed anyway, so do not record these histograms for such
-  // requests.
-  net::CertStatus other_errors =
-      ssl_info.cert_status &
-      ~net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED;
-  if (net::IsCertStatusError(other_errors))
-    return;
-
-  // Record the CT compliance of each request, to give a picture of the
-  // percentage of overall requests that are CT-compliant.
-  UMA_HISTOGRAM_ENUMERATION(
-      "Net.CertificateTransparency.RequestComplianceStatus",
-      ssl_info.ct_policy_compliance,
-      net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
-}
-
 net::CookieOptions CreateCookieOptions(
     net::CookieOptions::SameSiteCookieContext same_site_context,
     const net::SamePartyContext& same_party_context,
@@ -942,8 +915,6 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
     if (!IsCertificateError(result)) {
       LogTrustAnchor(ssl_info.public_key_hashes);
     }
-
-    RecordCTHistograms(ssl_info);
   }
 
   if (transaction_ && transaction_->GetResponseInfo()) {

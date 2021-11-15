@@ -136,8 +136,6 @@ static_library("common") {
     "search/ntp_logging_events.h",
     "secure_origin_allowlist.cc",
     "secure_origin_allowlist.h",
-    "ssl_insecure_content.cc",
-    "ssl_insecure_content.h",
     "url_constants.cc",
     "url_constants.h",
     "webui_url_constants.cc",

@@ -229,12 +229,6 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
   if (submitted_form_type_ != SubmittedFormType::kUnspecified) {
     UMA_HISTOGRAM_ENUMERATION("PasswordManager.SubmittedFormType",
                               submitted_form_type_, SubmittedFormType::kCount);
-    if (!is_main_frame_secure_) {
-      UMA_HISTOGRAM_ENUMERATION("PasswordManager.SubmittedNonSecureFormType",
-                                submitted_form_type_,
-                                SubmittedFormType::kCount);
-    }
-
     ukm_entry_builder_.SetSubmission_SubmittedFormType(
         static_cast<int64_t>(submitted_form_type_));
   }

@@ -51,9 +51,6 @@
 
 namespace {
 
-const char kCertDateErrorHistogram[] =
-    "interstitial.ssl_error_handler.cert_date_error_delay";
-
 const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
 
 const char kOkayCertName[] = "ok_cert.pem";
@@ -1184,8 +1181,6 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
 
   EXPECT_TRUE(delegate()->bad_clock_interstitial_shown());
   EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  // Check that the histogram for the delay was recorded.
-  histograms.ExpectTotalCount(kCertDateErrorHistogram, 1);
 }
 
 // Tests that an SSL interstitial is shown if the accuracy of the system
@@ -1211,8 +1206,6 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_NoTimeQueries) {
   EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
   EXPECT_FALSE(delegate()->bad_clock_interstitial_shown());
   EXPECT_TRUE(delegate()->ssl_interstitial_shown());
-  // Check that the histogram for the delay was recorded.
-  histograms.ExpectTotalCount(kCertDateErrorHistogram, 1);
 }
 
 // Tests that an SSL interstitial is shown if determing the accuracy of
@@ -1249,9 +1242,6 @@ TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
   EXPECT_FALSE(delegate()->bad_clock_interstitial_shown());
   EXPECT_TRUE(delegate()->ssl_interstitial_shown());
   EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-
-  // Check that the histogram for the delay was recorded.
-  histograms.ExpectTotalCount(kCertDateErrorHistogram, 1);
 
   // Clear the error handler to test that, when the request completes,
   // it doesn't try to call a callback on a deleted SSLErrorHandler.

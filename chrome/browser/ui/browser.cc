@@ -150,7 +150,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/ssl_insecure_content.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -1363,13 +1362,6 @@ void Browser::CreateSmsPrompt(content::RenderFrameHost*,
   std::move(on_confirm).Run();
 }
 
-void Browser::PassiveInsecureContentFound(const GURL& resource_url) {
-  // Note: this implementation is a mirror of
-  // ContentSettingsObserver::passiveInsecureContentFound
-  ReportInsecureContent(SslInsecureContentType::DISPLAY);
-  FilteredReportInsecureContentDisplayed(resource_url);
-}
-
 bool Browser::ShouldAllowRunningInsecureContent(
     content::WebContents* web_contents,
     bool allowed_per_prefs,
@@ -1377,8 +1369,6 @@ bool Browser::ShouldAllowRunningInsecureContent(
     const GURL& resource_url) {
   // Note: this implementation is a mirror of
   // ContentSettingsObserver::allowRunningInsecureContent.
-  FilteredReportInsecureContentRan(resource_url);
-
   if (allowed_per_prefs)
     return true;
 

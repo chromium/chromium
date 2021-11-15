@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl.clockstate.build_time" enum="ClockStates"
     expires_after="M85">
   <obsolete>
-    Expired after M85. No longer in use.
+    Expired after M85. No longer in use. Code removed in M98.
   </obsolete>
   <owner>mab@chromium.org</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl.clockstate.network3"
     enum="NetworkClockStates" expires_after="M85">
   <obsolete>
-    Expired after M85. No longer in use.
+    Expired after M85. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>mab@chromium.org</owner>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl_error_handler.cert_date_error_delay"
     units="ms" expires_after="M77">
   <obsolete>
-    Expired after M77. No longer in use.
+    Expired after M77. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl_nonoverridable.is_recurrent_error"
     enum="BooleanRecurrentError" expires_after="M72">
   <obsolete>
-    Expired after M72. No longer in use.
+    Expired after M72. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl_nonoverridable.is_recurrent_error.ct_error"
     enum="BooleanRecurrentError" expires_after="M72">
   <obsolete>
-    Expired after M72. No longer in use.
+    Expired after M72. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl_recurrent_error.action"
     enum="RecurrentErrorAction" expires_after="M72">
   <obsolete>
-    Expired after M72. No longer in use.
+    Expired after M72. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.ssl_recurrent_error.ct_error.action"
     enum="RecurrentErrorAction" expires_after="M72">
   <obsolete>
-    Expired after M72. No longer in use.
+    Expired after M72. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>

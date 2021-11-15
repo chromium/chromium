@@ -173,24 +173,6 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
       StatefulSSLHostStateDelegateFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   state->DidDisplayErrorPage(cert_error);
-  bool is_recurrent_error = state->HasSeenRecurrentErrors(cert_error);
-  if (overridable) {
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl_overridable.is_recurrent_error",
-                          is_recurrent_error);
-    if (cert_error == net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "interstitial.ssl_overridable.is_recurrent_error.ct_error",
-          is_recurrent_error);
-    }
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl_nonoverridable.is_recurrent_error",
-                          is_recurrent_error);
-    if (cert_error == net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "interstitial.ssl_nonoverridable.is_recurrent_error.ct_error",
-          is_recurrent_error);
-    }
-  }
 
   LogSafeBrowsingSecuritySensitiveAction(
       safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(

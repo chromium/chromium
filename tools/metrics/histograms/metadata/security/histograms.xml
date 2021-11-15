@@ -529,7 +529,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2021-12-26">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
   <summary>
     Records the amount of time a Safety Tip bubble is open, for cases where the
     user explicitly closed the bubble with the close button. This is recorded in
@@ -541,7 +540,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2021-12-26">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
   <summary>
     Records the amount of time a Safety Tip bubble is open, for cases where the
     user explicitly closed the bubble with the esc key. This is recorded in
@@ -553,7 +551,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2021-10-25">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
   <summary>
     Records the amount of time a Safety Tip bubble is open, for cases where the
     user explicitly closed the bubble with the ignore button. This is recorded
@@ -608,8 +605,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Security.SafetyTips.PageInfo.Action"
     enum="WebsiteSettingsAction" expires_after="2021-10-25">
-  <owner>estark@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
+  <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
     Tracks Page Info bubble actions along with the Safety Tip status of the
     page.
@@ -630,7 +627,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
     enum="SafetyTipStatus" expires_after="2021-12-26">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
+  <owner>src/chrome/browser/reputation/OWNERS</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit for a page
     where the Safety Tip has previously been ignored.
@@ -640,7 +637,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
     expires_after="2022-04-10">
   <owner>jdeblasio@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the Safety Tip status of a page after navigation commit or page
     visibility change.
@@ -769,7 +766,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SecurityLevel.CryptographicScheme"
     enum="SecurityLevel" expires_after="2021-09-01">
   <obsolete>
-    Expired after 2021-09. No longer in use.
+    Expired after 2021-09. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -818,7 +815,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
     enum="SecurityLevel" expires_after="2022-04-10">
   <owner>estark@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the security level of a page when submitting a form on a top-frame
     navigation with a non-cryptographic scheme. This histogram is recorded
@@ -831,10 +828,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SecurityLevel.InsecureMainFrameNonFormNavigation"
     enum="SecurityLevel" expires_after="2021-09-01">
   <obsolete>
-    Expired after 2021-09. No longer in use.
+    Expired after 2021-09. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
-  <owner>livvielin@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the security level of a page on top-frame navigations with a
     non-cryptographic scheme that are not form submissions. This histogram is
@@ -845,7 +842,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Security.SecurityLevel.NoncryptographicScheme"
     enum="SecurityLevel" expires_after="2021-09-01">
   <obsolete>
-    Expired after 2021-09. No longer in use.
+    Expired after 2021-09. No longer in use. Code removed in M98.
   </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>

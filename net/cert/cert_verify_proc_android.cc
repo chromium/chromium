@@ -105,8 +105,6 @@ bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
   Error error;
   std::vector<uint8_t> aia_fetch_bytes;
   request->WaitForResult(&error, &aia_fetch_bytes);
-  base::UmaHistogramSparse("Net.Certificate.AndroidAIAFetchError",
-                           std::abs(error));
   if (error != OK)
     return false;
   CertErrors errors;
@@ -258,9 +256,6 @@ bool VerifyFromAndroidTrustManager(
     status = TryVerifyWithAIAFetching(cert_bytes, hostname,
                                       std::move(cert_net_fetcher),
                                       verify_result, &verified_chain);
-    UMA_HISTOGRAM_BOOLEAN(
-        "Net.Certificate.VerificationSuccessAfterAIAFetchingNeeded",
-        status == android::CERT_VERIFY_STATUS_ANDROID_OK);
   }
 
   switch (status) {

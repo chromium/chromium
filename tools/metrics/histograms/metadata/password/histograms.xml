@@ -2721,6 +2721,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SubmittedNonSecureFormType"
     enum="PasswordFormType" expires_after="M77">
+  <obsolete>
+    Expired in M77, code removed in M98
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <summary>
     The type (e.g. signup, login, change password) of all submitted password

@@ -232,11 +232,6 @@ ClockState GetClockState(
     build_time_state = CLOCK_STATE_FUTURE;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("interstitial.ssl.clockstate.network3",
-                            network_state, NETWORK_CLOCK_STATE_MAX);
-  UMA_HISTOGRAM_ENUMERATION("interstitial.ssl.clockstate.build_time",
-                            build_time_state, CLOCK_STATE_MAX);
-
   switch (network_state) {
     case NETWORK_CLOCK_STATE_UNKNOWN_SYNC_LOST:
     case NETWORK_CLOCK_STATE_UNKNOWN_NO_SYNC_ATTEMPT:

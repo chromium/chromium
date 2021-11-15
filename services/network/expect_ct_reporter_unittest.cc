@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -37,9 +36,6 @@
 
 namespace network {
 namespace {
-
-const char kSendHistogramName[] = "SSL.ExpectCTReportSendingAttempt";
-const char kFailureHistogramName[] = "SSL.ExpectCTReportFailure2";
 
 // A test ReportSender that exposes the latest report URI and
 // serialized report to be sent.
@@ -492,9 +488,6 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
       &HandleReportPreflight, kGoodCorsHeaders, base::RepeatingClosure()));
   ASSERT_TRUE(test_server().Start());
 
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kSendHistogramName, 0);
-
   TestCertificateReportSender* sender = new TestCertificateReportSender();
   net::TestURLRequestContext context;
   ExpectCTReporter reporter(&context, base::NullCallback(),
@@ -522,8 +515,6 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
         net::NetworkIsolationKey());
     EXPECT_TRUE(sender->latest_report_uri().is_empty());
     EXPECT_TRUE(sender->latest_serialized_report().empty());
-
-    histograms.ExpectTotalCount(kSendHistogramName, 0);
   }
 
   // Enable the feature and send a dummy report. The test will fail if the
@@ -546,9 +537,6 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
 
 // Test that no report is sent if the report URI is empty.
 TEST_F(ExpectCTReporterTest, EmptyReportURI) {
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kSendHistogramName, 0);
-
   TestCertificateReportSender* sender = new TestCertificateReportSender();
   net::TestURLRequestContext context;
   ExpectCTReporter reporter(&context, base::NullCallback(),
@@ -563,36 +551,6 @@ TEST_F(ExpectCTReporterTest, EmptyReportURI) {
                             net::NetworkIsolationKey());
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
   EXPECT_TRUE(sender->latest_serialized_report().empty());
-
-  histograms.ExpectTotalCount(kSendHistogramName, 0);
-}
-
-// Test that if a report fails to send, the UMA metric is recorded.
-TEST_F(ExpectCTReporterWaitTest, SendReportFailure) {
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kFailureHistogramName, 0);
-  histograms.ExpectTotalCount(kSendHistogramName, 0);
-
-  ExpectCTReporter reporter(context(), base::NullCallback(),
-                            base::NullCallback());
-
-  net::SSLInfo ssl_info;
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_info.unverified_cert = net::ImportCertFromFile(
-      net::GetTestCertsDirectory(), "localhost_cert.pem");
-
-  net::HostPortPair host_port("example.test", 443);
-  GURL report_uri(
-      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_CONNECTION_FAILED));
-
-  SendReport(&reporter, host_port, report_uri, base::Time(), ssl_info);
-
-  histograms.ExpectTotalCount(kFailureHistogramName, 1);
-  histograms.ExpectBucketCount(kFailureHistogramName,
-                               -net::ERR_CONNECTION_FAILED, 1);
-  histograms.ExpectTotalCount(kSendHistogramName, 1);
-  histograms.ExpectBucketCount(kSendHistogramName, true, 1);
 }
 
 // Test that if a report fails to send, the failure callback is called.
@@ -619,10 +577,6 @@ TEST_F(ExpectCTReporterWaitTest, SendReportFailureCallback) {
 
 // Test that a sent report has the right format.
 TEST_F(ExpectCTReporterTest, SendReport) {
-  base::HistogramTester histograms;
-  histograms.ExpectTotalCount(kFailureHistogramName, 0);
-  histograms.ExpectTotalCount(kSendHistogramName, 0);
-
   TestCertificateReportSender* sender = new TestCertificateReportSender();
   net::TestURLRequestContext context;
   ExpectCTReporter reporter(&context, base::NullCallback(),
@@ -717,10 +671,6 @@ TEST_F(ExpectCTReporterTest, SendReport) {
   ASSERT_NO_FATAL_FAILURE(CheckExpectCTReport(
       sender->latest_serialized_report(),
       net::HostPortPair::FromURL(report_uri), kExpirationTimeStr, ssl_info));
-
-  histograms.ExpectTotalCount(kFailureHistogramName, 0);
-  histograms.ExpectTotalCount(kSendHistogramName, 1);
-  histograms.ExpectBucketCount(kSendHistogramName, true, 1);
 }
 
 // Test that the success callback is called when a report is successfully sent.

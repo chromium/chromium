@@ -48,8 +48,6 @@ namespace {
 // queue.
 const size_t kMaxReportCountInQueue = 3;
 
-const char* kFailedReportHistogram = "SSL.CertificateErrorReportFailure";
-
 // NSS requires that serial numbers be unique even for the same issuer;
 // as all fake certificates will contain the same issuer name, it's
 // necessary to ensure the serial number is unique, as otherwise
@@ -89,30 +87,6 @@ void CheckReport(const CertificateReportingService::Report& report,
   EXPECT_EQ(expected_is_retry_upload, error_report.is_retry_upload());
   EXPECT_EQ(expected_creation_time, report.creation_time);
 }
-
-// Class for histogram testing. The failed report histogram is checked once
-// after teardown to ensure all in flight requests have completed.
-class ReportHistogramTestHelper {
- public:
-  // Sets the expected histogram value to be checked during teardown.
-  void SetExpectedFailedReportCount(unsigned int num_expected_failed_report) {
-    num_expected_failed_report_ = num_expected_failed_report;
-  }
-
-  void CheckHistogram() {
-    if (num_expected_failed_report_ != 0) {
-      histogram_tester_.ExpectUniqueSample(kFailedReportHistogram,
-                                           -net::ERR_SSL_PROTOCOL_ERROR,
-                                           num_expected_failed_report_);
-    } else {
-      histogram_tester_.ExpectTotalCount(kFailedReportHistogram, 0);
-    }
-  }
-
- private:
-  unsigned int num_expected_failed_report_ = 0;
-  base::HistogramTester histogram_tester_;
-};
 
 }  // namespace
 
@@ -173,7 +147,6 @@ class CertificateReportingServiceReporterOnIOThreadTest
   void TearDown() override {
     // Check histograms as the last thing. This makes sure no in-flight report
     // is missed.
-    histogram_test_helper_.CheckHistogram();
     event_histogram_tester_.reset();
   }
 
@@ -183,10 +156,6 @@ class CertificateReportingServiceReporterOnIOThreadTest
   }
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory() {
     return test_shared_loader_factory_;
-  }
-
-  void SetExpectedFailedReportCountOnTearDown(unsigned int count) {
-    histogram_test_helper_.SetExpectedFailedReportCount(count);
   }
 
   EventHistogramTester* event_histogram_tester() {
@@ -199,7 +168,6 @@ class CertificateReportingServiceReporterOnIOThreadTest
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  ReportHistogramTestHelper histogram_test_helper_;
   // Histogram tester for reporting events. This is a member instead of a local
   // so that we can check the histogram after the test teardown. At that point
   // all in flight reports should be completed or deleted because
@@ -209,8 +177,6 @@ class CertificateReportingServiceReporterOnIOThreadTest
 
 TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
        Reporter_RetriesEnabled) {
-  SetExpectedFailedReportCountOnTearDown(6);
-
   std::unique_ptr<base::SimpleTestClock> clock(new base::SimpleTestClock());
   const base::Time reference_time = base::Time::Now();
   clock->SetNow(reference_time);
@@ -308,8 +274,6 @@ TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
 // Same as above, but retries are disabled.
 TEST_F(CertificateReportingServiceReporterOnIOThreadTest,
        Reporter_RetriesDisabled) {
-  SetExpectedFailedReportCountOnTearDown(2);
-
   std::unique_ptr<base::SimpleTestClock> clock(new base::SimpleTestClock());
   base::Time reference_time = base::Time::Now();
   clock->SetNow(reference_time);
@@ -397,7 +361,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
     service_.reset(nullptr);
     safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
 
-    histogram_test_helper_.CheckHistogram();
     event_histogram_tester_.reset();
   }
 
@@ -414,10 +377,6 @@ class CertificateReportingServiceTest : public ::testing::Test {
   void AdvanceClock(base::TimeDelta delta) { clock_->Advance(delta); }
 
   void SetNow(base::Time now) { clock_->SetNow(now); }
-
-  void SetExpectedFailedReportCountOnTearDown(unsigned int count) {
-    histogram_test_helper_.SetExpectedFailedReportCount(count);
-  }
 
   CertificateReportingServiceTestHelper* test_helper() {
     return test_helper_.get();
@@ -450,15 +409,12 @@ class CertificateReportingServiceTest : public ::testing::Test {
   TestingProfile profile_;
 
   scoped_refptr<CertificateReportingServiceTestHelper> test_helper_;
-  ReportHistogramTestHelper histogram_test_helper_;
   CertificateReportingServiceObserver service_observer_;
 
   std::unique_ptr<EventHistogramTester> event_histogram_tester_;
 };
 
 TEST_F(CertificateReportingServiceTest, SendSuccessful) {
-  SetExpectedFailedReportCountOnTearDown(0);
-
   // Let all reports succeed.
   test_helper()->SetFailureMode(certificate_reporting_test_utils::
                                     ReportSendingResult::REPORTS_SUCCESSFUL);
@@ -476,8 +432,6 @@ TEST_F(CertificateReportingServiceTest, SendSuccessful) {
 }
 
 TEST_F(CertificateReportingServiceTest, SendFailure) {
-  SetExpectedFailedReportCountOnTearDown(4);
-
   // Let all reports fail.
   test_helper()->SetFailureMode(
       certificate_reporting_test_utils::ReportSendingResult::REPORTS_FAIL);
@@ -523,8 +477,6 @@ TEST_F(CertificateReportingServiceTest, SendFailure) {
 }
 
 TEST_F(CertificateReportingServiceTest, Disabled_ShouldNotSend) {
-  SetExpectedFailedReportCountOnTearDown(0);
-
   // Let all reports succeed.
   test_helper()->SetFailureMode(certificate_reporting_test_utils::
                                     ReportSendingResult::REPORTS_SUCCESSFUL);
@@ -550,8 +502,6 @@ TEST_F(CertificateReportingServiceTest, Disabled_ShouldNotSend) {
 }
 
 TEST_F(CertificateReportingServiceTest, Disabled_ShouldClearPendingReports) {
-  SetExpectedFailedReportCountOnTearDown(1);
-
   // Let all reports fail.
   test_helper()->SetFailureMode(
       certificate_reporting_test_utils::ReportSendingResult::REPORTS_FAIL);
@@ -583,8 +533,6 @@ TEST_F(CertificateReportingServiceTest, Disabled_ShouldClearPendingReports) {
 }
 
 TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
-  SetExpectedFailedReportCountOnTearDown(5);
-
   SetNow(base::Time::Now());
   // Let all reports fail.
   test_helper()->SetFailureMode(
@@ -650,8 +598,6 @@ TEST_F(CertificateReportingServiceTest, DontSendOldReports) {
 }
 
 TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
-  SetExpectedFailedReportCountOnTearDown(7);
-
   SetNow(base::Time::Now());
   // Let all reports fail.
   test_helper()->SetFailureMode(
@@ -724,8 +670,6 @@ TEST_F(CertificateReportingServiceTest, DiscardOldReports) {
 
 // A delayed report should successfully upload when it's resumed.
 TEST_F(CertificateReportingServiceTest, Delayed_Resumed) {
-  SetExpectedFailedReportCountOnTearDown(0);
-
   // Let reports hang.
   test_helper()->SetFailureMode(
       certificate_reporting_test_utils::ReportSendingResult::REPORTS_DELAY);
@@ -747,8 +691,6 @@ TEST_F(CertificateReportingServiceTest, Delayed_Resumed) {
 
 // Delayed reports should cleaned when the service is reset.
 TEST_F(CertificateReportingServiceTest, Delayed_Reset) {
-  SetExpectedFailedReportCountOnTearDown(0);
-
   // Let reports hang.
   test_helper()->SetFailureMode(
       certificate_reporting_test_utils::ReportSendingResult::REPORTS_DELAY);

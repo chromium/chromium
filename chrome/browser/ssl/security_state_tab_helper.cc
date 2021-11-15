@@ -60,24 +60,6 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #endif
 
-namespace {
-
-void RecordSecurityLevel(
-    const security_state::VisibleSecurityState& visible_security_state,
-    security_state::SecurityLevel security_level) {
-  if (security_state::IsSchemeCryptographic(visible_security_state.url)) {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.CryptographicScheme",
-                              security_level,
-                              security_state::SECURITY_LEVEL_COUNT);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.NoncryptographicScheme",
-                              security_level,
-                              security_state::SECURITY_LEVEL_COUNT);
-  }
-}
-
-}  // namespace
-
 using password_manager::metrics_util::PasswordType;
 using safe_browsing::SafeBrowsingUIManager;
 
@@ -134,38 +116,29 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
 
 void SecurityStateTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsFormSubmission()) {
-    UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
-                              GetSecurityLevel(),
-                              security_state::SECURITY_LEVEL_COUNT);
+  if (!navigation_handle->IsFormSubmission()) {
+    return;
+  }
+  UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
+                            GetSecurityLevel(),
+                            security_state::SECURITY_LEVEL_COUNT);
+  UMA_HISTOGRAM_ENUMERATION("Security.SafetyTips.FormSubmission",
+                            GetVisibleSecurityState()->safety_tip_info.status);
+  if (navigation_handle->IsInMainFrame() &&
+      !security_state::IsSchemeCryptographic(GetVisibleSecurityState()->url)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Security.SafetyTips.FormSubmission",
-        GetVisibleSecurityState()->safety_tip_info.status);
-    if (navigation_handle->IsInMainFrame() &&
-        !security_state::IsSchemeCryptographic(
-            GetVisibleSecurityState()->url)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Security.SecurityLevel.InsecureMainFrameFormSubmission",
-          GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
-    }
-
-    if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
-      ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-      CHECK(ukm_recorder);
-      ukm::SourceId source_id =
-          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID);
-      ukm::builders::OmniboxSecurityIndicator_FormSubmission(source_id)
-          .SetSubmitted(true)
-          .Record(ukm_recorder);
-    }
-
-  } else if (navigation_handle->IsInMainFrame() &&
-             !security_state::IsSchemeCryptographic(
-                 GetVisibleSecurityState()->url)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.SecurityLevel.InsecureMainFrameNonFormNavigation",
+        "Security.SecurityLevel.InsecureMainFrameFormSubmission",
         GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
+  }
+
+  if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
+    ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+    CHECK(ukm_recorder);
+    ukm::SourceId source_id = ukm::ConvertToSourceId(
+        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+    ukm::builders::OmniboxSecurityIndicator_FormSubmission(source_id)
+        .SetSubmitted(true)
+        .Record(ukm_recorder);
   }
 }
 
@@ -192,10 +165,6 @@ void SecurityStateTabHelper::DidFinishNavigation(
   }
 
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
-}
-
-void SecurityStateTabHelper::DidChangeVisibleSecurityState() {
-  RecordSecurityLevel(*GetVisibleSecurityState(), GetSecurityLevel());
 }
 
 bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {

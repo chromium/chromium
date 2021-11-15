@@ -218,15 +218,11 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
     // Expectations:
     // Expectation for PasswordManager.SubmittedFormType:
     int expected_submitted_form_type;
-    // Expectation for PasswordManager.SubmittedNonSecureFormType:
-    int expected_submitted_non_secure_form_type;
   } kTests[] = {
-      {false, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0,
-       0},
-      {true, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0,
-       0},
-      {false, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1, 1},
-      {true, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1, 0},
+      {false, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0},
+      {true, PasswordFormMetricsRecorder::SubmittedFormType::kUnspecified, 0},
+      {false, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1},
+      {true, PasswordFormMetricsRecorder::SubmittedFormType::kLogin, 1},
   };
   for (const auto& test : kTests) {
     SCOPED_TRACE(testing::Message()
@@ -257,15 +253,6 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
                                          test.expected_submitted_form_type);
     } else {
       histogram_tester.ExpectTotalCount("PasswordManager.SubmittedFormType", 0);
-    }
-
-    if (test.expected_submitted_non_secure_form_type) {
-      histogram_tester.ExpectBucketCount(
-          "PasswordManager.SubmittedNonSecureFormType", test.form_type,
-          test.expected_submitted_non_secure_form_type);
-    } else {
-      histogram_tester.ExpectTotalCount(
-          "PasswordManager.SubmittedNonSecureFormType", 0);
     }
   }
 }

@@ -21,8 +21,6 @@ const char kFormSubmissionSecurityLevelHistogram[] =
     "Security.SecurityLevel.FormSubmission";
 const char kInsecureMainFrameFormSubmissionSecurityLevelHistogram[] =
     "Security.SecurityLevel.InsecureMainFrameFormSubmission";
-const char kInsecureMainFrameNonFormNavigationSecurityLevelHistogram[] =
-    "Security.SecurityLevel.InsecureMainFrameNonFormNavigation";
 
 class SecurityStateTabHelperHistogramTest
     : public ChromeRenderViewHostTestHarness {
@@ -108,28 +106,6 @@ TEST_F(SecurityStateTabHelperHistogramTest,
   StartNavigation(/*is_form=*/true, /*is_main_frame=*/true);
   histograms.ExpectTotalCount(
       kInsecureMainFrameFormSubmissionSecurityLevelHistogram, 1);
-}
-
-// Tests that insecure mainframe non-form navigation histograms are recorded
-// correctly.
-TEST_F(SecurityStateTabHelperHistogramTest,
-       InsecureMainFrameNonFormNavigationHistogram) {
-  base::HistogramTester histograms;
-  // Subframe navigations and form submissions should not be logged.
-  StartNavigation(/*is_form=*/true, /*is_main_frame=*/false);
-  StartNavigation(/*is_form=*/true, /*is_main_frame=*/true);
-  histograms.ExpectTotalCount(
-      kInsecureMainFrameNonFormNavigationSecurityLevelHistogram, 0);
-
-  // Only non-HTTPS navigations should be logged.
-  StartNavigation(/*is_form=*/false, /*is_main_frame=*/true);
-  histograms.ExpectUniqueSample(
-      kInsecureMainFrameNonFormNavigationSecurityLevelHistogram,
-      security_state::WARNING, 1);
-  NavigateToHTTPS();
-  StartNavigation(/*is_form=*/false, /*is_main_frame=*/true);
-  histograms.ExpectTotalCount(
-      kInsecureMainFrameNonFormNavigationSecurityLevelHistogram, 1);
 }
 
 }  // namespace

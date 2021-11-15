@@ -2652,47 +2652,6 @@ TEST_F(TransportSecurityStateTest,
   EXPECT_EQ(network_isolation_key, reporter.network_isolation_key());
 }
 
-// Tests that the dynamic Expect-CT UMA histogram is recorded correctly.
-TEST_F(TransportSecurityStateTest, DynamicExpectCTUMA) {
-  const char kHistogramName[] = "Net.ExpectCTHeader.ParseSuccess";
-  SSLInfo ssl;
-  ssl.is_issued_by_known_root = true;
-  ssl.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
-
-  // Test that the histogram is recorded correctly when the header successfully
-  // parses.
-  {
-    const char kHeader[] = "max-age=123,enforce,report-uri=\"http://foo.test\"";
-    base::HistogramTester histograms;
-    TransportSecurityState state;
-    MockExpectCTReporter reporter;
-    state.SetExpectCTReporter(&reporter);
-    state.ProcessExpectCTHeader(kHeader, HostPortPair("example.test", 443), ssl,
-                                NetworkIsolationKey());
-    histograms.ExpectTotalCount(kHistogramName, 1);
-    histograms.ExpectBucketCount(kHistogramName, true, 1);
-  }
-
-  // Test that the histogram is recorded correctly when the header fails to
-  // parse (due to semi-colons instead of commas).
-  {
-    const char kHeader[] = "max-age=123;enforce;report-uri=\"http://foo.test\"";
-    base::HistogramTester histograms;
-    TransportSecurityState state;
-    MockExpectCTReporter reporter;
-    state.SetExpectCTReporter(&reporter);
-    state.ProcessExpectCTHeader(kHeader, HostPortPair("example.test", 443), ssl,
-                                NetworkIsolationKey());
-    histograms.ExpectTotalCount(kHistogramName, 1);
-    histograms.ExpectBucketCount(kHistogramName, false, 1);
-  }
-}
-
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 const char kSubdomain[] = "foo.example.test";
 
