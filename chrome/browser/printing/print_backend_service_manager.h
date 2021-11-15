@@ -63,7 +63,6 @@ class PrintBackendServiceManager {
       int document_cookie,
       const std::u16string& document_name,
       mojom::PrintTargetType target_type,
-      int page_count,
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback);
 

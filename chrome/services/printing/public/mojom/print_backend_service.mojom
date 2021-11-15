@@ -124,7 +124,6 @@ interface PrintBackendService {
   StartPrinting(int32 document_cookie,
                 mojo_base.mojom.String16 document_name,
                 PrintTargetType target_type,
-                int32 page_count,
                 PrintSettings settings)
     => (ResultCode result_code);
 };

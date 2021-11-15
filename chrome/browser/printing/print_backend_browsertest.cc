@@ -460,8 +460,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->StartPrinting(
       /*document_cookie=*/1, u"document name",
-      mojom::PrintTargetType::kDirectToDevice,
-      /*page_count=*/0, print_settings,
+      mojom::PrintTargetType::kDirectToDevice, print_settings,
       base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
                      base::Unretained(this), std::ref(result)));
   WaitUntilCallbackReceived();
@@ -483,8 +482,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
   // forces a shorter lifetime than `this`.
   GetPrintBackendService()->StartPrinting(
       /*document_cookie=*/1, u"document name",
-      mojom::PrintTargetType::kDirectToDevice,
-      /*page_count=*/0, print_settings,
+      mojom::PrintTargetType::kDirectToDevice, print_settings,
       base::BindOnce(&PrintBackendBrowserTest::OnDidStartPrinting,
                      base::Unretained(this), std::ref(result)));
   WaitUntilCallbackReceived();

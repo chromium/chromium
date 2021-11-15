@@ -70,11 +70,9 @@ struct PrintBackendServiceImpl::DocumentContainer {
   DocumentContainer(
       scoped_refptr<PrintedDocument> document,
       mojom::PrintTargetType target_type,
-      int page_count,
       mojom::PrintBackendService::StartPrintingCallback start_printing_callback)
       : document(document),
         target_type(target_type),
-        page_count(page_count),
         start_printing_callback(std::move(start_printing_callback)),
         task_runner(GetPrintingTaskRunner()) {
     // Container is created on main thread, but system calls show be on
@@ -91,7 +89,6 @@ struct PrintBackendServiceImpl::DocumentContainer {
 
   // Parameters required for the delayed call to `UpdatePrinterSettings()`.
   mojom::PrintTargetType target_type;
-  int page_count;
 
   // `start_printing_callback` is held until the document is ready for
   // printing.
@@ -362,7 +359,6 @@ void PrintBackendServiceImpl::StartPrinting(
     int document_cookie,
     const std::u16string& document_name,
     mojom::PrintTargetType target_type,
-    int page_count,
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
   if (!print_backend_) {
@@ -380,7 +376,7 @@ void PrintBackendServiceImpl::StartPrinting(
       document_cookie);
   documents_.push_back(
       std::make_unique<PrintBackendServiceImpl::DocumentContainer>(
-          document, target_type, page_count, std::move(callback)));
+          document, target_type, std::move(callback)));
 
 #if defined(OS_CHROMEOS) && defined(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
@@ -436,7 +432,7 @@ mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
 #endif
   context->ApplyPrintSettings(document->settings());
   mojom::ResultCode result = context->UpdatePrinterSettings(
-      external_preview, show_system_dialog, document_container.page_count);
+      external_preview, show_system_dialog, /*page_count=*/0);
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure updating printer settings for document "
                 << document->cookie() << ", error: " << result;

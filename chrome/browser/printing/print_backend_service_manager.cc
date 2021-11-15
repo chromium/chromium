@@ -292,7 +292,6 @@ void PrintBackendServiceManager::StartPrinting(
     int document_cookie,
     const std::u16string& document_name,
     mojom::PrintTargetType target_type,
-    int page_count,
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
   // Need to be able to run the callback either after a successful return from
@@ -322,7 +321,7 @@ void PrintBackendServiceManager::StartPrinting(
   DVLOG(1) << "Sending StartPrinting on remote `" << remote_id
            << "`, saved callback ID of " << saved_callback_id;
   service->StartPrinting(
-      document_cookie, document_name, target_type, page_count, settings,
+      document_cookie, document_name, target_type, settings,
       base::BindOnce(&PrintBackendServiceManager::StartPrintingDone,
                      base::Unretained(this), is_sandboxed, remote_id,
                      saved_callback_id));
