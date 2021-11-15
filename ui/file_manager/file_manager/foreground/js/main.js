@@ -13,6 +13,11 @@ import {util} from '../../common/js/util.js';
 import {FileManager} from './file_manager.js';
 
 
+if (!window.isSWA) {
+  console.warn(
+      '%cYou are running Files chrome-app',
+      'font-size: 2em; background-color: blue; color: white;');
+}
 const fileManager = new FileManager();
 window.fileManager = fileManager;
 

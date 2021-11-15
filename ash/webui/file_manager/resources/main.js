@@ -67,8 +67,8 @@ class FileManagerApp {
     window.cr.webUIResponse = origWebUIResponse;
     window.cr.webUIListenerCallback = origWebUIListenerCallback;
 
-    console.log(
-        '%cYou are running File System Web App',
+    console.warn(
+        '%cYou are running Files System Web App',
         'font-size: 2em; background-color: #ff0; color: #000;');
   }
 }
