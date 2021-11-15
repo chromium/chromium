@@ -2510,7 +2510,7 @@ int SpdySession::DoWrite() {
     std::unique_ptr<SpdyBufferProducer> producer;
     base::WeakPtr<SpdyStream> stream;
     if (!write_queue_.Dequeue(&frame_type, &producer, &stream,
-                              &in_flight_write_traffic_annotation)) {
+                              &in_flight_write_traffic_annotation_)) {
       write_state_ = WRITE_STATE_IDLE;
       return ERR_IO_PENDING;
     }
@@ -2555,7 +2555,7 @@ int SpdySession::DoWrite() {
       write_io_buffer.get(), in_flight_write_->GetRemainingSize(),
       base::BindOnce(&SpdySession::PumpWriteLoop, weak_factory_.GetWeakPtr(),
                      WRITE_STATE_DO_WRITE_COMPLETE),
-      NetworkTrafficAnnotationTag(in_flight_write_traffic_annotation));
+      NetworkTrafficAnnotationTag(in_flight_write_traffic_annotation_));
 }
 
 int SpdySession::DoWriteComplete(int result) {
@@ -2569,7 +2569,7 @@ int SpdySession::DoWriteComplete(int result) {
     in_flight_write_frame_type_ = spdy::SpdyFrameType::DATA;
     in_flight_write_frame_size_ = 0;
     in_flight_write_stream_.reset();
-    in_flight_write_traffic_annotation.reset();
+    in_flight_write_traffic_annotation_.reset();
     write_state_ = WRITE_STATE_DO_WRITE;
     DoDrainSession(static_cast<Error>(result), "Write error");
     return OK;

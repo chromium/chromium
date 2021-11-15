@@ -1106,7 +1106,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   base::WeakPtr<SpdyStream> in_flight_write_stream_;
 
   // Traffic annotation for the write in progress.
-  MutableNetworkTrafficAnnotationTag in_flight_write_traffic_annotation;
+  MutableNetworkTrafficAnnotationTag in_flight_write_traffic_annotation_;
 
   // Spdy Frame state.
   std::unique_ptr<BufferedSpdyFramer> buffered_spdy_framer_;
