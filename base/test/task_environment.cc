@@ -162,9 +162,7 @@ class TaskEnvironment::TestTaskTracker
 
 class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
  public:
-  explicit MockTimeDomain(
-      sequence_manager::internal::SequenceManagerImpl* sequence_manager)
-      : sequence_manager_(sequence_manager) {
+  explicit MockTimeDomain() {
     DCHECK_EQ(nullptr, current_mock_time_domain_);
     current_mock_time_domain_ = this;
   }
@@ -233,7 +231,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
       return false;
 
     return FastForwardToNextTaskOrCap(next_wake_up, TimeTicks::Max()) ==
-           NextTaskSource::kMainThreadHasWork;
+           NextTaskSource::kMainThread;
   }
 
   const char* GetName() const override { return "MockTimeDomain"; }
@@ -250,11 +248,10 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   enum class NextTaskSource {
     // Out of tasks under |fast_forward_cap|.
     kNone,
-    // There's now >=1 immediate task on the main thread (ThreadPool might have
-    // some too).
-    kMainThreadHasWork,
+    // There's now >=1 immediate task on the main thread.
+    kMainThread,
     // There's now >=1 immediate task in the thread pool.
-    kThreadPoolOnly,
+    kThreadPool,
   };
 
   // Advances time to the first of : next main thread delayed task, next thread
@@ -306,26 +303,13 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
         now_ticks_ = std::max(now_ticks_, *next_task_time);
       }
 
-      if (next_task_time == next_thread_pool_task_time)
+      if (next_task_time == next_thread_pool_task_time) {
+        // Let the thread pool know that it should post its now ripe delayed
+        // tasks.
         thread_pool_->ProcessRipeDelayedTasksForTesting();
-
-      if (next_main_thread_wake_up &&
-          next_task_time == next_main_thread_wake_up->time) {
-        return NextTaskSource::kMainThreadHasWork;
+        return NextTaskSource::kThreadPool;
       }
-
-      // The main thread doesn't have immediate work so it'll go to sleep after
-      // returning from this call. We must make sure it wakes up when the
-      // ThreadPool is done or the test may stall : crbug.com/1263149.
-      //
-      // Note: It is necessary to reach in SequenceManagerImpl to ScheduleWork
-      // instead of alternatives to waking the main thread, like posting a
-      // no-op task, as alternatives would prevent the main thread from
-      // achieving quiescence (which some task monitoring tests verify).
-      thread_pool_->FlushAsyncForTesting(BindOnce(
-          &sequence_manager::internal::SequenceManagerImpl::ScheduleWork,
-          Unretained(sequence_manager_)));
-      return NextTaskSource::kThreadPoolOnly;
+      return NextTaskSource::kMainThread;
     }
 
     if (!fast_forward_cap.is_max()) {
@@ -343,8 +327,6 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
 
   internal::ThreadPoolImpl* thread_pool_ = nullptr;
   const TestTaskTracker* thread_pool_task_tracker_ = nullptr;
-
-  sequence_manager::internal::SequenceManagerImpl* const sequence_manager_;
 
   // Protects |now_ticks_|
   mutable Lock now_ticks_lock_;
@@ -375,10 +357,7 @@ TaskEnvironment::TaskEnvironment(
           CreateSequenceManagerForMainThreadType(main_thread_type)),
       mock_time_domain_(
           time_source != TimeSource::SYSTEM_TIME
-              ? std::make_unique<TaskEnvironment::MockTimeDomain>(
-                    static_cast<
-                        sequence_manager::internal::SequenceManagerImpl*>(
-                        sequence_manager_.get()))
+              ? std::make_unique<TaskEnvironment::MockTimeDomain>()
               : nullptr),
       time_overrides_(time_source == TimeSource::MOCK_TIME
                           ? std::make_unique<subtle::ScopedTimeClockOverrides>(
