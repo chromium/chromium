@@ -19,6 +19,8 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of built-in Chrome OS apps.
 //
 // See components/services/app_service/README.md.
@@ -34,6 +36,10 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
   ~BuiltInChromeOsApps() override;
 
  private:
+  friend class PublisherHost;
+
+  void Initialize();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,

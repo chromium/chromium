@@ -523,7 +523,6 @@ ArcApps* ArcApps::Get(Profile* profile) {
 
 ArcApps::ArcApps(AppServiceProxy* proxy)
     : AppPublisher(proxy),
-      proxy_(proxy),
       profile_(proxy->profile()),
       arc_icon_once_loader_(profile_) {}
 
@@ -535,7 +534,7 @@ void ArcApps::Initialize() {
     return;
   }
 
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
   if (!app_service.is_bound()) {
     return;
   }
@@ -546,7 +545,7 @@ void ArcApps::Initialize() {
     return;
   }
   prefs->AddObserver(this);
-  proxy_->SetArcIsRegistered();
+  proxy()->SetArcIsRegistered();
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
@@ -563,7 +562,7 @@ void ArcApps::Initialize() {
         ash::ArcNotificationsHostInitializer::Get());
   }
 
-  auto* instance_registry = &proxy_->InstanceRegistry();
+  auto* instance_registry = &proxy()->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
   }
@@ -574,6 +573,8 @@ void ArcApps::Initialize() {
   }
 
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kArc);
+
+  RegisterPublisher(AppType::kArc);
 
   std::vector<std::unique_ptr<App>> apps;
   for (const auto& app_id : prefs->GetAppIds()) {
@@ -1292,7 +1293,7 @@ void ArcApps::OnIntentFiltersUpdated(
 }
 
 void ArcApps::OnPreferredAppsChanged() {
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
   if (!app_service.is_bound()) {
     return;
   }

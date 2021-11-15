@@ -51,15 +51,6 @@ StandaloneBrowserApps::StandaloneBrowserApps(AppServiceProxy* proxy)
       profile_(proxy->profile()),
       browser_app_instance_registry_(proxy->BrowserAppInstanceRegistry()) {
   DCHECK(crosapi::browser_util::IsLacrosEnabled());
-  PublisherBase::Initialize(proxy->AppService(),
-                            apps::mojom::AppType::kStandaloneBrowser);
-
-  AppPublisher::Publish(CreateStandaloneBrowserApp());
-
-  auto* browser_manager = crosapi::BrowserManager::Get();
-  // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
-  if (browser_manager && !observation_.IsObserving())
-    observation_.Observe(browser_manager);
 }
 
 StandaloneBrowserApps::~StandaloneBrowserApps() = default;
@@ -107,6 +98,19 @@ apps::mojom::IconKeyPtr StandaloneBrowserApps::NewIconKey() {
   icon_key->resource_id = IDR_PRODUCT_LOGO_256;
 #endif
   return icon_key;
+}
+
+void StandaloneBrowserApps::Initialize() {
+  PublisherBase::Initialize(proxy()->AppService(),
+                            apps::mojom::AppType::kStandaloneBrowser);
+
+  auto* browser_manager = crosapi::BrowserManager::Get();
+  // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
+  if (browser_manager && !observation_.IsObserving())
+    observation_.Observe(browser_manager);
+
+  RegisterPublisher(AppType::kStandaloneBrowser);
+  AppPublisher::Publish(CreateStandaloneBrowserApp());
 }
 
 void StandaloneBrowserApps::LoadIcon(const std::string& app_id,

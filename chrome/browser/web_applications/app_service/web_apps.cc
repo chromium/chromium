@@ -294,6 +294,8 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
 }
 
 void WebApps::InitWebApps() {
+  RegisterPublisher(apps::ConvertMojomAppTypToAppType(app_type_));
+
   std::vector<std::unique_ptr<apps::App>> apps = CreateWebApps();
   if (apps.empty()) {
     return;

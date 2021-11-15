@@ -93,9 +93,15 @@ apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
 namespace apps {
 
 BuiltInChromeOsApps::BuiltInChromeOsApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()) {
-  PublisherBase::Initialize(proxy->AppService(),
+    : AppPublisher(proxy), profile_(proxy->profile()) {}
+
+BuiltInChromeOsApps::~BuiltInChromeOsApps() = default;
+
+void BuiltInChromeOsApps::Initialize() {
+  PublisherBase::Initialize(proxy()->AppService(),
                             apps::mojom::AppType::kBuiltIn);
+
+  RegisterPublisher(AppType::kBuiltIn);
 
   std::vector<std::unique_ptr<App>> apps;
   for (const auto& internal_app : app_list::GetInternalAppList(profile_)) {
@@ -106,8 +112,6 @@ BuiltInChromeOsApps::BuiltInChromeOsApps(AppServiceProxy* proxy)
   }
   AppPublisher::Publish(std::move(apps));
 }
-
-BuiltInChromeOsApps::~BuiltInChromeOsApps() = default;
 
 void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
                                    const IconKey& icon_key,

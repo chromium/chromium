@@ -25,6 +25,8 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of Plugin VM apps.
 //
 // See components/services/app_service/README.md.
@@ -43,6 +45,10 @@ class PluginVmApps : public apps::PublisherBase,
   PluginVmApps& operator=(const PluginVmApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
+  void Initialize();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,

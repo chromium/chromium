@@ -334,10 +334,12 @@ ExtensionAppsBase::CallbackWrapper::~CallbackWrapper() {
     std::move(callback).Run(false);
 }
 
-void ExtensionAppsBase::Initialize(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
+void ExtensionAppsBase::Initialize() {
+  RegisterPublisher(AppType::kExtension);
+
   DCHECK(profile_);
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kExtension);
+  PublisherBase::Initialize(proxy()->AppService(),
+                            apps::mojom::AppType::kExtension);
 
   std::vector<std::unique_ptr<App>> apps;
   extensions::ExtensionRegistry* registry =
@@ -357,7 +359,7 @@ void ExtensionAppsBase::Initialize(
 
   prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
-  app_service_ = app_service.get();
+  app_service_ = proxy()->AppService().get();
 }
 
 void ExtensionAppsBase::LoadIcon(const std::string& app_id,

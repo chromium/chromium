@@ -30,6 +30,8 @@ StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 
 void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
+  RegisterPublisher(AppType::kStandaloneBrowserExtension);
+
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
   // TODO(crbug.com/1174246): Support SxS lacros.

@@ -144,20 +144,6 @@ PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
   }
   registry_->AddObserver(this);
 
-  PublisherBase::Initialize(proxy->AppService(),
-                            apps::mojom::AppType::kPluginVm);
-
-  std::vector<std::unique_ptr<App>> apps;
-  apps.push_back(CreatePluginVmApp(profile_, is_allowed_));
-  for (const auto& pair :
-       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                        ApplicationList_VmType_PLUGIN_VM)) {
-    const guest_os::GuestOsRegistryService::Registration& registration =
-        pair.second;
-    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
-  }
-  AppPublisher::Publish(std::move(apps));
-
   // Register for Plugin VM changes to policy and installed state, so that we
   // can update the availability and status of the Plugin VM app. Unretained is
   // safe as these are cleaned up upon destruction.
@@ -204,6 +190,28 @@ void PluginVmApps::Connect(
   subscriber->OnApps(std::move(apps), apps::mojom::AppType::kPluginVm,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
+}
+
+void PluginVmApps::Initialize() {
+  if (!registry_) {
+    return;
+  }
+
+  PublisherBase::Initialize(proxy()->AppService(),
+                            apps::mojom::AppType::kPluginVm);
+
+  RegisterPublisher(AppType::kPluginVm);
+
+  std::vector<std::unique_ptr<App>> apps;
+  apps.push_back(CreatePluginVmApp(profile_, is_allowed_));
+  for (const auto& pair :
+       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
+                                        ApplicationList_VmType_PLUGIN_VM)) {
+    const guest_os::GuestOsRegistryService::Registration& registration =
+        pair.second;
+    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
+  }
+  AppPublisher::Publish(std::move(apps));
 }
 
 void PluginVmApps::LoadIcon(const std::string& app_id,

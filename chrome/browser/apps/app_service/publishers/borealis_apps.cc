@@ -136,22 +136,6 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
   anonymous_app_observation_.Observe(
       &borealis::BorealisService::GetForProfile(profile_)->WindowManager());
 
-  PublisherBase::Initialize(proxy->AppService(),
-                            apps::mojom::AppType::kBorealis);
-
-  std::vector<std::unique_ptr<App>> apps;
-  apps.push_back(
-      CreateBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
-
-  for (const auto& pair :
-       Registry()->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
-                                         ApplicationList_VmType_BOREALIS)) {
-    const guest_os::GuestOsRegistryService::Registration& registration =
-        pair.second;
-    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
-  }
-  AppPublisher::Publish(std::move(apps));
-
   // TODO(b/170264723): When uninstalling borealis is completed, ensure that we
   // remove the apps from the apps service.
 }
@@ -233,6 +217,26 @@ apps::mojom::AppPtr BorealisApps::Convert(
 
   SetAppAllowed(app.get(), !registration.NoDisplay());
   return app;
+}
+
+void BorealisApps::Initialize() {
+  PublisherBase::Initialize(proxy()->AppService(),
+                            apps::mojom::AppType::kBorealis);
+
+  RegisterPublisher(AppType::kBorealis);
+
+  std::vector<std::unique_ptr<App>> apps;
+  apps.push_back(
+      CreateBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
+
+  for (const auto& pair :
+       Registry()->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
+                                         ApplicationList_VmType_BOREALIS)) {
+    const guest_os::GuestOsRegistryService::Registration& registration =
+        pair.second;
+    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
+  }
+  AppPublisher::Publish(std::move(apps));
 }
 
 void BorealisApps::LoadIcon(const std::string& app_id,

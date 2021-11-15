@@ -25,6 +25,10 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace ash {
+class RemoteAppsManager;
+}
+
 namespace apps {
 
 // An app publisher (in the App Service sense) of Remote apps.
@@ -67,9 +71,13 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
   void DeleteApp(const std::string& app_id);
 
  private:
+  friend class ash::RemoteAppsManager;
+
   std::unique_ptr<App> CreateApp(const ash::RemoteAppsModel::AppInfo& info);
 
   apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
+
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,

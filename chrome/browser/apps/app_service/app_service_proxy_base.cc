@@ -188,6 +188,11 @@ apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredApps() {
   return preferred_apps_;
 }
 
+void AppServiceProxyBase::RegisterPublisher(AppType app_type,
+                                            AppPublisher* publisher) {
+  publishers_[app_type] = publisher;
+}
+
 apps::mojom::IconKeyPtr AppServiceProxyBase::GetIconKey(
     const std::string& app_id) {
   return outer_icon_loader_.GetIconKey(app_id);

@@ -128,6 +128,7 @@ RemoteAppsManager::RemoteAppsManager(Profile* profile)
           this)),
       model_(std::make_unique<RemoteAppsModel>()),
       image_downloader_(std::make_unique<ImageDownloaderImpl>()) {
+  remote_apps_->Initialize();
   app_list_syncable_service_ =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   model_updater_ = app_list_syncable_service_->GetModelUpdater();

@@ -97,7 +97,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   // nullptr.
   const extensions::Extension* MaybeGetExtension(const std::string& app_id);
 
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+  virtual void Initialize();
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;

@@ -22,7 +22,7 @@ RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
     return;
   }
 
-  Initialize(app_service, mojom::AppType::kRemote);
+  PublisherBase::Initialize(app_service, mojom::AppType::kRemote);
 }
 
 RemoteApps::~RemoteApps() = default;
@@ -82,6 +82,10 @@ apps::mojom::AppPtr RemoteApps::Convert(
   app->handles_intents = mojom::OptionalBool::kTrue;
   app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
   return app;
+}
+
+void RemoteApps::Initialize() {
+  RegisterPublisher(AppType::kRemote);
 }
 
 void RemoteApps::LoadIcon(const std::string& app_id,

@@ -26,6 +26,8 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
 //
@@ -46,6 +48,8 @@ class BorealisApps
   BorealisApps& operator=(const BorealisApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
   // Helper method to get the registry used by this profile
   guest_os::GuestOsRegistryService* Registry();
 
@@ -58,6 +62,8 @@ class BorealisApps
   apps::mojom::AppPtr Convert(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool new_icon_key);
+
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,

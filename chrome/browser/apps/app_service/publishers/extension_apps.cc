@@ -12,9 +12,7 @@
 namespace apps {
 
 ExtensionApps::ExtensionApps(AppServiceProxy* proxy)
-    : ExtensionAppsBase(proxy) {
-  Initialize(proxy->AppService());
-}
+    : ExtensionAppsBase(proxy) {}
 
 ExtensionApps::~ExtensionApps() = default;
 

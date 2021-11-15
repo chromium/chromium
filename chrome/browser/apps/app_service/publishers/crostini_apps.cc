@@ -83,9 +83,7 @@ CrostiniApps::CrostiniApps(AppServiceProxy* proxy)
     : AppPublisher(proxy),
       profile_(proxy->profile()),
       registry_(nullptr),
-      crostini_enabled_(false) {
-  Initialize(proxy->AppService());
-}
+      crostini_enabled_(false) {}
 
 CrostiniApps::~CrostiniApps() {
   if (registry_) {
@@ -93,8 +91,7 @@ CrostiniApps::~CrostiniApps() {
   }
 }
 
-void CrostiniApps::Initialize(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
+void CrostiniApps::Initialize() {
   DCHECK(profile_);
   if (!crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile_)) {
     return;
@@ -114,7 +111,10 @@ void CrostiniApps::Initialize(
       base::BindRepeating(&CrostiniApps::OnCrostiniEnabledChanged,
                           base::Unretained(this)));
 
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kCrostini);
+  PublisherBase::Initialize(proxy()->AppService(),
+                            apps::mojom::AppType::kCrostini);
+
+  RegisterPublisher(AppType::kCrostini);
 
   std::vector<std::unique_ptr<App>> apps;
   for (const auto& pair :

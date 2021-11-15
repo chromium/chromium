@@ -50,7 +50,7 @@ class CrostiniApps : public KeyedService,
  private:
   friend class PublisherHost;
 
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,

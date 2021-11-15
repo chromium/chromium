@@ -230,7 +230,6 @@ class ArcApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  AppServiceProxy* const proxy_;
   Profile* const profile_;
   ArcIconOnceLoader arc_icon_once_loader_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;

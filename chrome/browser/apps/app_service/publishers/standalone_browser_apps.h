@@ -23,6 +23,7 @@ class Profile;
 namespace apps {
 
 class BrowserAppInstanceRegistry;
+class PublisherHost;
 
 // An app publisher (in the App Service sense) for the "LaCrOS" app icon,
 // which launches the lacros-chrome binary.
@@ -43,6 +44,8 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   StandaloneBrowserApps& operator=(const StandaloneBrowserApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
   // Returns the single lacros app.
   std::unique_ptr<App> CreateStandaloneBrowserApp();
 
@@ -51,6 +54,8 @@ class StandaloneBrowserApps : public apps::PublisherBase,
 
   // Returns an IconKey with appropriate effects.
   apps::mojom::IconKeyPtr NewIconKey();
+
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,

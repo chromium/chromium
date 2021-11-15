@@ -99,7 +99,6 @@ namespace apps {
 ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy)
     : ExtensionAppsBase(proxy), instance_registry_(&proxy->InstanceRegistry()) {
   DCHECK(instance_registry_);
-  Initialize(proxy->AppService());
 }
 
 ExtensionAppsChromeOs::~ExtensionAppsChromeOs() {
@@ -157,9 +156,8 @@ void ExtensionAppsChromeOs::ObserveArc() {
   }
 }
 
-void ExtensionAppsChromeOs::Initialize(
-    const mojo::Remote<apps::mojom::AppService>& app_service) {
-  ExtensionAppsBase::Initialize(app_service);
+void ExtensionAppsChromeOs::Initialize() {
+  ExtensionAppsBase::Initialize();
 
   app_window_registry_.Observe(extensions::AppWindowRegistry::Get(profile()));
 

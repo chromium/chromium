@@ -22,6 +22,8 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of extension-backed apps for
 // Chrome, including Chrome Apps (platform apps and legacy packaged apps) and
 // hosted apps.
@@ -41,6 +43,8 @@ class ExtensionApps : public apps::ExtensionAppsBase {
                             gfx::NativeWindow parent_window);
 
  private:
+  friend class PublisherHost;
+
   // ExtensionAppsBase overrides.
   bool Accepts(const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;

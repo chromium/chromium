@@ -29,6 +29,10 @@ std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
   return app;
 }
 
+void AppPublisher::RegisterPublisher(AppType app_type) {
+  proxy_->RegisterPublisher(app_type, this);
+}
+
 void AppPublisher::Publish(std::unique_ptr<App> app) {
   if (!proxy_) {
     NOTREACHED();

@@ -42,6 +42,8 @@ class NotificationDisplayService;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of extension-backed apps for
 // ChromeOS, including Chrome Apps (platform apps and legacy packaged apps) and
 // hosted apps (including desktop PWAs).
@@ -71,7 +73,10 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void ObserveArc();
 
  private:
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+  friend class PublisherHost;
+
+  // ExtensionAppsBase overrides.
+  void Initialize() override;
 
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,

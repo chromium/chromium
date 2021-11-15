@@ -32,6 +32,14 @@ class AppPublisher {
                                       Readiness readiness,
                                       const std::string& name);
 
+  // Registers this AppPublisher to AppServiceProxy, allowing it to receive App
+  // Service API calls. This function must be called after the object's
+  // creation, and can't be called in the constructor function to avoid
+  // receiving API calls before being fully constructed and ready. This should
+  // be called immediately before the first call to AppPublisher::Publish that
+  // sends the initial list of apps to the App Service.
+  void RegisterPublisher(AppType app_type);
+
   // Requests an icon for an app identified by |app_id|. The icon is identified
   // by |icon_key| and parameterised by |icon_type| and |size_hint_in_dp|. If
   // |allow_placeholder_icon| is true, a default placeholder icon can be
@@ -57,13 +65,17 @@ class AppPublisher {
  protected:
   // Publish one `app` to AppServiceProxy. Should be called whenever the app
   // represented by `app` undergoes some state change to inform AppServiceProxy
-  // of the change.
+  // of the change. Ensure that RegisterPublisher() has been called before the
+  // first call to this method.
   void Publish(std::unique_ptr<App> app);
 
   // Publish multiple `apps` to AppServiceProxy. Should be called whenever the
   // app represented by `app` undergoes some state change to inform
-  // AppServiceProxy of the change.
+  // AppServiceProxy of the change. Ensure that RegisterPublisher() has been
+  // called before the first call to this method.
   void Publish(std::vector<std::unique_ptr<App>> apps);
+
+  AppServiceProxy* proxy() { return proxy_; }
 
  private:
   AppServiceProxy* proxy_ = nullptr;
