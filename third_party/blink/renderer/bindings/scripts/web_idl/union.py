@@ -152,9 +152,6 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
 
         ir.public_object = self
 
-        for idl_type in self._idl_types:
-            idl_type.set_union_definition_object(self)
-
     @property
     def idl_types(self):
         """Returns a list of IdlTypes which this object represents."""

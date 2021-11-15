@@ -16,7 +16,7 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
                       WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-observable-array"""
 
-    def __init__(self, idl_type, attributes):
+    def __init__(self, idl_type, attributes, for_testing):
         assert isinstance(idl_type, IdlType)
         assert isinstance(attributes, (list, tuple)) and all(
             isinstance(attribute, Attribute) for attribute in attributes)
@@ -33,14 +33,8 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
         if component_object:
             components.append(component_object.components[0])
 
-        for_testing = [True]
-        for attribute in attributes:
-            interface = attribute.owner
-            if not interface.code_generator_info.for_testing:
-                for_testing[0] = False
-
         code_generator_info = CodeGeneratorInfoMutable()
-        code_generator_info.set_for_testing(for_testing[0])
+        code_generator_info.set_for_testing(for_testing)
 
         WithIdentifier.__init__(self, identifier)
         WithCodeGeneratorInfo.__init__(self,
@@ -51,18 +45,6 @@ class ObservableArray(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
 
         self._idl_type = idl_type
         self._user_attributes = tuple(attributes)
-
-        for attribute in self._user_attributes:
-            idl_type = attribute.idl_type.unwrap()
-            if idl_type.observable_array_definition_object:
-                # When an IDL attribute is declared in an IDL interface mixin,
-                # it's possible that the exactly same web_idl.Attribute is held
-                # in two (or more) web_idl.interfaces.  Then, it's possible
-                # that set_observable_array_definition_object has already been
-                # called.
-                assert idl_type.observable_array_definition_object is self
-                continue
-            idl_type.set_observable_array_definition_object(self)
 
     @property
     def idl_type(self):
