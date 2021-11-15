@@ -47,6 +47,7 @@ class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
   bool ShowDialog(ui::WindowAndroid* windowAndroid);
 
  private:
+  void ShowConfirmationAndDismissDialog(std::u16string confirmation_message);
   CardUnmaskOtpInputDialogController* controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

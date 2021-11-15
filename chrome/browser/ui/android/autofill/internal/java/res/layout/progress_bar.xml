@@ -19,6 +19,14 @@
         android:layout_marginTop="@dimen/progress_bar_margin_top"
         android:layout_width="@dimen/progress_bar_size"/>
 
+    <ImageView
+        android:id="@+id/confirmation_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/progress_bar_size"
+        android:src="@drawable/checkmark_blue"
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/progress_bar_message"
         android:layout_height="wrap_content"

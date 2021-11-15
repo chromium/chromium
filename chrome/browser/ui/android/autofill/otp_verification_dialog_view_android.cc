@@ -41,10 +41,11 @@ CardUnmaskOtpInputDialogView* CardUnmaskOtpInputDialogView::CreateAndShow(
   if (!window_android) {
     return nullptr;
   }
-  OtpVerificationDialogViewAndroid* dialog_view =
-      new OtpVerificationDialogViewAndroid(controller);
+  std::unique_ptr<OtpVerificationDialogViewAndroid> dialog_view =
+      std::make_unique<OtpVerificationDialogViewAndroid>(controller);
   // Return the dialog only if we were able to show it.
-  return dialog_view->ShowDialog(window_android) ? dialog_view : nullptr;
+  return dialog_view->ShowDialog(window_android) ? dialog_view.release()
+                                                 : nullptr;
 }
 
 void OtpVerificationDialogViewAndroid::ShowPendingState() {
@@ -64,8 +65,17 @@ void OtpVerificationDialogViewAndroid::ShowInvalidState(
 void OtpVerificationDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing,
     bool user_closed_dialog) {
-  // TODO(crbug.com/1243475): Update the throbber and show the checkmark if
-  // |show_confirmation_before_closing| is true.
+  if (show_confirmation_before_closing) {
+    DCHECK(!user_closed_dialog);
+    DCHECK(controller_);
+    std::u16string confirmation_message = controller_->GetConfirmationMessage();
+    controller_->OnDialogClosed(/*user_closed_dialog=*/false,
+                                /*server_request_succeeded=*/true);
+    controller_ = nullptr;
+    ShowConfirmationAndDismissDialog(confirmation_message);
+    return;
+  }
+
   if (controller_) {
     controller_->OnDialogClosed(
         user_closed_dialog,
@@ -111,6 +121,15 @@ bool OtpVerificationDialogViewAndroid::ShowDialog(
   Java_OtpVerificationDialogBridge_showDialog(
       env, java_object_, controller_->GetExpectedOtpLength());
   return true;
+}
+
+void OtpVerificationDialogViewAndroid::ShowConfirmationAndDismissDialog(
+    std::u16string confirmation_message) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (java_object_) {
+    Java_OtpVerificationDialogBridge_showConfirmationAndDismissDialog(
+        env, java_object_, ConvertUTF16ToJavaString(env, confirmation_message));
+  }
 }
 
 }  // namespace autofill

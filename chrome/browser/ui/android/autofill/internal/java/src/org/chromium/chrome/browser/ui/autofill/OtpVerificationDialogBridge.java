@@ -98,6 +98,11 @@ public class OtpVerificationDialogBridge implements OtpVerificationDialog.Listen
         mOtpVerificationDialog.dismissDialog();
     }
 
+    @CalledByNative
+    public void showConfirmationAndDismissDialog(String confirmationMessage) {
+        mOtpVerificationDialog.showConfirmationAndDismissDialog(confirmationMessage);
+    }
+
     @NativeMethods
     interface Natives {
         void onConfirm(long nativeOtpVerificationDialogViewAndroid, String otp);

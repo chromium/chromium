@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 import android.content.Context;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
@@ -149,8 +150,10 @@ public class OtpVerificationDialog {
                 mContext.getResources().getString(
                         R.string.autofill_payments_otp_verification_dialog_cant_find_code_message),
                 new SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(mContext.getResources(),
-                                textView -> mListener.onNewOtpRequested())));
+                        new NoUnderlineClickableSpan(mContext.getResources(), textView -> {
+                            mOtpEditText.getText().clear();
+                            mListener.onNewOtpRequested();
+                        })));
     }
 
     /** Show an error message for the submitted otp. */
@@ -158,11 +161,25 @@ public class OtpVerificationDialog {
         hideProgressBarOverlay();
         mOtpErrorMessageTextView.setVisibility(View.VISIBLE);
         mOtpErrorMessageTextView.setText(errorMessage);
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 
     /** Dismiss the dialog if is already showing. */
     public void dismissDialog() {
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    /** Show confirmation message  */
+    public void showConfirmationAndDismissDialog(String confirmationMessage) {
+        if (mProgressBarOverlayView != null) {
+            mProgressBarOverlayView.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+            mProgressBarOverlayView.findViewById(R.id.confirmation_icon)
+                    .setVisibility(View.VISIBLE);
+            ((TextView) mProgressBarOverlayView.findViewById(R.id.progress_bar_message))
+                    .setText(confirmationMessage);
+        }
+        Runnable dismissRunnable = () -> dismissDialog();
+        new Handler().postDelayed(dismissRunnable, ANIMATION_DURATION_MS);
     }
 
     private void showProgressBarOverlay() {
