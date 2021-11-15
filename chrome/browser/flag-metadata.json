@@ -1601,7 +1601,7 @@
   {
     "name": "enable-cros-action-recorder",
     "owners": [ "charleszhao", "tby" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 101
   },
   {
     "name": "enable-cros-ime-assist-autocorrect",
@@ -3638,7 +3638,7 @@
   {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
-    "expiry_milestone": 96
+    "expiry_milestone": 101
   },
   {
     "name": "lazily-create-web-state-on-restoration",
