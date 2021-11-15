@@ -1060,8 +1060,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-#if defined(OS_MAC)
-// https://crbug.com/1222873
+#if defined(OS_MAC) || defined(OS_LINUX)
+// Mac: https://crbug.com/1222873
+// Linux: https://crbug.com/1269564
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
