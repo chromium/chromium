@@ -2402,6 +2402,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3449393517661170867">Új ablak lapokkal</translation>
 <translation id="3449839693241009168">Nyomja meg a(z) <ph name="SEARCH_KEY" /> billentyűt a parancsok elküldéséhez a következőre: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Tétlenségi állapot lefoglaltsága százalékban</translation>
+<translation id="3450180775417907283">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést.</translation>
 <translation id="3451753556629288767">Megnyithat bizonyos fájltípusokat</translation>
 <translation id="3452999110156026232">Szülői hozzáférés</translation>
 <translation id="3453612417627951340">Engedélyt igényel</translation>
@@ -4269,6 +4270,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5472627187093107397">Jelszavak mentése ennél a webhelynél</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{A PIN-kódnak legalább egy karakterből kell állnia}other{A PIN-kódnak legalább # karakterből kell állnia}}</translation>
+<translation id="5474859849784484111">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ez esetben a szolgáltató díjat számíthat fel).</translation>
 <translation id="5481273127572794904">Nem tölthetnek le automatikusan egyszerre több fájlt</translation>
 <translation id="5481941284378890518">Közeli nyomtatók hozzáadása</translation>
 <translation id="5483785310822538350">Fájl- és eszközhozzáférés visszavonása</translation>
@@ -4692,6 +4694,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="592880897588170157">PDF-fájlok letöltése ahelyett, hogy automatikusan megnyitná őket a Chrome</translation>
 <translation id="592919310198008711">Amikor a bővítményre kattintok</translation>
 <translation id="5932124097031739492">A Linux sikeresen frissült.</translation>
+<translation id="5932209916647644605">A(z) <ph name="MANAGER" /> megköveteli, hogy azonnal frissítse <ph name="DEVICE_TYPE" /> eszközét.</translation>
 <translation id="5932224571077948991">A webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="59324397759951282">USB-eszköz a következő gyártótól: <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Ön nem rendelkezik elegendő licenccel ennek a Google Meet-hardvernek a regisztrálásához. Továbbiak vásárlásáért forduljon az értékesítési csapathoz. Ha úgy gondolja, ezt az üzenetet tévesen kapta meg, forduljon az ügyfélszolgálathoz.</translation>

@@ -4093,6 +4093,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5265562206369321422">Neprijungta daugiau nei savaitę</translation>
 <translation id="5265797726250773323">Diegiant įvyko klaida</translation>
 <translation id="5266113311903163739">Sertifikavimo institucijos importavimo klaida</translation>
+<translation id="526622169288322445">Daugiau veiksmų (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="5269977353971873915">Spausdinant įvyko klaida</translation>
 <translation id="5275352920323889391">Šuo</translation>
 <translation id="527605982717517565">Visada leisti „JavaScript“ <ph name="HOST" /></translation>
@@ -5472,6 +5473,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6775163072363532304">Pasiekiami įrenginiai bus rodomi čia.</translation>
 <translation id="6777817260680419853">Peradresavimas užblokuotas</translation>
 <translation id="6778737459546443941">Jūsų tėtis ar mama dar jos nepatvirtino</translation>
+<translation id="6779092717724412415">Norėdami sukurti tokį paryškinimą kaip šis, pasirinkite bet kokį tekstą ir spustelėkite dešiniuoju pelės klavišu.</translation>
 <translation id="6779447100905857289">jūsų krepšeliai</translation>
 <translation id="677965093459947883">Labai mažas</translation>
 <translation id="6781005693196527806">&amp;Paieškos variklių tvarkymas...</translation>
@@ -6287,6 +6289,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7625823789272218216">Naujas skirtukas kairėje</translation>
 <translation id="7628201176665550262">Atnaujinimo dažnis</translation>
 <translation id="7629827748548208700">Skirtukas: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Šį įrenginį tvarko: <ph name="MANAGER" />. Prisijungti reikia kiekvieną kartą.</translation>
 <translation id="7631014249255418691">Sėkmingai sukurta „Linux“ programų ir failų atsarginė kopija</translation>
 <translation id="7631205654593498032">Susiedami įrenginius sutinkate, kad įrenginys „<ph name="DEVICE_TYPE" />“ gali:</translation>
 <translation id="7631887513477658702">&amp;Visada atidaryti tokio tipo failus</translation>

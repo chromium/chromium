@@ -4091,6 +4091,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5265562206369321422">Offline nang mahigit sa isang linggo</translation>
 <translation id="5265797726250773323">Nagkaroon ng error habang nag-i-install</translation>
 <translation id="5266113311903163739">Error sa Pag-import ng Certification Authority</translation>
+<translation id="526622169288322445">Higit pang aksyon para sa <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
 <translation id="5275352920323889391">Aso</translation>
 <translation id="527605982717517565">Palaging hayaan ang JavaScript sa <ph name="HOST" /></translation>
@@ -5469,6 +5470,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6775163072363532304">Lalabas dito ang mga available na device.</translation>
 <translation id="6777817260680419853">Na-block ang pag-redirect</translation>
 <translation id="6778737459546443941">Hindi pa ito inaaprubahan ng iyong magulang</translation>
+<translation id="6779092717724412415">Para gumawa ng highlight tulad nito, pumili ng anumang text at i-right-click.</translation>
 <translation id="6779447100905857289">ang iyong mga cart</translation>
 <translation id="677965093459947883">Napakaliit</translation>
 <translation id="6781005693196527806">&amp;Pamahalaan ang mga search engine...</translation>
@@ -5614,6 +5616,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6914783257214138813">Makikita ng sinumang makakatingin sa na-export na file ang iyong mga password.</translation>
 <translation id="6916590542764765824">Pamahalaan ang Mga Extension</translation>
 <translation id="6919868320029503575">Mahihinang password</translation>
+<translation id="6919952941889172531">I-on din ang Pinahusay na Ligtas na Pag-browse para sa profile na ito sa Chrome?</translation>
 <translation id="6920989436227028121">Buksan bilang regular na tab</translation>
 <translation id="6921104647315081813">I-clear ang mga aktibidad</translation>
 <translation id="692114467174262153">Hindi mabuksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6283,6 +6286,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7625823789272218216">Bagong Tab sa Kaliwa</translation>
 <translation id="7628201176665550262">Rate ng Pag-refresh</translation>
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at hinihiling nito sa iyong mag-sign in sa bawat pagkakataon.</translation>
 <translation id="7631014249255418691">Matagumpay na na-back up ang mga app at file ng Linux</translation>
 <translation id="7631205654593498032">Kapag ikinonekta mo ang iyong mga device, sumasang-ayon kang magagawa ng iyong <ph name="DEVICE_TYPE" /> na:</translation>
 <translation id="7631887513477658702">&amp;Palaging Magbukas ng Mga File na Ganitong Uri</translation>

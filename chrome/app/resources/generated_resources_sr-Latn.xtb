@@ -4072,6 +4072,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5265562206369321422">Oflajn duže od nedelju dana</translation>
 <translation id="5265797726250773323">Greška pri instaliranju</translation>
 <translation id="5266113311903163739">Greška pri uvozu autoriteta za izdavanje sertifikata</translation>
+<translation id="526622169288322445">Još radnji za <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Štampanje nije uspelo</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvek dozvoli JavaScript na sajtu <ph name="HOST" /></translation>
@@ -5448,6 +5449,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6775163072363532304">Dostupni uređaji se prikazuju ovde.</translation>
 <translation id="6777817260680419853">Preusmeravanje je blokirano</translation>
 <translation id="6778737459546443941">Roditelj ga još uvek nije odobrio</translation>
+<translation id="6779092717724412415">Da biste napravili isticanje poput ovog, izaberite bilo koji tekst i kliknite desnim tasterom.</translation>
 <translation id="6779447100905857289">korpe</translation>
 <translation id="677965093459947883">Jako mali</translation>
 <translation id="6781005693196527806">&amp;Upravljaj pretraživačima...</translation>
@@ -6263,6 +6265,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7625823789272218216">Nova kartica na levoj strani</translation>
 <translation id="7628201176665550262">Učestalost osvežavanja</translation>
 <translation id="7629827748548208700">Kartica: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382"><ph name="MANAGER" /> upravlja ovim uređajem i zahteva da se prijavite svaki put.</translation>
 <translation id="7631014249255418691">Napravljena je rezervna kopija Linux aplikacija i datoteka</translation>
 <translation id="7631205654593498032">Kada povežete uređaje, prihvatate da <ph name="DEVICE_TYPE" /> može:</translation>
 <translation id="7631887513477658702">&amp;Uvek otvori datoteke ovog tipa</translation>

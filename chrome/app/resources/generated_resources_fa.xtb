@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">‏به سایت‌ها اجازه داده نشود به دستگاه‌های MIDI متصل شوند</translation>
 <translation id="1088654056000736875">‏Chrome درحال حذف نرم‌افزارهای مضر از رایانه است…</translation>
 <translation id="1088659085457112967">ورود به «حالت خواننده»</translation>
+<translation id="1089606299949659462">بازبینی تکمیل شد!</translation>
 <translation id="1090126737595388931">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="1090541560108055381">پیش‌از مرتبط‌سازی، مطمئن شوید این کد در هر دو دستگاه یکی باشد</translation>
 <translation id="1091767800771861448">‏برای رد شدن، ESCAPE را فشار دهید (فقط ساخت‌های غیررسمی).</translation>
@@ -1442,6 +1443,7 @@
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2454247629720664989">کلمه کلیدی</translation>
 <translation id="2454264884354864965">دوربین خاموش است</translation>
+<translation id="2454524890947537054">درخواست وب تأیید شود؟</translation>
 <translation id="245650153866130664">برای بازخوانی خودکار بلیت، «به خاطر سپردن گذرواژه» را بررسی کنید. گذرواژه‌تان فقط در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> می‌خواهد چند فایل از <ph name="VOLUME_NAME" /> کپی کند.</translation>
 <translation id="2457842160081795172">درحال‌حاضر در کانال <ph name="CHANNEL_NAME" /> هستید</translation>
@@ -1844,6 +1846,7 @@
 <translation id="2861301611394761800">به‌روزرسانی سیستم کامل شد. لطفاً سیستم را راه‌اندازی مجدد کنید.</translation>
 <translation id="2861941300086904918">‏مدیر امنیت Native Client</translation>
 <translation id="2862815659905780618">‏برداشتن محیط برنامه‌نویسی Linux</translation>
+<translation id="2864272167277395865">دستگاهی را انتخاب کنید:</translation>
 <translation id="2864601841139725659">عکس نمایه اضافه کنید</translation>
 <translation id="2865919525181940183">نماگرفت برنامه‌هایی که درحال‌حاضر روی صفحه هستند</translation>
 <translation id="286674810810214575">درحال بررسی منابع برق...</translation>
@@ -3254,6 +3257,7 @@
 <translation id="4364830672918311045">نمایش اعلان‌ها</translation>
 <translation id="4366138410738374926">چاپ شروع شد</translation>
 <translation id="4369121877634339065">تصاویر موردنظرتان را برای جستجو بکشید</translation>
+<translation id="4369215744064167350">درخواست وب‌سایت تأیید شد</translation>
 <translation id="4370975561335139969">ایمیل و گذرواژه‌ای که وارد کرده‌اید، مطابقت ندارند</translation>
 <translation id="4373966964907728675">در حال فرستادن میزکار</translation>
 <translation id="4374831787438678295">‏نصب‌کننده Linux</translation>
@@ -3946,6 +3950,7 @@
 <translation id="5117139026559873716">اتصال تلفن و <ph name="DEVICE_TYPE" /> قطع می‌شود و دیگر به‌طور خودکار به هم وصل نمی‌شوند.</translation>
 <translation id="5117930984404104619">کنترل رفتار افزودنی‌های دیگر از جمله نشانی‌های وب بازدید شده</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">برای بازدید از <ph name="APPROVED_URL" />، اینجا را کلیک کنید</translation>
 <translation id="5121052518313988218">‏سیستم‌عاملی که در محتوای Linux دارید دیگر پشتیبانی نمی‌شود. این سیستم‌عامل دیگر به‌روزرسانی امنیتی و رفع اشکال دریافت نخواهد کرد و ویژگی‌هایی که درحال‌حاضر اجرا می‌شوند ممکن است با خرابی غیرمنتظره مواجه شوند. برای ادامه استفاده از Linux، لطفاً به جدیدترین نسخه به‌روزرسانی کنید.</translation>
 <translation id="5121130586824819730">دیسک سخت پر است. لطفاً در محل دیگری ذخیره کنید یا فضای بیشتری در دیسک سخت ایجاد کنید.</translation>
 <translation id="5123433949759960244">بسکتبال</translation>
@@ -4054,6 +4059,7 @@
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
 <translation id="5236374273162681467">‏برای استفاده آسان از گذرواژه‌ها در همه دستگاه‌ها، می‌توانید آن‌ها را به «حساب Google» خودتان منتقل کنید</translation>
+<translation id="523862956770478816">اجازه‌های سایت</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
 <translation id="5243522832766285132">چند لحظه دیگر دوباره امتحان کنید</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
@@ -5343,6 +5349,7 @@
 <translation id="6635674640674343739">برقراری اتصال شبکه امکان‌پذیر نیست. اتصال شبکه‌تان را بررسی و دوباره امتحان کنید.</translation>
 <translation id="6635944431854494329">‏مالک می‌تواند این ویژگی را در «تنظیمات &gt; پیشرفته &gt; ارسال خودکار داده‌های تشخیصی و میزان استفاده به Google» کنترل کند.</translation>
 <translation id="6635956300022133031">انتخاب و سفارشی‌سازی صداهای نوشتار به گفتار</translation>
+<translation id="6636623428211296678">در بخش زیر تنظیمات بیشتری را کاوش کنید یا همین‌حالا کارتان را به‌پایان برسانید</translation>
 <translation id="6639554308659482635">‏حافظه SQLite</translation>
 <translation id="6640268266988685324">برگه باز</translation>
 <translation id="6642720633335369752">برای دیدن پنجره‌های مربوط به همه برنامه‌های باز، از پایین صفحه تند به‌سمت بالا بکشید و نگه دارید.</translation>
@@ -6620,6 +6627,7 @@
 <translation id="7946586320617670168">مبدأ باید امن باشد</translation>
 <translation id="794676567536738329">تأیید مجوزها</translation>
 <translation id="7947962633355574091">کپی آدرس ویدئو</translation>
+<translation id="7948407723851303488">همه صفحه‌های <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">‏برای افزودن یا مدیریت روش‌های پرداخت Google Pay، به<ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود بروید</translation>
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
 <translation id="795282463722894016">بازیابی کامل شد</translation>
@@ -7686,6 +7694,7 @@
 <translation id="9053893665344928494">انتخاب من به خاطر سپرده شود</translation>
 <translation id="9055636786322918818">‏اجرای اجباری رمزگذاری RC4. استفاده از این گزینه احتمال خطر را بالا می‌برد، زیرا رمزهای RC4 امن نیست.</translation>
 <translation id="9056810968620647706">مورد منطبقی یافت نشد.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> می‌خواهد به محتوای زیر دسترسی پیدا کند:</translation>
 <translation id="9057354806206861646">زمان‌بندی به‌روزرسانی</translation>
 <translation id="9062468308252555888">۱۴ برابر</translation>
 <translation id="9063208415146866933">خطا از خط <ph name="ERROR_LINE_START" /> تا <ph name="ERROR_LINE_END" /></translation>

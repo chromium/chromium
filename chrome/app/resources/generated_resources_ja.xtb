@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">サイトに MIDI デバイスへの接続を許可しない</translation>
 <translation id="1088654056000736875">お使いのパソコンから有害なソフトウェアを削除しています...</translation>
 <translation id="1088659085457112967">リーダーモードを開始</translation>
+<translation id="1089606299949659462">確認が終わりました</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
@@ -1428,6 +1429,7 @@
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454247629720664989">キーワード</translation>
 <translation id="2454264884354864965">カメラはオフです</translation>
+<translation id="2454524890947537054">ウェブサイトへのアクセスを承認しますか？</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> のファイルのコピーを求めています。</translation>
 <translation id="2457842160081795172">現在のチャンネルは <ph name="CHANNEL_NAME" /> です</translation>
@@ -1830,6 +1832,7 @@
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
 <translation id="2861941300086904918">ネイティブ クライアント セキュリティ マネージャ</translation>
 <translation id="2862815659905780618">Linux 開発環境を削除</translation>
+<translation id="2864272167277395865">デバイスを選択してください:</translation>
 <translation id="2864601841139725659">プロフィール画像の設定</translation>
 <translation id="2865919525181940183">現在画面に表示されているプログラムのスクリーンショット</translation>
 <translation id="286674810810214575">電源を確認しています...</translation>
@@ -3238,6 +3241,7 @@
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4366138410738374926">印刷を開始しました</translation>
 <translation id="4369121877634339065">画像をドラッグして検索</translation>
+<translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4373966964907728675">デスクトップをキャスト中</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
@@ -3927,6 +3931,7 @@
 <translation id="5117139026559873716"><ph name="DEVICE_TYPE" /> からスマートフォンを切断します。以降、自動接続は行われなくなります。</translation>
 <translation id="5117930984404104619">他の拡張機能の動作を監視（アクセスした URL を含む）</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" /> にアクセスするには、ここをクリックしてください</translation>
 <translation id="5121052518313988218">お使いの Linux コンテナのオペレーティング システムはサポートが終了しています。セキュリティ アップデートやバグの修正が提供されなくなり、現在動作している機能が予期せず動作しなくなる可能性があります。引き続き Linux を使用するには、最新のバージョンにアップグレードしてください。</translation>
 <translation id="5121130586824819730">ハード ディスクがいっぱいです。別の場所に保存するか、ハード ディスクの空き容量を増やしてください。</translation>
 <translation id="5123433949759960244">バスケットボール</translation>
@@ -4035,6 +4040,7 @@
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
 <translation id="5236374273162681467">これらのパスワードを Google アカウントに移動すると、お持ちのすべてのデバイスで簡単に使用できるようになります</translation>
+<translation id="523862956770478816">サイトの権限</translation>
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
@@ -5321,6 +5327,7 @@
 <translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
 <translation id="6635956300022133031">テキスト読み上げ用の音声を選択してカスタマイズします</translation>
+<translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
 <translation id="6640268266988685324">開いているタブ</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
@@ -6596,6 +6603,7 @@
 <translation id="7946586320617670168">保護されている発行元でなければなりません</translation>
 <translation id="794676567536738329">許可の確認</translation>
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
 <translation id="7951265006188088697">Google Pay のお支払い方法を追加、管理するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
 <translation id="795282463722894016">復元が完了しました</translation>
@@ -7661,6 +7669,7 @@
 <translation id="9053893665344928494">選択内容を保存</translation>
 <translation id="9055636786322918818">RC4 暗号化を適用します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> さんが次のコンテンツへのアクセスをリクエストしています:</translation>
 <translation id="9057354806206861646">更新スケジュール</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>

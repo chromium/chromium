@@ -4072,6 +4072,7 @@
 <translation id="5265562206369321422">Офлајн дуже од недељу дана</translation>
 <translation id="5265797726250773323">Грешка при инсталирању</translation>
 <translation id="5266113311903163739">Грешка при увозу ауторитета за издавање сертификата</translation>
+<translation id="526622169288322445">Још радњи за <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Штампање није успело</translation>
 <translation id="5275352920323889391">Пас</translation>
 <translation id="527605982717517565">Увек дозволи JavaScript на сајту <ph name="HOST" /></translation>
@@ -5448,6 +5449,7 @@
 <translation id="6775163072363532304">Доступни уређаји се приказују овде.</translation>
 <translation id="6777817260680419853">Преусмеравање је блокирано</translation>
 <translation id="6778737459546443941">Родитељ га још увек није одобрио</translation>
+<translation id="6779092717724412415">Да бисте направили истицање попут овог, изаберите било који текст и кликните десним тастером.</translation>
 <translation id="6779447100905857289">корпе</translation>
 <translation id="677965093459947883">Јако мали</translation>
 <translation id="6781005693196527806">&amp;Управљај претраживачима...</translation>
@@ -6263,6 +6265,7 @@
 <translation id="7625823789272218216">Нова картица на левој страни</translation>
 <translation id="7628201176665550262">Учесталост освежавања</translation>
 <translation id="7629827748548208700">Картица: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382"><ph name="MANAGER" /> управља овим уређајем и захтева да се пријавите сваки пут.</translation>
 <translation id="7631014249255418691">Направљена је резервна копија Linux апликација и датотека</translation>
 <translation id="7631205654593498032">Када повежете уређаје, прихватате да <ph name="DEVICE_TYPE" /> може:</translation>
 <translation id="7631887513477658702">&amp;Увек отвори датотеке овог типа</translation>
