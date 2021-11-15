@@ -35,8 +35,19 @@ Tutorial::StepBuilder::BuildFromDescriptionStep(
 }
 
 Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementID(
-    ui::ElementIdentifier element_id_) {
-  step_.element_id = element_id_;
+    ui::ElementIdentifier anchor_element_id) {
+  // Element ID and Element Name are mutually exclusive
+  DCHECK(!anchor_element_id || step_.element_name.empty());
+
+  step_.element_id = anchor_element_id;
+  return *this;
+}
+
+Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementName(
+    std::string anchor_element_name) {
+  // Element ID and Element Name are mutually exclusive
+  DCHECK(anchor_element_name.empty() || !step_.element_id);
+  step_.element_name = anchor_element_name;
   return *this;
 }
 
@@ -89,7 +100,12 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
       interaction_sequence_step_builder =
           std::make_unique<ui::InteractionSequence::StepBuilder>();
 
-  interaction_sequence_step_builder->SetElementID(step_.element_id);
+  if (step_.element_id)
+    interaction_sequence_step_builder->SetElementID(step_.element_id);
+
+  if (!step_.element_name.empty())
+    interaction_sequence_step_builder->SetElementName(step_.element_name);
+
   interaction_sequence_step_builder->SetType(step_.step_type);
 
   if (step_.must_remain_visible.has_value())

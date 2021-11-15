@@ -36,6 +36,7 @@ struct TutorialDescription {
          absl::optional<std::u16string> body_text_,
          ui::InteractionSequence::StepType step_type_,
          ui::ElementIdentifier element_id_,
+         std::string element_name_,
          Arrow arrow_,
          absl::optional<bool> must_remain_visible_ = absl::nullopt);
     Step(const Step& step);
@@ -52,6 +53,10 @@ struct TutorialDescription {
 
     // the element used by interaction sequence to observe and attach a bubble.
     ui::ElementIdentifier element_id;
+
+    // the element, referred to by name, used by the interaction sequence
+    // to observe and potentially attach a bubble. must be non-empty.
+    std::string element_name;
 
     // the positioning of the bubble arrow
     Arrow arrow;

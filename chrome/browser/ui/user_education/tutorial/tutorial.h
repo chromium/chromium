@@ -66,7 +66,8 @@ class Tutorial {
         TutorialService* tutorial_service,
         TutorialBubbleFactoryRegistry* bubble_factory_registry);
 
-    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_);
+    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
+    StepBuilder& SetAnchorElementName(std::string anchor_element_name);
     StepBuilder& SetTitleText(absl::optional<std::u16string> title_text_);
     StepBuilder& SetBodyText(absl::optional<std::u16string> body_text_);
     StepBuilder& SetStepType(ui::InteractionSequence::StepType step_type_);

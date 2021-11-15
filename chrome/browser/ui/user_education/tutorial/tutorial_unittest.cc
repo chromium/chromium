@@ -30,12 +30,21 @@ TEST(TutorialTest, TutorialBuilder) {
   Tutorial::Builder builder;
 
   // build a step with an ElementID
-  std::unique_ptr<ui::InteractionSequence::Step> step =
+  std::unique_ptr<ui::InteractionSequence::Step> step1 =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
           .Build(service.get(), bubble_factory_registry.get());
 
-  builder.SetContext(kTestContext1).AddStep(std::move(step)).Build();
+  // build a step with a named element
+  std::unique_ptr<ui::InteractionSequence::Step> step2 =
+      Tutorial::StepBuilder()
+          .SetAnchorElementName(std::string("TestElementName"))
+          .Build(service.get(), bubble_factory_registry.get());
+
+  builder.SetContext(kTestContext1)
+      .AddStep(std::move(step1))
+      .AddStep(std::move(step2))
+      .Build();
 }
 
 TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
@@ -46,7 +55,8 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
     TutorialDescription description;
     description.steps.emplace_back(TutorialDescription::Step(
         u"title", u"description", ui::InteractionSequence::StepType::kShown,
-        kTestIdentifier1, TutorialDescription::Step::Arrow::NONE));
+        kTestIdentifier1, std::string(),
+        TutorialDescription::Step::Arrow::NONE));
     registry->AddTutorial(kTestTutorial1, description);
   }
 
