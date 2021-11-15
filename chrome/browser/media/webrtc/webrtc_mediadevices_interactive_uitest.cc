@@ -34,6 +34,10 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if defined(OS_MAC)
+#include <CoreGraphics/CoreGraphics.h>
+#endif
+
 namespace {
 
 const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
@@ -401,6 +405,11 @@ class WebRtcMediaDevicesPrerenderingBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesPrerenderingBrowserTest,
                        EnumerateDevicesInPrerendering) {
+#if defined(OS_MAC)
+  // Test will fail if the window it's runnig in contains the mouse pointer.
+  // Here we warp the cursor, hopefully, out of the window.
+  CGWarpMouseCursorPosition({0, 0});
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Loads a simple page as a primary page.
