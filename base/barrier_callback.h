@@ -68,6 +68,10 @@ void ShouldNeverRun(T t) {
 // is copied. (BarrierCallback does not support `T`s that are neither movable
 // nor copyable.) If T is a reference, the reference is removed, and the
 // callback moves or copies the underlying value per the previously stated rule.
+// Beware of creating dangling references. Types that contain references but are
+// not references themselves are not modified for callback storage, e.g.
+// `std::pair<int, const Foo&>`. Dangling references will be passed to
+// `done_callback` if the referenced `Foo` objects have already been deleted.
 //
 // If `num_callbacks` is 0, `done_callback` is executed immediately.
 //
