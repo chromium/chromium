@@ -121,7 +121,7 @@
       'android-web-platform-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-smoketest': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
-      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
+      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell',
       'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
       # Use webview_trichrome as this builder triggers tests on Android 10
       'android-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_webview_shell',
