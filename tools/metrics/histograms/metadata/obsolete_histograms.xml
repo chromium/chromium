@@ -64049,18 +64049,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.pixelCountOpaque" units="NormalizedPixels"
-    expires_after="2019-02-14">
-  <obsolete>
-    Removed at an unknown time. No longer used in code.
-  </obsolete>
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels known to be opaque, recorded as 10 times the percentage of
-    the viewport that these pixels cover.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.pixelCountPainted" units="NormalizedPixels"
     expires_after="2019-02-14">
   <obsolete>
@@ -64071,18 +64059,6 @@ chromium-metrics-reviews@google.com.
     Number of pixels painted by WebKit into main memory, recorded as 10 times
     the percentage of the viewport that these pixels cover. This is collected
     once per commit from WebKit to the compositor.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.pixelCountTranslucent" units="NormalizedPixels"
-    expires_after="2019-02-14">
-  <obsolete>
-    Removed at an unknown time. No longer used in code.
-  </obsolete>
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels not known to be opaque opaque, recorded as 10 times the
-    percentage of the viewport that these pixels cover.
   </summary>
 </histogram>
 
