@@ -597,6 +597,11 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.ManifestShortcutItem"
           cpp = "::blink::Manifest::ShortcutItem"
         },
+
+        {
+          mojom = "blink.mojom.ManifestTranslationItem"
+          cpp = "::blink::Manifest::TranslationItem"
+        },
       ]
       traits_headers = [
         "//third_party/blink/public/common/common_export.h",

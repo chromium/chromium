@@ -188,4 +188,24 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::ManifestTranslationItemDataView,
+                  ::blink::Manifest::TranslationItem>::
+    Read(blink::mojom::ManifestTranslationItemDataView data,
+         ::blink::Manifest::TranslationItem* out) {
+  TruncatedString16 string;
+  if (!data.ReadName(&string))
+    return false;
+  out->name = std::move(string.string);
+
+  if (!data.ReadShortName(&string))
+    return false;
+  out->short_name = std::move(string.string);
+
+  if (!data.ReadDescription(&string))
+    return false;
+  out->description = std::move(string.string);
+
+  return true;
+}
+
 }  // namespace mojo

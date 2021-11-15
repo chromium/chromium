@@ -463,6 +463,8 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (manifest.description.has_value()) {
     web_app_info->description = manifest.description.value();
   }
+
+  web_app_info->translations = manifest.translations;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

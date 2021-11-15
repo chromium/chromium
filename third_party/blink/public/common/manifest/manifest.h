@@ -145,6 +145,18 @@ class BLINK_COMMON_EXPORT Manifest {
     NavigateExistingClient navigate_existing_client =
         NavigateExistingClient::kAlways;
   };
+
+  // Structure containing translations for the translatable manifest fields.
+  struct BLINK_COMMON_EXPORT TranslationItem {
+    TranslationItem();
+    ~TranslationItem();
+
+    bool operator==(const TranslationItem& other) const;
+
+    absl::optional<std::u16string> name;
+    absl::optional<std::u16string> short_name;
+    absl::optional<std::u16string> description;
+  };
 };
 
 }  // namespace blink

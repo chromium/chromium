@@ -302,6 +302,9 @@ struct WebApplicationInfo {
 
   // The window selection behaviour of app launches.
   absl::optional<blink::Manifest::LaunchHandler> launch_handler;
+
+  // A mapping from locales to translated fields.
+  base::flat_map<std::u16string, blink::Manifest::TranslationItem> translations;
 };
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);

@@ -814,6 +814,53 @@ TEST(WebAppInstallUtils, PopulateProductIcons_IsGeneratedIcon) {
   }
 }
 
+TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_Translations) {
+  blink::mojom::Manifest manifest;
+  WebApplicationInfo web_app_info;
+
+  {
+    blink::Manifest::TranslationItem item;
+    item.name = u"name 1";
+    item.short_name = u"short name 1";
+    item.description = u"description 1";
+
+    manifest.translations[u"language 1"] = std::move(item);
+  }
+  {
+    blink::Manifest::TranslationItem item;
+    item.short_name = u"short name 2";
+    item.description = u"description 2";
+
+    manifest.translations[u"language 2"] = std::move(item);
+  }
+  {
+    blink::Manifest::TranslationItem item;
+    item.name = u"name 3";
+
+    manifest.translations[u"language 3"] = std::move(item);
+  }
+
+  const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
+
+  EXPECT_EQ(3u, web_app_info.translations.size());
+  EXPECT_EQ(web_app_info.translations[u"language 1"].name, u"name 1");
+  EXPECT_EQ(web_app_info.translations[u"language 1"].short_name,
+            u"short name 1");
+  EXPECT_EQ(web_app_info.translations[u"language 1"].description,
+            u"description 1");
+
+  EXPECT_FALSE(web_app_info.translations[u"language 2"].name);
+  EXPECT_EQ(web_app_info.translations[u"language 2"].short_name,
+            u"short name 2");
+  EXPECT_EQ(web_app_info.translations[u"language 2"].description,
+            u"description 2");
+
+  EXPECT_EQ(web_app_info.translations[u"language 3"].name, u"name 3");
+  EXPECT_FALSE(web_app_info.translations[u"language 3"].short_name);
+  EXPECT_FALSE(web_app_info.translations[u"language 3"].description);
+}
+
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
