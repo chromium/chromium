@@ -221,12 +221,10 @@ class MediaStreamAudioFifo {
 };
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(
-    DeliverProcessedAudioCallback deliver_processed_audio_callback,
     const AudioProcessingProperties& properties,
     bool use_capture_multi_channel_processing,
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
-    : deliver_processed_audio_callback_(deliver_processed_audio_callback),
-      render_delay_(base::TimeDelta()),
+    : render_delay_(base::TimeDelta()),
       audio_delay_stats_reporter_(kBuffersPerSecond),
       playout_data_source_(std::move(playout_data_source)),
       main_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -257,6 +255,9 @@ void MediaStreamAudioProcessor::OnCaptureFormatChanged(
     const media::AudioParameters& input_format) {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
 
+  // There is no need to hold a lock here since the caller guarantees that
+  // there is no more PushCaptureData() and ProcessAndConsumeData() callbacks
+  // on the capture thread.
   InitializeCaptureFifo(input_format);
 
   // Reset the |capture_thread_checker_| since the capture data will come from
@@ -264,50 +265,54 @@ void MediaStreamAudioProcessor::OnCaptureFormatChanged(
   DETACH_FROM_THREAD(capture_thread_checker_);
 }
 
-void MediaStreamAudioProcessor::ProcessCapturedAudio(
+void MediaStreamAudioProcessor::PushCaptureData(
     const media::AudioBus& audio_source,
-    base::TimeTicks audio_capture_time,
-    int num_preferred_channels,
-    double volume,
-    bool key_pressed) {
+    base::TimeDelta capture_delay) {
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
-  DCHECK(deliver_processed_audio_callback_);
-  // Sanity-check the input audio format in debug builds.
-  DCHECK(input_format_.IsValid());
-  DCHECK_EQ(audio_source.channels(), input_format_.channels());
-  DCHECK_EQ(audio_source.frames(), input_format_.frames_per_buffer());
-
-  base::TimeDelta capture_delay = base::TimeTicks::Now() - audio_capture_time;
-  TRACE_EVENT1("audio", "MediaStreamAudioProcessor::ProcessCapturedAudio",
+  TRACE_EVENT1("audio", "MediaStreamAudioProcessor::PushCaptureData",
                "delay (ms)", capture_delay.InMillisecondsF());
-
   capture_fifo_->Push(audio_source, capture_delay);
+}
 
-  // Process and consume the data in the FIFO until there is not enough
-  // data to process.
+bool MediaStreamAudioProcessor::ProcessAndConsumeData(
+    double volume,
+    int num_preferred_channels,
+    bool key_pressed,
+    media::AudioBus** processed_data,
+    base::TimeDelta* capture_delay,
+    absl::optional<double>* new_volume) {
+  DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
+  DCHECK(processed_data);
+  DCHECK(capture_delay);
+  DCHECK(new_volume);
+
+  TRACE_EVENT0("audio", "MediaStreamAudioProcessor::ProcessAndConsumeData");
+
   MediaStreamAudioBus* process_bus;
-  while (capture_fifo_->Consume(&process_bus, &capture_delay)) {
-    // Use the process bus directly if audio processing is disabled.
-    MediaStreamAudioBus* output_bus = process_bus;
-    absl::optional<double> new_volume;
-    if (audio_processing_) {
-      output_bus = output_bus_.get();
-      new_volume =
-          ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
-                      capture_delay, volume, key_pressed,
-                      num_preferred_channels, output_bus->channel_ptrs());
-    }
+  if (!capture_fifo_->Consume(&process_bus, capture_delay))
+    return false;
 
-    // Swap channels before interleaving the data.
-    if (audio_mirroring_ &&
-        output_format_.channel_layout() == media::CHANNEL_LAYOUT_STEREO) {
-      // Swap the first and second channels.
-      output_bus->bus()->SwapChannels(0, 1);
-    }
-
-    deliver_processed_audio_callback_.Run(*output_bus->bus(),
-                                          audio_capture_time, new_volume);
+  // Use the process bus directly if audio processing is disabled.
+  MediaStreamAudioBus* output_bus = process_bus;
+  *new_volume = absl::nullopt;
+  if (audio_processing_) {
+    output_bus = output_bus_.get();
+    *new_volume =
+        ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
+                    *capture_delay, volume, key_pressed, num_preferred_channels,
+                    output_bus->channel_ptrs());
   }
+
+  // Swap channels before interleaving the data.
+  if (audio_mirroring_ &&
+      output_format_.channel_layout() == media::CHANNEL_LAYOUT_STEREO) {
+    // Swap the first and second channels.
+    output_bus->bus()->SwapChannels(0, 1);
+  }
+
+  *processed_data = output_bus->bus();
+
+  return true;
 }
 
 void MediaStreamAudioProcessor::Stop() {
@@ -318,7 +323,6 @@ void MediaStreamAudioProcessor::Stop() {
 
   stopped_ = true;
 
-  deliver_processed_audio_callback_.Reset();
   aec_dump_agent_impl_.reset();
 
   if (!audio_processing_.get())
@@ -463,6 +467,8 @@ void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
 
 void MediaStreamAudioProcessor::OnPlayoutDataSourceChanged() {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
+  // There is no need to hold a lock here since the caller guarantees that
+  // there is no more OnPlayoutData() callback on the render thread.
   DETACH_FROM_THREAD(render_thread_checker_);
 }
 

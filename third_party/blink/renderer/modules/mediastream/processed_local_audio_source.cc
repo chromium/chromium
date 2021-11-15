@@ -375,15 +375,9 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   media::AudioSourceParameters source_params(device().session_id());
   blink::WebRtcLogMessage("Using APM in renderer process.");
   bool use_multichannel_processing = num_requested_channels_ > 1;
-  // This callback has to be valid until MediaStreamAudioProcessor is stopped,
-  // which happens in EnsureSourceIsStopped().
-  MediaStreamAudioProcessor::DeliverProcessedAudioCallback processing_callback =
-      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &ProcessedLocalAudioSource::DeliverProcessedAudio,
-          CrossThreadUnretained(this)));
   audio_processor_ = new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-      std::move(processing_callback), audio_processing_properties_,
-      use_multichannel_processing, rtc_audio_device);
+      audio_processing_properties_, use_multichannel_processing,
+      rtc_audio_device);
   params.set_frames_per_buffer(GetBufferSize(device().input.sample_rate()));
   audio_processor_->OnCaptureFormatChanged(params);
   SetFormat(audio_processor_->OutputFormat());
@@ -467,29 +461,14 @@ void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
                                         base::TimeTicks audio_capture_time,
                                         double volume,
                                         bool key_pressed) {
-  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
-               audio_capture_time);
   if (audio_processor_) {
-    // Figure out if the pre-processed data has any energy or not. This
-    // information will be passed to the level calculator to force it to report
-    // energy in case the post-processed data is zeroed by the audio processing.
-    force_report_nonzero_energy_ = !audio_bus->AreFramesZero();
-
-    // Push the data to the processor for processing.
-    // Maximum number of channels used by the sinks.
-    const int num_preferred_channels = NumPreferredChannels();
-
-    // Passing audio to the audio processor is sufficient, the processor will
-    // return it to DeliverProcessedAudio() via the registered callback.
-    audio_processor_->ProcessCapturedAudio(*audio_bus, audio_capture_time,
-                                           num_preferred_channels, volume,
-                                           key_pressed);
+    // The data must be processed here.
+    CaptureUsingProcessor(audio_bus, audio_capture_time, volume, key_pressed);
   } else {
     // The audio is already processed in the audio service, just send it
     // along.
-    force_report_nonzero_energy_ = false;
-    DeliverProcessedAudio(*audio_bus, audio_capture_time,
-                          /*new_volume=*/absl::nullopt);
+    level_calculator_.Calculate(*audio_bus, false);
+    DeliverDataToTracks(*audio_bus, audio_capture_time);
   }
 }
 
@@ -521,20 +500,58 @@ void ProcessedLocalAudioSource::SetOutputDeviceForAec(
     source_->SetOutputDeviceForAec(output_device_id);
 }
 
-void ProcessedLocalAudioSource::DeliverProcessedAudio(
-    const media::AudioBus& processed_audio,
+void ProcessedLocalAudioSource::CaptureUsingProcessor(
+    const media::AudioBus* audio_bus,
     base::TimeTicks audio_capture_time,
-    absl::optional<double> new_volume) {
-  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::DeliverProcessedAudio",
-               "capture-time", audio_capture_time);
-  level_calculator_.Calculate(processed_audio, force_report_nonzero_energy_);
-  DeliverDataToTracks(processed_audio, audio_capture_time);
+    double volume,
+    bool key_pressed) {
+  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
+               audio_capture_time);
 
-  if (new_volume) {
-    PostCrossThreadTask(
-        *GetTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
-                            weak_factory_.GetWeakPtr(), *new_volume));
+  // Sanity-check the input audio format in debug builds.  Then, notify the
+  // tracks if the format has changed.
+  //
+  // Locking is not needed here to read the audio input/output parameters
+  // because the audio processor format changes only occur while audio capture
+  // is stopped.
+  DCHECK(audio_processor_->InputFormat().IsValid());
+  DCHECK_EQ(audio_bus->channels(), audio_processor_->InputFormat().channels());
+  DCHECK_EQ(audio_bus->frames(),
+            audio_processor_->InputFormat().frames_per_buffer());
+
+  // Figure out if the pre-processed data has any energy or not. This
+  // information will be passed to the level calculator to force it to report
+  // energy in case the post-processed data is zeroed by the audio processing.
+  const bool force_report_nonzero_energy = !audio_bus->AreFramesZero();
+
+  // Push the data to the processor for processing.
+  audio_processor_->PushCaptureData(
+      *audio_bus, base::TimeTicks::Now() - audio_capture_time);
+
+  // Process and consume the data in the processor until there is not enough
+  // data in the processor.
+  media::AudioBus* processed_data = nullptr;
+  base::TimeDelta processed_data_audio_delay;
+  absl::optional<double> new_volume;
+
+  // Maximum number of channels used by the sinks.
+  const int num_preferred_channels = NumPreferredChannels();
+
+  while (audio_processor_->ProcessAndConsumeData(
+      volume, num_preferred_channels, key_pressed, &processed_data,
+      &processed_data_audio_delay, &new_volume)) {
+    DCHECK(processed_data);
+
+    level_calculator_.Calculate(*processed_data, force_report_nonzero_energy);
+
+    DeliverDataToTracks(*processed_data, audio_capture_time);
+
+    if (new_volume) {
+      PostCrossThreadTask(
+          *GetTaskRunner(), FROM_HERE,
+          CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
+                              weak_factory_.GetWeakPtr(), *new_volume));
+    }
   }
 }
 

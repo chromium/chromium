@@ -40,32 +40,19 @@ using webrtc::AudioProcessorInterface;
 // This class owns an object of webrtc::AudioProcessing which contains signal
 // processing components like AGC, AEC and NS. It enables the components based
 // on the getUserMedia constraints, processes the data and outputs it in a unit
-// of up to 10 ms data chunk.
+// of 10 ms data chunk.
 class MODULES_EXPORT MediaStreamAudioProcessor
     : public WebRtcPlayoutDataSource::Sink,
       public AudioProcessorInterface,
       public AecDumpAgentImpl::Delegate {
  public:
-  // Callback for consuming processed capture audio.
-  // |audio_bus| contains the most recent processed capture audio.
-  // |new_volume| specifies a new microphone volume from the AGC. The new
-  // microphone volume range is [0.0, 1.0], and is only set if the microphone
-  // volume should be adjusted.
-  using DeliverProcessedAudioCallback =
-      base::RepeatingCallback<void(const media::AudioBus& audio_bus,
-                                   base::TimeTicks audio_capture_time,
-                                   absl::optional<double> new_volume)>;
-
-  // |deliver_processed_audio_callback| is used to deliver frames of processed
-  // capture audio, from ProcessCapturedAudio(), and has to be valid until
-  // Stop() is called. |playout_data_source| is used to register this class as a
-  // sink to the WebRtc playout data for processing AEC. If clients do not
-  // enable AEC, |playout_data_source| won't be used.
+  // |playout_data_source| is used to register this class as a sink to the
+  // WebRtc playout data for processing AEC. If clients do not enable AEC,
+  // |playout_data_source| won't be used.
   //
   // Threading note: The constructor assumes it is being run on the main render
   // thread.
   MediaStreamAudioProcessor(
-      DeliverProcessedAudioCallback deliver_processed_audio_callback,
       const AudioProcessingProperties& properties,
       bool use_capture_multi_channel_processing,
       scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
@@ -81,27 +68,39 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // thread.
   void OnCaptureFormatChanged(const media::AudioParameters& source_params);
 
-  // Processes and delivers capture audio in chunks of <= 10 ms to
-  // |deliver_processed_audio_callback_|: Each call to ProcessCapturedAudio()
-  // method triggers zero or more calls to |deliver_processed_audio_callback_|,
-  // depending on internal FIFO size and content. |num_preferred_channels| is
-  // the highest number of channels that any sink is interested in. This can be
-  // different from the number of channels in the output format. A value of -1
-  // means an unknown number. If |use_capture_multi_channel_processing_| is
-  // true, the number of channels of the output of the Audio Processing Module
-  // (APM) will be equal to the highest observed value of num_preferred_channels
-  // as long as it does not exceed the number of channels of the output format.
-  // |volume| specifies the current microphone volume, in the range [0.0, 1.0].
+  // Pushes capture data in |audio_source| to the internal FIFO. Each call to
+  // this method should be followed by calls to ProcessAndConsumeData() while
+  // it returns false, to pull out all available data.
   // Called on the capture audio thread.
-  void ProcessCapturedAudio(const media::AudioBus& audio_source,
-                            base::TimeTicks audio_capture_time,
-                            int num_preferred_channels,
-                            double volume,
-                            bool key_pressed);
+  void PushCaptureData(const media::AudioBus& audio_source,
+                       base::TimeDelta capture_delay);
 
-  // Stops the audio processor. The caller guarantees that there will be no more
-  // calls to ProcessCapturedAudio(). Calling Stop() stops any ongoing aecdump
-  // recordings and playout audio analysis.
+  // Processes a block of 10 ms data from the internal FIFO, returning true if
+  // |processed_data| contains the result. Returns false and does not modify the
+  // outputs if the internal FIFO has insufficient data. The caller does NOT own
+  // the object pointed to by |*processed_data|.
+  // |num_preferred_channels| is the highest number of channels that any sink is
+  // interested in. This can be different from the number of channels in the
+  // output format. A value of -1 means an unknown number. If
+  // use_capture_multi_channel_processing_ is true, the number of channels of
+  // the output of the Audio Processing Module (APM) will be equal to the
+  // highest observed value of num_preferred_channels as long as it does not
+  // exceed the number of channels of the output format.
+  // |capture_delay| is an adjustment on the |capture_delay| value provided in
+  // the last call to PushCaptureData().
+  // |new_volume| receives the new microphone volume from the AGC. The new
+  // microphone volume range is [0.0, 1.0], and is only set if the microphone
+  // volume should be adjusted.
+  // Called on the capture audio thread.
+  bool ProcessAndConsumeData(double volume,
+                             int num_preferred_channels,
+                             bool key_pressed,
+                             media::AudioBus** processed_data,
+                             base::TimeDelta* capture_delay,
+                             absl::optional<double>* new_volume);
+
+  // Stops the audio processor, no more AEC dump or render data after calling
+  // this method.
   void Stop();
 
   // The audio formats of the capture input to and output from the processor.
@@ -174,13 +173,13 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Helper to initialize the capture converter.
   void InitializeCaptureFifo(const media::AudioParameters& input_format);
 
-  // Called by ProcessCapturedAudio().
+  // Called by ProcessAndConsumeData().
   // Returns the new microphone volume in the range of |0.0, 1.0], or unset if
   // the volume should not be updated.
   // |num_preferred_channels| is the highest number of channels that any sink is
   // interested in. This can be different from the number of channels in the
   // output format. A value of -1 means an unknown number. If
-  // |use_capture_multi_channel_processing_| is true, the number of channels of
+  // use_capture_multi_channel_processing_ is true, the number of channels of
   // the output of the Audio Processing Module (APM) will be equal to the
   // highest observed value of num_preferred_channels as long as it does not
   // exceed the number of channels of the output format.
@@ -196,9 +195,6 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void UpdateAecStats();
 
   void SendLogMessage(const WTF::String& message);
-
-  // Consumer of processed capture audio in ProcessCapturedAudio().
-  DeliverProcessedAudioCallback deliver_processed_audio_callback_;
 
   // Cached value for the render delay latency. This member is accessed by
   // both the capture audio thread and the render audio thread.
@@ -261,7 +257,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Observed maximum number of preferred output channels. Used for not
   // performing audio processing on more channels than the sinks are interested
   // in. The value is a maximum over time and can increase but never decrease.
-  // If |use_capture_multi_channel_processing_| is true, Audio Processing Module
+  // If use_capture_multi_channel_processing_ is true, Audio Processing Module
   // (APM) will output max_num_preferred_output_channels_ channels as long as it
   // does not exceed the number of channels of the output format.
   int max_num_preferred_output_channels_ = 1;
