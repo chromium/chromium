@@ -194,25 +194,13 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
   command_line->AppendSwitchASCII(::switches::kOzonePlatform, "headless");
 #endif
 
-  if (command_line->HasSwitch(::switches::kUseGL)) {
-    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-    if (use_gl != gl::kGLImplementationEGLName) {
-      // Headless uses a software output device which will cause us to fall back
-      // to software compositing anyway, but only after attempting and failing
-      // to initialize GPU compositing. We disable GPU compositing here
-      // explicitly to preempt this attempt.
-      command_line->AppendSwitch(::switches::kDisableGpuCompositing);
-    }
-  } else {
-    if (!options()->gl_implementation.empty()) {
-      command_line->AppendSwitchASCII(::switches::kUseGL,
-                                      options()->gl_implementation);
-      if (!options()->angle_implementation.empty()) {
-        command_line->AppendSwitchASCII(::switches::kUseANGLE,
-                                        options()->angle_implementation);
-      }
-    } else {
-      command_line->AppendSwitch(::switches::kDisableGpu);
+  if (!command_line->HasSwitch(::switches::kUseGL) &&
+      !options()->gl_implementation.empty()) {
+    command_line->AppendSwitchASCII(::switches::kUseGL,
+                                    options()->gl_implementation);
+    if (!options()->angle_implementation.empty()) {
+      command_line->AppendSwitchASCII(::switches::kUseANGLE,
+                                      options()->angle_implementation);
     }
   }
 

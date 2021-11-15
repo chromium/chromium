@@ -227,7 +227,10 @@ std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
-      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kDefault),
+  };
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(

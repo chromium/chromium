@@ -119,9 +119,7 @@ GLImplementationParts GetRequestedGLImplementation(
   GLImplementationParts impl = allowed_impls[0];
 
   *fallback_to_software_gl = false;
-  if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless)) {
-    impl = GetSoftwareGLImplementationForPlatform();
-  } else if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
+  if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
     impl = GetSoftwareGLImplementationForPlatform();
   } else if (cmd->HasSwitch(switches::kUseGL) ||
              cmd->HasSwitch(switches::kUseANGLE)) {

@@ -822,8 +822,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
                         const base::CommandLine* command_line,
                         std::vector<DisplayType>* init_displays) {
   bool usingSoftwareGL =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests) ||
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless);
+      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
   bool isSwANGLE = GetGLImplementationParts() == GetSoftwareGLImplementation();
 
   // SwiftShader does not use the platform extensions

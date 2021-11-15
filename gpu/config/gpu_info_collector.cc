@@ -320,15 +320,13 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
   bool useSoftwareGLForTests =
       command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
-  bool useSoftwareGLForHeadless =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless);
   gl::GLImplementationParts legacyImpl =
       gl::GetLegacySoftwareGLImplementation();
   gl::GLImplementationParts swangleImpl = gl::GetSoftwareGLImplementation();
 
-  if ((implementation == legacyImpl) ||
-      ((useSoftwareGLForTests || useSoftwareGLForHeadless) &&
-       (legacyImpl == gl::init::GetSoftwareGLImplementationForPlatform()))) {
+  if (implementation == legacyImpl ||
+      (useSoftwareGLForTests &&
+       legacyImpl == gl::init::GetSoftwareGLImplementationForPlatform())) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -344,10 +342,10 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
         std::string(gl::GetGLImplementationGLName(legacyImpl));
 
     return true;
-  } else if ((implementation == swangleImpl) ||
-             ((useSoftwareGLForTests || useSoftwareGLForHeadless) &&
-              (swangleImpl ==
-               gl::init::GetSoftwareGLImplementationForPlatform()))) {
+  } else if (implementation == swangleImpl ||
+             (useSoftwareGLForTests &&
+              swangleImpl ==
+                  gl::init::GetSoftwareGLImplementationForPlatform())) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;

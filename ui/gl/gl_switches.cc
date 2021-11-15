@@ -136,10 +136,6 @@ const char kDisableGLDrawingForTests[] = "disable-gl-drawing-for-tests";
 const char kOverrideUseSoftwareGLForTests[] =
     "override-use-software-gl-for-tests";
 
-// Forces the use of software GL instead of hardware gpu for headless.
-const char kOverrideUseSoftwareGLForHeadless[] =
-    "override-use-software-gl-for-headless";
-
 // Disables specified comma separated GL Extensions if found.
 const char kDisableGLExtensions[] = "disable-gl-extensions";
 

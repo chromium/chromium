@@ -86,9 +86,6 @@ GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];
 GL_EXPORT extern const char kDisableGLDrawingForTests[];
 GL_EXPORT extern const char kOverrideUseSoftwareGLForTests[];
 
-// This flag is used when not enabling GPU hardware in headless mode
-GL_EXPORT extern const char kOverrideUseSoftwareGLForHeadless[];
-
 GL_EXPORT extern const char* const kGLSwitchesCopiedFromGpuProcessHost[];
 GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
 

@@ -1310,19 +1310,6 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
   if (!use_gl.empty()) {
     command_line->AppendSwitchASCII(switches::kUseGL, use_gl);
   }
-
-#if !defined(OS_MAC)
-  // MacOSX bots use real GPU in tests.
-  if (browser_command_line->HasSwitch(switches::kHeadless)) {
-    if (command_line->HasSwitch(switches::kUseGL)) {
-      use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-      // Don't append kOverrideUseSoftwareGLForHeadless when we need to enable
-      // GPU hardware for headless chromium.
-      if (use_gl != gl::kGLImplementationEGLName)
-        command_line->AppendSwitch(switches::kOverrideUseSoftwareGLForHeadless);
-    }
-  }
-#endif  // !OS_MAC
 }
 
 void GpuDataManagerImplPrivate::UpdateGpuPreferences(
