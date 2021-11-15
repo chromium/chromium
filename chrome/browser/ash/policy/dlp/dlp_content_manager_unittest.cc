@@ -8,11 +8,15 @@
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/ash/policy/dlp/mock_dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -59,6 +63,8 @@ const DlpContentRestrictionSet kPrivacyScreenReported(
 const DlpContentRestrictionSet kPrintingRestricted(
     DlpContentRestriction::kPrint,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintingWarned(DlpContentRestriction::kPrint,
+                                               DlpRulesManager::Level::kWarn);
 
 class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
  public:
@@ -79,6 +85,12 @@ class DlpContentManagerTest : public testing::Test {
     mock_rules_manager_ = dlp_rules_manager.get();
     return dlp_rules_manager;
   }
+
+  void SetDlpWarnNotifier(std::unique_ptr<DlpWarnNotifier> notifier) {
+    helper_.SetWarnNotifierForTesting(std::move(notifier));
+  }
+
+  void ResetDlpWarnNotifier() { helper_.ResetWarnNotifierForTesting(); }
 
  protected:
   DlpContentManagerTest()
@@ -424,7 +436,6 @@ TEST_F(DlpContentManagerTest,
   helper_.DestroyWebContents(web_contents.get());
 }
 
-// TODO(crbug.com/1265935): Add a test for warning
 TEST_F(DlpContentManagerTest, PrintingRestricted) {
   // Needs to be set because CheckPrintingRestriction() will show the blocked
   // notification.
@@ -498,6 +509,120 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
+}
+
+TEST_F(DlpContentManagerTest, PrintingWarnedContinued) {
+  // Set the notifier to "Proceed" on the warning.
+  std::unique_ptr<MockDlpWarnNotifier> wrapper =
+      std::make_unique<MockDlpWarnNotifier>(true /*should_proceed*/);
+  MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
+  SetDlpWarnNotifier(std::move(wrapper));
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
+
+  absl::optional<bool> is_printing_allowed;
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
+
+  SetupDlpRulesManager();
+
+  is_printing_allowed.reset();
+  helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kPrintingWarned);
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
+
+  is_printing_allowed.reset();
+  helper_.DestroyWebContents(web_contents.get());
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
+
+  ResetDlpWarnNotifier();
+}
+
+TEST_F(DlpContentManagerTest, PrintingWarnedCancelled) {
+  // Set the notifier to "Cancel" on the warning.
+  std::unique_ptr<MockDlpWarnNotifier> wrapper =
+      std::make_unique<MockDlpWarnNotifier>(false /*should_proceed*/);
+  MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
+  SetDlpWarnNotifier(std::move(wrapper));
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
+
+  absl::optional<bool> is_printing_allowed;
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
+
+  SetupDlpRulesManager();
+
+  is_printing_allowed.reset();
+  helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kPrintingWarned);
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_FALSE(is_printing_allowed.value());
+
+  is_printing_allowed.reset();
+  helper_.DestroyWebContents(web_contents.get());
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kEmptyRestrictionSet);
+  GetManager()->CheckPrintingRestriction(
+      web_contents.get(),
+      base::BindOnce(
+          [](absl::optional<bool>* out_result, bool should_proceed) {
+            *out_result = absl::make_optional(should_proceed);
+          },
+          &is_printing_allowed));
+  ASSERT_TRUE(is_printing_allowed.has_value());
+  EXPECT_TRUE(is_printing_allowed.value());
+
+  ResetDlpWarnNotifier();
 }
 
 }  // namespace policy

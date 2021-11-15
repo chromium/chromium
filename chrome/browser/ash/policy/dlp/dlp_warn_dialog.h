@@ -14,7 +14,11 @@
 
 namespace policy {
 
-using OnDlpRestrictionChecked = base::OnceCallback<void(bool should_proceed)>;
+// The callback function that is invoked when the user addresses the
+// DlpWarnDialog. When `should_proceed` is set to true, the action will continue
+// as if there was no restricted content. Otherwise, the operation is aborted.
+using OnDlpRestrictionCheckedCallback =
+    base::OnceCallback<void(bool should_proceed)>;
 
 // DlpWarnDialog is a system modal dialog shown when Data Leak Protection on
 // screen restriction (Screen Capture, Printing, Screen Share) level is set to
@@ -51,43 +55,25 @@ class DlpWarnDialog : public views::DialogDelegateView {
     absl::optional<std::u16string> application_title;
   };
 
-  // Shows a warning dialog that informs the user that printing is not
-  // recommended. Calls |callback| and passes user's choice of whether to
-  // proceed or not.
-  static void ShowDlpPrintWarningDialog(OnDlpRestrictionChecked callback);
-
-  // Shows a warning dialog that informs the user that screen capture is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
-  // passes user's choice of whether to proceed or not.
-  static void ShowDlpScreenCaptureWarningDialog(
-      OnDlpRestrictionChecked callback,
-      const DlpConfidentialContents& confidential_contents);
-
-  // Shows a warning dialog that informs the user that video capture is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
-  // passes user's choice of whether to proceed or not.
-  static void ShowDlpVideoCaptureWarningDialog(
-      OnDlpRestrictionChecked callback,
-      const DlpConfidentialContents& confidential_contents);
-
-  // Shows a warning dialog that informs the user that screen sharing is not
-  // recommended due to |confidential_contents| visible. Calls |callback| and
-  // passes user's choice of whether to proceed or not.
-  static void ShowDlpScreenShareWarningDialog(
-      OnDlpRestrictionChecked callback,
-      const DlpConfidentialContents& confidential_contents,
-      const std::u16string& application_title);
-
-  DlpWarnDialog& operator=(const DlpWarnDialog&) = delete;
+  DlpWarnDialog() = delete;
+  DlpWarnDialog(const DlpWarnDialog& other) = delete;
+  DlpWarnDialog& operator=(const DlpWarnDialog& other) = delete;
   ~DlpWarnDialog() override = default;
 
  private:
+  // DlpWarnNotifier is used to create and show DlpWarnDialogs and should be the
+  // only way to do that. Therefore it needs access to some private members of
+  // the DlpWarnDialog class, such as the options and restriction types, as well
+  // as the constructor.
+  friend class DlpWarnNotifier;
+
   // Helper method to create and show a warning dialog for a given
   // |restriction|.
-  static void ShowDlpWarningDialog(OnDlpRestrictionChecked callback,
+  static void ShowDlpWarningDialog(OnDlpRestrictionCheckedCallback callback,
                                    DlpWarnDialogOptions options);
 
-  DlpWarnDialog(OnDlpRestrictionChecked callback, DlpWarnDialogOptions options);
+  DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
+                DlpWarnDialogOptions options);
 };
 
 }  // namespace policy

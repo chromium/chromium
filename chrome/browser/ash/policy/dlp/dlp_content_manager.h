@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
@@ -38,10 +37,9 @@ class WebContents;
 
 namespace policy {
 
-using OnDlpRestrictionCheckedCallback =
-    base::OnceCallback<void(bool should_proceed)>;
-
 class DlpReportingManager;
+
+class DlpWarnNotifier;
 
 // System-wide class that tracks the set of currently known confidential
 // WebContents and whether any of them are currently visible.
@@ -161,6 +159,10 @@ class DlpContentManager : public DlpContentObserver,
 
  protected:
   void SetReportingManagerForTesting(DlpReportingManager* manager);
+
+  void SetWarnNotifierForTesting(
+      std::unique_ptr<DlpWarnNotifier> warn_notifier);
+  void ResetWarnNotifierForTesting();
 
  private:
   friend class DlpContentManagerTestHelper;
@@ -370,6 +372,8 @@ class DlpContentManager : public DlpContentObserver,
   bool user_allowed_screen_capture_ = false;
 
   DlpReportingManager* reporting_manager_;
+
+  std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 };
 
 // Helper class to call SetDlpContentManagerForTesting and

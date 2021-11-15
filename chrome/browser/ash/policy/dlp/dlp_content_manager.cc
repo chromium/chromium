@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -178,7 +179,7 @@ void DlpContentManager::CheckPrintingRestriction(
     return;
   }
   if (IsWarn(restriction_info)) {
-    DlpWarnDialog::ShowDlpPrintWarningDialog(std::move(callback));
+    warn_notifier_->ShowDlpPrintWarningDialog(std::move(callback));
     return;
   }
   // No restriction
@@ -221,7 +222,7 @@ void DlpContentManager::CheckScreenShareRestriction(
     } else {
       // base::Unretained(this) is safe here because DlpContentManager is
       // initialized as a singleton that's always available in the system.
-      DlpWarnDialog::ShowDlpScreenShareWarningDialog(
+      warn_notifier_->ShowDlpScreenShareWarningDialog(
           base::BindOnce(&DlpContentManager::OnScreenShareInitReply,
                          base::Unretained(this),
                          std::ref(info.confidential_contents),
@@ -250,7 +251,7 @@ void DlpContentManager::CheckStoppedVideoCapture(
   if (!user_allowed_screen_capture_ &&
       running_video_capture_info_.has_value() &&
       !running_video_capture_info_->confidential_contents.IsEmpty()) {
-    DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
+    warn_notifier_->ShowDlpVideoCaptureWarningDialog(
         std::move(callback),
         running_video_capture_info_->confidential_contents);
   } else {
@@ -459,6 +460,7 @@ void DlpContentManager::Init() {
   if (rules_manager)
     reporting_manager_ =
         DlpRulesManagerFactory::GetForPrimaryProfile()->GetReportingManager();
+  warn_notifier_ = std::make_unique<DlpWarnNotifier>();
 }
 
 DlpContentManager::~DlpContentManager() = default;
@@ -779,7 +781,7 @@ void DlpContentManager::CheckRunningScreenShares() {
         }
         // base::Unretained(this) is safe here because DlpContentManager is
         // initialized as a singleton that's always available in the system.
-        DlpWarnDialog::ShowDlpScreenShareWarningDialog(
+        warn_notifier_->ShowDlpScreenShareWarningDialog(
             base::BindOnce(&DlpContentManager::OnScreenShareReply,
                            base::Unretained(this),
                            std::ref(info.confidential_contents), screen_share),
@@ -799,6 +801,16 @@ void DlpContentManager::CheckRunningScreenShares() {
 void DlpContentManager::SetReportingManagerForTesting(
     DlpReportingManager* reporting_manager) {
   reporting_manager_ = reporting_manager;
+}
+
+void DlpContentManager::SetWarnNotifierForTesting(
+    std::unique_ptr<DlpWarnNotifier> warn_notifier) {
+  DCHECK(warn_notifier);
+  warn_notifier_ = std::move(warn_notifier);
+}
+
+void DlpContentManager::ResetWarnNotifierForTesting() {
+  warn_notifier_ = std::make_unique<DlpWarnNotifier>();
 }
 
 // static
@@ -833,7 +845,7 @@ void DlpContentManager::CheckScreenCaptureRestriction(
     } else {
       // base::Unretained(this) is safe here because DlpContentManager is
       // initialized as a singleton that's always available in the system.
-      DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
+      warn_notifier_->ShowDlpScreenCaptureWarningDialog(
           base::BindOnce(&DlpContentManager::OnScreenCaptureReply,
                          base::Unretained(this), std::move(callback)),
           info.confidential_contents);

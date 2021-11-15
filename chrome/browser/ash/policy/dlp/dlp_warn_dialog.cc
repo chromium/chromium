@@ -20,6 +20,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace policy {
 
@@ -316,52 +317,7 @@ DlpWarnDialog::DlpWarnDialogOptions::operator=(
 
 DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
 
-// static
-void DlpWarnDialog::ShowDlpPrintWarningDialog(
-    OnDlpRestrictionChecked callback) {
-  ShowDlpWarningDialog(std::move(callback),
-                       DlpWarnDialogOptions(Restriction::kPrinting));
-}
-
-// static
-void DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
-    OnDlpRestrictionChecked callback,
-    const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(
-      std::move(callback),
-      DlpWarnDialogOptions(Restriction::kScreenCapture, confidential_contents));
-}
-
-// static
-void DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
-    OnDlpRestrictionChecked callback,
-    const DlpConfidentialContents& confidential_contents) {
-  ShowDlpWarningDialog(
-      std::move(callback),
-      DlpWarnDialogOptions(Restriction::kVideoCapture, confidential_contents));
-}
-
-// static
-void DlpWarnDialog::ShowDlpScreenShareWarningDialog(
-    OnDlpRestrictionChecked callback,
-    const DlpConfidentialContents& confidential_contents,
-    const std::u16string& application_title) {
-  ShowDlpWarningDialog(
-      std::move(callback),
-      DlpWarnDialogOptions(Restriction::kScreenShare, confidential_contents,
-                           application_title));
-}
-
-// static
-void DlpWarnDialog::ShowDlpWarningDialog(OnDlpRestrictionChecked callback,
-                                         DlpWarnDialogOptions options) {
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      new DlpWarnDialog(std::move(callback), options),
-      /*context=*/nullptr, /*parent=*/nullptr);
-  widget->Show();
-}
-
-DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionChecked callback,
+DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
                              DlpWarnDialogOptions options) {
   auto split = base::SplitOnceCallback(std::move(callback));
   SetAcceptCallback(base::BindOnce(std::move(split.first), true));

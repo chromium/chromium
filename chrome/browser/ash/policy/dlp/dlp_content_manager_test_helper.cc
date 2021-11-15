@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+
+#include <memory>
+
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 
 namespace policy {
@@ -37,6 +42,17 @@ void DlpContentManagerTestHelper::DestroyWebContents(
     content::WebContents* web_contents) {
   DCHECK(manager_);
   manager_->OnWebContentsDestroyed(web_contents);
+}
+
+void DlpContentManagerTestHelper::SetWarnNotifierForTesting(
+    std::unique_ptr<DlpWarnNotifier> notifier) {
+  DCHECK(manager_);
+  manager_->SetWarnNotifierForTesting(std::move(notifier));
+}
+
+void DlpContentManagerTestHelper::ResetWarnNotifierForTesting() {
+  DCHECK(manager_);
+  manager_->ResetWarnNotifierForTesting();
 }
 
 base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
