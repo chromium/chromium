@@ -255,8 +255,6 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
-    base::TimeTicks removed_image_paint_time,
-    uint64_t removed_image_paint_size,
     bool is_animated) {
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
@@ -270,22 +268,8 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     largest_contentful_paint_type_ &=
         ~LargestContentfulPaintType::kLCPTypeAnimatedImage;
   }
-  // Compute LCP by using the largest size (smallest paint time in case of tie).
-  if (removed_image_paint_size < image_paint_size) {
-    largest_image_paint_time_ = image_paint_time;
-    largest_image_paint_size_ = image_paint_size;
-  } else if (removed_image_paint_size > image_paint_size) {
-    largest_image_paint_time_ = removed_image_paint_time;
-    largest_image_paint_size_ = removed_image_paint_size;
-  } else {
-    largest_image_paint_size_ = image_paint_size;
-    if (image_paint_time.is_null()) {
-      largest_image_paint_time_ = removed_image_paint_time;
-    } else {
-      largest_image_paint_time_ =
-          std::min(image_paint_time, removed_image_paint_time);
-    }
-  }
+  largest_image_paint_time_ = image_paint_time;
+  largest_image_paint_size_ = image_paint_size;
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;
