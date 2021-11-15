@@ -6705,12 +6705,12 @@ others/histograms.xml -->
   <int value="0" label="Unknown result"/>
   <int value="1"
       label="User closed the OTP input dialog before pressing the OK button"/>
-  <int value="3"
+  <int value="2"
       label="User closed the OTP input dialog after pressing the OK button"/>
-  <int value="4"
+  <int value="3"
       label="OTP input dialog closed automatically after the OTP verification
              succeeded"/>
-  <int value="5"
+  <int value="4"
       label="OTP input dialog closed automatically after a server failure
              response"/>
 </enum>
