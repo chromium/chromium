@@ -1010,7 +1010,8 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_ = std::make_unique<AV1Decoder>(std::move(accelerator), profile_);
+    decoder_ = std::make_unique<AV1Decoder>(std::move(accelerator), profile_,
+                                            color_space_);
   } else {
     return VaapiStatus(VaapiStatus::Codes::kUnsupportedProfile)
         .WithData("profile", profile_);
