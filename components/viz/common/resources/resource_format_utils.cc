@@ -35,6 +35,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       return kBGRA_8888_SkColorType;
     case ALPHA_8:
       return kAlpha_8_SkColorType;
+    case BGR_565:
     case RGB_565:
       return kRGB_565_SkColorType;
     case LUMINANCE_8:
@@ -61,7 +62,6 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       return kR16G16_unorm_SkColorType;
     // Use kN32_SkColorType if there is no corresponding SkColorType.
     case LUMINANCE_F16:
-    case BGR_565:
       return kN32_SkColorType;
     case RG_88:
       return kR8G8_unorm_SkColorType;
@@ -189,7 +189,7 @@ unsigned int GLDataType(ResourceFormat format) {
       GL_UNSIGNED_BYTE,                    // ALPHA_8
       GL_UNSIGNED_BYTE,                    // LUMINANCE_8
       GL_UNSIGNED_SHORT_5_6_5,             // RGB_565,
-      GL_ZERO,                             // BGR_565
+      GL_UNSIGNED_SHORT_5_6_5,             // BGR_565
       GL_UNSIGNED_BYTE,                    // ETC1
       GL_UNSIGNED_BYTE,                    // RED_8
       GL_UNSIGNED_BYTE,                    // RG_88
@@ -220,7 +220,7 @@ unsigned int GLDataFormat(ResourceFormat format) {
       GL_ALPHA,      // ALPHA_8
       GL_LUMINANCE,  // LUMINANCE_8
       GL_RGB,        // RGB_565
-      GL_ZERO,       // BGR_565
+      GL_RGB,        // BGR_565
       GL_RGB,        // ETC1
       GL_RED_EXT,    // RED_8
       GL_RG_EXT,     // RG_88
@@ -277,7 +277,7 @@ unsigned int GLCopyTextureInternalFormat(ResourceFormat format) {
       GL_ALPHA,      // ALPHA_8
       GL_LUMINANCE,  // LUMINANCE_8
       GL_RGB,        // RGB_565
-      GL_ZERO,       // BGR_565
+      GL_RGB,        // BGR_565
       GL_RGB,        // ETC1
       GL_LUMINANCE,  // RED_8
       GL_RGBA,       // RG_88
@@ -363,6 +363,7 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
       return GL_ALPHA8_EXT;
     case LUMINANCE_8:
       return GL_LUMINANCE8_EXT;
+    case BGR_565:
     case RGB_565:
       return GL_RGB565;
     case RED_8:
@@ -388,7 +389,7 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
       return GL_RGB8_OES;
     case BGRX_8888:
       return GL_RGB8_OES;
-    case BGR_565:
+    default:
       break;
   }
   NOTREACHED();
