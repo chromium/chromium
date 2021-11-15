@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "crypto/unexportable_key.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -51,6 +53,14 @@ std::unique_ptr<SigningKeyPair> SigningKeyPair::Create(
     return std::make_unique<SigningKeyPair>(std::move(key_pair), trust_level);
   }
   return nullptr;
+}
+
+// static
+std::unique_ptr<SigningKeyPair> SigningKeyPair::LoadPersistedKey() {
+  auto* factory = KeyPersistenceDelegateFactory::GetInstance();
+  DCHECK(factory);
+  auto persistence_delegate = factory->CreateKeyPersistenceDelegate();
+  return Create(persistence_delegate.get());
 }
 
 SigningKeyPair::SigningKeyPair(

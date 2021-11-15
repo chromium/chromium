@@ -22,22 +22,43 @@ source_set("browser") {
 
   deps = [
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/core/common",
+    "//crypto",
     "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
     "//third_party/abseil-cpp:absl",
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_key_rotation_launcher.cc",
+    "mock_key_rotation_launcher.h",
+  ]
+
+  deps = [
+    ":browser",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "key_rotation_launcher_unittest.cc" ]
+  sources = [
+    "device_trust_key_manager_impl_unittest.cc",
+    "key_rotation_launcher_unittest.cc",
+  ]
 
   public_deps = [
     ":browser",
+    ":test_support",
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
     "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/policy/core/common",

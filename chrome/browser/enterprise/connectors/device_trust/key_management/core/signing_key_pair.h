@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace crypto {
@@ -17,6 +16,8 @@ class UnexportableSigningKey;
 }  // namespace crypto
 
 namespace enterprise_connectors {
+
+class KeyPersistenceDelegate;
 
 // Class in charge of using a stored signing key and providing cryptographic
 // functionality.
@@ -30,6 +31,13 @@ class SigningKeyPair {
   // if no key was found.
   static std::unique_ptr<SigningKeyPair> Create(
       KeyPersistenceDelegate* persistence_delegate);
+
+  // Loads the signing key pair from disk and initializes it. Returns nullptr if
+  // no key was found. Uses the KeyPersistenceDelegateFactory's default delegate
+  // to load the key from persistence.
+  // This function does IO and heavy cryptographic calculations, do not call
+  // on the main thread.
+  static std::unique_ptr<SigningKeyPair> LoadPersistedKey();
 
   SigningKeyPair(std::unique_ptr<crypto::UnexportableSigningKey> key_pair,
                  KeyTrustLevel trust_level);
