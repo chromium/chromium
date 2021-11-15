@@ -13,7 +13,6 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -26,9 +25,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/video_codecs.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "gpu/config/gpu_util.h"
-#endif
 
 namespace content {
 namespace protocol {
