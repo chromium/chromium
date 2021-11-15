@@ -116,6 +116,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium/compilator",
+    bootstrappable = True,
 )
 
 build_recipe(
