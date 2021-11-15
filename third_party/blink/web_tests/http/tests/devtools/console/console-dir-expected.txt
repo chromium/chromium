@@ -56,7 +56,7 @@ console-dir.js:42 Uint8Array(400000000)
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
-    PASS: "Non-element properties should show up as well."
+    FAIL: "FAIL: Object.getOwnPropertyNames() should not have been run"
     buffer: ArrayBuffer(400000000)  
     byteLength: 400000000
     byteOffset: 0
