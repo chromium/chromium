@@ -769,10 +769,10 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   char* next_slot_end = next_slot + size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
-    auto* entry = new (next_slot) PartitionFreelistEntry();
     if (LIKELY(size <= kMaxMemoryTaggingSize)) {
-      entry = memory::TagMemoryRangeRandomly(entry, size);
+      next_slot = memory::TagMemoryRangeRandomly(next_slot, size);
     }
+    auto* entry = new (next_slot) PartitionFreelistEntry();
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
