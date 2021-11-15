@@ -13,6 +13,7 @@ from .extended_attribute import ExtendedAttributes
 from .reference import RefById
 from .reference import RefByIdFactory
 from .typedef import Typedef
+from .union import Union
 from .user_defined_type import UserDefinedType
 
 # The implementation class hierarchy of IdlType
@@ -1291,8 +1292,6 @@ class UnionType(IdlType):
         return self._union_definition_object
 
     def set_union_definition_object(self, union_definition_object):
-        # In Python2, we need to avoid circular imports.
-        from .union import Union
         assert isinstance(union_definition_object, Union)
         assert self._union_definition_object is None
         self._union_definition_object = union_definition_object

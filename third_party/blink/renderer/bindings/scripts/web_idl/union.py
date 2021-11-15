@@ -8,8 +8,6 @@ from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
 from .composition_parts import WithIdentifier
-from .idl_type import IdlType
-from .typedef import Typedef
 
 
 class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
