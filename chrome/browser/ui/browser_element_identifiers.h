@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// A subset of the browser element identifiers are being used in Desktop UI
+// benchmark. The name of the identifiers and the string names used by the
+// benchmark are expected to be equal.
+//
+// Please keep the names in this file in sync with
+// `tools/perf/page_sets/desktop_ui/browser_element_identifiers.py`
+
 #ifndef CHROME_BROWSER_UI_BROWSER_ELEMENT_IDENTIFIERS_H_
 #define CHROME_BROWSER_UI_BROWSER_ELEMENT_IDENTIFIERS_H_
 
@@ -14,6 +21,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkStarViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInstallPwaElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kLocationIconElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMediaButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kOmniboxElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kReadLaterButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSideSearchButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabCounterButtonElementId);
