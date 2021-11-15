@@ -62,21 +62,8 @@ enum AvatarShape {
   SHAPE_SQUARE,
 };
 
-// Options for painting avatars. This is used to dim the avatar but to ensure
-// that a background pattern (such as a themed toolbar image) does not bleed
-// through.
-struct AvatarPaintOptions {
-  // Fill color to be painted below the avatar.
-  SkColor background_color;
-  // Alpha value for the avatar to be painted over the background.
-  SkAlpha avatar_alpha;
-};
-
-// Returns the default guest avatar. If `stroke_color` is nullopt, the default
-// color for guest avatar is used.
-ui::ImageModel GetGuestAvatar(
-    int size = 256,
-    absl::optional<SkColor> stroke_color = absl::nullopt);
+// Returns the default guest avatar.
+ui::ImageModel GetGuestAvatar(int size = 256);
 
 // Returns a version of |image| of a specific size. Note that no checks are
 // done on the width/height so make sure they're reasonable values; in the
@@ -85,9 +72,7 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
                               bool is_rectangle,
                               int width,
                               int height,
-                              AvatarShape shape,
-                              AvatarPaintOptions paint_options = {
-                                  SK_ColorTRANSPARENT, SK_AlphaOPAQUE});
+                              AvatarShape shape);
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
                               bool is_rectangle,

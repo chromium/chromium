@@ -129,9 +129,7 @@ class AvatarImageSource : public gfx::CanvasImageSource {
                     int width,
                     AvatarPosition position,
                     AvatarBorder border,
-                    profiles::AvatarShape shape,
-                    profiles::AvatarPaintOptions paint_options = {
-                        SK_ColorTRANSPARENT, SK_AlphaOPAQUE});
+                    profiles::AvatarShape shape);
 
   AvatarImageSource(gfx::ImageSkia avatar,
                     const gfx::Size& canvas_size,
@@ -155,7 +153,6 @@ class AvatarImageSource : public gfx::CanvasImageSource {
   const AvatarPosition position_;
   const AvatarBorder border_;
   const profiles::AvatarShape shape_;
-  const profiles::AvatarPaintOptions paint_options_;
 };
 
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
@@ -163,18 +160,17 @@ AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                                      int width,
                                      AvatarPosition position,
                                      AvatarBorder border,
-                                     profiles::AvatarShape shape,
-                                     profiles::AvatarPaintOptions paint_options)
+                                     profiles::AvatarShape shape)
     : gfx::CanvasImageSource(canvas_size),
       canvas_size_(canvas_size),
       width_(width),
       height_(GetScaledAvatarHeightForWidth(width, avatar)),
       position_(position),
       border_(border),
-      shape_(shape),
-      paint_options_(paint_options) {
+      shape_(shape) {
   avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
-      avatar, skia::ImageOperations::RESIZE_BEST, gfx::Size(width_, height_));
+      avatar, skia::ImageOperations::RESIZE_BEST,
+      gfx::Size(width_, height_));
 }
 
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
@@ -225,14 +221,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
   }
 #endif
 
-  if (paint_options_.avatar_alpha < SK_AlphaOPAQUE) {
-    // Draw background color to make sure the whole avatar image is fully opaque
-    // (this e.g. avoids theme background images bleeding through the avatar).
-    canvas->DrawColor(paint_options_.background_color);
-    canvas->DrawImageInt(avatar_, x, y, paint_options_.avatar_alpha);
-  } else {
-    canvas->DrawImageInt(avatar_, x, y);
-  }
+  canvas->DrawImageInt(avatar_, x, y);
 
   // The border should be square.
   int border_size = std::max(width_, height_);
@@ -376,14 +365,7 @@ constexpr size_t kPlaceholderAvatarIndex = 26;
 constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
-ui::ImageModel GetGuestAvatar(int size, absl::optional<SkColor> stroke_color) {
-  if (stroke_color) {
-    return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon, *stroke_color,
-                                          size);
-  }
-
-  // If no color is provided, call a different function overload with a ColorId
-  // of the default stroke color for the guest avatar icon.
+ui::ImageModel GetGuestAvatar(int size) {
   return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
                                         ui::kColorAvatarIconGuest, size);
 }
@@ -392,18 +374,17 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
                               bool is_rectangle,
                               int width,
                               int height,
-                              AvatarShape shape,
-                              AvatarPaintOptions paint_options) {
+                              AvatarShape shape) {
   if (!is_rectangle && image.Height() <= height)
     return image;
 
   gfx::Size size(width, height);
 
   // Source for a centered, sized icon. GAIA images get a border.
-  auto source = std::make_unique<AvatarImageSource>(
-      *image.ToImageSkia(), size, std::min(width, height),
-      AvatarImageSource::POSITION_CENTER, AvatarImageSource::BORDER_NONE, shape,
-      paint_options);
+  std::unique_ptr<gfx::ImageSkiaSource> source(
+      new AvatarImageSource(*image.ToImageSkia(), size, std::min(width, height),
+                            AvatarImageSource::POSITION_CENTER,
+                            AvatarImageSource::BORDER_NONE, shape));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), size));
 }
@@ -435,11 +416,11 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
 
   // Source for a sized icon drawn at the bottom center of the canvas,
   // with an etched border (for GAIA images).
-  auto source = std::make_unique<AvatarImageSource>(
-      *image.ToImageSkia(), dst_size, size,
-      AvatarImageSource::POSITION_BOTTOM_CENTER,
-      is_gaia_image ? AvatarImageSource::BORDER_ETCHED
-                    : AvatarImageSource::BORDER_NONE);
+  std::unique_ptr<gfx::ImageSkiaSource> source(
+      new AvatarImageSource(*image.ToImageSkia(), dst_size, size,
+                            AvatarImageSource::POSITION_BOTTOM_CENTER,
+                            is_gaia_image ? AvatarImageSource::BORDER_ETCHED
+                                          : AvatarImageSource::BORDER_NONE));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), dst_size));
 }
