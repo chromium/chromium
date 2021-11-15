@@ -6,14 +6,30 @@
  * @fileoverview Offline message screen implementation.
  */
 
-(function() {
-var USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
-var USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
-var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
+/* #js_imports_placeholder */
+
+const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
+const USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
+const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
+
+/**
+ * Possible UI states of the error screen.
+ * @enum {string}
+ */
+const ERROR_SCREEN_UI_STATE = {
+  UNKNOWN: 'ui-state-unknown',
+  UPDATE: 'ui-state-update',
+  SIGNIN: 'ui-state-signin',
+  KIOSK_MODE: 'ui-state-kiosk-mode',
+  LOCAL_STATE_ERROR: 'ui-state-local-state-error',
+  AUTO_ENROLLMENT_ERROR: 'ui-state-auto-enrollment-error',
+  ROLLBACK_ERROR: 'ui-state-rollback-error',
+  SUPERVISED_USER_CREATION_FLOW: 'ui-state-supervised',
+};
 
 // Array of the possible UI states of the screen. Must be in the
 // same order as ErrorScreen::UIState enum values.
-/** @const */ var UI_STATES = [
+const ErrorMessageUIState = [
   ERROR_SCREEN_UI_STATE.UNKNOWN,
   ERROR_SCREEN_UI_STATE.UPDATE,
   ERROR_SCREEN_UI_STATE.SIGNIN,
@@ -25,10 +41,10 @@ var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
 ];
 
 // The help topic linked from the auto enrollment error message.
-/** @const */ var HELP_TOPIC_AUTO_ENROLLMENT = 4632009;
+const HELP_TOPIC_AUTO_ENROLLMENT = 4632009;
 
 // Possible error states of the screen.
-/** @const */ var ERROR_STATE = {
+const ERROR_STATE = {
   UNKNOWN: 'unknown',
   PORTAL: 'portal',
   OFFLINE: 'offline',
@@ -40,7 +56,7 @@ var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
 
 // Possible error states of the screen. Must be in the same order as
 // ErrorScreen::ErrorState enum values.
-/** @const */ var ERROR_STATES = [
+const ERROR_STATES = [
   ERROR_STATE.UNKNOWN,
   ERROR_STATE.PORTAL,
   ERROR_STATE.OFFLINE,
@@ -50,100 +66,120 @@ var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
   ERROR_STATE.KIOSK_ONLINE,
 ];
 
-Polymer({
-  is: 'error-message-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const ErrorMessageScreenBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-  ],
+/**
+ * @polymer
+ */
+class ErrorMessageScreen extends ErrorMessageScreenBase {
+  static get is() {
+    return 'error-message-element';
+  }
 
-  EXTERNAL_API: [
-    'allowGuestSignin',
-    'allowOfflineLogin',
-    'setUIState',
-    'setErrorState',
-    'showConnectingIndicator',
-    'setErrorStateNetwork',
-    'setIsPersistentError',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
-    /**
-     * Error screen initial UI state.
-     * @private
-     */
-    uiState_: {
-      type: String,
-      value: ERROR_SCREEN_UI_STATE.UNKNOWN,
-      observer: 'updateLocalizedContent',
-    },
+  /** @override */
+  get EXTERNAL_API() {
+    return [
+      'allowGuestSignin',
+      'allowOfflineLogin',
+      'setUIState',
+      'setErrorState',
+      'showConnectingIndicator',
+      'setErrorStateNetwork',
+      'setIsPersistentError',
+    ];
+  }
 
-    /**
-     * Error screen initial error state.
-     * @private
-     */
-    errorState_: {
-      type: String,
-      value: ERROR_STATE.UNKNOWN,
-      observer: 'updateLocalizedContent',
-    },
+  static get properties() {
+    return {
+      /**
+       * Error screen initial UI state.
+       * @private
+       */
+      uiState_: {
+        type: String,
+        value: ERROR_SCREEN_UI_STATE.UNKNOWN,
+        observer: 'updateLocalizedContent',
+      },
 
-    /**
-     * True if it is forbidden to close the error message.
-     * @private
-     */
-    is_persistent_error_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Error screen initial error state.
+       * @private
+       */
+      errorState_: {
+        type: String,
+        value: ERROR_STATE.UNKNOWN,
+        observer: 'updateLocalizedContent',
+      },
 
-    /**
-     * Controls if periodic background Wi-Fi scans are enabled to update the
-     * list of available networks.
-     * @private
-     */
-    enableWifiScans_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * True if it is forbidden to close the error message.
+       * @private
+       */
+      is_persistent_error_: {
+        type: Boolean,
+        value: false,
+      },
 
-    currentNetworkName_: {
-      type: String,
-      value: '',
-      observer: 'updateLocalizedContent',
-    },
+      /**
+       * Controls if periodic background Wi-Fi scans are enabled to update the
+       * list of available networks.
+       * @private
+       */
+      enableWifiScans_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * True if guest signin is allowed from the error screen.
-     * @private
-     */
-    guestSessionAllowed_: {
-      type: Boolean,
-      value: false,
-      observer: 'updateLocalizedContent',
-    },
+      currentNetworkName_: {
+        type: String,
+        value: '',
+        observer: 'updateLocalizedContent',
+      },
 
-    /**
-     * True if offline login is allowed from the error screen.
-     * @private
-     */
-    offlineLoginAllowed_: {
-      type: Boolean,
-      value: false,
-      observer: 'updateLocalizedContent',
-    },
+      /**
+       * True if guest signin is allowed from the error screen.
+       * @private
+       */
+      guestSessionAllowed_: {
+        type: Boolean,
+        value: false,
+        observer: 'updateLocalizedContent',
+      },
 
-    /**
-     * True if connecting indicator is shown.
-     * @private
-     */
-    connectingIndicatorShown_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * True if offline login is allowed from the error screen.
+       * @private
+       */
+      offlineLoginAllowed_: {
+        type: Boolean,
+        value: false,
+        observer: 'updateLocalizedContent',
+      },
+
+      /**
+       * True if connecting indicator is shown.
+       * @private
+       */
+      connectingIndicatorShown_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+  }
 
   /**
    * @suppress {checkTypes} isOneOf_ allows arbitrary number of arguments.
@@ -162,7 +198,7 @@ Polymer({
     } else {
       return '';
     }
-  },
+  }
 
   /**
    * Whether the screen can be closed.
@@ -173,7 +209,7 @@ Polymer({
    */
   get closable() {
     return Oobe.getInstance().hasUserPods && !this.is_persistent_error_;
-  },
+  }
 
   /**
    * Returns default event target element.
@@ -181,15 +217,16 @@ Polymer({
    */
   get defaultControl() {
     return this.$.dialog;
-  },
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('ErrorMessageScreen', {
       resetAllowed: true,
     });
 
     this.updateLocalizedContent();
-  },
+  }
 
 
   /**
@@ -199,35 +236,35 @@ Polymer({
    */
   isOneOf_(state) {
     return Array.from(arguments).slice(1).includes(state);
-  },
+  }
 
   rebootButtonClicked() {
     this.userActed('reboot');
-  },
+  }
 
   diagnoseButtonClicked() {
     this.userActed('diagnose');
-  },
+  }
 
   configureCertsButtonClicked() {
     this.userActed('configure-certs');
-  },
+  }
 
   continueButtonClicked() {
     chrome.send('continueAppLaunch');
-  },
+  }
 
   okButtonClicked() {
     this.userActed('cancel-reset');
-  },
+  }
 
   powerwashButtonClicked() {
     this.userActed(USER_ACTION_LOCAL_STATE_POWERWASH);
-  },
+  }
 
   onNetworkConnected_() {
     this.userActed('network-connected');
-  },
+  }
 
   /**
    * Inserts translated `string_id` into `element_id` with substitutions and
@@ -274,13 +311,12 @@ Polymer({
         linkElement.removeAttribute('hidden');
       }
     }
-  },
+  }
 
   /**
    * Updates localized content of the screen that is not updated via template.
    */
   updateLocalizedContent() {
-    var self = this;
     this.updateElementWithStringAndAnchorTag_(
         'auto-enrollment-offline-message-text',
         'autoEnrollmentOfflineMessageBody', {
@@ -290,41 +326,45 @@ Polymer({
           ]
         },
         'auto-enrollment-learn-more');
-    this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick = function() {
-      chrome.send('launchHelpApp', [HELP_TOPIC_AUTO_ENROLLMENT]);
-    };
+    this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick =
+        () => {
+          chrome.send('launchHelpApp', [HELP_TOPIC_AUTO_ENROLLMENT]);
+        };
 
     this.updateElementWithStringAndAnchorTag_(
         'captive-portal-message-text', 'captivePortalMessage',
         {substitutions: ['<b>' + this.currentNetworkName_ + '</b>']},
         'captive-portal-fix-link');
-    this.shadowRoot.querySelector('#captive-portal-fix-link').onclick = function() {
-      self.userActed(USER_ACTION_SHOW_CAPTIVE_PORTAL);
+    this.shadowRoot.querySelector('#captive-portal-fix-link').onclick = () => {
+      this.userActed(USER_ACTION_SHOW_CAPTIVE_PORTAL);
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'captive-portal-proxy-message-text', 'captivePortalProxyMessage', {},
         'proxy-settings-fix-link');
-    this.shadowRoot.querySelector('#proxy-settings-fix-link').onclick = function() {
+    this.shadowRoot.querySelector('#proxy-settings-fix-link').onclick = () => {
       chrome.send('openInternetDetailDialog');
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'update-proxy-message-text', 'updateProxyMessageText', {},
         'update-proxy-error-fix-proxy');
-    this.shadowRoot.querySelector('#update-proxy-error-fix-proxy').onclick = function() {
-      chrome.send('openInternetDetailDialog');
-    };
+    this.shadowRoot.querySelector('#update-proxy-error-fix-proxy').onclick =
+        () => {
+          chrome.send('openInternetDetailDialog');
+        };
 
     this.updateElementWithStringAndAnchorTag_(
         'signin-proxy-message-text', 'signinProxyMessageText', {},
         'proxy-error-signin-retry-link', 'signin-proxy-error-fix-proxy');
-    this.shadowRoot.querySelector('#proxy-error-signin-retry-link').onclick = function() {
-      self.userActed('reload-gaia');
-    };
-    this.shadowRoot.querySelector('#signin-proxy-error-fix-proxy').onclick = function() {
-      chrome.send('openInternetDetailDialog');
-    };
+    this.shadowRoot.querySelector('#proxy-error-signin-retry-link').onclick =
+        () => {
+          this.userActed('reload-gaia');
+        };
+    this.shadowRoot.querySelector('#signin-proxy-error-fix-proxy').onclick =
+        () => {
+          chrome.send('openInternetDetailDialog');
+        };
 
     this.updateElementWithStringAndAnchorTag_(
         'error-guest-signin', 'guestSignin', {}, 'error-guest-signin-link');
@@ -339,25 +379,24 @@ Polymer({
 
     this.updateElementWithStringAndAnchorTag_(
         'error-offline-login', 'offlineLogin', {}, 'error-offline-login-link');
-    this.shadowRoot.querySelector('#error-offline-login-link').onclick = function() {
+    this.shadowRoot.querySelector('#error-offline-login-link').onclick = () => {
       chrome.send('offlineLogin');
     };
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ERROR;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is shown.
    * @param {Object} data Screen init payload.
-   * @suppress {missingProperties} clearErrors() exists
    */
   onBeforeShow(data) {
     this.enableWifiScans_ = true;
-    this.$['backButton'].disabled = !this.closable;
-  },
+    this.$.backButton.disabled = !this.closable;
+  }
 
   /**
    * Event handler that is invoked just before the screen is hidden.
@@ -367,7 +406,7 @@ Polymer({
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.HIDDEN);
     // Reset property to the default state.
     this.setIsPersistentError(false);
-  },
+  }
 
   /**
    * Event handler for guest session launch.
@@ -379,7 +418,7 @@ Polymer({
     } else {
       chrome.send('launchIncognito');
     }
-  },
+  }
 
   /**
    * Prepares error screen to show guest signin link.
@@ -387,7 +426,7 @@ Polymer({
    */
   allowGuestSignin(allowed) {
     this.guestSessionAllowed_ = allowed;
-  },
+  }
 
   /**
    * Prepares error screen to show offline login link.
@@ -395,7 +434,7 @@ Polymer({
    */
   allowOfflineLogin(allowed) {
     this.offlineLoginAllowed_ = allowed;
-  },
+  }
 
   /**
    * Sets current UI state of the screen.
@@ -403,8 +442,8 @@ Polymer({
    * @private
    */
   setUIState(ui_state) {
-    this.uiState_ = UI_STATES[ui_state];
-  },
+    this.uiState_ = ErrorMessageUIState[ui_state];
+  }
 
   /**
    * Sets current error state of the screen.
@@ -413,7 +452,7 @@ Polymer({
    */
   setErrorState(error_state) {
     this.errorState_ = ERROR_STATES[error_state];
-  },
+  }
 
   /**
    * Sets current error network state of the screen.
@@ -421,7 +460,7 @@ Polymer({
    */
   setErrorStateNetwork(network) {
     this.currentNetworkName_ = network;
-  },
+  }
 
   /**
    * Updates visibility of the label indicating we're reconnecting.
@@ -429,7 +468,7 @@ Polymer({
    */
   showConnectingIndicator(show) {
     this.connectingIndicatorShown_ = show;
-  },
+  }
 
   /**
    * Cancels error screen and drops to user pods.
@@ -437,13 +476,14 @@ Polymer({
   cancel() {
     if (this.closable)
       this.userActed('cancel');
-  },
+  }
 
   /**
    * Makes error message non-closable.
    */
   setIsPersistentError(is_persistent) {
     this.is_persistent_error_ = is_persistent;
-  },
-});
-})();
+  }
+}
+
+customElements.define(ErrorMessageScreen.is, ErrorMessageScreen);

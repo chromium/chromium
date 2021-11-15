@@ -627,10 +627,6 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
-      id: 'tpm-error-message',
-      kind: ScreenKind.ERROR,
-    },
-    {
       // Failure during SAML flow.
       id: 'fatal-error',
       kind: ScreenKind.ERROR,

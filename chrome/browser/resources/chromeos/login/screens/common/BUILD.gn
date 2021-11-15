@@ -19,6 +19,7 @@ group("polymer3_elements") {
     ":consolidated_consent_module",
     ":device_disabled_module",
     ":enable_kiosk_module",
+    ":error_message_module",
     ":family_link_notice_module",
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
@@ -57,6 +58,7 @@ js_type_check("closure_compile_module") {
     ":consolidated_consent.m",
     ":device_disabled.m",
     ":enable_kiosk.m",
+    ":error_message.m",
     ":family_link_notice.m",
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
@@ -373,6 +375,23 @@ js_library("wrong_hwid.m") {
   extra_deps = [ ":wrong_hwid_module" ]
 }
 
+js_library("error_message.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.m.js" ]
+  deps = [
+    "../../:cr_ui.m",
+    "../../components:display_manager_types.m",
+    "../../components:network_select_login.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//ui/webui/resources/js:parse_html_subset.m",
+  ]
+  extra_deps = [ ":error_message_module" ]
+}
+
 polymer_modulizer("app_downloading") {
   js_file = "app_downloading.js"
   html_file = "app_downloading.html"
@@ -521,6 +540,14 @@ polymer_modulizer("tpm_error") {
 polymer_modulizer("wrong_hwid") {
   js_file = "wrong_hwid.js"
   html_file = "wrong_hwid.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("error_message") {
+  js_file = "error_message.js"
+  html_file = "error_message.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

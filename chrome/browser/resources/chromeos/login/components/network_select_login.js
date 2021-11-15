@@ -165,7 +165,7 @@ class NetworkSelectLogin extends Polymer.Element {
    *
    * @private
    */
-  openInternetDetailDialog_(item) {
+  openInternetDetailDialog_() {
     chrome.send('launchInternetDetailDialog');
   }
 
@@ -174,7 +174,7 @@ class NetworkSelectLogin extends Polymer.Element {
    *
    * @private
    */
-  openAddWiFiNetworkDialog_(item) {
+  openAddWiFiNetworkDialog_() {
     chrome.send('launchAddWiFiNetworkDialog');
   }
 
@@ -182,7 +182,7 @@ class NetworkSelectLogin extends Polymer.Element {
    * Offline demo setup button handler.
    * @private
    */
-  onOfflineDemoSetupClicked_(item) {
+  onOfflineDemoSetupClicked_() {
     chrome.send('login.NetworkScreen.userActed', ['offline-demo-setup']);
   }
 

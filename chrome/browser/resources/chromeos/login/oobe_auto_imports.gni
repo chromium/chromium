@@ -52,8 +52,9 @@ oobe_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
-  "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
+  "ui/webui/resources/html/parse_html_subset.html|SanitizeInnerHtmlOpts",
+  "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
   "ui/webui/resources/html/util.html|announceAccessibleMessage",
 ]
 

@@ -173,6 +173,7 @@ js_library("long_touch_detector.m") {
 js_library("network_select_login.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.m.js" ]
   deps = [
+    "../:cr_ui.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_select.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/js:assert.m",

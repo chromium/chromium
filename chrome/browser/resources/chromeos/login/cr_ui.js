@@ -316,7 +316,7 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Starts online demo mode setup for telemetry.
+     * Starts online demo mode setup for telemetry. Is used in autotests.
      */
     static setUpOnlineDemoModeForTesting() {
       DemoModeTestHelper.setUp('online');
@@ -408,4 +408,3 @@ cr.define('cr.ui', function() {
   // Export
   return {Oobe: Oobe};
 });
-
