@@ -6107,7 +6107,6 @@ crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-ifr
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Failure Pass ]
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
-crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
 
 # Flaky test
 crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js [ Pass Skip Timeout ]
