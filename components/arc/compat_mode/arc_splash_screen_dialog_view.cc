@@ -310,6 +310,13 @@ void ArcSplashScreenDialogView::Show(aura::Window* parent,
                      base::Unretained(dialog_view.get())),
       /*dialog_view=*/nullptr);
 
+  // TODO(b/206336651): Investigate the cases when the following check fails.
+  if (!anchor_view->GetWidget() ||
+      !anchor_view->GetWidget()->GetNativeWindow()) {
+    LOG(WARNING) << "Skipped to show the compat mode splash screen because the "
+                    "anchored widget/window has already been destroyed.";
+    return;
+  }
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
