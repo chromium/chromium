@@ -1065,7 +1065,13 @@ void WizardController::OnEduCoexistenceLoginScreenExit(
     EduCoexistenceLoginScreen::Result result) {
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
                EduCoexistenceLoginScreen::GetResultString(result));
-  ShowSyncConsentScreen();
+  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
+  // after being enabled during OOBE.
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    ShowConsolidatedConsentScreen();
+  } else {
+    ShowSyncConsentScreen();
+  }
 }
 
 void WizardController::OnParentalHandoffScreenExit(
@@ -1082,7 +1088,7 @@ void WizardController::OnConsolidatedConsentScreenExit(
   switch (result) {
     case ConsolidatedConsentScreen::Result::ACCEPTED:
     case ConsolidatedConsentScreen::Result::NOT_APPLICABLE:
-      ShowTermsOfServiceScreen();
+      ShowSyncConsentScreen();
       break;
     case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE:
       DCHECK(demo_setup_controller_);
@@ -1529,13 +1535,7 @@ void WizardController::OnLocaleSwitchScreenExit(
     LocaleSwitchScreen::Result result) {
   OnScreenExit(LocaleSwitchView::kScreenId,
                LocaleSwitchScreen::GetResultString(result));
-  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
-  // after being enabled during OOBE.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    ShowConsolidatedConsentScreen();
-  } else {
-    AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
-  }
+  AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
 }
 
 void WizardController::OnTermsOfServiceScreenExit(
