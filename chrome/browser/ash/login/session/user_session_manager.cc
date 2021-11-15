@@ -1501,11 +1501,11 @@ void UserSessionManager::InitProfilePreferences(
 
 void UserSessionManager::UserProfileInitialized(Profile* profile,
                                                 const AccountId& account_id) {
-  // Only migrate sync prefs for existing users. New users are given the
-  // choice to turn on OS sync in OOBE, so they get the default sync pref
-  // values.
-  if (!IsNewProfile(profile))
-    os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
+  // OOBE doesn't set kOsSyncFeatureEnabled yet, call MigrateOsSyncPreferences
+  // to make sure it is correctly set.
+  // TODO(https://crbug.com/1229582): Revise when SyncConsentOptional changes
+  //                                  for OOBE are implemented.
+  os_sync_util::MigrateOsSyncPreferences(profile->GetPrefs());
 
   BootTimesRecorder* btl = BootTimesRecorder::Get();
   btl->AddLoginTimeMarker("UserProfileGotten", false);

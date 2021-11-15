@@ -26,25 +26,6 @@ void MaybeMigratePreferencesForSyncConsentOptional(PrefService* prefs) {
 
   // TODO(https://crbug.com/1246357) Add a migration code here. To handle switch
   // between SyncConsentOptional being disabled and enabled
-
-  bool sync_all_os_types = prefs->GetBoolean(syncer::prefs::kSyncAllOsTypes);
-  bool sync_os_apps = prefs->GetBoolean(syncer::prefs::kSyncOsApps);
-  bool sync_os_preferences =
-      prefs->GetBoolean(syncer::prefs::kSyncOsPreferences);
-  bool sync_os_wallpaper =
-      prefs->GetBoolean(chromeos::settings::prefs::kSyncOsWallpaper);
-  bool sync_wifi = prefs->GetBoolean(syncer::prefs::kSyncWifiConfigurations);
-
-  // Enable the OS sync feature if any OS data type is enabled. Otherwise the
-  // user would stop syncing a type that they were syncing before.
-  if (sync_all_os_types || sync_os_apps || sync_os_preferences ||
-      sync_os_wallpaper || sync_wifi) {
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, true);
-    return;
-  }
-
-  // TODO(https://crbug.com/1246357) Figure out how to run the Sync Consent
-  // dialog here.
   prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, false);
 }
 
