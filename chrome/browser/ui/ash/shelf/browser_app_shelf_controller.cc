@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -15,9 +14,11 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -46,6 +47,7 @@ BrowserAppShelfController::BrowserAppShelfController(
           *apps::AppServiceProxyFactory::GetForProfile(profile)
                ->BrowserAppInstanceRegistry()) {
   registry_observation_.Observe(&browser_app_instance_registry_);
+  shelf_model_observation_.Observe(&model);
 }
 
 BrowserAppShelfController::~BrowserAppShelfController() = default;
@@ -105,6 +107,19 @@ void BrowserAppShelfController::OnBrowserAppRemoved(
     ash::ShelfID id(instance.app_id);
     SetShelfItemClosed(id);
   }
+}
+
+void BrowserAppShelfController::ShelfItemAdded(int index) {
+  const ash::ShelfItem& item = model_.items()[index];
+  const std::string& app_id = item.id.app_id;
+  if (!BrowserAppShelfControllerShouldHandleApp(app_id, profile_)) {
+    return;
+  }
+  bool running = (app_id == extension_misc::kLacrosAppId)
+                     ? browser_app_instance_registry_.IsLacrosBrowserRunning()
+                     : browser_app_instance_registry_.IsAppRunning(app_id);
+  UpdateShelfItemStatus(item,
+                        running ? ash::STATUS_RUNNING : ash::STATUS_CLOSED);
 }
 
 void BrowserAppShelfController::UpdateShelfItemStatus(

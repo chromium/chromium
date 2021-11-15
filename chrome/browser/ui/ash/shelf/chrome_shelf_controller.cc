@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -1458,10 +1459,13 @@ void ChromeShelfController::ShelfItemAdded(int index) {
       item.title =
           ShelfControllerHelper::GetAppTitle(latest_active_profile_, id.app_id);
     }
-    ash::ShelfItemStatus status = GetAppState(id.app_id);
-    if (status != item.status && status != ash::STATUS_CLOSED) {
-      needs_update = true;
-      item.status = status;
+    if (!BrowserAppShelfControllerShouldHandleApp(id.app_id,
+                                                  latest_active_profile_)) {
+      ash::ShelfItemStatus status = GetAppState(id.app_id);
+      if (status != item.status && status != ash::STATUS_CLOSED) {
+        needs_update = true;
+        item.status = status;
+      }
     }
 
     ash::AppStatus app_status =

@@ -7,6 +7,8 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/eche_app/app_id.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -191,5 +194,23 @@ apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
       return apps::mojom::LaunchSource::kFromAppListRecommendation;
     case ash::LAUNCH_FROM_SHELF:
       return apps::mojom::LaunchSource::kFromShelf;
+  }
+}
+
+bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
+                                              Profile* profile) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
+  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  switch (app_type) {
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return true;
+    default:
+      return false;
   }
 }
