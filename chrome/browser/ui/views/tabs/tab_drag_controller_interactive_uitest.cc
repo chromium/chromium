@@ -3362,12 +3362,13 @@ void DeferredTargetTabStripTestStep2(DetachToBrowserTabDragControllerTest* test,
   // At this point, |target_tab_strip| should be the deferred target tabstip.
   // Theoratically the dragged tabstrip will merge into |target_tab_strip| after
   // the drag ends.
-  EXPECT_TRUE(test::GetWindowForTabStrip(target_tab_strip)
-                  ->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey));
+  EXPECT_TRUE(
+      test::GetWindowForTabStrip(target_tab_strip)
+          ->GetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey));
 
   // Now clear the property.
   test::GetWindowForTabStrip(target_tab_strip)
-      ->ClearProperty(ash::kIsDeferredTabDraggingTargetWindowKey);
+      ->ClearProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey);
 
   ASSERT_TRUE(test->ReleaseInput());
 }
@@ -3489,8 +3490,8 @@ void DragToMinimizedOverviewWindowStep2(
                              ui::SHOW_STATE_MINIMIZED);
 
   ASSERT_TRUE(test->DragInputTo(target_point));
-  EXPECT_TRUE(
-      target_window->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey));
+  EXPECT_TRUE(target_window->GetProperty(
+      chromeos::kIsDeferredTabDraggingTargetWindowKey));
 
   ASSERT_TRUE(test->ReleaseInput());
 }

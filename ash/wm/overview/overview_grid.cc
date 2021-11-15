@@ -374,8 +374,8 @@ class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
     DCHECK_EQ(window, target_window_);
     // When the property is cleared, the dragged window should have been merged
     // into |target_window_|, update the corresponding window item in overview.
-    if (key == kIsDeferredTabDraggingTargetWindowKey &&
-        !window->GetProperty(kIsDeferredTabDraggingTargetWindowKey)) {
+    if (key == chromeos::kIsDeferredTabDraggingTargetWindowKey &&
+        !window->GetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
       UpdateWindowItemInOverviewContaining(window);
       StopObserving();
     }
@@ -1064,19 +1064,20 @@ void OverviewGrid::OnWindowDragContinued(
     // hide the highlight.
     overview_session_->highlight_controller()->HideTabDragHighlight();
 
-    // Also clear ash::kIsDeferredTabDraggingTargetWindowKey key on the target
-    // overview item so that it can't merge into this overview item if the
-    // dragged window is currently in preview window area.
+    // Also clear chromeos::kIsDeferredTabDraggingTargetWindowKey key on the
+    // target overview item so that it can't merge into this overview item if
+    // the dragged window is currently in preview window area.
     if (target_window && !IsDropTargetWindow(target_window))
-      target_window->ClearProperty(kIsDeferredTabDraggingTargetWindowKey);
+      target_window->ClearProperty(
+          chromeos::kIsDeferredTabDraggingTargetWindowKey);
 
     return;
   }
 
   // Show the tab drag highlight if |location_in_screen| is contained by the
   // browser windows' overview item in overview.
-  if (target_window &&
-      target_window->GetProperty(kIsDeferredTabDraggingTargetWindowKey)) {
+  if (target_window && target_window->GetProperty(
+                           chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
     auto* item = GetOverviewItemContaining(target_window);
     if (!item)
       return;
@@ -1119,8 +1120,8 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
   // in overview.
   aura::Window* target_window =
       GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
-  if (target_window &&
-      target_window->GetProperty(kIsDeferredTabDraggingTargetWindowKey)) {
+  if (target_window && target_window->GetProperty(
+                           chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
     // Create an window observer and update the minimized window widget after
     // the dragged window merges into |target_window|.
     if (!target_window_observer_)

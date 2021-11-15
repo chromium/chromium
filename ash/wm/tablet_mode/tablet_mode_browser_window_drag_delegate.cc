@@ -267,7 +267,8 @@ void TabletModeBrowserWindowDragDelegate::MergeBackToSourceWindowIfApplicable(
 
   // Arriving here we know the dragged window should merge back into its source
   // window.
-  source_window->SetProperty(kIsDeferredTabDraggingTargetWindowKey, true);
+  source_window->SetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey,
+                             true);
 }
 
 }  // namespace ash

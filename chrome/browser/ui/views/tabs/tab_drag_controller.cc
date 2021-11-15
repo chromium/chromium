@@ -301,7 +301,7 @@ TabDragController::TabDragData::TabDragData(TabDragData&&) = default;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The class to track the current deferred target tabstrip and also to observe
-// its native window's property ash::kIsDeferredTabDraggingTargetWindowKey.
+// its native window's property chromeos::kIsDeferredTabDraggingTargetWindowKey.
 // The reason we need to observe the window property is the property might be
 // cleared outside of TabDragController (i.e. by ash), and we should update the
 // tracked deferred target tabstrip in this case.
@@ -330,7 +330,8 @@ class TabDragController::DeferredTargetTabstripObserver
       aura::Window* old_window =
           GetWindowForTabDraggingProperties(deferred_target_context_);
       old_window->RemoveObserver(this);
-      old_window->ClearProperty(ash::kIsDeferredTabDraggingTargetWindowKey);
+      old_window->ClearProperty(
+          chromeos::kIsDeferredTabDraggingTargetWindowKey);
     }
 
     deferred_target_context_ = deferred_target_context;
@@ -339,7 +340,8 @@ class TabDragController::DeferredTargetTabstripObserver
     if (deferred_target_context_) {
       aura::Window* new_window =
           GetWindowForTabDraggingProperties(deferred_target_context_);
-      new_window->SetProperty(ash::kIsDeferredTabDraggingTargetWindowKey, true);
+      new_window->SetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey,
+                              true);
       new_window->AddObserver(this);
     }
   }
@@ -351,8 +353,8 @@ class TabDragController::DeferredTargetTabstripObserver
     DCHECK_EQ(window,
               GetWindowForTabDraggingProperties(deferred_target_context_));
 
-    if (key == ash::kIsDeferredTabDraggingTargetWindowKey &&
-        !window->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
+    if (key == chromeos::kIsDeferredTabDraggingTargetWindowKey &&
+        !window->GetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
       SetDeferredTargetTabstrip(nullptr);
     }
 
@@ -629,9 +631,9 @@ void TabDragController::EndDrag(EndDragReason reason) {
   // window.
   if (source_context_ &&
       GetWindowForTabDraggingProperties(source_context_)
-          ->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
+          ->GetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
     GetWindowForTabDraggingProperties(source_context_)
-        ->ClearProperty(ash::kIsDeferredTabDraggingTargetWindowKey);
+        ->ClearProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey);
     reason = END_DRAG_CANCEL;
   }
 #endif
