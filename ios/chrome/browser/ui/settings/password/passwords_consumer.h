@@ -42,6 +42,9 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
     setPasswordsForms:(std::vector<password_manager::PasswordForm>)savedForms
          blockedForms:(std::vector<password_manager::PasswordForm>)blockedForms;
 
+// Updates "On/Off" state for Passwords In Other Apps item.
+- (void)updatePasswordsInOtherAppsDetailedText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_CONSUMER_H_

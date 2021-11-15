@@ -23,6 +23,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,6 +69,8 @@ PasswordForm CreatePasswordForm() {
   std::vector<password_manager::PasswordForm> _blockedForms;
 }
 
+@property(nonatomic, assign) NSString* detailedText;
+
 @end
 
 @implementation FakePasswordsConsumer
@@ -84,13 +87,17 @@ PasswordForm CreatePasswordForm() {
   _blockedForms = blockedForms;
 }
 
+- (void)updatePasswordsInOtherAppsDetailedText {
+  _detailedText = @"On";
+}
+
 - (std::vector<password_manager::PasswordForm>)savedForms {
   return _savedForms;
 }
 
 @end
 
-// Tests for Password Issues mediator.
+// Tests for Passwords mediator.
 class PasswordsMediatorTest : public BlockCleanupTest {
  protected:
   void SetUp() override {
@@ -186,4 +193,11 @@ TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
   [mediator() deletePasswordForm:form];
   RunUntilIdle();
   EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+}
+
+// Mediator should update consumer password autofill state.
+TEST_F(PasswordsMediatorTest, TestPasswordAutoFillDidChangeToStatusMethod) {
+  ASSERT_EQ([consumer() detailedText], nil);
+  [mediator() passwordAutoFillStatusDidChange];
+  EXPECT_NSEQ([consumer() detailedText], @"On");
 }

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
@@ -35,6 +36,7 @@
     AddPasswordCoordinatorDelegate,
     PasswordDetailsCoordinatorDelegate,
     PasswordIssuesCoordinatorDelegate,
+    PasswordsInOtherAppsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordsTableViewControllerPresentationDelegate>
 
@@ -63,6 +65,10 @@
 
 // Coordinator for add password details.
 @property(nonatomic, strong) AddPasswordCoordinator* addPasswordCoordinator;
+
+// Coordinator for passwords in other apps promotion view.
+@property(nonatomic, strong)
+    PasswordsInOtherAppsCoordinator* passwordsInOtherAppsCoordinator;
 
 @end
 
@@ -131,6 +137,12 @@
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
+
+  if (base::FeatureList::IsEnabled(kCredentialProviderExtensionPromo)) {
+    [self.passwordsInOtherAppsCoordinator stop];
+    self.passwordsInOtherAppsCoordinator.delegate = nil;
+    self.passwordsInOtherAppsCoordinator = nil;
+  }
 }
 
 #pragma mark - PasswordsSettingsCommands
@@ -167,6 +179,16 @@
             passwordCheckManager:[self passwordCheckManager].get()];
   self.addPasswordCoordinator.delegate = self;
   [self.addPasswordCoordinator start];
+}
+
+- (void)showPasswordsInOtherAppsPromo {
+  DCHECK(!self.passwordsInOtherAppsCoordinator);
+  self.passwordsInOtherAppsCoordinator =
+      [[PasswordsInOtherAppsCoordinator alloc]
+          initWithBaseNavigationController:self.baseNavigationController
+                                   browser:self.browser];
+  self.passwordsInOtherAppsCoordinator.delegate = self;
+  [self.passwordsInOtherAppsCoordinator start];
 }
 
 #pragma mark - PasswordsTableViewControllerPresentationDelegate
@@ -234,6 +256,16 @@
   [self showDetailedViewForForm:password];
   [self.passwordDetailsCoordinator
           showPasswordDetailsInEditModeWithoutAuthentication];
+}
+
+#pragma mark - PasswordsInOtherAppsCoordinatorDelegate
+
+- (void)passwordsInOtherAppsCoordinatorDidRemove:
+    (PasswordsInOtherAppsCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordsInOtherAppsCoordinator, coordinator);
+  [self.passwordsInOtherAppsCoordinator stop];
+  self.passwordsInOtherAppsCoordinator.delegate = nil;
+  self.passwordsInOtherAppsCoordinator = nil;
 }
 
 #pragma mark Private

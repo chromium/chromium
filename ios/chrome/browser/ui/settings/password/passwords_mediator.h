@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class IOSChromePasswordCheckManager;
@@ -16,7 +17,8 @@ class IOSChromePasswordCheckManager;
 class SyncSetupService;
 
 // This mediator fetches and organises the passwords for its consumer.
-@interface PasswordsMediator : NSObject <PasswordsTableViewControllerDelegate,
+@interface PasswordsMediator : NSObject <PasswordAutoFillStatusObserver,
+                                         PasswordsTableViewControllerDelegate,
                                          SuccessfulReauthTimeAccessor>
 
 - (instancetype)initWithPasswordCheckManager:
