@@ -18,8 +18,8 @@ class MediaKeySystemAccess final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  MediaKeySystemAccess(const String& key_system,
-                       std::unique_ptr<WebContentDecryptionModuleAccess>);
+  explicit MediaKeySystemAccess(
+      std::unique_ptr<WebContentDecryptionModuleAccess>);
   ~MediaKeySystemAccess() override;
 
   String keySystem() const { return access_->GetKeySystem(); }
@@ -31,7 +31,6 @@ class MediaKeySystemAccess final : public ScriptWrappable {
   }
 
  private:
-  const String key_system_;
   std::unique_ptr<WebContentDecryptionModuleAccess> access_;
 };
 

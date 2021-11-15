@@ -209,8 +209,8 @@ class MediaCapabilitiesKeySystemAccessInitializer final
     // Query the client for smoothness and power efficiency of the video. It
     // will resolve the promise.
     std::move(get_perf_callback_)
-        .Run(resolver_.Get(), MakeGarbageCollected<MediaKeySystemAccess>(
-                                  KeySystem(), std::move(access)));
+        .Run(resolver_.Get(),
+             MakeGarbageCollected<MediaKeySystemAccess>(std::move(access)));
   }
 
   void RequestNotSupported(const WebString& error_message) override {

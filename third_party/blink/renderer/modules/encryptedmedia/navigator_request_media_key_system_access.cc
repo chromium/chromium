@@ -86,8 +86,8 @@ void MediaKeySystemAccessInitializer::RequestSucceeded(
   if (!IsExecutionContextValid())
     return;
 
-  resolver_->Resolve(MakeGarbageCollected<MediaKeySystemAccess>(
-      KeySystem(), std::move(access)));
+  resolver_->Resolve(
+      MakeGarbageCollected<MediaKeySystemAccess>(std::move(access)));
   resolver_.Clear();
 }
 
