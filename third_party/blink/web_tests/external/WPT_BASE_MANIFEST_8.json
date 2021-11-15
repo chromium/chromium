@@ -122775,7 +122775,7 @@
       ]
      ],
      "counter-reset-reversed-list-item-start.html": [
-      "a4d9451f037b5d7260149f43ac10be14ba738a25",
+      "4c8039b25d499bc59ee95806543f6cb8090f8979",
       [
        null,
        [
@@ -122788,7 +122788,7 @@
       ]
      ],
      "counter-reset-reversed-list-item.html": [
-      "00534942337ecdf26b5a21a44cc4d8041005208c",
+      "40706fdf97f7396c9ee67b5496dcb30eef99208e",
       [
        null,
        [
@@ -122846,6 +122846,149 @@
        [
         [
          "/css/css-lists/counter-set-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-006a.html": [
+      "028f1fe19998c8eb70cc1d98d6d6f9ee852b7b03",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-006b.html": [
+      "21d5067109562d80eaaf14d4f20b0f2fce37429d",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-006c.html": [
+      "c684e73181e8a45b40e0b6923eb8a21461a38c4a",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-006d.html": [
+      "0e9f53272bbb93375986722c7fcd7fcc2603131b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-006e.html": [
+      "58ff2b83e112f57bb702b19384667b08d09d00c4",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-007a.html": [
+      "a8390abcb071db3fff958a7855326c500d31c6d4",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-007b.html": [
+      "defbc0e26f1c50f4781d68fe69b25706d71d53d3",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-008a.html": [
+      "9a597139a201771edc21ab3536fdf7760eba8f70",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-008b.html": [
+      "b7d4d569aadb3515cc96006ce6d394454b88f032",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-009a.html": [
+      "742d8bf0f55a84dd0b9d149b1a0c73c4f61bd11e",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "foo-counter-reversed-009b.html": [
+      "852297c898097f5d5f76970378f2359bceca852b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-009-ref.html",
          "=="
         ]
        ],
@@ -122957,7 +123100,7 @@
       ]
      ],
      "li-value-reversed-001.html": [
-      "616d7ccc66bb7fbe543daf4a469344e568013f0d",
+      "94c3ebc24847efcae0f4e0d6aad337432afd451a",
       [
        null,
        [
@@ -122970,7 +123113,7 @@
       ]
      ],
      "li-value-reversed-002.html": [
-      "0c89ad21222aad4a4773833f3600dd48b22e0e81",
+      "41454611eaa3ee06e0322c2755d7328b395754fc",
       [
        null,
        [
@@ -122983,7 +123126,7 @@
       ]
      ],
      "li-value-reversed-003.html": [
-      "6e4d3d5f1ced2349355eae1fc097ae68daa0d591",
+      "af40da87a019682b7ecb32c4565b10b702f1357c",
       [
        null,
        [
@@ -122996,7 +123139,7 @@
       ]
      ],
      "li-value-reversed-004.html": [
-      "48ac24a6a2f6e5b81c380cdfc71350099a8eb93a",
+      "bb04fb4c703e8a36e950c5306019df7a084b58ef",
       [
        null,
        [
@@ -123009,12 +123152,155 @@
       ]
      ],
      "li-value-reversed-005.html": [
-      "84f017b4992f0f268537dcd9706bef2c454d17b8",
+      "cbdf38da40a72a0681e1e5dc436d30b95b86f5e5",
       [
        null,
        [
         [
-         "/css/css-lists/li-value-reversed-004-ref.html",
+         "/css/css-lists/li-value-reversed-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-006a.html": [
+      "3491c863a5446f9fad3f1523446e5b4855b69f9b",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-006b.html": [
+      "b124e9ba2d8ef8563b47275690cee697e6920428",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-006c.html": [
+      "7d1d419cc99435edd2ced4197bcdd08f147512d5",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-006d.html": [
+      "4d14d10cc70ae6573fbe96d0f087ccf6ddb721d3",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-006e.html": [
+      "e20a32051a64bc6f47c41f57181ba99f619b8cb5",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-007a.html": [
+      "088ad356720737a671c2ad92e45d082f306ae91e",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-007b.html": [
+      "438316eca7f9c9e6b920deb89ec31c6d87d56df6",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-008a.html": [
+      "0bbddbb975e37b45fc502306901da9d13802ed59",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-008b.html": [
+      "17e81f8189a37eb254364e419523ae042c4a0e25",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-008-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-009a.html": [
+      "e0b5e9403c9d991a014a5ee05f815889e78fbe61",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "li-value-reversed-009b.html": [
+      "c3ee99dbc688ec9c7a308daedfc97f8246b711e3",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/li-value-reversed-009-ref.html",
          "=="
         ]
        ],
@@ -247719,7 +248005,7 @@
       []
      ],
      "counter-list-item-ref.html": [
-      "04ed6e87fad005537714d8c24a9eff5747c4943e",
+      "70d2febaae29ac4fd255c37b310d638374bd3d17",
       []
      ],
      "counter-set-001-ref.html": [
@@ -247763,15 +248049,35 @@
       []
      ],
      "li-value-reversed-001-ref.html": [
-      "7b5c5d86087fa9ad09296b519e582e6d0f161b09",
+      "c93f5cba0ae43a39da6b2b348bfcdd18f51e4834",
       []
      ],
      "li-value-reversed-002-ref.html": [
-      "71c187d3069c3ca4e6961c4788365d05ee15bd4f",
+      "c73c01d0723fe1409bc6608dc8ae9e7271ab9427",
       []
      ],
      "li-value-reversed-004-ref.html": [
-      "da95a042cfdc4a701d2293f3834c3598d95f5648",
+      "c5a957bf39adaf0da5c81c92123e22d9442046c2",
+      []
+     ],
+     "li-value-reversed-005-ref.html": [
+      "b88e5103164758d80167212cf3430ef137131a6c",
+      []
+     ],
+     "li-value-reversed-006-ref.html": [
+      "27fcfc5114421d4cc6d0203f68647ff41747b1b0",
+      []
+     ],
+     "li-value-reversed-007-ref.html": [
+      "3bd9c90fc61c569a493d873a9d0c00dd48d19b66",
+      []
+     ],
+     "li-value-reversed-008-ref.html": [
+      "28cfde924807fb282bb72f7062fc17f96ee20069",
+      []
+     ],
+     "li-value-reversed-009-ref.html": [
+      "d0a54486f61ec1f22c7d10d4dff83209c8d5dffa",
       []
      ],
      "li-with-height-001-ref.html": [
@@ -247889,6 +248195,10 @@
      "parsing": {
       "content-invalid-expected.txt": [
        "22f1ec89c1c6018a435f0242db81371dc747a5d2",
+       []
+      ],
+      "counter-reset-valid-expected.txt": [
+       "a64967a2303a35f3bfa6c646583779260e156ba2",
        []
       ],
       "list-style-image-computed.sub-expected.txt": [
@@ -282487,7 +282797,7 @@
         []
        ],
        "lists-styles-expected.txt": [
-        "25a52896a5b3ff2e9f6309e38743a17e451caa30",
+        "a61abd553c1d42fe79eeeeff2084d171d961abbf",
         []
        ],
        "ol-display-contents-ref.html": [
@@ -353088,7 +353398,7 @@
        ]
       ],
       "counter-increment-invalid.html": [
-       "262a38d76b57bb786268b42e8a9dc3df5b343f40",
+       "2138584913de7bd279e4ee143d05d90f0be08118",
        [
         null,
         {}
@@ -353102,14 +353412,14 @@
        ]
       ],
       "counter-reset-invalid.html": [
-       "7a603fffc0d86226e6d56bd0b38c2069593191c4",
+       "d79736001f72a2d2d457fa6521d3615b7d92f993",
        [
         null,
         {}
        ]
       ],
       "counter-reset-valid.html": [
-       "a71572289e41375e360b27a7ea7583538a2627d7",
+       "2e6b37d0fcf2c2bb05676ab58a5a55126e99f274",
        [
         null,
         {}
@@ -353123,7 +353433,7 @@
        ]
       ],
       "counter-set-invalid.html": [
-       "9cc5be7c928305e647f97cdc360249dcba19b263",
+       "e955049222c2de367a4977990ee5fea7da14e147",
        [
         null,
         {}
@@ -432210,7 +432520,7 @@
         ]
        ],
        "lists-styles.html": [
-        "0a21f630de95a4f17574121c714d59fb2e784e9a",
+        "3a94de18ad69d2e7e92139ad5171c3bb416917f3",
         [
          null,
          {}
