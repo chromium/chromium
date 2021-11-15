@@ -164,6 +164,7 @@ COMPONENT_EXPORT(ONC) extern const char kTechnologyHspaPlus[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyLte[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyLteAdvanced[];
 COMPONENT_EXPORT(ONC) extern const char kTechnologyUmts[];
+COMPONENT_EXPORT(ONC) extern const char kTechnology5gNr[];
 }  // namespace cellular
 
 namespace cellular_provider {

@@ -401,6 +401,7 @@ const StringTranslationEntry kNetworkTechnologyTable[] = {
     {::onc::cellular::kTechnologyLteAdvanced,
      shill::kNetworkTechnologyLteAdvanced},
     {::onc::cellular::kTechnologyUmts, shill::kNetworkTechnologyUmts},
+    {::onc::cellular::kTechnology5gNr, shill::kNetworkTechnology5gNr},
     {nullptr}};
 
 const StringTranslationEntry kRoamingStateTable[] = {

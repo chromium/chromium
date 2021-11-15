@@ -121,6 +121,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "network_badge_technology_1x.icon",
     "network_badge_technology_3g.icon",
     "network_badge_technology_4g.icon",
+    "network_badge_technology_5g.icon",
     "network_badge_technology_edge.icon",
     "network_badge_technology_evdo.icon",
     "network_badge_technology_gprs.icon",

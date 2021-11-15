@@ -1527,6 +1527,7 @@ ONC configuration of of **Cellular** networks is not yet supported.
         * *LTE*
         * *LTEAdvanced*
         * *UMTS*
+        * *5GNR*
 
 * **PaymentPortal**
     * (optional, read-only) - [PaymentPortal](#PaymentPortal-type)

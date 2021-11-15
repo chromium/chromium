@@ -222,7 +222,8 @@ bool IsCellularTechnology(const std::string& type) {
           type == shill::kNetworkTechnologyHspa ||
           type == shill::kNetworkTechnologyHspaPlus ||
           type == shill::kNetworkTechnologyLte ||
-          type == shill::kNetworkTechnologyLteAdvanced);
+          type == shill::kNetworkTechnologyLteAdvanced ||
+          type == shill::kNetworkTechnology5gNr);
 }
 
 void SetInitialDeviceProperty(const std::string& device_path,

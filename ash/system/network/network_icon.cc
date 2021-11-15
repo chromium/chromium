@@ -261,6 +261,8 @@ Badge BadgeForNetworkTechnology(const NetworkStateProperties* network,
     badge.icon = &kNetworkBadgeTechnologyLteIcon;
   } else if (technology == onc::cellular::kTechnologyLteAdvanced) {
     badge.icon = &kNetworkBadgeTechnologyLteAdvancedIcon;
+  } else if (technology == onc::cellular::kTechnology5gNr) {
+    badge.icon = &kNetworkBadgeTechnology5gIcon;
   } else {
     return {};
   }
