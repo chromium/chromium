@@ -45,15 +45,6 @@ void ThrottlingController::UnregisterNetLogSource(uint32_t net_log_source_id) {
   instance().Unregister(net_log_source_id);
 }
 
-// static
-bool ThrottlingController::HasInterceptor(
-    const base::UnguessableToken& throttling_profile_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(instance().thread_checker_);
-
-  return instance().interceptors_.find(throttling_profile_id) !=
-         instance().interceptors_.end();
-}
-
 void ThrottlingController::Register(
     uint32_t net_log_source_id,
     const base::UnguessableToken& throttling_profile_id) {

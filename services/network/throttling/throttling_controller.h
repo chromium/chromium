@@ -53,11 +53,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   // Unregister the NetLog source. This is called from ScopedThrottlingToken.
   static void UnregisterNetLogSource(uint32_t net_log_source_id);
 
-  // Returns whether there is an interceptor for the profile ID. This is called
-  // from ScopedThrottlingToken.
-  static bool HasInterceptor(
-      const base::UnguessableToken& throttling_profile_id);
-
   void Register(uint32_t net_log_source_id,
                 const base::UnguessableToken& throttling_profile_id);
   void Unregister(uint32_t net_log_source_id);
