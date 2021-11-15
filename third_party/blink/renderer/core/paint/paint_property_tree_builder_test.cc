@@ -7062,7 +7062,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OutOfFlowContainedInMulticol) {
     <div id="columns" style="columns: 2; height: 100px">
       <div id="relative"
            style="position: relative; height: 200px; transform: translateX(0)">
-        <div style="overflow: scroll">
+        <div style="overflow: clip; height: 150px">
           <div id="absolute"
                style="position: absolute; width: 100%; height: 200px"></div>
           <div id="fixed"
@@ -7082,22 +7082,23 @@ TEST_P(PaintPropertyTreeBuilderTest, OutOfFlowContainedInMulticol) {
   const auto* fixed = GetLayoutObjectByElementId("fixed");
   ASSERT_EQ(2u, NumFragments(fixed));
 
-  // For now we use the container's first fragment's transform as the parent of
-  // the transforms of all fragments of out-of-flow descendants.
-  const auto* relative_transform =
-      FragmentAt(relative, 0).PaintProperties()->Transform();
   for (unsigned i = 0; i < NumFragments(flow_thread); i++) {
     SCOPED_TRACE(testing::Message() << "Fragment " << i);
-    const auto* fragment_clip =
-        FragmentAt(flow_thread, i).PaintProperties()->FragmentClip();
+    const auto* relative_transform =
+        FragmentAt(relative, i).PaintProperties()->Transform();
     const auto& absolute_properties =
         FragmentAt(absolute, i).LocalBorderBoxProperties();
     const auto& fixed_properties =
         FragmentAt(fixed, i).LocalBorderBoxProperties();
-    EXPECT_EQ(fragment_clip, &absolute_properties.Clip());
-    EXPECT_EQ(fragment_clip, &fixed_properties.Clip());
     EXPECT_EQ(relative_transform, &absolute_properties.Transform());
     EXPECT_EQ(relative_transform, &fixed_properties.Transform());
+
+    if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+      const auto* fragment_clip =
+          FragmentAt(flow_thread, i).PaintProperties()->FragmentClip();
+      EXPECT_EQ(fragment_clip, &absolute_properties.Clip());
+      EXPECT_EQ(fragment_clip, &fixed_properties.Clip());
+    }
   }
 }
 
