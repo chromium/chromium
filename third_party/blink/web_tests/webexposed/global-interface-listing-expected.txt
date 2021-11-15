@@ -4243,8 +4243,14 @@ interface HTMLSelectMenuElement : HTMLElement
     getter open
     getter required
     getter type
+    getter validationMessage
+    getter validity
     getter value
+    getter willValidate
+    method checkValidity
     method constructor
+    method reportValidity
+    method setCustomValidity
     setter name
     setter required
     setter value

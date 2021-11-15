@@ -31,6 +31,10 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void setValue(const String&, bool send_events = false);
   bool open() const;
 
+  // For ValidityState
+  String validationMessage() const override;
+  bool ValueMissing() const override;
+
   void Trace(Visitor*) const override;
 
   enum class PartType { kNone, kButton, kListBox, kOption };
@@ -57,7 +61,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   Element* FirstValidListboxPart() const;
   Element* FirstValidSelectedValuePart() const;
   void EnsureSelectedOptionIsValid();
-  Element* SelectedOption();
+  HTMLOptionElement* SelectedOption();
   void SetSelectedOption(HTMLOptionElement* selected_option);
   void SelectNextOption();
   void SelectPreviousOption();

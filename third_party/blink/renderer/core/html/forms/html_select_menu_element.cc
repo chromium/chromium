@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
 
@@ -677,7 +679,7 @@ void HTMLSelectMenuElement::EnsureSelectedOptionIsValid() {
   }
 }
 
-Element* HTMLSelectMenuElement::SelectedOption() {
+HTMLOptionElement* HTMLSelectMenuElement::SelectedOption() {
   EnsureSelectedOptionIsValid();
   return selected_option_;
 }
@@ -838,6 +840,32 @@ bool HTMLSelectMenuElement::IsRequiredFormControl() const {
 
 bool HTMLSelectMenuElement::IsOptionalFormControl() const {
   return !IsRequiredFormControl();
+}
+
+bool HTMLSelectMenuElement::ValueMissing() const {
+  if (!IsRequired())
+    return false;
+
+  if (auto* selected_option =
+          const_cast<HTMLSelectMenuElement*>(this)->SelectedOption()) {
+    // If a non-placeholer label option is selected, it's not value-missing.
+    // TODO(crbug.com/1121840) Sync APIs shouldn't rely on async computed
+    // option_parts_
+    return option_parts_.size() == 1 && selected_option->value().IsEmpty();
+  }
+
+  return true;
+}
+
+String HTMLSelectMenuElement::validationMessage() const {
+  if (!willValidate())
+    return String();
+  if (CustomError())
+    return CustomValidationMessage();
+  if (ValueMissing()) {
+    return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_MISSING_SELECT);
+  }
+  return String();
 }
 
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {

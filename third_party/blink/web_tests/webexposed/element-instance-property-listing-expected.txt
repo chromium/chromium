@@ -973,12 +973,18 @@ html element select
     property value
     property willValidate
 html element selectmenu
+    property checkValidity
     property form
     property name
     property open
+    property reportValidity
     property required
+    property setCustomValidity
     property type
+    property validationMessage
+    property validity
     property value
+    property willValidate
 html element slot
     property assign
     property assignedElements
