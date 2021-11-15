@@ -20,6 +20,7 @@
 // Global variables are not necessarily a problem but it is useful to understand
 // them, and monitoring their changes can be instructive.
 
+#include <atlbase.h>
 #include <dia2.h>
 #include <stdio.h>
 #include <wrl/client.h>
@@ -27,8 +28,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-
-#include "base/win/atl.h"
 
 // Helper function for comparing strings - returns a strcmp/wcscmp compatible
 // value.
