@@ -975,7 +975,7 @@ LayoutUnit InlineFlowBox::FarthestPositionForUnderline(
     // If the text decoration isn't in effect on the child, it must be outside
     // of |decorationObject|.
     if (!EnumHasFlags(curr->LineStyleRef().TextDecorationsInEffect(),
-                      TextDecoration::kUnderline))
+                      TextDecorationLine::kUnderline))
       continue;
 
     if (decorating_box && decorating_box.IsLayoutInline() &&

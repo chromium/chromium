@@ -281,7 +281,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
   style.ResetTextCombine();
   style.SetLetterSpacing(0.0f);
   style.SetTextAlign(ETextAlign::kCenter);
-  style.SetTextDecoration(TextDecoration::kNone);
+  style.SetTextDecorationLine(TextDecorationLine::kNone);
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
   style.SetWordBreak(EWordBreak::kKeepAll);

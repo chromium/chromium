@@ -13,21 +13,21 @@ namespace blink {
 TEST(AppliedTextDecorationTest, OperatorEqual) {
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     EXPECT_EQ(instance1, instance2);
   }
 
-  // Only TextDecoration is different.
+  // Only TextDecorationLine is different.
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kOverline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kOverline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
@@ -35,10 +35,10 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
   // Only ETextDecorationStyle is different.
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kDouble, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kDouble, Color(),
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
@@ -46,10 +46,10 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
   // Only Color is different.
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid,
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
         Color(Color::kBlack), TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
@@ -57,10 +57,10 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
   // Only TextDecorationThickness is different.
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length(42, Length::kFixed)), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
   }
@@ -68,10 +68,10 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
   // Only |underline_offset_| is different.
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length(13, Length::kPercent));
     AppliedTextDecoration instance2(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length(13, Length::kFixed));
     EXPECT_NE(instance1, instance2);
   }
@@ -80,7 +80,7 @@ TEST(AppliedTextDecorationTest, OperatorEqual) {
 TEST(AppliedTextDecorationTest, CopyConstructor) {
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(instance1);
     EXPECT_EQ(instance1, instance2);
@@ -90,10 +90,10 @@ TEST(AppliedTextDecorationTest, CopyConstructor) {
 TEST(AppliedTextDecorationTest, Assignment) {
   {
     AppliedTextDecoration instance1(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     AppliedTextDecoration instance2(
-        TextDecoration::kOverline, ETextDecorationStyle::kSolid, Color(),
+        TextDecorationLine::kOverline, ETextDecorationStyle::kSolid, Color(),
         TextDecorationThickness(Length()), Length());
     EXPECT_NE(instance1, instance2);
     instance2 = instance1;

@@ -83,8 +83,8 @@ static LineLayoutItem EnclosingUnderlineObject(
       return nullptr;
 
     const ComputedStyle& style_to_use = current.StyleRef(first_line);
-    if (EnumHasFlags(style_to_use.GetTextDecoration(),
-                     TextDecoration::kUnderline))
+    if (EnumHasFlags(style_to_use.GetTextDecorationLine(),
+                     TextDecorationLine::kUnderline))
       return current;
 
     current = current.Parent();
@@ -410,7 +410,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     // Paint text decorations except line-through.
     absl::optional<TextDecorationInfo> decoration_info;
     bool has_line_through_decoration = false;
-    if (style_to_use.TextDecorationsInEffect() != TextDecoration::kNone &&
+    if (style_to_use.TextDecorationsInEffect() != TextDecorationLine::kNone &&
         inline_text_box_.Truncation() != kCFullTruncation) {
       PhysicalOffset local_origin = box_origin;
       LayoutUnit width = inline_text_box_.LogicalWidth();

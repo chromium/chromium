@@ -2283,17 +2283,17 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
     *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kItalic);
 
   for (const auto& decoration : style->AppliedTextDecorations()) {
-    if (EnumHasFlags(decoration.Lines(), TextDecoration::kOverline)) {
+    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kOverline)) {
       *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kOverline);
       *text_overline_style =
           TextDecorationStyleToAXTextDecorationStyle(decoration.Style());
     }
-    if (EnumHasFlags(decoration.Lines(), TextDecoration::kLineThrough)) {
+    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kLineThrough)) {
       *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kLineThrough);
       *text_strikethrough_style =
           TextDecorationStyleToAXTextDecorationStyle(decoration.Style());
     }
-    if (EnumHasFlags(decoration.Lines(), TextDecoration::kUnderline)) {
+    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kUnderline)) {
       *text_style |= TextStyleFlag(ax::mojom::blink::TextStyle::kUnderline);
       *text_underline_style =
           TextDecorationStyleToAXTextDecorationStyle(decoration.Style());

@@ -173,8 +173,9 @@ void LayoutTextCombine::UpdateFontStyleForCombinedText() {
                                  *style, style->Direction());
   FontDescription description = style->GetFont().GetFontDescription();
   float em_width = description.ComputedSize();
-  if (!EnumHasFlags(style->TextDecorationsInEffect(),
-                    TextDecoration::kUnderline | TextDecoration::kOverline))
+  if (!EnumHasFlags(
+          style->TextDecorationsInEffect(),
+          TextDecorationLine::kUnderline | TextDecorationLine::kOverline))
     em_width *= kTextCombineMargin;
 
   // We are going to draw combined text horizontally.

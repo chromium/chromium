@@ -90,9 +90,9 @@ void TextPainter::PaintDecorationsExceptLineThrough(
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
         decorations[applied_decoration_index];
-    TextDecoration lines = decoration.Lines();
-    bool has_underline = EnumHasFlags(lines, TextDecoration::kUnderline);
-    bool has_overline = EnumHasFlags(lines, TextDecoration::kOverline);
+    TextDecorationLine lines = decoration.Lines();
+    bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
+    bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
     if (flip_underline_and_overline)
       std::swap(has_underline, has_overline);
 
@@ -110,10 +110,10 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetPerLineData(TextDecoration::kUnderline,
+      decoration_info.SetPerLineData(TextDecorationLine::kUnderline,
                                      paint_underline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kUnderline);
+                                     TextDecorationLine::kUnderline);
     }
 
     if (has_overline && decoration_info.FontData()) {
@@ -128,16 +128,17 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetPerLineData(TextDecoration::kOverline,
+      decoration_info.SetPerLineData(TextDecorationLine::kOverline,
                                      paint_overline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kOverline);
+                                     TextDecorationLine::kOverline);
     }
 
-    // We could instead build a vector of the TextDecoration instances needing
-    // line-through but this is a rare case so better to avoid vector overhead.
+    // We could instead build a vector of the TextDecorationLine instances
+    // needing line-through but this is a rare case so better to avoid vector
+    // overhead.
     *has_line_through_decoration |=
-        EnumHasFlags(lines, TextDecoration::kLineThrough);
+        EnumHasFlags(lines, TextDecorationLine::kLineThrough);
   }
 
   // Restore rotation as needed.
@@ -162,8 +163,8 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
         decorations[applied_decoration_index];
-    TextDecoration lines = decoration.Lines();
-    if (EnumHasFlags(lines, TextDecoration::kLineThrough)) {
+    TextDecorationLine lines = decoration.Lines();
+    if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
       decoration_info.SetDecorationIndex(applied_decoration_index);
 
       float resolved_thickness = decoration_info.ResolvedThickness();
@@ -174,10 +175,10 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
       // it centered at the same origin.
       const float line_through_offset =
           2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetPerLineData(TextDecoration::kLineThrough,
+      decoration_info.SetPerLineData(TextDecorationLine::kLineThrough,
                                      line_through_offset);
-      AppliedDecorationPainter decoration_painter(context, decoration_info,
-                                                  TextDecoration::kLineThrough);
+      AppliedDecorationPainter decoration_painter(
+          context, decoration_info, TextDecorationLine::kLineThrough);
       // No skip: ink for line-through,
       // compare https://github.com/w3c/csswg-drafts/issues/711
       decoration_painter.Paint();

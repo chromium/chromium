@@ -1853,13 +1853,13 @@ bool ComputedStyle::TextDecorationVisualOverflowEqual(
   return true;
 }
 
-TextDecoration ComputedStyle::TextDecorationsInEffect() const {
+TextDecorationLine ComputedStyle::TextDecorationsInEffect() const {
   if (HasSimpleUnderlineInternal())
-    return TextDecoration::kUnderline;
+    return TextDecorationLine::kUnderline;
   if (!AppliedTextDecorationsInternal())
-    return TextDecoration::kNone;
+    return TextDecorationLine::kNone;
 
-  TextDecoration decorations = TextDecoration::kNone;
+  TextDecorationLine decorations = TextDecorationLine::kNone;
 
   const Vector<AppliedTextDecoration>& applied = AppliedTextDecorations();
 
@@ -1875,7 +1875,7 @@ const Vector<AppliedTextDecoration>& ComputedStyle::AppliedTextDecorations()
     DEFINE_STATIC_LOCAL(
         Vector<AppliedTextDecoration>, underline,
         (1, AppliedTextDecoration(
-                TextDecoration::kUnderline, ETextDecorationStyle::kSolid,
+                TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
                 VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
                 TextDecorationThickness(), Length::Auto())));
     // Since we only have one of these in memory, just update the color before
@@ -2202,7 +2202,7 @@ void ComputedStyle::OverrideTextDecorationColors(Color override_color) {
 void ComputedStyle::ApplyTextDecorations(
     const Color& parent_text_decoration_color,
     bool override_existing_colors) {
-  if (GetTextDecoration() == TextDecoration::kNone &&
+  if (GetTextDecorationLine() == TextDecorationLine::kNone &&
       !HasSimpleUnderlineInternal() && !AppliedTextDecorationsInternal())
     return;
 
@@ -2211,28 +2211,28 @@ void ComputedStyle::ApplyTextDecorations(
   Color current_text_decoration_color =
       VisitedDependentColor(GetCSSPropertyTextDecorationColor());
   if (HasSimpleUnderlineInternal() &&
-      (GetTextDecoration() != TextDecoration::kNone ||
+      (GetTextDecorationLine() != TextDecorationLine::kNone ||
        current_text_decoration_color != parent_text_decoration_color)) {
     SetHasSimpleUnderlineInternal(false);
     AddAppliedTextDecoration(AppliedTextDecoration(
-        TextDecoration::kUnderline, ETextDecorationStyle::kSolid,
+        TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
         parent_text_decoration_color, TextDecorationThickness(),
         Length::Auto()));
   }
   if (override_existing_colors && AppliedTextDecorationsInternal())
     OverrideTextDecorationColors(current_text_decoration_color);
-  if (GetTextDecoration() == TextDecoration::kNone)
+  if (GetTextDecorationLine() == TextDecorationLine::kNone)
     return;
   DCHECK(!HasSimpleUnderlineInternal());
   // To save memory, we don't use AppliedTextDecoration objects in the common
   // case of a single simple underline of currentColor.
-  TextDecoration decoration_lines = GetTextDecoration();
+  TextDecorationLine decoration_lines = GetTextDecorationLine();
   ETextDecorationStyle decoration_style = TextDecorationStyle();
-  bool is_simple_underline = decoration_lines == TextDecoration::kUnderline &&
-                             decoration_style == ETextDecorationStyle::kSolid &&
-                             TextDecorationColor().IsCurrentColor() &&
-                             TextUnderlineOffset().IsAuto() &&
-                             GetTextDecorationThickness().IsAuto();
+  bool is_simple_underline =
+      decoration_lines == TextDecorationLine::kUnderline &&
+      decoration_style == ETextDecorationStyle::kSolid &&
+      TextDecorationColor().IsCurrentColor() &&
+      TextUnderlineOffset().IsAuto() && GetTextDecorationThickness().IsAuto();
   if (is_simple_underline && !AppliedTextDecorationsInternal()) {
     SetHasSimpleUnderlineInternal(true);
     return;

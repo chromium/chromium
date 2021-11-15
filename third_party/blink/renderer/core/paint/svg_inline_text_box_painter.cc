@@ -198,10 +198,10 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
     const Vector<AppliedTextDecoration>& decorations =
         style.AppliedTextDecorations();
     for (const AppliedTextDecoration& decoration : decorations) {
-      if (EnumHasFlags(decoration.Lines(), TextDecoration::kUnderline))
-        PaintDecoration(paint_info, TextDecoration::kUnderline, fragment);
-      if (EnumHasFlags(decoration.Lines(), TextDecoration::kOverline))
-        PaintDecoration(paint_info, TextDecoration::kOverline, fragment);
+      if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kUnderline))
+        PaintDecoration(paint_info, TextDecorationLine::kUnderline, fragment);
+      if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kOverline))
+        PaintDecoration(paint_info, TextDecorationLine::kOverline, fragment);
     }
 
     for (int i = 0; i < 3; i++) {
@@ -232,8 +232,8 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
     // Spec: Line-through should be drawn after the text is filled and stroked;
     // thus, the line-through is rendered on top of the text.
     for (const AppliedTextDecoration& decoration : decorations) {
-      if (EnumHasFlags(decoration.Lines(), TextDecoration::kLineThrough))
-        PaintDecoration(paint_info, TextDecoration::kLineThrough, fragment);
+      if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kLineThrough))
+        PaintDecoration(paint_info, TextDecorationLine::kLineThrough, fragment);
     }
   }
 }
@@ -295,7 +295,8 @@ static inline LayoutObject* FindLayoutObjectDefininingTextDecoration(
         LineLayoutAPIShim::LayoutObjectFrom(parent_box->GetLineLayoutItem());
 
     if (layout_object->Style() &&
-        layout_object->StyleRef().GetTextDecoration() != TextDecoration::kNone)
+        layout_object->StyleRef().GetTextDecorationLine() !=
+            TextDecorationLine::kNone)
       break;
 
     parent_box = parent_box->Parent();
@@ -307,24 +308,25 @@ static inline LayoutObject* FindLayoutObjectDefininingTextDecoration(
 
 // Offset from the baseline for |decoration|. Positive offsets are above the
 // baseline.
-static inline float BaselineOffsetForDecoration(TextDecoration decoration,
+static inline float BaselineOffsetForDecoration(TextDecorationLine decoration,
                                                 const FontMetrics& font_metrics,
                                                 float thickness) {
   // FIXME: For SVG Fonts we need to use the attributes defined in the
   // <font-face> if specified.
   // Compatible with Batik/Presto.
-  if (decoration == TextDecoration::kUnderline)
+  if (decoration == TextDecorationLine::kUnderline)
     return -thickness * 1.5f;
-  if (decoration == TextDecoration::kOverline)
+  if (decoration == TextDecorationLine::kOverline)
     return font_metrics.FloatAscent() - thickness;
-  if (decoration == TextDecoration::kLineThrough)
+  if (decoration == TextDecorationLine::kLineThrough)
     return font_metrics.FloatAscent() * 3 / 8.0f;
 
   NOTREACHED();
   return 0.0f;
 }
 
-static inline float ThicknessForDecoration(TextDecoration, const Font& font) {
+static inline float ThicknessForDecoration(TextDecorationLine,
+                                           const Font& font) {
   // FIXME: For SVG Fonts we need to use the attributes defined in the
   // <font-face> if specified.
   // Compatible with Batik/Presto
@@ -332,11 +334,11 @@ static inline float ThicknessForDecoration(TextDecoration, const Font& font) {
 }
 
 void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
-                                              TextDecoration decoration,
+                                              TextDecorationLine decoration,
                                               const SVGTextFragment& fragment) {
   if (svg_inline_text_box_.GetLineLayoutItem()
           .StyleRef()
-          .TextDecorationsInEffect() == TextDecoration::kNone)
+          .TextDecorationsInEffect() == TextDecorationLine::kNone)
     return;
 
   if (fragment.width <= 0)

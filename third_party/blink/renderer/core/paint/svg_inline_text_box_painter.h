@@ -60,7 +60,7 @@ class SVGInlineTextBoxPainter {
   bool ShouldPaintSelection(const PaintInfo&) const;
   void PaintTextFragments(const PaintInfo&, LayoutObject&);
   void PaintDecoration(const PaintInfo&,
-                       TextDecoration,
+                       TextDecorationLine,
                        const SVGTextFragment&);
   bool SetupTextPaint(const PaintInfo&,
                       const ComputedStyle&,

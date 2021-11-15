@@ -600,12 +600,12 @@ const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
   while (result) {
     if (style_variant_ == NGStyleVariant::kFirstLine) {
       if (const ComputedStyle* style = result->FirstLineStyle()) {
-        if (style->GetTextDecoration() != TextDecoration::kNone)
+        if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
           break;
       }
     }
     if (const ComputedStyle* style = result->Style()) {
-      if (style->GetTextDecoration() != TextDecoration::kNone)
+      if (style->GetTextDecorationLine() != TextDecorationLine::kNone)
         break;
     }
 

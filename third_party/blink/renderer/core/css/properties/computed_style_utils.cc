@@ -1572,13 +1572,13 @@ FloatSize ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
 }
 
 CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
-    TextDecoration text_decoration) {
+    TextDecorationLine text_decoration) {
   switch (text_decoration) {
-    case TextDecoration::kNone:
+    case TextDecorationLine::kNone:
       return CSSIdentifierValue::Create(CSSValueID::kNone);
-    case TextDecoration::kSpellingError:
+    case TextDecorationLine::kSpellingError:
       return CSSIdentifierValue::Create(CSSValueID::kSpellingError);
-    case TextDecoration::kGrammarError:
+    case TextDecorationLine::kGrammarError:
       return CSSIdentifierValue::Create(CSSValueID::kGrammarError);
     default:
       break;
@@ -1586,11 +1586,11 @@ CSSValue* ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
 
   // Blink value is ignored.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (EnumHasFlags(text_decoration, TextDecoration::kUnderline))
+  if (EnumHasFlags(text_decoration, TextDecorationLine::kUnderline))
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnderline));
-  if (EnumHasFlags(text_decoration, TextDecoration::kOverline))
+  if (EnumHasFlags(text_decoration, TextDecorationLine::kOverline))
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kOverline));
-  if (EnumHasFlags(text_decoration, TextDecoration::kLineThrough))
+  if (EnumHasFlags(text_decoration, TextDecorationLine::kLineThrough))
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLineThrough));
 
   if (!list->length())

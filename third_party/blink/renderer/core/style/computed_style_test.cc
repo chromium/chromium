@@ -1022,14 +1022,14 @@ TEST_F(ComputedStyleTest,
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
   style->SetTextUnderlinePosition(kTextUnderlinePositionUnder);
   state.SetStyle(style);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
-  EXPECT_EQ(TextDecoration::kUnderline, style->TextDecorationsInEffect());
+  EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
   StyleDifference diff1;
@@ -1062,7 +1062,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
@@ -1081,7 +1081,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 
   // Change decoration line
   other = ComputedStyle::Clone(*style);
-  other->SetTextDecoration(TextDecoration::kOverline);
+  other->SetTextDecorationLine(TextDecorationLine::kOverline);
   state.SetStyle(other);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_line;

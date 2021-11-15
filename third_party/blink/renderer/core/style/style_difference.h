@@ -25,7 +25,7 @@ class StyleDifference {
     kCSSClipChanged = 1 << 4,
     // The object needs to issue paint invalidations if it is affected by text
     // decorations or properties dependent on color (e.g., border or outline).
-    // TextDecoration changes must also invalidate ink overflow.
+    // TextDecorationLine changes must also invalidate ink overflow.
     kTextDecorationOrColorChanged = 1 << 5,
     kBlendModeChanged = 1 << 6,
     kMaskChanged = 1 << 7,

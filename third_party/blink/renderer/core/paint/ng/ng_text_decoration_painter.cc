@@ -43,7 +43,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   decoration_info_.reset();
   clip_rect_.reset();
 
-  if (style_.TextDecorationsInEffect() != TextDecoration::kNone &&
+  if (style_.TextDecorationsInEffect() != TextDecorationLine::kNone &&
       // Ellipsis should not have text decorations. This is not defined, but
       // 4 impls do this: <https://github.com/w3c/csswg-drafts/issues/6531>
       !text_item_.IsEllipsis()) {

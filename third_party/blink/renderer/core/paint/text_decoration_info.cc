@@ -111,13 +111,13 @@ static enum StrokeStyle TextDecorationStyleToStrokeStyle(
   return stroke_style;
 }
 
-static int TextDecorationToLineDataIndex(TextDecoration line) {
+static int TextDecorationToLineDataIndex(TextDecorationLine line) {
   switch (line) {
-    case TextDecoration::kUnderline:
+    case TextDecorationLine::kUnderline:
       return 0;
-    case TextDecoration::kOverline:
+    case TextDecorationLine::kOverline:
       return 1;
-    case TextDecoration::kLineThrough:
+    case TextDecorationLine::kLineThrough:
       return 2;
     default:
       NOTREACHED();
@@ -165,7 +165,7 @@ void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
   decoration_index_ = decoration_index;
 }
 
-void TextDecorationInfo::SetPerLineData(TextDecoration line,
+void TextDecorationInfo::SetPerLineData(TextDecorationLine line,
                                         float line_offset) {
   int index = TextDecorationToLineDataIndex(line);
   line_data_[index].line_offset = line_offset;
@@ -174,15 +174,15 @@ void TextDecorationInfo::SetPerLineData(TextDecoration line,
   float double_offset;
   int wavy_offset_factor;
   switch (line) {
-    case TextDecoration::kUnderline:
+    case TextDecorationLine::kUnderline:
       double_offset = double_offset_from_thickness;
       wavy_offset_factor = 1;
       break;
-    case TextDecoration::kOverline:
+    case TextDecorationLine::kOverline:
       double_offset = -double_offset_from_thickness;
       wavy_offset_factor = 1;
       break;
-    case TextDecoration::kLineThrough:
+    case TextDecorationLine::kLineThrough:
       // Floor double_offset in order to avoid double-line gap to appear
       // of different size depending on position where the double line
       // is drawn because of rounding downstream in
@@ -217,12 +217,12 @@ Color TextDecorationInfo::LineColor() const {
   return style_.AppliedTextDecorations()[decoration_index_].GetColor();
 }
 
-FloatPoint TextDecorationInfo::StartPoint(TextDecoration line) const {
+FloatPoint TextDecorationInfo::StartPoint(TextDecorationLine line) const {
   return local_origin_ +
          FloatPoint(
              0, line_data_[TextDecorationToLineDataIndex(line)].line_offset);
 }
-float TextDecorationInfo::DoubleOffset(TextDecoration line) const {
+float TextDecorationInfo::DoubleOffset(TextDecorationLine line) const {
   return line_data_[TextDecorationToLineDataIndex(line)].double_offset;
 }
 
@@ -258,7 +258,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
   return thickness;
 }
 
-FloatRect TextDecorationInfo::BoundsForLine(TextDecoration line) const {
+FloatRect TextDecorationInfo::BoundsForLine(TextDecorationLine line) const {
   FloatPoint start_point = StartPoint(line);
   switch (DecorationStyle()) {
     case ETextDecorationStyle::kDotted:
@@ -284,7 +284,7 @@ FloatRect TextDecorationInfo::BoundsForLine(TextDecoration line) const {
 }
 
 FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
-    TextDecoration line) const {
+    TextDecorationLine line) const {
   int line_data_index = TextDecorationToLineDataIndex(line);
   if (!line_data_[line_data_index].stroke_path) {
     // These coordinate transforms need to match what's happening in
@@ -304,7 +304,7 @@ FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
           stroke_data));
 }
 
-FloatRect TextDecorationInfo::BoundsForWavy(TextDecoration line) const {
+FloatRect TextDecorationInfo::BoundsForWavy(TextDecorationLine line) const {
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
   auto bounding_rect =
@@ -363,7 +363,7 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
  *                 step
  */
 absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
-    TextDecoration line) const {
+    TextDecorationLine line) const {
   int line_data_index = TextDecorationToLineDataIndex(line);
   if (line_data_[line_data_index].stroke_path)
     return line_data_[line_data_index].stroke_path;

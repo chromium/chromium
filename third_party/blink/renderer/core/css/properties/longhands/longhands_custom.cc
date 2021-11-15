@@ -6751,7 +6751,7 @@ const CSSValue* TextDecorationLine::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ComputedStyleUtils::RenderTextDecorationFlagsToCSSValue(
-      style.GetTextDecoration());
+      style.GetTextDecorationLine());
 }
 
 const CSSValue* TextDecorationSkipInk::CSSValueFromComputedStyleInternal(
