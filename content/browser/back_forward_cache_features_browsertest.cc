@@ -1708,8 +1708,9 @@ class BackForwardCacheBrowserTestWithVibration
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
 };
 
+// TODO(crbug.com/1269046): Enable this test.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
-                       VibrationStopsAfterEnteringCache) {
+                       DISABLED_VibrationStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with a long vibration.
