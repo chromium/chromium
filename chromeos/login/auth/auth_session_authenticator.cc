@@ -840,9 +840,11 @@ void AuthSessionAuthenticator::RunSafeModeChecks(
     return;
   }
   LOGIN_LOG(EVENT) << "Running in safe mode";
+  // Save value as context will be moved.
+  auto user_hash = context->GetUserIDHash();
   // Device is running in the safe mode, need to check if user is an owner.
   safe_mode_delegate_->CheckSafeModeOwnership(
-      context->GetUserIDHash(),
+      user_hash,
       base::BindOnce(&AuthSessionAuthenticator::OnOwnershipCheckedForSafeMode,
                      weak_factory_.GetWeakPtr(), std::move(continuation),
                      std::move(context)));
