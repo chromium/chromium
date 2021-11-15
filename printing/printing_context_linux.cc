@@ -109,12 +109,9 @@ gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
-  DCHECK(!external_preview) << "Not implemented";
 
   if (!create_dialog_func_)
     return mojom::ResultCode::kSuccess;

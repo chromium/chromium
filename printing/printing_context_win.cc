@@ -164,11 +164,8 @@ gfx::Size PrintingContextWin::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextWin::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
+    const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
-  DCHECK(!external_preview) << "Not implemented";
 
   ScopedPrinterHandle printer;
   if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
@@ -239,9 +236,10 @@ mojom::ResultCode PrintingContextWin::UpdatePrinterSettings(
   }
 
   // Update data using DocumentProperties.
-  if (show_system_dialog) {
+  if (printer_settings.show_system_dialog) {
     mojom::ResultCode result = mojom::ResultCode::kFailed;
-    AskUserForSettings(page_count, false, false,
+    AskUserForSettings(printer_settings.page_count, /*has_selection=*/false,
+                       /*is_scripted=*/false,
                        base::BindOnce(&AssignResult, &result));
     return result;
   }

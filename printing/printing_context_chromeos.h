@@ -36,9 +36,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
                           PrintSettingsCallback callback) override;
   mojom::ResultCode UseDefaultSettings() override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  mojom::ResultCode UpdatePrinterSettings(bool external_preview,
-                                          bool show_system_dialog,
-                                          int page_count) override;
+  mojom::ResultCode UpdatePrinterSettings(
+      const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
   mojom::ResultCode PageDone() override;

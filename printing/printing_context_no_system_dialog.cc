@@ -80,10 +80,8 @@ gfx::Size PrintingContextNoSystemDialog::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextNoSystemDialog::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
 
   if (settings_->dpi() == 0)
     UseDefaultSettings();

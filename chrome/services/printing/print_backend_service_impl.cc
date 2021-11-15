@@ -421,18 +421,17 @@ mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
   // now to our new context.
   // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
   // `PrintingContext::UpdatePrinterSettings()`.
-  bool external_preview = false;
-  bool show_system_dialog =
-      document_container.target_type == mojom::PrintTargetType::kSystemDialog;
+  PrintingContext::PrinterSettings printer_settings {
 #if defined(OS_MAC)
-  if (document_container.target_type ==
-      mojom::PrintTargetType::kExternalPreview) {
-    external_preview = true;
-  }
+    .external_preview = document_container.target_type ==
+                        mojom::PrintTargetType::kExternalPreview,
 #endif
+    .show_system_dialog =
+        document_container.target_type == mojom::PrintTargetType::kSystemDialog,
+    .page_count = 0,
+  };
   context->ApplyPrintSettings(document->settings());
-  mojom::ResultCode result = context->UpdatePrinterSettings(
-      external_preview, show_system_dialog, /*page_count=*/0);
+  mojom::ResultCode result = context->UpdatePrinterSettings(printer_settings);
   if (result != mojom::ResultCode::kSuccess) {
     DLOG(ERROR) << "Failure updating printer settings for document "
                 << document->cookie() << ", error: " << result;

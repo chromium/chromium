@@ -60,12 +60,12 @@ gfx::Size TestPrintingContext::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
+    const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
-  DCHECK(!external_preview) << "Not implemented";
-  DCHECK(!show_system_dialog) << "Not implemented";
+#if defined(OS_MAC)
+  DCHECK(!printer_settings.external_preview) << "Not implemented";
+#endif
+  DCHECK(!printer_settings.show_system_dialog) << "Not implemented";
 
   // The printer name is to be embedded in the printing context's existing
   // settings.

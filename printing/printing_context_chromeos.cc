@@ -292,10 +292,8 @@ gfx::Size PrintingContextChromeos::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
 
   if (InitializeDevice(base::UTF16ToUTF8(settings_->device_name())) !=
       mojom::ResultCode::kSuccess) {

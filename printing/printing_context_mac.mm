@@ -172,17 +172,15 @@ mojom::ResultCode PrintingContextMac::UseDefaultSettings() {
 }
 
 mojom::ResultCode PrintingContextMac::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
   // NOTE: Reset |print_info_| with a copy of |sharedPrintInfo| so as to start
   // with a clean slate.
   print_info_.reset([[NSPrintInfo sharedPrintInfo] copy]);
 
-  if (external_preview) {
+  if (printer_settings.external_preview) {
     if (!SetPrintPreviewJob())
       return OnError();
   } else {

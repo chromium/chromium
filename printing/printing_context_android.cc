@@ -200,10 +200,8 @@ gfx::Size PrintingContextAndroid::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextAndroid::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
   // Intentional No-op.

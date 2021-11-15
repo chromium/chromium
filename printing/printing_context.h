@@ -40,6 +40,21 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
     virtual std::string GetAppLocale() = 0;
   };
 
+  struct PrinterSettings {
+#if defined(OS_MAC)
+    // True if the to-be-printed PDF is going to be opened in external
+    // preview. Used by macOS only to open Preview.app.
+    bool external_preview;
+#endif
+
+    // Whether to show the system dialog.
+    bool show_system_dialog;
+
+    // If showing the system dialog, the number of pages in the to-be-printed
+    // PDF.
+    int page_count;
+  };
+
   PrintingContext(const PrintingContext&) = delete;
   PrintingContext& operator=(const PrintingContext&) = delete;
   virtual ~PrintingContext();
@@ -71,11 +86,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   virtual gfx::Size GetPdfPaperSizeDeviceUnits() = 0;
 
   // Updates printer settings.
-  // `external_preview` is true if pdf is going to be opened in external
-  // preview. Used by MacOS only now to open Preview.app.
-  virtual mojom::ResultCode UpdatePrinterSettings(bool external_preview,
-                                                  bool show_system_dialog,
-                                                  int page_count) = 0;
+  virtual mojom::ResultCode UpdatePrinterSettings(
+      const PrinterSettings& printer_settings) = 0;
 
   // Updates Print Settings. `job_settings` contains all print job
   // settings information.
