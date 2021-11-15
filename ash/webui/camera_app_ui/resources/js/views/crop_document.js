@@ -27,7 +27,7 @@ const ROTATIONS = [
 
 /**
  * @typedef {{
- *   el: !HTMLButtonElement,
+ *   el: !HTMLDivElement,
  *   pt: !Point,
  *   pointerId: ?number,
  * }}
