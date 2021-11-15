@@ -45,7 +45,7 @@ class EligibleHostDevicesProviderImpl
   ~EligibleHostDevicesProviderImpl() override;
 
  private:
-  EligibleHostDevicesProviderImpl(
+  explicit EligibleHostDevicesProviderImpl(
       device_sync::DeviceSyncClient* device_sync_client);
 
   // EligibleHostDevicesProvider:

@@ -54,6 +54,20 @@ EligibleHostDevicesProviderImpl::~EligibleHostDevicesProviderImpl() {
 
 multidevice::RemoteDeviceRefList
 EligibleHostDevicesProviderImpl::GetEligibleHostDevices() const {
+  // When enabled, this is equivalent to GetEligibleActiveHostDevices() without
+  // the connectivity data.
+  // TODO(https://crbug.com/1229876): Consolidate GetEligibleHostDevices() and
+  // GetEligibleActiveHostDevices().
+  if (base::FeatureList::IsEnabled(
+          features::kCryptAuthV2AlwaysUseActiveEligibleHosts)) {
+    multidevice::RemoteDeviceRefList eligible_active_devices;
+    for (const auto& device : eligible_active_devices_from_last_sync_) {
+      eligible_active_devices.push_back(device.remote_device);
+    }
+
+    return eligible_active_devices;
+  }
+
   return eligible_devices_from_last_sync_;
 }
 
