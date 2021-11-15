@@ -98,9 +98,10 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
   } else {
     // Some controllers might have no windows attached, for example background
     // task when foreground tasks is in full screen.
-    for (const auto& it : app_shelf_group_to_controller_map_)
+    for (const auto& it : app_shelf_group_to_controller_map_) {
       app_service_controller_->owner()->ReplaceWithAppShortcutOrRemove(
           it.second->shelf_id());
+    }
     app_shelf_group_to_controller_map_.clear();
   }
 }

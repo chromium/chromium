@@ -621,8 +621,18 @@ void AppServiceAppWindowShelfController::RemoveAppWindowFromShelf(
       owner()->shelf_model()->GetAppWindowShelfItemController(
           app_window->shelf_id());
 
-  if (item_controller && item_controller->window_count() == 0)
+  if (item_controller && item_controller->window_count() == 0) {
+    // `item_controller` will be destroyed by calling
+    // `ReplaceWithAppShortcutOrRemove`. So call the arc tracker to remove
+    // `item_controller` saved in `app_shelf_group_to_controller_map_` of
+    // `arc_tracker_` to prevent accessing the shelf id from the destroyed
+    // `item_controller` when switching the user.
+    if (arc_tracker_) {
+      arc_tracker_->OnItemDelegateDiscarded(item_controller->shelf_id(),
+                                            item_controller);
+    }
     owner()->ReplaceWithAppShortcutOrRemove(item_controller->shelf_id());
+  }
 }
 
 void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
