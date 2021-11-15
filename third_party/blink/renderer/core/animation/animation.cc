@@ -264,7 +264,7 @@ Animation* Animation::Create(ExecutionContext* execution_context,
 Animation::Animation(ExecutionContext* execution_context,
                      AnimationTimeline* timeline,
                      AnimationEffect* content)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ExecutionContextLifecycleObserver(nullptr),
       reported_play_state_(kIdle),
       playback_rate_(1),
       start_time_(),
@@ -288,6 +288,9 @@ Animation::Animation(ExecutionContext* execution_context,
       effect_suppressed_(false),
       compositor_property_animations_have_no_effect_(false),
       animation_has_no_effect_(false) {
+  if (execution_context && !execution_context->IsContextDestroyed())
+    SetExecutionContext(execution_context);
+
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->cancel();

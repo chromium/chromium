@@ -2077,6 +2077,22 @@ TEST_P(AnimationAnimationTestNoCompositing,
   EXPECT_FALSE(animation->HasPendingActivity());
 }
 
+TEST_P(AnimationAnimationTestCompositing, InvalidExecutionContext) {
+  // Test for crbug.com/1254444. Guard against setting an invalid execution
+  // context.
+  EXPECT_TRUE(animation->GetExecutionContext());
+  GetDocument().GetExecutionContext()->NotifyContextDestroyed();
+  EXPECT_FALSE(animation->GetExecutionContext());
+  Animation* original_animation = animation;
+  ResetWithCompositedAnimation();
+  EXPECT_TRUE(animation);
+  EXPECT_NE(animation, original_animation);
+  EXPECT_FALSE(animation->GetExecutionContext());
+  // Cancel queues an event if there is a valid execution context.
+  animation->cancel();
+  EXPECT_FALSE(animation->HasPendingActivity());
+}
+
 class AnimationPendingAnimationsTest : public PaintTestConfigurations,
                                        public RenderingTest {
  public:
