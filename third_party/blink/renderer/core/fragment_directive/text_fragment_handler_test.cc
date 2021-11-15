@@ -33,25 +33,14 @@ namespace {
 
 using test::RunPendingTasks;
 
-class TextFragmentHandlerTest : public SimTest,
-                                public ::testing::WithParamInterface<bool> {
+class TextFragmentHandlerTest : public SimTest {
  public:
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-
-    enabled.push_back(shared_highlighting::kSharedHighlightingV2);
-
-    preemptive_generation_enabled_ = GetParam();
-    if (preemptive_generation_enabled_)
-      enabled.push_back(shared_highlighting::kPreemptiveLinkToTextGeneration);
-    else
-      disabled.push_back(shared_highlighting::kPreemptiveLinkToTextGeneration);
-
-    feature_list_.InitWithFeatures(enabled, disabled);
+    feature_list_.InitWithFeatures({shared_highlighting::kSharedHighlightingV2},
+                                   {});
   }
 
   void BeginEmptyFrame() {
@@ -152,16 +141,8 @@ class TextFragmentHandlerTest : public SimTest,
   }
 
   void VerifyPreemptiveGenerationMetrics(bool success) {
-    if (!preemptive_generation_enabled_) {
-      histogram_tester_.ExpectTotalCount(
-          "SharedHighlights.LinkGenerated.Error.Requested", 0);
-      histogram_tester_.ExpectTotalCount(
-          "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
-      histogram_tester_.ExpectTotalCount(
-          "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
-    } else {
-      EXPECT_EQ(
-          1u, histogram_tester_
+    EXPECT_EQ(1u,
+              histogram_tester_
                       .GetAllSamples(
                           "SharedHighlights.LinkGenerated.RequestedAfterReady")
                       .size() +
@@ -170,13 +151,12 @@ class TextFragmentHandlerTest : public SimTest,
                           "SharedHighlights.LinkGenerated.RequestedBeforeReady")
                       .size());
 
-      if (!success) {
-        histogram_tester_.ExpectTotalCount(
-            "SharedHighlights.LinkGenerated.Error.Requested", 1);
-      } else {
-        histogram_tester_.ExpectTotalCount(
-            "SharedHighlights.LinkGenerated.Error.Requested", 0);
-      }
+    if (!success) {
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.Error.Requested", 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.Error.Requested", 0);
     }
 
     // Check async task metrics.
@@ -200,10 +180,9 @@ class TextFragmentHandlerTest : public SimTest,
  protected:
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
-  bool preemptive_generation_enabled_;
 };
 
-TEST_P(TextFragmentHandlerTest, RemoveTextFragments) {
+TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -245,7 +224,7 @@ TEST_P(TextFragmentHandlerTest, RemoveTextFragments) {
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 }
 
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ExtractTextFragmentWithWithMultipleTextFragments) {
   SimRequest request(
       "https://example.com/"
@@ -285,7 +264,7 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_EQ("more text", target_texts[1]);
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
+TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",
@@ -321,7 +300,7 @@ TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithNoMatch) {
   EXPECT_EQ(0u, target_texts.size());
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
+TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,text",
@@ -358,7 +337,7 @@ TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRange) {
   EXPECT_EQ("This is a test page, with some more text", target_texts[0]);
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
+TEST_F(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=this,is&text=a-,test,page&text=with,some,-content&"
@@ -389,7 +368,7 @@ TEST_P(TextFragmentHandlerTest, ExtractTextFragmentWithRangeAndContext) {
   EXPECT_EQ("nothing at", target_texts[3]);
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
+TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=This,page",
@@ -427,7 +406,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
+TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   // Android settings to correctly extract the rect when the page is loaded
   // zoomed in
   WebView().GetPage()->GetSettings().SetViewportEnabled(true);
@@ -476,7 +455,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
+TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -525,7 +504,7 @@ TEST_P(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ExtractFirstTextFragmentRectMultipleHighlightWithNoFoundText) {
   SimRequest request(
       "https://example.com/"
@@ -574,7 +553,7 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_EQ(expected_rect.ToString(), text_fragment_rect.ToString());
 }
 
-TEST_P(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
+TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page",
@@ -613,10 +592,7 @@ TEST_P(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
 }
 
 // Checks that the selector is preemptively generated.
-TEST_P(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
-  if (!preemptive_generation_enabled_)
-    return;
-
+TEST_F(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -639,10 +615,7 @@ TEST_P(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
 }
 
 // When URL is blocklisted, the selector shouldn't be preemptively generated.
-TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
-  if (!preemptive_generation_enabled_)
-    return;
-
+TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
   SimRequest request("https://instagram.com/test.html", "text/html");
   LoadURL("https://instagram.com/test.html");
   request.Complete(R"HTML(
@@ -665,10 +638,7 @@ TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
 }
 
 // Check that selector is not generated for editable text.
-TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
-  if (!preemptive_generation_enabled_)
-    return;
-
+TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
   SimRequest request("https://instagram.com/test.html", "text/html");
   LoadURL("https://instagram.com/test.html");
   request.Complete(R"HTML(
@@ -696,7 +666,7 @@ TEST_P(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
 // TODO(crbug.com/1192047): Update the test to better reflect the real repro
 // steps. Test case for crash in crbug.com/1190137. When selector is requested
 // after callback is set and unused.
-TEST_P(TextFragmentHandlerTest, SecondGenerationCrash) {
+TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -724,7 +694,7 @@ TEST_P(TextFragmentHandlerTest, SecondGenerationCrash) {
 
 // Verifies metrics for preemptive generation are correctly recorded when the
 // selector is successfully generated.
-TEST_P(TextFragmentHandlerTest, CheckMetrics_Success) {
+TEST_F(TextFragmentHandlerTest, CheckMetrics_Success) {
   base::test::ScopedFeatureList feature_list;
   // Basic exact selector case.
   SimRequest request("https://example.com/test.html", "text/html");
@@ -748,7 +718,7 @@ TEST_P(TextFragmentHandlerTest, CheckMetrics_Success) {
 
 // Verifies metrics for preemptive generation are correctly recorded when the
 // selector request fails, in this case, because the context limit is reached.
-TEST_P(TextFragmentHandlerTest, CheckMetrics_Failure) {
+TEST_F(TextFragmentHandlerTest, CheckMetrics_Failure) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -769,7 +739,7 @@ TEST_P(TextFragmentHandlerTest, CheckMetrics_Failure) {
   VerifyPreemptiveGenerationMetrics(false);
 }
 
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ShouldCreateTextFragmentHandlerAndRemoveHighlightForIframes) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(
@@ -825,7 +795,7 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_FALSE(child_frame->GetDocument()->View()->GetFragmentAnchor());
 }
 
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ShouldCreateTextFragmentHandlerAndRemoveHighlight) {
   SimRequest request(
       "https://example.com/"
@@ -877,7 +847,7 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
 }
 
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ShouldCreateTextFragmentHandlerAndRequestSelector) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -925,7 +895,7 @@ TEST_P(TextFragmentHandlerTest,
 }
 
 // Verifies that removing a text fragments from an iframe updates the URL
-TEST_P(TextFragmentHandlerTest, ShouldUpdateUrlAndRemoveHighlightForIframes) {
+TEST_F(TextFragmentHandlerTest, ShouldUpdateUrlAndRemoveHighlightForIframes) {
   SimRequest main_request("https://example.com/test.html#:~:text=test",
                           "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
@@ -1004,7 +974,7 @@ TEST_P(TextFragmentHandlerTest, ShouldUpdateUrlAndRemoveHighlightForIframes) {
 
 // When the main frame and an iFrame have different selectors, it verifies that
 // removing a text fragments from the iframe updates the URL.
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ShouldUpdateMainFrameUrlWhenMainFrameAndIframeHaveDifferentSelectors) {
   SimRequest main_request("https://example.com/test.html#:~:text=test",
                           "text/html");
@@ -1085,7 +1055,7 @@ TEST_P(TextFragmentHandlerTest,
 // When the main frame and an iFrame both have highlighted text, it verifies
 // that removing a text fragments from the main frame and the iframe, updates
 // there respective URL and remove the highlights.
-TEST_P(TextFragmentHandlerTest,
+TEST_F(TextFragmentHandlerTest,
        ShouldRemoveFromMainFrameAndIframeWhenBothHaveHighlights) {
   SimRequest main_request("https://example.com/test.html#:~:text=test",
                           "text/html");
@@ -1165,17 +1135,6 @@ TEST_P(TextFragmentHandlerTest,
                                                  ->GetHistoryItem()
                                                  ->Url());
 }
-
-struct PreemptiveLinkGenerationTestPassToString {
-  std::string operator()(const testing::TestParamInfo<bool> b) const {
-    return b.param ? "Preemptive" : "NonPreemptive";
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TextFragmentHandlerTest,
-                         ::testing::Bool(),
-                         PreemptiveLinkGenerationTestPassToString());
 
 }  // namespace
 

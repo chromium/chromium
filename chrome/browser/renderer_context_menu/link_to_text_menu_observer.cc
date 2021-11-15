@@ -30,9 +30,6 @@
 namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
 
-// Indicates how long context menu should wait for link generation result.
-constexpr base::TimeDelta kTimeoutMs = base::Milliseconds(500);
-
 // Removes the highlight from the frame.
 void RemoveHighlightsInFrame(content::RenderFrameHost* render_frame_host) {
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
@@ -90,7 +87,7 @@ void LinkToTextMenuObserver::InitMenu(
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
   }
 
-  if (ShouldPreemptivelyGenerateLink()) {
+  if (link_needs_generation_) {
     RequestLinkGeneration();
   }
 }
@@ -104,11 +101,13 @@ bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
   // This should only be called for the command for copying link to text.
   DCHECK(IsCommandIdSupported(command_id));
 
-  // If preemptively generating the link, only enable the command if the link
-  // has already been successfully generated.
-  if (ShouldPreemptivelyGenerateLink())
+  // If a link generation was needed, only enable the command if a link was
+  // successfully generated.
+  if (link_needs_generation_) {
     return generated_link_.has_value();
+  }
 
+  // For other cases (re-sharing and removing), the options are always enabled.
   return true;
 }
 
@@ -120,11 +119,7 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
     if (!link_needs_generation_) {
       ReshareLink();
     } else {
-      if (ShouldPreemptivelyGenerateLink()) {
-        CopyLinkToClipboard();
-      } else {
-        RequestLinkGeneration();
-      }
+      CopyLinkToClipboard();
     }
   } else if (command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT) {
     RemoveHighlights();
@@ -134,34 +129,21 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
 void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
   is_generation_complete_ = true;
-  if (ShouldPreemptivelyGenerateLink()) {
-    if (selector.empty()) {
-      // If there is no valid selector, leave the item disabled.
-      return;
-    }
-    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
-    proxy_->UpdateMenuItem(
-        IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+
+  if (selector.empty()) {
+    // If there is no valid selector, leave the item disabled.
     return;
   }
 
-  if (selector.empty())
-    generated_link_ = url_.spec();
-  else
-    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
-  CopyLinkToClipboard();
+  generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
+  proxy_->UpdateMenuItem(
+      IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
 }
 
 void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
     const std::string& selector) {
   generated_selector_for_testing_ = url_.spec() + selector;
-}
-
-bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
-  return base::FeatureList::IsEnabled(
-             shared_highlighting::kPreemptiveLinkToTextGeneration) &&
-         link_needs_generation_;
 }
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {
@@ -191,11 +173,8 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
     return;
   }
 
-  base::TimeDelta timeout_length_ms =
-      ShouldPreemptivelyGenerateLink()
-          ? base::Milliseconds(
-                shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs())
-          : kTimeoutMs;
+  base::TimeDelta timeout_length_ms = base::Milliseconds(
+      shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs());
 
   // Make a call to the renderer to generate a string that uniquely represents
   // the selected text and any context around the text to distinguish it from

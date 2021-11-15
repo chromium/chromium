@@ -27,7 +27,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,7 +41,6 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for {@link LinkToTextCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 public class LinkToTextCoordinatorTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -126,8 +124,7 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
-    public void showShareSheetTest_PreemptiveLinkToTextGeneration_LinkGeneration() {
+    public void showShareSheetTest_LinkGeneration() {
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
                 mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
@@ -137,8 +134,7 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
-    public void showShareSheetTest_EmptySelector_PreemptiveLinkToTextGeneration() {
+    public void showShareSheetTest_EmptySelector() {
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
                 mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);

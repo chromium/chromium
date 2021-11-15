@@ -21,13 +21,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
-namespace {
-bool PreemptiveGenerationEnabled() {
-  return base::FeatureList::IsEnabled(
-      shared_highlighting::kPreemptiveLinkToTextGeneration);
-}
-}  // namespace
-
 namespace blink {
 
 TextFragmentHandler::TextFragmentHandler(LocalFrame* main_frame)
@@ -53,26 +46,18 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
       GetFrame()->GetDocument()->Url()));
   DCHECK(!GetFrame()->Selection().SelectedText().IsEmpty());
 
-  if (PreemptiveGenerationEnabled()) {
-    GetTextFragmentSelectorGenerator()->RecordSelectorStateUma();
+  GetTextFragmentSelectorGenerator()->RecordSelectorStateUma();
 
-    selector_requested_before_ready_ =
-        !preemptive_generation_result_.has_value();
-    response_callback_ = std::move(callback);
+  selector_requested_before_ready_ = !preemptive_generation_result_.has_value();
+  response_callback_ = std::move(callback);
 
-    // If preemptive link generation is enabled, the generator would have
-    // already been invoked when the selection was updated in
-    // StartPreemptiveGenerationIfNeeded. If that generation finished simply
-    // respond with the result. Otherwise, the response callback is stored so
-    // that we reply on completion.
-    if (!selector_requested_before_ready_.value())
-      InvokeReplyCallback(preemptive_generation_result_.value());
-  } else {
-    DCHECK(!preemptive_generation_result_.has_value());
-    DCHECK(!response_callback_);
-    response_callback_ = std::move(callback);
-    StartGeneratingForCurrentSelection();
-  }
+  // If preemptive link generation is enabled, the generator would have
+  // already been invoked when the selection was updated in
+  // StartPreemptiveGenerationIfNeeded. If that generation finished simply
+  // respond with the result. Otherwise, the response callback is stored so
+  // that we reply on completion.
+  if (!selector_requested_before_ready_.value())
+    InvokeReplyCallback(preemptive_generation_result_.value());
 }
 
 void TextFragmentHandler::GetExistingSelectors(
@@ -197,7 +182,6 @@ void TextFragmentHandler::DidFinishSelectorGeneration(
     // If we don't have a callback yet, it's because we started generating
     // preemptively. We'll store the result so that when the selector actually
     // is requested we can simply use the stored result.
-    DCHECK(PreemptiveGenerationEnabled());
     preemptive_generation_result_.emplace(selector);
   }
 }
@@ -220,7 +204,6 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
 
 void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
     const TextFragmentSelector& selector) {
-  DCHECK(PreemptiveGenerationEnabled());
   DCHECK(selector_requested_before_ready_.has_value());
 
   bool success =
@@ -247,8 +230,7 @@ void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
 }
 
 void TextFragmentHandler::StartPreemptiveGenerationIfNeeded() {
-  if (PreemptiveGenerationEnabled() &&
-      shared_highlighting::ShouldOfferLinkToText(
+  if (shared_highlighting::ShouldOfferLinkToText(
           GetFrame()->GetDocument()->Url())) {
     preemptive_generation_result_.reset();
     StartGeneratingForCurrentSelection();
@@ -268,8 +250,7 @@ void TextFragmentHandler::DidDetachDocumentOrFrame() {
 
 void TextFragmentHandler::InvokeReplyCallback(
     const TextFragmentSelector& selector) {
-  if (PreemptiveGenerationEnabled())
-    RecordPreemptiveGenerationMetrics(selector);
+  RecordPreemptiveGenerationMetrics(selector);
 
   DCHECK(response_callback_);
   std::move(response_callback_).Run(selector.ToString());
