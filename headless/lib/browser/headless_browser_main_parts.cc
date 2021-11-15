@@ -57,12 +57,21 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   MaybeStartLocalDevToolsHttpHandler();
   browser_->PlatformInitialize();
   browser_->RunOnStartCallback();
+
+  if (parameters_.ui_task) {
+    std::move(parameters_.ui_task).Run();
+    run_message_loop_ = false;
+  }
+
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void HeadlessBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
-  quit_main_message_loop_ = run_loop->QuitClosure();
+  if (run_message_loop_)
+    quit_main_message_loop_ = run_loop->QuitClosure();
+  else
+    run_loop.reset();
 }
 
 void HeadlessBrowserMainParts::PostMainMessageLoopRun() {

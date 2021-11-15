@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_process_io_thread.h"
@@ -252,13 +251,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   void PostCreateThreadsImpl();
 
   int PreMainMessageLoopRun();
-
-  // One last opportunity to intercept the upcoming MainMessageLoopRun (or
-  // before yielding to the native loop on Android). Returns false iff the run
-  // should proceed after this call.
-  using ProceedWithMainMessageLoopRun =
-      base::StrongAlias<class ProceedWithMainMessageLoopRunTag, bool>;
-  ProceedWithMainMessageLoopRun InterceptMainMessageLoopRun();
 
   void MainMessageLoopRun();
 
