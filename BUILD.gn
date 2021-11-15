@@ -678,8 +678,6 @@ group("gn_all") {
       "//components/zucchini",
       "//net:quic_client",
       "//net:quic_server",
-      "//sandbox/win:pocdll",
-      "//sandbox/win:sandbox_poc",
       "//sandbox/win:sbox_integration_tests",
       "//sandbox/win:sbox_unittests",
       "//sandbox/win:sbox_validation_tests",

@@ -348,47 +348,6 @@ test("sbox_unittests") {
   ]
 }
 
-test("sandbox_poc") {
-  sources = [
-    "sandbox_poc/main_ui_window.cc",
-    "sandbox_poc/main_ui_window.h",
-    "sandbox_poc/resource.h",
-    "sandbox_poc/sandbox.cc",
-    "sandbox_poc/sandbox.h",
-    "sandbox_poc/sandbox.rc",
-  ]
-
-  configs -= [ "//build/config/win:console" ]
-  configs += [ "//build/config/win:windowed" ]
-
-  libs = [ "comctl32.lib" ]
-
-  deps = [
-    ":pocdll",
-    ":sandbox",
-  ]
-}
-
-shared_library("pocdll") {
-  sources = [
-    "sandbox_poc/pocdll/exports.h",
-    "sandbox_poc/pocdll/fs.cc",
-    "sandbox_poc/pocdll/handles.cc",
-    "sandbox_poc/pocdll/invasive.cc",
-    "sandbox_poc/pocdll/network.cc",
-    "sandbox_poc/pocdll/ntundoc.h",
-    "sandbox_poc/pocdll/pocdll.cc",
-    "sandbox_poc/pocdll/processes_and_threads.cc",
-    "sandbox_poc/pocdll/registry.cc",
-    "sandbox_poc/pocdll/spyware.cc",
-    "sandbox_poc/pocdll/utils.h",
-  ]
-
-  defines = [ "POCDLL_EXPORTS" ]
-
-  deps = [ "//base" ]
-}
-
 # This fuzzer will only work on Windows, add fuzz targets which could run on
 # Linux to //sandbox/ directly.
 fuzzer_test("sandbox_policy_rule_fuzzer") {
