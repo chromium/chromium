@@ -41,6 +41,10 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
                 download_item) != download_items_.end()) {
     return;
   }
+  if (!window_android) {
+    download_item->Remove();
+    return;
+  }
   download_item->AddObserver(this);
   download_items_.push_back(download_item);
 
