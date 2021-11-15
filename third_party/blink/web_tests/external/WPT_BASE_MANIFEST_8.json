@@ -266897,7 +266897,7 @@
       []
      ],
      "testdriver.md": [
-      "7adc4752e81c5523287f67730301a06a7f0ef906",
+      "cf117d65faa8b40789255e45fe58987bbe0c228a",
       []
      ],
      "testharness-api.md": [
@@ -298432,7 +298432,7 @@
      []
     ],
     "testdriver.js": [
-     "3b654f8139939aa52a6c597211f5684f08de5c23",
+     "cd113d975b96a5cdb268ead1fd79d3d08a1db588",
      []
     ],
     "testdriver.js.headers": [
@@ -298849,8 +298849,24 @@
     }
    },
    "secure-payment-confirmation": {
+    "secure-payment-confirmation-authentication-accepted.https-expected.txt": [
+     "51ace4ed85da9ac55547fffc751f7fa28b23b265",
+     []
+    ],
+    "secure-payment-confirmation-authentication-rejected.https-expected.txt": [
+     "81374cc95b81514962979e4e076d615589fcd0d1",
+     []
+    ],
     "secure-payment-confirmation-enrollment.https-expected.txt": [
      "3613bbce753b456ecacc55b658955ab0adc3feab",
+     []
+    ],
+    "troy.png": [
+     "4987ba65c2cefafeaa07abd87f47431ac7b6ca3a",
+     []
+    ],
+    "utils.sub.js": [
+     "86ce967c1d9241d45656990d35d6d387b1a11596",
      []
     ]
    },
@@ -308028,7 +308044,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "18054650e2ed4b25b1fa759d7cd9b77dd789e92c",
+     "c056ba7d76402d292024d195c3be28f826112a3e",
      []
     ]
    },
@@ -481361,6 +481377,24 @@
     ]
    },
    "secure-payment-confirmation": {
+    "secure-payment-confirmation-authentication-accepted.https.html": [
+     "b62716e0ccb9dfbf84a26b5ce3bdd6fe27d30e48",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "secure-payment-confirmation-authentication-rejected.https.html": [
+     "22432b88161d5fa9b34fa1a3dad23cfac96db749",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "secure-payment-confirmation-constructor.https.html": [
      "88b250511d07365b721b64d7999d5d9e1198f0d9",
      [

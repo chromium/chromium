@@ -491,6 +491,25 @@
             const blocked = state === "blocked";
             return window.test_driver_internal.set_storage_access(origin, embedding_origin, blocked, context);
         },
+
+        /**
+         * Sets the current transaction automation mode for Secure Payment
+         * Confirmation.
+         *
+         * {@link https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode}
+         *
+         * @param {String} mode - The transaction mode to set. Must be one of
+         *                        "none", "autoaccept", or "autoreject".
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Fulfilled after the transaction mode has been set,
+         *                    or rejected if setting the mode fails.
+         */
+        set_spc_transaction_mode: function(mode, context=null) {
+          return window.test_driver_internal.set_spc_transaction_mode(mode, context);
+        },
     };
 
     window.test_driver_internal = {
@@ -604,5 +623,10 @@
         set_storage_access: function(origin, embedding_origin, blocked, context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
+
+        set_spc_transaction_mode: function(mode, context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
     };
 })();

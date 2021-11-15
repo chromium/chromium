@@ -185,6 +185,31 @@ await test_driver.set_permission({ name: "background-fetch" }, "denied");
 await test_driver.set_permission({ name: "push", userVisibleOnly: true }, "granted", true);
 ```
 
+### set_spc_transaction_mode
+
+Usage: `test_driver.set_spc_transaction_mode(mode, context=null)`
+  * _mode_: a [TransactionAutomationMode](https://w3c.github.io/secure-payment-confirmation/#enumdef-transactionautomationmode)
+    that describes the mode to set SPC into
+  * _context_: a WindowProxy for the browsing context in which to perform the call
+
+This function places [Secure Payment Confirmation](https://w3c.github.io/secure-payment-confirmation/)
+into an automated 'autoaccept' or 'autoreject' mode, to allow testing without
+user interaction with the transaction UX prompt. It returns a promise that
+resolves after the transaction mode has been set to _mode_.
+
+Example:
+
+``` js
+await test_driver.set_spc_transaction_mode("autoaccept");
+test.add_cleanup(() => {
+  return test_driver.set_spc_transaction_mode("none");
+});
+
+// Assumption: `request` is a PaymentRequest with a secure-payment-confirmation
+// payment method.
+const response = await request.show();
+```
+
 ## Using testdriver in Other Browsing Contexts
 
 Testdriver can be used in browsing contexts (i.e. windows or frames)
