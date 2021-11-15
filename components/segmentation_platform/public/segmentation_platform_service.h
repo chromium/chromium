@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -20,10 +19,6 @@
 class PrefRegistrySimple;
 
 namespace segmentation_platform {
-namespace features {
-extern const base::Feature kSegmentationPlatformFeature;
-}  // namespace features
-
 struct SegmentSelectionResult;
 
 // The core class of segmentation platform that integrates all the required

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -151,6 +152,8 @@ SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() = default;
 void SegmentationPlatformServiceImpl::GetSelectedSegment(
     const std::string& segmentation_key,
     SegmentSelectionCallback callback) {
+  CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
+
   auto& selector = segment_selectors_.at(segmentation_key);
   selector->GetSelectedSegment(std::move(callback));
 }

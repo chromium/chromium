@@ -82,6 +82,12 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB};
     configs.push_back(std::move(config));
   }
+  {
+    // Empty config.
+    std::unique_ptr<Config> config = std::make_unique<Config>();
+    configs.push_back(std::move(config));
+  }
+
   return configs;
 }
 
@@ -137,6 +143,10 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
         "segment_id",
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
+  }
+
+  virtual std::vector<std::unique_ptr<Config>> CreateConfigs() {
+    return CreateTestConfigs();
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -280,6 +290,26 @@ TEST_F(SegmentationPlatformServiceImplTest,
       base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
                      base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
+}
+
+class SegmentationPlatformServiceImplEmptyConfigTest
+    : public SegmentationPlatformServiceImplTest {
+  std::vector<std::unique_ptr<Config>> CreateConfigs() override {
+    return std::vector<std::unique_ptr<Config>>();
+  }
+};
+
+TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
+  // Let the DB loading complete successfully.
+  segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->LoadCallback(true);
+
+  // If initialization is succeeded, model execution scheduler should start
+  // querying segment db.
+  segment_db_->LoadCallback(true);
 }
 
 class SegmentationPlatformServiceImplMultiClientTest

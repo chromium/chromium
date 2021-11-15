@@ -4,12 +4,4 @@
 
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-namespace segmentation_platform {
-namespace features {
-
-// Core feature flag for segmentation platform.
-const base::Feature kSegmentationPlatformFeature{
-    "SegmentationPlatform", base::FEATURE_ENABLED_BY_DEFAULT};
-}  // namespace features
-
-}  // namespace segmentation_platform
+namespace segmentation_platform {}  // namespace segmentation_platform

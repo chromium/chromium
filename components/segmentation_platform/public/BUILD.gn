@@ -11,6 +11,8 @@ source_set("public") {
   sources = [
     "config.cc",
     "config.h",
+    "features.cc",
+    "features.h",
     "segment_selection_result.cc",
     "segment_selection_result.h",
     "segmentation_platform_service.cc",

@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
