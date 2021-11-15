@@ -31721,7 +31721,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="528" label="MixedContentPrivateIPInPublicWebsiteActive"/>
   <int value="529" label="XMLExternalResourceLoad"/>
   <int value="530" label="MixedContentPrivateHostnameInPublicHostname"/>
-  <int value="531" label="LegacyProtocolEmbeddedAsSubresource"/>
+  <int value="531" label="OBSOLETE_LegacyProtocolEmbeddedAsSubresource"/>
   <int value="532" label="RequestedSubresourceWithEmbeddedCredentials"/>
   <int value="533" label="NotificationCreated"/>
   <int value="534" label="NotificationClosed"/>
@@ -35434,6 +35434,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4077" label="FileSystemUrlNavigation"/>
   <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
   <int value="4079" label="ClientHintsUAFullVersionList"/>
+  <int value="4080" label="WebAppManifestLaunchHandler"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

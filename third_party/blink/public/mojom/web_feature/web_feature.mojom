@@ -3386,6 +3386,7 @@ enum WebFeature {
   kFileSystemUrlNavigation = 4077,
   kV8Navigator_AdAuctionComponents_Method = 4078,
   kClientHintsUAFullVersionList = 4079,
+  kWebAppManifestLaunchHandler = 4080,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
