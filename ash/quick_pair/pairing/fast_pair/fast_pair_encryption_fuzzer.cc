@@ -84,8 +84,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Set x value and y bit according to fuzz.
   auto x_value_arr = fuzzed_data.ConsumeBytes<uint8_t>(kXSize);
   DCHECK(x_value_arr.size() == kXSize);
-  BIGNUM* x = BN_new();
-  DCHECK(BN_le2bn(&x_value_arr[0], kXSize, x));
+  bssl::UniquePtr<BIGNUM> x(BN_new());
+  DCHECK(BN_le2bn(&x_value_arr[0], kXSize, x.get()));
 
   auto y_value_arr = fuzzed_data.ConsumeBytes<uint8_t>(kYSize);
   DCHECK(y_value_arr.size() == kYSize);
@@ -95,8 +95,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // effectively uses fuzz to generate a point on the EC without us having to
   // explicitly compute the solution y for x on the EC. Fails 50% of the time
   // when generated x value has no solution on the EC.
-  if (!EC_POINT_set_compressed_coordinates_GFp(ec_group.get(), point.get(), x,
-                                               y_bit, /*ctx=*/nullptr))
+  if (!EC_POINT_set_compressed_coordinates_GFp(ec_group.get(), point.get(),
+                                               x.get(), y_bit, /*ctx=*/nullptr))
     return 0;
 
   // Convert compressed EC_POINT into the uncompressed string expected by the
