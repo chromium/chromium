@@ -213,7 +213,7 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   // non-editable positions. It acts to negate the logic at the beginning of
   // |LayoutObject::CreatePositionWithAffinity()|.
   const PositionTemplate<Strategy>& downstream_equivalent =
-      DownstreamVisuallyEquivalent(position);
+      DownstreamVisuallyEquivalent(position, rule);
   DCHECK(downstream_equivalent.IsNotNull());
   if (downstream_equivalent != position &&
       downstream_equivalent.AnchorNode()->GetLayoutObject()) {
@@ -223,7 +223,7 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
         recursion_depth + 1, rule);
   }
   const PositionTemplate<Strategy>& upstream_equivalent =
-      UpstreamVisuallyEquivalent(position);
+      UpstreamVisuallyEquivalent(position, rule);
   DCHECK(upstream_equivalent.IsNotNull());
   if (upstream_equivalent == position ||
       !upstream_equivalent.AnchorNode()->GetLayoutObject())

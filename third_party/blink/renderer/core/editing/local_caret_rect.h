@@ -36,10 +36,12 @@ struct LocalCaretRect {
 };
 
 // Rect is local to the returned layoutObject
-CORE_EXPORT LocalCaretRect
-LocalCaretRectOfPosition(const PositionWithAffinity&);
-CORE_EXPORT LocalCaretRect
-LocalCaretRectOfPosition(const PositionInFlatTreeWithAffinity&);
+CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
+    const PositionWithAffinity&,
+    EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
+CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
+    const PositionInFlatTreeWithAffinity&,
+    EditingBoundaryCrossingRule = kCanCrossEditingBoundary);
 
 LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
 
