@@ -236,6 +236,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/accessibility/AccessibilityActionAndEventTracker.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcher.java",
+    "java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoUtils.java",
     "java/src/org/chromium/content/browser/accessibility/BrowserAccessibilityState.java",
     "java/src/org/chromium/content/browser/accessibility/OViewStructureBuilder.java",
     "java/src/org/chromium/content/browser/accessibility/OWebContentsAccessibility.java",

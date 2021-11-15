@@ -43,6 +43,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     // Test output error messages.
     protected static final String EVENTS_ERROR =
             "Generated events and actions did not match expectations.";
+    protected static final String NODE_ERROR =
+            "Generated AccessibilityNodeInfo tree did not match expectations.";
     protected static final String EXPECTATIONS_NULL =
             "Test expectations were null, perhaps the file is missing?";
     protected static final String RESULTS_NULL =

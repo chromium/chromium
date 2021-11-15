@@ -52,6 +52,12 @@ def Fix(line):
                        line)
     if result:
       line = group(1)
+  # For Android content_shell_test_apk tests:
+  elif line[:2] == 'C ':
+    result = re.search('C \d+\.\d+s Main  ([T|E|A|W|\+](.*))', line)
+
+    if result:
+      line = result.group(1)
   return line
 
 def ParseLog(logdata):
@@ -130,7 +136,8 @@ def Run():
       s_name = None
       for step in steps_json['steps']:
         name = step['name']
-        if name.startswith('content_browsertests') and '(with patch)' in name:
+        if (name.startswith('content_shell_test_apk') or
+            name.startswith('content_browsertests')) and '(with patch)' in name:
           s_name = name
 
       bb_command = [

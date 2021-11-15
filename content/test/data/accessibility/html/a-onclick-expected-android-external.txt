@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"null" contentDescription:"link with no href but onclick" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link"]
+++++TextView text:"link with no href but onclick" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++View text:"null" contentDescription:"link with no href and click handler added via script" viewIdResName:"add-click-handler-to-me" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link"]
+++++TextView text:"link with no href and click handler added via script" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
