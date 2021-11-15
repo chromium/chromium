@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chrome OS-specific strings (included from generated_resources.grd).
+     Shared between both Ash and Lacros.
+     Everything in this file is wrapped in <if expr="chromeos or lacros">. -->
+<grit-part>
+
+  <!-- Slow UI -->
+  <message name="IDS_SLOW_DISABLE" desc="The text of the button that disables performance collection for feedback reports">
+    Disable performance data collection
+  </message>
+  <message name="IDS_SLOW_ENABLE" desc="The text of the button that enables performance collection for feedback reports">
+    Enable performance data collection
+  </message>
+  <message name="IDS_SLOW_DESCRIPTION" desc="The description of the performance tracing feature for feedback reports.">
+    Enabling collection of performance data will help Google improve the system over time. No data is sent until you file a feedback report (Alt-Shift-I) and include performance data. You can return to this screen to disable collection at any time.
+  </message>
+  <message name="IDS_SLOW_WARNING" desc="The warning that informs users that enabling this can have a negative effect on their performance">
+    <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Note:<ph name="END_BOLD">&lt;/strong&gt;</ph> Only enable if you know what you are doing or if you have been asked to do so, as collection of data may reduce performance.
+  </message>
+
+</grit-part>
