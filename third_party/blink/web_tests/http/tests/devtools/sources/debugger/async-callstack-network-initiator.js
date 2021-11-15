@@ -59,7 +59,7 @@
   }
 
   async function dumpConsoleMessages() {
-    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaksTrimmed);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();
