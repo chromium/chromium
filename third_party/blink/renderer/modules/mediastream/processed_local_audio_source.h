@@ -113,11 +113,11 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       media::AudioProcessorControls* controls) override;
 
  private:
-  // Runs the audio through |audio_processor_| before sending it along.
-  void CaptureUsingProcessor(const media::AudioBus* audio_source,
+  // Receive and forward processed capture audio. Called on the same thread as
+  // Capture().
+  void DeliverProcessedAudio(const media::AudioBus& processed_audio,
                              base::TimeTicks audio_capture_time,
-                             double volume,
-                             bool key_pressed);
+                             absl::optional<double> new_volume);
 
   // Update the device (source) mic volume.
   void SetVolume(double volume);
@@ -154,6 +154,11 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   // Used to calculate the signal level that shows in the UI.
   blink::MediaStreamAudioLevelCalculator level_calculator_;
+
+  // Used to signal non-silent mic input to the level calculator, when there is
+  // a risk that the audio processor will zero it out.
+  // Is only accessed on the audio capture thread.
+  bool force_report_nonzero_energy_ = false;
 
   bool allow_invalid_render_frame_id_for_testing_;
 
