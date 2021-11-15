@@ -18,6 +18,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/about_this_site_service.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
@@ -468,6 +469,11 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     optimization_guide_decider->AddHintForTesting(
         GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
         optimization_metadata);
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
   }
 
   // DialogBrowserTest:
