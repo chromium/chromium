@@ -355,9 +355,9 @@ TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   FakeFontCollection fonts;
   FakeFont& arial = fonts.AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
   for (auto& path : arial_font_files) {
-    base::File file(base::FilePath(path), base::File::FLAG_OPEN |
-                                              base::File::FLAG_READ |
-                                              base::File::FLAG_EXCLUSIVE_WRITE);
+    base::File file(base::FilePath(path),
+                    base::File::FLAG_OPEN | base::File::FLAG_READ |
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     arial.AddFileHandle(std::move(file));
   }
   mswr::ComPtr<DWriteFontCollectionProxy> collection;
