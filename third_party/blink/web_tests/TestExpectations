@@ -5094,7 +5094,6 @@ crbug.com/943969 [ Win ] inspector-protocol/css/css-get-media-queries.js [ Failu
 # Sheriff 2019-03-25
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Failure Pass ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Failure Pass Skip Timeout ]
-crbug.com/945665 http/tests/devtools/elements/styles-3/styles-disable-inherited.js [ Failure Pass ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-editing.js [ Failure Pass ]
 
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
