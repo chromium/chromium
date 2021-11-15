@@ -393,15 +393,8 @@ std::unique_ptr<Server> Server::Create(Display* display) {
     LOG(ERROR) << "XDG_RUNTIME_DIR not set in the environment";
     return nullptr;
   }
-
-  std::string socket_name(kSocketName);
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kWaylandServerSocket)) {
-    socket_name =
-        command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
-  }
   return Create(display, Capabilities::GetDefaultCapabilities(),
-                base::FilePath(runtime_dir_str).Append(socket_name));
+                base::FilePath(runtime_dir_str).Append(GetSocketName()));
 }
 
 // static
@@ -436,6 +429,14 @@ void Server::CreateAsync(
             std::move(callback).Run(std::move(server));
           },
           std::move(callback)));
+}
+
+// static
+std::string Server::GetSocketName() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kWaylandServerSocket))
+    return command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
+  return kSocketName;
 }
 
 bool Server::AddSocket(const std::string name) {

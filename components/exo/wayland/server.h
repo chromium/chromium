@@ -68,6 +68,11 @@ class Server : public display::DisplayObserver {
       const base::FilePath& socket_path,
       base::OnceCallback<void(std::unique_ptr<Server>)> callback);
 
+  // Returns the name to be used for wayland sockets. This will be "wayland-0"
+  // (in-line with the wayland spec) unless overridden using the
+  // --wayland-server-socket switch.
+  static std::string GetSocketName();
+
   void Initialize();
 
   void Finalize();

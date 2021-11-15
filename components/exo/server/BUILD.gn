@@ -26,12 +26,19 @@ source_set("server") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "arc_overlay_manager_unittest.cc" ]
+  sources = [
+    "arc_overlay_manager_unittest.cc",
+    "wayland_server_controller_unittest.cc",
+  ]
+
   deps = [
+    ":server",
+    "//ash:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//components/exo",
     "//components/exo:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/aura",
   ]

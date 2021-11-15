@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "components/exo/display.h"
 
 namespace exo {
@@ -15,14 +16,33 @@ namespace wayland {
 class Server;
 }  // namespace wayland
 
+class Capabilities;
 class DataExchangeDelegate;
-class WMHelper;
-class NotificationSurfaceManager;
 class InputMethodSurfaceManager;
+class NotificationSurfaceManager;
 class ToastSurfaceManager;
+class WMHelper;
 
 class WaylandServerController {
  public:
+  // Helper to manage the lifetimes of the directories associated with custom
+  // wayland servers.
+  class PathHelper {
+   public:
+    static std::unique_ptr<PathHelper> Create(const Capabilities& capabilities);
+
+    PathHelper(const PathHelper&) = delete;
+    PathHelper& operator=(const PathHelper&) = delete;
+
+    const base::FilePath& GetPath() const { return socket_path_; }
+
+   private:
+    explicit PathHelper(base::ScopedTempDir runtime_dir);
+
+    base::ScopedTempDir runtime_dir_;
+    base::FilePath socket_path_;
+  };
+
   static std::unique_ptr<WaylandServerController> CreateForArcIfNecessary(
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
 
