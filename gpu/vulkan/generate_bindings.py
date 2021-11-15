@@ -414,7 +414,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
 
-  bool BindUnassociatedFunctionPointers();
+  bool BindUnassociatedFunctionPointers(
+      PFN_vkGetInstanceProcAddr proc = nullptr);
 
   // These functions assume that vkGetInstanceProcAddr has been populated.
   bool BindInstanceFunctionPointers(
@@ -562,15 +563,22 @@ VulkanFunctionPointers* GetVulkanFunctionPointers() {
 VulkanFunctionPointers::VulkanFunctionPointers() = default;
 VulkanFunctionPointers::~VulkanFunctionPointers() = default;
 
-bool VulkanFunctionPointers::BindUnassociatedFunctionPointers() {
-  // vkGetInstanceProcAddr must be handled specially since it gets its function
-  // pointer through base::GetFunctionPOinterFromNativeLibrary(). Other Vulkan
-  // functions don't do this.
-  vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
-      base::GetFunctionPointerFromNativeLibrary(vulkan_loader_library,
-                                                "vkGetInstanceProcAddr"));
-  if (!vkGetInstanceProcAddr)
-    return false;
+bool VulkanFunctionPointers::BindUnassociatedFunctionPointers(
+  PFN_vkGetInstanceProcAddr proc) {
+
+  if (proc) {
+    DCHECK(!vulkan_loader_library);
+    vkGetInstanceProcAddr = proc;
+  } else {
+    // vkGetInstanceProcAddr must be handled specially since it gets its
+    // function pointer through base::GetFunctionPOinterFromNativeLibrary().
+    // Other Vulkan functions don't do this.
+    vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
+        base::GetFunctionPointerFromNativeLibrary(vulkan_loader_library,
+                                                  "vkGetInstanceProcAddr"));
+    if (!vkGetInstanceProcAddr)
+      return false;
+  }
 """)
 
   WriteUnassociatedFunctionPointerInitialization(

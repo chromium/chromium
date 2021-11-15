@@ -53,7 +53,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunctionPointers();
   ~VulkanFunctionPointers();
 
-  bool BindUnassociatedFunctionPointers();
+  bool BindUnassociatedFunctionPointers(
+      PFN_vkGetInstanceProcAddr proc = nullptr);
 
   // These functions assume that vkGetInstanceProcAddr has been populated.
   bool BindInstanceFunctionPointers(

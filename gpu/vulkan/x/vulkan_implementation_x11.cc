@@ -26,7 +26,7 @@ namespace gpu {
 
 namespace {
 
-bool InitializeVulkanFunctionPointers(
+bool LoadVulkanLibrary(
     const base::FilePath& path,
     VulkanFunctionPointers* vulkan_function_pointers) {
   base::NativeLibraryLoadError native_library_load_error;
@@ -64,21 +64,22 @@ bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
     required_extensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
   }
 
-  VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
+  if (!vulkan_instance_.is_from_angle()) {
+    base::FilePath path;
+    if (use_swiftshader()) {
+      if (!base::PathService::Get(base::DIR_MODULE, &path))
+        return false;
 
-  base::FilePath path;
-  if (use_swiftshader()) {
-    if (!base::PathService::Get(base::DIR_MODULE, &path))
+      path = path.Append("libvk_swiftshader.so");
+    } else {
+      path = base::FilePath("libvulkan.so.1");
+    }
+
+    VulkanFunctionPointers* vulkan_function_pointers =
+        gpu::GetVulkanFunctionPointers();
+    if (!LoadVulkanLibrary(path, vulkan_function_pointers))
       return false;
-
-    path = path.Append("libvk_swiftshader.so");
-  } else {
-    path = base::FilePath("libvulkan.so.1");
   }
-
-  if (!InitializeVulkanFunctionPointers(path, vulkan_function_pointers))
-    return false;
 
   if (!vulkan_instance_.Initialize(required_extensions, {}))
     return false;

@@ -23,6 +23,7 @@ GL_EXPORT gfx::ExtensionSet QueryVkInstanceExtensionsFromANGLE();
 GL_EXPORT gfx::ExtensionSet QueryVkDeviceExtensionsFromANGLE();
 GL_EXPORT const VkPhysicalDeviceFeatures2KHR*
 QueryVkEnabledDeviceFeaturesFromANGLE();
+GL_EXPORT PFN_vkGetInstanceProcAddr QueryVkGetInstanceProcAddrFromANGLE();
 
 }  // namespace gl
 

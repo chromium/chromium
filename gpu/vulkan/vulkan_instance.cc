@@ -75,10 +75,18 @@ VulkanInstance::~VulkanInstance() {
 bool VulkanInstance::Initialize(
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& required_layers) {
+  PFN_vkGetInstanceProcAddr proc = nullptr;
+  if (is_from_angle_) {
+    proc = gl::QueryVkGetInstanceProcAddrFromANGLE();
+    if (!proc) {
+      LOG(ERROR) << "Failed to get vkGetInstanceProcAddr pointer from ANGLE.";
+      return false;
+    }
+  }
+
   VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
-
-  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
+  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers(proc))
     return false;
 
   if (is_from_angle_)
