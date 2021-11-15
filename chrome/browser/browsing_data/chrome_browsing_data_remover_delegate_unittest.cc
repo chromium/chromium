@@ -969,6 +969,12 @@ class MockReportingService : public net::ReportingService {
     return std::vector<const net::ReportingReport*>();
   }
 
+  base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override {
+    NOTREACHED();
+    return base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>();
+  }
+
   void AddReportingCacheObserver(
       net::ReportingCacheObserver* observer) override {}
 

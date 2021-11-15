@@ -169,6 +169,11 @@ class ReportingServiceImpl : public ReportingService {
     return reports;
   }
 
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override {
+    return context_->cache()->GetV1ReportingEndpointsByOrigin();
+  }
+
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override {
     context_->AddCacheObserver(observer);
   }

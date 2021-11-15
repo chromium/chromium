@@ -127,6 +127,10 @@ class NET_EXPORT ReportingService {
   virtual base::Value StatusAsValue() const;
 
   virtual std::vector<const ReportingReport*> GetReports() const = 0;
+
+  virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const = 0;
+
   virtual void AddReportingCacheObserver(ReportingCacheObserver* observer) = 0;
   virtual void RemoveReportingCacheObserver(
       ReportingCacheObserver* observer) = 0;

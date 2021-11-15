@@ -192,6 +192,53 @@ void ReportingCacheImpl::IncrementReportsAttempts(
   context_->NotifyCachedReportsUpdated();
 }
 
+std::vector<ReportingEndpoint> FilterEndpointsByOrigin(
+    const std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>&
+        document_endpoints,
+    const url::Origin& origin) {
+  std::set<std::string> group_names;
+  std::vector<ReportingEndpoint> result;
+  for (const auto& token_and_endpoints : document_endpoints) {
+    for (const auto& endpoint : token_and_endpoints.second) {
+      if (endpoint.group_key.origin == origin) {
+        if (group_names.insert(endpoint.group_key.group_name).second) {
+          // Push the endpoint only when the insertion succeeds.
+          result.push_back(endpoint);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>> result;
+  base::flat_map<url::Origin, base::flat_set<std::string>> group_name_helper;
+  for (const auto& token_and_endpoints : document_endpoints_) {
+    for (const auto& endpoint : token_and_endpoints.second) {
+      auto origin = endpoint.group_key.origin;
+      if (result.count(origin)) {
+        if (group_name_helper.at(origin)
+                .insert(endpoint.group_key.group_name)
+                .second) {
+          // Push the endpoint only when the insertion succeeds.
+          result.at(origin).push_back(endpoint);
+        }
+      } else {
+        std::vector<ReportingEndpoint> endpoints_for_origin;
+        endpoints_for_origin.push_back(endpoint);
+        result.emplace(origin, endpoints_for_origin);
+
+        base::flat_set<std::string> group_names;
+        group_names.insert(endpoint.group_key.group_name);
+        group_name_helper.emplace(origin, group_names);
+      }
+    }
+  }
+  return result;
+}
+
 ReportingEndpoint::Statistics* ReportingCacheImpl::GetEndpointStats(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url) {
@@ -400,10 +447,15 @@ void ReportingCacheImpl::RemoveSourceAndEndpoints(
                report->status != ReportingReport::Status::DOOMED &&
                report->status != ReportingReport::Status::SUCCESS;
       }));
+  url::Origin origin;
+  if (document_endpoints_.count(reporting_source) > 0) {
+    origin = document_endpoints_.at(reporting_source)[0].group_key.origin;
+  }
   document_endpoints_.erase(reporting_source);
   isolation_info_.erase(reporting_source);
   expired_sources_.erase(reporting_source);
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
 void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
@@ -414,9 +466,11 @@ void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
   DCHECK(!endpoints.empty());
   DCHECK_EQ(0u, document_endpoints_.count(reporting_source));
   DCHECK_EQ(0u, isolation_info_.count(reporting_source));
+  url::Origin origin = endpoints[0].group_key.origin;
   document_endpoints_.insert({reporting_source, std::move(endpoints)});
   isolation_info_.insert({reporting_source, isolation_info});
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
@@ -831,7 +885,8 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
     DCHECK(isolation_info_.at(reporting_source)
                .IsEqualForTesting(isolation_info));  // IN-TEST
   }
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, group_key.origin));
 }
 
 void ReportingCacheImpl::SetEndpointForTesting(

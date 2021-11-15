@@ -42,7 +42,10 @@ class ReportingGarbageCollectorImpl : public ReportingGarbageCollector,
 
   // ReportingObserver implementation:
   void OnReportsUpdated() override { EnsureTimerIsRunning(); }
-  void OnEndpointsUpdated() override { EnsureTimerIsRunning(); }
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<ReportingEndpoint>& endpoints) override {
+    EnsureTimerIsRunning();
+  }
 
  private:
   // TODO(crbug.com/912622): Garbage collect clients, reports with no matching

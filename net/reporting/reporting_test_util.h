@@ -367,6 +367,8 @@ class TestReportingService : public ReportingService {
   ReportingContext* GetContextForTesting() const override;
 
   std::vector<const ReportingReport*> GetReports() const override;
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override;
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override;
   void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override;
 

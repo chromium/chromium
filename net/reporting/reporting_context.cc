@@ -86,9 +86,10 @@ void ReportingContext::NotifyCachedClientsUpdated() {
     observer.OnClientsUpdated();
 }
 
-void ReportingContext::NotifyEndpointsUpdated() {
+void ReportingContext::NotifyEndpointsUpdatedForOrigin(
+    const std::vector<ReportingEndpoint>& endpoints) {
   for (auto& observer : cache_observers_)
-    observer.OnEndpointsUpdated();
+    observer.OnEndpointsUpdatedForOrigin(endpoints);
 }
 
 bool ReportingContext::IsReportDataPersisted() const {

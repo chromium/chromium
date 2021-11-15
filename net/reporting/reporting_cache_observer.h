@@ -5,11 +5,13 @@
 #ifndef NET_REPORTING_REPORTING_CACHE_OBSERVER_H_
 #define NET_REPORTING_REPORTING_CACHE_OBSERVER_H_
 
+#include <vector>
+
 #include "net/base/net_export.h"
+#include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_report.h"
 
 namespace net {
-
-struct ReportingReport;
 
 class NET_EXPORT ReportingCacheObserver {
  public:
@@ -29,8 +31,10 @@ class NET_EXPORT ReportingCacheObserver {
   // ReportingCache.
   virtual void OnClientsUpdated();
 
-  // Called when V1 reporting endpoints are updated in the ReportingCache.
-  virtual void OnEndpointsUpdated();
+  // Called when V1 reporting endpoints for an origin are updated in the
+  // ReportingCache.
+  virtual void OnEndpointsUpdatedForOrigin(
+      const std::vector<ReportingEndpoint>& endpoints);
 
  protected:
   ReportingCacheObserver();

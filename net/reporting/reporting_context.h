@@ -64,7 +64,8 @@ class NET_EXPORT ReportingContext {
   void NotifyReportAdded(const ReportingReport* report);
   void NotifyReportUpdated(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
-  void NotifyEndpointsUpdated();
+  void NotifyEndpointsUpdatedForOrigin(
+      const std::vector<ReportingEndpoint>& endpoints);
 
   // Returns whether the data in the cache is persisted across restarts in the
   // PersistentReportingStore.

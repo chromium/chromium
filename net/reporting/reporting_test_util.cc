@@ -378,6 +378,12 @@ std::vector<const ReportingReport*> TestReportingService::GetReports() const {
   return std::vector<const ReportingReport*>();
 }
 
+base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+TestReportingService::GetV1ReportingEndpointsByOrigin() const {
+  NOTREACHED();
+  return base::flat_map<url::Origin, std::vector<ReportingEndpoint>>();
+}
+
 void TestReportingService::AddReportingCacheObserver(
     ReportingCacheObserver* observer) {
   NOTREACHED();
