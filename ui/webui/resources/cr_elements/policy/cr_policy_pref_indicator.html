@@ -6,12 +6,7 @@
 
 <dom-module id="cr-policy-pref-indicator">
   <template>
-    <style include="cr-hidden-style">
-      cr-tooltip-icon {
-        --cr-tooltip-icon-fill-color:
-          var(--cr-policy-indicator-icon-fill-color);
-      }
-    </style>
+    <style include="cr-hidden-style"></style>
     <cr-tooltip-icon hidden$="[[!indicatorVisible]]"
         tooltip-text="[[indicatorTooltip]]" icon-class="[[indicatorIcon]]"
         icon-aria-label="[[iconAriaLabel]]" exportparts="tooltip">
