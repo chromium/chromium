@@ -7,11 +7,8 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Hardware Write Protection Disabled Manually</h1>
-    <p id="writeProtectStatus">
-      [[statusString_]]
-    </p>
+    <h1>[[i18n('wpDisableCompletePageTitleText')]]</h1>
+    <div id="writeProtectStatus">[[statusString_]]</div>
   </div>
   <div slot="body">
     <!-- TODO(gavindodd): Replace with correct graphic -->
