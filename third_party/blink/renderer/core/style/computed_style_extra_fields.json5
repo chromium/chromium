@@ -264,6 +264,18 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
     },
+    {
+      name: "CustomHighlightNames",
+      field_template: "external",
+      field_group: "*",
+      include_paths: ["third_party/blink/renderer/platform/wtf/hash_set.h",
+                      "third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
+      type_name: "HashSet<AtomicString>",
+      wrapper_pointer_name: "std::unique_ptr",
+      default_value: "nullptr",
+      computed_style_custom_functions: ["setter", "getter"],
+      custom_copy: true,
+    },
     // True if 'underline solid' is the only text decoration on this element.
     {
       name: "HasSimpleUnderline",

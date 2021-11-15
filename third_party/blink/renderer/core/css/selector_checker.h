@@ -129,6 +129,7 @@ class CORE_EXPORT SelectorChecker {
 
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
+    AtomicString custom_highlight_name = g_null_atom;
 
     // From the shortest argument selector match, we need to get the element
     // that matches the leftmost compound selector to mark the correct scope

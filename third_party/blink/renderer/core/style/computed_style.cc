@@ -622,6 +622,15 @@ StyleHighlightData& ComputedStyle::MutableHighlightData() {
   return *data;
 }
 
+void ComputedStyle::SetHasCustomHighlightName(
+    const AtomicString& custom_highlight_name) {
+  std::unique_ptr<HashSet<AtomicString>>& names_set =
+      MutableCustomHighlightNamesInternal();
+  if (!names_set)
+    names_set = std::make_unique<HashSet<AtomicString>>();
+  names_set->insert(custom_highlight_name);
+}
+
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
   return IndependentInheritedEqual(other) &&
          NonIndependentInheritedEqual(other);

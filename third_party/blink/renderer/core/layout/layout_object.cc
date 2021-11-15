@@ -2484,31 +2484,27 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
         switch (pseudo) {
           case kPseudoIdTargetText:
             pseudo_old_style = style_->HighlightData()
-                                   ? style_->HighlightData()->TargetText().get()
+                                   ? style_->HighlightData()->TargetText()
                                    : nullptr;
             pseudo_new_style = style->HighlightData()
-                                   ? style->HighlightData()->TargetText().get()
+                                   ? style->HighlightData()->TargetText()
                                    : nullptr;
             break;
           case kPseudoIdSpellingError:
-            pseudo_old_style =
-                style_->HighlightData()
-                    ? style_->HighlightData()->SpellingError().get()
-                    : nullptr;
-            pseudo_new_style =
-                style->HighlightData()
-                    ? style->HighlightData()->SpellingError().get()
-                    : nullptr;
+            pseudo_old_style = style_->HighlightData()
+                                   ? style_->HighlightData()->SpellingError()
+                                   : nullptr;
+            pseudo_new_style = style->HighlightData()
+                                   ? style->HighlightData()->SpellingError()
+                                   : nullptr;
             break;
           case kPseudoIdGrammarError:
-            pseudo_old_style =
-                style_->HighlightData()
-                    ? style_->HighlightData()->GrammarError().get()
-                    : nullptr;
-            pseudo_new_style =
-                style->HighlightData()
-                    ? style->HighlightData()->GrammarError().get()
-                    : nullptr;
+            pseudo_old_style = style_->HighlightData()
+                                   ? style_->HighlightData()->GrammarError()
+                                   : nullptr;
+            pseudo_new_style = style->HighlightData()
+                                   ? style->HighlightData()->GrammarError()
+                                   : nullptr;
             break;
           default:
             NOTREACHED();
@@ -4283,7 +4279,7 @@ scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
 const ComputedStyle* LayoutObject::GetSelectionStyle() const {
   if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
       StyleRef().HighlightData()) {
-    return StyleRef().HighlightData()->Selection().get();
+    return StyleRef().HighlightData()->Selection();
   }
   return GetCachedPseudoElementStyle(kPseudoIdSelection);
 }

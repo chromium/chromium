@@ -235,8 +235,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   if (!CheckOne(context, sub_result))
     return kSelectorFailsLocally;
 
-  if (sub_result.dynamic_pseudo != kPseudoIdNone)
+  if (sub_result.dynamic_pseudo != kPseudoIdNone) {
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
+    result.custom_highlight_name = sub_result.custom_highlight_name;
+  }
 
   if (context.selector->IsLastInTagHistory())
     return kSelectorMatches;
@@ -1337,7 +1339,11 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       // element through result.dynamic_pseudo. For ::highlight() pseudo
       // elements we have a single flag for tracking whether an element may
       // match _any_ ::highlight() element (kPseudoIdHighlight).
-      return !pseudo_argument_ || pseudo_argument_ == selector.Argument();
+      if (!pseudo_argument_ || pseudo_argument_ == selector.Argument()) {
+        result.custom_highlight_name = selector.Argument();
+        return true;
+      }
+      return false;
     }
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {

@@ -541,6 +541,9 @@ void ElementRuleCollector::DidMatchRule(
       return;
     if (!rule_data->Rule()->Properties().IsEmpty())
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
+    if (result.custom_highlight_name) {
+      style_->SetHasCustomHighlightName(result.custom_highlight_name);
+    }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order,
                                          match_request.style_sheet_index,

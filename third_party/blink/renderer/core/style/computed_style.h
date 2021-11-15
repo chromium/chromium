@@ -418,6 +418,11 @@ class ComputedStyle : public ComputedStyleBase,
 
   StyleHighlightData& MutableHighlightData();
 
+  HashSet<AtomicString>* CustomHighlightNames() const {
+    return CustomHighlightNamesInternal().get();
+  }
+  void SetHasCustomHighlightName(const AtomicString&);
+
   /**
    * ComputedStyle properties
    *

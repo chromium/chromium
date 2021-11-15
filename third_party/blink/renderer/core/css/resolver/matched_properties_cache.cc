@@ -213,6 +213,10 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.HasContainerRelativeUnits())
     return false;
+  // Avoiding cache for ::highlight because the style depends on the highlight
+  // names involved and they're not cached.
+  if (style.HasPseudoElementStyle(kPseudoIdHighlight))
+    return false;
   return true;
 }
 

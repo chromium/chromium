@@ -1148,6 +1148,9 @@ crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-015.html 
 crbug.com/591099 external/wpt/css/css-grid/grid-items/percentage-size-indefinite-replaced.html [ Failure ]
 crbug.com/667785 external/wpt/css/css-grid/table-grid-item-005.html [ Failure ]
 
+### external/wpt/css/css-highlight-api/
+crbug.com/591099 virtual/css-highlight-inheritance/external/wpt/css/css-highlight-api/painting/custom-highlight-painting-inheritance-* [ Failure ]
+
 ### external/wpt/css/css-pseudo/
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-011.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-012.html [ Failure ]

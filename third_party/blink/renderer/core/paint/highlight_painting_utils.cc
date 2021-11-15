@@ -202,9 +202,7 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
     case kPseudoIdGrammarError:
       return style.HighlightData()->GrammarError();
     case kPseudoIdHighlight:
-      // TODO(crbug.com/1024156): implement ::highlight() case
-      return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
-                                                            pseudo_argument);
+      return style.HighlightData()->CustomHighlight(pseudo_argument);
     default:
       NOTREACHED();
       return nullptr;

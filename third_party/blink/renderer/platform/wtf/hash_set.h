@@ -136,6 +136,10 @@ class HashSet {
   ValueType Take(ValuePeekInType);
   ValueType TakeAny();
 
+  std::unique_ptr<HashSet> Clone() const {
+    return std::make_unique<HashSet>(*this);
+  }
+
   template <typename VisitorDispatcher, typename A = Allocator>
   std::enable_if_t<A::kIsGarbageCollected> Trace(
       VisitorDispatcher visitor) const {
@@ -199,6 +203,21 @@ auto HashSet<Value, HashFunctions, Traits, Allocator>::operator=(
     std::initializer_list<ValueType> elements) -> HashSet& {
   *this = HashSet(std::move(elements));
   return *this;
+}
+
+template <typename T, typename U, typename V, typename W>
+bool operator==(const HashSet<T, U, V, W>& a, const HashSet<T, U, V, W>& b) {
+  if (a.size() != b.size())
+    return false;
+
+  const auto a_end = a.end();
+  const auto b_end = b.end();
+  for (auto it = a.begin(); it != a_end; ++it) {
+    if (b.find(*it) == b_end)
+      return false;
+  }
+
+  return true;
 }
 
 template <typename T, typename U, typename V, typename W>

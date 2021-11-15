@@ -1088,7 +1088,8 @@
     "prefix": "css-highlight-inheritance",
     "bases": [
       "external/wpt/css/css-pseudo",
-      "wpt_internal/css/css-pseudo"
+      "wpt_internal/css/css-pseudo",
+      "external/wpt/css/css-highlight-api"
     ],
     "args": ["--enable-blink-features=HighlightInheritance"]
   },
