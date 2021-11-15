@@ -191,12 +191,6 @@ std::string GetPathAndQuery(const GURL& url) {
   return result;
 }
 
-// Remove directory components from |file_name|. E.g.,
-// StripPathComponents("../directory/file.jpg") returns "file.jpg".
-std::string StripPathComponents(const std::string& file_name) {
-  return base::FilePath(file_name).BaseName().AsUTF8Unsafe();
-}
-
 apps::mojom::IntentPtr ConvertLaunchIntent(
     const arc::mojom::LaunchIntentPtr& launch_intent) {
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
@@ -219,7 +213,12 @@ apps::mojom::IntentPtr ConvertLaunchIntent(
 
       file->url = arc::ArcUrlToExternalFileUrl(file_info->content_uri);
       file->mime_type = file_info->type;
-      file->file_name = StripPathComponents(file_info->name);
+      file->file_name = file_info->name;
+      if (!file->file_name.has_value()) {
+        // TODO(crbug.com/1238215): Remove fallback to deprecated field.
+        file->file_name =
+            base::SafeBaseName::Create(file_info->deprecated_name);
+      }
       file->file_size = file_info->size;
       intent->files->push_back(std::move(file));
       mime_types.push_back(file_info->type);

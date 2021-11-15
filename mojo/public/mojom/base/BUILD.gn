@@ -55,8 +55,8 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.SafeBasename"
-          cpp = "::base::SafeBasename"
+          mojom = "mojo_base.mojom.SafeBaseName"
+          cpp = "::base::SafeBaseName"
         },
       ]
       traits_headers =

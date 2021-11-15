@@ -20,12 +20,17 @@ namespace base {
 // FilePath dir(FILE_PATH_LITERAL("foo")); dir.Append(*a);
 class BASE_EXPORT SafeBaseName {
  public:
+  // TODO(crbug.com/1269986): Change to only be exposed to Mojo.
+  SafeBaseName() = default;
+
   // Factory method that returns a valid SafeBaseName or absl::nullopt.
   static absl::optional<SafeBaseName> Create(const FilePath&);
 
   // Same as above, but takes a StringPieceType for convenience.
   static absl::optional<SafeBaseName> Create(FilePath::StringPieceType);
   const FilePath& path() const { return path_; }
+
+  bool operator==(const SafeBaseName& that) const;
 
  private:
   // Constructs a new SafeBaseName from the given FilePath.

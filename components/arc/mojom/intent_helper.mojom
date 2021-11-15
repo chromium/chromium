@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 48
+// Next MinVersion: 49
 
 module arc.mojom;
 
@@ -11,6 +11,7 @@ import "components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/camera_intent.mojom";
 import "components/arc/mojom/intent_common.mojom";
 import "components/arc/mojom/scale_factor.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
 import "url/mojom/url.mojom";
 
 [Extensible]
@@ -211,12 +212,14 @@ struct LaunchFileInfo {
   // specific type can be determined.
   string type;
 
-  // Human readable name for the file.
-  // TODO(crbug.com/1238215): Use BaseName instead, when available.
-  string name;
+  // TODO(crbug.com/1238215): Remove references and rename.
+  string deprecated_name;
 
   // Size of the file in bytes.
   uint64 size;
+
+  // Human readable name for the file.
+  [MinVersion=48] mojo_base.mojom.SafeBaseName? name;
 };
 
 // Contains the information needed to launch an app along with any data which

@@ -5,6 +5,7 @@
 module apps.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
@@ -422,12 +423,14 @@ struct IntentFile {
   // information in cases where fetching the metadata through the file would be
   // difficult or expensive.
 
-  string? mime_type;  // File MIME type.
-  // TODO(crbug.com/1238215): Use BaseName instead, when available.
-  string? file_name;  // Human readable file name, including extension. Should
-                      // not contain path separators.
-  uint64 file_size;   // File size in bytes.
-  OptionalBool is_directory; // Whether this is a directory or not.
+  // File MIME type.
+  string? mime_type;
+  // Human readable file name, including extension.
+  mojo_base.mojom.SafeBaseName? file_name;
+  // File size in bytes.
+  uint64 file_size;
+  // Whether this is a directory or not.
+  OptionalBool is_directory;
 };
 
 // Action and resource handling request. This should

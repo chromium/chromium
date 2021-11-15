@@ -134,8 +134,8 @@ NavigateParams NavigateParamsForShareTarget(
       }
 
       const std::string filename =
-          (file->file_name.has_value() && !file->file_name->empty())
-              ? (*file->file_name)
+          (file->file_name.has_value() && !file->file_name->path().empty())
+              ? (file->file_name->path().AsUTF8Unsafe())
               : file_system_url.path().BaseName().AsUTF8Unsafe();
 
       names.push_back(name);

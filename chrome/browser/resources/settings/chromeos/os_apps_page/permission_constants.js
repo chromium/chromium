@@ -4,6 +4,9 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import '/app-management/file_path.mojom-lite.js';
+import '/app-management/image.mojom-lite.js';
+import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 
 
