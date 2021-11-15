@@ -27,7 +27,6 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -413,7 +412,7 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     limit = 143;
 #else
     limit = 255;
