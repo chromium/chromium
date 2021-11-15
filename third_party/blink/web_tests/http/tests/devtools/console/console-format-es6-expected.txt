@@ -138,6 +138,7 @@ globals[5]
 console-format-es6.js:15 Map(1) {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {{…} => {…}}
@@ -147,6 +148,7 @@ globals[6]
 Map(1) {{…} => {…}}
     [[Entries]]
         0: {Object => Object}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:15 WeakMap {{…} => {…}}
     [[Entries]]
@@ -164,6 +166,7 @@ WeakMap {{…} => {…}}
 console-format-es6.js:15 Set(1) {{…}}
     [[Entries]]
         0: Object
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {{…}}
@@ -173,6 +176,7 @@ globals[8]
 Set(1) {{…}}
     [[Entries]]
         0: Object
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:15 WeakSet {{…}}
     [[Entries]]
@@ -190,6 +194,7 @@ WeakSet {{…}}
 console-format-es6.js:15 Map(1) {Map(0) => WeakMap}
     [[Entries]]
         0: {Map(0) => WeakMap}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {Map(0) => WeakMap}
@@ -199,10 +204,12 @@ globals[10]
 Map(1) {Map(0) => WeakMap}
     [[Entries]]
         0: {Map(0) => WeakMap}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:15 Map(1) {Map(1) => WeakMap}
     [[Entries]]
         0: {Map(1) => WeakMap}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:16 [Map(1)]
     0: Map(1) {Map(1) => WeakMap}
@@ -212,10 +219,12 @@ globals[11]
 Map(1) {Map(1) => WeakMap}
     [[Entries]]
         0: {Map(1) => WeakMap}
+    size: 1
     [[Prototype]]: Map
 console-format-es6.js:15 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {WeakSet}
@@ -225,10 +234,12 @@ globals[12]
 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:15 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:16 [Set(1)]
     0: Set(1) {WeakSet}
@@ -238,6 +249,7 @@ globals[13]
 Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
+    size: 1
     [[Prototype]]: Set
 console-format-es6.js:15 Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     [[Entries]]
@@ -247,6 +259,7 @@ console-format-es6.js:15 Map(6) {' from str ' => ' to str ', undefined => undef
         3: {42 => 42}
         4: {Object => Object}
         5: {Array(1) => Array(1)}
+    size: 6
     [[Prototype]]: Map
 console-format-es6.js:16 [Map(6)]
     0: Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
@@ -261,6 +274,7 @@ Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 =>
         3: {42 => 42}
         4: {Object => Object}
         5: {Array(1) => Array(1)}
+    size: 6
     [[Prototype]]: Map
 console-format-es6.js:15 genFunction {<suspended>}
     [[GeneratorLocation]]: console-format-es6.js:62
