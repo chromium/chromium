@@ -12,7 +12,4 @@ enum GPUPowerPreference {
 dictionary GPURequestAdapterOptions {
     GPUPowerPreference powerPreference;
     boolean forceFallbackAdapter = false;
-
-    // TODO: Deprecated
-    boolean forceSoftware;
 };

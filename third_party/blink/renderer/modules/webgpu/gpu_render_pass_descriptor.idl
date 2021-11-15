@@ -17,6 +17,4 @@ enum GPULoadOp {
 enum GPUStoreOp {
     "store",
     "discard",
-
-    "clear" // Deprecated
 };

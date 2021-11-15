@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -99,8 +100,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   return context_provider;
 }
 
-void AddConsoleWarning(ExecutionContext* execution_context,
-                       const char* message) {
+ALLOW_UNUSED_TYPE void AddConsoleWarning(ExecutionContext* execution_context,
+                                         const char* message) {
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
@@ -236,16 +237,6 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  bool force_fallback_adapter = options->forceFallbackAdapter();
-
-  if (options->hasForceSoftware()) {
-    AddConsoleWarning(
-        ExecutionContext::From(script_state),
-        "forceSoftware is deprecated. Use forceFallbackAdapter instead.");
-
-    force_fallback_adapter = options->forceSoftware();
-  }
-
   // For now we choose kHighPerformance by default.
   gpu::webgpu::PowerPreference power_preference =
       gpu::webgpu::PowerPreference::kHighPerformance;
@@ -257,7 +248,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
   DCHECK(context_provider);
   context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
-      power_preference, force_fallback_adapter,
+      power_preference, options->forceFallbackAdapter(),
       WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                 WrapPersistent(script_state), WrapPersistent(options),
                 WrapPersistent(resolver)));
