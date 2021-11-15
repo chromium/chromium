@@ -58897,6 +58897,7 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Settings"/>
   <int value="1" label="Tray icon/label"/>
   <int value="2" label="Share Sheet"/>
+  <int value="3" label="Nearby Device is Trying to Share Notification"/>
 </enum>
 
 <enum name="NearbyShareOnboardingFinalState">
