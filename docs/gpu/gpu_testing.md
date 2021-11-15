@@ -183,7 +183,8 @@ which aren't allowed to run on the regular Chromium waterfalls:
 *   `audio_unittests`
 
 The remaining GPU tests are run via Telemetry.  In order to run them, just
-build the `chrome` target and then
+build the `telemetry_gpu_integration_test` target (or
+`telemetry_gpu_integration_test_android_chrome` for Android) and then
 invoke `src/content/test/gpu/run_gpu_integration_test.py` with the appropriate
 argument. The tests this script can invoke are
 in `src/content/test/gpu/gpu_tests/`. For example:
@@ -198,9 +199,16 @@ The pixel tests are a bit special. See
 [the section on running them locally](#Running-the-pixel-tests-locally) for
 details.
 
-If you're testing on Android and have built and deployed
-`ChromePublic.apk` to the device, use `--browser=android-chromium` to
-invoke it.
+The `--browser=release` argument can be changed to `--browser=debug` if you
+built in a directory such as `out/Debug`. If you built in some non-standard
+directory such as `out/my_special_gn_config`, you can instead specify
+`--browser=exact --browser-executable=out/my_special_gn_config/chrome`.
+
+If you're testing on Android, use `--browser=android-chromium` instead of
+`--browser=release/debug` to invoke it. Additionally, Telemetry will likely
+complain about being unable to find the browser binary on Android if you build
+in a non-standard output directory. Thus, `out/Release` or `out/Debug` are
+suggested when testing on Android.
 
 **Note:** The tests require some third-party Python packages. Obtaining these
 packages is handled automatically by `vpython`, and the script's shebang should
