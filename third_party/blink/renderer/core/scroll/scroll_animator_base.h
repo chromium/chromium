@@ -94,8 +94,6 @@ class CORE_EXPORT ScrollAnimatorBase
   void Trace(Visitor*) const override;
 
  protected:
-  virtual void NotifyOffsetChanged();
-
   Member<ScrollableArea> scrollable_area_;
 
   ScrollOffset current_offset_;

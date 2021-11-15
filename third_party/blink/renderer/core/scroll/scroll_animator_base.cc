@@ -61,7 +61,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
     return ScrollResult(false, false, delta.width(), delta.height());
 
   SetCurrentOffset(new_pos);
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 
   return ScrollResult(consumed_delta.width(), consumed_delta.height(),
                       delta.width() - consumed_delta.width(),
@@ -71,7 +71,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset) {
   SetCurrentOffset(offset);
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 void ScrollAnimatorBase::SetCurrentOffset(const ScrollOffset& offset) {
@@ -80,10 +80,6 @@ void ScrollAnimatorBase::SetCurrentOffset(const ScrollOffset& offset) {
 
 ScrollOffset ScrollAnimatorBase::CurrentOffset() const {
   return current_offset_;
-}
-
-void ScrollAnimatorBase::NotifyOffsetChanged() {
-  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 void ScrollAnimatorBase::Trace(Visitor* visitor) const {

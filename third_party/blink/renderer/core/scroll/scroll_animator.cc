@@ -239,7 +239,7 @@ void ScrollAnimator::ScrollToOffsetWithoutAnimation(
   current_offset_ = offset;
 
   ResetAnimationState();
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
@@ -267,7 +267,7 @@ void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   }
 
   TRACE_EVENT0("blink", "ScrollAnimator::notifyOffsetChanged");
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 bool ScrollAnimator::SendAnimationToCompositor() {
