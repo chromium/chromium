@@ -156,8 +156,7 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 // TODO(crbug.com/949181): Make this work on Fuchsia.
 #if !defined(OS_FUCHSIA)
 // TODO(crbug.com/1270151): Fix this on Android 11 and 12.
-// TODO(crbug.com/1270178): Crashing on Windows 7.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if defined(OS_ANDROID)
 #define MAYBE_ContentLocalFontsMatching DISABLED_ContentLocalFontsMatching
 #else
 #define MAYBE_ContentLocalFontsMatching ContentLocalFontsMatching
