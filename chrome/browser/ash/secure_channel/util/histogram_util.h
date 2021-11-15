@@ -26,6 +26,35 @@ void RecordSendPayloadResult(
     location::nearby::connections::mojom::Status status);
 void RecordDisconnectFromEndpointResult(
     location::nearby::connections::mojom::Status status);
+void RecordRegisterPayloadFilesResult(
+    location::nearby::connections::mojom::Status status);
+
+// Enumeration of possible file payload transfer actions via Nearby Connection
+// library. Keep in sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class FileAction {
+  kRegisteredFileReceived = 0,
+  kUnexpectedFileReceived = 1,
+  kMaxValue = kUnexpectedFileReceived,
+};
+
+// Logs an action related to a file transfer.
+void LogFileAction(FileAction file_action);
+
+// Enumeration of possible results of a file transfer via Nearby Connections
+// library. Keep in sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class FileTransferResult {
+  kFileTransferSuccess = 0,
+  kFileTransferFailure = 1,
+  kFileTransferCanceled = 2,
+  kMaxValue = kFileTransferCanceled,
+};
+
+// Logs the result of a file transfer.
+void LogFileTransferResult(FileTransferResult file_transfer_result);
 
 // Enumeration of possible message transfer action via Nearby Connection
 // library. Keep in sync with corresponding enum in

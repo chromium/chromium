@@ -56,6 +56,24 @@ void RecordDisconnectFromEndpointResult(Status status) {
       status);
 }
 
+void RecordRegisterPayloadFilesResult(
+    location::nearby::connections::mojom::Status status) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.OperationResult.RegisterPayloadFiles",
+      status);
+}
+
+void LogFileAction(FileAction file_action) {
+  base::UmaHistogramEnumeration("MultiDevice.SecureChannel.Nearby.FileAction",
+                                file_action);
+}
+
+void LogFileTransferResult(FileTransferResult file_transfer_result) {
+  base::UmaHistogramEnumeration(
+      "MultiDevice.SecureChannel.Nearby.FileTransferResult",
+      file_transfer_result);
+}
+
 void LogMessageAction(MessageAction message_action) {
   base::UmaHistogramEnumeration(
       "MultiDevice.SecureChannel.Nearby.MessageAction", message_action);

@@ -452,8 +452,8 @@ void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
         base::Unretained(this), payload_id));
     file_payload_listeners_.emplace(payload_id, std::move(listener_remote));
   }
-  // TODO(https://crbug.com/1221297): log file payload registration results
   std::move(callback).Run(success);
+  util::RecordRegisterPayloadFilesResult(status);
 }
 
 void NearbyConnectionBrokerImpl::OnFilePayloadListenerDisconnect(
@@ -467,6 +467,8 @@ void NearbyConnectionBrokerImpl::CleanUpPendingFileTransfers() {
         id_to_listener.first, mojom::FileTransferStatus::kCanceled,
         /*total_bytes=*/0,
         /*bytes_transferred=*/0));
+    util::LogFileTransferResult(
+        util::FileTransferResult::kFileTransferCanceled);
   }
   file_payload_listeners_.clear();
 }
@@ -597,12 +599,13 @@ void NearbyConnectionBrokerImpl::OnPayloadReceived(
       PA_LOG(WARNING)
           << "OnPayloadReceived(): Received unregistered file payload with ID "
           << payload->id << ". Disconnecting.";
+      util::LogFileAction(util::FileAction::kUnexpectedFileReceived);
       Disconnect(
           util::NearbyDisconnectionReason::kReceivedUnregisteredFilePayload);
     } else {
       PA_LOG(VERBOSE) << "OnPayloadReceived(): Received file with payload ID "
                       << payload->id;
-      // TODO(https://crbug.com/1221297): log file payloads received
+      util::LogFileAction(util::FileAction::kRegisteredFileReceived);
     }
 
     // We don't need to use the base::File provided by |payload| and it should
@@ -659,9 +662,28 @@ void NearbyConnectionBrokerImpl::OnPayloadTransferUpdate(
       update->payload_id, ConvertFileTransferStatus(update->status),
       update->total_bytes, update->bytes_transferred));
 
-  if (update->status != PayloadStatus::kInProgress) {
+  bool is_transfer_complete = false;
+  switch (update->status) {
+    case PayloadStatus::kInProgress:
+      return;
+    case PayloadStatus::kSuccess:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferSuccess);
+      break;
+    case PayloadStatus::kFailure:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferFailure);
+      break;
+    case PayloadStatus::kCanceled:
+      is_transfer_complete = true;
+      util::LogFileTransferResult(
+          util::FileTransferResult::kFileTransferCanceled);
+      break;
+  }
+  if (is_transfer_complete) {
     file_payload_listeners_.erase(it);
-    // TODO(https://crbug.com/1221297): log result of file transfers
   }
 }
 

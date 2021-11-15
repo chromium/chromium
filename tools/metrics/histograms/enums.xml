@@ -58189,6 +58189,17 @@ Called by update_use_counter_css.py.-->
   <int value="14" label="Received file paylad that wasn't registered"/>
 </enum>
 
+<enum name="MultiDeviceNearbyFileAction">
+  <int value="0" label="Registered file received"/>
+  <int value="1" label="Unexpected file received"/>
+</enum>
+
+<enum name="MultiDeviceNearbyFileTransferResult">
+  <int value="0" label="File transfer success"/>
+  <int value="1" label="File transfer failure"/>
+  <int value="2" label="File transfer canceled"/>
+</enum>
+
 <enum name="MultiDeviceNearbyMessageAction">
   <int value="0" label="Message Sent"/>
   <int value="1" label="Message Received"/>

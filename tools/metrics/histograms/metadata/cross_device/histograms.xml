@@ -1876,6 +1876,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.FileAction"
+    enum="MultiDeviceNearbyFileAction" expires_after="2022-11-15">
+  <owner>jasonsun@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the reception of SecureChannel file payload transfers via the
+    Nearby Connections library. Emitted when the Nearby Connections library
+    receives an incoming file transfer.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.FileTransferResult"
+    enum="MultiDeviceNearbyFileTransferResult" expires_after="2022-11-15">
+  <owner>jasonsun@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the completion of SecureChannel file payload transfers via the
+    Nearby Connections library. Emitted when a file tranfer has been completed
+    successfully, with failure, or canceled.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
     enum="MultiDeviceNearbyMessageAction" expires_after="2022-05-01">
   <owner>hansenmichael@google.com</owner>
@@ -1901,6 +1923,7 @@ chromium-metrics-reviews@google.com.
     <variant name="AcceptConnection"/>
     <variant name="DisconnectFromEndpoint"/>
     <variant name="InjectEndpoint"/>
+    <variant name="RegisterPayloadFiles"/>
     <variant name="RequestConnection"/>
     <variant name="SendPayload"/>
     <variant name="StartDiscovery"/>
