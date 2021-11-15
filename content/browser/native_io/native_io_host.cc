@@ -102,7 +102,7 @@ std::pair<base::File, int64_t> DoOpenFile(const base::FilePath& root_path,
   // SHARE_DELETE allows the browser to delete files even if a compromised
   // renderer refuses to close its file handles.
   int open_flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                   base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+                   base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   base::File file(GetNativeIOFilePath(root_path, name), open_flags);
 
   int64_t file_length = file.IsValid() ? file.GetLength() : 0;
