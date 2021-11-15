@@ -251,3 +251,50 @@ TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary) {
                                   mock_callback.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 }
+
+TEST_F(AccountManagerUtilTest, GetAccountsAvailableAsSecondary_Overlapping) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath unassigned = base::FilePath();
+  std::unique_ptr<AccountProfileMapper> mapper =
+      CreateMapper({{main_path(), {"A", "B"}},
+                    {second_path, {"B", "C"}},
+                    {unassigned, {"E"}}});
+
+  base::MockRepeatingCallback<void(const std::vector<Account>&)> mock_callback;
+
+  // All accounts not in the current profile are returned, incl. unassigned.
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"C", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAccountsAvailableAsSecondary(mapper.get(), main_path(),
+                                  mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"A", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAccountsAvailableAsSecondary(mapper.get(), second_path,
+                                  mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // Syncing status does not change anything here.
+  SetPrimaryAccountForProfile(main_path(), "A");
+  SetPrimaryAccountForProfile(second_path, "B");
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"C", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAccountsAvailableAsSecondary(mapper.get(), main_path(),
+                                  mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              Run(testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"A", kGaiaType}),
+                  Field(&Account::key, AccountKey{"E", kGaiaType}))));
+  GetAccountsAvailableAsSecondary(mapper.get(), second_path,
+                                  mock_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+}

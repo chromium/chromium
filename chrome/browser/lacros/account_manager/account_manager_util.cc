@@ -12,6 +12,26 @@
 
 namespace {
 
+void GetAccountsNotDenylisted(
+    const std::map<base::FilePath, std::vector<account_manager::Account>>&
+        accounts_map,
+    const base::flat_set<std::string>& denylisted_gaia_ids,
+    AccountProfileMapper::ListAccountsCallback callback) {
+  std::vector<account_manager::Account> result;
+  // Copy all accounts into result, except for those denylisted.
+  for (const auto& path_and_list_pair : accounts_map) {
+    const std::vector<account_manager::Account>& list =
+        path_and_list_pair.second;
+
+    std::copy_if(
+        list.begin(), list.end(), std::back_inserter(result),
+        [&denylisted_gaia_ids](const account_manager::Account& account) {
+          return !denylisted_gaia_ids.contains(account.key.id());
+        });
+  }
+  std::move(callback).Run(result);
+}
+
 void GetAccountsAvailableAsPrimaryImpl(
     ProfileAttributesStorage* storage,
     AccountProfileMapper::ListAccountsCallback callback,
@@ -30,18 +50,7 @@ void GetAccountsAvailableAsPrimaryImpl(
   base::flat_set<std::string> syncing_gaia_ids(
       std::move(syncing_gaia_ids_temp));
 
-  std::vector<account_manager::Account> result;
-  // Copy all accounts into result, except for those syncing.
-  for (const auto& path_and_list_pair : accounts_map) {
-    const std::vector<account_manager::Account>& list =
-        path_and_list_pair.second;
-
-    std::copy_if(list.begin(), list.end(), std::back_inserter(result),
-                 [&syncing_gaia_ids](const account_manager::Account& account) {
-                   return !syncing_gaia_ids.contains(account.key.id());
-                 });
-  }
-  std::move(callback).Run(result);
+  GetAccountsNotDenylisted(accounts_map, syncing_gaia_ids, std::move(callback));
 }
 
 void GetAccountsAvailableAsSecondaryImpl(
@@ -49,18 +58,20 @@ void GetAccountsAvailableAsSecondaryImpl(
     AccountProfileMapper::ListAccountsCallback callback,
     const std::map<base::FilePath, std::vector<account_manager::Account>>&
         accounts_map) {
-  std::vector<account_manager::Account> result;
-
-  // Copy all accounts into result, except for those already in `profile_path`.
-  for (const auto& path_and_list_pair : accounts_map) {
-    if (profile_path == path_and_list_pair.first && !profile_path.empty())
-      continue;
-
-    const std::vector<account_manager::Account>& list =
-        path_and_list_pair.second;
-    result.insert(result.end(), list.begin(), list.end());
+  auto it = accounts_map.find(profile_path);
+  if (profile_path.empty() || it == accounts_map.end()) {
+    // When empty or invalid profile path is given, return all accounts.
+    GetAccountsNotDenylisted(accounts_map, {}, std::move(callback));
+    return;
   }
-  std::move(callback).Run(result);
+
+  // Put the gaia ids of all the accounts in the given profile into a flat set.
+  const std::vector<account_manager::Account>& accounts = it->second;
+  auto profile_gaia_ids = base::MakeFlatSet<std::string>(
+      accounts, {},
+      [](const account_manager::Account& account) { return account.key.id(); });
+
+  GetAccountsNotDenylisted(accounts_map, profile_gaia_ids, std::move(callback));
 }
 
 }  // namespace
