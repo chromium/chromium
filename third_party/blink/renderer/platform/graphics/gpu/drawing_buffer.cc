@@ -89,6 +89,33 @@ void FlipVertically(base::span<uint8_t> framebuffer,
   }
 }
 
+class ScopedDrawBuffer {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedDrawBuffer(gpu::gles2::GLES2Interface* gl,
+                            GLenum prev_draw_buffer,
+                            GLenum new_draw_buffer)
+      : gl_(gl),
+        prev_draw_buffer_(prev_draw_buffer),
+        new_draw_buffer_(new_draw_buffer) {
+    if (prev_draw_buffer_ != new_draw_buffer_) {
+      gl_->DrawBuffersEXT(1, &new_draw_buffer_);
+    }
+  }
+
+  ~ScopedDrawBuffer() {
+    if (prev_draw_buffer_ != new_draw_buffer_) {
+      gl_->DrawBuffersEXT(1, &prev_draw_buffer_);
+    }
+  }
+
+ private:
+  gpu::gles2::GLES2Interface* gl_;
+  GLenum prev_draw_buffer_;
+  GLenum new_draw_buffer_;
+};
+
 }  // namespace
 
 // Increase cache to avoid reallocation on fuchsia, see
@@ -308,6 +335,10 @@ bool DrawingBuffer::RequiresAlphaChannelToBePreserved() {
 
 bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
   return !want_alpha_channel_ && have_alpha_channel_;
+}
+
+void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
+  draw_buffer_ = draw_buffer;
 }
 
 DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
@@ -1303,16 +1334,24 @@ void DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
                                               ClearOption clear_option) {
   DCHECK(state_restorer_);
   state_restorer_->SetFramebufferBindingDirty();
+
+  GLenum prev_draw_buffer =
+      draw_buffer_ == GL_BACK ? GL_COLOR_ATTACHMENT0 : draw_buffer_;
+
   // Clear the multisample FBO, but also clear the non-multisampled buffer if
   // requested.
   if (multisample_fbo_ && clear_option == kClearAllFBOs) {
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    ScopedDrawBuffer scoped_draw_buffer(gl_, prev_draw_buffer,
+                                        GL_COLOR_ATTACHMENT0);
     gl_->Clear(GL_COLOR_BUFFER_BIT);
   }
 
   if (multisample_fbo_ || clear_option == kClearAllFBOs) {
     gl_->BindFramebuffer(GL_FRAMEBUFFER,
                          multisample_fbo_ ? multisample_fbo_ : fbo_);
+    ScopedDrawBuffer scoped_draw_buffer(gl_, prev_draw_buffer,
+                                        GL_COLOR_ATTACHMENT0);
     gl_->Clear(clear_mask);
   }
 }

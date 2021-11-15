@@ -1488,7 +1488,8 @@ WebGLRenderingContextBase::ClearIfComposited(
 
   // Determine if it's possible to combine the clear the user asked for and this
   // clear.
-  bool combined_clear = mask && !scissor_enabled_;
+  bool combined_clear =
+      mask && !scissor_enabled_ && back_draw_buffer_ == GL_BACK;
 
   ContextGL()->Disable(GL_SCISSOR_TEST);
   if (combined_clear && (mask & GL_COLOR_BUFFER_BIT)) {
@@ -1527,6 +1528,7 @@ WebGLRenderingContextBase::ClearIfComposited(
   ContextGL()->ColorMask(
       true, true, true,
       !GetDrawingBuffer()->DefaultBufferRequiresAlphaChannelToBePreserved());
+
   {
     ScopedDisableRasterizerDiscard scoped_disable(this,
                                                   rasterizer_discard_enabled_);
@@ -8841,6 +8843,9 @@ GLint WebGLRenderingContextBase::MaxColorAttachments() {
 
 void WebGLRenderingContextBase::SetBackDrawBuffer(GLenum buf) {
   back_draw_buffer_ = buf;
+  if (GetDrawingBuffer()) {
+    GetDrawingBuffer()->SetDrawBuffer(buf);
+  }
 }
 
 void WebGLRenderingContextBase::SetFramebuffer(GLenum target,

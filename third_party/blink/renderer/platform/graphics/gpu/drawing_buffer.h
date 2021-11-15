@@ -227,6 +227,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // default framebuffer.
   bool DefaultBufferRequiresAlphaChannelToBePreserved();
 
+  // Set the current GL draw buffer being used with this framebuffer. Allows
+  // DrawingBuffer to properly reset the draw buffer state when doing internal
+  // operations.
+  void SetDrawBuffer(GLenum draw_buffer);
+
   cc::Layer* CcLayer();
 
   gpu::gles2::GLES2Interface* ContextGL();
@@ -665,6 +670,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool has_eqaa_support = false;
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
+
+  GLenum draw_buffer_ = GL_COLOR_ATTACHMENT0;
 
   scoped_refptr<cc::TextureLayer> layer_;
 
