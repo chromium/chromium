@@ -1811,13 +1811,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapPlusSignInGridViewController:
     (GridViewController*)gridViewController {
-  if (gridViewController == self.regularTabsViewController) {
-    [self.regularTabsDelegate addNewItem];
-    // TODO(crbug.com/1135329): Record when a new regular tab is opened.
-  } else if (gridViewController == self.incognitoTabsViewController) {
-    [self.incognitoTabsDelegate addNewItem];
-    // TODO(crbug.com/1135329): Record when a new incognito tab is opened.
-  }
+  [self plusSignButtonTapped:self];
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
                                        closeTabGrid:YES];
@@ -2003,13 +1997,25 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)plusSignButtonTapped:(id)sender {
   switch (self.currentPage) {
-    case TabGridPageRegularTabs:
-      [self.regularTabsDelegate addNewItem];
-      // TODO(crbug.com/1135329): Record when a new regular tab is opened.
-      break;
     case TabGridPageIncognitoTabs:
       [self.incognitoTabsDelegate addNewItem];
-      // TODO(crbug.com/1135329): Record when a new incognito tab is opened.
+      if (self.currentState == ViewRevealState::Peeked) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileThumbstripCreateIncognitoTab"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("MobileTabGridCreateIncognitoTab"));
+      }
+      break;
+    case TabGridPageRegularTabs:
+      [self.regularTabsDelegate addNewItem];
+      if (self.currentState == ViewRevealState::Peeked) {
+        base::RecordAction(
+            base::UserMetricsAction("MobileThumbstripCreateRegularTab"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("MobileTabGridCreateRegularTab"));
+      }
       break;
     case TabGridPageRemoteTabs:
       // No-op.

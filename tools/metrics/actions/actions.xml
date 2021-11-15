@@ -16616,6 +16616,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileThumbstripCreateIncognitoTab">
+  <owner>djean@chromium.org</owner>
+  <owner>edchin@chromium.org</owner>
+  <description>
+    User in the iOS thumbstrip created a new incognito tab using the new tab
+    button.
+  </description>
+</action>
+
+<action name="MobileThumbstripCreateRegularTab">
+  <owner>djean@chromium.org</owner>
+  <owner>edchin@chromium.org</owner>
+  <description>
+    User in the iOS thumbstrip created a new regular tab using the new tab
+    button.
+  </description>
+</action>
+
 <action name="MobileToolbarBack">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
