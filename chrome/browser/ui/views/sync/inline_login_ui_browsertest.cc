@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
@@ -400,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
-class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
+class InlineLoginHelperBrowserTest : public DialogBrowserTest {
  public:
   InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
 
@@ -487,6 +488,25 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory() {
     return profile_->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess();
+  }
+
+  void ShowUi(const std::string& name) override {
+    InlineLoginHandlerImpl handler;
+    // See Source enum in components/signin/public/base/signin_metrics.h for
+    // possible values of access_point=, reason=.
+    GURL url("chrome://chrome-signin/?access_point=0&reason=5");
+    // MockSyncStarterInlineSigninHelper will delete itself when done using
+    // base::ThreadTaskRunnerHandle::DeleteSoon(), so need to delete here.  But
+    // do need the RunUntilIdle() at the end.
+    MockSyncStarterInlineSigninHelper* helper =
+        new MockSyncStarterInlineSigninHelper(
+            handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
+            "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+            /*signin_scoped_device_id=*/std::string(),
+            /*confirm_untrusted_signin=*/true,
+            /*is_force_sign_in_with_usermanager=*/true);
+    SimulateOnClientOAuthSuccess(helper, "refresh_token");
+    EXPECT_TRUE(OneClickSigninDialogView::IsShowing());
   }
 
  protected:
@@ -697,6 +717,10 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
   ASSERT_EQ(1ul, BrowserList::GetInstance()->size());
   ASSERT_FALSE(entry->IsSigninRequired());
+}
+
+IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, InvokeUi_default) {
+  ShowAndVerifyUi();
 }
 
 class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {

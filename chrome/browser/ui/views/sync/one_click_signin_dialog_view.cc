@@ -26,7 +26,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 // static
@@ -78,58 +78,47 @@ OneClickSigninDialogView::OneClickSigninDialogView(
     : email_(email), confirmed_callback_(std::move(confirmed_callback)) {
   DCHECK(!confirmed_callback_.is_null());
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // Column set for descriptive text and link.
-  views::ColumnSet* cs = layout->AddColumnSet(0);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto label = std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
-      IDS_ONE_CLICK_SIGNIN_DIALOG_MESSAGE_NEW, email_));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // Minimum width for the multi-line label.
   constexpr int kMinimumDialogLabelWidth = 400;
-  label->SizeToFit(kMinimumDialogLabelWidth);
-  layout->AddView(std::move(label));
+  views::Builder<OneClickSigninDialogView>(this)
+      .SetButtonLabel(
+          ui::DIALOG_BUTTON_OK,
+          l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_OK_BUTTON))
+      .SetButtonLabel(
+          ui::DIALOG_BUTTON_CANCEL,
+          l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_UNDO_BUTTON))
+      .SetModalType(ui::MODAL_TYPE_WINDOW)
+      .SetTitle(IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW)
+      .set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kText))
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical))
+      .AddChildren(views::Builder<views::Label>()
+                       .SetText(l10n_util::GetStringFUTF16(
+                           IDS_ONE_CLICK_SIGNIN_DIALOG_MESSAGE_NEW, email_))
+                       .SetMultiLine(true)
+                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                       .CustomConfigure(base::BindOnce([](views::Label* label) {
+                         label->SizeToFit(kMinimumDialogLabelWidth);
+                       })),
+                   views::Builder<views::Link>()
+                       .SetText(l10n_util::GetStringUTF16(IDS_LEARN_MORE))
+                       .SetCallback(base::BindRepeating(
+                           &OneClickSigninLinksDelegate::OnLearnMoreLinkClicked,
+                           std::move(delegate), true))
+                       .SetHorizontalAlignment(gfx::ALIGN_LEFT))
+      .SetExtraView(views::Builder<views::Link>()
+                        .SetText(l10n_util::GetStringUTF16(
+                            IDS_ONE_CLICK_SIGNIN_DIALOG_ADVANCED))
+                        .SetCallback(base::BindRepeating(
+                            [](OneClickSigninDialogView* view) {
+                              if (view->Accept())
+                                Hide();
+                            },
+                            base::Unretained(this)))
+                        .SetHorizontalAlignment(gfx::ALIGN_LEFT))
+      .BuildChildren();
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto learn_more_link =
-      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  learn_more_link->SetCallback(
-      base::BindRepeating(&OneClickSigninLinksDelegate::OnLearnMoreLinkClicked,
-                          std::move(delegate), true));
-  learn_more_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  layout->AddView(std::move(learn_more_link), 1, 1, views::GridLayout::TRAILING,
-                  views::GridLayout::CENTER);
-
-  auto advanced_link = std::make_unique<views::Link>(
-      l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_ADVANCED));
-  advanced_link->SetCallback(base::BindRepeating(
-      [](OneClickSigninDialogView* view) {
-        if (view->Accept())
-          Hide();
-      },
-      base::Unretained(this)));
-  advanced_link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  SetExtraView(std::move(advanced_link));
-
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_OK_BUTTON));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_UNDO_BUTTON));
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetTitle(IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW);
-
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ONE_CLICK_SIGNIN);
 }
 
