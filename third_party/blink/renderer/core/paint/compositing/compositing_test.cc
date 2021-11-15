@@ -861,19 +861,26 @@ TEST_P(CompositingSimTest, LayerSubtreeTransformPropertyChanged) {
 // case (ie before and after transforms both preserve axis alignment), the
 // transforms can be directly updated without explicitly marking layers as
 // damaged. The ensure damage occurs, the transform node should have
-// |transform_changed| set. In non-layer-list mode, this occurs in
-// cc::TransformTree::OnTransformAnimated and cc::Layer::SetTransform.
+// |transform_changed| set.
 TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #outer {
           width: 100px;
           height: 100px;
-          will-change: transform;
-          transform: translate(10px, 10px) scale(1, 2);
           background: lightgreen;
+          animation-name: animateTransformA;
+          animation-duration: 999s;
         }
         #inner {
           width: 100px;
@@ -901,7 +908,7 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
 
   // Modifying the transform in a simple way allowed for a direct update.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "transform: translate(30px, 20px) scale(5, 5)");
+                              "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -915,21 +922,29 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
   InitializeWithHTML(R"HTML(
     <!doctype html>
     <style>
-      #willChange {
+      @keyframes animateTransformA {
+        0% { transform: translateX(0px); }
+        100% { transform: translateX(100px); }
+      }
+      @keyframes animateTransformB {
+        0% { transform: translateX(200px); }
+        100% { transform: translateX(300px); }
+      }
+      #willChangeWithAnimation {
         width: 100px;
         height: 100px;
-        will-change: transform;
-        transform: translate(10px, 10px);
+        animation-name: animateTransformA;
+        animation-duration: 999s;
       }
     </style>
     <svg width="200" height="200">
-      <rect id="willChange" fill="blue"></rect>
+      <rect id="willChangeWithAnimation" fill="blue"></rect>
     </svg>
   )HTML");
 
   Compositor().BeginFrame();
 
-  auto* will_change_layer = CcLayerByDOMElementId("willChange");
+  auto* will_change_layer = CcLayerByDOMElementId("willChangeWithAnimation");
   auto transform_tree_index = will_change_layer->transform_tree_index();
   auto* transform_node =
       GetPropertyTrees()->transform_tree.Node(transform_tree_index);
@@ -939,9 +954,9 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
 
   // Modifying the transform in a simple way allowed for a direct update.
-  auto* will_change_element = GetElementById("willChange");
+  auto* will_change_element = GetElementById("willChangeWithAnimation");
   will_change_element->setAttribute(html_names::kStyleAttr,
-                                    "transform: translate(30px, 20px)");
+                                    "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -959,11 +974,19 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #outer {
           width: 100px;
           height: 100px;
-          will-change: transform;
-          transform: translate(1px, 2px);
+          animation-name: animateTransformA;
+          animation-duration: 999s;
           background: lightgreen;
         }
         #inner {
@@ -1002,7 +1025,7 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   // update of the outer transform. Modifying the inner transform in a
   // non-simple way should not allow for a direct update of the inner transform.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "transform: translate(5px, 6px)");
+                              "animation-name: animateTransformB");
   inner_element->setAttribute(html_names::kStyleAttr,
                               "transform: rotate(30deg)");
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1079,17 +1102,25 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
 // When a property tree change occurs that affects layer transform-origin, the
 // transform can be directly updated without explicitly marking the layer as
 // damaged. The ensure damage occurs, the transform node should have
-// |transform_changed| set. In non-layer-list mode, this occurs in
-// cc::Layer::SetTransformOrigin.
+// |transform_changed| set.
 TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #box {
           width: 100px;
           height: 100px;
-          transform: rotate3d(3, 2, 1, 45deg);
+          animation-name: animateTransformA;
+          animation-duration: 999s;
           transform-origin: 10px 10px 100px;
           background: lightblue;
         }
@@ -1111,7 +1142,7 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
 
   // Modifying the transform-origin in a simple way allowed for a direct update.
   box_element->setAttribute(html_names::kStyleAttr,
-                            "transform-origin: -10px -10px -100px");
+                            "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
