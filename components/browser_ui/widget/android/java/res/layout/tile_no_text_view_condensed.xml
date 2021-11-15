@@ -10,14 +10,13 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <!-- The icon background. -->
-    <org.chromium.components.browser_ui.widget.SurfaceColorOvalView
+    <View
         android:id="@+id/tile_view_icon_background"
         android:layout_width="@dimen/tile_view_icon_size"
         android:layout_height="@dimen/tile_view_icon_size"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
-        android:background="@drawable/tile_view_icon_background_modern"
-        app:surfaceElevation="@dimen/default_elevation_1"/>
+        android:background="@drawable/tile_view_icon_background_modern"/>
 
     <!-- The main icon. -->
     <ImageView
