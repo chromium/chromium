@@ -26,7 +26,7 @@ class DataDecoder;
 // Section 2.3 Device description.
 class SafeDialDeviceDescriptionParser {
  public:
-  enum class ParsingError : int32_t {
+  enum class ParsingError {
     kNone = 0,
     kInvalidXml = 1,
     kFailedToReadUdn = 2,
@@ -38,10 +38,7 @@ class SafeDialDeviceDescriptionParser {
     kMissingAppUrl = 8,
     kInvalidAppUrl = 9,
     kUtilityProcessError = 10,
-
-    // Note: Add entries only immediately above this line.
-    // TODO(https://crbug.com/742517): remove this enum value.
-    kTotalCount = 11,
+    kMaxValue = kUtilityProcessError,
   };
 
   SafeDialDeviceDescriptionParser();

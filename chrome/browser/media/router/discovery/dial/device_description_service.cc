@@ -63,11 +63,7 @@ ParsingError ValidateParsedDeviceDescription(
 
 void RecordDialParsingError(
     SafeDialDeviceDescriptionParser::ParsingError parsing_error) {
-  DCHECK_LT(parsing_error,
-            SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
-  UMA_HISTOGRAM_ENUMERATION(
-      "MediaRouter.Dial.ParsingError", parsing_error,
-      SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
+  UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.ParsingError", parsing_error);
 }
 
 }  // namespace
