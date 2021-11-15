@@ -3444,7 +3444,7 @@ class PydepsChecker(object):
   def _LoadFile(self, path):
     """Returns the list of paths within a .pydeps file relative to //."""
     if path not in self._file_cache:
-      with open(path) as f:
+      with open(path, encoding='utf-8') as f:
         self._file_cache[path] = f.read()
     return self._file_cache[path]
 
@@ -3513,7 +3513,7 @@ class PydepsChecker(object):
     env = dict(os.environ)
     env['PYTHONDONTWRITEBYTECODE'] = '1'
     new_pydeps_data = self._input_api.subprocess.check_output(
-        cmd + ' --output ""', shell=True, env=env)
+        cmd + ' --output ""', shell=True, env=env, encoding='utf-8')
     new_contents = new_pydeps_data.splitlines()[2:]
     if old_contents != new_contents:
       return cmd, '\n'.join(difflib.context_diff(old_contents, new_contents))
@@ -3536,7 +3536,7 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
   # This check is for Python dependency lists (.pydeps files), and involves
   # paths not only in the PRESUBMIT.py, but also in the .pydeps files. It
   # doesn't work on Windows and Mac, so skip it on other platforms.
-  if input_api.platform != 'linux2':
+  if not input_api.platform.startswith('linux'):
     return []
   is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
   pydeps_to_check = _ALL_PYDEPS_FILES if is_android else _GENERIC_PYDEPS_FILES

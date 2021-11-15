@@ -104,6 +104,7 @@
 ../../third_party/colorama/src/colorama/winterm.py
 ../../third_party/jinja2/__init__.py
 ../../third_party/jinja2/_compat.py
+../../third_party/jinja2/_identifier.py
 ../../third_party/jinja2/bccache.py
 ../../third_party/jinja2/compiler.py
 ../../third_party/jinja2/defaults.py
