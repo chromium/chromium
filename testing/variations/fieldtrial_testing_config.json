@@ -1497,6 +1497,29 @@
             ]
         }
     ],
+    "AutomaticLazyFrameLoadingToEmbeds": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithAllowedWebsites_20210922",
+                    "params": {
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed,https://platform.twitter.com|/embed,https://www.redditmedia.com|embed=true,https://www.instagram.com|/embed"
+                    },
+                    "enable_features": [
+                        "AutomaticLazyFrameLoadingToEmbeds"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCache": [
         {
             "platforms": [
