@@ -4446,12 +4446,17 @@ crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-dat
 # Test timing out when SharedArrayBuffer is disabled by default.
 # See https://crbug.com/1194557
 crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Skip Timeout ]
-crbug.com/1194557 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Pass ]
 
 # Test output varies depending on the bot. A single expectation file doesn't
 # work.
 crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/fast/beacon/beacon-basic.html [ Pass ]
+
+# Tests are failing on CodeMirror 6 update, temporarily disable to re-open the tree.
+# Restore set-breakpoint-while-blocking-main-thread.js test to previous state [ Pass ] with
+# crbug.com/1194557 annotation as soon as crbug.com/1270207 has been fixed.
+crbug.com/1270207 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Skip ]
+crbug.com/1270207 virtual/portals/http/tests/devtools/portals/portals-sources-activate.js [ Skip ]
 
 # This test passes only when the JXL feature is enabled.
 crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Failure Pass ]
