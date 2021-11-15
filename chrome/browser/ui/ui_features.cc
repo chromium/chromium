@@ -154,7 +154,6 @@ const base::Feature kTabGroupsNewBadgePromo{"TabGroupsNewBadgePromo",
 // https://crbug.com/1223929
 const base::Feature kTabGroupsSave{"TabGroupsSave",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const char kTabGroupsSaveUIVariationsParameterName[] = "UI variation";
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954

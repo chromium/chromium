@@ -40,11 +40,6 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
   const SkColor default_dark_toolbar_color =
       TP::GetDefaultColor(TP::COLOR_TOOLBAR, false, true);
   float tab_group_chip_alpha = 0.24f;
-  int ui_option = base::GetFieldTrialParamByFeatureAsInt(
-      features::kTabGroupsSave,
-      features::kTabGroupsSaveUIVariationsParameterName, 0);
-  if (ui_option == 3)
-    tab_group_chip_alpha = 0.48f;
 
   switch (color_id) {
     case TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE:

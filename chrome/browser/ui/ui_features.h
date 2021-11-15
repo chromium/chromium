@@ -90,7 +90,6 @@ extern const base::Feature kTabGroupsCollapseFreezing;
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;
-extern const char kTabGroupsSaveUIVariationsParameterName[];
 
 extern const base::Feature kTabHoverCardImages;
 
