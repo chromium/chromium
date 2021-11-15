@@ -1992,6 +1992,7 @@ void TemplateURLService::UpdateProvidersCreatedByPolicy(
       new_data.GenerateSyncGUID();
     new_data.created_by_policy = true;
     new_data.safe_for_autoreplace = false;
+    new_data.is_active = TemplateURLData::ActiveStatus::kTrue;
     std::unique_ptr<TemplateURL> new_dse_ptr =
         std::make_unique<TemplateURL>(new_data);
     TemplateURL* new_dse = new_dse_ptr.get();
