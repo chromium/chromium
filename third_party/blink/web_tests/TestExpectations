@@ -5501,7 +5501,6 @@ crbug.com/1006759 http/tests/devtools/profiler/heap-snapshot-loader.js [ Failure
 # Temporarily disabled to land changes in DevTools, multiple dependent CLs
 # [1] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2049183
 # [2] https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2119670
-crbug.com/1064472 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
 
 crbug.com/1049456 fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass ]
 crbug.com/1081277 fast/scrolling/events/scrollend-event-fired-to-element-with-overscroll-behavior.html [ Failure Pass ]
