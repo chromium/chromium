@@ -105,3 +105,5 @@ Local Modifications:
 - Add a document about testing the crazy linker in a Chromium checkout
 
 - Remove unnecessary alignment check for size of area that is about to mmap(2).
+
+- Fix -Wshadow warning (error with -Werror) in struct RelroLibrary.
