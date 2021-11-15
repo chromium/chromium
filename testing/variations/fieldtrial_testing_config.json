@@ -8244,6 +8244,21 @@
             ]
         }
     ],
+    "UseContextSnapshot": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseContextSnapshot"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseFluentLanguageModel": [
         {
             "platforms": [
