@@ -12,6 +12,7 @@ include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
 
+  "+ash/components/arc",
   "+chrome/android/native_j_unittests_jni_headers",
   "+chrome/android/chrome_jni_headers",
   "+chrome/android/features/autofill_assistant/jni_headers",
@@ -39,6 +40,7 @@ include_rules = [
   "+components/about_ui",
   "+components/account_id",
   "+components/federated_learning",
+  # TODO(b/129295708): Remove after move is complete.
   "+components/arc",
   "+components/accuracy_tips",
   "+components/account_manager_core",
