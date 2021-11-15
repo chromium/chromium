@@ -603,7 +603,15 @@ void GpuServiceImpl::InitializeWithHost(
 
   // Create and Initialize compositor gpu thread.
   compositor_gpu_thread_ = CompositorGpuThread::Create(
-      gpu_channel_manager_.get(), !!watchdog_thread_);
+      gpu_channel_manager_.get(),
+#if BUILDFLAG(ENABLE_VULKAN)
+      vulkan_implementation_,
+      vulkan_context_provider_ ? vulkan_context_provider_->GetDeviceQueue()
+                               : nullptr,
+#else
+      nullptr, nullptr,
+#endif
+      !!watchdog_thread_);
 }
 
 void GpuServiceImpl::Bind(

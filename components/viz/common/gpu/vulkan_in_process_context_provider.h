@@ -42,6 +42,15 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       base::TimeDelta cooldown_duration_at_memory_pressure_critical =
           base::Seconds(15));
 
+  // Creates a VulkanContextProvider for the CompositorGpuThread.
+  static scoped_refptr<VulkanInProcessContextProvider>
+  CreateForCompositorGpuThread(
+      gpu::VulkanImplementation* vulkan_implementation,
+      std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue,
+      uint32_t sync_cpu_memory_limit = 0,
+      base::TimeDelta cooldown_duration_at_memory_pressure_critical =
+          base::Seconds(15));
+
   VulkanInProcessContextProvider(const VulkanInProcessContextProvider&) =
       delete;
   VulkanInProcessContextProvider& operator=(
@@ -71,6 +80,9 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   ~VulkanInProcessContextProvider() override;
 
   bool Initialize(const gpu::GPUInfo* gpu_info);
+
+  void InitializeForCompositorGpuThread(
+      std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue);
 
   // Memory pressure handler, called by |memory_pressure_listener_|.
   void OnMemoryPressure(

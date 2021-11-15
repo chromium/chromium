@@ -43,6 +43,24 @@ VulkanInProcessContextProvider::Create(
   return context_provider;
 }
 
+scoped_refptr<VulkanInProcessContextProvider>
+VulkanInProcessContextProvider::CreateForCompositorGpuThread(
+    gpu::VulkanImplementation* vulkan_implementation,
+    std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue,
+    uint32_t sync_cpu_memory_limit,
+    base::TimeDelta cooldown_duration_at_memory_pressure_critical) {
+  if (!vulkan_implementation)
+    return nullptr;
+
+  scoped_refptr<VulkanInProcessContextProvider> context_provider(
+      new VulkanInProcessContextProvider(
+          vulkan_implementation, /*heap_memory_limit=*/0, sync_cpu_memory_limit,
+          cooldown_duration_at_memory_pressure_critical));
+  context_provider->InitializeForCompositorGpuThread(
+      std::move(vulkan_device_queue));
+  return context_provider;
+}
+
 VulkanInProcessContextProvider::VulkanInProcessContextProvider(
     gpu::VulkanImplementation* vulkan_implementation,
     uint32_t heap_memory_limit,
@@ -87,6 +105,14 @@ bool VulkanInProcessContextProvider::Initialize(
     return false;
 
   return true;
+}
+
+void VulkanInProcessContextProvider::InitializeForCompositorGpuThread(
+    std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue) {
+  DCHECK(!device_queue_);
+  DCHECK(vulkan_device_queue);
+
+  device_queue_ = std::move(vulkan_device_queue);
 }
 
 bool VulkanInProcessContextProvider::InitializeGrContext(
