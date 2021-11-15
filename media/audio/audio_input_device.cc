@@ -210,6 +210,10 @@ void AudioInputDevice::SetOutputDeviceForAec(
   TRACE_EVENT1("audio", "AudioInputDevice::SetOutputDeviceForAec",
                "output_device_id", output_device_id);
 
+  if (output_device_id_for_aec_ &&
+      *output_device_id_for_aec_ == output_device_id)
+    return;
+
   output_device_id_for_aec_ = output_device_id;
   if (state_ > CREATING_STREAM)
     ipc_->SetOutputDeviceForAec(output_device_id);
