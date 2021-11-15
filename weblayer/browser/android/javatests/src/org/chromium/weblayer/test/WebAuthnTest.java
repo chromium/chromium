@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -73,7 +72,6 @@ public class WebAuthnTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1270281")
     public void testCreatePublicKeyCredential() throws Exception {
         String url = mActivityTestRule.getTestServer().getURLWithHostName(TEST_DOMAIN, TEST_FILE);
         mActivityTestRule.navigateAndWait(url);
