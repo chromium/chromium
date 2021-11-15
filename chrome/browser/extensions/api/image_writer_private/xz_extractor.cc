@@ -36,8 +36,8 @@ constexpr uint8_t kExpectedMagic[6] = {0xfd, '7', 'z', 'X', 'Z', 0x00};
 
 bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
   base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                    base::File::FLAG_EXCLUSIVE_WRITE |
-                                    base::File::FLAG_SHARE_DELETE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
   if (!infile.IsValid())
     return false;
 
@@ -94,8 +94,8 @@ void XzExtractor::ExtractImpl() {
 
   infile_.Initialize(properties_.image_path,
                      base::File::FLAG_OPEN | base::File::FLAG_READ |
-                         base::File::FLAG_EXCLUSIVE_WRITE |
-                         base::File::FLAG_SHARE_DELETE);
+                         base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                         base::File::FLAG_WIN_SHARE_DELETE);
   if (!infile_.IsValid()) {
     RunFailureCallbackAndDeleteThis(error::kUnzipGenericError);
     return;
@@ -105,9 +105,9 @@ void XzExtractor::ExtractImpl() {
       properties_.temp_dir_path.Append(kExtractedBinFileName);
   outfile_.Initialize(out_image_path, base::File::FLAG_CREATE_ALWAYS |
                                           base::File::FLAG_WRITE |
-                                          base::File::FLAG_EXCLUSIVE_READ |
-                                          base::File::FLAG_EXCLUSIVE_WRITE |
-                                          base::File::FLAG_SHARE_DELETE);
+                                          base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                          base::File::FLAG_WIN_SHARE_DELETE);
   if (!outfile_.IsValid()) {
     RunFailureCallbackAndDeleteThis(error::kTempFileError);
     return;
