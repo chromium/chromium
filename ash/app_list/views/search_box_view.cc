@@ -75,12 +75,6 @@ constexpr gfx::Insets kBorderInsetsForAppListBubble(4, 4, 4, 0);
 // Margins for the search box text field in bubble launcher.
 constexpr gfx::Insets kTextFieldMarginsForAppListBubble(8, 0, 0, 0);
 
-float GetAssistantButtonOpacityForState(AppListState state) {
-  if (state == AppListState::kStateSearchResults)
-    return .0f;
-  return 1.f;
-}
-
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
   std::u16string trimmed_query;
   base::TrimWhitespace(query, base::TrimPositions::TRIM_ALL, &trimmed_query);
@@ -415,10 +409,6 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
   box_layout()->set_inside_border_insets(
       gfx::Insets(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
-  if (show_assistant_button()) {
-    assistant_button()->layer()->SetOpacity(
-        GetAssistantButtonOpacityForState(target_state));
-  }
   InvalidateLayout();
   current_app_list_state_ = target_state;
 }

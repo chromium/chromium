@@ -127,6 +127,15 @@ class SearchBoxViewBase : public views::View,
   // Updates the visibility of the close and assistant buttons.
   void UpdateButtonsVisibility();
 
+  // When necessary, starts the fade in animation for the button.
+  void MaybeFadeButtonIn(SearchBoxImageButton* button);
+
+  // When necessary, starts the fade out animation for the button.
+  void MaybeFadeButtonOut(SearchBoxImageButton* button);
+
+  // Used as a callback to set the button's visibility to false.
+  void SetVisibilityHidden(SearchBoxImageButton* button);
+
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -190,7 +199,7 @@ class SearchBoxViewBase : public views::View,
   SearchBoxImageButton* back_button_ = nullptr;
   SearchBoxImageButton* close_button_ = nullptr;
   views::Textfield* search_box_;
-  views::View* search_box_right_space_ = nullptr;
+  views::View* search_box_button_container_ = nullptr;
 
   // Owned by |content_container_|. It is deleted when the view is deleted.
   views::BoxLayout* box_layout_ = nullptr;
@@ -206,6 +215,8 @@ class SearchBoxViewBase : public views::View,
       AddEnabledChangedCallback(
           base::BindRepeating(&SearchBoxViewBase::OnEnabledChanged,
                               base::Unretained(this)));
+
+  base::WeakPtrFactory<SearchBoxViewBase> weak_factory_{this};
 };
 
 }  // namespace ash

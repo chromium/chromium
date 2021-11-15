@@ -153,6 +153,10 @@ AppListView* AppListTestHelper::GetAppListView() {
   return app_list_controller_->presenter()->GetView();
 }
 
+SearchBoxView* AppListTestHelper::GetSearchBoxView() {
+  return GetAppListView()->search_box_view();
+}
+
 AppsContainerView* AppListTestHelper::GetAppsContainerView() {
   return GetAppListView()
       ->app_list_main_view()

@@ -35,6 +35,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -1212,6 +1214,74 @@ TEST_F(SearchBoxViewAppListBubbleTest, HasAccessibilityHintWhenActive) {
   EXPECT_EQ(view->search_box()->GetAccessibleName(),
             l10n_util::GetStringUTF16(
                 IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+}
+
+class SearchBoxViewAnimationTest : public AshTestBase {
+ public:
+  SearchBoxViewAnimationTest() {
+    scoped_features_.InitWithFeatures({features::kProductivityLauncherAnimation,
+                                       features::kProductivityLauncher},
+                                      {});
+  }
+  ~SearchBoxViewAnimationTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    non_zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    GetSearchModel()->search_box()->SetShowAssistantButton(true);
+  }
+
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Test that the search box image buttons fade in and out correctly when the
+// search box is activated and deactivated.
+TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
+  auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
+
+  // Initially the assistant button should be shown, and the close button
+  // hidden.
+  EXPECT_FALSE(search_box->close_button()->GetVisible());
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
+
+  // Set search box to active state.
+  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+
+  // Close button should be fading in.
+  EXPECT_TRUE(search_box->close_button()->GetVisible());
+  auto* close_animator = search_box->close_button()->layer()->GetAnimator();
+  ASSERT_TRUE(close_animator);
+  EXPECT_TRUE(close_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(close_animator->GetTargetOpacity(), 1.0f);
+
+  // Assistant button should be fading out.
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
+  auto* assistant_animator =
+      search_box->assistant_button()->layer()->GetAnimator();
+  EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(assistant_animator->GetTargetOpacity(), 0.0f);
+
+  // Set search box to inactive state, hiding the close button.
+  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+
+  // Close button should be fading out.
+  EXPECT_TRUE(search_box->close_button()->GetVisible());
+  EXPECT_TRUE(close_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(close_animator->GetTargetOpacity(), 0.0f);
+
+  // Assistant button should be fading in.
+  EXPECT_TRUE(search_box->assistant_button()->GetVisible());
+  ASSERT_TRUE(assistant_animator);
+  EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(assistant_animator->GetTargetOpacity(), 1.0f);
 }
 
 }  // namespace

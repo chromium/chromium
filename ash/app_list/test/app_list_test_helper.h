@@ -102,6 +102,7 @@ class AppListTestHelper {
 
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
+  SearchBoxView* GetSearchBoxView();
   AppsContainerView* GetAppsContainerView();
   AppListFolderView* GetFullscreenFolderView();
   RecentAppsView* GetFullscreenRecentAppsView();
