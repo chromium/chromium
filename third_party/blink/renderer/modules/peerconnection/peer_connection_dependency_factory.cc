@@ -339,7 +339,7 @@ std::string GetTierName() {
 }
 
 struct UmaVideoConfig {
-  std::string name;
+  webrtc::SdpVideoFormat format;
   absl::optional<std::string> scalability_mode;
   int decoder_weight;
   int encoder_weight;
@@ -361,24 +361,33 @@ void ReportUmaEncodeDecodeCapabilities(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
           render_color_space);
   if (webrtc_encoder_factory && webrtc_decoder_factory) {
+    using Sdp = webrtc::SdpVideoFormat;
     // Query for encode/decode support for H264, VP8, VP9, VP9 k-SVC.
-    UmaVideoConfig video_configs[] = {{"H264", absl::nullopt, 1, 16},
-                                      {"VP8", absl::nullopt, 2, 32},
-                                      {"VP9", absl::nullopt, 4, 64},
-                                      {"VP9", "L3T3_KEY", 8, 128}};
+    UmaVideoConfig video_configs[] = {
+        {Sdp{"H264", Sdp::Parameters{{"level-asymmetry-allowed", "1"},
+                                     {"packetization-mode", "1"},
+                                     {"profile-level-id", "42001f"}}},
+         absl::nullopt, 1, 32},
+        {Sdp{"H264", Sdp::Parameters{{"level-asymmetry-allowed", "1"},
+                                     {"packetization-mode", "1"},
+                                     {"profile-level-id", "4d0032"}}},
+         absl::nullopt, 2, 64},
+        {Sdp{"VP8"}, absl::nullopt, 4, 128},
+        {Sdp{"VP9"}, absl::nullopt, 8, 256},
+        {Sdp{"VP9"}, "L3T3_KEY", 16, 512}};
     int uma_metric = 0;
     for (const auto& config : video_configs) {
       uma_metric += config.decoder_weight *
                     webrtc_decoder_factory
-                        ->QueryCodecSupport(webrtc::SdpVideoFormat(config.name),
+                        ->QueryCodecSupport(config.format,
                                             config.scalability_mode.has_value())
                         .is_power_efficient;
 
-      uma_metric += config.encoder_weight *
-                    webrtc_encoder_factory
-                        ->QueryCodecSupport(webrtc::SdpVideoFormat(config.name),
-                                            config.scalability_mode)
-                        .is_power_efficient;
+      uma_metric +=
+          config.encoder_weight *
+          webrtc_encoder_factory
+              ->QueryCodecSupport(config.format, config.scalability_mode)
+              .is_power_efficient;
     }
 
     base::UmaHistogramSparse("WebRTC.Video.HwCapabilities." + GetTierName(),

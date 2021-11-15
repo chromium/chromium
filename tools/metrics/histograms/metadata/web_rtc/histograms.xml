@@ -2753,9 +2753,11 @@ chromium-metrics-reviews@google.com.
     A bitfield representing RTC HW encode and decode support. The number is
     reported one time per frame when the first RTCPeerConnection object is
     created. The bits in the reported number have the following meaning: H264
-    decode supported (1), VP8 decode supported (2), VP9 decode supported (4),
-    VP9 kSVC decode supported (8), H264 encode supported (16), VP8 encode
-    supported (32), VP9 encode supported (64), VP9 kSVC encode supported (128).
+    Baseline profile decode supported (1), H264 Main profile decode supported
+    (2), VP8 decode supported (4), VP9 decode supported (8), VP9 kSVC decode
+    supported (16), H264 Baseline profile encode supported (32), H264 Main
+    profile encode supported (64), VP8 encode supported (128), VP9 encode
+    supported (256), VP9 kSVC encode supported (512).
   </summary>
   <token key="Tier">
     <variant name="HIGH_OR_ULTRA"/>
