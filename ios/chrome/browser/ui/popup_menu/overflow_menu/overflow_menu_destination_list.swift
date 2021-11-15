@@ -28,7 +28,14 @@ struct OverflowMenuDestinationList: View {
 
     /// Range of icon paddings; varies based on view width.
     static let iconPaddingRange: ClosedRange<CGFloat> = 0...3
+
+    /// When the dynamic text size is large, the width of each item is the
+    /// screen width minus a fixed space.
+    static let largeTextSizeSpace: CGFloat = 120
   }
+
+  /// The current dynamic type size.
+  @Environment(\.sizeCategory) var sizeCategory
 
   /// The destinations for this view.
   var destinations: [OverflowMenuDestination]
@@ -37,11 +44,17 @@ struct OverflowMenuDestinationList: View {
     GeometryReader { geometry in
       ScrollView(.horizontal, showsIndicators: false) {
         let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
+        let layoutParameters: OverflowMenuDestinationView.LayoutParameters =
+          sizeCategory >= .accessibilityMedium
+          ? .horizontal(itemWidth: geometry.size.width - Constants.largeTextSizeSpace)
+          : .vertical(
+            iconSpacing: spacing.iconSpacing,
+            iconPadding: spacing.iconPadding)
+
         LazyHStack(spacing: 0) {
           ForEach(destinations) { destination in
             OverflowMenuDestinationView(
-              destination: destination, iconSpacing: spacing.iconSpacing,
-              iconPadding: spacing.iconPadding)
+              destination: destination, layoutParameters: layoutParameters)
           }
         }
         // Make sure the space to the first icon is constant, so add extra

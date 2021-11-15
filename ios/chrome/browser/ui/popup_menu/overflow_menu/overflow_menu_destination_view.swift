@@ -8,40 +8,102 @@ import ios_chrome_common_ui_colors_swift
 /// A view displaying a single destination.
 struct OverflowMenuDestinationView: View {
 
+  /// Parameters providing any necessary data to layout the view.
+  enum LayoutParameters {
+    /// The destination has an icon on top and text below.
+    /// There is `iconSpacing` to either side of the icon, and `iconPadding`
+    /// around the icon and inside the background.
+    case vertical(iconSpacing: CGFloat, iconPadding: CGFloat)
+    /// The destination has an icon on the left and text on the right. Here
+    /// the view will have a fixed overall `itemWidth`.
+    case horizontal(itemWidth: CGFloat)
+  }
+
   enum Dimensions {
-    /// The size of the total icon, including the background.
-    static let iconSize: CGFloat = 60
     static let cornerRadius: CGFloat = 13
-    /// The padding on either side of the text, separating it from the next view.
-    static let textPadding: CGFloat = 3
+
+    /// The padding on either side of the text in the vertical layout,
+    /// separating it from the next view.
+    static let verticalLayoutTextPadding: CGFloat = 3
+
+    /// The padding on either side of the view in the horizontal layout,
+    /// separating it from the next view.
+    static let horizontalLayoutViewPadding: CGFloat = 16
+
+    /// The padding around the icon and inside the background in horizontal
+    /// layout.
+    static let horizontalLayoutIconPadding: CGFloat = 3
+
+    /// The spacing between the icon and the text in horizontal layout.
+    static let horizontalLayoutIconSpacing: CGFloat = 14
   }
 
   /// The destination for this view.
   var destination: OverflowMenuDestination
 
-  /// The spacing to either side of each icon.
-  var iconSpacing: CGFloat
-
-  /// The padding around the icon and inside the white background.
-  var iconPadding: CGFloat
+  /// The layout parameters for this view.
+  var layoutParameters: LayoutParameters
 
   var body: some View {
-    VStack {
-      destination.image
-        .padding(iconPadding)
-        .background(iconBackground)
-        .padding([.leading, .trailing], iconSpacing)
-
-      Text(destination.name)
-        .font(.caption2)
-        .padding([.leading, .trailing], Dimensions.textPadding)
+    Group {
+      switch layoutParameters {
+      case .vertical:
+        VStack {
+          icon
+          text
+        }
+      case .horizontal(let itemWidth):
+        HStack {
+          icon
+          Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
+          text
+        }
+        .frame(width: itemWidth, alignment: .leading)
+        // In horizontal layout, the item itself has leading and trailing
+        // padding.
+        .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
+      }
     }
     .contentShape(Rectangle())
     .onTapGesture(perform: destination.handler)
   }
 
+  /// View representing the background of the icon.
   var iconBackground: some View {
     RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
       .foregroundColor(.cr_groupedSecondaryBackground)
+  }
+
+  /// Icon for the destination.
+  var icon: some View {
+    let interiorPadding: CGFloat
+    let spacing: CGFloat
+    switch layoutParameters {
+    case .vertical(let iconSpacing, let iconPadding):
+      spacing = iconSpacing
+      interiorPadding = iconPadding
+    case .horizontal:
+      spacing = 0
+      interiorPadding = Dimensions.horizontalLayoutIconPadding
+    }
+    return destination.image
+      .padding(interiorPadding)
+      .background(iconBackground)
+      .padding([.leading, .trailing], spacing)
+  }
+
+  /// Text view for the destination.
+  var text: some View {
+    // Only the vertical layout has extra spacing around the text
+    let textSpacing: CGFloat
+    switch layoutParameters {
+    case .vertical:
+      textSpacing = Dimensions.verticalLayoutTextPadding
+    case .horizontal:
+      textSpacing = 0
+    }
+    return Text(destination.name)
+      .font(.caption2)
+      .padding([.leading, .trailing], textSpacing)
   }
 }
