@@ -312,8 +312,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::vector<WebContentsImpl*> GetWebContentsAndAllInner();
 
   // Returns the primary FrameTree for this WebContents (as opposed to the
-  // ones held by MPArch features like Prerender or Portal).
-  FrameTree& GetPrimaryFrameTree() { return frame_tree_; }
+  // ones held by MPArch features like Prerender or Fenced Frame).
+  FrameTree& GetPrimaryFrameTree() { return primary_frame_tree_; }
 
   // Whether the initial empty page of this view has been accessed by another
   // page, making it unsafe to show the pending URL. Always false after the
@@ -1131,8 +1131,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // |IsFullscreen| must return |true| when this method is called.
   bool IsPictureInPictureAllowedForFullscreenVideo() const;
 
-  // Set this WebContents's `frame_tree_` as the focused frame tree.
-  // `frame_tree_`'s main frame RenderWidget (and all of its
+  // Set this WebContents's `primary_frame_tree_` as the focused frame tree.
+  // `primary_frame_tree_`'s main frame RenderWidget (and all of its
   // subframe widgets) will be activated. GetFocusedRenderWidgetHost will search
   // this WebContentsImpl for a focused RenderWidgetHost. The previously focused
   // WebContentsImpl, if any, will have its RenderWidgetHosts deactivated.
@@ -1871,9 +1871,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       render_widget_host_destruction_observers_;
 
   // A list of observers notified when page state changes. Weak references.
-  // This MUST be listed above frame_tree_ since at destruction time the
-  // latter might cause RenderViewHost's destructor to call us and we might use
-  // the observer list then.
+  // This MUST be listed above `primary_frame_tree_` since at destruction time
+  // the latter might cause RenderViewHost's destructor to call us and we might
+  // use the observer list then.
   WebContentsObserverList observers_;
 
   // True if this tab was opened by another window. This is true even if the tab
@@ -1886,8 +1886,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Helper classes ------------------------------------------------------------
 
-  // Manages the frame tree of the page and process swaps in each node.
-  FrameTree frame_tree_;
+  // Primary FrameTree of this WebContents instance. This WebContents might have
+  // additional FrameTrees for features like prerendering and fenced frames,
+  // which either might be standalone (prerendering) to nested within a
+  // different FrameTree (fenced frame).
+  FrameTree primary_frame_tree_;
 
   // Contains information about the WebContents tree structure.
   WebContentsTreeNode node_;

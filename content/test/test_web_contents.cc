@@ -196,15 +196,17 @@ void TestWebContents::TestDidReceiveMouseDownEvent() {
   event.SetType(blink::WebInputEvent::Type::kMouseDown);
   // Use the first RenderWidgetHost from the frame tree to make sure that the
   // interaction doesn't get ignored.
-  DCHECK(frame_tree_.Nodes().begin() != frame_tree_.Nodes().end());
-  RenderWidgetHostImpl* render_widget_host = (*frame_tree_.Nodes().begin())
-                                                 ->current_frame_host()
-                                                 ->GetRenderWidgetHost();
+  DCHECK(primary_frame_tree_.Nodes().begin() !=
+         primary_frame_tree_.Nodes().end());
+  RenderWidgetHostImpl* render_widget_host =
+      (*primary_frame_tree_.Nodes().begin())
+          ->current_frame_host()
+          ->GetRenderWidgetHost();
   DidReceiveInputEvent(render_widget_host, event);
 }
 
 void TestWebContents::TestDidFinishLoad(const GURL& url) {
-  OnDidFinishLoad(frame_tree_.root()->current_frame_host(), url);
+  OnDidFinishLoad(primary_frame_tree_.root()->current_frame_host(), url);
 }
 
 void TestWebContents::TestDidFailLoadWithError(const GURL& url,
@@ -270,7 +272,7 @@ void TestWebContents::TestSetIsLoading(bool value) {
   if (value) {
     DidStartLoading(GetMainFrame()->frame_tree_node(), true);
   } else {
-    for (FrameTreeNode* node : frame_tree_.Nodes()) {
+    for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
       RenderFrameHostImpl* current_frame_host =
           node->render_manager()->current_frame_host();
       DCHECK(current_frame_host);
@@ -300,7 +302,7 @@ RenderViewHostDelegateView* TestWebContents::GetDelegateView() {
 }
 
 void TestWebContents::SetOpener(WebContents* opener) {
-  frame_tree_.root()->SetOpener(
+  primary_frame_tree_.root()->SetOpener(
       static_cast<WebContentsImpl*>(opener)->GetPrimaryFrameTree().root());
 }
 

@@ -883,16 +883,16 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
       opened_by_another_window_(false),
-      frame_tree_(browser_context,
-                  this,
-                  this,
-                  this,
-                  this,
-                  this,
-                  this,
-                  this,
-                  this,
-                  FrameTree::Type::kPrimary),
+      primary_frame_tree_(browser_context,
+                          this,
+                          this,
+                          this,
+                          this,
+                          this,
+                          this,
+                          this,
+                          this,
+                          FrameTree::Type::kPrimary),
       node_(this),
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
@@ -1023,7 +1023,7 @@ WebContentsImpl::~WebContentsImpl() {
   find_request_manager_.reset();
 
   // Shutdown the primary FrameTree.
-  frame_tree_.Shutdown();
+  primary_frame_tree_.Shutdown();
 
   // Shutdown the non-primary FrameTrees.
   //
@@ -1225,7 +1225,7 @@ std::string WebContentsImpl::GetTitleForMediaControls() {
 // FrameTrees in one WebContents and each has its own NavigationController.
 // TODO(https://crbug.com/1170273): Make sure callers are aware of this.
 NavigationControllerImpl& WebContentsImpl::GetController() {
-  return frame_tree_.controller();
+  return primary_frame_tree_.controller();
 }
 
 BrowserContext* WebContentsImpl::GetBrowserContext() {
@@ -1278,7 +1278,7 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetMainFrame() {
-  return frame_tree_.root()->current_frame_host();
+  return primary_frame_tree_.root()->current_frame_host();
 }
 
 PageImpl& WebContentsImpl::GetPrimaryPage() {
@@ -1287,12 +1287,12 @@ PageImpl& WebContentsImpl::GetPrimaryPage() {
   //
   // Please note that IsBeingDestroyed() should be checked to ensure that we
   // don't access Page related data that is going to be destroyed.
-  CHECK(frame_tree_.root()->current_frame_host());
-  return frame_tree_.root()->current_frame_host()->GetPage();
+  CHECK(primary_frame_tree_.root()->current_frame_host());
+  return primary_frame_tree_.root()->current_frame_host()->GetPage();
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
-  FrameTreeNode* focused_node = frame_tree_.GetFocusedFrame();
+  FrameTreeNode* focused_node = primary_frame_tree_.GetFocusedFrame();
   if (!focused_node)
     return nullptr;
   return focused_node->current_frame_host();
@@ -1331,20 +1331,22 @@ void WebContentsImpl::ForEachFrame(
     const base::RepeatingCallback<void(RenderFrameHost*)>& on_frame) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::ForEachFrame");
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     on_frame.Run(node->current_frame_host());
   }
 }
 
 int WebContentsImpl::SendToAllFrames(IPC::Message* message) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendToAllFrames");
-  return SendToAllFramesImpl(frame_tree_, /*include_pending=*/false, message);
+  return SendToAllFramesImpl(primary_frame_tree_, /*include_pending=*/false,
+                             message);
 }
 
 int WebContentsImpl::SendToAllFramesIncludingPending(IPC::Message* message) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::SentToAllFramesIncludingPending");
-  return SendToAllFramesImpl(frame_tree_, /*include_pending=*/true, message);
+  return SendToAllFramesImpl(primary_frame_tree_, /*include_pending=*/true,
+                             message);
 }
 
 void WebContentsImpl::ForEachRenderFrameHost(
@@ -1478,7 +1480,8 @@ void WebContentsImpl::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::ExecutePageBroadcastMethod");
-  frame_tree_.root()->render_manager()->ExecutePageBroadcastMethod(callback);
+  primary_frame_tree_.root()->render_manager()->ExecutePageBroadcastMethod(
+      callback);
 }
 
 RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
@@ -1727,7 +1730,7 @@ void WebContentsImpl::OnManifestUrlChanged(const PageImpl& page) {
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
-  return frame_tree_.root()->current_frame_host()->web_ui();
+  return primary_frame_tree_.root()->current_frame_host()->web_ui();
 }
 
 // TODO(https://crbug.com/1199697): (MPArch) We should probably iterate all
@@ -1895,13 +1898,13 @@ SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
 }
 
 bool WebContentsImpl::IsLoading() {
-  return frame_tree_.IsLoading();
+  return primary_frame_tree_.IsLoading();
 }
 
 double WebContentsImpl::GetLoadProgress() {
   // TODO(crbug.com/1199682): Make this MPArch friendly considering primary
   // frame tree and its descendants.
-  return frame_tree_.GetLoadProgress();
+  return primary_frame_tree_.GetLoadProgress();
 }
 
 bool WebContentsImpl::ShouldShowLoadingUI() {
@@ -1916,7 +1919,7 @@ bool WebContentsImpl::IsDocumentOnLoadCompletedInMainFrame() {
 
 bool WebContentsImpl::IsWaitingForResponse() {
   NavigationRequest* ongoing_navigation_request =
-      frame_tree_.root()->navigation_request();
+      primary_frame_tree_.root()->navigation_request();
 
   // An ongoing navigation request means we're waiting for a response.
   return ongoing_navigation_request != nullptr;
@@ -2250,7 +2253,8 @@ bool WebContentsImpl::HasActiveEffectivelyFullscreenVideo() {
 
 void WebContentsImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("root_frame_tree_node_id", frame_tree_.root()->frame_tree_node_id());
+  dict.Add("root_frame_tree_node_id",
+           primary_frame_tree_.root()->frame_tree_node_id());
 }
 
 void WebContentsImpl::DisallowActivationNavigationsForBug1234857() {
@@ -2300,7 +2304,7 @@ bool WebContentsImpl::NeedToFireBeforeUnloadOrUnloadEvents() {
 
   // Check whether any frame in the frame tree needs to run beforeunload or
   // unload-time event handlers.
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
 
     // No need to run beforeunload/unload-time events if the RenderFrame isn't
@@ -2428,10 +2432,10 @@ void WebContentsImpl::AttachInnerWebContents(
     inner_web_contents_impl->ReattachToOuterWebContentsFrame();
   }
 
-  if (frame_tree_.GetFocusedFrame() ==
+  if (primary_frame_tree_.GetFocusedFrame() ==
       render_frame_host_impl->frame_tree_node()) {
     inner_web_contents_impl->SetFocusedFrame(
-        inner_web_contents_impl->frame_tree_.root(),
+        inner_web_contents_impl->primary_frame_tree_.root(),
         render_frame_host_impl->GetSiteInstance());
   }
   outer_render_manager->set_attach_complete();
@@ -2834,7 +2838,7 @@ void WebContentsImpl::OnWebPreferencesChanged() {
   updating_web_preferences_ = true;
   SetWebPreferences(ComputeWebPreferences());
 #if defined(OS_ANDROID)
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
     if (rfh->is_local_root()) {
       if (auto* rwh = rfh->GetRenderWidgetHost())
@@ -2906,7 +2910,7 @@ void WebContentsImpl::SetPageFrozen(bool frozen) {
   // A visible page is never frozen.
   DCHECK_NE(Visibility::VISIBLE, GetVisibility());
 
-  for (auto& entry : frame_tree_.render_view_hosts()) {
+  for (auto& entry : primary_frame_tree_.render_view_hosts()) {
     entry.second->SetIsFrozen(frozen);
   }
 }
@@ -2918,13 +2922,13 @@ std::unique_ptr<WebContents> WebContentsImpl::Clone() {
   // We pass our own opener so that the cloned page can access it if it was set
   // before.
   CreateParams create_params(GetBrowserContext(), GetSiteInstance());
-  FrameTreeNode* opener = frame_tree_.root()->opener();
+  FrameTreeNode* opener = primary_frame_tree_.root()->opener();
   RenderFrameHostImpl* opener_rfh = nullptr;
   if (opener)
     opener_rfh = opener->current_frame_host();
   std::unique_ptr<WebContentsImpl> tc =
       CreateWithOpener(create_params, opener_rfh);
-  tc->GetController().CopyStateFrom(&frame_tree_.controller(), true);
+  tc->GetController().CopyStateFrom(&primary_frame_tree_.controller(), true);
   observers_.NotifyObservers(&WebContentsObserver::DidCloneToNewWebContents,
                              this, tc.get());
   return tc;
@@ -2958,8 +2962,9 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
         ->PreventAssociationWithSpareProcess();
   }
 
-  frame_tree_.Init(site_instance.get(), params.renderer_initiated_creation,
-                   params.main_frame_name);
+  primary_frame_tree_.Init(site_instance.get(),
+                           params.renderer_initiated_creation,
+                           params.main_frame_name);
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
@@ -3623,7 +3628,7 @@ void WebContentsImpl::RequestToLockMouse(
   }
 
   bool widget_in_frame_tree = false;
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     if (node->current_frame_host()->GetRenderWidgetHost() ==
         render_widget_host) {
       widget_in_frame_tree = true;
@@ -3733,9 +3738,9 @@ bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
                         "visibility", static_cast<int>(visibility));
 
   // Check that we are responsible for the RenderFrameProxyHost by checking that
-  // its FrameTreeNode matches our `frame_tree_` root. Otherwise this is not a
-  // visibility change that affects all frames in an inner WebContents.
-  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root())
+  // its FrameTreeNode matches our `primary_frame_tree_` root. Otherwise this is
+  // not a visibility change that affects all frames in an inner WebContents.
+  if (render_frame_proxy_host->frame_tree_node() != primary_frame_tree_.root())
     return false;
 
   DCHECK(GetOuterWebContents());
@@ -3961,7 +3966,7 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
                         "route_id", route_id);
   RenderProcessHost* process = agent_scheduling_group.GetProcess();
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
-      &frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
+      &primary_frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),
@@ -4374,7 +4379,7 @@ void WebContentsImpl::SetNotWaitingForResponse() {
 
 void WebContentsImpl::SendScreenRects() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendScreenRects");
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
     if (node->current_frame_host()->is_local_root())
       node->current_frame_host()->GetRenderWidgetHost()->SendScreenRects();
   }
@@ -4515,8 +4520,8 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // If a frame tree node ID is specified and it exists, ensure it is for a
       // node within this WebContents. Note: this WebContents could be hosting
       // multiple frame trees (e.g. prerendering) so it's not enough to check
-      // against this->frame_tree_. Check against page_delegate(), which is
-      // always a WebContentsImpl, while delegate() may be implemented by
+      // against this->primary_frame_tree_. Check against page_delegate(), which
+      // is always a WebContentsImpl, while delegate() may be implemented by
       // something else such as for prerendered frame trees.
       FrameTree* frame_tree = frame_tree_node->frame_tree();
       CHECK_EQ(frame_tree->page_delegate(), this);
@@ -5146,7 +5151,7 @@ bool WebContentsImpl::HasOpener() {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetOpener() {
-  FrameTreeNode* opener_ftn = frame_tree_.root()->opener();
+  FrameTreeNode* opener_ftn = primary_frame_tree_.root()->opener();
   return opener_ftn ? opener_ftn->current_frame_host() : nullptr;
 }
 
@@ -5155,7 +5160,7 @@ bool WebContentsImpl::HasOriginalOpener() {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetOriginalOpener() {
-  FrameTreeNode* opener_ftn = frame_tree_.root()->original_opener();
+  FrameTreeNode* opener_ftn = primary_frame_tree_.root()->original_opener();
   return opener_ftn ? opener_ftn->current_frame_host() : nullptr;
 }
 
@@ -5937,7 +5942,7 @@ void WebContentsImpl::SetWebPreferences(
   // cached pages), and make them send the current WebPreferences
   // to the renderer. WebPreferences updates for back-forward cached pages will
   // be sent when we restore those pages from the back-forward cache.
-  for (auto& rvh : frame_tree_.render_view_hosts()) {
+  for (auto& rvh : primary_frame_tree_.render_view_hosts()) {
     rvh.second->SendWebPreferencesToRenderer();
   }
 }
@@ -6022,7 +6027,7 @@ void WebContentsImpl::OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
     observers_.NotifyObservers(&WebContentsObserver::DidFinishLoad,
                                render_frame_host, validated_url);
   }
-  size_t tree_size = frame_tree_.root()->GetFrameTreeSize();
+  size_t tree_size = primary_frame_tree_.root()->GetFrameTreeSize();
   if (max_loaded_frame_count_ < tree_size)
     max_loaded_frame_count_ = tree_size;
 
@@ -7634,7 +7639,7 @@ WebContentsImpl::GetFocusedFrameIncludingInnerWebContents() {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::GetFocusedFrameIncludingInnerWebContents");
   WebContentsImpl* contents = this;
-  FrameTreeNode* focused_node = contents->frame_tree_.GetFocusedFrame();
+  FrameTreeNode* focused_node = contents->primary_frame_tree_.GetFocusedFrame();
 
   // If there is no focused frame in the outer WebContents, we need to return
   // null.
@@ -7650,7 +7655,7 @@ WebContentsImpl::GetFocusedFrameIncludingInnerWebContents() {
     if (!contents)
       return focused_node->current_frame_host();
 
-    focused_node = contents->frame_tree_.GetFocusedFrame();
+    focused_node = contents->primary_frame_tree_.GetFocusedFrame();
     if (!focused_node)
       return contents->GetMainFrame();
   }
@@ -7727,7 +7732,7 @@ void WebContentsImpl::DidReceiveInputEvent(
     return;
 
   // Ignore unless the widget is currently in the frame tree.
-  if (!HasMatchingWidgetHost(&frame_tree_, render_widget_host))
+  if (!HasMatchingWidgetHost(&primary_frame_tree_, render_widget_host))
     return;
 
   if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin)
@@ -7851,8 +7856,9 @@ void WebContentsImpl::NotifySwappedFromRenderManager(
   if (new_frame->IsInPrimaryMainFrame()) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
-    DCHECK_EQ(frame_tree_.root()->render_manager()->GetRenderWidgetHostView(),
-              new_frame->GetView());
+    DCHECK_EQ(
+        primary_frame_tree_.root()->render_manager()->GetRenderWidgetHostView(),
+        new_frame->GetView());
 
     RenderViewHost* old_rvh =
         old_frame ? old_frame->GetRenderViewHost() : nullptr;
@@ -8108,7 +8114,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
 }
 
 RenderFrameHostManager* WebContentsImpl::GetRenderManager() const {
-  return frame_tree_.root()->render_manager();
+  return primary_frame_tree_.root()->render_manager();
 }
 
 BrowserPluginGuest* WebContentsImpl::GetBrowserPluginGuest() const {
@@ -8211,11 +8217,11 @@ void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
   // If we are the focused frame tree and are destroying the root node
   // reassign the focused frame tree node.
   if (!node->parent() && GetFocusedFrameTree() == node->frame_tree() &&
-      node->frame_tree() != &frame_tree_) {
+      node->frame_tree() != &primary_frame_tree_) {
     FrameTreeNode* frame_in_embedder =
         node->render_manager()->GetOuterDelegateNode();
     SetFocusedFrameTree(frame_in_embedder ? frame_in_embedder->frame_tree()
-                                          : &frame_tree_);
+                                          : &primary_frame_tree_);
   }
 
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
@@ -8727,7 +8733,7 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
                      WebContents* guest_contents) {
                     unattached_owned_nodes.push_back(
                         static_cast<WebContentsImpl*>(guest_contents)
-                            ->frame_tree_.root());
+                            ->primary_frame_tree_.root());
                   },
                   std::ref(unattached_owned_nodes)));
   }
