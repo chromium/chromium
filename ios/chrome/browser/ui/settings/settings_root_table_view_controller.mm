@@ -188,6 +188,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
   self.backButtonItem = self.navigationItem.leftBarButtonItem;
   self.shouldShowDeleteButtonInToolbar = YES;
+  self.extendedLayoutIncludesOpaqueBars = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
