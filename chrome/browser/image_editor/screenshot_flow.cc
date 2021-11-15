@@ -234,7 +234,6 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
         drag_end_.SetPoint(0, 0);
         if (selection.width() >= kMinimumValidSelectionEdgePixels &&
             selection.height() >= kMinimumValidSelectionEdgePixels) {
-          capture_mode_ = CaptureMode::NOT_CAPTURING;
           CompleteCapture(ScreenshotCaptureResultCode::SUCCESS, selection);
         } else {
           RequestRepaint(gfx::Rect());
