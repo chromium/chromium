@@ -1287,7 +1287,7 @@ void FrameImpl::DidFinishLoad(content::RenderFrameHost* render_frame_host,
 void FrameImpl::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   // The top-level frame is given a transparent background color.
   // GetView() is guaranteed to be non-null until |frame_host| teardown.
-  if (frame_host == web_contents()->GetMainFrame()) {
+  if (!frame_host->GetParentOrOuterDocument()) {
     frame_host->GetView()->SetBackgroundColor(SK_AlphaTRANSPARENT);
   }
 }
