@@ -683,10 +683,10 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
                                               uint64_t id,
                                               StringPiece name,
                                               bool exclusive_write) {
-  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
+  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_WIN_SHARE_DELETE |
                    File::FLAG_READ | File::FLAG_WRITE;
   if (exclusive_write)
-    flags |= File::FLAG_EXCLUSIVE_WRITE;
+    flags |= File::FLAG_WIN_EXCLUSIVE_WRITE;
   File file(file_path, flags);
   if (!file.IsValid())
     return false;
