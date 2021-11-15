@@ -87,6 +87,30 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void makeCredential(
+            PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
+        if (mIsOperationPending) {
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            return;
+        }
+
+        mMakeCredentialCallback = callback;
+        mIsOperationPending = true;
+        Context context = ContextUtils.getApplicationContext();
+        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
+                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+            onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+            return;
+        }
+
+        Fido2ApiHandler.getInstance().makeCredential(options, mRenderFrameHost, mOrigin,
+                (status, response)
+                        -> onRegisterResponse(status, response),
+                status -> onError(status));
+    }
+
+    // TODO(crbug.com/1093146): remove when all callbacks are migrated to new names.
+    @Override
+    public void makeCredential(
             PublicKeyCredentialCreationOptions options, MakeCredentialResponse callback) {
         if (mIsOperationPending) {
             callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
@@ -110,6 +134,29 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void getAssertion(
+            PublicKeyCredentialRequestOptions options, GetAssertion_Response callback) {
+        if (mIsOperationPending) {
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            return;
+        }
+
+        mGetAssertionCallback = callback;
+        mIsOperationPending = true;
+        Context context = ContextUtils.getApplicationContext();
+
+        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
+                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+            onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+            return;
+        }
+
+        Fido2ApiHandler.getInstance().getAssertion(options, mRenderFrameHost, mOrigin, mPayment,
+                (status, response) -> onSignResponse(status, response), status -> onError(status));
+    }
+
+    // TODO(crbug.com/1093146): remove when all callbacks are migrated to new names.
+    @Override
+    public void getAssertion(
             PublicKeyCredentialRequestOptions options, GetAssertionResponse callback) {
         if (mIsOperationPending) {
             callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
@@ -130,6 +177,41 @@ public class AuthenticatorImpl implements Authenticator {
                 (status, response) -> onSignResponse(status, response), status -> onError(status));
     }
 
+    @Override
+    @TargetApi(Build.VERSION_CODES.N)
+    public void isUserVerifyingPlatformAuthenticatorAvailable(
+            final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
+        IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback = (isUvpaa) -> {
+            RecordHistogram.recordBooleanHistogram(
+                    "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
+            callback.call(isUvpaa);
+        };
+
+        Context context = ContextUtils.getApplicationContext();
+        // ChromeActivity could be null.
+        if (context == null) {
+            decoratedCallback.call(false);
+            return;
+        }
+
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
+            decoratedCallback.call(false);
+            return;
+        }
+
+        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
+                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+            decoratedCallback.call(false);
+            return;
+        }
+
+        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
+        Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(
+                mRenderFrameHost,
+                isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+    }
+
+    // TODO(crbug.com/1093146): remove when all callbacks are migrated to new names.
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
