@@ -6276,9 +6276,6 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gest
 crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-buttons-attribute.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Crash Failure Pass Timeout ]
 
-# Sheriff 2021-04-05
-crbug.com/921151 http/tests/security/mixedContent/insecure-iframe-with-hsts.https.html [ Failure Pass ]
-
 # Sheriff 2021-04-06
 crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iteration-event-destroy-renderer.html [ Failure Pass Timeout ]
 
