@@ -414,14 +414,15 @@ void DumpProcessesMemoryMapsInExtendedFormat(
     const std::vector<ProcessMemory>& processes_memory) {
   std::string buf;
   std::string app_shared_buf;
-  for (std::vector<ProcessMemory>::const_iterator it = processes_memory.begin();
-       it != processes_memory.end(); ++it) {
-    const ProcessMemory& process_memory = *it;
+  for (std::vector<ProcessMemory>::const_iterator memory_it =
+           processes_memory.begin();
+       memory_it != processes_memory.end(); ++memory_it) {
+    const ProcessMemory& process_memory = *memory_it;
     std::cout << "[ PID=" << process_memory.pid << "]" << '\n';
     const std::vector<MemoryMap>& memory_maps = process_memory.memory_maps;
-    for (std::vector<MemoryMap>::const_iterator it = memory_maps.begin();
-         it != memory_maps.end(); ++it) {
-      const MemoryMap& memory_map = *it;
+    for (std::vector<MemoryMap>::const_iterator map_it = memory_maps.begin();
+         map_it != memory_maps.end(); ++map_it) {
+      const MemoryMap& memory_map = *map_it;
       app_shared_buf.clear();
       AppendAppSharedField(memory_map.app_shared_pages, &app_shared_buf);
       base::SStringPrintf(
