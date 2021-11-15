@@ -42488,6 +42488,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147219425"
       label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL"/>
   <int value="-2147219198" label="GOOPDATEINSTALL_E_INSTALLER_FAILED"/>
+  <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
   <int value="-2147168255" label="ITF_E_FONTFILE_UTIL_TOO_MANY_FILES_PER_FACE"/>
   <int value="-2147168254" label="ITF_E_FONTFILE_UTIL_EMPTY_FILE_PATH"/>
   <int value="-2147167999" label="ITF_E_SCANNING_TIMEOUT"/>
@@ -42584,6 +42585,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2003283956" label="DWRITE_E_NOCOLOR"/>
   <int value="-1606219753" label="GOOPDATE_E_NON_BLOCKING_CALL_PENDING"/>
   <int value="-1606219747" label="GOOPDATE_E_APP_USING_EXTERNAL_UPDATER"/>
+  <int value="-1072860855" label="MF_E_LICENSE_OUTOFDATE"/>
   <int value="-805306212" label="STATUS_DEVICE_DATA_ERROR"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="0" label="S_OK"/>
