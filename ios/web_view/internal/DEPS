@@ -45,6 +45,7 @@ include_rules = [
   "+google_apis",
   "+ios/components/credential_provider_extension",
   "+ios/components/io_thread",
+  "+ios/components/security_interstitials",
   "+ios/components/webui",
   "+ios/net",
   "+ios/web/common",

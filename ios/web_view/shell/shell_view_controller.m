@@ -1040,6 +1040,27 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (void)webView:(CWVWebView*)webView
+    handleLegacyTLSWarningWithHandler:(CWVLegacyTLSWarningHandler*)handler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  [handler displayWarningPageWithHTML:handler.error.localizedDescription];
+
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:@"Legacy TLS encountered"
+                         message:@"Would you like to continue anyways?"];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Yes"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [handler overrideWarningAndReloadPage];
+                                       }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }

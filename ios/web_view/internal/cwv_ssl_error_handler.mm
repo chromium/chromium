@@ -18,7 +18,6 @@
   web::WebState* _webState;
   net::SSLInfo _SSLInfo;
   void (^_errorPageHTMLCallback)(NSString*);
-  BOOL _overridden;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -33,7 +32,6 @@
     _error = error;
     _SSLInfo = SSLInfo;
     _errorPageHTMLCallback = errorPageHTMLCallback;
-    _overridden = NO;
   }
   return self;
 }
