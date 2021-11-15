@@ -89,19 +89,20 @@ bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
 // Filter `clusters` matching `query`. There are additional filters (e.g.
 // `max_time`) used when requesting `QueryClusters()`, but this function is only
 // responsible for matching `query`.
-std::vector<history::Cluster> FilterClustersMatchingQuery(
-    std::string query,
-    const std::vector<history::Cluster>& clusters) {
+void FilterClustersMatchingQuery(std::string query,
+                                 std::vector<history::Cluster>* clusters) {
+  DCHECK(clusters);
   if (query.empty()) {
     // For the empty-query state, only show clusters with
     // `should_show_on_prominent_ui_surfaces` set to true. This restriction is
     // NOT applied when the user is searching for a specific keyword.
-    std::vector<history::Cluster> shown_clusters;
-    base::ranges::copy_if(clusters, std::back_inserter(shown_clusters),
-                          [](const history::Cluster& cluster) {
-                            return cluster.should_show_on_prominent_ui_surfaces;
-                          });
-    return shown_clusters;
+    clusters->erase(base::ranges::remove_if(
+                        *clusters,
+                        [](const history::Cluster& cluster) {
+                          return !cluster.should_show_on_prominent_ui_surfaces;
+                        }),
+                    clusters->end());
+    return;
   }
 
   // Extract query nodes from the query string.
@@ -110,22 +111,22 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
       base::UTF8ToUTF16(query),
       query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &find_nodes);
 
-  std::vector<history::Cluster> matching_clusters;
-  base::ranges::copy_if(clusters, std::back_inserter(matching_clusters),
-                        [&find_nodes](const history::Cluster& cluster) {
-                          return DoesQueryMatchCluster(find_nodes, cluster);
-                        });
-
-  return matching_clusters;
+  clusters->erase(base::ranges::remove_if(
+                      *clusters,
+                      [&find_nodes](const history::Cluster& cluster) {
+                        return !DoesQueryMatchCluster(find_nodes, cluster);
+                      }),
+                  clusters->end());
 }
 
 // Enforces the reverse-chronological invariant of clusters, as well the
 // by-score sorting of visits within clusters.
-std::vector<Cluster> SortClusters(std::vector<Cluster> clusters) {
+void SortClusters(std::vector<Cluster>* clusters) {
+  DCHECK(clusters);
   // Within each cluster, sort visits from best to worst using score.
   // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
   //  this sort step, if they are stored in-order.
-  for (auto& cluster : clusters) {
+  for (auto& cluster : *clusters) {
     base::ranges::sort(cluster.visits, [](auto& v1, auto& v2) {
       if (v1.score != v2.score) {
         // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
@@ -140,7 +141,7 @@ std::vector<Cluster> SortClusters(std::vector<Cluster> clusters) {
 
   // After that, sort clusters reverse-chronologically based on their highest
   // scored visit.
-  base::ranges::sort(clusters, [&](auto& c1, auto& c2) {
+  base::ranges::sort(*clusters, [&](auto& c1, auto& c2) {
     // TODO(tommycli): If we can establish an invariant that no backend will
     //  ever return an empty cluster, we can simplify the below code.
     base::Time c1_time;
@@ -155,8 +156,6 @@ std::vector<Cluster> SortClusters(std::vector<Cluster> clusters) {
     // Use c1 > c2 to get more recent clusters BEFORE older clusters.
     return c1_time > c2_time;
   });
-
-  return clusters;
 }
 
 // Gets a loggable JSON representation of `visits`.
@@ -629,28 +628,29 @@ void HistoryClustersService::OnGotClusters(
     result.continuation_end_time = continuation_end_time;
   }
 
+  int clusters_from_backend_count = clusters.size();
   base::UmaHistogramTimes("History.Clusters.Backend.GetClustersLatency",
                           base::TimeTicks::Now() - cluster_start_time);
 
   base::ElapsedTimer timer;
-  auto filtered_raw_clusters = FilterClustersMatchingQuery(query, clusters);
-  result.clusters = CollapseDuplicateVisits(filtered_raw_clusters);
-  result.clusters = SortClusters(result.clusters);
+  FilterClustersMatchingQuery(query, &clusters);
+  result.clusters = CollapseDuplicateVisits(clusters);
+  SortClusters(&result.clusters);
 
   base::TimeDelta clustering_duration = timer.Elapsed();
   base::UmaHistogramLongTimes("History.Clusters.ProcessClustersDuration",
                               clustering_duration);
 
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
-                               static_cast<int>(clusters.size()));
+                               clusters_from_backend_count);
 
-  if (!clusters.empty()) {
+  if (clusters_from_backend_count > 0) {
     // Log the percentage of clusters that get filtered (e.g., 100 - % of
     // clusters that remain).
     base::UmaHistogramCounts100(
         "History.Clusters.PercentClustersFilteredByQuery",
-        static_cast<int>(
-            100 - (result.clusters.size() / (1.0 * clusters.size()) * 100)));
+        static_cast<int>(100 - (result.clusters.size() /
+                                (1.0 * clusters_from_backend_count) * 100)));
   }
 
   NotifyDebugMessage("  Clusters JSON follows:");
