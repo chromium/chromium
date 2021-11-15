@@ -247,6 +247,30 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
       {"(height: 100px) and (width: 100px) or (width: 200px)", "not all"},
       {"(height: 100px) or (width: 100px) and (width: 200px)", "not all"},
       {"(width: 100px) or (max-width: 50%)", "not all"},
+      {"((width: 100px))", nullptr},
+      {"(((width: 100px)))", nullptr},
+      {"(   (   (width: 100px) ) )", "(((width: 100px)))"},
+      {"(width: 100px) or ((width: 200px) or (width: 300px))", nullptr},
+      {"(width: 100px) and ((width: 200px) or (width: 300px))", nullptr},
+      {"(width: 100px) or ((width: 200px) and (width: 300px))", nullptr},
+      {"(width: 100px) or ((width: 200px) and (width: 300px) or (width: "
+       "400px))",
+       "not all"},
+      {"(width: 100px) or ((width: 200px) or (width: 300px) and (width: "
+       "400px))",
+       "not all"},
+      {"(width: 100px) or ((width: 200px) and (width: 300px)) and (width: "
+       "400px)",
+       "not all"},
+      {"(width: 100px) and ((width: 200px) and (width: 300px)) or (width: "
+       "400px)",
+       "not all"},
+      {"(width: 100px) or ((width: 200px) and (width: 300px)) or (width: "
+       "400px)",
+       nullptr},
+      {"(width: 100px) and ((width: 200px) and (width: 300px)) and (width: "
+       "400px)",
+       nullptr},
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {
@@ -276,6 +300,7 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(vertical-viewport-segments: 1)", "not all"},
       {"(device-posture:none)", "not all"},
       {"(width: 100px) or (width: 200px)", "not all"},
+      {"((width: 100px))", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
@@ -303,6 +328,8 @@ TEST(MediaQuerySetTest, QueriedAxes) {
             QueriedAxes("(color) and (width) and (height)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
             QueriedAxes("not screen and (height)"));
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("((width))"));
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("((height))"));
 }
 
 }  // namespace blink

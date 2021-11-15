@@ -145,30 +145,52 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(
     CSSParserTokenRange& range,
     ConditionMode mode) {
-  std::unique_ptr<MediaQueryExpNode> result = ConsumeFeature(range);
+  std::unique_ptr<MediaQueryExpNode> result = ConsumeInParens(range);
   if (!result)
     return nullptr;
 
   if (AtIdent(range.Peek(), "and")) {
     while (ConsumeIfIdent(range, "and")) {
-      std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
-      if (!feature)
+      std::unique_ptr<MediaQueryExpNode> in_parens = ConsumeInParens(range);
+      if (!in_parens)
         return nullptr;
       result = std::make_unique<MediaQueryAndExpNode>(std::move(result),
-                                                      std::move(feature));
+                                                      std::move(in_parens));
     }
   } else if (AtIdent(range.Peek(), "or") && mode == ConditionMode::kNormal &&
              RuntimeEnabledFeatures::CSSMediaQueries4Enabled()) {
     while (ConsumeIfIdent(range, "or")) {
-      std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
-      if (!feature)
+      std::unique_ptr<MediaQueryExpNode> in_parens = ConsumeInParens(range);
+      if (!in_parens)
         return nullptr;
       result = std::make_unique<MediaQueryOrExpNode>(std::move(result),
-                                                     std::move(feature));
+                                                     std::move(in_parens));
     }
   }
 
   return result;
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeInParens(
+    CSSParserTokenRange& range) {
+  CSSParserTokenRange original_range = range;
+
+  // ( <media-condition> )
+  if (range.Peek().GetType() == kLeftParenthesisToken &&
+      RuntimeEnabledFeatures::CSSMediaQueries4Enabled()) {
+    CSSParserTokenRange block = range.ConsumeBlock();
+    block.ConsumeWhitespace();
+    range.ConsumeWhitespace();
+    auto node = ConsumeCondition(block);
+    if (node && block.AtEnd())
+      return std::make_unique<MediaQueryNestedExpNode>(std::move(node));
+  }
+  range = original_range;
+
+  // TODO(crbug.com/962417): <general-enclosed>
+
+  // <media-feature>
+  return ConsumeFeature(range);
 }
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(

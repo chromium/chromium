@@ -1111,6 +1111,11 @@ TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
       {"(width: 500px) or (width: 2px) or (width: 3px)", true},
       {"(width: 1px) or (width: 500px) or (width: 3px)", true},
       {"(width: 1px) or (width: 2px) or (width: 500px)", true},
+      {"((width: 1px))", false},
+      {"((width: 500px))", true},
+      {"(((width: 500px)))", true},
+      {"((width: 1px) or (width: 2px)) or (width: 3px)", false},
+      {"(width: 1px) or ((width: 2px) or (width: 500px))", true},
       {nullptr, false}  // Do not remove the terminator line.
   };
 
