@@ -100,13 +100,19 @@ bool IsExternalImageWebGLCanvas(
 bool IsValidExternalImageDestinationFormat(
     WGPUTextureFormat dawn_texture_format) {
   switch (dawn_texture_format) {
-    // Not support float target format due to unclear "srgb" definition for now.
+    case WGPUTextureFormat_R8Unorm:
+    case WGPUTextureFormat_R16Float:
+    case WGPUTextureFormat_R32Float:
+    case WGPUTextureFormat_RG8Unorm:
+    case WGPUTextureFormat_RG16Float:
+    case WGPUTextureFormat_RG32Float:
     case WGPUTextureFormat_RGBA8Unorm:
     case WGPUTextureFormat_RGBA8UnormSrgb:
     case WGPUTextureFormat_BGRA8Unorm:
     case WGPUTextureFormat_BGRA8UnormSrgb:
     case WGPUTextureFormat_RGB10A2Unorm:
-    case WGPUTextureFormat_RG8Unorm:
+    case WGPUTextureFormat_RGBA16Float:
+    case WGPUTextureFormat_RGBA32Float:
       return true;
     default:
       return false;
@@ -132,23 +138,20 @@ bool IsValidCopyIB2TDestinationFormat(WGPUTextureFormat dawn_texture_format) {
   }
 }
 
-// TODO(crubg.com/dawn/465): Cover more formats.
 bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
                                          WGPUTextureFormat dst_texture_format) {
   // CopyTextureForBrowser only supports RGBA8Unorm and BGRA8Unorm src texture.
-  if (src_color_type != SkColorType::kRGBA_8888_SkColorType &&
-      src_color_type != SkColorType::kBGRA_8888_SkColorType) {
-    return false;
+  // TODO(crbug.com/dawn/856): Cover more source formats if needed.
+  if ((src_color_type == SkColorType::kRGBA_8888_SkColorType ||
+       src_color_type == SkColorType::kBGRA_8888_SkColorType) &&
+      (dst_texture_format == WGPUTextureFormat_RG8Unorm ||
+       dst_texture_format == WGPUTextureFormat_RGBA8Unorm ||
+       dst_texture_format == WGPUTextureFormat_BGRA8Unorm ||
+       dst_texture_format == WGPUTextureFormat_RGB10A2Unorm)) {
+    return true;
   }
 
-  // CopyTextureForBrowser() supports neither RGBA8UnormSrgb nor BGRA8UnormSrgb
-  // as dst texture format.
-  if (dst_texture_format == WGPUTextureFormat_RGBA8UnormSrgb ||
-      dst_texture_format == WGPUTextureFormat_BGRA8UnormSrgb) {
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 scoped_refptr<Image> GetImageFromExternalImage(
