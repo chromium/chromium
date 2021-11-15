@@ -17,17 +17,9 @@ and have properties set that the bootstrapper consumes. These properties enable
 the bootstrapper to apply the properties from the properties file and then
 execute the exe that was specified for the builder.
 
-To enable bootstrapping for a builder, its recipe must appear in
-_BOOTSTRAPPABLE_RECIPES. In order for an recipe to interoperate with the
-bootstrapper it must meet the following conditions:
-* chromium_bootstrap.update_gclient_config is called to update the gclient
-  config that is used for bot_update.
-* If the recipe does analysis to reduce compilation/testing, it skips analysis
-  and performs a full build if chromium_bootstrap.skip_analysis_reasons is
-  non-empty.
-
-To enable bootstrapping for a builder, set bootstrap=True in the builder
-definition.
+To enable bootstrapping for a builder, bootstrap must be set to True in its
+builder definition its and it must be using a bootstrappable recipe. See
+//recipes.star for more information on bootstrappable recipes.
 """
 
 load("@stdlib//internal/graph.star", "graph")
@@ -36,19 +28,6 @@ load("//project.star", "settings")
 # builder_config.star has a generator that modifies properties, so load it first
 # to ensure that the modified properties get written out to the property files
 load("./builder_config.star", _ = "builder_config")  # @unused
-
-# A recipe can (but doesn't have to) be marked as bootstrappable if the
-# following conditions are true:
-# * chromium_bootstrap.update_gclient_config is called to update the gclient
-#   config that is used for bot_update.
-# * If the recipe does analysis to reduce compilation/testing, it skips analysis
-#   and performs a full build if chromium_bootstrap.skip_analysis_reasons is
-#   non-empty.
-_BOOTSTRAPPABLE_RECIPES = [
-    "recipe:chromium",
-    "recipe:chromium/orchestrator",
-    "recipe:chromium_trybot",
-]
 
 _NON_BOOTSTRAPPED_PROPERTIES = [
     # Sheriff-o-Matic queries for builder_group in the input properties to find
@@ -59,6 +38,12 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     "builder_group",
     "sheriff_rotations",
 ]
+
+def _bootstrappable_recipe_key(name):
+    return graph.key("@chromium", "", "bootstrappable_recipe", name)
+
+def register_bootstrappable_recipe(name):
+    graph.add_node(_bootstrappable_recipe_key(name))
 
 def _bootstrap_key(bucket_name, builder_name):
     return graph.key("@chromium", "", "bootstrap", "{}/{}".format(bucket_name, builder_name))
@@ -78,8 +63,10 @@ def register_bootstrap(bucket, name, bootstrap, executable):
     # even if an earlier revision is built (to a certain point). The bootstrap
     # property of the node will determine whether the builder's properties are
     # overwritten to actually use the bootstrapper.
-    if executable in _BOOTSTRAPPABLE_RECIPES:
-        graph.add_node(_bootstrap_key(bucket, name), props = {"bootstrap": bootstrap})
+    graph.add_node(_bootstrap_key(bucket, name), props = {
+        "bootstrap": bootstrap,
+        "executable": executable,
+    })
 
 def _bootstrap_properties(ctx):
     """Update builder properties for bootstrapping.
@@ -115,6 +102,10 @@ def _bootstrap_properties(ctx):
             builder_name = builder.name
             bootstrap_node = graph.node(_bootstrap_key(bucket_name, builder_name))
             if not bootstrap_node:
+                continue
+            executable = bootstrap_node.props.executable
+            bootstrappable_recipe_node = graph.node(_bootstrappable_recipe_key(executable))
+            if not bootstrappable_recipe_node:
                 continue
 
             bootstrap = bootstrap_node.props.bootstrap

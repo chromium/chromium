@@ -66,4 +66,6 @@ luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_
 
 exec("//dev/swarming.star")
 
+exec("//recipes.star")
+
 exec("//dev/subprojects/chromium/subproject.star")
