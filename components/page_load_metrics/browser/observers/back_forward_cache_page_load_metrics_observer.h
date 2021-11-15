@@ -170,6 +170,10 @@ class BackForwardCachePageLoadMetricsObserver
   // from the BFCache.
   bool page_metrics_logged_due_to_backgrounding_ = false;
 
+  // TODO(crbug.com/1265307): Remove this when removing the DCHECK for lack of
+  // page end metrics logging from the back forward page load metrics observer.
+  bool logged_page_end_metrics_ = false;
+
   // The layout shift score. These are recorded when the page is navigated away.
   // These serve as "deliminators" between back-forward cache navigations.
   absl::optional<double> last_main_frame_layout_shift_score_;

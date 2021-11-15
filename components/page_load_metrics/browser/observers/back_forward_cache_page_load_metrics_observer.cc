@@ -126,7 +126,13 @@ BackForwardCachePageLoadMetricsObserver::
     BackForwardCachePageLoadMetricsObserver() = default;
 
 BackForwardCachePageLoadMetricsObserver::
-    ~BackForwardCachePageLoadMetricsObserver() = default;
+    ~BackForwardCachePageLoadMetricsObserver() {
+  // TODO(crbug.com/1265307): Revert to the default destructor when we've
+  // figured out why sometimes page end metrics are not logged.
+  if (back_forward_cache_navigation_ids_.size() > 0) {
+    DCHECK(logged_page_end_metrics_);
+  }
+}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BackForwardCachePageLoadMetricsObserver::OnStart(
@@ -168,7 +174,7 @@ void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
   content::WebContents* web_contents = GetDelegate().GetWebContents();
   was_hidden_ = web_contents &&
                 web_contents->GetVisibility() == content::Visibility::HIDDEN;
-
+  logged_page_end_metrics_ = false;
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(
@@ -555,6 +561,7 @@ void BackForwardCachePageLoadMetricsObserver::
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder.SetPageEndReasonAfterBackForwardCacheRestore(page_end_reason);
   builder.Record(ukm::UkmRecorder::Get());
+  logged_page_end_metrics_ = true;
 }
 
 void BackForwardCachePageLoadMetricsObserver::
