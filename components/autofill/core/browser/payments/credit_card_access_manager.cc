@@ -1148,6 +1148,15 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
 void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
 
+  if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtp ||
+      unmask_auth_flow_type_ == UnmaskAuthFlowType::kOtpFallbackFromFido) {
+    // It is possible to have the user hit the cancel button during an in-flight
+    // Virtual Card Unmask request, so we need to reset the state of the
+    // CreditCardOtpAuthenticator as well to ensure the flow does not continue,
+    // as continuing the flow can cause a crash.
+    GetOrCreateOtpAuthenticator()->Reset();
+  }
+
   AutofillMetrics::VirtualCardUnmaskFlowType flow_type;
   switch (unmask_auth_flow_type_) {
     case UnmaskAuthFlowType::kOtp:

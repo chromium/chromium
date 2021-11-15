@@ -113,6 +113,9 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskResponseDetails& response_details);
 
+  // Reset the authenticator to initial states.
+  virtual void Reset();
+
  private:
   friend class CreditCardOtpAuthenticatorTest;
 
@@ -128,9 +131,6 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // Have PaymentsClient send a UnmaskCardRequest for this card. The response's
   // callback function is |OnDidGetRealPan()|.
   void SendUnmaskCardRequest();
-
-  // Reset the authenticator to initial states.
-  void Reset();
 
   // Card being unmasked.
   const CreditCard* card_;

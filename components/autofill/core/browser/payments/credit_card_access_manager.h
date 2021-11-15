@@ -202,6 +202,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned);
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
