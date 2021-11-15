@@ -81,11 +81,14 @@ copy("signing") {
 
 zip("updater_zip") {
   output = "$root_build_dir/updater.zip"
-  inputs =
-      [ "$root_build_dir/UpdaterSetup.exe" ] + get_target_outputs(":signing")
+  inputs = [
+             "$root_build_dir/UpdaterSetup.exe",
+             "$root_build_dir/UpdaterSetup_test.exe",
+           ] + get_target_outputs(":signing")
   deps = [
     ":signing",
     "//chrome/updater/win/installer",
+    "//chrome/updater/win/installer:installer_test",
   ]
 }
 

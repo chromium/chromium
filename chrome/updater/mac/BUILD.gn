@@ -13,6 +13,7 @@ group("mac") {
     ":browser_install_script",
     ":privileged_helper",
     ":updater_bundle",
+    ":updater_bundle_test",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
   ]
