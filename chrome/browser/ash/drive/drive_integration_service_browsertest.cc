@@ -154,6 +154,27 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetThumbnailTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->profile());
+
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+  ASSERT_TRUE(base::WriteFile(mount_path.Append("bar"), ""));
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  drive_service->GetThumbnail(
+      base::FilePath("/bar"), true,
+      base::BindLambdaForTesting(
+          [=](const absl::optional<std::vector<uint8_t>>& image) {
+            ASSERT_FALSE(image.has_value());
+            quit_closure.Run();
+          }));
+  run_loop.Run();
+}
+
 class DriveIntegrationServiceWithGaiaDisabledBrowserTest
     : public DriveIntegrationServiceBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {

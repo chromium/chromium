@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/components/drivefs/drivefs_bootstrap.h"
 #include "base/bind.h"
@@ -1229,6 +1230,15 @@ void DriveIntegrationService::DumpAccountSettings() {
 void DriveIntegrationService::LoadAccountSettings() {
   if (GetDriveFsInterface()) {
     GetDriveFsInterface()->LoadAccountSettings();
+  }
+}
+
+void DriveIntegrationService::GetThumbnail(const base::FilePath& path,
+                                           bool crop_to_square,
+                                           GetThumbnailCallback callback) {
+  if (GetDriveFsInterface()) {
+    GetDriveFsInterface()->GetThumbnail(path, crop_to_square,
+                                        std::move(callback));
   }
 }
 
