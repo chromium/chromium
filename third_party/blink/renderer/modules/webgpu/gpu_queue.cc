@@ -435,11 +435,11 @@ void GPUQueue::copyExternalImageToTexture(
   // WebGL canvas. It should follow the canvas origin but it follows WebGL
   // coords instead. Use the temporary origin config for WebGL canvas so user
   // could fix the flip issue.
-  bool is_bottom_left_origin_webgl =
+  bool copy_origin_is_bottom_left =
       copyImage->temporaryOriginBottomLeftIfWebGL() &&
       IsExternalImageWebGLCanvas(copyImage->source());
 
-  if (is_bottom_left_origin_webgl) {
+  if (copy_origin_is_bottom_left) {
     device_->AddConsoleWarning(
         "temporaryOriginBottomLeftIfWebGL is true means the top-left pixel in "
         "destination gpu texture is from"
@@ -528,41 +528,33 @@ void GPUQueue::copyExternalImageToTexture(
   }
 
   // Issue the noop copy to continue validation to destination textures
-  const bool isNoopCopy = dawn_copy_size.width == 0 ||
-                          dawn_copy_size.height == 0 ||
-                          dawn_copy_size.depthOrArrayLayers == 0;
-
-  if (isNoopCopy) {
+  if (dawn_copy_size.width == 0 || dawn_copy_size.height == 0 ||
+      dawn_copy_size.depthOrArrayLayers == 0) {
     device_->AddConsoleWarning(
         "CopyExternalImageToTexture(): It is a noop copy"
         "({width|height|depthOrArrayLayers} equals to 0).");
   }
 
-  // NOTE: IsOriginTopLeft for AcceleratedStaticBitmapImage
-  // will provide the correct orientation info.
-  bool is_origin_top_left = static_bitmap_image->IsOriginTopLeft();
-  bool flipY = is_origin_top_left == is_bottom_left_origin_webgl;
-
   // Try GPU path first and delegate noop copy to CPU path.
-  if (static_bitmap_image->IsTextureBacked() &&
-      !isNoopCopy) {  // Try GPU uploading path.
+  if (static_bitmap_image->IsTextureBacked()) {  // Try GPU uploading path.
     if (CopyContentFromGPU(static_bitmap_image.get(), origin_in_external_image,
                            dawn_copy_size, dawn_destination,
                            destination->texture()->Format(),
-                           destination->premultipliedAlpha(), flipY)) {
+                           destination->premultipliedAlpha(),
+                           static_bitmap_image->IsOriginTopLeft() ==
+                               copy_origin_is_bottom_left)) {
       return;
     }
   }
   // GPU path failed, fallback to CPU path
   static_bitmap_image = static_bitmap_image->MakeUnaccelerated();
   DCHECK_EQ(static_bitmap_image->IsOriginTopLeft(), true);
-  flipY = is_bottom_left_origin_webgl;
 
   // CPU path is the fallback path and should always work.
-  if (!CopyContentFromCPU(static_bitmap_image.get(), origin_in_external_image,
-                          dawn_copy_size, dawn_destination,
-                          destination->texture()->Format(),
-                          destination->premultipliedAlpha(), flipY)) {
+  if (!CopyContentFromCPU(
+          static_bitmap_image.get(), origin_in_external_image, dawn_copy_size,
+          dawn_destination, destination->texture()->Format(),
+          destination->premultipliedAlpha(), copy_origin_is_bottom_left)) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -740,6 +732,7 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
     return false;
   }
 
+  // Keep mailbox generation in noop copy to catch possible issue.
   // TODO(crbug.com/1197369): config color space based on image
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
