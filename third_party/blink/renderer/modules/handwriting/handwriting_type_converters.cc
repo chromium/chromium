@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognizer_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_segment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_stroke.h"
+#include "third_party/blink/renderer/modules/handwriting/handwriting_stroke.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace mojo {

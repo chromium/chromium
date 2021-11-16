@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_declaration.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

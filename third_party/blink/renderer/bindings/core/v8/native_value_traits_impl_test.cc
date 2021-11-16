@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internals.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_sequence_callback.h"
+#include "third_party/blink/renderer/core/testing/internals.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

@@ -5,6 +5,7 @@
 // Tests for PaymentRequest::OnPaymentResponse().
 
 #include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
+#include "third_party/blink/renderer/modules/payments/payment_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 
 namespace blink {

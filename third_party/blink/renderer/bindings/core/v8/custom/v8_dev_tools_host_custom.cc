@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 #include "third_party/blink/renderer/core/inspector/inspector_frontend_client.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

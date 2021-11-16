@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
+#include "third_party/blink/renderer/core/app_history/app_history_transition.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"

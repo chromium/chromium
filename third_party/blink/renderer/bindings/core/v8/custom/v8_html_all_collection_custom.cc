@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
+#include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 
 namespace blink {
