@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2021-12-31">
+    enum="DevToolsDeveloperResourceScheme" expires_after="2022-05-15">
   <owner>yangguo@chromium.org</owner>
   <owner>sigurds@chromium.org</owner>
   <summary>
