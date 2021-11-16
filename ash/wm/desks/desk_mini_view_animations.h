@@ -27,14 +27,10 @@ class ExpandedDesksBarButton;
 // - It assumes that the new mini_views have already been created, and all
 //   mini_views (new and existing) have already been laid out in their final
 //   positions.
-// - If this is the first time mini_views are being created in the desk bar
-//   view, it will also animate the bar background from top to buttom, and shift
-//   the windows in the overview grid down.
 void PerformNewDeskMiniViewAnimation(
     DesksBarView* bar_view,
     const std::vector<DeskMiniView*>& new_mini_views,
-    int shift_x,
-    bool first_time_mini_views);
+    int shift_x);
 
 // Performs the mini_view removal animation. It is in charge of removing the
 // |removed_mini_view| from the views hierarchy and deleting it.
@@ -58,8 +54,8 @@ void PerformRemoveDeskMiniViewAnimation(
 
 // Performs the animation of switching from zero state desks bar to expanded
 // state desks bar. It scales up and fades in the current mini views and the
-// ExpandedDesksBarButton. Also animates the bar's background view from the
-// zero state bar's height to the expanded bar's height.
+// ExpandedDesksBarButton. Also animates the desks bar view from the zero state
+// bar's height to the expanded bar's height.
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
 
 // Performs the animation of switching from expanded state desks bar to zero
@@ -67,13 +63,12 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
 // is remaining. It scales down and fades out the |removed_mini_views| and the
 // ExpandedDesksBarButton. |removed_mini_views| will be removed from the
 // views hierarchy. But the ExpandedDesksBarButton will be kept and set to
-// invisible. It will also animate the bar's background view from the expanded
-// bar's height to zero state bar's height.
+// invisible. It will also animate the desks bar view from the expanded bar's
+// height to zero state bar's height.
 //
 // * Notes:
-// - It assumes the background view, |removed_mini_views| and the
-//   ExpandedDesksBarButton are still laid out at their previous positions
-//   before the bar state transition.
+// - It assumes |removed_mini_views| and the ExpandedDesksBarButton are still
+//   laid out at their previous positions before the bar state transition.
 // - Layout will be done once the animation is completed.
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DesksBarView* bar_view,
