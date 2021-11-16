@@ -1733,6 +1733,40 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceIsntSingleton) {
   EXPECT_EQ(-1, GetIndexOfExistingTab(browser(), singleton_params));
 }
 
+// Ensure that an incognito window invoking |view-source:| on a url forbidden in
+// incognito loads the correct url in the non-incognito window.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceUrlMatching) {
+  // Open chrome://settings in the main window.
+  NavigateParams settings_params(browser(), GURL(chrome::kChromeUISettingsURL),
+                                 ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&settings_params);
+
+  // Create a new incognito window.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
+
+  // In the Incognito window, start a navigation to the view-source page.
+  const std::string viewsource_settings_url =
+      std::string(content::kViewSourceScheme) + ":" +
+      chrome::kChromeUISettingsURL;
+  NavigateParams params(MakeNavigateParams(incognito_browser));
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params.url = GURL(viewsource_settings_url);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  Navigate(&params);
+
+  // The view-source page should be opened as a new tab in the non-incognito
+  // browser window.
+  EXPECT_NE(incognito_browser, params.browser);
+  EXPECT_EQ(browser(), params.browser);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(viewsource_settings_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
 // This test verifies that browser initiated navigations can send requests
 // using POST.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
