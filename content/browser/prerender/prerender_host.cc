@@ -653,12 +653,10 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // of updating transition is still absent. This workaround will be removed
   // once the update mechanism is done.
   if (!IsBrowserInitiated()) {
-    DCHECK(ui::PageTransitionCoreTypeIs(
+    DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
         ui::PageTransitionFromInt(common_params_->transition),
         ui::PAGE_TRANSITION_FIRST));
-    if (!ui::PageTransitionCoreTypeIs(
-            ui::PageTransitionFromInt(potential_activation.transition),
-            ui::PageTransitionFromInt(common_params_->transition))) {
+    if (potential_activation.transition != common_params_->transition) {
       return false;
     }
   }
