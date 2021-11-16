@@ -1972,4 +1972,26 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
                 .storage_partition_config());
 }
 
+TEST_F(SiteInstanceTest, GetNonOriginKeyedEquivalentPreservesIsPdf) {
+  auto origin_isolation_request = static_cast<UrlInfo::OriginIsolationRequest>(
+      UrlInfo::OriginIsolationRequest::kOriginAgentCluster |
+      UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess);
+  UrlInfo url_info_pdf_with_oac(
+      UrlInfoInit(GURL("https://foo.com/test.pdf"))
+          .WithOriginIsolationRequest(origin_isolation_request)
+          .WithIsPdf(true));
+  SiteInfo site_info_pdf_with_origin_key =
+      SiteInfo::Create(IsolationContext(context()), url_info_pdf_with_oac);
+  SiteInfo site_info_pdf_no_origin_key =
+      site_info_pdf_with_origin_key.GetNonOriginKeyedEquivalentForMetrics(
+          IsolationContext(context()));
+
+  // Verify that the non-origin-keyed equivalent still has the is_pdf flag set
+  // but has the is_origin_keyed flag cleared.
+  EXPECT_TRUE(site_info_pdf_with_origin_key.is_pdf());
+  EXPECT_TRUE(site_info_pdf_no_origin_key.is_pdf());
+  EXPECT_TRUE(site_info_pdf_with_origin_key.requires_origin_keyed_process());
+  EXPECT_FALSE(site_info_pdf_no_origin_key.requires_origin_keyed_process());
+}
+
 }  // namespace content

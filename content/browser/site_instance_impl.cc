@@ -1323,4 +1323,8 @@ void SiteInstanceImpl::WriteIntoTrace(
   proto->set_active_rfh_count(active_frame_count_);
 }
 
+int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {
+  return browsing_instance_->EstimateOriginAgentClusterOverhead();
+}
+
 }  // namespace content

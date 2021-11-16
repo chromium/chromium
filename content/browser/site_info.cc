@@ -272,6 +272,49 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
                   site_info.is_jit_disabled_, site_info.is_pdf_);
 }
 
+SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
+    const IsolationContext& isolation_context) const {
+  SiteInfo non_oac_site_info(*this);
+  if (requires_origin_keyed_process()) {
+    DCHECK(process_lock_url_.SchemeIs(url::kHttpsScheme));
+    non_oac_site_info.requires_origin_keyed_process_ = false;
+
+    // TODO(wjmaclean): It would probably be better if we just changed
+    // SiteInstanceImpl::original_url_ to be SiteInfo::original_url_info_ and
+    // use that to recreate the SiteInfo with origin keying turned off. But
+    // that's a largish refactor in its own, since it would require making all
+    // SiteInfo creation go through SiteInfo::CreateInternal.
+    // We'll do the following for now and do the refactor separately.
+    // The code below creates a simple non-origin-keyed equivalent for this
+    // SiteInfo by (1) Converting the process lock to its equivalent by either
+    // seeing if it has a command-line isolated-origin it should use, and if not
+    // then just using GetSiteForOrigin to convert it, and (2) doing the same
+    // for the SiteUrl, but only if the SiteUrl and ProcessLockUrl match
+    // prior to the conversion, otherwise leave the SiteUrl as is.
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    url::Origin result_origin;
+    // We need to make the following call with a 'null' IsolationContext,
+    // otherwise the OAC history will just opt us back into an origin-keyed
+    // SiteInfo.
+    if (policy->GetMatchingProcessIsolatedOrigin(
+            IsolationContext(BrowsingInstanceId(0),
+                             isolation_context.browser_or_resource_context()),
+            url::Origin::Create(process_lock_url_),
+            false /* origin_requests_isolation */, &result_origin)) {
+      non_oac_site_info.process_lock_url_ = result_origin.GetURL();
+    } else {
+      non_oac_site_info.process_lock_url_ =
+          GetSiteForOrigin(url::Origin::Create(process_lock_url_));
+    }
+    // Only convert the site_url_ if it matches the process_lock_url_, otherwise
+    // leave it alone. This will only matter for hosted apps, and we only expect
+    // them to differ if an effective URL is defined.
+    if (site_url_ == process_lock_url_)
+      non_oac_site_info.site_url_ = non_oac_site_info.process_lock_url_;
+  }
+  return non_oac_site_info;
+}
+
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
 
 bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {

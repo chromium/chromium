@@ -204,4 +204,49 @@ SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
   return SiteInfo::Create(isolation_context_, url_info_with_partition);
 }
 
+int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
+  DCHECK(SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+
+  std::set<SiteInfo> site_info_set;
+  std::set<SiteInfo> site_info_set_no_oac;
+
+  // The following computes an estimate of how many additional processes have
+  // been created to deal with OriginAgentCluster (OAC) headers. When OAC
+  // headers forces an additional process, that corresponds to the SiteInfo's
+  // is_origin_keyed_ flag being set. To compute the estimate, we use the set of
+  // unique SiteInstances (each represented by a unique SiteInfo) in each
+  // BrowsingInstance as a proxy for the set of different RenderProcesses. We
+  // start with the total count of SiteInfos, then we create a new set of
+  // SiteInfos created by resetting the is_origin_keyed_ flag on each of the
+  // SiteInfos (along with any corresponding adjustments to the site_url_ and
+  // process_lock_url_ to reflect the possible conversion from origin to site).
+  // The assumption here is that SiteInfos that forced a new process due to OAC
+  // may no longer be unique once these values are reset, and as such the new
+  // set will have less elements than the original set, with the difference
+  // being the count of extra SiteInstances due to OAC. There are cases where
+  // ignoring the OAC header would still result in an extra process, e.g. when
+  // the SiteInfo's origin appears in the command-line origin isolation list.
+  //
+  // The estimate is computed using several simplifying assumptions:
+  // 1) We only consider HTTPS SiteInfos to compute the additional SiteInfos.
+  // This assumption should generally be valid, since we don't apply
+  // is_origin_keyed_ to non-HTTPS schemes.
+  // 2) We assume that SiteInfos from multiple BrowsingInstances aren't
+  // coalesced into a single RenderProcess.  While this isn't true in general,
+  // it is difficult in practice to account for, so we don't try to.
+  for (auto& entry : site_instance_map_) {
+    const SiteInfo& site_info = entry.first;
+    GURL process_lock_url = site_info.process_lock_url();
+    if (!process_lock_url.SchemeIs(url::kHttpsScheme))
+      continue;
+
+    site_info_set.insert(site_info);
+    site_info_set_no_oac.insert(
+        site_info.GetNonOriginKeyedEquivalentForMetrics(isolation_context_));
+  }
+  DCHECK_GE(site_info_set.size(), site_info_set_no_oac.size());
+  int result = site_info_set.size() - site_info_set_no_oac.size();
+  return result;
+}
+
 }  // namespace content
