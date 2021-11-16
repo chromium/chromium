@@ -412,23 +412,21 @@ infobars::InfoBar* ChromePermissionsClient::MaybeCreateInfoBar(
   return nullptr;
 }
 
-messages::MessageWrapper* ChromePermissionsClient::MaybeCreateMessageUI(
+std::unique_ptr<ChromePermissionsClient::PermissionMessageDelegate>
+ChromePermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
     ContentSettingsType type,
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
   if (messages::IsNotificationBlockedMessagesUiEnabled() &&
       ShouldUseQuietUI(web_contents, type)) {
-    NotificationBlockedMessageDelegate::CreateForWebContents(web_contents);
-    auto* notification_blocked_message_delegate =
-        NotificationBlockedMessageDelegate::FromWebContents(web_contents);
     auto delegate =
         std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
             std::move(prompt));
-    return notification_blocked_message_delegate->ShowMessage(
-        std::move(delegate));
+    return std::make_unique<NotificationBlockedMessageDelegate>(
+        web_contents, std::move(delegate));
   }
 
-  return nullptr;
+  return {};
 }
 
 void ChromePermissionsClient::RepromptForAndroidPermissions(

@@ -21,22 +21,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-NotificationBlockedMessageDelegate::~NotificationBlockedMessageDelegate() {
-  DismissInternal();
-}
-
 NotificationBlockedMessageDelegate::NotificationBlockedMessageDelegate(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
-
-messages::MessageWrapper* NotificationBlockedMessageDelegate::ShowMessage(
-    std::unique_ptr<Delegate> delegate) {
-  if (message_) {
-    // Don't show new message UI until the current message has been destroyed,
-    // such as when prompt dialog has been closed or accpeted.
-    return nullptr;
-  }
-  delegate_ = std::move(delegate);
+    content::WebContents* web_contents,
+    std::unique_ptr<Delegate> delegate)
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::NOTIFICATION_BLOCKED,
       base::BindOnce(
@@ -62,7 +50,10 @@ messages::MessageWrapper* NotificationBlockedMessageDelegate::ShowMessage(
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
-  return message_.get();
+}
+
+NotificationBlockedMessageDelegate::~NotificationBlockedMessageDelegate() {
+  DismissInternal();
 }
 
 void NotificationBlockedMessageDelegate::HandlePrimaryActionClick() {
@@ -129,5 +120,3 @@ NotificationBlockedMessageDelegate::Delegate::Delegate(
     const base::WeakPtr<permissions::PermissionPromptAndroid>&
         permission_prompt)
     : permission_prompt_(permission_prompt) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NotificationBlockedMessageDelegate);

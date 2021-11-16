@@ -149,7 +149,8 @@ infobars::InfoBar* PermissionsClient::MaybeCreateInfoBar(
 }
 
 #if defined(OS_ANDROID)
-messages::MessageWrapper* PermissionsClient::MaybeCreateMessageUI(
+std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
+PermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
     ContentSettingsType type,
     base::WeakPtr<PermissionPromptAndroid> prompt) {

@@ -14,6 +14,7 @@
 #include "components/messages/android/message_wrapper.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permissions_client.h"
 
 namespace content {
 class WebContents;
@@ -79,8 +80,10 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   infobars::InfoBar* permission_infobar_;
 
   // Message UI is alternative to infobars. So it should be impossible that
-  // both |message_| and |permission_infobar_| are non-null at the same moment.
-  messages::MessageWrapper* message_ = nullptr;
+  // both |message_delegate_| and |permission_infobar_| are non-null at the
+  // same moment.
+  std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
+      message_delegate_;
 
   permissions::PermissionPromptDisposition prompt_disposition_ =
       permissions::PermissionPromptDisposition::NOT_APPLICABLE;

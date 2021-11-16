@@ -31,9 +31,13 @@ class NotificationBlockedMessageDelegateAndroidTest
   NotificationBlockedMessageDelegateAndroidTest() = default;
   ~NotificationBlockedMessageDelegateAndroidTest() override = default;
 
-  NotificationBlockedMessageDelegate* GetController() { return controller_; }
   void ExpectEnqueued() {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+  }
+
+  void ShowMessage(std::unique_ptr<MockDelegate> delegate) {
+    controller_ = std::make_unique<NotificationBlockedMessageDelegate>(
+        web_contents(), std::move(delegate));
   }
 
   void TriggerDismiss(messages::DismissReason reason) {
@@ -65,7 +69,7 @@ class NotificationBlockedMessageDelegateAndroidTest
   void TearDown() override;
 
  private:
-  NotificationBlockedMessageDelegate* controller_;
+  std::unique_ptr<NotificationBlockedMessageDelegate> controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockDelegate> delegate_;
 };
@@ -73,9 +77,6 @@ class NotificationBlockedMessageDelegateAndroidTest
 void NotificationBlockedMessageDelegateAndroidTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
   permissions::PermissionRequestManager::CreateForWebContents(web_contents());
-  NotificationBlockedMessageDelegate::CreateForWebContents(web_contents());
-  controller_ =
-      NotificationBlockedMessageDelegate::FromWebContents(web_contents());
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
   delegate_ = std::make_unique<MockDelegate>(nullptr);
@@ -97,7 +98,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByTimeout) {
 
   ExpectEnqueued();
 
-  GetController()->ShowMessage(std::move(delegate));
+  ShowMessage(std::move(delegate));
   TriggerDismiss(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -115,7 +116,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
 
   ExpectEnqueued();
 
-  GetController()->ShowMessage(std::move(delegate));
+  ShowMessage(std::move(delegate));
   TriggerPrimaryAction();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -133,7 +134,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
   EXPECT_CALL(*delegate, Deny).Times(0);
 
   ExpectEnqueued();
-  GetController()->ShowMessage(std::move(delegate));
+  ShowMessage(std::move(delegate));
   TriggerPrimaryAction();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }

@@ -11,7 +11,6 @@
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/permissions/android/permission_dialog_delegate.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permissions_client.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -29,8 +28,7 @@ PermissionPromptAndroid::PermissionPromptAndroid(
   DCHECK(web_contents);
 
   auto* permission_client = PermissionsClient::Get();
-
-  if ((message_ = permission_client->MaybeCreateMessageUI(
+  if ((message_delegate_ = permission_client->MaybeCreateMessageUI(
            web_contents, GetContentSettingType(0u /* position */),
            weak_factory_.GetWeakPtr()))) {
     prompt_disposition_ = permissions::PermissionPromptDisposition::MESSAGE_UI;
@@ -50,9 +48,8 @@ PermissionPromptAndroid::PermissionPromptAndroid(
 }
 
 PermissionPromptAndroid::~PermissionPromptAndroid() {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_, messages::DismissReason::UNKNOWN);
+  if (message_delegate_) {
+    message_delegate_.reset();
     return;
   }
   infobars::InfoBarManager* infobar_manager =

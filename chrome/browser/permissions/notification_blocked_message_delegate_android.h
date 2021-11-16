@@ -11,7 +11,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "components/permissions/permissions_client.h"
 
 namespace content {
 class WebContents;
@@ -24,7 +24,7 @@ class PermissionPromptAndroid;
 // A message ui that displays a notification permission request, which is an
 // alternative ui to the mini infobar.
 class NotificationBlockedMessageDelegate
-    : public content::WebContentsUserData<NotificationBlockedMessageDelegate> {
+    : public permissions::PermissionsClient::PermissionMessageDelegate {
  public:
   // Delegate to mock out the |PermissionPromptAndroid| for testing.
   class Delegate {
@@ -43,14 +43,11 @@ class NotificationBlockedMessageDelegate
     base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
   };
 
+  NotificationBlockedMessageDelegate(content::WebContents* web_contents,
+                                     std::unique_ptr<Delegate> delegate);
   ~NotificationBlockedMessageDelegate() override;
 
-  // Returns pointer to the message wrapper if a new message UIs has been
-  // created and will be shown. Returns nullptr if not created.
-  messages::MessageWrapper* ShowMessage(std::unique_ptr<Delegate> delegate);
-
  private:
-  friend class content::WebContentsUserData<NotificationBlockedMessageDelegate>;
   friend class NotificationBlockedMessageDelegateAndroidTest;
 
   explicit NotificationBlockedMessageDelegate(
@@ -63,10 +60,8 @@ class NotificationBlockedMessageDelegate
   void DismissInternal();
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  std::unique_ptr<Delegate> delegate_;
   content::WebContents* web_contents_ = nullptr;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  std::unique_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_NOTIFICATION_BLOCKED_MESSAGE_DELEGATE_ANDROID_H_
