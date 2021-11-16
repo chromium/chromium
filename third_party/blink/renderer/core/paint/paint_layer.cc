@@ -3897,12 +3897,15 @@ void PaintLayer::MarkCompositingContainerChainForNeedsCullRectUpdate() {
       container = owner->EnclosingLayer();
     }
 
-    DCHECK(!container->GetLayoutObject().ChildPrePaintBlockedByDisplayLock());
-
     if (container->descendant_needs_cull_rect_update_)
       break;
 
     container->descendant_needs_cull_rect_update_ = true;
+
+    // Only propagate the dirty bit up to the display locked ancestor.
+    if (container->GetLayoutObject().ChildPrePaintBlockedByDisplayLock())
+      break;
+
     layer = container;
   }
 }
