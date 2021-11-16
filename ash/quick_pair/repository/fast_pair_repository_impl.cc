@@ -29,9 +29,10 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
           std::unique_ptr<image_fetcher::ImageFetcher>())),
       saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
       footprints_last_updated_(base::Time::UnixEpoch()) {
-  footprints_fetcher_->GetUserDevices(
-      base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // TODO(crbug/1270534): Determine the best place to make this call.
+  // footprints_fetcher_->GetUserDevices(
+  //     base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
+  //                    weak_ptr_factory_.GetWeakPtr()));
 }
 
 FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
