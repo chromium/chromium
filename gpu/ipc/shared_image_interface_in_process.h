@@ -12,12 +12,12 @@
 
 namespace gpu {
 class MailboxManager;
-class SyncPointClientState;
-struct SyncToken;
 class SharedContextState;
 class SharedImageFactory;
 class SharedImageManager;
 class SingleTaskSequence;
+class SyncPointClientState;
+struct SyncToken;
 
 // This is an implementation of the SharedImageInterface to be used on the viz
 // compositor thread. This class also implements the corresponding parts
@@ -29,10 +29,33 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
  public:
   using CommandBufferHelper =
       InProcessCommandBuffer::SharedImageInterfaceHelper;
+  // The callers must guarantee that the instances passed via pointers are kept
+  // alive for as long as the instance of this class is alive. This can be
+  // achieved by ensuring that the ownership of the created
+  // SharedImageInterfaceInProcess is the same as the ownership of the passed in
+  // pointers.
   SharedImageInterfaceInProcess(
       SingleTaskSequence* task_sequence,
       DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
       std::unique_ptr<CommandBufferHelper> command_buffer_helper);
+  // The callers must guarantee that the instances passed via pointers are kept
+  // alive for as long as the instance of this class is alive. This can be
+  // achieved by ensuring that the ownership of the created
+  // SharedImageInterfaceInProcess is the same as the ownership of the passed in
+  // pointers.
+  SharedImageInterfaceInProcess(
+      SingleTaskSequence* task_sequence,
+      SyncPointManager* sync_point_manager,
+      const GpuPreferences& gpu_preferences,
+      const GpuDriverBugWorkarounds& gpu_workarounds,
+      const GpuFeatureInfo& gpu_feature_info,
+      gpu::SharedContextState* context_state,
+      MailboxManager* mailbox_manager,
+      SharedImageManager* shared_image_manager,
+      ImageFactory* image_factory,
+      MemoryTracker* tracker,
+      bool is_for_display_compositor = false,
+      std::unique_ptr<CommandBufferHelper> command_buffer_helper = nullptr);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
@@ -151,10 +174,12 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
       const gpu::Mailbox& mailbox) override;
 
  private:
-  struct SharedImageFactoryInput;
+  // Parameters needed to be passed in to set up the class on the GPU.
+  // Needed since we cannot pass refcounted instances (e.g.
+  // gpu::SharedContextState) to base::BindOnce as raw pointers.
+  struct SetUpOnGpuParams;
 
-  void SetUpOnGpu(
-      DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller);
+  void SetUpOnGpu(std::unique_ptr<SetUpOnGpuParams> params);
   void DestroyOnGpu(base::WaitableEvent* completion);
 
   SyncToken MakeSyncToken(uint64_t release_id) {
@@ -234,9 +259,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   SharedImageManager* shared_image_manager_;
 
   // Accessed on GPU thread.
-  MailboxManager* mailbox_manager_;
   scoped_refptr<SharedContextState> context_state_;
-  // Created and only used by this SharedImageInterface.
+  // This is a raw pointer for now since the ownership of SyncPointManager would
+  // be the same as the SharedImageInterfaceInProcess.
   SyncPointManager* sync_point_manager_;
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
