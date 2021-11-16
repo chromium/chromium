@@ -38,9 +38,9 @@
   async function addPrefetchAndWait(prefetchUrl, waitUrl) {
     const promise = new Promise(resolve => {
         TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFinished', loadingFinished);
-        function loadingFinished(requestId, finishTime, encodedDataLength) {
+        function loadingFinished(event) {
           var request = NetworkTestRunner.networkLog().requestByManagerAndId(
-              TestRunner.networkManager, requestId);
+              TestRunner.networkManager, event.requestId);
           if (request.url() == waitUrl) {
             resolve();
           } else {

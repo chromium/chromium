@@ -5689,7 +5689,6 @@ crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
 
 # Disabled for landing DevTools change
 crbug.com/1011811 http/tests/devtools/network/download.js [ Failure Pass ]
-crbug.com/1011811 http/tests/devtools/sxg/sxg-disable-cache.js [ Failure Pass ]
 
 crbug.com/1080609 virtual/threaded/external/wpt/scroll-animations/element-based-offset.html [ Failure Pass ]
 crbug.com/1080609 virtual/threaded/external/wpt/scroll-animations/element-based-offset-clamp.html [ Failure Pass ]
