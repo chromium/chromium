@@ -23,11 +23,15 @@ export interface BackdropState {
  * has been initialized, then either null (in error state) or a valid Array.
  * |photos| is the list of Google Photos photos. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid Array.
+ * |photosByAlbumId| is the list of Google Photos photos keyed by album id. The
+ * list of photos for a given album id is undefined only until is has been
+ * initialized, then either null (in error state) or a valid Array.
  */
 export interface GooglePhotosState {
   count: number|null|undefined;
   albums: Array<WallpaperCollection>|null|undefined;
   photos: Array<undefined>|null|undefined;
+  photosByAlbumId: Record<string, Array<undefined>|null|undefined>;
 }
 
 /**
@@ -55,7 +59,10 @@ export interface LoadingState {
   refreshWallpaper: boolean;
   selected: boolean;
   setImage: number;
-  googlePhotos: {count: boolean; albums: boolean; photos: boolean;};
+  googlePhotos: {
+    count: boolean; albums: boolean; photos: boolean;
+    photosByAlbumId: Record<string, boolean>;
+  };
 }
 
 /**
@@ -93,7 +100,12 @@ export function emptyState(): PersonalizationState {
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
-      googlePhotos: {count: false, albums: false, photos: false},
+      googlePhotos: {
+        count: false,
+        albums: false,
+        photos: false,
+        photosByAlbumId: {},
+      },
     },
     local: {images: null, data: {}},
     currentSelected: null,
@@ -101,6 +113,11 @@ export function emptyState(): PersonalizationState {
     dailyRefresh: {collectionId: null},
     error: null,
     fullscreen: false,
-    googlePhotos: {count: undefined, albums: undefined, photos: undefined},
+    googlePhotos: {
+      count: undefined,
+      albums: undefined,
+      photos: undefined,
+      photosByAlbumId: {},
+    },
   };
 }

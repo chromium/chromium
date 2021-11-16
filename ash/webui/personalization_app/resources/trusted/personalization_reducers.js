@@ -9,6 +9,7 @@
  */
 
 import './mojo_interface_provider.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {ActionName} from './personalization_actions.js';
 
@@ -153,7 +154,32 @@ function loadingReducer(state, action) {
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
     case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: false});
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
+      assert(state.googlePhotos.photosByAlbumId[action.albumId] === undefined);
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          photosByAlbumId: {
+            ...state.googlePhotos.photosByAlbumId,
+            [action.albumId]: true,
+          },
+        },
+      });
+    case ActionName.SET_GOOGLE_PHOTOS_ALBUM:
+      assert(state.googlePhotos.photosByAlbumId[action.albumId] === true);
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          photosByAlbumId: {
+            ...state.googlePhotos.photosByAlbumId,
+            [action.albumId]: false,
+          },
+        },
+      });
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:
+      assert(state.googlePhotos.albums === false);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -162,6 +188,7 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.SET_GOOGLE_PHOTOS_ALBUMS:
+      assert(state.googlePhotos.albums === true);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -170,6 +197,7 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT:
+      assert(state.googlePhotos.count === false);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -178,6 +206,7 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.SET_GOOGLE_PHOTOS_COUNT:
+      assert(state.googlePhotos.count === true);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -186,6 +215,7 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
+      assert(state.googlePhotos.photos === false);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -194,6 +224,7 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+      assert(state.googlePhotos.photos === true);
       return /** @type {!LoadingState} */ ({
         ...state,
         googlePhotos: {
@@ -360,18 +391,49 @@ function errorReducer(state, action) {
  */
 function googlePhotosReducer(state, action) {
   switch (action.name) {
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
+      // The list of photos for an album should be loaded only once.
+      assert(state.albums?.some(album => album.id === action.albumId));
+      assert(state.photosByAlbumId[action.albumId] === undefined);
+      return state;
+    case ActionName.SET_GOOGLE_PHOTOS_ALBUM:
+      assert(state.albums?.some(album => album.id === action.albumId));
+      assert(action.albumId !== undefined);
+      assert(action.photos !== undefined);
+      return /** @type {!GooglePhotosState} */ ({
+        ...state,
+        photosByAlbumId: {
+          ...state.photosByAlbumId,
+          [action.albumId]: action.photos,
+        },
+      });
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS:
+      // The list of albums should be loaded only once.
+      assert(state.albums === undefined);
+      return state;
     case ActionName.SET_GOOGLE_PHOTOS_ALBUMS:
+      assert(action.albums !== undefined);
       return /** @type {!GooglePhotosState} */ ({
         ...state,
         albums: (/** @type {{albums: ?Array<WallpaperCollection>}} */ (action))
                     .albums,
       });
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT:
+      // The total count of photos should be loaded only once.
+      assert(state.count === undefined);
+      return state;
     case ActionName.SET_GOOGLE_PHOTOS_COUNT:
+      assert(action.count !== undefined);
       return /** @type {!GooglePhotosState} */ ({
         ...state,
         count: (/** @type {{count: ?number}} */ (action)).count,
       });
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
+      // The list of photos should be loaded only once.
+      assert(state.photos === undefined);
+      return state;
     case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
+      assert(action.photos !== undefined);
       return /** @type {!GooglePhotosState} */ ({
         ...state,
         photos: (/** @type {{photos: ?Array<undefined>}} */ (action)).photos,

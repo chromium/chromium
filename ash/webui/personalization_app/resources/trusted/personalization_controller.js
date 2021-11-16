@@ -61,11 +61,31 @@ async function fetchAllImagesForCollections(provider, store) {
 }
 
 /**
- * Gets the list of Google Photos albums and saves it to the store.
+ * Fetches the list of Google Photos photos for the album associated with the
+ * specified id and saves it to the store.
  * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
+ * @param {string} albumId
  */
-async function getGooglePhotosAlbums(provider, store) {
+export async function fetchGooglePhotosAlbum(provider, store, albumId) {
+  store.dispatch(action.beginLoadGooglePhotosAlbumAction(albumId));
+
+  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
+  // request that returns a list of 1,000 Google Photos photos.
+  return new Promise(resolve => setTimeout(() => {
+                       store.dispatch(action.setGooglePhotosAlbumAction(
+                           albumId, Array.from({length: 1000})));
+                       resolve();
+                     }, 1000));
+}
+
+/**
+ * Fetches the list of Google Photos albums and saves it to the store.
+ * @param {!WallpaperProviderInterface} provider
+ * @param {!PersonalizationStore} store
+ * @private
+ */
+async function fetchGooglePhotosAlbums(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
@@ -88,11 +108,12 @@ async function getGooglePhotosAlbums(provider, store) {
 }
 
 /**
- * Gets the count of Google Photos photos and saves it to the store.
+ * Fetches the count of Google Photos photos and saves it to the store.
  * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
+ * @private
  */
-async function getGooglePhotosCount(provider, store) {
+async function fetchGooglePhotosCount(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosCountAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
@@ -104,11 +125,12 @@ async function getGooglePhotosCount(provider, store) {
 }
 
 /**
- * Gets the list of Google Photos photos and saves it to the store.
+ * Fetches the list of Google Photos photos and saves it to the store.
  * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
+ * @private
  */
-async function getGooglePhotosPhotos(provider, store) {
+async function fetchGooglePhotosPhotos(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
@@ -312,12 +334,12 @@ export async function initializeBackdropData(provider, store) {
 }
 
 /**
- * Gets the initial Google Photos data state and saves it to the store.
+ * Fetches initial Google Photos data and saves it to the store.
  * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function initializeGooglePhotosData(provider, store) {
-  await getGooglePhotosCount(provider, store);
+  await fetchGooglePhotosCount(provider, store);
 
   // If the count of Google Photos photos is zero or null, it's not necesssary
   // to query the server for the list of albums/photos.
@@ -334,8 +356,8 @@ export async function initializeGooglePhotosData(provider, store) {
   }
 
   await Promise.all([
-    getGooglePhotosAlbums(provider, store),
-    getGooglePhotosPhotos(provider, store),
+    fetchGooglePhotosAlbums(provider, store),
+    fetchGooglePhotosPhotos(provider, store),
   ]);
 }
 
