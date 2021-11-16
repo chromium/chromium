@@ -203,6 +203,7 @@ class SyncConsentTest
   void SwitchLanguage(const std::string& language) {
     WelcomeScreen* welcome_screen =
         WizardController::default_controller()->GetScreen<WelcomeScreen>();
+    welcome_screen->UpdateLanguageList();
     test::LanguageReloadObserver observer(welcome_screen);
     test::OobeJS().SelectElementInPath(language,
                                        {"connect", "languageSelect", "select"});

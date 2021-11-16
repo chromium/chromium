@@ -72,7 +72,9 @@ class LanguageListWaiter : public WelcomeScreen::Observer {
   void RunUntilLanguageListReady() { loop_.Run(); }
 
  private:
-  bool LanguageListReady() const { return welcome_screen_->language_list(); }
+  bool LanguageListReady() const {
+    return !welcome_screen_->language_list().GetList().empty();
+  }
 
   void CheckLanguageList() {
     if (LanguageListReady())

@@ -276,21 +276,20 @@ void WelcomeScreenHandler::GetAdditionalParameters(
           ->GetCurrentInputMethod()
           .id();
 
-  std::unique_ptr<base::ListValue> language_list;
+  base::Value language_list{base::Value::Type::LIST};
   if (screen_) {
-    if (screen_->language_list() &&
+    if (!screen_->language_list().GetList().empty() &&
         screen_->language_list_locale() == application_locale) {
-      language_list = screen_->language_list()->CreateDeepCopy();
+      language_list = screen_->language_list().Clone();
     } else {
       screen_->UpdateLanguageList();
     }
   }
 
-  if (!language_list)
-    language_list = GetMinimalUILanguageList();
+  if (language_list.GetList().empty())
+    language_list = std::move(*GetMinimalUILanguageList());
 
-  dict->SetKey("languageList",
-               base::Value::FromUniquePtrValue(std::move(language_list)));
+  dict->SetKey("languageList", std::move(language_list));
   dict->SetKey("inputMethodsList",
                GetAndActivateLoginKeyboardLayouts(application_locale,
                                                   selected_input_method));
@@ -309,7 +308,7 @@ void WelcomeScreenHandler::Initialize() {
   }
 
   // Reload localized strings if they are already resolved.
-  if (screen_ && screen_->language_list())
+  if (screen_ && !screen_->language_list().GetList().empty())
     ReloadLocalizedContent();
   UpdateA11yState();
 }

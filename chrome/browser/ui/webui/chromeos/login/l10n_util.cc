@@ -452,7 +452,7 @@ std::unique_ptr<base::ListValue> GetMinimalUILanguageList() {
   language_list->Append(CreateLanguageEntry(application_locale,
                                             language_native_display_name,
                                             language_native_display_name));
-  AdjustUILanguageList(std::string(), language_list.get());
+  AdjustUILanguageList(application_locale, language_list.get());
   return language_list;
 }
 

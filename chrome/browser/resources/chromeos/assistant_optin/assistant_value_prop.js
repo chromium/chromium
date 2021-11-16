@@ -236,7 +236,9 @@ Polymer({
     this.loadingError_ = false;
     this.headerReceived_ = false;
     this.webViewLoaded_ = false;
-    let locale = this.locale.replace('-', '_').toLowerCase();
+    let locale = loadTimeData.getString('assistantLocale')
+                     .replace('-', '_')
+                     .toLowerCase();
     this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
   },
 
