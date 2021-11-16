@@ -168,6 +168,12 @@ void AddStrings(content::WebUIDataSource* html_source) {
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE},
     {"accountSelectionLacrosOtherAccountButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
+    {"lacrosPrimaryProfileDeletionWarningTitle",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE},
+    {"lacrosPrimaryProfileDeletionWarning",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
+    {"lacrosPrimaryProfileDeletionWarningConfirmation",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

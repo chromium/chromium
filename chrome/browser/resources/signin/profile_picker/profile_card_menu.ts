@@ -50,6 +50,7 @@ export interface ProfileCardMenuElement {
     actionMenu: CrActionMenuElement,
     moreActionsButton: HTMLElement,
     removeConfirmationDialog: CrDialogElement,
+    removePrimaryLacrosProfileDialog: CrDialogElement,
   };
 }
 
@@ -101,6 +102,14 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         type: String,
         computed: 'computeRemoveWarningTitle_(profileState)',
       },
+
+      // <if expr="lacros">
+      removePrimaryLacrosProfileWarning_: {
+        type: String,
+        computed: 'computeRemovePrimaryLacrosProfileWarning_(profileState)',
+      },
+      // </if>
+
     };
   }
 
@@ -109,6 +118,9 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   private profileStatistics_: Array<ProfileStatistics>;
   private removeWarningText_: string;
   private removeWarningTitle_: string;
+  // <if expr="lacros">
+  private removePrimaryLacrosProfileWarning_: string;
+  // </if>
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -135,6 +147,13 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
                                       'removeWarningLocalProfileTitle');
   }
 
+  // <if expr="lacros">
+  private computeRemovePrimaryLacrosProfileWarning_(): string {
+    return this.i18n(
+        'lacrosPrimaryProfileDeletionWarning', this.profileState.userName);
+  }
+  // </if>
+
   private onMoreActionsButtonClicked_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
@@ -149,7 +168,16 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.manageProfilesBrowserProxy_.getProfileStatistics(
         this.profileState.profilePath);
     this.$.actionMenu.close();
+    // <if expr="lacros">
+    if (this.profileState.isPrimaryLacrosProfile) {
+      this.$.removePrimaryLacrosProfileDialog.showModal();
+    } else {
+      this.$.removeConfirmationDialog.showModal();
+    }
+    // </if>
+    // <if expr="not lacros">
     this.$.removeConfirmationDialog.showModal();
+    // </if>
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
   }
 
@@ -192,6 +220,12 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   private onRemoveCancelClicked_() {
     this.$.removeConfirmationDialog.cancel();
   }
+
+  // <if expr="lacros">
+  private onRemovePrimaryLacrosProfileCancelClicked_() {
+    this.$.removePrimaryLacrosProfileDialog.cancel();
+  }
+  // </if>
 
   /**
    * Ensure any menu is closed on profile list updated.

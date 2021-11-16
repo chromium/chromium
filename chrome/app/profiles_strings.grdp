@@ -664,6 +664,15 @@
       <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS" desc="Profile picker main view title">
         Choose a profile
       </message>
+      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE" desc="Title of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
+        Can't delete this profile
+      </message>
+      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING" desc="Text of a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile.">
+        <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph> is the default account on your Chromebook.
+      </message>
+      <message name="IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION" desc="Text of a button below a dialog which explains that the profile the user is trying to delete cannot be deleted, because it is the default profile. By clicking the button, the user closes the this dialog.">
+        Got it
+      </message>
     </if>
 
   </if>

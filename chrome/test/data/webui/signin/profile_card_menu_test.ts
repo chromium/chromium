@@ -232,13 +232,21 @@ suite('ProfileCardMenuLacrosTest', function() {
   });
 
   // The primary profile cannot be deleted in Lacros. The delete button should
-  // be disabled.
+  // just open a notification about that.
   test('PrimaryProfileCannotBeDeleted', async function() {
     primaryProfileCardMenuElement.$.moreActionsButton.click();
     const menuButtons = primaryProfileCardMenuElement.shadowRoot!
                             .querySelectorAll<HTMLButtonElement>(
                                 '#actionMenu > .dropdown-item');
-    assertTrue(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    assertFalse(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    menuButtons[MenuButtonIndex.DELETE]!.click();
+    assertFalse(primaryProfileCardMenuElement.$.actionMenu.open);
+    const dialog =
+        primaryProfileCardMenuElement.$.removePrimaryLacrosProfileDialog;
+    assertTrue(dialog.open);
+    dialog.querySelector<HTMLElement>('.action-button')!.click();
+    waitBeforeNextRender(primaryProfileCardMenuElement);
+    assertFalse(dialog.open);
   });
 
   // All other profiles can be deleted as normal.
