@@ -64,8 +64,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
