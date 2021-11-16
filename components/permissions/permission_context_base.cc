@@ -81,6 +81,10 @@ const char kPermissionBlockedPortalsMessage[] =
     "%s permission has been blocked because it was requested inside a portal. "
     "Portals don't currently support permission requests.";
 
+const char kPermissionBlockedFencedFrameMessage[] =
+    "%s permission has been blocked because it was requested inside a fenced "
+    "frame. Fenced frames don't currently support permission requests.";
+
 void LogPermissionBlockedMessage(content::WebContents* web_contents,
                                  const char* message,
                                  ContentSettingsType type) {
@@ -177,6 +181,11 @@ void PermissionContextBase::RequestPermission(
                                     kPermissionBlockedPortalsMessage,
                                     content_settings_type_);
         break;
+      case PermissionStatusSource::FENCED_FRAME:
+        LogPermissionBlockedMessage(web_contents,
+                                    kPermissionBlockedFencedFrameMessage,
+                                    content_settings_type_);
+        break;
       case PermissionStatusSource::INSECURE_ORIGIN:
       case PermissionStatusSource::UNSPECIFIED:
       case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
@@ -267,6 +276,12 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
     if (web_contents && web_contents->IsPortal()) {
       return PermissionResult(CONTENT_SETTING_BLOCK,
                               PermissionStatusSource::PORTAL);
+    }
+
+    // Permissions are denied for fenced frames.
+    if (render_frame_host->IsNestedWithinFencedFrame()) {
+      return PermissionResult(CONTENT_SETTING_BLOCK,
+                              PermissionStatusSource::FENCED_FRAME);
     }
 
     // Automatically deny all HTTP or HTTPS requests where the virtual URL and

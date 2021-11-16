@@ -38,9 +38,13 @@ enum class PermissionStatusSource {
   // permissions request.
   VIRTUAL_URL_DIFFERENT_ORIGIN,
 
-  // The status is the result of a permissions being requested inside a portal.
+  // The status is the result of a permission being requested inside a portal.
   // Permissions are currently always denied inside a portal.
-  PORTAL
+  PORTAL,
+
+  // The status is the result of a permission being requested inside a fenced
+  // frame. Permissions are currently always denied inside a fenced frame.
+  FENCED_FRAME,
 };
 
 struct PermissionResult {
