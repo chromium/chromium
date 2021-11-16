@@ -4,6 +4,7 @@
 
 import("//build/config/mac/mac_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
+import("//build_overrides/build.gni")
 
 # Specialisation of the apple_toolchain template to declare the toolchain
 # and its tools to build target for macOS platform.
@@ -24,9 +25,13 @@ template("mac_toolchain") {
         # Use LLD for the host part of a chrome/ios build.
         use_lld = true
 
-        # cronet disable this because it targets 32-bit,
-        # enable it unconditionally for the host toolchain.
-        use_allocator_shim = true
+        # Defined in //base, would trigger a warning if the build doesn't depend
+        # on it.
+        if (build_with_chromium) {
+          # cronet disable this because it targets 32-bit,
+          # enable it unconditionally for the host toolchain.
+          use_allocator_shim = true
+        }
 
         # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
         # not supported by the Chromium mac_clang_x64 toolchain on iOS
