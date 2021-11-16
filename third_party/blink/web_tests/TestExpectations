@@ -3446,7 +3446,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/protocol/split.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDTMFSender-insertDTMF.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCEncodedVideoFrame-serviceworker-failure.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-connectionState.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
@@ -3691,8 +3690,6 @@ crbug.com/626703 external/wpt/workers/examples/onconnect.any.worker.html [ Timeo
 crbug.com/626703 external/wpt/cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/postMessage_block.https.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-management-expectations.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/preload/onload-event.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/preload/download-resources.html [ Timeout ]
 crbug.com/626703 external/wpt/workers/shared-worker-parse-error-failure.html [ Timeout ]
@@ -5651,10 +5648,6 @@ crbug.com/1066732 fast/events/platform-wheelevent-paging-y-in-scrolling-div.html
 
 # Temporarily disabled for landing changes to DevTools frontend
 crbug.com/1066579 http/tests/devtools/har-importer.js [ Failure Pass ]
-
-# Flaky test, happens only on Mac 10.13.
-# The "timeout" was detected by the wpt-importer bot.
-crbug.com/1069714 [ Mac10.13 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Failure Pass Skip Timeout ]
 
 # COOP top navigation:
 crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
