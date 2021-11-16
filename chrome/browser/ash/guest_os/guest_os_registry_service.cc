@@ -548,7 +548,6 @@ GuestOsRegistryService::GuestOsRegistryService(Profile* profile)
       base_icon_path_(profile->GetPath().AppendASCII(kCrostiniIconFolder)),
       clock_(base::DefaultClock::GetInstance()) {
   RecordStartupMetrics();
-  MigrateTerminal();
 }
 
 GuestOsRegistryService::~GuestOsRegistryService() = default;
@@ -1163,34 +1162,6 @@ void GuestOsRegistryService::OnContainerAppIcon(
     std::move(callback).Run(icon_content);
   }
   active_icon_requests_.erase(key);
-}
-
-void GuestOsRegistryService::MigrateTerminal() const {
-  // Remove the old terminal from the registry.
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              guest_os::prefs::kGuestOsRegistry);
-  base::DictionaryValue* apps = update.Get();
-  apps->RemoveKey(crostini::kCrostiniDeletedTerminalId);
-
-  // Transfer item attributes from old terminal to new, and delete old terminal
-  // once AppListSyncableService is initialized.
-  auto* app_list_syncable_service =
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
-  if (!app_list_syncable_service) {
-    return;
-  }
-  app_list_syncable_service->on_initialized().Post(
-      FROM_HERE,
-      base::BindOnce(
-          [](app_list::AppListSyncableService* service) {
-            if (service->GetSyncItem(crostini::kCrostiniDeletedTerminalId)) {
-              service->TransferItemAttributes(
-                  crostini::kCrostiniDeletedTerminalId,
-                  crostini::kCrostiniTerminalSystemAppId);
-              service->RemoveItem(crostini::kCrostiniDeletedTerminalId);
-            }
-          },
-          base::Unretained(app_list_syncable_service)));
 }
 
 }  // namespace guest_os

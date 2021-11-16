@@ -255,14 +255,6 @@ class GuestOsRegistryService : public KeyedService {
   // Removes all the icons installed for an application.
   void RemoveAppData(const std::string& app_id);
 
-  // Migrates terminal from old crosh-based terminal to new Terminal System App.
-  // Old terminal is removed from registry, and launcher position and pinned
-  // attribute is copied to the new terminal.
-  // TODO(crbug.com/1019021):  Keep this code for at least 1 release after
-  // TerminalSystemApp feature is removed.  Current expectation is to remove
-  // feature in M83, this function can then be remoevd after M84.
-  void MigrateTerminal() const;
-
   // Apply container-specific badging to `icon`. This is run after the generic
   // icon loading code.
   void ApplyContainerBadge(SkColor badge_color,

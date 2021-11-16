@@ -36,10 +36,6 @@ class Profile;
 
 namespace crostini {
 
-// TODO(crbug.com/1092657): kCrostiniDeletedTerminalId can be removed after M86.
-// We use an arbitrary well-formed extension id for the Terminal app, this
-// is equal to GenerateId("Terminal").
-extern const char kCrostiniDeletedTerminalId[];
 // web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 extern const char kCrostiniTerminalSystemAppId[];

@@ -54,9 +54,6 @@
 
 namespace crostini {
 
-// We use an arbitrary well-formed extension id for the Terminal app, this
-// is equal to GenerateId("Terminal").
-const char kCrostiniDeletedTerminalId[] = "oajcgpnkmhaalajejhlfpacbiokdnnfe";
 // web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
