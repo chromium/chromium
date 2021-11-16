@@ -53,6 +53,7 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -152,8 +153,7 @@ import java.util.concurrent.TimeoutException;
         "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION + ","
                 + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-// TODO(donnd): Reenable batch per-class execution. See https://crbug.com/1183540,
-// and https://crbug.com/1180304.
+@Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
