@@ -506,6 +506,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return PhysicalOffset(ContentLeft(), ContentTop());
   }
+  PhysicalSize PhysicalContentBoxSize() const {
+    NOT_DESTROYED();
+    return PhysicalSize(ContentWidth(), ContentHeight());
+  }
   // The content box converted to absolute coords (taking transforms into
   // account).
   FloatQuad AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
