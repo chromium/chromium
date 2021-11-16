@@ -201,9 +201,10 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
+  const GURL image_url("http://test_url");
 
   AddWallpaperImage(asset_id, /*image_info=*/{
-                        GURL("test_url"),
+                        image_url,
                         "collection_id",
                     });
 
@@ -218,23 +219,24 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, SelectWallpaper) {
   loop.Run();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           absl::make_optional(asset_id), GURL("test_url"), "collection_id",
-           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/false, /*from_user=*/true,
-           /*daily_refresh_enabled=*/false}),
-      test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_EQ(ash::WallpaperInfo(
+                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+                 absl::make_optional(asset_id), image_url, "collection_id",
+                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+                 /*preview_mode=*/false, /*from_user=*/true,
+                 /*daily_refresh_enabled=*/false,
+                 /*variants=*/std::vector<ash::OnlineWallpaperVariant>()}),
+            test_wallpaper_controller()->wallpaper_info().value());
 }
 
 TEST_F(ChromePersonalizationAppUiDelegateTest, PreviewWallpaper) {
   test_wallpaper_controller()->ClearCounts();
 
   const uint64_t asset_id = 1;
+  const GURL image_url("http://test_url");
 
   AddWallpaperImage(asset_id, /*image_info=*/{
-                        GURL("test_url"),
+                        image_url,
                         "collection_id",
                     });
 
@@ -249,14 +251,14 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, PreviewWallpaper) {
   loop.Run();
 
   EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
-  EXPECT_EQ(
-      ash::WallpaperInfo(
-          {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
-           absl::make_optional(asset_id), GURL("test_url"), "collection_id",
-           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-           /*preview_mode=*/true, /*from_user=*/true,
-           /*daily_refresh_enabled=*/false}),
-      test_wallpaper_controller()->wallpaper_info().value());
+  EXPECT_EQ(ash::WallpaperInfo(
+                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+                 absl::make_optional(asset_id), image_url, "collection_id",
+                 ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+                 /*preview_mode=*/true, /*from_user=*/true,
+                 /*daily_refresh_enabled=*/false,
+                 /*variants=*/std::vector<ash::OnlineWallpaperVariant>()}),
+            test_wallpaper_controller()->wallpaper_info().value());
 }
 
 TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
@@ -271,7 +273,8 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
        absl::make_optional(asset_id), GURL("test_url"), "collection_id",
        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
-       /*daily_refresh_enabled=*/false},
+       /*daily_refresh_enabled=*/false,
+       /*variants=*/std::vector<ash::OnlineWallpaperVariant>()},
       base::DoNothing());
 
   EXPECT_EQ(nullptr, current_wallpaper());

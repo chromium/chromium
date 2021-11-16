@@ -74,7 +74,7 @@ struct WallpaperImage {
 
     // The identifier of a unit of images e.g. Dark/Light variants of the same
     // wallpaper.
-    int32 unit_id;
+    uint64 unit_id;
 
     // The type of the online image .i.e kLight, kDark, etc.
     OnlineImageType type;

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -597,10 +598,12 @@ class WallpaperControllerTestBase : public AshTestBase {
       bool save_file,
       bool preview_mode,
       bool from_user,
+      const std::vector<OnlineWallpaperVariant>& variants,
       WallpaperControllerImpl::SetOnlineWallpaperCallback callback) {
     const OnlineWallpaperParams params = {
         account_id, asset_id,     GURL(url), collection_id,
-        layout,     preview_mode, from_user, /*daily_refresh_enabled=*/false};
+        layout,     preview_mode, from_user, /*daily_refresh_enabled=*/false,
+        variants};
     controller_->OnOnlineWallpaperDecoded(params, save_file,
                                           std::move(callback), image);
   }
@@ -656,7 +659,8 @@ class WallpaperControllerTestBase : public AshTestBase {
             account_id_1, /*asset_id=*/absl::nullopt, GURL(path),
             /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
             /*preview_mode=*/false, /*from_user=*/false,
-            /*daily_refresh_enabled=*/false),
+            /*daily_refresh_enabled=*/false,
+            /*variants=*/std::vector<OnlineWallpaperVariant>()),
         /*image_data=*/std::string(),
         WallpaperControllerImpl::SetOnlineWallpaperCallback());
     RunAllTasksUntilIdle();
@@ -1052,7 +1056,8 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, layout,
                             /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_FALSE(file_exists);
         run_loop->Quit();
@@ -1068,7 +1073,8 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
                             GURL(kDummyUrl),
                             /*collection_id=*/std::string(), layout,
                             /*preview_mode=*/false, /*from_user=*/false,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -1102,7 +1108,8 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, layout,
                             /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_TRUE(file_exists);
         run_loop->Quit();
@@ -1133,7 +1140,8 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperFromDataSavesFile) {
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -1164,7 +1172,8 @@ TEST_P(WallpaperControllerTest,
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -1185,7 +1194,8 @@ TEST_P(WallpaperControllerTest,
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl2),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -1212,7 +1222,8 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaper) {
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, layout,
                             /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop->Quit();
@@ -1667,7 +1678,8 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
@@ -1755,7 +1767,8 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
             account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
             /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
             /*preview_mode=*/false, /*from_user=*/false,
-            /*daily_refresh_enabled=*/false),
+            /*daily_refresh_enabled=*/false,
+            /*variants=*/std::vector<OnlineWallpaperVariant>()),
         /*image_data=*/std::string(),
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
@@ -1778,7 +1791,8 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
             account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
             /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
             /*preview_mode=*/false, /*from_user=*/false,
-            /*daily_refresh_enabled=*/false),
+            /*daily_refresh_enabled=*/false,
+            /*variants=*/std::vector<OnlineWallpaperVariant>()),
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
           run_loop->Quit();
@@ -1821,7 +1835,8 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -2057,7 +2072,8 @@ TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
                             GURL(kDummyUrl),
                             /*collection_id=*/std::string(), layout,
                             /*preview_mode=*/false, /*from_user=*/false,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -2605,6 +2621,7 @@ TEST_P(WallpaperControllerTest, ConfirmPreviewWallpaper) {
       account_id_1, kAssetId, gfx::ImageSkia(), kDummyUrl, kDummyCollectionId,
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true,
+      /*variants=*/std::vector<OnlineWallpaperVariant>(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_FALSE(success);
         run_loop->Quit();
@@ -2623,6 +2640,8 @@ TEST_P(WallpaperControllerTest, ConfirmPreviewWallpaper) {
       account_id_1, kAssetId, online_wallpaper, kDummyUrl, kDummyCollectionId,
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true,
+      /*variants=*/
+      std::vector<OnlineWallpaperVariant>(),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop->Quit();
@@ -2710,6 +2729,7 @@ TEST_P(WallpaperControllerTest, CancelPreviewWallpaper) {
       account_id_1, kAssetId, online_wallpaper, kDummyUrl, kDummyCollectionId,
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true,
+      /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2812,6 +2832,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
       account_id_1, kAssetId, online_wallpaper, kDummyUrl, kDummyCollectionId,
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true,
+      /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2830,7 +2851,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   SetOnlineWallpaperFromImage(
       account_id_1, kAssetId, synced_online_wallpaper, kDummyUrl2,
       kDummyCollectionId, layout, /*save_file=*/false, /*preview_mode=*/false,
-      /*from_user=*/true,
+      /*from_user=*/true, /*variants=*/std::vector<OnlineWallpaperVariant>(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
@@ -3800,7 +3821,8 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, WALLPAPER_LAYOUT_CENTER_CROPPED,
                             /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false),
+                            /*daily_refresh_enabled=*/false,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
       base::BindLambdaForTesting([&run_loop](bool success) {
         EXPECT_TRUE(success);
         run_loop->Quit();

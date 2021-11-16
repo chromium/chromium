@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +38,9 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // If the `WallpaperInfo` generated from these params should have type
   // `WallpaperType::kDaily`.
   bool daily_refresh_enabled = false;
+  // The variants related to the wallpaper. This vector also contains the
+  // wallpaper itself.
+  std::vector<OnlineWallpaperVariant> variants;
 
   OnlineWallpaperParams(const AccountId& account_id,
                         const absl::optional<uint64_t>& asset_id,
@@ -45,7 +49,8 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
                         WallpaperLayout layout,
                         bool preview_mode,
                         bool from_user,
-                        bool daily_refresh_enabled);
+                        bool daily_refresh_enabled,
+                        const std::vector<OnlineWallpaperVariant>& variants);
 
   OnlineWallpaperParams(const OnlineWallpaperParams& other);
 

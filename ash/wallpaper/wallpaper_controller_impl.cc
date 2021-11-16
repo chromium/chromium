@@ -8,6 +8,7 @@
 #include <numeric>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -17,6 +18,7 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
@@ -1596,16 +1598,18 @@ void WallpaperControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
 
   switch (local_info.type) {
     case WallpaperType::kDaily:
-    case WallpaperType::kOnline:
+    case WallpaperType::kOnline: {
       // TODO(b/205035933): Handle setting the right variant.
+      std::vector<OnlineWallpaperVariant> variants;
       SetOnlineWallpaper(
-          OnlineWallpaperParams{account_id, local_info.asset_id,
-                                GURL(local_info.location),
-                                local_info.collection_id, local_info.layout,
-                                /*preview_mode=*/false,
-                                /*from_user=*/false, daily_refresh_enabled},
+          OnlineWallpaperParams{
+              account_id, local_info.asset_id, GURL(local_info.location),
+              local_info.collection_id, local_info.layout,
+              /*preview_mode=*/false,
+              /*from_user=*/false, daily_refresh_enabled, variants},
           base::DoNothing());
       break;
+    }
     case WallpaperType::kCustomized:
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:
@@ -2470,15 +2474,18 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     case WallpaperType::kDaily:
       HandleDailyWallpaperInfoSyncedIn(account_id, info);
       break;
-    case WallpaperType::kOnline:
+    case WallpaperType::kOnline: {
+      // TODO(b/205035933): Retrieve online wallpaper variants.
+      std::vector<OnlineWallpaperVariant> variants;
       SetOnlineWallpaper(
           OnlineWallpaperParams{account_id, info.asset_id, GURL(info.location),
                                 info.collection_id, info.layout,
                                 /*preview_mode=*/false,
                                 /*from_user=*/false,
-                                /*daily_refresh_enabled=*/false},
+                                /*daily_refresh_enabled=*/false, variants},
           base::DoNothing());
       break;
+    }
     case WallpaperType::kDefault:
     case WallpaperType::kPolicy:
     case WallpaperType::kThirdParty:
@@ -2622,11 +2629,14 @@ void WallpaperControllerImpl::SetDailyWallpaper(
     const absl::optional<uint64_t>& asset_id,
     const std::string& image_url) {
   if (asset_id.has_value() && !image_url.empty()) {
+    // TODO(b/205035933): Retrieve online wallpaper variants for the daily
+    // wallpaper.
+    std::vector<OnlineWallpaperVariant> variants;
     SetOnlineWallpaper(
         OnlineWallpaperParams{account_id, asset_id, GURL(image_url),
                               collection_id, layout, preview_mode,
                               /*from_user=*/false,
-                              /*daily_refresh_enabled=*/true},
+                              /*daily_refresh_enabled=*/true, variants},
         base::BindOnce(&WallpaperControllerImpl::OnSetDailyWallpaper,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {

@@ -13,6 +13,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -298,6 +299,15 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
     return;
   }
 
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  for (auto entry : image_asset_id_map_) {
+    const ImageInfo& image_info = entry.second;
+    if (image_info.unit_id == it->second.unit_id) {
+      variants.emplace_back(image_info.asset_id, image_info.image_url,
+                            image_info.type);
+    }
+  }
+
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
 
@@ -313,7 +323,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
-          /*daily_refresh_enabled=*/false),
+          /*daily_refresh_enabled=*/false, variants),
       base::BindOnce(
           &ChromePersonalizationAppUiDelegate::OnOnlineWallpaperSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
@@ -419,7 +429,11 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
       }
       image_asset_id_map_.insert(
           {proto_image.asset_id(),
-           {GURL(proto_image.image_url()), collection_id}});
+           {GURL(proto_image.image_url()), collection_id,
+            proto_image.asset_id(), proto_image.unit_id(),
+            proto_image.has_image_type()
+                ? proto_image.image_type()
+                : backdrop::Image::IMAGE_TYPE_UNKNOWN}});
     }
     result = std::move(images);
   }

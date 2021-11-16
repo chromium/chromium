@@ -202,10 +202,9 @@ uint64_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   return image.asset_id();
 }
 
-int32_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
-                     backdrop::Image>::unit_id(const backdrop::Image& image) {
-  // TODO(b/202859390): remove condition once unit_id is available.
-  return image.has_unit_id() ? image.unit_id() : image.asset_id();
+uint64_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
+                      backdrop::Image>::unit_id(const backdrop::Image& image) {
+  return image.unit_id();
 }
 
 ::backdrop::Image::ImageType

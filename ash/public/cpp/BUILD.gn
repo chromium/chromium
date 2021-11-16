@@ -316,6 +316,8 @@ component("cpp") {
     "vm_camera_mic_constants.h",
     "wallpaper/online_wallpaper_params.cc",
     "wallpaper/online_wallpaper_params.h",
+    "wallpaper/online_wallpaper_variant.cc",
+    "wallpaper/online_wallpaper_variant.h",
     "wallpaper/wallpaper_controller.cc",
     "wallpaper/wallpaper_controller.h",
     "wallpaper/wallpaper_controller_client.h",
@@ -381,6 +383,7 @@ component("cpp") {
   public_deps = [
     "//ash/components/security_token_pin",
     "//ash/public/mojom",
+    "//ash/webui/personalization_app/proto",
     "//base",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/assistant/public/mojom",

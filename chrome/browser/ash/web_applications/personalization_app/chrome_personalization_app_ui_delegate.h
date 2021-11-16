@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
 
 #include <stdint.h>
@@ -201,6 +202,9 @@ class ChromePersonalizationAppUiDelegate
   struct ImageInfo {
     GURL image_url;
     std::string collection_id;
+    uint64_t asset_id;
+    uint64_t unit_id;
+    backdrop::Image::ImageType type;
   };
 
   // Store a mapping of valid image asset_ids to their ImageInfo to validate

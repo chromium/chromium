@@ -64,7 +64,7 @@ struct StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   static GURL url(const backdrop::Image& image);
   static std::vector<std::string> attribution(const backdrop::Image& image);
   static uint64_t asset_id(const backdrop::Image& image);
-  static int32_t unit_id(const backdrop::Image& image);
+  static uint64_t unit_id(const backdrop::Image& image);
   static ::backdrop::Image::ImageType type(const backdrop::Image& image);
 
   static bool Read(ash::personalization_app::mojom::WallpaperImageDataView data,
