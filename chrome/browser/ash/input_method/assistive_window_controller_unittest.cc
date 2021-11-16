@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
@@ -89,6 +92,13 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     emoji_button_.announce_string = kAnnounceString;
   }
 
+  void EnableLacros() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kLacrosSupport},
+        /*disabled_features=*/{});
+  }
+
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;
@@ -96,6 +106,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   ui::ime::AssistiveWindowButton emoji_button_;
   AssistiveWindowProperties emoji_window_;
   TestAccessibilityView* accessibility_view_;
+  base::test::ScopedFeatureList feature_list_;
 
   void TearDown() override {
     controller_.reset();
@@ -104,7 +115,6 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 };
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
-  // Sets up suggestion_view with confirmed_length = 0.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
@@ -116,17 +126,19 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
       ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect new_caret_bounds(current_bounds.width() + 1,
-                             current_bounds.height());
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
-  bounds.caret = new_caret_bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-  EXPECT_EQ(new_caret_bounds, suggestion_view->GetAnchorRect());
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,
        ConfirmedLengthNSetsBoundsToCompositionTextBounds) {
-  // Sets up suggestion_view with confirmed_length = 1.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
@@ -138,13 +150,40 @@ TEST_F(AssistiveWindowControllerTest,
       ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect composition_text_bounds(current_bounds.width() - 5,
-                                    current_bounds.height());
-
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
-  bounds.composition_text = composition_text_bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-  EXPECT_EQ(composition_text_bounds, suggestion_view->GetAnchorRect());
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(composition_bounds, suggestion_view->GetAnchorRect());
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       ConfirmedLengthNSetsBoundsToCaretBoundsWithLacrosEnabled) {
+  EnableLacros();
+  ui::ime::SuggestionDetails details;
+  details.text = suggestion_;
+  details.confirmed_length = 1;
+  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
+  ui::ime::SuggestionWindowView* suggestion_view =
+      controller_->GetSuggestionWindowViewForTesting();
+  EXPECT_EQ(
+      1u,
+      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
+
+  gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
+  Bounds bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
+  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,
