@@ -692,6 +692,16 @@
 <translation id="1862267110714201519">ゴースト ウィンドウ機能を無効にする</translation>
 <translation id="1865417998205858223">キーの権限</translation>
 <translation id="186719019195685253">AC 電源での実行時、アイドル時間に到達したときに行う操作</translation>
+<translation id="1881649377321404593">
+      WebDriver が既存のポリシーのすべてに対応するようになったため、
+      このポリシーは不要になり、M80 で削除されました。
+
+      このポリシーを使用すると、WebDriver 機能のユーザーは動作を妨げる可能性のあるポリシーをオーバーライドできます。
+
+      現在、このポリシーによって SitePerProcess ポリシーと IsolateOrigins ポリシーが無効になります。
+
+      このポリシーが有効な場合、WebDriver では互換性のないポリシーをオーバーライドできます。
+      このポリシーが無効または未設定の場合、WebDriver では互換性のないポリシーをオーバーライドできません。</translation>
 <translation id="1885782360784839335">タブ全体にプロモーション コンテンツを表示する</translation>
 <translation id="1888871729456797026">パソコンでのクラウド ポリシーの登録トークン</translation>
 <translation id="1894790493260633497">背景のグラフィックの印刷モードをデフォルトで有効にする</translation>
@@ -2693,6 +2703,8 @@
       <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="4268014245533736105">Chrome はサンドボックス化された iframe 内で外部プロトコルへの移動をブロックします。https://chromestatus.com/features/5680742077038592 をご覧ください。True の場合は、該当する移動を Chrome がブロックできるようになります。False の場合は、該当する移動を Chrome がブロックするのを防ぎます。このデフォルトは True で、セキュリティ機能が有効になっています。このポリシーは、新しい制限の影響を受ける社内ウェブサイトの更新に時間がかかる場合に使用できます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 104 以降で削除される予定です。
+      </translation>
 <translation id="4268586991084547853">Microsoft IE / Edge エンタープライズ モードのサイトリストとの互換性を高める。</translation>
 <translation id="4269859918103560644">ユーザーが決定できるようにする</translation>
 <translation id="4274691295133617461">このポリシーを 3 に設定した場合、ウェブサイトは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリへの File System API を経由した読み取りアクセスを要求することが許可されます。このポリシーを 2 に設定した場合、アクセスは拒否されます。
@@ -4014,6 +4026,12 @@
 <translation id="5997543603646547632">デフォルトで 24 時間表示を使用</translation>
 <translation id="5997846976342452720">プラグイン ファインダーを無効にするかどうかを指定する（サポート終了）</translation>
 <translation id="5998198091336830580">このポリシーは、次の最小単位グループの一部です（グループ内にある優先度の最も高いソースのポリシーのみが適用されます）。</translation>
+<translation id="6004575267180297869">
+      WebAssembly モジュールを他のウィンドウやワーカーにクロスオリジンで送信できるかどうかを指定します。クロスオリジンの WebAssembly モジュール共有は、document.domain のサポート終了にともない、同じくサポート終了となります。詳しくは https://github.com/mikewest/deprecating-document-domain　をご覧ください。このポリシーにより、クロスオリジンの WebAssembly モジュール共有を再度有効にし、サポート終了プロセスにおける移行期間を延長することができます。
+
+      True に設定した場合、サイトでは WebAssembly モジュールをクロスオリジンでも制限なく送信できます。
+
+      False に設定するか未設定のままにした場合、サイトでは WebAssembly モジュールを同じオリジンのウィンドウとワーカーにのみ送信できます。</translation>
 <translation id="6009062900206392980">このポリシーを None（なし）に設定した場合、ログイン画面で拡大鏡が無効になります。
 
        このポリシーを設定した場合、ユーザーは拡大鏡を一時的に有効または無効にできます。ログイン画面が再読み込みされるか 1 分間アイドル状態が続くと、元の状態に戻ります。
@@ -4185,6 +4203,7 @@
       このポリシーは、企業のセキュリティ ソフトウェアの設定がサンドボックス化と干渉する場合に、音声処理のサンドボックス化を無効にできるようにするためのものです。</translation>
 <translation id="624818583115864448">ポート 554（ブロックの解除は 2021 年 10 年 15 日まで可能）</translation>
 <translation id="6252773211180267325">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックしない</translation>
+<translation id="6258658183356534534">User-Agent Client Hints の GREASE 更新機能を管理します。</translation>
 <translation id="6261643884958898336">マシン識別情報に関するレポートを作成</translation>
 <translation id="6265892395051519509">センサーへのアクセスを許可するサイトを指定します</translation>
 <translation id="6273015149273504999">
@@ -4265,6 +4284,7 @@
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。
 
           警告メッセージは、アイドル時の操作がログアウトかシャットダウンの場合にのみ表示されます。</translation>
+<translation id="6331943515692769234">従来の User-Agent GREASE アルゴリズムを強制的に使用する。</translation>
 <translation id="6332546092866098577">File System API 経由での読み取りアクセスをブロックするサイトを指定する</translation>
 <translation id="6334330017384340264">このポリシーでは、アプリごとの時間制限を適用しないアプリと URL を指定します。
         設定した許可リストは、アプリごとの時間制限が設定されているユーザーが <ph name="PRODUCT_OS_NAME" /> にインストールされているアプリを使用する場合に適用されます。
@@ -4583,6 +4603,10 @@
 
       注: このポリシーは、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> を使用して強制的にインストールされる拡張機能やアプリにも影響します。</translation>
 <translation id="6731757988219967594">アダルト コンテンツに基づいて最上位サイト（埋め込み iframe 以外）を除外する</translation>
+<translation id="6733851879899284032">
+      クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定します。ウェブの互換性に関する理由から、<ph name="PRODUCT_NAME" /> 91 以降（2021-05-25）では、SharedArrayBuffers を使用する際に <ph name="PRODUCT_NAME" /> でクロスオリジン分離が必要となります。詳しくはこちらをご覧ください。https://developer.chrome.com/blog/enabling-shared-array-buffer/
+      有効に設定した場合、サイトで SharedArrayBuffers を制限なく使用できます。
+      無効に設定するか未設定のままにした場合、クロスオリジン分離されている場合のみ、サイトで SharedArrayBuffers を使用できます。</translation>
 <translation id="6735701345096330595">言語のスペルチェックを強制的に有効にする</translation>
 <translation id="6740611636377710500">このユーザーに PluginVm の実行を許可します。
 
@@ -4761,6 +4785,9 @@
 <translation id="6929746927224321095">自動入力を無効にする</translation>
 <translation id="6931242315485576290">Google とのデータの同期を無効にする</translation>
 <translation id="6940243892299228102">デスク テンプレートの使用をユーザーに許可しない</translation>
+<translation id="694071740172924905">このポリシーが有効な場合、User-Agent Client Hints の GREASE 更新機能により、User-Agent GREASE アルゴリズムに最新の仕様が適用されます。
+      最新の仕様は、リクエストに含まれる文字が制限されているウェブサイトでは、動作しない可能性があります。詳しくは仕様をご確認ください。https://wicg.github.io/ua-client-hints/#grease
+      このポリシーを有効に設定するか、未設定のままにした場合、User-Agent Client Hints の GREASE 更新機能が有効になります。このポリシーを無効に設定した場合、従来の User-Agent GREASE アルゴリズムが使用されます。</translation>
 <translation id="6943577887654905793">Mac/Linux 設定名:</translation>
 <translation id="6946652757373377924">
       このポリシーは M77 で削除されました。
@@ -5113,6 +5140,7 @@
 
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="7295019613773647480">監視対象ユーザーを有効にする</translation>
+<translation id="7297476773981993405">更新された User-Agent GREASE アルゴリズムの実行を許可する。</translation>
 <translation id="7302043767260300182">画面がロックされるまでの時間（AC 電源での実行時）</translation>
 <translation id="7303902834678570827">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可しない</translation>
 <translation id="731208205557053914">VPD 情報を報告する</translation>
@@ -5218,6 +5246,12 @@
 <translation id="7491720878670299691">ネットワーク データをポーリングしてイベントの有無を確認する間隔です。指定できる最小値は 1 分です。
 
       設定しない場合は、デフォルトの 1 分が適用されます。</translation>
+<translation id="7498595166686106721">
+      ディスプレイ キャプチャ許可ポリシーでは、仕様（https://www.w3.org/TR/screen-capture/#feature-policy-integration）に沿って、getDisplayMedia(), へのアクセスをゲートします。ただし、このポリシーを無効に設定した場合、この要件は適用されず、本来禁止されているコンテキストからの getDisplayMedia() の呼び出しが許可されます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 100 以降で削除される予定です。仕様を満たしていないため修正する時間が必要なアプリケーションを使用しているエンタープライズ ユーザーのブロックを解除することを目的としています。
+
+      このポリシーを有効に設定するか未設定のままにした場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されたコンテキストからのみ getDisplayMedia() を呼び出すことができます。
+
+      このポリシーを無効に設定した場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されていないコンテキストからでも getDisplayMedia() を呼び出すことができます。ただし、他の制限が適用される可能性があります。</translation>
 <translation id="7506745375479451616">このポリシーでは、<ph name="IE_PRODUCT_NAME" /> から <ph name="PRODUCT_NAME" /> に切り替えて URL を開くときに使用するコマンドを管理します。このポリシーは、実行ファイルのパスに設定するか <ph name="PRODUCT_NAME_PLACEHOLDER" /> に設定することで、<ph name="PRODUCT_NAME" /> の場所を自動検出できます。
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> が Internet Explorer から起動する際に <ph name="IE_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> の実行パスを自動検出します。注: <ph name="IE_PRODUCT_NAME" /> の従来のブラウザをサポートするアドインがインストールされていない場合、このポリシーは無視されます。</translation>
@@ -5809,6 +5843,19 @@
 <translation id="8266778278542911985">このポリシーを 3 に設定した場合、ウェブサイトによるシリアルポートへのアクセス要求が許可されます。このポリシーを 2 に設定した場合、シリアルポートへのアクセスは拒否されます。
 
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="8267887696930711948">このポリシーは M69 でサポート終了となりました。
+      代わりに OverrideSecurityRestrictionsOnInsecureOrigin を使用してください。
+
+      保護されていない発行元に関するセキュリティ制限の適用対象外となる発行元（URL）またはホスト名パターン（例: *.example.com）のリストを指定します。
+
+      このポリシーの目的は、TLS を実装できない以前のアプリケーションに対して組織で発行元を許可できるようにすること、または組織で内部ウェブ開発用のステージング サーバーをセットアップし、ステージング サーバーに TLS を実装しなくても安全なコンテキストで機能をテストできるようにすることです。また、このポリシーを設定すると、アドレスバーで発行元に「保護されていない」というラベルが表示されなくなります。
+
+      このポリシーで URL のリストを設定すると、コマンドライン フラグ「--unsafely-treat-insecure-origin-as-secure」を使って同じ URL をカンマ区切りリストで設定した場合と同じ効果が得られます。このポリシーが設定されている場合、コマンドライン フラグの指定は無視されます。
+
+      このポリシーは M69 でサポート終了となりました。代わりに OverrideSecurityRestrictionsOnInsecureOrigin を使用してください。両方のポリシーが設定されている場合は、このポリシーよりも OverrideSecurityRestrictionsOnInsecureOrigin が優先されます。
+
+      安全なコンテキストについて詳しくは、https://www.w3.org/TR/secure-contexts/ をご覧ください。
+      </translation>
 <translation id="8270320981823560179">ドライブ</translation>
 <translation id="827054846390793641">接続がアクティブなときにホスト デスクトップで接続関連の UI を有効にする</translation>
 <translation id="8274603902181597201">ユーザーの ecryptfs ホーム ディレクトリのデータをワイプして、ext4 で暗号化された新規のホーム ディレクトリから開始する。</translation>

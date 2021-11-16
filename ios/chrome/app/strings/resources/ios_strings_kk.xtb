@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Кіру кезінде бірдеңе дұрыс болмады.</translation>
 <translation id="1911619930368729126">Google Drive-қа жүктеу</translation>
 <translation id="1923342640370224680">Соңғы сағат</translation>
+<translation id="1930989359703290198">Ұйымыңыз сізге белгілі бір аккаунттармен ғана кіруге рұқсат етеді. Рұқсат етілмеген аккаунттар жасырылған. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Көшіру үшін екі рет түртіңіз.</translation>
 <translation id="1952172573699511566">Вебсайттар мүмкін болған кезде мәтінді өзіңізге ыңғайлы тілде көрсетеді.</translation>
 <translation id="1965935827552890526">Басқа ашық Chrome терезесінде жасап жатқан нәрсеңізді аяқтаңыз.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">Google Pay қызметіндегі төлеу әдістері мен мекенжайлар құпия фразамен шифрланбайды.
 
 Бұл параметрді өзгерту үшін <ph name="BEGIN_LINK" />синхрондауды бастапқы күйіне қайтарыңыз<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Ұйымыңыз басқарады.
+<ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Карта нөмірі дұрыс емес</translation>
 <translation id="4808744395915275922">Жаңартылған нұсқалар</translation>
 <translation id="4818522717893377262">Тіл қосу...</translation>

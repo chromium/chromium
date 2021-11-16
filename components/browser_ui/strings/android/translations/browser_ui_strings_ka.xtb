@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
 <translation id="2434158240863470628">ჩამოტვირთვა დასრულდა: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">საიტის დესკტოპის ვერსიის ყოველთვის მოთხოვნა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
 <translation id="2490684707762498678">მართავს <ph name="APP_NAME" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">მოწყობილობაზე წვდომის ნებართვის გაუქმება</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{გამოიყენება 1 ქუქი-ჩანაწერი}other{გამოიყენება # ქუქი-ჩანაწერი}}</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
+<translation id="848952951823693243">საიტის მობილურის ვერსიის ყოველთვის მოთხოვნა</translation>
 <translation id="851751545965956758">საიტებისთვის მოწყობილობებთან დაკავშირების აკრძალვა</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
 <translation id="857943718398505171">დაშვებული (რეკომენდებულია)</translation>

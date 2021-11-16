@@ -713,6 +713,16 @@
 <translation id="1862267110714201519">고스트 창 기능 사용 안함</translation>
 <translation id="1865417998205858223">주요 권한</translation>
 <translation id="186719019195685253">AC 전원으로 기기를 실행하는 동안 유휴 지연 시간에 도달했을 때 실행할 작업</translation>
+<translation id="1881649377321404593">
+      이 정책은 M80에서 삭제되었습니다. WebDriver가 이제 기존의 모든 정책과 호환됨에 따라 더 이상 필요가 없어졌기 때문입니다.
+
+      이 정책은 WebDriver 기능의 사용자가 작업을 방해할 수 있는 정책을 재정의할 수 있도록 해 줍니다.
+
+      현재 이 정책을 적용하면 SitePerProcess 및 IsolateOrigins 정책이 사용 중지됩니다.
+
+      정책이 사용 설정되면 WebDriver가 호환되지 않는 정책을 무시할 수 있습니다.
+
+      정책이 사용 중지되거나 설정되지 않으면 WebDriver가 호환되지 않는 정책을 무시할 수 없습니다.</translation>
 <translation id="1885782360784839335">전체 탭 프로모션 콘텐츠 표시 기능을 사용합니다.</translation>
 <translation id="1888871729456797026">데스크톱의 클라우드 정책 등록 토큰</translation>
 <translation id="1894790493260633497">기본적으로 배경 그래픽 인쇄 모드 사용</translation>
@@ -2794,6 +2804,16 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       <ph name="PRODUCT_NAME" /> 버전 92부터 이 정책이 헤드리스 모드에서도 지원됩니다.
 
       <ph name="MS_WIN_NAME" />의 경우 이 기능은 <ph name="MS_AD_NAME" /> 도메인에 연결된 인스턴스, Windows 10 Pro에서 실행되는 인스턴스 또는 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다. <ph name="MAC_OS_NAME" />의 경우에는 MDM을 통해 관리되는 인스턴스 또는 MCX를 통해 도메인에 연결된 인스턴스에서만 사용할 수 있습니다.</translation>
+<translation id="4268014245533736105">Chrome이 샌드박스 처리된 iframe 내부에서 외부 프로토콜로 이동을 차단합니다. https://chromestatus.com/features/5680742077038592 페이지를 참고하세요.
+
+      True로 설정하면 Chrome에서 이러한 이동을 차단합니다.
+
+      False로 설정하면 Chrome에서 이러한 이동을 차단할 수 없습니다.
+
+      기본값은 True로 보안 기능이 사용 설정됩니다.
+
+      이 정책은 새로운 제한의 영향을 받은 내부 웹사이트를 업데이트하는 데 시간이 더 필요한 관리자가 사용할 수 있습니다. 이 기업 정책은 일시적이며 <ph name="PRODUCT_NAME" /> 버전 104 이후 삭제됩니다.
+      </translation>
 <translation id="4268586991084547853">Microsoft IE/Edge 엔터프라이즈 모드 사이트 목록과 더 잘 호환됩니다.</translation>
 <translation id="4269859918103560644">사용자가 결정하도록 허용</translation>
 <translation id="4274691295133617461">이 정책을 3으로 설정하면 웹사이트에서 File System API를 통해 호스트 운영체제의 파일 시스템 내 파일 및 디렉터리에 대한 읽기 액세스 권한을 요청할 수 있습니다. 정책을 2로 설정하면 액세스가 거부됩니다.
@@ -4164,6 +4184,12 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="5997543603646547632">기본적으로 24시간 표기법 사용</translation>
 <translation id="5997846976342452720">플러그인 Finder 사용 중지 여부 지정(지원 중단됨)</translation>
 <translation id="5998198091336830580">이 정책은 다음 그룹의 일부입니다. 그룹에서 우선순위가 가장 높은 출처의 정책만 적용됩니다.</translation>
+<translation id="6004575267180297869">
+      WebAssembly 모듈이 출처가 다른 창 또는 작업자로 전송되도록 허용할지 선택합니다. 출처 간 WebAssembly 모듈 공유는 document.domain 지원 중단의 일환으로 지원 중단될 예정입니다. https://github.com/mikewest/deprecating-document-domain 페이지를 참고하세요. 정책을 설정하면 출처 간 WebAssembly 모듈 공유가 다시 활성화되어 지원 중단 과정에서 전환 기간이 더 길어집니다.
+
+      True로 설정하면 제한 없이 출처 간 WebAssembly 모듈 전송이 가능해집니다.
+
+      False로 설정되거나 설정되지 않으면 사이트에서 동일한 출처의 창 및 작업자로만 WebAssembly를 전송할 수 있습니다.</translation>
 <translation id="6009062900206392980">이 정책을 None으로 설정하면 로그인 화면에서 화면 확대 기능이 사용 중지됩니다.
 
        정책을 설정하면 사용자는 일시적으로 화면 돋보기를 사용 설정하거나 사용 중지할 수 있습니다. 로그인 화면이 새로고침되거나 1분 정도 유휴 상태가 유지되면 원래 상태로 돌아갑니다.
@@ -4343,6 +4369,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       이 정책은 기업에서 샌드박스를 방해하는 보안 소프트웨어 설정을 사용하는 경우 필요에 따라 오디오 샌드박스를 사용 중지할 수 있도록 만들어졌습니다.</translation>
 <translation id="624818583115864448">포트 554(2021년 10월 15일까지 차단 해제될 수 있음)</translation>
 <translation id="6252773211180267325">사용자가 <ph name="BOREALIS_NAME" />를 실행하는 것을 차단하지 않음</translation>
+<translation id="6258658183356534534">User-Agent Client Hints GREASE 업데이트 기능을 제어합니다.</translation>
 <translation id="6261643884958898336">기기 식별 정보 보고</translation>
 <translation id="6265892395051519509">이 사이트에서 센서에 액세스하도록 허용</translation>
 <translation id="6273015149273504999">
@@ -4425,6 +4452,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
           정책 값은 밀리초로 지정되어야 합니다. 유휴 지연 시간보다 작거나 같게 값이 잘립니다.
 
           유휴 작업이 로그아웃 또는 종료인 경우에만 경고 메시지가 표시됩니다.</translation>
+<translation id="6331943515692769234">이전 User-Agent GREASE 알고리즘이 사용되도록 강제 적용합니다.</translation>
 <translation id="6332192586629642626">방문 기록이 chrome://history/journeys에 표시되지 않습니다.</translation>
 <translation id="6332489309596092806">정책을 설정하면 사용자 상호작용 없이 자동으로 설치하는 웹 앱 목록이 지정되며, 사용자가 제거하거나 사용 중지할 수 없습니다.
 
@@ -4803,6 +4831,12 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
       참고: 이 정책은 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />로 강제 설치되는 확장 프로그램과 앱에도 영향을 미칩니다.</translation>
 <translation id="6731757988219967594">최상위 사이트(삽입된 iframe 제외)에 성인용 콘텐츠 필터링을 적용함</translation>
+<translation id="6733851879899284032">
+      SharedArrayBuffers가 교차 출처 분리되지 않은 컨텍스트에서 사용될 수 있는지 지정합니다. <ph name="PRODUCT_NAME" />은 <ph name="PRODUCT_NAME" /> 91(2021년 5월 25일 출시) 이상에서 SharedArrayBuffers를 사용할 때 웹 호환성을 이유로 교차 출처 분리를 요구합니다. 자세한 내용은 다음 페이지에서 확인하세요.: https://developer.chrome.com/blog/enabling-shared-array-buffer/
+
+      정책을 사용으로 설정하면 사이트에서 아무런 제한 없이 SharedArrayBuffer를 사용할 수 있습니다.
+
+      정책을 사용 안함으로 설정하거나 설정하지 않으면 교차 출처 분리된 경우에만 사이트에서 SharedArrayBuffers를 사용할 수 있습니다.</translation>
 <translation id="6735701345096330595">언어 맞춤법 검사 강제 사용</translation>
 <translation id="6740611636377710500">이 사용자가 PluginVm을 실행하도록 허용합니다.
 
@@ -4994,6 +5028,9 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="6929746927224321095">자동 완성 사용 안함</translation>
 <translation id="6931242315485576290">Google과 데이터 동기화 사용 중지</translation>
 <translation id="6940243892299228102">사용자가 데스크 템플릿을 사용하도록 허용하지 않음</translation>
+<translation id="694071740172924905">정책이 사용 설정되면 User-Agent Client Hints GREASE 업데이트 기능이 최신 사양의 User-Agent GREASE 알고리즘과 정렬됩니다.
+      업데이트된 사양으로 인해 요청에 포함된 문자 수를 제한하는 일부 웹사이트의 작동이 중단될 수 있습니다. 다음 사양에서 자세한 내용을 확인하세요. https://wicg.github.io/ua-client-hints/#grease
+      이 정책이 사용 설정되거나 설정되지 않으면 User-Agent Client Hints GREASE 업데이트 기능이 사용 설정됩니다. 정책이 사용 중지되면 이전의 User-Agent GREASE 알고리즘이 사용 설정됩니다.</translation>
 <translation id="6943577887654905793">Mac 및 Linux 환경설정 이름:</translation>
 <translation id="6946652757373377924">
       이 정책은 M77에서 삭제되었습니다.
@@ -5355,6 +5392,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
       이 정책이 설정되지 않으면 기본적으로 엔터프라이즈 관리 사용자의 경우 사용 중지되고 관리되지 않는 사용자의 경우 사용 설정됩니다.</translation>
 <translation id="7295019613773647480">관리 대상 사용자를 사용하도록 설정</translation>
+<translation id="7297476773981993405">업데이트된 User-Agent GREASE 알고리즘이 실행되도록 허용합니다.</translation>
 <translation id="7302043767260300182">AC 전원으로 실행할 때 화면 잠금 지연</translation>
 <translation id="7303902834678570827">관리 게스트 세션 사용자가 기기 전체에 적용되는 화면 설정을 저장할 수 없음</translation>
 <translation id="731208205557053914">VPD 정보 보고</translation>
@@ -5462,6 +5500,12 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 <translation id="7491720878670299691">이벤트와 관련하여 네트워크 데이터가 수집 및 확인되는 속도입니다. 허용되는 최솟값은 1분입니다.
 
       정책을 설정하지 않으면 기본값 1분이 적용됩니다.</translation>
+<translation id="7498595166686106721">
+      디스플레이 캡처 권한 정책은 다음에 따라 getDisplayMedia()에 대한 액세스를 제어합니다. https://www.w3.org/TR/screen-capture/#feature-policy-integration. 하지만 정책이 사용 중지된 경우 이 요구사항은 적용되지 않으며, 다른 상황에서는 금지되었을 컨텍스트에서도 getDisplayMedia()가 허용됩니다. 이 기업 정책은 일시적이며 <ph name="PRODUCT_NAME" /> 버전 100 이후 삭제됩니다. 애플리케이션이 사양을 따르지 않지만 수정하는 데 시간이 필요한 기업 사용자를 차단 해제하는 것이 목적입니다.
+
+      사용 설정되거나 설정되지 않으면 사이트는 디스플레이 캡처 정책에서 허용 목록에 추가한 컨텍스트에서만 getDisplayMedia()를 호출할 수 있습니다.
+
+      사용 중지된 경우 사이트는 디스플레이 캡처 정책에서 허용 목록에 추가하지 않은 컨텍스트에서도 getDisplayMedia()를 호출할 수 있습니다. 다른 제한사항이 적용될 수 있습니다.</translation>
 <translation id="7506745375479451616">이 정책은 <ph name="IE_PRODUCT_NAME" />에서 전환할 때 <ph name="PRODUCT_NAME" />에서 URL을 여는 데 사용할 명령을 제어합니다. 정책을 실행 파일 경로로 설정하거나 <ph name="PRODUCT_NAME_PLACEHOLDER" />으로 설정하여 <ph name="PRODUCT_NAME" />의 위치를 자동으로 감지할 수 있습니다.
 
       정책을 설정하지 않으면 Internet Explorer에서 <ph name="PRODUCT_NAME" />을 실행할 때 <ph name="IE_PRODUCT_NAME" />에서 <ph name="PRODUCT_NAME" />의 자체 실행 경로를 자동으로 감지합니다.
@@ -6079,6 +6123,18 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8266778278542911985">이 정책을 3으로 설정하면 웹사이트에서 직렬 포트 액세스를 요청할 수 있습니다. 정책을 2로 설정하면 직렬 포트 액세스를 거부합니다.
 
       정책을 설정하지 않으면 웹사이트에서 액세스를 요청할 수 있지만, 사용자가 이 설정을 변경할 수 있습니다.</translation>
+<translation id="8267887696930711948">M69에서 지원 중단되었습니다. 대신 OverrideSecurityRestrictionsOnInsecureOrigin을 사용하시기 바랍니다.
+
+      이 정책에서는 안전하지 않은 출처에 대한 보한 제안을 적용하지 않을 출처(URL) 또는 호스트 이름 패턴('*.example.com' 등)의 목록을 지정합니다.
+
+      정책을 통해 조직은 TLS를 배포할 수 없는 기존 애플리케이션에 허용할 출처를 설정하거나 내부 웹 개발을 위한 스테이징 서버를 설정하여 개발자가 스테이징 서버에서 TLS를 배포하지 않고도 보안 컨텍스트를 필요로 하는 기능을 테스트할 수 있습니다. 또한 이 정책은 검색주소창에서 출처에 '주의 요함' 라벨이 표시되지 않게 해 줍니다.
+
+      정책에서 URL 목록을 설정하면 같은 URL의 쉼표로 구분된 목록에 명령줄 플래그 '--unsafely-treat-insecure-origin-as-secure'를 설정하는 것과 같은 효과가 나타납니다. 정책이 설정되면 명령줄 플래그가 재정의됩니다.
+
+      정책은 M69에서 지원 중단되어 OverrideSecurityRestrictionsOnInsecureOrigin으로 대체됩니다. 두 정책이 모두 있는 경우, OverrideSecurityRestrictionsOnInsecureOrigin이 이 정책을 재정의합니다.
+
+      보안 컨텍스트에 관해 자세히 알아보려면 https://www.w3.org/TR/secure-contexts/를 참고하세요.
+      </translation>
 <translation id="8270320981823560179">드라이브</translation>
 <translation id="827054846390793641">연결이 활성화된 경우 호스트 데스크톱에서 연결 관련 UI 사용</translation>
 <translation id="8274603902181597201">사용자의 ecryptfs 홈 디렉터리를 삭제하고 ext4로 암호화된 새 홈 디렉터리로 시작합니다.</translation>

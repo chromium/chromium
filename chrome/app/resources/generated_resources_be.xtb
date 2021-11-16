@@ -4073,6 +4073,7 @@
 <translation id="5265562206369321422">Па-за сеткай больш за тыдзень</translation>
 <translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="5266113311903163739">Памылка імпарту файла цэнтра сертыфікацыі</translation>
+<translation id="526622169288322445">Іншыя дзеянні ў дачыненні да атрымальніка <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Збой друку</translation>
 <translation id="5275352920323889391">Сабака</translation>
 <translation id="527605982717517565">Заўсёды дазваляць сайту <ph name="HOST" /> выкарыстоўваць JavaScript</translation>
@@ -5449,6 +5450,7 @@
 <translation id="6775163072363532304">Тут будуць з'яўляцца даступныя прылады.</translation>
 <translation id="6777817260680419853">Перанакіраванне заблакіравана</translation>
 <translation id="6778737459546443941">Вашы бацькі яшчэ не ўхвалілі гэты сайт</translation>
+<translation id="6779092717724412415">Каб стварыць такое вылучэнне, як гэта, выберыце які-небудзь тэкст і націсніце на яго правай кнопкай мышы.</translation>
 <translation id="6779447100905857289">вашы кошыкі</translation>
 <translation id="677965093459947883">Вельмі дробны</translation>
 <translation id="6781005693196527806">&amp;Кіраваць пошукавымі сістэмамі...</translation>
@@ -6264,6 +6266,7 @@
 <translation id="7625823789272218216">Новая ўкладка злева</translation>
 <translation id="7628201176665550262">Частата абнаўлення</translation>
 <translation id="7629827748548208700">Укладка: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Прыладай кіруе <ph name="MANAGER" />. Вам трэба кожны раз уваходзіць ва ўліковы запіс.</translation>
 <translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
 <translation id="7631205654593498032">Пры падключэнні прылад вы згаджаецеся, што <ph name="DEVICE_TYPE" /> можа:</translation>
 <translation id="7631887513477658702">&amp;Заўсёды адкрываць файлы гэтага тыпу</translation>

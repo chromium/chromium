@@ -4087,6 +4087,7 @@
 <translation id="5265562206369321422">1주 이상 오프라인 상태</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
 <translation id="5275352920323889391">개</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
@@ -5465,6 +5466,7 @@
 <translation id="6775163072363532304">사용 가능한 기기가 여기에 표시됩니다.</translation>
 <translation id="6777817260680419853">리디렉션이 차단됨</translation>
 <translation id="6778737459546443941">부모님이 아직 승인하지 않았습니다.</translation>
+<translation id="6779092717724412415">이와 같이 강조표시하려면 텍스트를 선택하고 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="6779447100905857289">장바구니</translation>
 <translation id="677965093459947883">아주 작게</translation>
 <translation id="6781005693196527806">검색엔진 관리(&amp;M)…</translation>
@@ -6280,6 +6282,7 @@
 <translation id="7625823789272218216">새 좌측 탭</translation>
 <translation id="7628201176665550262">새로고침 빈도</translation>
 <translation id="7629827748548208700">탭: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7631014249255418691">Linux 앱 및 파일이 성공적으로 백업되었습니다.</translation>
 <translation id="7631205654593498032">기기를 연결하면 <ph name="DEVICE_TYPE" />에서 다음 작업을 처리하는 것에 동의하게 됩니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>

@@ -326,6 +326,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="334252345105450327">Zrób zrzut ekranu</translation>
 <translation id="3351879221545518001">Obecnie przesyłasz ekran.</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
+<translation id="3365977133351922112">Twój telefon jest za daleko. Przysuń go bliżej.</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3371140690572404006">Urządzenie USB-C (przedni port na prawym boku)</translation>
 <translation id="3375634426936648815">Połączono</translation>
@@ -602,6 +603,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5199367439331364630">Aby zalogować się na Chromebooku, wpisz hasło</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}many{# innych powiadomień}other{# innego powiadomienia}}</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5208059991603368177">Włączono</translation>
@@ -884,6 +886,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7398254312354928459">Przełączono połączenie sieciowe</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="7406608787870898861">Dokończ konfigurowanie sieci komórkowej</translation>
+<translation id="740790383907119240">Skróty do aplikacji</translation>
 <translation id="741244894080940828">przeliczanie</translation>
 <translation id="7413851974711031813">Naciśnij Escape, aby zamknąć</translation>
 <translation id="742594950370306541">Aparat jest używany.</translation>
@@ -986,6 +989,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8061464966246066292">Wysoki kontrast</translation>
 <translation id="8098591350844501178">Zakończ przesyłanie ekranu do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Włączono (wszystkie aplikacje)</translation>
+<translation id="8120151603115102514">Twój telefon nie ma ekranu blokady. Aby odblokować Chromebooka, wpisz hasło.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8132487352815776550">Wyłącz napisy</translation>
@@ -1034,6 +1038,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8473301994082929012">Funkcja <ph name="FEATURE_NAME" /> w organizacji <ph name="ORGANIZATION_NAME" /> jest <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth Chromebooka jest wyłączony. Aby odblokować Chromebooka, wpisz hasło.</translation>
 <translation id="8513108775083588393">Autoobracanie</translation>
 <translation id="851458219935658693">Wybrano opcję Pokaż okna z bieżącego biurka</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
