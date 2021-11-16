@@ -127,7 +127,11 @@ suite('ProfilePickerAppTest', function() {
         testElement.shadowRoot!.querySelector('account-selection-lacros');
     assertTrue(!!accountSelectionLacros);
     // Test the back button.
-    accountSelectionLacros!.$.backButton.click();
+    const backButton =
+        accountSelectionLacros!.shadowRoot!.querySelector<HTMLElement>(
+            '#backButton');
+    assertTrue(!!backButton);
+    backButton!.click();
     await whenCheck(choice!, () => choice!.classList.contains('active'));
   });
 

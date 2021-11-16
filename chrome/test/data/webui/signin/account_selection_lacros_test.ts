@@ -12,80 +12,94 @@ import {flushTasks, isChildVisible, waitBeforeNextRender} from 'chrome://webui-t
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
-suite('ProfileTypeChoiceTest', function() {
-  let testElement: AccountSelectionLacrosElement;
-  let browserProxy: TestManageProfilesBrowserProxy;
+[true, false].forEach(withinFlow => {
+  const suiteSuffix = withinFlow ? 'WithinFlow' : 'OpenedDirectly';
 
-  /**
-   * @param n Indicates the desired number of accounts.
-   */
-  function generateAccountsList(n: number): UnassignedAccount[] {
-    return Array(n).fill(null).map((_x, i) => ({
-                                     gaiaId: `gaia-id-${i}`,
-                                     name: `name-${i}`,
-                                     email: `email-${i}`,
-                                     accountImageUrl: `account-image-${i}`,
-                                   }));
-  }
+  suite(`AccountSelectionLacrosTest${suiteSuffix}`, function() {
+    let testElement: AccountSelectionLacrosElement;
+    let browserProxy: TestManageProfilesBrowserProxy;
 
-  async function verifyLoadSignInProfileCreationFlowCalled(gaiaId: string) {
-    const args = await browserProxy.whenCalled('loadSignInProfileCreationFlow');
-    assertEquals(args[1], gaiaId);
-    browserProxy.resetResolver('loadSignInProfileCreationFlow');
-  }
+    /**
+     * @param n Indicates the desired number of accounts.
+     */
+    function generateAccountsList(n: number): UnassignedAccount[] {
+      return Array(n).fill(null).map((_x, i) => ({
+                                       gaiaId: `gaia-id-${i}`,
+                                       name: `name-${i}`,
+                                       email: `email-${i}`,
+                                       accountImageUrl: `account-image-${i}`,
+                                     }));
+    }
 
-  setup(async function() {
-    browserProxy = new TestManageProfilesBrowserProxy();
-    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
+    async function verifyLoadSignInProfileCreationFlowCalled(gaiaId: string) {
+      const args =
+          await browserProxy.whenCalled('loadSignInProfileCreationFlow');
+      assertEquals(args[1], gaiaId);
+      browserProxy.resetResolver('loadSignInProfileCreationFlow');
+    }
 
-    document.body.innerHTML = '';
-    testElement = document.createElement('account-selection-lacros');
-    testElement.profileThemeInfo = browserProxy.profileThemeInfo;
-    document.body.append(testElement);
+    setup(async function() {
+      browserProxy = new TestManageProfilesBrowserProxy();
+      ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
 
-    await Promise.all([
-      browserProxy.whenCalled('getUnassignedAccounts'),
-      ensureLazyLoaded(),
-    ]);
-    browserProxy.reset();
+      // Simulate the history state (using navigation_mixin.ts breaks the test).
+      history.pushState(
+          {
+            route: 'account-selection-lacros',
+            step: 'accountSelectionLacros',
+            isFirst: !withinFlow,
+          },
+          '', '/account-selection-lacros');
 
-    await waitBeforeNextRender(testElement);
-  });
+      document.body.innerHTML = '';
+      testElement = document.createElement('account-selection-lacros');
+      testElement.profileThemeInfo = browserProxy.profileThemeInfo;
+      document.body.append(testElement);
 
-  test('BackButton', function() {
-    assertTrue(isChildVisible(testElement, '#backButton'));
-  });
+      await Promise.all([
+        browserProxy.whenCalled('getUnassignedAccounts'),
+        ensureLazyLoaded(),
+      ]);
+      browserProxy.reset();
 
-  test('accountButtons', async function() {
-    // There are no accounts initially, only "Use another account".
-    flushTasks();
-    let buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-        '.account-button');
-    assertTrue(!!buttons);
-    assertEquals(buttons.length, 1);
-    // Add some accounts.
-    webUIListenerCallback(
-        'unassigned-accounts-changed', generateAccountsList(3));
-    flushTasks();
-    buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-        '.account-button');
-    assertTrue(!!buttons);
-    assertEquals(buttons.length, 4);
-    // Update the accounts again.
-    webUIListenerCallback(
-        'unassigned-accounts-changed', generateAccountsList(2));
-    flushTasks();
-    buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
-        '.account-button');
-    assertTrue(!!buttons);
-    assertEquals(buttons.length, 3);
-    // Click account buttons.
-    buttons[0]!.click();
-    await verifyLoadSignInProfileCreationFlowCalled('gaia-id-0');
-    buttons[1]!.click();
-    await verifyLoadSignInProfileCreationFlowCalled('gaia-id-1');
-    // Click "Use another account".
-    buttons[2]!.click();
-    await verifyLoadSignInProfileCreationFlowCalled('');
+      await waitBeforeNextRender(testElement);
+    });
+
+    test('BackButton', function() {
+      assertEquals(isChildVisible(testElement, '#backButton'), withinFlow);
+    });
+
+    test('accountButtons', async function() {
+      // There are no accounts initially, only "Use another account".
+      flushTasks();
+      let buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.account-button');
+      assertTrue(!!buttons);
+      assertEquals(buttons.length, 1);
+      // Add some accounts.
+      webUIListenerCallback(
+          'unassigned-accounts-changed', generateAccountsList(3));
+      flushTasks();
+      buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.account-button');
+      assertTrue(!!buttons);
+      assertEquals(buttons.length, 4);
+      // Update the accounts again.
+      webUIListenerCallback(
+          'unassigned-accounts-changed', generateAccountsList(2));
+      flushTasks();
+      buttons = testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.account-button');
+      assertTrue(!!buttons);
+      assertEquals(buttons.length, 3);
+      // Click account buttons.
+      buttons[0]!.click();
+      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-0');
+      buttons[1]!.click();
+      await verifyLoadSignInProfileCreationFlowCalled('gaia-id-1');
+      // Click "Use another account".
+      buttons[2]!.click();
+      await verifyLoadSignInProfileCreationFlowCalled('');
+    });
   });
 });

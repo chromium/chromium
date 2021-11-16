@@ -174,13 +174,21 @@ export function navigateTo(route: Routes) {
  * otherwise to the main route.
  */
 export function navigateToPreviousRoute() {
-  // This can happen if the profile creation flow is opened directly from the
-  // profile menu.
-  if (history.state.isFirst) {
-    navigateTo(Routes.MAIN);
-  } else {
+  if (hasPreviousRoute()) {
     window.history.back();
+  } else {
+    // This can happen if the profile creation flow is opened directly from the
+    // profile menu.
+    navigateTo(Routes.MAIN);
   }
+}
+
+/**
+ * Returns whether there's a previous route. This is true iff some navigation
+ * within the app already took place.
+ */
+export function hasPreviousRoute() {
+  return !history.state.isFirst;
 }
 
 export function navigateToStep(route: Routes, step: string) {
