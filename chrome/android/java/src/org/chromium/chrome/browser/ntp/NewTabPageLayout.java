@@ -261,8 +261,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         mSearchProviderLogoView.showSearchProviderInitialView();
 
         if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
-            mQueryTileSection = new QueryTileSection(findViewById(R.id.query_tiles),
-                    mSearchBoxCoordinator, profile, mManager::performSearchQuery);
+            mQueryTileSection = new QueryTileSection(
+                    findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
         }
 
         mTileGroup.startObserving(maxRows * getMaxColumnsForMostVisitedTiles());

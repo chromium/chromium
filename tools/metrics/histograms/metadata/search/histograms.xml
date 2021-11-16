@@ -1388,6 +1388,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.QueryTiles.NTP.Chip.SearchClicked" units="index"
     expires_after="2022-04-01">
+  <obsolete>
+    Deprecated as of November 2021 since Query Tiles no longer use chips.
+  </obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

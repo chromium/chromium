@@ -380,15 +380,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         return mAutocompleteResult.getNativeObjectRef();
     }
 
-    private static boolean isQueryEditingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_ENABLE_QUERY_EDITING);
-    }
-
     /** Called when a query tile is selected by the user. */
     void onQueryTileSelected(QueryTile queryTile) {
         // For last level tile, start a search query, unless we want to let user have a chance to
         // edit the query.
-        if (queryTile.children.isEmpty() && !isQueryEditingEnabled()) {
+        if (queryTile.children.isEmpty()) {
             launchSearchUrlForQueryTileSuggestion(queryTile);
             return;
         }

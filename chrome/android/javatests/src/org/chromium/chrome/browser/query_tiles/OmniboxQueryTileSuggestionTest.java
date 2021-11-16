@@ -149,34 +149,6 @@ public class OmniboxQueryTileSuggestionTest {
         Assert.assertTrue(mUrlBar.getText().toString().contains(tile.queryText));
     }
 
-    /** Tests that clicking on a tile hides the suggestion and shows the query on omnibox. */
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @Features.EnableFeatures(ChromeFeatureList.QUERY_TILES_ENABLE_QUERY_EDITING)
-    public void testClickTileOpensQueryEditMode() throws Exception {
-        clickNTPSearchBox();
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
-        OmniboxTestUtils.waitForOmniboxSuggestions(mLocationBar);
-
-        Matcher<View> recyclerViewMatcher = withParent(withId(R.id.omnibox_query_tiles));
-        matchList(recyclerViewMatcher, mTileProvider.getChildrenOf());
-
-        // Click the first level tile.
-        QueryTile tile = mTileProvider.getTileAt(0);
-        QueryTile subtile = mTileProvider.getTileAt(0, 0);
-        onView(recyclerViewMatcher).perform(scrollTo(0));
-        onView(tileSuggestionMatcher(tile)).perform(click());
-
-        // Click the last level tile. The omnibox should show the query text. No suggestions should
-        // show up.
-        Assert.assertTrue(mUrlBar.getText().toString().contains(tile.queryText));
-        onView(recyclerViewMatcher).perform(scrollTo(0));
-        onView(tileSuggestionMatcher(subtile)).perform(click());
-        Assert.assertTrue(mUrlBar.getText().toString().contains(subtile.queryText));
-        onView(recyclerViewMatcher).check(doesNotExist());
-    }
-
     /** Tests that clicking a last level tile loads the search result page. */
     @Test
     @SmallTest

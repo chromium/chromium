@@ -47,18 +47,6 @@ public class QueryTileUtils {
     }
 
     /**
-     * This is one experimental variation where user will have a chance of editing the query text
-     * before starting a search. When a query tile is clicked, the query text will be pasted in the
-     * omnibox. No second level tiles will be displayed. This is meant to show only one level of
-     * query tiles.
-     * @return Whether the user should have a chance to edit the query text before starting a
-     *         search.
-     */
-    public static boolean isQueryEditingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_ENABLE_QUERY_EDITING);
-    }
-
-    /**
      * Called to Check whether query tiles should be displayed. Here are the rules for showing query
      * tile: If user hasn't clicked on MV tiles for a while, query tiles will be shown for a period
      * of time. And the decision is reevaluated when it expires.

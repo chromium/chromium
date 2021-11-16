@@ -7,7 +7,6 @@ package org.chromium.components.query_tiles;
 import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 
 import java.util.List;
 
@@ -49,16 +48,6 @@ public class TileUmaLogger {
         int tileUmaId = getTileUmaId(tile.id);
         RecordHistogram.recordSparseHistogram(
                 "Search." + mHistogramPrefix + ".Tile.Clicked", tileUmaId);
-    }
-
-    public void recordSearchButtonClicked(QueryTile tile) {
-        int tileUmaId = getTileUmaId(tile.id);
-        RecordHistogram.recordSparseHistogram(
-                "Search.QueryTiles.NTP.Chip.SearchClicked", tileUmaId);
-    }
-
-    public void recordChipCleared() {
-        RecordUserAction.record("Search.QueryTiles.NTP.FakeSearchBox.Chip.Cleared");
     }
 
     private boolean isTopLevelTile(String id) {

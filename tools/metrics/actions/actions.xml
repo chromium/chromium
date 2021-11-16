@@ -22501,6 +22501,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Search.QueryTiles.NTP.FakeSearchBox.Chip.Cleared">
+  <obsolete>Removed 11/2021. Query Tiles no longer show chips on NTP.</obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding@google.com</owner>
   <description>
