@@ -26,13 +26,16 @@ struct NGGridBreakTokenData {
  public:
   NGGridBreakTokenData(const NGGridGeometry& grid_geometry,
                        const Vector<GridItemOffsets>& offsets,
+                       const Vector<LayoutUnit>& row_offset_adjustments,
                        LayoutUnit intrinsic_block_size)
       : grid_geometry(grid_geometry),
         offsets(offsets),
+        row_offset_adjustments(row_offset_adjustments),
         intrinsic_block_size(intrinsic_block_size) {}
 
   NGGridGeometry grid_geometry;
   Vector<GridItemOffsets> offsets;
+  Vector<LayoutUnit> row_offset_adjustments;
   LayoutUnit intrinsic_block_size;
 };
 

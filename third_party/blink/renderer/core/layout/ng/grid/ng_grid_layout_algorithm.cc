@@ -219,16 +219,23 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
     Vector<GridItemOffsets> offsets;
-    if (IsResumingLayout(BreakToken()))
+    Vector<LayoutUnit> row_offset_adjustments;
+    if (IsResumingLayout(BreakToken())) {
       offsets = BreakToken()->GridData().offsets;
-    else
+      row_offset_adjustments = BreakToken()->GridData().row_offset_adjustments;
+    } else {
       PlaceGridItems(grid_items, grid_geometry, &offsets);
+      row_offset_adjustments =
+          Vector<LayoutUnit>(grid_geometry.row_geometry.sets.size());
+    }
 
     PlaceGridItemsForFragmentation(grid_items, &grid_geometry, &offsets,
+                                   &row_offset_adjustments,
                                    &intrinsic_block_size);
 
     container_builder_.SetGridBreakTokenData(
         std::make_unique<NGGridBreakTokenData>(grid_geometry, offsets,
+                                               row_offset_adjustments,
                                                intrinsic_block_size));
   } else {
     PlaceGridItems(grid_items, grid_geometry);
@@ -3540,6 +3547,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
     NGGridGeometry* grid_geometry,
     Vector<GridItemOffsets>* offsets,
+    Vector<LayoutUnit>* row_offset_adjustments,
     LayoutUnit* intrinsic_block_size) {
   DCHECK(grid_geometry && offsets && intrinsic_block_size);
 
@@ -3598,8 +3606,11 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   Vector<ResultAndOffsets> result_and_offsets;
   BaselineAccumulator baseline_accumulator;
   LayoutUnit max_row_expansion;
-  wtf_size_t row_set_index;
+  wtf_size_t expansion_row_set_index;
+  wtf_size_t breakpoint_row_set_index;
 
+  const LayoutUnit fragmentainer_space =
+      FragmentainerSpaceAtBfcStart(ConstraintSpace());
   const LayoutUnit previous_consumed_block_size =
       BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
   base::span<const Member<const NGBreakToken>> child_break_tokens;
@@ -3611,7 +3622,8 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     result_and_offsets = Vector<ResultAndOffsets>();
     baseline_accumulator = BaselineAccumulator();
     max_row_expansion = LayoutUnit();
-    row_set_index = kNotFound;
+    expansion_row_set_index = kNotFound;
+    breakpoint_row_set_index = kNotFound;
 
     auto child_break_token_it = child_break_tokens.begin();
     auto* offsets_it = offsets->begin();
@@ -3637,10 +3649,10 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           min_block_size_should_encompass_intrinsic_size);
 
       // Make the grid area relative to this fragment.
-      grid_area.offset.block_offset -= previous_consumed_block_size;
-
-      const LayoutUnit fragmentainer_space =
-          FragmentainerSpaceAtBfcStart(ConstraintSpace());
+      const auto item_row_set_index = grid_item.SetIndices(kForRows).begin;
+      grid_area.offset.block_offset +=
+          (*row_offset_adjustments)[item_row_set_index] -
+          previous_consumed_block_size;
 
       // Check to see if this child should be placed within this fragmentainer.
       // We base this calculation on the grid-area rather than the offset.
@@ -3657,8 +3669,6 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       if (grid_area.offset.block_offset < LayoutUnit() && !break_token)
         continue;
 
-      // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
-      //  - what to set for has_container_separation?
       scoped_refptr<const NGLayoutResult> result =
           grid_item.node.Layout(space, break_token);
       result_and_offsets.emplace_back(
@@ -3673,6 +3683,26 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       fragment_relative_block_offset);
 
+      // If the row has container separation we are able to push it into the
+      // next fragmentainer. If it doesn't we, need to take the current
+      // breakpoint (even if it is undesirable).
+      const bool row_has_container_separation =
+          grid_area.offset.block_offset > LayoutUnit();
+
+      // TODO(ikilpatrick): When we support break-before/break-after, and if we
+      // shouldn't move past the current breakpoint, we should search for the
+      // row (with container separation) with the highest break appeal. The
+      // current row's break-appeal should also be used instead of
+      // |kBreakAppealPerfect| in the call below.
+      if (row_has_container_separation &&
+          item_row_set_index < breakpoint_row_set_index &&
+          !MovePastBreakpoint(ConstraintSpace(), grid_item.node, *result,
+                              fragment_relative_block_offset,
+                              kBreakAppealPerfect, /* builder */ nullptr)) {
+        breakpoint_row_set_index = item_row_set_index;
+        continue;
+      }
+
       // This item may want to expand due to fragmentation. Record how much we
       // should grow the row by (if applicable).
       // Only do this if this row (currently) ends (but does not start) in this
@@ -3680,10 +3710,10 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       if (min_block_size_should_encompass_intrinsic_size &&
           grid_area.offset.block_offset < LayoutUnit() &&
           grid_area.BlockEndOffset() <= fragmentainer_space) {
-        if (row_set_index == kNotFound)
-          row_set_index = grid_item.SetIndices(kForRows).begin;
+        if (expansion_row_set_index == kNotFound)
+          expansion_row_set_index = item_row_set_index;
         else
-          DCHECK_EQ(row_set_index, grid_item.SetIndices(kForRows).begin);
+          DCHECK_EQ(expansion_row_set_index, item_row_set_index);
 
         LayoutUnit item_expansion;
         if (result->PhysicalFragment().BreakToken()) {
@@ -3709,32 +3739,74 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     }
   };
 
-  PlaceItems();
+  // This will adjust the pre-computed item-offset (for all items starting at
+  // |row_index| and below) by |delta|.
+  auto AdjustItemOffsets = [&](wtf_size_t row_index, LayoutUnit delta) {
+    auto* items_it = grid_items.item_data.begin();
+    for (auto& offset : *offsets) {
+      if ((items_it++)->SetIndices(kForRows).begin < row_index)
+        continue;
+      offset.offset.block_offset += delta;
+    }
+  };
 
   // Adjust our grid break-token data to accommodate the larger item in the row.
-  if (max_row_expansion > LayoutUnit()) {
+  // Returns true if this function adjusted the break-token data in any way.
+  auto ExpandRow = [&]() -> bool {
+    if (max_row_expansion == LayoutUnit())
+      return false;
+    DCHECK_GT(max_row_expansion, LayoutUnit());
+
     *intrinsic_block_size += max_row_expansion;
-
-    auto* it = grid_geometry->row_geometry.sets.begin() + row_set_index + 1;
-    DCHECK_NE(it, grid_geometry->row_geometry.sets.end());
-    const LayoutUnit row_end_offset = it->offset;
-
-    // Adjust all the pre-computed offsets. Don't adjust anything above the row
-    // which received the increase. An item might have a large negative margin,
-    // and already be partially fragmented.
-    for (auto& offset : *offsets) {
-      if (offset.offset.block_offset >= row_end_offset)
-        offset.offset.block_offset += max_row_expansion;
-    }
+    AdjustItemOffsets(expansion_row_set_index + 1, max_row_expansion);
 
     // Expand the positions of all the sets by the increase.
+    auto* it =
+        grid_geometry->row_geometry.sets.begin() + expansion_row_set_index + 1;
     while (it != grid_geometry->row_geometry.sets.end())
       (it++)->offset += max_row_expansion;
+    return true;
+  };
 
-    // Re-run placing the items so that they receive the increased
-    // grid-geometry. Only do this once.
+  // Shifts the row where we wish to take a breakpoint (indicated by
+  // |breakpoint_row_set_index|) into the next fragmentainer.
+  // Returns true if this function adjusted the break-token data in any way.
+  auto ShiftBreakpointIntoNextFragmentainer = [&]() -> bool {
+    if (breakpoint_row_set_index == kNotFound)
+      return false;
+
+    const LayoutUnit fragment_relative_row_offset =
+        grid_geometry->row_geometry.sets[breakpoint_row_set_index].offset +
+        (*row_offset_adjustments)[breakpoint_row_set_index] -
+        previous_consumed_block_size;
+    const LayoutUnit row_offset_delta =
+        fragmentainer_space - fragment_relative_row_offset;
+
+    // An expansion may have occurred in |ExpandRow| which already pushed this
+    // row into the next fragmentainer.
+    if (row_offset_delta <= LayoutUnit())
+      return false;
+
+    *intrinsic_block_size += row_offset_delta;
+    AdjustItemOffsets(breakpoint_row_set_index, row_offset_delta);
+
+    auto* it = row_offset_adjustments->begin() + breakpoint_row_set_index;
+    while (it != row_offset_adjustments->end())
+      *(it++) += row_offset_delta;
+    return true;
+  };
+
+  PlaceItems();
+
+  // See if we need to expand any rows, and if so re-run |PlaceItems()|. Only
+  // allow row expansion once.
+  if (ExpandRow())
     PlaceItems();
-  }
+
+  // See if we need to take a row break-point, and if-so re-run |PlaceItems()|.
+  // We only need to do this once.
+  if (ShiftBreakpointIntoNextFragmentainer())
+    PlaceItems();
 
   // Add all the results into the builder.
   for (auto& result_and_offset : result_and_offsets) {
