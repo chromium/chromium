@@ -431,7 +431,10 @@ public class PictureInPictureController {
         }
 
         mIsAutoEnterAllowed = allowed;
-        mActivity.setPictureInPictureParams(builder.build());
+        try {
+            mActivity.setPictureInPictureParams(builder.build());
+        } catch(RuntimeException e) {
+        }
     }
 
     /**
