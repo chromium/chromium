@@ -648,3 +648,129 @@ suite('full screen mode', () => {
         }
       });
 });
+
+suite('observes pendingState during wallpaper selection', () => {
+  let wallpaperProvider;
+  let personalizationStore;
+
+  setup(() => {
+    wallpaperProvider = new TestWallpaperProvider();
+    personalizationStore = new TestPersonalizationStore({});
+    personalizationStore.setReducersEnabled(true);
+  });
+
+  test(
+      'sets pendingState to selected image for successful operation',
+      async () => {
+        await selectWallpaper(
+            wallpaperProvider.images[0], wallpaperProvider,
+            personalizationStore);
+
+        assertDeepEquals(
+            [
+              {
+                name: 'begin_select_image',
+                image: wallpaperProvider.images[0],
+              },
+              {
+                name: 'begin_load_selected_image',
+              },
+              {
+                name: 'end_select_image',
+                image: wallpaperProvider.images[0],
+                success: true,
+              },
+              {
+                name: 'set_fullscreen_enabled',
+                enabled: true,
+              },
+            ],
+            personalizationStore.actions,
+        );
+
+        assertDeepEquals(
+            [
+              // Begin selecting image.
+              {
+                'pendingSelected': wallpaperProvider.images[0],
+              },
+              // Begin loading image.
+              {
+                'pendingSelected': wallpaperProvider.images[0],
+              },
+              // End selecting image.
+              {
+                'pendingSelected': wallpaperProvider.images[0],
+              },
+              // Set fullscreen enabled
+              {
+                'pendingSelected': wallpaperProvider.images[0],
+              },
+            ],
+            personalizationStore.states.map(
+                filterAndFlattenState(['pendingSelected'])));
+      });
+
+  test(
+      'clears pendingState when error occured and only one request',
+      async () => {
+        await selectWallpaper(
+            wallpaperProvider.localImages[0], wallpaperProvider,
+            personalizationStore);
+        // Reset the history of actions and prior states, but keep the current
+        // state.
+        personalizationStore.reset(personalizationStore.data);
+
+        loadTimeData.overrideValues({['setWallpaperError']: 'someError'});
+
+        // sets selected image without file path to force fail the operation.
+        wallpaperProvider.localImages = [{path: ''}];
+        await selectWallpaper(
+            wallpaperProvider.localImages[0], wallpaperProvider,
+            personalizationStore);
+
+        assertDeepEquals(
+            [
+              {
+                name: 'begin_select_image',
+                image: wallpaperProvider.localImages[0],
+              },
+              {
+                name: 'begin_load_selected_image',
+              },
+              {
+                name: 'end_select_image',
+                image: wallpaperProvider.localImages[0],
+                success: false,
+              },
+              {
+                name: 'set_selected_image',
+                image: personalizationStore.data.currentSelected,
+              },
+            ],
+            personalizationStore.actions,
+        );
+
+        assertDeepEquals(
+            [
+              // Begin selecting image.
+              {
+                'pendingSelected': wallpaperProvider.localImages[0],
+              },
+              // Begin loading image.
+              {
+                'pendingSelected': wallpaperProvider.localImages[0],
+              },
+              // End selecting image, pendingState is cleared.
+              {
+                'pendingSelected': null,
+              },
+              // Set selected image
+              {
+                'pendingSelected': null,
+              },
+            ],
+            personalizationStore.states.map(
+                filterAndFlattenState(['pendingSelected'])));
+      });
+});

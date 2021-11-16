@@ -33,7 +33,7 @@ function combineReducers(mapping) {
   function reduce(state, action) {
     const newState = Object.keys(mapping).reduce((result, key) => {
       const func = mapping[key];
-      result[key] = func(state[key], action);
+      result[key] = func(state[key], action, state);
       return result;
     }, /** @type {!PersonalizationState} */ ({}));
     const change =
@@ -46,9 +46,11 @@ function combineReducers(mapping) {
 /**
  * @param {!BackdropState} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {!BackdropState}
  */
-function backdropReducer(state, action) {
+function backdropReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.SET_COLLECTIONS:
       return {collections: action.collections, images: {}};
@@ -70,9 +72,11 @@ function backdropReducer(state, action) {
 /**
  * @param {!LoadingState} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {!LoadingState}
  */
-function loadingReducer(state, action) {
+function loadingReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.BEGIN_LOAD_IMAGES_FOR_COLLECTIONS:
       return /** @type {!LoadingState} */ ({
@@ -240,9 +244,11 @@ function loadingReducer(state, action) {
 /**
  * @param {!LocalState} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {!LocalState}
  */
-function localReducer(state, action) {
+function localReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.SET_LOCAL_IMAGES:
       return /** @type {!LocalState} */ ({
@@ -274,9 +280,11 @@ function localReducer(state, action) {
 /**
  * @param {?CurrentWallpaper} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {?CurrentWallpaper}
  */
-function currentSelectedReducer(state, action) {
+function currentSelectedReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.SET_SELECTED_IMAGE:
       return action.image;
@@ -289,16 +297,19 @@ function currentSelectedReducer(state, action) {
  * Reducer for the pending selected image. The pendingSelected state is set when
  * a user clicks on an image and before the client code is reached.
  *
- * Note: The pendingSelected state is not cleared when an image is selected i.e.
- * the ActionName.END_SELECT_IMAGE because we allow multiple concurrent requests
- * of selecting images while only keeping the latest pending image and clearing
- * it results in a unwanted jumpy motion of selected state.
+ * Note: We allow multiple concurrent requests of selecting images while only
+ * keeping the latest pending image and failing others occurred in between.
+ * The pendingSelected state should not be cleared in this scenario (of multiple
+ * concurrent requests). Otherwise, it results in a unwanted jumpy motion of
+ * selected state.
  *
  * @param {?DisplayableImage} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {?DisplayableImage}
  */
-function pendingSelectedReducer(state, action) {
+function pendingSelectedReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.BEGIN_SELECT_IMAGE:
       return action.image;
@@ -317,6 +328,15 @@ function pendingSelectedReducer(state, action) {
         return null;
       }
       return state;
+    case ActionName.END_SELECT_IMAGE:
+      const {success} =
+          /** @type {{name: string, success: boolean}} */ (action);
+      if (!success && globalState.loading.setImage <= 1) {
+        // Clear the pending selected state if an error occurs and
+        // there are no multiple concurrent requests of selecting images.
+        return null;
+      }
+      return state;
     default:
       return state;
   }
@@ -325,9 +345,11 @@ function pendingSelectedReducer(state, action) {
 /**
  * @param {!DailyRefreshState} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @returns {!DailyRefreshState}
  */
-function dailyRefreshReducer(state, action) {
+function dailyRefreshReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.SET_DAILY_REFRESH_COLLECTION_ID:
       return /** @type {!DailyRefreshState} */ ({
@@ -342,9 +364,11 @@ function dailyRefreshReducer(state, action) {
 /**
  * @param {?string} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {?string}
  */
-function errorReducer(state, action) {
+function errorReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.END_SELECT_IMAGE:
       const {success} =
@@ -373,9 +397,11 @@ function errorReducer(state, action) {
 /**
  * @param {boolean} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {boolean}
  */
- function fullscreenReducer(state, action) {
+function fullscreenReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.SET_FULLSCREEN_ENABLED:
       return (/** @type {{enabled: boolean}} */(action)).enabled;
@@ -387,9 +413,11 @@ function errorReducer(state, action) {
 /**
  * @param {!GooglePhotosState} state
  * @param {!Action} action
+ * @param {!PersonalizationState} globalState - Top level personalization state,
+ * to access specific states when needed (i.e.: loading state).
  * @return {!GooglePhotosState}
  */
-function googlePhotosReducer(state, action) {
+function googlePhotosReducer(state, action, globalState) {
   switch (action.name) {
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
       // The list of photos for an album should be loaded only once.
