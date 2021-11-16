@@ -748,6 +748,7 @@
   },
   "ash/public/cpp/resources/ash_public_unscaled_resources.grd": {
     "includes": [4100],
+    "structures": [4101],
   },
   "base/tracing/protos/resources.grd": {
     "includes": [4120],

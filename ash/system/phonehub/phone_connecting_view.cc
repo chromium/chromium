@@ -29,7 +29,6 @@ PhoneConnectingView::PhoneConnectingView() {
   content_view_ = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/true));
 
-  // TODO(crbug.com/1127996): Replace PNG file with vector icon.
   gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PHONE_HUB_CONNECTING_IMAGE);

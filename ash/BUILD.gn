@@ -3029,6 +3029,7 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
     "//ui/display:display_manager_test_api",
+    "//ui/lottie",
   ]
   deps = [
     "//ash",
