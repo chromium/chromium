@@ -14,6 +14,8 @@
 
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
+#include "base/win/windows_types.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
 
@@ -201,13 +203,13 @@ class RestrictedToken {
   // Add a SID to the default DACL. These SIDs are added regardless of the
   // SetLockdownDefaultDacl state.
   DWORD AddDefaultDaclSid(const base::win::Sid& sid,
-                          ACCESS_MODE access_mode,
+                          SecurityAccessMode access_mode,
                           ACCESS_MASK access);
 
   // Add a SID to the default DACL. These SIDs are added regardless of the
   // SetLockdownDefaultDacl state.
   DWORD AddDefaultDaclSid(base::win::WellKnownSid known_sid,
-                          ACCESS_MODE access_mode,
+                          SecurityAccessMode access_mode,
                           ACCESS_MASK access);
 
  private:
@@ -218,7 +220,7 @@ class RestrictedToken {
   // The list of sids to mark as Deny Only in the restricted token.
   std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
-  std::vector<std::tuple<base::win::Sid, ACCESS_MODE, ACCESS_MASK>>
+  std::vector<std::tuple<base::win::Sid, SecurityAccessMode, ACCESS_MASK>>
       sids_for_default_dacl_;
   // The token to restrict. Can only be set in a constructor.
   base::win::ScopedHandle effective_token_;

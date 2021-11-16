@@ -940,8 +940,9 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
   BOOL granted_access_status;
   bool access_check =
       container->AccessCheck(command_line.GetProgram().value().c_str(),
-                             SE_FILE_OBJECT, GENERIC_READ | GENERIC_EXECUTE,
-                             &granted_access, &granted_access_status) &&
+                             SecurityObjectType::kFile,
+                             GENERIC_READ | GENERIC_EXECUTE, &granted_access,
+                             &granted_access_status) &&
       granted_access_status;
   if (!access_check)
     return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;

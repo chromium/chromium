@@ -4,10 +4,14 @@
 
 #include <memory>
 
+#include <windows.h>
+
+#include <accctrl.h>
 #include <aclapi.h>
 #include <sddl.h>
 #include <userenv.h>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
@@ -36,33 +40,26 @@ struct FreeSidDeleter {
   inline void operator()(void* ptr) const { ::FreeSid(ptr); }
 };
 
-bool IsValidObjectType(SE_OBJECT_TYPE object_type) {
+GENERIC_MAPPING GetGenericMappingForType(SecurityObjectType object_type) {
+  GENERIC_MAPPING generic_mapping = {};
   switch (object_type) {
-    case SE_FILE_OBJECT:
-    case SE_REGISTRY_KEY:
-      return true;
+    case SecurityObjectType::kFile:
+      generic_mapping.GenericRead = FILE_GENERIC_READ;
+      generic_mapping.GenericWrite = FILE_GENERIC_WRITE;
+      generic_mapping.GenericExecute = FILE_GENERIC_EXECUTE;
+      generic_mapping.GenericAll = FILE_ALL_ACCESS;
+      break;
+    case SecurityObjectType::kRegistry:
+      generic_mapping.GenericRead = KEY_READ;
+      generic_mapping.GenericWrite = KEY_WRITE;
+      generic_mapping.GenericExecute = KEY_EXECUTE;
+      generic_mapping.GenericAll = KEY_ALL_ACCESS;
+      break;
     default:
+      NOTREACHED();
       break;
   }
-  return false;
-}
-
-bool GetGenericMappingForType(SE_OBJECT_TYPE object_type,
-                              GENERIC_MAPPING* generic_mapping) {
-  if (!IsValidObjectType(object_type))
-    return false;
-  if (object_type == SE_FILE_OBJECT) {
-    generic_mapping->GenericRead = FILE_GENERIC_READ;
-    generic_mapping->GenericWrite = FILE_GENERIC_WRITE;
-    generic_mapping->GenericExecute = FILE_GENERIC_EXECUTE;
-    generic_mapping->GenericAll = FILE_ALL_ACCESS;
-  } else {
-    generic_mapping->GenericRead = KEY_READ;
-    generic_mapping->GenericWrite = KEY_WRITE;
-    generic_mapping->GenericExecute = KEY_EXECUTE;
-    generic_mapping->GenericAll = KEY_ALL_ACCESS;
-  }
-  return true;
+  return generic_mapping;
 }
 
 class ScopedImpersonation {
@@ -216,18 +213,29 @@ bool AppContainerBase::GetPipePath(const wchar_t* pipe_name,
 }
 
 bool AppContainerBase::AccessCheck(const wchar_t* object_name,
-                                   SE_OBJECT_TYPE object_type,
+                                   SecurityObjectType object_type,
                                    DWORD desired_access,
                                    DWORD* granted_access,
                                    BOOL* access_status) {
-  GENERIC_MAPPING generic_mapping;
-  if (!GetGenericMappingForType(object_type, &generic_mapping))
-    return false;
-  MapGenericMask(&desired_access, &generic_mapping);
+  SE_OBJECT_TYPE native_object_type;
+  switch (object_type) {
+    case SecurityObjectType::kFile:
+      native_object_type = SE_FILE_OBJECT;
+      break;
+    case SecurityObjectType::kRegistry:
+      native_object_type = SE_REGISTRY_KEY;
+      break;
+    default:
+      ::SetLastError(ERROR_INVALID_PARAMETER);
+      return false;
+  }
+
+  GENERIC_MAPPING generic_mapping = GetGenericMappingForType(object_type);
+  ::MapGenericMask(&desired_access, &generic_mapping);
   PSECURITY_DESCRIPTOR sd = nullptr;
   PACL dacl = nullptr;
-  if (GetNamedSecurityInfo(
-          object_name, object_type,
+  if (::GetNamedSecurityInfo(
+          object_name, native_object_type,
           OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
               DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION,
           nullptr, nullptr, &dacl, nullptr, &sd) != ERROR_SUCCESS) {
@@ -243,7 +251,7 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
     // Set mask for ALL APPLICATION PACKAGE Sid to 0.
     for (WORD index = 0; index < dacl->AceCount; ++index) {
       PVOID temp_ace;
-      if (!GetAce(dacl, index, &temp_ace))
+      if (!::GetAce(dacl, index, &temp_ace))
         return false;
       PACE_HEADER header = static_cast<PACE_HEADER>(temp_ace);
       if ((header->AceType != ACCESS_ALLOWED_ACE_TYPE) &&
@@ -364,8 +372,8 @@ ResultCode AppContainerBase::BuildLowBoxToken(
       return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
     }
 
-    if (!ReplacePackageSidInDacl(token->Get(), SE_KERNEL_OBJECT, package_sid_,
-                                 TOKEN_ALL_ACCESS)) {
+    if (!ReplacePackageSidInDacl(token->Get(), SecurityObjectType::kKernel,
+                                 package_sid_, TOKEN_ALL_ACCESS)) {
       return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
     }
   } else if (CreateLowBoxToken(nullptr, IMPERSONATION,

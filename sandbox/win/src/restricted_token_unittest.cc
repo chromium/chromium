@@ -30,10 +30,10 @@ void TestDefaultDalc(bool restricted_required, bool additional_sid_required) {
   if (additional_sid_required) {
     token.AddDefaultDaclSid(
         *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid.GetPSID())),
-        GRANT_ACCESS, READ_CONTROL);
+        SecurityAccessMode::kGrant, READ_CONTROL);
     token.AddDefaultDaclSid(
         *base::win::Sid::FromPSID(const_cast<SID*>(additional_sid2.GetPSID())),
-        DENY_ACCESS, GENERIC_ALL);
+        SecurityAccessMode::kDeny, GENERIC_ALL);
   }
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
@@ -806,7 +806,7 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   ASSERT_TRUE(token.IsValid());
   CheckLowBoxToken(token, ::TokenPrimary, &caps_no_capabilities);
 
-  ASSERT_TRUE(ReplacePackageSidInDacl(token.Get(), SE_KERNEL_OBJECT,
+  ASSERT_TRUE(ReplacePackageSidInDacl(token.Get(), SecurityObjectType::kKernel,
                                       *package_sid, TOKEN_ALL_ACCESS));
   CheckDaclForPackageSid(token, &caps_no_capabilities, false);
 

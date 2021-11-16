@@ -4,6 +4,11 @@
 
 #include "sandbox/win/src/acl.h"
 
+#include <memory>
+
+#include <windows.h>
+
+#include <accctrl.h>
 #include <aclapi.h>
 #include <sddl.h>
 
@@ -13,6 +18,8 @@
 #include "base/win/scoped_localalloc.h"
 
 namespace sandbox {
+
+namespace {
 
 bool GetDefaultDacl(
     HANDLE token,
@@ -37,13 +44,30 @@ bool GetDefaultDacl(
                                  length, &length);
 }
 
+ACCESS_MODE ConvertAccessMode(SecurityAccessMode access_mode) {
+  switch (access_mode) {
+    case SecurityAccessMode::kGrant:
+      return GRANT_ACCESS;
+    case SecurityAccessMode::kSet:
+      return SET_ACCESS;
+    case SecurityAccessMode::kDeny:
+      return DENY_ACCESS;
+    case SecurityAccessMode::kRevoke:
+      return REVOKE_ACCESS;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return NOT_USED_ACCESS;
+}
+
 bool AddSidToDacl(const base::win::Sid& sid,
                   ACL* old_dacl,
-                  ACCESS_MODE access_mode,
+                  SecurityAccessMode access_mode,
                   ACCESS_MASK access,
                   ACL** new_dacl) {
   EXPLICIT_ACCESS new_access = {0};
-  new_access.grfAccessMode = access_mode;
+  new_access.grfAccessMode = ConvertAccessMode(access_mode);
   new_access.grfAccessPermissions = access;
   new_access.grfInheritance = NO_INHERITANCE;
 
@@ -58,9 +82,28 @@ bool AddSidToDacl(const base::win::Sid& sid,
   return true;
 }
 
+SE_OBJECT_TYPE ConvertObjectType(SecurityObjectType object_type) {
+  switch (object_type) {
+    case SecurityObjectType::kFile:
+      return SE_FILE_OBJECT;
+    case SecurityObjectType::kRegistry:
+      return SE_REGISTRY_KEY;
+    case SecurityObjectType::kWindow:
+      return SE_WINDOW_OBJECT;
+    case SecurityObjectType::kKernel:
+      return SE_KERNEL_OBJECT;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return SE_UNKNOWN_OBJECT_TYPE;
+}
+
+}  // namespace
+
 bool AddSidToDefaultDacl(HANDLE token,
                          const base::win::Sid& sid,
-                         ACCESS_MODE access_mode,
+                         SecurityAccessMode access_mode,
                          ACCESS_MASK access) {
   if (!token)
     return false;
@@ -85,7 +128,7 @@ bool AddSidToDefaultDacl(HANDLE token,
 
 bool AddSidToDefaultDacl(HANDLE token,
                          base::win::WellKnownSid known_sid,
-                         ACCESS_MODE access_mode,
+                         SecurityAccessMode access_mode,
                          ACCESS_MASK access) {
   absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
   if (!sid)
@@ -116,7 +159,7 @@ bool RevokeLogonSidFromDefaultDacl(HANDLE token) {
     ::SetLastError(ERROR_INVALID_SID);
     return false;
   }
-  return AddSidToDefaultDacl(token, *logon_sid, REVOKE_ACCESS, 0);
+  return AddSidToDefaultDacl(token, *logon_sid, SecurityAccessMode::kRevoke, 0);
 }
 
 bool AddUserSidToDefaultDacl(HANDLE token, ACCESS_MASK access) {
@@ -124,20 +167,25 @@ bool AddUserSidToDefaultDacl(HANDLE token, ACCESS_MASK access) {
   if (!user_sid)
     return false;
 
-  return AddSidToDefaultDacl(token, *user_sid, GRANT_ACCESS, access);
+  return AddSidToDefaultDacl(token, *user_sid, SecurityAccessMode::kGrant,
+                             access);
 }
 
 bool AddKnownSidToObject(HANDLE object,
-                         SE_OBJECT_TYPE object_type,
+                         SecurityObjectType object_type,
                          const base::win::Sid& sid,
-                         ACCESS_MODE access_mode,
+                         SecurityAccessMode access_mode,
                          ACCESS_MASK access) {
   PSECURITY_DESCRIPTOR descriptor_ptr = nullptr;
   PACL old_dacl = nullptr;
+  SE_OBJECT_TYPE native_object_type = ConvertObjectType(object_type);
+  if (native_object_type == SE_UNKNOWN_OBJECT_TYPE)
+    return false;
 
-  if (ERROR_SUCCESS !=
-      ::GetSecurityInfo(object, object_type, DACL_SECURITY_INFORMATION, nullptr,
-                        nullptr, &old_dacl, nullptr, &descriptor_ptr)) {
+  if (ERROR_SUCCESS != ::GetSecurityInfo(object, native_object_type,
+                                         DACL_SECURITY_INFORMATION, nullptr,
+                                         nullptr, &old_dacl, nullptr,
+                                         &descriptor_ptr)) {
     return false;
   }
 
@@ -147,15 +195,15 @@ bool AddKnownSidToObject(HANDLE object,
     return false;
 
   auto new_dacl = base::win::TakeLocalAlloc(new_dacl_ptr);
-  return ::SetSecurityInfo(object, object_type, DACL_SECURITY_INFORMATION,
-                           nullptr, nullptr, new_dacl.get(),
-                           nullptr) == ERROR_SUCCESS;
+  return ::SetSecurityInfo(object, native_object_type,
+                           DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                           new_dacl.get(), nullptr) == ERROR_SUCCESS;
 }
 
 bool AddKnownSidToObject(HANDLE object,
-                         SE_OBJECT_TYPE object_type,
+                         SecurityObjectType object_type,
                          base::win::WellKnownSid known_sid,
-                         ACCESS_MODE access_mode,
+                         SecurityAccessMode access_mode,
                          ACCESS_MASK access) {
   absl::optional<base::win::Sid> sid = base::win::Sid::FromKnownSid(known_sid);
   if (!sid)
@@ -164,11 +212,11 @@ bool AddKnownSidToObject(HANDLE object,
 }
 
 bool ReplacePackageSidInDacl(HANDLE object,
-                             SE_OBJECT_TYPE object_type,
+                             SecurityObjectType object_type,
                              const base::win::Sid& package_sid,
                              ACCESS_MASK access) {
-  if (!AddKnownSidToObject(object, object_type, package_sid, REVOKE_ACCESS,
-                           0)) {
+  if (!AddKnownSidToObject(object, object_type, package_sid,
+                           SecurityAccessMode::kRevoke, 0)) {
     return false;
   }
 
@@ -176,7 +224,46 @@ bool ReplacePackageSidInDacl(HANDLE object,
       object, object_type,
       *base::win::Sid::FromKnownSid(
           base::win::WellKnownSid::kAllApplicationPackages),
-      GRANT_ACCESS, access);
+      SecurityAccessMode::kGrant, access);
+}
+
+DWORD SetObjectIntegrityLabel(HANDLE handle,
+                              SecurityObjectType type,
+                              const wchar_t* ace_access,
+                              const wchar_t* integrity_level_sid) {
+  // Build the SDDL string for the label.
+  std::wstring sddl = L"S:(";    // SDDL for a SACL.
+  sddl += SDDL_MANDATORY_LABEL;  // Ace Type is "Mandatory Label".
+  sddl += L";;";                 // No Ace Flags.
+  sddl += ace_access;            // Add the ACE access.
+  sddl += L";;;";                // No ObjectType and Inherited Object Type.
+  sddl += integrity_level_sid;   // Trustee Sid.
+  sddl += L")";
+
+  DWORD error = ERROR_SUCCESS;
+  PSECURITY_DESCRIPTOR sec_desc = nullptr;
+
+  PACL sacl = nullptr;
+  BOOL sacl_present = false;
+  BOOL sacl_defaulted = false;
+
+  if (::ConvertStringSecurityDescriptorToSecurityDescriptorW(
+          sddl.c_str(), SDDL_REVISION, &sec_desc, nullptr)) {
+    if (::GetSecurityDescriptorSacl(sec_desc, &sacl_present, &sacl,
+                                    &sacl_defaulted)) {
+      error = ::SetSecurityInfo(handle, ConvertObjectType(type),
+                                LABEL_SECURITY_INFORMATION, nullptr, nullptr,
+                                nullptr, sacl);
+    } else {
+      error = ::GetLastError();
+    }
+
+    ::LocalFree(sec_desc);
+  } else {
+    return ::GetLastError();
+  }
+
+  return error;
 }
 
 }  // namespace sandbox

@@ -149,9 +149,9 @@ void AccessCheckFile(AppContainer* container,
   ASSERT_TRUE(file_handle.IsValid());
   DWORD granted_access;
   BOOL access_status;
-  ASSERT_TRUE(container->AccessCheck(path.value().c_str(), SE_FILE_OBJECT,
-                                     desired_access, &granted_access,
-                                     &access_status));
+  ASSERT_TRUE(container->AccessCheck(path.value().c_str(),
+                                     SecurityObjectType::kFile, desired_access,
+                                     &granted_access, &access_status));
   ASSERT_EQ(expected_status, access_status);
   if (access_status)
     ASSERT_EQ(expected_access, granted_access);
@@ -383,9 +383,9 @@ TEST(AppContainerTest, AccessCheckRegistry) {
   DWORD granted_access;
   BOOL access_status;
 
-  ASSERT_TRUE(container->AccessCheck(key_name.c_str(), SE_REGISTRY_KEY,
-                                     KEY_QUERY_VALUE, &granted_access,
-                                     &access_status));
+  ASSERT_TRUE(
+      container->AccessCheck(key_name.c_str(), SecurityObjectType::kRegistry,
+                             KEY_QUERY_VALUE, &granted_access, &access_status));
   ASSERT_TRUE(access_status);
   ASSERT_EQ(DWORD{KEY_QUERY_VALUE}, granted_access);
   RegDeleteKey(HKEY_CURRENT_USER, package_name.c_str());

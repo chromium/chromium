@@ -5,7 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
-#include <accctrl.h>
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
@@ -47,12 +46,6 @@ DWORD CreateRestrictedToken(
     bool lockdown_default_dacl,
     const absl::optional<base::win::Sid>& unique_restricted_sid,
     base::win::ScopedHandle* token);
-
-// Sets the integrity label on a object handle.
-DWORD SetObjectIntegrityLabel(HANDLE handle,
-                              SE_OBJECT_TYPE type,
-                              const wchar_t* ace_access,
-                              const wchar_t* integrity_level_sid);
 
 // Sets the integrity level on a token. This is only valid on Vista. It returns
 // without failing on XP. If the integrity level that you specify is greater

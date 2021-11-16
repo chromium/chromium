@@ -71,11 +71,11 @@ DWORD CreateRestrictedToken(
   if (lockdown_default_dacl)
     restricted_token.SetLockdownDefaultDacl();
   if (unique_restricted_sid) {
-    restricted_token.AddDefaultDaclSid(*unique_restricted_sid, GRANT_ACCESS,
-                                       GENERIC_ALL);
+    restricted_token.AddDefaultDaclSid(*unique_restricted_sid,
+                                       SecurityAccessMode::kGrant, GENERIC_ALL);
     restricted_token.AddDefaultDaclSid(
-        base::win::WellKnownSid::kCreatorOwnerRights, GRANT_ACCESS,
-        READ_CONTROL);
+        base::win::WellKnownSid::kCreatorOwnerRights,
+        SecurityAccessMode::kGrant, READ_CONTROL);
   }
 
   std::vector<std::wstring> privilege_exceptions;
@@ -215,44 +215,6 @@ DWORD CreateRestrictedToken(
   }
 
   return err_code;
-}
-
-DWORD SetObjectIntegrityLabel(HANDLE handle,
-                              SE_OBJECT_TYPE type,
-                              const wchar_t* ace_access,
-                              const wchar_t* integrity_level_sid) {
-  // Build the SDDL string for the label.
-  std::wstring sddl = L"S:(";    // SDDL for a SACL.
-  sddl += SDDL_MANDATORY_LABEL;  // Ace Type is "Mandatory Label".
-  sddl += L";;";                 // No Ace Flags.
-  sddl += ace_access;            // Add the ACE access.
-  sddl += L";;;";                // No ObjectType and Inherited Object Type.
-  sddl += integrity_level_sid;   // Trustee Sid.
-  sddl += L")";
-
-  DWORD error = ERROR_SUCCESS;
-  PSECURITY_DESCRIPTOR sec_desc = nullptr;
-
-  PACL sacl = nullptr;
-  BOOL sacl_present = false;
-  BOOL sacl_defaulted = false;
-
-  if (::ConvertStringSecurityDescriptorToSecurityDescriptorW(
-          sddl.c_str(), SDDL_REVISION, &sec_desc, nullptr)) {
-    if (::GetSecurityDescriptorSacl(sec_desc, &sacl_present, &sacl,
-                                    &sacl_defaulted)) {
-      error = ::SetSecurityInfo(handle, type, LABEL_SECURITY_INFORMATION,
-                                nullptr, nullptr, nullptr, sacl);
-    } else {
-      error = ::GetLastError();
-    }
-
-    ::LocalFree(sec_desc);
-  } else {
-    return ::GetLastError();
-  }
-
-  return error;
 }
 
 const wchar_t* GetIntegrityLevelString(IntegrityLevel integrity_level) {

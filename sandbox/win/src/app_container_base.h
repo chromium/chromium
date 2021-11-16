@@ -5,10 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_
 #define SANDBOX_WIN_SRC_APP_CONTAINER_BASE_H_
 
-#include <windows.h>
-
-#include <accctrl.h>
-
 #include <memory>
 #include <vector>
 
@@ -16,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_capabilities.h"
@@ -36,7 +33,7 @@ class AppContainerBase final : public AppContainer {
   bool GetPipePath(const wchar_t* pipe_name,
                    base::FilePath* pipe_path) override;
   bool AccessCheck(const wchar_t* object_name,
-                   SE_OBJECT_TYPE object_type,
+                   SecurityObjectType object_type,
                    DWORD desired_access,
                    DWORD* granted_access,
                    BOOL* access_status) override;

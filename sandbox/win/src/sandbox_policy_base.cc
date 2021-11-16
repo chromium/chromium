@@ -458,9 +458,9 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     }
     // If the desktop_handle hasn't been created for any reason, skip this.
     if (desktop_handle && desktop_integrity_level_label < integrity_level_) {
-      result =
-          SetObjectIntegrityLabel(desktop_handle, SE_WINDOW_OBJECT, L"",
-                                  GetIntegrityLevelString(integrity_level_));
+      result = SetObjectIntegrityLabel(
+          desktop_handle, SecurityObjectType::kWindow, L"",
+          GetIntegrityLevelString(integrity_level_));
       if (ERROR_SUCCESS != result)
         return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
 
