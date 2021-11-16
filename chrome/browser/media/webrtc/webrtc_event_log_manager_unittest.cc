@@ -156,7 +156,7 @@ bool CreateRemoteBoundLogFile(const base::FilePath& dir,
           .AddExtension(extension);
 
   constexpr int file_flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-                             base::File::FLAG_EXCLUSIVE_WRITE;
+                             base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   file->Initialize(*file_path, file_flags);
   if (!file->IsValid() || !file->created()) {
     return false;
