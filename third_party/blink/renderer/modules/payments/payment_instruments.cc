@@ -36,6 +36,9 @@
 namespace blink {
 namespace {
 
+// Maximum size of a PaymentInstrument icon's type when passed over mojo.
+const size_t kMaxTypeLength = 4096;
+
 static const char kPaymentManagerUnavailable[] = "Payment manager unavailable";
 
 bool rejectError(ScriptPromiseResolver* resolver,
@@ -291,7 +294,10 @@ void PaymentInstruments::OnRequestPermission(
       mojom::blink::ManifestImageResourcePtr icon =
           mojom::blink::ManifestImageResource::New();
       icon->src = parsed_url;
-      icon->type = image_object->type();
+      // Truncate the type to avoid passing too-large strings to Mojo (see
+      // https://crbug.com/810792). We could additionally verify that the type
+      // is a MIME type, but the browser side will do that anyway.
+      icon->type = image_object->type().Left(kMaxTypeLength);
       icon->purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
       WebVector<gfx::Size> web_sizes =
           WebIconSizesParser::ParseIconSizes(image_object->sizes());
