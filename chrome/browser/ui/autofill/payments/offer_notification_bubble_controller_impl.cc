@@ -18,6 +18,9 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -178,8 +181,9 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     // storage.
     coupon_service_->RecordCouponDisplayTimestamp(*offer);
   }
-
   is_user_gesture_ = false;
+  bubble_shown_timestamp_ = AutofillClock::Now();
+
   Show();
 }
 
@@ -189,24 +193,31 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
     return;
 
   is_user_gesture_ = true;
+  bubble_shown_timestamp_ = AutofillClock::Now();
   Show();
 }
 
 void OfferNotificationBubbleControllerImpl::PrimaryPageChanged(
     content::Page& page) {
-  // Don't do anything if user is still on an eligible origin for this offer.
+  // If user is still on an eligible domain for the offer, remove bubble but
+  // keep omniicon.
   if (base::ranges::count(origins_to_display_bubble_,
                           page.GetMainDocument()
                               .GetLastCommittedURL()
                               .DeprecatedGetOriginAsURL())) {
+    // Only remove bubble if the user has had enough time to view it.
+    const base::TimeDelta elapsed_time =
+        AutofillClock::Now() - bubble_shown_timestamp_;
+    if (elapsed_time < kAutofillBubbleSurviveNavigationTime)
+      return;
+    // Hide the bubble as we only show on the first page with the eligible
+    // offer.
+    HideBubble();
     return;
   }
-
   // Reset variables.
   origins_to_display_bubble_.clear();
   UpdatePageActionIcon();
-
-  // Hide the bubble.
   HideBubble();
 }
 

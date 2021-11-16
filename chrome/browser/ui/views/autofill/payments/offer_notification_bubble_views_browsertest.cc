@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -59,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-// TODO(crbug.com/1248523): Does not work for Wayland-based tests.
+// TODO(crbug.com/1270516): Does not work for Wayland-based tests.
 // TODO(crbug.com/1256480): Disabled on Mac, Win, ChromeOS, and Lacros due to
 // flakiness.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
@@ -102,6 +103,32 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
   NavigateTo("https://www.example.com/first/");
 
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+// TODO(crbug.com/1270516): Disabled due to flakiness with linux-wayland-rel.
+// Tests that the offer notification bubble will not be shown if bubble has been
+// shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
+// opened another tab on the same website.
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
+                       DISABLED_BubbleNotShowingOnDuplicateTab) {
+  SetUpCardLinkedOfferDataWithDomains({GURL("https://www.example.com/")});
+
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  NavigateTo("https://www.example.com/first/");
+  test_clock.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
+  NavigateTo("https://www.example.com/second/");
+  // Ensure the bubble is still there if
+  // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  test_clock.Advance(base::Seconds(2));
+  NavigateTo("https://www.example.com/second/");
+  // As kAutofillBubbleSurviveNavigationTime has been reached, the bubble should
+  // no longer be showing.
   EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }

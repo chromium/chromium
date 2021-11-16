@@ -82,6 +82,11 @@ class OfferNotificationBubbleControllerImpl
     observer_for_testing_ = observer;
   }
 
+  // The timestamp that the bubble has been shown. Used to check if the bubble
+  // has been shown for longer than
+  // kAutofillBubbleSurviveNavigationTime (5 seconds).
+  base::Time bubble_shown_timestamp_;
+
   // The Autofill offer being displayed as a bubble. Set when the bubble is
   // requested to be shown via ShowOfferNotificationIfApplicable(~).
   const AutofillOfferData* offer_;

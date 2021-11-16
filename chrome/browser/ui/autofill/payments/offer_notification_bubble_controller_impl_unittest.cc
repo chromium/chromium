@@ -14,6 +14,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -24,7 +25,6 @@
 namespace autofill {
 
 namespace {
-
 class TestOfferNotificationBubbleControllerImpl
     : public OfferNotificationBubbleControllerImpl {
  public:
@@ -126,6 +126,7 @@ class OfferNotificationBubbleControllerImplTest
     controller->coupon_service_ = coupon_service;
   }
 
+  TestAutofillClock test_clock_;
   MockCouponService mock_coupon_service_;
 
  private:
@@ -168,6 +169,30 @@ TEST_F(OfferNotificationBubbleControllerImplTest, OriginSticky) {
     EXPECT_EQ(test_case.bubble_should_be_visible,
               !!controller()->GetOfferNotificationBubbleView());
   }
+}
+
+// Ensures the bubble does not stick around after it has been shown for longer
+// than kAutofillBubbleSurviveNavigationTime (5 seconds).
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       OfferBubbleDismissesOnNavigation) {
+  const GURL& original_url = GURL("https://www.example.com/first/");
+  const GURL& second_url = GURL("https://www.example.com/second/");
+  NavigateAndCommitActiveTab(original_url);
+
+  // Ensure a bubble is visible on the primary page.
+  AutofillOfferData offer =
+      CreateTestOfferWithOrigins({original_url.DeprecatedGetOriginAsURL()});
+  ShowBubble(&offer);
+  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime - base::Seconds(1));
+  NavigateAndCommitActiveTab(second_url);
+  // Ensure the bubble is still there if
+  // kOfferNotificationBubbleSurviveNavigationTime hasn't been reached yet.
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+
+  test_clock_.Advance(base::Seconds(2));
+  NavigateAndCommitActiveTab(original_url);
+  // Ensure new page does not have an active offer notification bubble.
+  EXPECT_EQ(nullptr, controller()->GetOfferNotificationBubbleView());
 }
 
 TEST_F(OfferNotificationBubbleControllerImplTest,
