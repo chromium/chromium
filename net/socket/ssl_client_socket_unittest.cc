@@ -5470,6 +5470,7 @@ TEST_F(SSLClientSocketTest, ECHGreaseEnabled) {
         EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
             client_hello, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
         ran_callback = true;
+        return true;
       });
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
@@ -5495,6 +5496,7 @@ TEST_F(SSLClientSocketTest, ECHGreaseDisabled) {
         EXPECT_FALSE(SSL_early_callback_ctx_extension_get(
             client_hello, TLSEXT_TYPE_encrypted_client_hello, &data, &len));
         ran_callback = true;
+        return true;
       });
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
@@ -6056,6 +6058,7 @@ TEST_F(SSLClientSocketTest, ServerName) {
           got_server_name = absl::nullopt;
         }
         ran_callback = true;
+        return true;
       });
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));

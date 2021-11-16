@@ -66,21 +66,6 @@ std::string GetClientCertType(SSLClientCertType type) {
   }
 }
 
-base::Value GetTLSIntoleranceType(
-    BaseTestServer::SSLOptions::TLSIntoleranceType type) {
-  switch (type) {
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_ALERT:
-      return base::Value("alert");
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_CLOSE:
-      return base::Value("close");
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_RESET:
-      return base::Value("reset");
-    default:
-      NOTREACHED();
-      return base::Value("");
-  }
-}
-
 bool GetLocalCertificatesDir(const base::FilePath& certificates_dir,
                              base::FilePath* local_certificates_dir) {
   if (certificates_dir.IsAbsolute()) {
@@ -475,12 +460,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
   if (type_ == TYPE_HTTPS) {
     arguments->SetKey("https", base::Value());
 
-    if (ssl_options_.tls_intolerant != SSLOptions::TLS_INTOLERANT_NONE) {
-      arguments->SetIntKey("tls-intolerant", ssl_options_.tls_intolerant);
-      arguments->SetKey(
-          "tls-intolerance-type",
-          GetTLSIntoleranceType(ssl_options_.tls_intolerance_type));
-    }
     if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
       arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
     }

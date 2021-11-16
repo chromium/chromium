@@ -371,8 +371,9 @@ SSLServerContextImpl::SocketImpl::SelectCertificateCallback(
     const SSL_CLIENT_HELLO* client_hello) {
   SSLServerContextImpl::SocketImpl* socket = FromSSL(client_hello->ssl);
   const SSLServerConfig& config = socket->context_->ssl_server_config_;
-  if (!config.client_hello_callback_for_testing.is_null()) {
-    config.client_hello_callback_for_testing.Run(client_hello);
+  if (!config.client_hello_callback_for_testing.is_null() &&
+      !config.client_hello_callback_for_testing.Run(client_hello)) {
+    return ssl_select_cert_error;
   }
   return ssl_select_cert_success;
 }

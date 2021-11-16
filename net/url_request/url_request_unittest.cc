@@ -151,6 +151,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -10453,14 +10454,13 @@ class HTTPSFallbackTest : public TestWithTaskEnvironment {
     return ssl_config_service_.get();
   }
 
-  void DoFallbackTest(const SpawnedTestServer::SSLOptions& ssl_options) {
+  void DoFallbackTest(const SSLServerConfig& ssl_config) {
     DCHECK(!request_);
     context_.Init();
     delegate_.set_allow_certificate_errors(true);
 
-    SpawnedTestServer test_server(
-        SpawnedTestServer::TYPE_HTTPS, ssl_options,
-        base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+    EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+    test_server.SetSSLConfig(EmbeddedTestServer::CERT_OK, ssl_config);
     ASSERT_TRUE(test_server.Start());
 
     request_ = context_.CreateRequest(test_server.GetURL("/"), DEFAULT_PRIORITY,
@@ -10491,34 +10491,44 @@ class HTTPSFallbackTest : public TestWithTaskEnvironment {
 
 // Tests the TLS 1.0 fallback doesn't happen.
 TEST_F(HTTPSFallbackTest, TLSv1NoFallback) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_OK);
-  ssl_options.tls_intolerant =
-      SpawnedTestServer::SSLOptions::TLS_INTOLERANT_TLS1_1;
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_hello_callback_for_testing =
+      base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+        // Reject ClientHellos with version >= TLS 1.1.
+        return client_hello->version <= TLS1_VERSION;
+      });
 
-  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_options));
+  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_config));
   ExpectFailure(ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
 }
 
 // Tests the TLS 1.1 fallback doesn't happen.
 TEST_F(HTTPSFallbackTest, TLSv1_1NoFallback) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_OK);
-  ssl_options.tls_intolerant =
-      SpawnedTestServer::SSLOptions::TLS_INTOLERANT_TLS1_2;
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_hello_callback_for_testing =
+      base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+        // Reject ClientHellos with version >= TLS 1.2.
+        return client_hello->version <= TLS1_1_VERSION;
+      });
 
-  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_options));
+  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_config));
   ExpectFailure(ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
 }
 
 // Tests the TLS 1.2 fallback doesn't happen.
 TEST_F(HTTPSFallbackTest, TLSv1_2NoFallback) {
-  SpawnedTestServer::SSLOptions ssl_options(
-      SpawnedTestServer::SSLOptions::CERT_OK);
-  ssl_options.tls_intolerant =
-      SpawnedTestServer::SSLOptions::TLS_INTOLERANT_TLS1_3;
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_hello_callback_for_testing =
+      base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+        // Reject ClientHellos with a supported_versions extension. TLS 1.3 is
+        // signaled via an extension rather than the legacy version field.
+        const uint8_t* data;
+        size_t len;
+        return !SSL_early_callback_ctx_extension_get(
+            client_hello, TLSEXT_TYPE_supported_versions, &data, &len);
+      });
 
-  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_options));
+  ASSERT_NO_FATAL_FAILURE(DoFallbackTest(ssl_config));
   ExpectFailure(ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
 }
 
