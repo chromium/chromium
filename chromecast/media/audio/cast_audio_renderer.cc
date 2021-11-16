@@ -510,9 +510,12 @@ void CastAudioRenderer::OnNextBuffer(int64_t media_timestamp_microseconds,
   if (GetPlaybackState() == PlaybackState::kStarting) {
     SetPlaybackState(PlaybackState::kPlaying);
   }
-  reference_time_ =
-      base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
-  media_pos_ = base::Microseconds(media_timestamp_microseconds);
+  if (reference_timestamp_microseconds >= 0l &&
+      media_timestamp_microseconds >= 0l) {
+    media_pos_ = base::Microseconds(media_timestamp_microseconds);
+    reference_time_ =
+        base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
+  }
   RUN_ON_MAIN_THREAD(ScheduleFetchNextBuffer);
 }
 
