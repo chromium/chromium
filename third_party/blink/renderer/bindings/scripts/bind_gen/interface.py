@@ -7120,6 +7120,8 @@ def _collect_include_headers(class_like):
         for x in [class_like.iterable, class_like.maplike, class_like.setlike]:
             if x:
                 operations.extend(x.operations)
+        for exposed_construct in class_like.exposed_constructs:
+            operations.extend(exposed_construct.named_constructors)
     for operation in operations:
         collect_from_idl_type(operation.return_type)
         for argument in operation.arguments:
@@ -7553,10 +7555,14 @@ def generate_class_like(class_like):
             make_forward_declarations(impl_source_node.accumulator),
             EmptyNode(),
         ])
+    api_header_node.accumulator.add_class_decls([blink_class_name(class_like)])
     api_header_node.accumulator.add_include_headers([
-        class_like.code_generator_info.blink_headers[0],
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/v8_interface_bridge.h",
+    ])
+    api_source_node.accumulator.add_include_headers([
+        # Blink implementation class' header (e.g. node.h for Node)
+        class_like.code_generator_info.blink_headers[0],
     ])
     if interface and interface.inherited:
         api_source_node.accumulator.add_include_headers(
@@ -7567,6 +7573,8 @@ def generate_class_like(class_like):
             component_export_header(impl_component, for_testing),
         ])
     impl_source_node.accumulator.add_include_headers([
+        # Blink implementation class' header (e.g. node.h for Node)
+        class_like.code_generator_info.blink_headers[0],
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
