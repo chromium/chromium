@@ -18,7 +18,7 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       ash::prefs::kProjectorCreationFlowEnabled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
