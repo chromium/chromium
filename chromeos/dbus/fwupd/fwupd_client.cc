@@ -37,12 +37,14 @@ class FwupdClientImpl : public FwupdClient {
 
  protected:
   void Init(dbus::Bus* bus) override {
+    DCHECK(bus);
+
     if (!features::IsFirmwareUpdaterAppEnabled())
       return;
 
     proxy_ = bus->GetObjectProxy(kFwupdServiceName,
                                  dbus::ObjectPath(kFwupdServicePath));
-
+    DCHECK(proxy_);
     proxy_->ConnectToSignal(
         kFwupdServiceInterface, kFwupdDeviceAddedSignalName,
         base::BindRepeating(&FwupdClientImpl::OnDeviceAddedReceived,
@@ -52,6 +54,7 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestUpdates(const std::string& device_id) override {
+    DCHECK(IsInitialized());
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
     dbus::MessageWriter writer(&method_call);
@@ -65,6 +68,7 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestDevices() override {
+    DCHECK(IsInitialized());
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetDevicesMethodName);
     proxy_->CallMethodWithErrorResponse(
@@ -74,6 +78,9 @@ class FwupdClientImpl : public FwupdClient {
   }
 
  private:
+  // Return true if the client has been initialized.
+  bool IsInitialized() { return proxy_; }
+
   // Pops a string-to-variant-string dictionary from the reader.
   std::unique_ptr<base::DictionaryValue> PopStringToStringDictionary(
       dbus::MessageReader* reader) {
