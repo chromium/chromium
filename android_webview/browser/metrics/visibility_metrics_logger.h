@@ -103,8 +103,6 @@ class VisibilityMetricsLogger {
 
   void UpdateDurations(base::TimeTicks update_time);
   void ProcessClientUpdate(Client* client, const VisibilityInfo& info);
-  bool IsVisible(const VisibilityInfo& info);
-  bool IsDisplayingOpenWebContent(const VisibilityInfo& info);
   void RecordVisibilityMetrics();
   void RecordOpenWebDisplayMetrics();
   void RecordScreenPortionMetrics();
@@ -132,8 +130,6 @@ class VisibilityMetricsLogger {
   base::TimeTicks last_update_time_;
   std::map<Client*, VisibilityInfo> client_visibility_;
 
-  int open_web_screen_area_pixels_ = 0;
-  int open_web_screen_area_percentage_ = 0;
   WebViewOpenWebScreenPortion current_open_web_screen_portion_ =
       WebViewOpenWebScreenPortion::kZeroPercent;
   base::TimeDelta open_web_screen_portion_tracked_duration_

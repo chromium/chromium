@@ -111,11 +111,9 @@ void VisibilityMetricsLogger::UpdateOpenWebScreenArea(int pixels,
 
   UpdateDurations(base::TimeTicks::Now());
 
-  open_web_screen_area_pixels_ = pixels;
-  open_web_screen_area_percentage_ = percentage;
-
   DCHECK(percentage >= 0);
   DCHECK(percentage <= 100);
+
   if (pixels == 0) {
     current_open_web_screen_portion_ = VisibilityMetricsLogger::
         WebViewOpenWebScreenPortion::kExactlyZeroPercent;
