@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -15,8 +17,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -35,7 +36,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

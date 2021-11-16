@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_timer_instance.h"
+#include "ash/components/arc/test/test_browser_context.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -20,8 +22,6 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
-#include "components/arc/test/fake_timer_instance.h"
-#include "components/arc/test/test_browser_context.h"
 #include "components/arc/timer/arc_timer_bridge.h"
 #include "components/arc/timer/arc_timer_mojom_traits.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -25,7 +26,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/test_browser_context.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

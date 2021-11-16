@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -18,8 +20,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"

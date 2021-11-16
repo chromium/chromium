@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/user_manager/scoped_user_manager.h"

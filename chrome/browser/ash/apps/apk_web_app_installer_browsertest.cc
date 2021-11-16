@@ -6,7 +6,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -35,8 +37,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

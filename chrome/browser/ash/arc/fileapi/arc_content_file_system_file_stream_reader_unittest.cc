@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -19,7 +20,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"

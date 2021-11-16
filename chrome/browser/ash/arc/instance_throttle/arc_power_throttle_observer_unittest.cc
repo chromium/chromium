@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
 
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -15,8 +17,6 @@
 #include "components/arc/mojom/anr.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

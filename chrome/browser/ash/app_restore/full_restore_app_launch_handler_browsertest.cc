@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/split_view_test_api.h"
@@ -58,8 +60,6 @@
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"

@@ -12,7 +12,9 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -94,8 +96,6 @@
 #include "chromeos/disks/mount_point.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

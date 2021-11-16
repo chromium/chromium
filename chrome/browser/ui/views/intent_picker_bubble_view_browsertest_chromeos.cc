@@ -7,7 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,9 +35,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"

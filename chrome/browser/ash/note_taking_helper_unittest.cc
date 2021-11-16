@@ -9,6 +9,8 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/bind.h"
@@ -54,8 +56,6 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
-#include "components/arc/test/fake_file_system_instance.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"

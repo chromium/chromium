@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/fake_apps_tracker.h"
+#include "ash/components/arc/test/fake_snapshot_reboot_notification.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -22,8 +24,6 @@
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
-#include "components/arc/test/fake_apps_tracker.h"
-#include "components/arc/test/fake_snapshot_reboot_notification.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"

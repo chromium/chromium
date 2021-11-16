@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/session/arc_management_transition.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
@@ -114,8 +116,6 @@
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_notifier_impl.h"

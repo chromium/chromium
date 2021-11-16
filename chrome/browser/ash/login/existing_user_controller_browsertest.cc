@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_switches.h"
@@ -72,7 +73,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"

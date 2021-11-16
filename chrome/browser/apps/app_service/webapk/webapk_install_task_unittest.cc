@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/fake_webapk_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
@@ -24,7 +25,6 @@
 #include "components/arc/mojom/webapk.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_webapk_instance.h"
 #include "components/webapk/webapk.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/default_handlers.h"

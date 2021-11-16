@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

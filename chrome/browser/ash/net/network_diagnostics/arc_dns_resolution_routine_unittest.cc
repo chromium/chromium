@@ -4,9 +4,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/fake_net_instance.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
-#include "components/arc/test/fake_net_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"

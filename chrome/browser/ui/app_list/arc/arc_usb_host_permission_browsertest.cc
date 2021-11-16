@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"

@@ -570,10 +570,10 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc:arc_test_support",
       "//ash/constants",
       "//chrome/browser/chromeos",
       "//components/arc:arc",
-      "//components/arc:arc_test_support",
       "//components/arc/mojom",
     ]
   }

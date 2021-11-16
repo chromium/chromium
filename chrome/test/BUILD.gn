@@ -3599,6 +3599,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/app_list",
         "//ash/app_list:test_support",
         "//ash/app_list/model:app_list_model",
+        "//ash/components/arc:arc_test_support",
         "//ash/components/audio",
         "//ash/components/drivefs",
         "//ash/components/drivefs:test_support",
@@ -3692,7 +3693,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/ui/frame:test_support",
         "//chromeos/ui/wm",
         "//components/app_restore",
-        "//components/arc:arc_test_support",
         "//components/arc/enterprise",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/device_event_log",
@@ -6585,6 +6585,7 @@ test("unit_tests") {
     deps += [
       "//ash:test_support",
       "//ash/app_list:test_support",
+      "//ash/components/arc:arc_test_support",
       "//ash/components/quick_answers:quick_answers",
       "//ash/public/cpp/assistant/test_support",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
@@ -6619,7 +6620,6 @@ test("unit_tests") {
       "//chromeos/services/nearby/public/cpp:test_support",
       "//chromeos/ui/wm",
       "//components/app_restore:unit_tests",
-      "//components/arc:arc_test_support",
     ]
   }
 
@@ -9021,8 +9021,8 @@ source_set("sync_integration_test_support") {
     ]
     deps += [
       "//ash/app_list:test_support",
+      "//ash/components/arc:arc_test_support",
       "//chromeos",
-      "//components/arc:arc_test_support",
       "//components/desks_storage",
       "//components/user_manager:test_support",
     ]

@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

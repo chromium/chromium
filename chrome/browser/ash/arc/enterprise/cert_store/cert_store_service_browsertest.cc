@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -36,7 +37,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/arc_util_test_support.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -29,7 +30,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"

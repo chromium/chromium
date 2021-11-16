@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/test_browser_context.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"

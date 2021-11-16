@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/arc/enterprise/snapshot_reboot_controller.h"
+#include "ash/components/arc/test/fake_snapshot_reboot_notification.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/test/fake_snapshot_reboot_notification.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"

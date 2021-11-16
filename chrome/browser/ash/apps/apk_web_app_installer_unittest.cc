@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
 

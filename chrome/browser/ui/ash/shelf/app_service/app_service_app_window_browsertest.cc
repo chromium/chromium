@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
@@ -40,8 +42,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"

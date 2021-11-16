@@ -5,7 +5,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -31,8 +33,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"

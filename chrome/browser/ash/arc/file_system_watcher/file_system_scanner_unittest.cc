@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -21,7 +22,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

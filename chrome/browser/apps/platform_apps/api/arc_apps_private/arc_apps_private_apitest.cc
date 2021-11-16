@@ -4,7 +4,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -16,8 +18,6 @@
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"

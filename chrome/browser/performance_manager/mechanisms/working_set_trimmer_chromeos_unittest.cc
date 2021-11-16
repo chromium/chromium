@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -16,7 +17,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "components/arc/memory/arc_memory_bridge.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"

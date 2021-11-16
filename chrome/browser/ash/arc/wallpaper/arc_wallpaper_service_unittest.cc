@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_wallpaper_instance.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -23,7 +24,6 @@
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"

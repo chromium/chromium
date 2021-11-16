@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/fake_net_instance.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_ping_routine.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -15,7 +16,6 @@
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "components/arc/test/fake_net_instance.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

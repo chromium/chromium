@@ -7,7 +7,11 @@
 #include <memory>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_backup_settings_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -27,10 +31,6 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
-#include "components/arc/test/fake_backup_settings_instance.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/user_manager/scoped_user_manager.h"

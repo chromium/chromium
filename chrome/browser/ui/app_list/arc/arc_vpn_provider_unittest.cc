@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "components/arc/test/fake_app_instance.h"
 
 constexpr char kVpnAppName[] = "vpn.app.name";
 constexpr char kVpnAppNameUpdate[] = "vpn.app.name.update";

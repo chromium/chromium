@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -42,7 +43,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"

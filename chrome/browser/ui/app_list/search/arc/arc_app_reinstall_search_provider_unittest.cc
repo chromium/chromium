@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/grit/extensions_browser_resources.h"

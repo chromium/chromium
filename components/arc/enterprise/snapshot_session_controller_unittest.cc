@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/fake_apps_tracker.h"
 #include "base/test/task_environment.h"
-#include "components/arc/test/fake_apps_tracker.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
