@@ -12,6 +12,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "content/public/common/url_constants.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"

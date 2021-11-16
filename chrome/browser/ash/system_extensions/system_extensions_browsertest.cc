@@ -23,8 +23,6 @@
 
 namespace {
 
-constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
-
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
 constexpr char kTestSystemExtensionIndexURL[] =
@@ -40,25 +38,6 @@ base::FilePath GetBasicSystemExtensionDir() {
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
   return test_dir.Append("system_extensions").Append("basic_system_extension");
-}
-
-// Creates fake resources in the directory where the System Extension would
-// be installed.
-void CreateFakeSystemExtensionResources(
-    const base::FilePath& profile_path,
-    const SystemExtensionId& kTestSystemExtensionId) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath system_extensions_dir =
-      profile_path.Append(kSystemExtensionsProfileDirectory);
-  ASSERT_TRUE(base::CreateDirectory(system_extensions_dir));
-
-  ASSERT_TRUE(base::CopyDirectory(GetBasicSystemExtensionDir(),
-                                  system_extensions_dir, true));
-
-  base::FilePath system_extension_dir = system_extensions_dir.Append(
-      SystemExtension::IdToString(kTestSystemExtensionId));
-  ASSERT_TRUE(base::Move(system_extensions_dir.Append("basic_system_extension"),
-                         system_extension_dir));
 }
 
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {
@@ -95,9 +74,6 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, ExtensionInstalled) {
             extension_ids);
   EXPECT_TRUE(install_manager.GetSystemExtensionById(kTestSystemExtensionId));
 
-  // TODO(ortuno): Actually move resources instead of faking them.
-  CreateFakeSystemExtensionResources(browser()->profile()->GetPath(),
-                                     kTestSystemExtensionId);
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

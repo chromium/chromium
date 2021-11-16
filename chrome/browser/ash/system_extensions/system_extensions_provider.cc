@@ -10,20 +10,19 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_web_ui_config_map.h"
 
-constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
-
 // static
 SystemExtensionsProvider* SystemExtensionsProvider::Get(Profile* profile) {
   return SystemExtensionsProviderFactory::GetForProfileIfExists(profile);
 }
 
+// static
 bool SystemExtensionsProvider::IsEnabled() {
   return base::FeatureList::IsEnabled(ash::features::kSystemExtensions);
 }
 
-SystemExtensionsProvider::SystemExtensionsProvider() {
+SystemExtensionsProvider::SystemExtensionsProvider(Profile* profile) {
   SystemExtensionsWebUIConfigMap::RegisterInstance();
-  install_manager_ = std::make_unique<SystemExtensionsInstallManager>();
+  install_manager_ = std::make_unique<SystemExtensionsInstallManager>(profile);
 }
 
 SystemExtensionsProvider::~SystemExtensionsProvider() = default;

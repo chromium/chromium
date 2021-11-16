@@ -13,10 +13,6 @@
 class Profile;
 class SystemExtensionsInstallManager;
 
-// Name of the directory, under the user profile directory, where System
-// Extensions are installed.
-extern const char kSystemExtensionsProfileDirectory[];
-
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
  public:
@@ -24,7 +20,7 @@ class SystemExtensionsProvider : public KeyedService {
   static SystemExtensionsProvider* Get(Profile* profile);
   static bool IsEnabled();
 
-  SystemExtensionsProvider();
+  explicit SystemExtensionsProvider(Profile* profile);
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;
   ~SystemExtensionsProvider() override;

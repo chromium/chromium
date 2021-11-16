@@ -36,7 +36,7 @@ SystemExtensionsProviderFactory::~SystemExtensionsProviderFactory() = default;
 
 KeyedService* SystemExtensionsProviderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new SystemExtensionsProvider();
+  return new SystemExtensionsProvider(Profile::FromBrowserContext(context));
 }
 
 bool SystemExtensionsProviderFactory::ServiceIsCreatedWithBrowserContext()

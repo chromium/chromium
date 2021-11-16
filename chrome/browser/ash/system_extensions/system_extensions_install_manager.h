@@ -7,14 +7,19 @@
 
 #include <map>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_sandboxed_unpacker.h"
 
+class Profile;
+
 class SystemExtensionsInstallManager {
  public:
-  SystemExtensionsInstallManager();
+  explicit SystemExtensionsInstallManager(Profile* profile);
   SystemExtensionsInstallManager(const SystemExtensionsInstallManager&) =
       delete;
   SystemExtensionsInstallManager& operator=(
@@ -30,10 +35,23 @@ class SystemExtensionsInstallManager {
   const SystemExtension* GetSystemExtensionById(const SystemExtensionId& id);
 
  private:
+  // Helper class to run blocking IO operations on a separate thread.
+  class IOHelper {
+   public:
+    bool CopyExtensionAssets(const base::FilePath& unpacked_extension_dir,
+                             const base::FilePath& dest_dir,
+                             const base::FilePath& system_extensions_dir);
+  };
+
   void InstallFromCommandLineIfNecessary();
   void OnGetSystemExtensionFromDir(
+      const base::FilePath& source_system_extension_dir,
       StatusOrSystemExtension<SystemExtensionsSandboxedUnpacker::Status>
           result);
+  void OnAssetsCopiedToProfileDir(SystemExtension system_extension,
+                                  bool did_succeed);
+
+  Profile* profile_;
 
   base::OneShotEvent on_command_line_install_finished_;
 
@@ -41,6 +59,11 @@ class SystemExtensionsInstallManager {
 
   // TODO(ortuno): Move this to a Registrar or Database.
   std::map<SystemExtensionId, SystemExtension> system_extensions_;
+
+  base::SequenceBound<IOHelper> io_helper_{
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+           base::TaskPriority::USER_VISIBLE})};
 
   base::WeakPtrFactory<SystemExtensionsInstallManager> weak_ptr_factory_{this};
 };
