@@ -120,6 +120,9 @@ const char kDiscoverFeedUserActionManageInterestsTapped[] =
 const char kDiscoverFeedUserActionInfiniteFeedTriggered[] =
     "ContentSuggestions.Feed.InfiniteFeedTriggered";
 
+// User action name for engaging with feed.
+const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
+
 // Histogram name for the feed engagement types.
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
@@ -170,6 +173,11 @@ const char kDiscoverFeedURLOpened[] = "NewTabPage.ContentSuggestions.Opened";
 // Histogram name to capture if the last Feed fetch had logging enabled.
 const char kDiscoverFeedActivityLoggingEnabled[] =
     "ContentSuggestions.Feed.ActivityLoggingEnabled";
+
+// Histogram name for broken NTP view hierarchy logs.
+// TODO(crbug.com/1262536): Remove this when issue is fixed.
+const char kDiscoverFeedBrokenNTPHierarchy[] =
+    "ContentSuggestions.Feed.BrokenNTPHierarchy";
 
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
@@ -443,6 +451,10 @@ const int kMinutesBetweenSessions = 5;
                             loggingEnabled);
 }
 
+- (void)recordBrokenNTPHierarchy:(BrokenNTPHierarchyRelationship)relationship {
+  base::UmaHistogramEnumeration(kDiscoverFeedBrokenNTPHierarchy, relationship);
+}
+
 #pragma mark - Private
 
 // Records histogram metrics for Discover feed user actions.
@@ -478,6 +490,7 @@ const int kMinutesBetweenSessions = 5;
   if (!self.engagedReported &&
       (scrollDistance > kMinScrollThreshold || interacted)) {
     [self recordEngagementTypeHistogram:FeedEngagementType::kFeedEngaged];
+    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionEngaged));
     self.engagedReported = YES;
   }
 }
