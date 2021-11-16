@@ -356,4 +356,20 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
       /* expected_read_data= */ {});
 }
 
+TEST_F(TestReadLaterPageHandlerTest,
+       CurrentPageActionButtonStateChangedOnActiveTabChange) {
+  handler()->SetActiveTabURL(GURL("http://google.com"));
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            read_later::mojom::CurrentPageActionButtonState::kAdd);
+  handler()->SetActiveTabURL(GURL("google.com"));
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            read_later::mojom::CurrentPageActionButtonState::kDisabled);
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp() each AddEntry call while the reading list is open triggers items to
+  // be marked as read which triggers an ItemsChanged call.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called twice.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(2);
+}
+
 }  // namespace

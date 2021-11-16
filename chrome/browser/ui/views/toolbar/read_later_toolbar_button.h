@@ -11,12 +11,9 @@
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "ui/views/controls/dot_indicator.h"
 
 class Browser;
-
-namespace views {
-class DotIndicator;
-}  // namespace views
 
 class ReadLaterToolbarButton : public ToolbarButton,
                                public ReadingListModelObserver {
@@ -35,6 +32,10 @@ class ReadLaterToolbarButton : public ToolbarButton,
   // TODO(crbug.com/3130644): Remove this method and instead have the toolbar
   // button listen for side panel state changes.
   void HideSidePanel();
+
+  bool GetDotIndicatorVisibilityForTesting() const {
+    return dot_indicator_->GetVisible();
+  }
 
  private:
   class DotBoundsUpdater : public views::ViewObserver {

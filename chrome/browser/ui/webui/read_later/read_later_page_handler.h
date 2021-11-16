@@ -68,6 +68,11 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
     web_contents_ = web_contents;
   }
 
+  read_later::mojom::CurrentPageActionButtonState
+  GetCurrentPageActionButtonStateForTesting() {
+    return current_page_action_button_state_;
+  }
+
  private:
   // Gets the reading list entry data used for displaying to the user and
   // triggering actions.
