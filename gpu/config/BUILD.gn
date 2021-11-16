@@ -57,7 +57,7 @@ action("process_json") {
     args += [ "macosx" ]
   } else if (is_android) {
     args += [ "android" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     args += [ "chromeos" ]
   } else if (is_fuchsia) {
     args += [ "fuchsia" ]
