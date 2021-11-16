@@ -12,6 +12,7 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
+#include "ash/quick_pair/keyed_service/fast_pair_bluetooth_config_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
@@ -77,7 +78,9 @@ Mediator::Mediator(
       pairer_broker_(std::move(pairer_broker)),
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
-      process_manager_(std::move(process_manager)) {
+      process_manager_(std::move(process_manager)),
+      fast_pair_bluetooth_config_delegate_(
+          std::make_unique<FastPairBluetoothConfigDelegate>()) {
   metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
       scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());
 
@@ -106,8 +109,7 @@ void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {
-  // TODO: Implementation of the delegate and returning the real instance here.
-  return nullptr;
+  return fast_pair_bluetooth_config_delegate_.get();
 }
 
 void Mediator::OnFastPairEnabledChanged(bool is_enabled) {

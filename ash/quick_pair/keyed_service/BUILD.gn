@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 static_library("keyed_service") {
   sources = [
+    "fast_pair_bluetooth_config_delegate.cc",
+    "fast_pair_bluetooth_config_delegate.h",
     "quick_pair_keyed_service.cc",
     "quick_pair_keyed_service.h",
     "quick_pair_mediator.cc",

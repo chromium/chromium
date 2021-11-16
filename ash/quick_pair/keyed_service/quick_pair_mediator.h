@@ -26,6 +26,7 @@ class FastPairDelegate;
 namespace ash {
 namespace quick_pair {
 
+class FastPairBluetoothConfigDelegate;
 class FastPairRepository;
 struct Device;
 class QuickPairProcessManager;
@@ -106,6 +107,8 @@ class Mediator final : public FeatureStatusTracker::Observer,
   std::unique_ptr<FastPairRepository> fast_pair_repository_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
   std::unique_ptr<QuickPairMetricsLogger> metrics_logger_;
+  std::unique_ptr<FastPairBluetoothConfigDelegate>
+      fast_pair_bluetooth_config_delegate_;
 
   base::ScopedObservation<FeatureStatusTracker, FeatureStatusTracker::Observer>
       feature_status_tracker_observation_{this};
