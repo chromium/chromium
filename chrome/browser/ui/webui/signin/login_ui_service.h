@@ -85,11 +85,6 @@ class LoginUIService : public KeyedService {
   // option chosen by the user in the confirmation UI.
   void SyncConfirmationUIClosed(SyncConfirmationUIClosedResult result);
 
-  // Delegate to an existing login tab if one exists. If not, a new sigin tab is
-  // created.
-  void ShowExtensionLoginPrompt(bool enable_sync,
-                                const std::string& email_hint);
-
   // Displays login results. This is either the Modal Signin Error dialog if
   // |error.message()| is a non-empty string, or the User Menu with a blue
   // header toast otherwise.

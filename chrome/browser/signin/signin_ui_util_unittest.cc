@@ -19,6 +19,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -31,6 +32,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -568,6 +570,58 @@ TEST_F(
 
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
       *profile_manager()->profile_attributes_storage(), profile()));
+}
+
+TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt) {
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+  // Calling the function again reuses the tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+
+  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(base::StartsWith(
+      tab->GetVisibleURL().spec(),
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
+      base::CompareCase::INSENSITIVE_ASCII));
+
+  // Changing the parameter opens a new tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(2, tab_strip->count());
+  // Calling the function again reuses the tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(2, tab_strip->count());
+  tab = tab_strip->GetWebContentsAt(1);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(
+      base::StartsWith(tab->GetVisibleURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
+}
+
+TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  Profile* profile = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(0, tab_strip->count());
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(0, tab_strip->count());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

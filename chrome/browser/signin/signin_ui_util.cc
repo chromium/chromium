@@ -24,12 +24,14 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -224,6 +226,41 @@ void ShowReauthForPrimaryAccountWithAuthError(
 #else
   browser->signin_view_controller()->ShowSignin(
       profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH, access_point);
+#endif
+}
+
+void ShowExtensionSigninPrompt(Profile* profile,
+                               bool enable_sync,
+                               const std::string& email_hint) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  // There is no sign-in flow for guest or system profile.
+  if (profile->IsGuestSession() || profile->IsSystemProfile())
+    return;
+  // Locked profile should be unlocked with UserManager only.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (entry && entry->IsSigninRequired()) {
+    return;
+  }
+
+  // This may be called in incognito. Redirect to the original profile.
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile->GetOriginalProfile());
+  Browser* browser = displayer.browser();
+
+  if (enable_sync) {
+    // Set a primary account.
+    browser->signin_view_controller()->ShowDiceEnableSyncTab(
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, email_hint);
+  } else {
+    // Add an account to the web without setting a primary account.
+    browser->signin_view_controller()->ShowDiceAddAccountTab(
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
+  }
 #endif
 }
 

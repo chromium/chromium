@@ -6,16 +6,10 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,41 +50,6 @@ void LoginUIService::SyncConfirmationUIClosed(
     SyncConfirmationUIClosedResult result) {
   for (Observer& observer : observer_list_)
     observer.OnSyncConfirmationUIClosed(result);
-}
-
-void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
-                                              const std::string& email_hint) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
-#else
-  // There is no sign-in flow for guest or system profile.
-  if (profile_->IsGuestSession() || profile_->IsSystemProfile())
-    return;
-  // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-  if (entry && entry->IsSigninRequired()) {
-    return;
-  }
-
-  // This may be called in incognito. Redirect to the original profile.
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      profile_->GetOriginalProfile());
-  Browser* browser = displayer.browser();
-
-  if (enable_sync) {
-    // Set a primary account.
-    browser->signin_view_controller()->ShowDiceEnableSyncTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, email_hint);
-  } else {
-    // Add an account to the web without setting a primary account.
-    browser->signin_view_controller()->ShowDiceAddAccountTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
-  }
-#endif
 }
 
 void LoginUIService::DisplayLoginResult(Browser* browser,
