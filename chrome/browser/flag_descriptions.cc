@@ -4515,11 +4515,6 @@ const char kEnableLauncherSearchNormalizationDescription[] =
     "Enable normalization of scores from different providers to the "
     "launcher.";
 
-const char kNewDragSpecInLauncherName[] = "Enable Launcher App Paging";
-const char kNewDragSpecInLauncherDescription[] =
-    "Show visual affordance of launcher app pages and enable page previews "
-    "when dragging apps.";
-
 const char kEnableNeuralStylusPalmRejectionName[] =
     "Enable Neural Palm Detection";
 const char kEnableNeuralStylusPalmRejectionDescription[] =

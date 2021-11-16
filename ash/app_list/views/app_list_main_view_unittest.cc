@@ -42,8 +42,7 @@ const int kInitialItems = 2;
 
 }  // namespace
 
-class AppListMainViewTest : public views::ViewsTestBase,
-                            public testing::WithParamInterface<bool> {
+class AppListMainViewTest : public views::ViewsTestBase {
  public:
   AppListMainViewTest() = default;
   AppListMainViewTest(const AppListMainViewTest& other) = delete;
@@ -56,11 +55,6 @@ class AppListMainViewTest : public views::ViewsTestBase,
     zero_duration_mode_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    // Allow TEST_F for tests that don't need to be parameterized.
-    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-      feature_list_.InitWithFeatureState(
-          app_list_features::kNewDragSpecInLauncher, GetParam());
-    }
 
     // Create, and show the app list is fullscreen apps grid state.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
@@ -230,8 +224,6 @@ class AppListMainViewTest : public views::ViewsTestBase,
     return dragged;
   }
 
-  bool IsPaginationPreviewActive() { return GetParam(); }
-
   void PressKeyInSearchBox(ui::KeyboardCode key_code) {
     ui::KeyEvent press(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
     search_box_view()->search_box()->OnKeyEvent(&press);
@@ -249,11 +241,8 @@ class AppListMainViewTest : public views::ViewsTestBase,
   std::unique_ptr<AppListTestViewDelegate> delegate_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
 
 // Tests that the close button becomes invisible after close button is clicked.
 TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
@@ -277,7 +266,7 @@ TEST_F(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
 }
 
 // Tests changing the AppListModel when switching profiles.
-TEST_P(AppListMainViewTest, ModelChanged) {
+TEST_F(AppListMainViewTest, ModelChanged) {
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   EXPECT_EQ(kInitialItems, GetRootViewModel()->view_size());
 
@@ -294,7 +283,7 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
-TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
@@ -329,7 +318,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 // Test that an interrupted drag while reparenting an item from a folder, when
 // canceled via the root grid, correctly forwards the cancelation to the drag
 // ocurring from the folder.
-TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
+TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   CreateAndOpenSingleItemFolder();
   AppListItemView* dragged = StartDragForReparent(0);
 
@@ -352,10 +341,7 @@ TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
 // Test that dragging an app out of a single item folder and reparenting it
 // back into its original folder results in a cancelled reparent. This is a
 // regression test for http://crbug.com/429083.
-TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
-  // TODO(anasalazar): Fix for cardified state
-  if (IsPaginationPreviewActive())
-    return;
+TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   // Add a folder with 1 item.
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   std::string folder_id = folder_item_view->item()->id();

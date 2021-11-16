@@ -1089,8 +1089,6 @@ void PagedAppsGridView::StopPageFlipTimer() {
 }
 
 void PagedAppsGridView::StartAppsGridCardifiedView() {
-  if (!app_list_features::IsNewDragSpecInLauncherEnabled())
-    return;
   if (IsInFolder())
     return;
   DCHECK(!cardified_state_);
@@ -1112,8 +1110,6 @@ void PagedAppsGridView::StartAppsGridCardifiedView() {
 }
 
 void PagedAppsGridView::EndAppsGridCardifiedView() {
-  if (!app_list_features::IsNewDragSpecInLauncherEnabled())
-    return;
   if (IsInFolder())
     return;
   DCHECK(cardified_state_);
