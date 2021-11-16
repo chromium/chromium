@@ -15,10 +15,6 @@ namespace infobars {
 class ContentInfoBarManager;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace permissions {
 class PermissionPromptAndroid;
 }
@@ -67,10 +63,6 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   bool Accept() override;
   bool Cancel() override;
-
-  // Returns true if we should show the permission request as a mini-infobar.
-  static bool ShouldShowMiniInfobar(content::WebContents* web_contents,
-                                    ContentSettingsType type);
 
  private:
   GroupedPermissionInfoBarDelegate(

@@ -20,7 +20,6 @@
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -228,16 +227,6 @@ bool GroupedPermissionInfoBarDelegate::Cancel() {
   }
   NOTREACHED();
   return true;
-}
-
-// static
-bool GroupedPermissionInfoBarDelegate::ShouldShowMiniInfobar(
-    content::WebContents* web_contents,
-    ContentSettingsType type) {
-  auto* manager =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
-  return type == ContentSettingsType::NOTIFICATIONS &&
-         manager->ShouldCurrentRequestUseQuietUI();
 }
 
 GroupedPermissionInfoBarDelegate::GroupedPermissionInfoBarDelegate(

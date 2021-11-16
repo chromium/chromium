@@ -89,6 +89,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
+  messages::MessageWrapper* MaybeCreateMessageUI(
+      content::WebContents* web_contents,
+      ContentSettingsType type,
+      base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
   void RepromptForAndroidPermissions(
       content::WebContents* web_contents,
       const std::vector<ContentSettingsType>& content_settings_types,

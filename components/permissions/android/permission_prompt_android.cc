@@ -8,9 +8,9 @@
 
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/permissions/android/permission_dialog_delegate.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -28,22 +28,33 @@ PermissionPromptAndroid::PermissionPromptAndroid(
       weak_factory_(this) {
   DCHECK(web_contents);
 
-  infobars::InfoBarManager* infobar_manager =
-      PermissionsClient::Get()->GetInfoBarManager(web_contents_);
-  if (infobar_manager) {
-    permission_infobar_ = PermissionsClient::Get()->MaybeCreateInfoBar(
-        web_contents, GetContentSettingType(0u /* position */),
-        weak_factory_.GetWeakPtr());
-    if (permission_infobar_) {
-      infobar_manager->AddObserver(this);
-      return;
-    }
+  auto* permission_client = PermissionsClient::Get();
+
+  if ((message_ = permission_client->MaybeCreateMessageUI(
+           web_contents, GetContentSettingType(0u /* position */),
+           weak_factory_.GetWeakPtr()))) {
+    prompt_disposition_ = permissions::PermissionPromptDisposition::MESSAGE_UI;
+  } else if ((permission_infobar_ = permission_client->MaybeCreateInfoBar(
+                  web_contents, GetContentSettingType(0u /* position */),
+                  weak_factory_.GetWeakPtr()))) {
+    prompt_disposition_ =
+        permissions::PermissionPromptDisposition::MINI_INFOBAR;
+    permission_client->GetInfoBarManager(web_contents_)->AddObserver(this);
+  } else {
+    prompt_disposition_ =
+        permissions::PermissionPromptDisposition::MODAL_DIALOG;
+    PermissionDialogDelegate::Create(web_contents_, this);
   }
 
-  PermissionDialogDelegate::Create(web_contents_, this);
+  prompt_disposition_ = permissions::PermissionPromptDisposition::MINI_INFOBAR;
 }
 
 PermissionPromptAndroid::~PermissionPromptAndroid() {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_, messages::DismissReason::UNKNOWN);
+    return;
+  }
   infobars::InfoBarManager* infobar_manager =
       PermissionsClient::Get()->GetInfoBarManager(web_contents_);
   if (!infobar_manager)
@@ -67,9 +78,7 @@ PermissionPromptAndroid::GetTabSwitchingBehavior() {
 
 permissions::PermissionPromptDisposition
 PermissionPromptAndroid::GetPromptDisposition() const {
-  return permission_infobar_
-             ? permissions::PermissionPromptDisposition::MINI_INFOBAR
-             : permissions::PermissionPromptDisposition::MODAL_DIALOG;
+  return prompt_disposition_;
 }
 
 void PermissionPromptAndroid::Closing() {
@@ -82,6 +91,10 @@ void PermissionPromptAndroid::Accept() {
 
 void PermissionPromptAndroid::Deny() {
   delegate_->Deny();
+}
+
+bool PermissionPromptAndroid::ShouldCurrentRequestUseQuietUI() {
+  return delegate_->ShouldCurrentRequestUseQuietUI();
 }
 
 size_t PermissionPromptAndroid::PermissionCount() const {

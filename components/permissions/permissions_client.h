@@ -19,6 +19,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+#if defined(OS_ANDROID)
+#include "components/messages/android/message_wrapper.h"
+#endif
+
 class GURL;
 class HostContentSettingsMap;
 
@@ -216,6 +220,15 @@ class PermissionsClient {
   // infobar permission prompts). The returned infobar is owned by the info bar
   // manager.
   virtual infobars::InfoBar* MaybeCreateInfoBar(
+      content::WebContents* web_contents,
+      ContentSettingsType type,
+      base::WeakPtr<PermissionPromptAndroid> prompt);
+
+  // Allows the embedder to create a message UI to use as the permission prompt.
+  // Returns the pointer to the message UI if the message UI is successfully
+  // created, nullptr otherwise, e.g. if the messages-prompt is not
+  // supported for `type`.
+  virtual messages::MessageWrapper* MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<PermissionPromptAndroid> prompt);

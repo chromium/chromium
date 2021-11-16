@@ -3243,6 +3243,8 @@ static_library("browser") {
       "payments/android/service_worker_payment_app_bridge.cc",
       "permissions/grouped_permission_infobar_delegate_android.cc",
       "permissions/grouped_permission_infobar_delegate_android.h",
+      "permissions/notification_blocked_message_delegate_android.cc",
+      "permissions/notification_blocked_message_delegate_android.h",
       "permissions/permission_update_infobar_delegate_android.cc",
       "permissions/permission_update_infobar_delegate_android.h",
       "permissions/permission_update_message_controller_android.cc",

@@ -49,10 +49,12 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
+#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -64,6 +66,20 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
+
+namespace {
+
+#if defined(OS_ANDROID)
+bool ShouldUseQuietUI(content::WebContents* web_contents,
+                      ContentSettingsType type) {
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  return type == ContentSettingsType::NOTIFICATIONS &&
+         manager->ShouldCurrentRequestUseQuietUI();
+}
+#endif
+
+}  // namespace
 
 // static
 ChromePermissionsClient* ChromePermissionsClient::GetInstance() {
@@ -389,12 +405,29 @@ infobars::InfoBar* ChromePermissionsClient::MaybeCreateInfoBar(
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (infobar_manager &&
-      GroupedPermissionInfoBarDelegate::ShouldShowMiniInfobar(web_contents,
-                                                              type)) {
+  if (infobar_manager && ShouldUseQuietUI(web_contents, type)) {
     return GroupedPermissionInfoBarDelegate::Create(std::move(prompt),
                                                     infobar_manager);
   }
+  return nullptr;
+}
+
+messages::MessageWrapper* ChromePermissionsClient::MaybeCreateMessageUI(
+    content::WebContents* web_contents,
+    ContentSettingsType type,
+    base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
+  if (messages::IsNotificationBlockedMessagesUiEnabled() &&
+      ShouldUseQuietUI(web_contents, type)) {
+    NotificationBlockedMessageDelegate::CreateForWebContents(web_contents);
+    auto* notification_blocked_message_delegate =
+        NotificationBlockedMessageDelegate::FromWebContents(web_contents);
+    auto delegate =
+        std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
+            std::move(prompt));
+    return notification_blocked_message_delegate->ShowMessage(
+        std::move(delegate));
+  }
+
   return nullptr;
 }
 
