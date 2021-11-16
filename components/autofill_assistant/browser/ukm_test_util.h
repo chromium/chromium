@@ -42,8 +42,15 @@ const char kTriggerScriptFinished[] = "LiteScriptFinished";
 const char kTriggerScriptOnboarding[] = "LiteScriptOnboarding";
 const char kInChromeTriggerAction[] = "InChromeTriggerAction";
 const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
+const char kCompleteContactProfilesCount[] = "CompleteContactProfilesCount";
 const char kContactModified[] = "ContactModified";
+const char kIncompleteContactProfilesCount[] = "IncompleteContactProfilesCount";
+const char kCompleteCreditCardsCount[] = "CompleteCreditCardsCount";
+const char kIncompleteCreditCardsCount[] = "IncompleteCreditCardsCount";
 const char kCreditCardModified[] = "CreditCardModified";
+const char kCompleteShippingProfilesCount[] = "CompleteShippingProfilesCount";
+const char kIncompleteShippingProfilesCount[] =
+    "IncompleteShippingProfilesCount";
 const char kShippingModified[] = "ShippingModified";
 
 // Convenience accessors for UKM metrics.
@@ -59,10 +66,23 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmTriggerConditionEvaluationTime(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCreditCardModified(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteShippingProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteShippingProfilesCount(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 

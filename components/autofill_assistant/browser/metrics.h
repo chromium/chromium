@@ -508,12 +508,18 @@ class Metrics {
       DependenciesInvalidated dependencies_invalidated);
   static void RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
                                    ukm::SourceId source_id,
+                                   int complete_count,
+                                   int incomplete_count,
                                    UserDataSelectionState selection_state);
   static void RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
                                       ukm::SourceId source_id,
+                                      int complete_count,
+                                      int incomplete_count,
                                       UserDataSelectionState selection_state);
   static void RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
                                     ukm::SourceId source_id,
+                                    int complete_count,
+                                    int incomplete_count,
                                     UserDataSelectionState selection_state);
 
   // Intended for debugging: writes string representation of |reason| to

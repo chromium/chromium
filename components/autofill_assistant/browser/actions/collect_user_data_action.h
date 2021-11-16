@@ -75,6 +75,29 @@ class CollectUserDataAction : public Action,
     absl::optional<WebsiteLoginManager::Login> login;
   };
 
+  struct MetricsData {
+    MetricsData();
+    ~MetricsData();
+    bool metrics_logged = false;
+    ukm::SourceId source_id;
+
+    bool initially_prefilled = false;
+    bool personal_data_changed = false;
+    bool action_successful = false;
+    Metrics::UserDataSelectionState contact_selection_state =
+        Metrics::UserDataSelectionState::NO_CHANGE;
+    Metrics::UserDataSelectionState credit_card_selection_state =
+        Metrics::UserDataSelectionState::NO_CHANGE;
+    Metrics::UserDataSelectionState shipping_selection_state =
+        Metrics::UserDataSelectionState::NO_CHANGE;
+    int complete_contacts_initial_count;
+    int incomplete_contacts_initial_count;
+    int complete_credit_cards_initial_count;
+    int incomplete_credit_cards_initial_count;
+    int complete_shipping_addresses_initial_count;
+    int incomplete_shipping_addresses_initial_count;
+  };
+
   void InternalProcessAction(ProcessActionCallback callback) override;
   void EndAction(const ClientStatus& status);
 
@@ -100,7 +123,7 @@ class CollectUserDataAction : public Action,
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.
   bool CreateOptionsFromProto();
 
-  bool CheckInitialAutofillDataComplete(
+  void FillInitialDataStateForMetrics(
       const std::vector<std::unique_ptr<Contact>>& contacts,
       const std::vector<std::unique_ptr<Address>>& addresses,
       const std::vector<std::unique_ptr<PaymentInstrument>>&
@@ -128,18 +151,8 @@ class CollectUserDataAction : public Action,
                               UserData::FieldChange* field_change = nullptr);
   void MaybeLogMetrics();
 
+  MetricsData metrics_data_;
   bool shown_to_user_ = false;
-  ukm::SourceId source_id_;
-  bool initially_prefilled_ = false;
-  bool personal_data_changed_ = false;
-  bool action_successful_ = false;
-  bool metrics_logged_ = false;
-  Metrics::UserDataSelectionState contact_selection_state_ =
-      Metrics::UserDataSelectionState::NO_CHANGE;
-  Metrics::UserDataSelectionState credit_card_selection_state_ =
-      Metrics::UserDataSelectionState::NO_CHANGE;
-  Metrics::UserDataSelectionState shipping_selection_state_ =
-      Metrics::UserDataSelectionState::NO_CHANGE;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;
 

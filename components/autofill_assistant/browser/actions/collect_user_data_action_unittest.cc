@@ -3275,5 +3275,195 @@ TEST_F(CollectUserDataActionTest,
   EXPECT_THAT(GetUkmShippingModified(ukm_recorder_), IsEmpty());
 }
 
+TEST_F(CollectUserDataActionTest, LogsUkmProfilesCount) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  // This profile is a complete contact and shipping address.
+  autofill::AutofillProfile complete;
+  autofill::test::SetProfileInfo(&complete, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Main St. 18", "",
+                                 "abc", "New York", "NY", "10001", "US", "");
+  // This profile is a complete contact but incomplete as a shipping address.
+  autofill::AutofillProfile incomplete_for_shipping;
+  autofill::test::SetProfileInfo(&incomplete_for_shipping, "Berta", "West", "",
+                                 "", "", "", "", "", "", "", "", "", "");
+  // This profile is incomplete both as a contact and as a shipping address.
+  autofill::AutofillProfile incomplete;
+  autofill::test::SetProfileInfo(&incomplete, "", "West", "", "", "", "", "",
+                                 "", "", "", "", "", "");
+
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>(
+          {&complete, &incomplete_for_shipping, &incomplete})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
+  *contact_details->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(GetUkmCompleteContactProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kCompleteContactProfilesCount, 2)}));
+  EXPECT_THAT(GetUkmIncompleteContactProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kIncompleteContactProfilesCount, 1)}));
+  EXPECT_THAT(GetUkmCompleteShippingProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kCompleteShippingProfilesCount, 1)}));
+  EXPECT_THAT(
+      GetUkmIncompleteShippingProfilesCount(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          ukm::kInvalidSourceId, kIncompleteShippingProfilesCount, 2)}));
+}
+
+TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillCreditCardEnabled)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_personal_data_manager_, ShouldSuggestServerCards)
+      .WillByDefault(Return(true));
+
+  autofill::AutofillProfile complete_billing_address;
+  autofill::test::SetProfileInfo(&complete_billing_address, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK", "+44");
+  autofill::AutofillProfile incomplete_billing_address;
+  autofill::test::SetProfileInfo(&incomplete_billing_address, "", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "London", "", "WC2N 5DU", "UK", "+44");
+
+  ON_CALL(mock_personal_data_manager_, GetProfileByGUID("GUID"))
+      .WillByDefault(Return(&complete_billing_address));
+  ON_CALL(mock_personal_data_manager_, GetProfileByGUID("INCOMPLETE_GUID"))
+      .WillByDefault(Return(&incomplete_billing_address));
+
+  autofill::CreditCard card_with_complete_address;
+  autofill::test::SetCreditCardInfo(&card_with_complete_address, "Adam West",
+                                    "4111111111111111", "1", "2050",
+                                    /* billing_address_id= */ "GUID");
+  autofill::CreditCard card_with_incomplete_address;
+  autofill::test::SetCreditCardInfo(
+      &card_with_incomplete_address, "Berta West", "4111111111111111", "1",
+      "2050",
+      /* billing_address_id= */ "INCOMPLETE_GUID");
+  autofill::CreditCard incomplete_card;
+  autofill::test::SetCreditCardInfo(&incomplete_card, "Jim West",
+                                    "4111111111111111", "1",
+                                    /* expiration_year= */ "",
+                                    /* billing_address_id= */ "GUID");
+
+  // Cards with unsupported networks are filtered out early and not shown as
+  // option to the user in the UI, so they are not counted as neither complete
+  // or incomplete.
+  autofill::CreditCard unsupported_network_card;
+  autofill::test::SetCreditCardInfo(&unsupported_network_card, "Jim West",
+                                    "378282246310005", "1", "",
+                                    /* billing_address_id= */ "GUID");
+
+  ON_CALL(mock_personal_data_manager_, GetCreditCards())
+      .WillByDefault(Return(std::vector<autofill::CreditCard*>(
+          {&card_with_complete_address, &card_with_incomplete_address,
+           &incomplete_card, &unsupported_network_card})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            user_model_.SetSelectedCreditCard(
+                std::make_unique<autofill::CreditCard>(
+                    card_with_complete_address),
+                &user_data_);
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("billing");
+  user_data->add_supported_basic_card_networks("visa");
+  *user_data->add_required_billing_address_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(GetUkmCompleteCreditCardsCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kCompleteCreditCardsCount, 1)}));
+  EXPECT_THAT(GetUkmIncompleteCreditCardsCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kIncompleteCreditCardsCount, 2)}));
+}
+
+TEST_F(CollectUserDataActionTest, LogsUkmmMoreThanFiveProfilesCount) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  // This profile is a complete contact and shipping address.
+  autofill::AutofillProfile complete;
+  autofill::test::SetProfileInfo(&complete, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Main St. 18", "",
+                                 "abc", "New York", "NY", "10001", "US", "");
+
+  // We return the same profile 6 times, to verify that the count is correctly
+  // set in the |MORE_THAN_FIVE| bucket.
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>(
+          {&complete, &complete, &complete, &complete, &complete, &complete})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
+  *contact_details->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmCompleteContactProfilesCount(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          ukm::kInvalidSourceId, kCompleteContactProfilesCount,
+          static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

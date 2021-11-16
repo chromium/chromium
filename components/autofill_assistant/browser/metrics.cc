@@ -13,6 +13,15 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace autofill_assistant {
+namespace {
+int64_t ToEntryCountBucket(int entry_count) {
+  DCHECK_GE(entry_count, 0);
+  if (entry_count < 5)
+    return static_cast<int64_t>(entry_count);
+
+  return static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE);
+}
+}  // namespace
 
 // Intent not set constant.
 const char* const kIntentNotSet = "NotSet";
@@ -260,24 +269,36 @@ void Metrics::RecordDependenciesInvalidated(
 
 void Metrics::RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
                                    ukm::SourceId source_id,
+                                   int complete_count,
+                                   int incomplete_count,
                                    UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectContact(source_id)
+      .SetCompleteContactProfilesCount(ToEntryCountBucket(complete_count))
+      .SetIncompleteContactProfilesCount(ToEntryCountBucket(incomplete_count))
       .SetContactModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }
 
 void Metrics::RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
                                       ukm::SourceId source_id,
+                                      int complete_count,
+                                      int incomplete_count,
                                       UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectPayment(source_id)
+      .SetCompleteCreditCardsCount(ToEntryCountBucket(complete_count))
+      .SetIncompleteCreditCardsCount(ToEntryCountBucket(incomplete_count))
       .SetCreditCardModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }
 
 void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
                                     ukm::SourceId source_id,
+                                    int complete_count,
+                                    int incomplete_count,
                                     UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectShippingAddress(source_id)
+      .SetCompleteShippingProfilesCount(ToEntryCountBucket(complete_count))
+      .SetIncompleteShippingProfilesCount(ToEntryCountBucket(incomplete_count))
       .SetShippingModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }

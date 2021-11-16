@@ -44,6 +44,17 @@ GetUkmTriggerConditionEvaluationTime(
                                  {kTriggerConditionTimingMs});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
+                                 {kCompleteContactProfilesCount});
+}
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteContactProfilesCount(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
+                                 {kIncompleteContactProfilesCount});
+}
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
@@ -51,11 +62,32 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
 }
 
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectCreditCard,
+                                 {kCompleteCreditCardsCount});
+}
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectCreditCard,
+                                 {kIncompleteCreditCardsCount});
+}
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCreditCardModified(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectCreditCard,
                                  {kCreditCardModified});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCompleteShippingProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
+                                 {kCompleteShippingProfilesCount});
+}
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmIncompleteShippingProfilesCount(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
+                                 {kIncompleteShippingProfilesCount});
+}
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
