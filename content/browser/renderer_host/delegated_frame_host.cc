@@ -91,7 +91,7 @@ void DelegatedFrameHost::WasShown(
     compositor_->RequestPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
             true /* has_saved_frames */,
-            std::move(record_tab_switch_time_request), base::TimeTicks::Now()));
+            std::move(record_tab_switch_time_request)));
   }
 
   // Use the default deadline to synchronize web content with browser UI.
@@ -115,8 +115,7 @@ void DelegatedFrameHost::RequestPresentationTimeForNextFrame(
   // captured.
   compositor_->RequestPresentationTimeForNextFrame(
       tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
-                                            std::move(visible_time_request),
-                                            base::TimeTicks::Now()));
+                                            std::move(visible_time_request)));
 }
 
 void DelegatedFrameHost::CancelPresentationTimeRequest() {

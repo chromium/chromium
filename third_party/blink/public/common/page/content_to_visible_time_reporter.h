@@ -43,8 +43,7 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // callback to invoke the next time a frame is presented for this tab.
   base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
       bool has_saved_frames,
-      mojom::RecordContentToVisibleTimeRequestPtr start_state,
-      base::TimeTicks widget_visibility_request_timestamp);
+      mojom::RecordContentToVisibleTimeRequestPtr start_state);
 
   base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
       bool has_saved_frames,
@@ -52,8 +51,7 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       bool destination_is_loaded,
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
-      bool show_reason_bfcache_restore,
-      base::TimeTicks widget_visibility_request_timestamp);
+      bool show_reason_bfcache_restore);
 
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
@@ -74,10 +72,6 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // The information about the last tab switch request, or nullptr if there is
   // no incomplete tab switch.
   mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
-
-  // The widget visibility request timestamp for the last tab switch, or null
-  // if there is no incomplete tab switch.
-  base::TimeTicks widget_visibility_request_timestamp_;
 
   // Cache the feature value for faster lookups.
   bool is_tab_switch_metric2_feature_enabled_;

@@ -121,12 +121,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
-  void WasShown(base::TimeTicks show_request_timestamp,
-                bool was_evicted,
+  void WasShown(bool was_evicted,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
   void RequestPresentationTimeForNextFrame(
-      base::TimeTicks show_request_timestamp,
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelPresentationTimeRequest() override;

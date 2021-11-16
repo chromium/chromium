@@ -107,8 +107,7 @@ TEST_F(ContentToVisibleTimeReporterTest, TimeIsRecordedWithSavedFrames) {
           start, /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -138,8 +137,7 @@ TEST_F(ContentToVisibleTimeReporterTest, TimeIsRecordedNoSavedFrame) {
           start, /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -169,8 +167,7 @@ TEST_F(ContentToVisibleTimeReporterTest, TimeIsRecordedNoSavedFrameUnloaded) {
           /* destination_is_loaded */ false,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -200,8 +197,7 @@ TEST_F(ContentToVisibleTimeReporterTest, PresentationFailureWithSavedFrames) {
           start, /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   std::move(callback).Run(gfx::PresentationFeedback::Failure());
 
   ExpectHistogramsEmptyExcept({kResultWithSavedFramesHistogram});
@@ -223,8 +219,7 @@ TEST_F(ContentToVisibleTimeReporterTest, PresentationFailureNoSavedFrames) {
           start, /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   std::move(callback).Run(gfx::PresentationFeedback::Failure());
 
   // Result (no duration is recorded on presentation failure).
@@ -246,8 +241,7 @@ TEST_F(ContentToVisibleTimeReporterTest,
           /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start1);
+          /* show_reason_bfcache_restore */ false));
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -274,8 +268,7 @@ TEST_F(ContentToVisibleTimeReporterTest,
           /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start2);
+          /* show_reason_bfcache_restore */ false));
   const auto end2 = start2 + kOtherDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end2, end2 - start2, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -311,8 +304,7 @@ TEST_F(ContentToVisibleTimeReporterTest, HideBeforePresentFrameNoSavedFrames) {
           /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start1);
+          /* show_reason_bfcache_restore */ false));
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -336,8 +328,7 @@ TEST_F(ContentToVisibleTimeReporterTest, HideBeforePresentFrameNoSavedFrames) {
           /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ false),
-      start2);
+          /* show_reason_bfcache_restore */ false));
   const auto end2 = start2 + kOtherDuration;
 
   auto presentation_feedback = gfx::PresentationFeedback(
@@ -375,8 +366,7 @@ TEST_F(ContentToVisibleTimeReporterTest, UnoccludedTimeIsRecorded) {
           start, /* destination_is_loaded */ false,
           /* show_reason_tab_switching */ false,
           /* show_reason_unoccluded */ true,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -400,8 +390,7 @@ TEST_F(ContentToVisibleTimeReporterTest,
           start, /* destination_is_loaded */ true,
           /* show_reason_tab_switching */ true,
           /* show_reason_unoccluded */ true,
-          /* show_reason_bfcache_restore */ false),
-      start);
+          /* show_reason_bfcache_restore */ false));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);
@@ -435,8 +424,7 @@ TEST_F(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
           start, /* destination_is_loaded */ false,
           /* show_reason_tab_switching */ false,
           /* show_reason_unoccluded */ false,
-          /* show_reason_bfcache_restore */ true),
-      start);
+          /* show_reason_bfcache_restore */ true));
   const auto end = start + kDuration;
   auto presentation_feedback = gfx::PresentationFeedback(
       end, end - start, gfx::PresentationFeedback::Flags::kHWCompletion);

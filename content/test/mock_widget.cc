@@ -72,8 +72,7 @@ void MockWidget::WasHidden() {
     std::move(shown_hidden_callback_).Run();
 }
 
-void MockWidget::WasShown(base::TimeTicks show_request_timestamp,
-                          bool was_evicted,
+void MockWidget::WasShown(bool was_evicted,
                           blink::mojom::RecordContentToVisibleTimeRequestPtr
                               record_tab_switch_time_request) {
   is_hidden_ = false;
@@ -82,7 +81,6 @@ void MockWidget::WasShown(base::TimeTicks show_request_timestamp,
 }
 
 void MockWidget::RequestPresentationTimeForNextFrame(
-    base::TimeTicks show_request_timestamp,
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {}
 
 void MockWidget::CancelPresentationTimeRequest() {}

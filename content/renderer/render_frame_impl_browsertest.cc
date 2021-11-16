@@ -280,7 +280,7 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(frame());
 
   widget_remote()->WasShown(
-      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      false /* was_evicted=*/,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   base::RunLoop().RunUntilIdle();
 

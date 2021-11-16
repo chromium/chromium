@@ -409,7 +409,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   do {
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
-  } while (histogram_tester.GetAllSamples("MPArch.RWH_TabSwitchPaintDuration")
+  } while (histogram_tester
+               .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
                .size() != 1);
 }
 

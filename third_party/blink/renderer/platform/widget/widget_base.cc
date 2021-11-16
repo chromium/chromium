@@ -434,8 +434,7 @@ void WidgetBase::WasHidden() {
   client_->WasHidden();
 }
 
-void WidgetBase::WasShown(base::TimeTicks show_request_timestamp,
-                          bool was_evicted,
+void WidgetBase::WasShown(bool was_evicted,
                           mojom::blink::RecordContentToVisibleTimeRequestPtr
                               record_tab_switch_time_request) {
   // The frame must be attached to the frame tree (which makes it no longer
@@ -455,15 +454,13 @@ void WidgetBase::WasShown(base::TimeTicks show_request_timestamp,
             record_tab_switch_time_request->destination_is_loaded,
             record_tab_switch_time_request->show_reason_tab_switching,
             record_tab_switch_time_request->show_reason_unoccluded,
-            record_tab_switch_time_request->show_reason_bfcache_restore,
-            show_request_timestamp));
+            record_tab_switch_time_request->show_reason_bfcache_restore));
   }
 
   client_->WasShown(was_evicted);
 }
 
 void WidgetBase::RequestPresentationTimeForNextFrame(
-    base::TimeTicks show_request_timestamp,
     mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(visible_time_request);
   if (is_hidden_)
@@ -477,8 +474,7 @@ void WidgetBase::RequestPresentationTimeForNextFrame(
           visible_time_request->destination_is_loaded,
           visible_time_request->show_reason_tab_switching,
           visible_time_request->show_reason_unoccluded,
-          visible_time_request->show_reason_bfcache_restore,
-          show_request_timestamp));
+          visible_time_request->show_reason_bfcache_restore));
 }
 
 void WidgetBase::CancelPresentationTimeRequest() {

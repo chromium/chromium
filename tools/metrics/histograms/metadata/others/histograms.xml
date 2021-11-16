@@ -10561,10 +10561,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MPArch.RWH_TabSwitchPaintDuration" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed in M98. Replaced by Browser.Tabs.TotalSwitchDuration.*
+  </obsolete>
   <owner>jbauman@chromium.org</owner>
   <summary>
     Time from tab switch requested to tab appearing on screen (Aura and Mac
-    only). Replaced by Browser.Tabs.TotalSwitchDuration.*
+    only).
   </summary>
 </histogram>
 

@@ -545,7 +545,7 @@ void RenderViewTest::SetUp() {
   RenderFrameWasShownWaiter waiter(RenderFrame::FromWebFrame(
       view->GetWebView()->MainFrame()->ToWebLocalFrame()));
   render_widget_host_->widget_remote_for_testing()->WasShown(
-      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      false /* was_evicted=*/,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   waiter.Wait();
 

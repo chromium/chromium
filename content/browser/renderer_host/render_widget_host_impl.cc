@@ -774,7 +774,6 @@ void RenderWidgetHostImpl::Init() {
   if (pending_show_params_) {
     DCHECK(blink_widget_.is_bound());
     blink_widget_->WasShown(
-        pending_show_params_->show_request_timestamp,
         pending_show_params_->is_evicted,
         std::move(pending_show_params_->visible_time_request));
     pending_show_params_.reset();
@@ -863,16 +862,13 @@ void RenderWidgetHostImpl::WasShown(
   // all state gets to the renderer as close together as possible.
   SynchronizeVisualProperties();
 
-  auto show_request_timestamp = record_tab_switch_time_request
-                                    ? base::TimeTicks::Now()
-                                    : base::TimeTicks();
   DCHECK(!pending_show_params_);
   if (!waiting_for_init_) {
-    blink_widget_->WasShown(show_request_timestamp, view_->is_evicted(),
+    blink_widget_->WasShown(view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
   } else {
     // Delay the WasShown message until Init is called.
-    pending_show_params_.emplace(show_request_timestamp, view_->is_evicted(),
+    pending_show_params_.emplace(view_->is_evicted(),
                                  std::move(record_tab_switch_time_request));
   }
   view_->reset_is_evicted();
@@ -910,20 +906,18 @@ void RenderWidgetHostImpl::RequestPresentationTimeForNextFrame(
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(!is_hidden_);
   DCHECK(visible_time_request);
-  const auto show_request_timestamp = base::TimeTicks::Now();
   if (waiting_for_init_) {
     // This method should only be called if the RWHI is already visible, meaning
     // there will be a WasShown call that's queued until init. Update that with
     // the new request.
     DCHECK(pending_show_params_);
-    pending_show_params_->show_request_timestamp = show_request_timestamp;
     pending_show_params_->visible_time_request =
         std::move(visible_time_request);
     return;
   }
   DCHECK(!pending_show_params_);
   blink_widget_->RequestPresentationTimeForNextFrame(
-      show_request_timestamp, std::move(visible_time_request));
+      std::move(visible_time_request));
 }
 
 void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
@@ -933,7 +927,6 @@ void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
     // there will be a WasShown call that's queued until init. Update that to
     // clear any request that was set.
     DCHECK(pending_show_params_);
-    pending_show_params_->show_request_timestamp = base::TimeTicks();
     pending_show_params_->visible_time_request = nullptr;
     return;
   }
@@ -3770,11 +3763,9 @@ RenderWidgetHostImpl::MainFramePropagationProperties::
     ~MainFramePropagationProperties() = default;
 
 RenderWidgetHostImpl::PendingShowParams::PendingShowParams(
-    base::TimeTicks show_request_timestamp,
     bool is_evicted,
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
-    : show_request_timestamp(show_request_timestamp),
-      is_evicted(is_evicted),
+    : is_evicted(is_evicted),
       visible_time_request(std::move(visible_time_request)) {}
 
 RenderWidgetHostImpl::PendingShowParams::~PendingShowParams() = default;

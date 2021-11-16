@@ -1391,8 +1391,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // storing a callback so that they can be updated if
   // RequestPresentationTimeForNextFrame is called while waiting.
   struct PendingShowParams {
-    PendingShowParams(base::TimeTicks show_request_timestamp,
-                      bool is_evicted,
+    PendingShowParams(bool is_evicted,
                       blink::mojom::RecordContentToVisibleTimeRequestPtr
                           visible_time_request);
     ~PendingShowParams();
@@ -1400,7 +1399,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     PendingShowParams(const PendingShowParams&) = delete;
     PendingShowParams& operator=(const PendingShowParams&) = delete;
 
-    base::TimeTicks show_request_timestamp;
     bool is_evicted;
     blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request;
   };
