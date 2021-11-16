@@ -71,7 +71,8 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> PasswordChangeLauncher.start(getWebContents().getTopLevelNativeWindow(),
-                                getWebContents().getLastCommittedUrl(), username));
+                                getWebContents().getLastCommittedUrl(), username,
+                                /*skipLogin=*/false));
     }
 
     private static TextValue buildUsernameValue() {

@@ -85,7 +85,8 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       Java_PasswordChangeLauncher_start(
           env, window_android_->GetJavaObject(),
           url::GURLAndroid::FromNativeGURL(env, origin_),
-          base::android::ConvertUTF16ToJavaString(env, username_));
+          base::android::ConvertUTF16ToJavaString(env, username_),
+          /*skip_login=*/true);
       break;
   }
 

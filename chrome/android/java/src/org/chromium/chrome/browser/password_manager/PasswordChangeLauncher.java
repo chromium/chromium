@@ -19,6 +19,7 @@ public class PasswordChangeLauncher {
      * TODO(b/151401974): Eliminate duplicate parameter definitions.
      */
     private static final String PASSWORD_CHANGE_USERNAME_PARAMETER = "PASSWORD_CHANGE_USERNAME";
+    private static final String PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER = "PASSWORD_CHANGE_SKIP_LOGIN";
     private static final String INTENT_PARAMETER = "INTENT";
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String DEBUG_BUNDLE_ID = "DEBUG_BUNDLE_ID";
@@ -26,17 +27,19 @@ public class PasswordChangeLauncher {
     private static final int IN_CHROME_CALLER = 7;
 
     @CalledByNative
-    public static void start(WindowAndroid windowAndroid, GURL origin, String username) {
-        start(windowAndroid, origin, username, "", "");
+    public static void start(
+            WindowAndroid windowAndroid, GURL origin, String username, boolean skipLogin) {
+        start(windowAndroid, origin, username, skipLogin, "", "");
     }
 
     public static void start(WindowAndroid windowAndroid, GURL origin, String username,
-            String debugBundleId, String debutSocketId) {
+            boolean skipLogin, String debugBundleId, String debutSocketId) {
         AutofillAssistantFacade.start(windowAndroid.getActivity().get(),
                 TriggerContext.newBuilder()
                         .addParameter(DEBUG_BUNDLE_ID, debugBundleId)
                         .addParameter(DEBUG_SOCKET_ID, debutSocketId)
                         .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER, username)
+                        .addParameter(PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER, skipLogin)
                         .addParameter(INTENT_PARAMETER, INTENT)
                         .addParameter(TriggerContext.PARAMETER_START_IMMEDIATELY, true)
                         .addParameter(TriggerContext.PARAMETER_ENABLED, true)
