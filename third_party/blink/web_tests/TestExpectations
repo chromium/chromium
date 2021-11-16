@@ -6341,7 +6341,6 @@ crbug.com/1200671 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 
 crbug.com/1197444 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/nested-scroll-overlay-scrollbar.html [ Crash Failure Pass ]
 # Sheriff 2021-04-21
-crbug.com/1200671 [ Linux ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Crash Pass ]
 crbug.com/1201225 external/wpt/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock.html [ Failure Pass Timeout ]
 crbug.com/1198232 [ Win ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Failure Pass ]
 crbug.com/1201346 http/tests/origin_trials/webexposed/bfcache-experiment-http-header-origin-trial.php [ Failure Pass ]
