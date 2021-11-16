@@ -213,7 +213,8 @@ class BrowserAppInstanceRegistry
       receiver_set_;
   mojo::Remote<crosapi::mojom::BrowserAppInstanceController> controller_;
 
-  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 
   base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
       tracker_observation_{this};
