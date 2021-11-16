@@ -501,8 +501,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     } else {
       // Verify that we are not trying to update the lock with different
       // COOP/COEP information.
-      CHECK_EQ(process_lock_.web_exposed_isolation_info(),
-               lock.web_exposed_isolation_info());
+      CHECK_EQ(process_lock_.GetWebExposedIsolationInfo(),
+               lock.GetWebExposedIsolationInfo());
 
       if (process_lock_.allows_any_site()) {
         // TODO(acolwell): Remove ability to lock to an allows_any_site
@@ -1622,9 +1622,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
             isolation_context,
             UrlInfo(UrlInfoInit(url)
                         .WithStoragePartitionConfig(
-                            actual_process_lock.storage_partition_config())
+                            actual_process_lock.GetStoragePartitionConfig())
                         .WithWebExposedIsolationInfo(
-                            actual_process_lock.web_exposed_isolation_info())
+                            actual_process_lock.GetWebExposedIsolationInfo())
                         .WithIsPdf(actual_process_lock.is_pdf())));
 
         if (actual_process_lock.is_locked_to_site()) {
@@ -1716,7 +1716,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
           SiteInfo site_info = SiteInfo::Create(
               isolation_context,
               UrlInfo(UrlInfoInit(url).WithWebExposedIsolationInfo(
-                  actual_process_lock.web_exposed_isolation_info())));
+                  actual_process_lock.GetWebExposedIsolationInfo())));
 
           // A process that's not locked to any site can only access data from
           // origins that do not require a locked process.

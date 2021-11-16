@@ -3313,9 +3313,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
           running_info.render_process_id);
   if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
     EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-              process_lock.web_exposed_isolation_info().is_isolated());
+              process_lock.GetWebExposedIsolationInfo().is_isolated());
   } else {
-    EXPECT_FALSE(process_lock.web_exposed_isolation_info().is_isolated());
+    EXPECT_FALSE(process_lock.GetWebExposedIsolationInfo().is_isolated());
   }
 }
 
@@ -3371,7 +3371,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
   EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-            process_lock.web_exposed_isolation_info().is_isolated());
+            process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

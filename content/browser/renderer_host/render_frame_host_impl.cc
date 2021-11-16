@@ -2078,7 +2078,7 @@ RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   if (process_lock.is_invalid())
     return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
 
-  WebExposedIsolationInfo info = process_lock.web_exposed_isolation_info();
+  WebExposedIsolationInfo info = process_lock.GetWebExposedIsolationInfo();
   if (info.is_isolated_application()) {
     // TODO(crbug.com/1159832): Check the document policy once it's available to
     // find out if this frame is actually isolated.

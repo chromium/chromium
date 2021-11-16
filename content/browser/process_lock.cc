@@ -45,6 +45,16 @@ ProcessLock& ProcessLock::operator=(const ProcessLock&) = default;
 
 ProcessLock::~ProcessLock() = default;
 
+StoragePartitionConfig ProcessLock::GetStoragePartitionConfig() const {
+  DCHECK(site_info_.has_value());
+  return site_info_->storage_partition_config();
+}
+
+WebExposedIsolationInfo ProcessLock::GetWebExposedIsolationInfo() const {
+  return site_info_.has_value() ? site_info_->web_exposed_isolation_info()
+                                : WebExposedIsolationInfo::CreateNonIsolated();
+}
+
 bool ProcessLock::IsASiteOrOrigin() const {
   const GURL lock_url = ProcessLock::lock_url();
   return lock_url.has_scheme() && lock_url.has_host() && lock_url.is_valid();
@@ -94,10 +104,10 @@ bool ProcessLock::operator!=(const ProcessLock& rhs) const {
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
   const auto this_is_origin_keyed_process = is_origin_keyed_process();
   const auto this_is_pdf = is_pdf();
-  const auto this_web_exposed_isolation_info = web_exposed_isolation_info();
+  const auto this_web_exposed_isolation_info = GetWebExposedIsolationInfo();
   const auto rhs_is_origin_keyed_process = is_origin_keyed_process();
   const auto rhs_is_pdf = rhs.is_pdf();
-  const auto rhs_web_exposed_isolation_info = web_exposed_isolation_info();
+  const auto rhs_web_exposed_isolation_info = GetWebExposedIsolationInfo();
   return std::tie(lock_url(), this_is_origin_keyed_process, this_is_pdf,
                   this_web_exposed_isolation_info) <
          std::tie(rhs.lock_url(), rhs_is_origin_keyed_process, rhs_is_pdf,
@@ -116,17 +126,17 @@ std::string ProcessLock::ToString() const {
     if (is_pdf())
       ret += " pdf";
 
-    if (web_exposed_isolation_info().is_isolated()) {
+    if (GetWebExposedIsolationInfo().is_isolated()) {
       ret += " cross-origin-isolated";
-      if (web_exposed_isolation_info().is_isolated_application())
+      if (GetWebExposedIsolationInfo().is_isolated_application())
         ret += "-application";
       ret += " coi-origin='" +
-             web_exposed_isolation_info().origin().GetDebugString() + "'";
+             GetWebExposedIsolationInfo().origin().GetDebugString() + "'";
     }
-    if (!storage_partition_config().is_default()) {
-      ret += ", partition=" + storage_partition_config().partition_domain() +
-             "." + storage_partition_config().partition_name();
-      if (storage_partition_config().in_memory())
+    if (!GetStoragePartitionConfig().is_default()) {
+      ret += ", partition=" + GetStoragePartitionConfig().partition_domain() +
+             "." + GetStoragePartitionConfig().partition_name();
+      if (GetStoragePartitionConfig().in_memory())
         ret += ", in-memory";
     }
   } else {

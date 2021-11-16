@@ -103,27 +103,20 @@ class CONTENT_EXPORT ProcessLock {
   // Returns whether this ProcessLock is specific to PDF contents.
   bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
 
+  bool is_error_page() const {
+    return site_info_.has_value() && site_info_->is_error_page();
+  }
+
   // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
   // lock is used with.
-  StoragePartitionConfig storage_partition_config() const {
-    DCHECK(site_info_.has_value());
-    return site_info_->storage_partition_config();
-  }
+  StoragePartitionConfig GetStoragePartitionConfig() const;
 
   // Representing agent cluster's "cross-origin isolated" concept.
   // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
   // This property is renderer process global because we ensure that a
   // renderer process host only cross-origin isolated agents or only
   // non-cross-origin isolated agents, not both.
-  WebExposedIsolationInfo web_exposed_isolation_info() const {
-    return site_info_.has_value()
-               ? site_info_->web_exposed_isolation_info()
-               : WebExposedIsolationInfo::CreateNonIsolated();
-  }
-
-  bool is_error_page() const {
-    return site_info_.has_value() && site_info_->is_error_page();
-  }
+  WebExposedIsolationInfo GetWebExposedIsolationInfo() const;
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
   // a scheme plus eTLD+1, like https://google.com).  Also returns true if the
