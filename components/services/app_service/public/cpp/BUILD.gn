@@ -120,6 +120,7 @@ if (is_chromeos_ash) {
       "instance_registry.h",
       "instance_update.cc",
       "instance_update.h",
+      "macros.h",
     ]
     deps = [
       "//ash/public/cpp:cpp",

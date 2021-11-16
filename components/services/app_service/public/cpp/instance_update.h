@@ -62,6 +62,12 @@ class InstanceUpdate {
 
   const std::string& AppId() const;
 
+  const base::UnguessableToken& InstanceId() const;
+
+  aura::Window* Window() const;
+  bool WindowChanged() const;
+
+  // TODO(crbug.com/1251501): Deprecated field. Will be removed soon.
   const Instance::InstanceKey& InstanceKey() const;
 
   const std::string& LaunchId() const;
@@ -75,9 +81,6 @@ class InstanceUpdate {
 
   content::BrowserContext* BrowserContext() const;
   bool BrowserContextChanged() const;
-
-  aura::Window* Window() const;
-  bool WindowChanged() const;
 
  private:
   Instance* state_;

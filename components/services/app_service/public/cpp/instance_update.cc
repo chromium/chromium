@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/macros.h"
 
 namespace apps {
 
@@ -16,14 +17,20 @@ void InstanceUpdate::Merge(Instance* state, const Instance* delta) {
   if (!delta) {
     return;
   }
+
+  // TODO(crbug.com/1251501): Remove GetInstanceKey.
   if ((delta->AppId() != state->AppId()) ||
+      delta->InstanceId() != state->InstanceId() ||
       delta->GetInstanceKey() != state->GetInstanceKey()) {
-    LOG(ERROR) << "inconsistent (app_id, instance_key): (" << delta->AppId()
-               << ", " << delta->GetInstanceKey() << ") vs (" << state->AppId()
-               << ", " << state->GetInstanceKey() << ") ";
+    LOG(ERROR) << "inconsistent (app_id, instance_id, instance_key): ("
+               << delta->AppId() << ", " << delta->InstanceId() << ", "
+               << delta->GetInstanceKey() << ") vs (" << state->AppId() << ", "
+               << state->InstanceId() << ", " << state->GetInstanceKey()
+               << ") ";
     DCHECK(false);
     return;
   }
+
   if (!delta->LaunchId().empty()) {
     state->SetLaunchId(delta->LaunchId());
   }
@@ -54,12 +61,20 @@ bool InstanceUpdate::Equals(const Instance* state, const Instance* delta) {
     return false;
   }
 
+  // TODO(crbug.com/1251501): Remove GetInstanceKey.
   if ((delta->AppId() != state->AppId()) ||
+      delta->InstanceId() != state->InstanceId() ||
       delta->GetInstanceKey() != state->GetInstanceKey()) {
-    LOG(ERROR) << "inconsistent (app_id, instance_key): (" << delta->AppId()
-               << ", " << delta->GetInstanceKey() << ") vs (" << state->AppId()
-               << ", " << state->GetInstanceKey() << ") ";
+    LOG(ERROR) << "inconsistent (app_id, instance_id, instance_key): ("
+               << delta->AppId() << ", " << delta->InstanceId() << ", "
+               << delta->GetInstanceKey() << ") vs (" << state->AppId() << ", "
+               << state->InstanceId() << ", " << state->GetInstanceKey()
+               << ") ";
     DCHECK(false);
+    return false;
+  }
+
+  if (delta->Window() && delta->Window() != state->Window()) {
     return false;
   }
   if (!delta->LaunchId().empty() && delta->LaunchId() != state->LaunchId()) {
@@ -105,84 +120,53 @@ const std::string& InstanceUpdate::AppId() const {
   return delta_ ? delta_->AppId() : state_->AppId();
 }
 
+const base::UnguessableToken& InstanceUpdate::InstanceId() const {
+  return delta_ ? delta_->InstanceId() : state_->InstanceId();
+}
+
+aura::Window* InstanceUpdate::Window() const {
+  GET_VALUE(Window);
+}
+
+bool InstanceUpdate::WindowChanged() const {
+  IS_VALUE_CHANGED(Window);
+}
+
 const Instance::InstanceKey& InstanceUpdate::InstanceKey() const {
   return delta_ ? delta_->GetInstanceKey() : state_->GetInstanceKey();
 }
 
 const std::string& InstanceUpdate::LaunchId() const {
-  if (delta_ && !delta_->LaunchId().empty()) {
-    return delta_->LaunchId();
-  }
-  if (state_ && !state_->LaunchId().empty()) {
-    return state_->LaunchId();
-  }
-  return base::EmptyString();
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LaunchId, empty, base::EmptyString());
 }
 
 bool InstanceUpdate::LaunchIdChanged() const {
-  return delta_ && !delta_->LaunchId().empty() &&
-         (!state_ || (delta_->LaunchId() != state_->LaunchId()));
+  IS_VALUE_CHANGED_WITH_CHECK(LaunchId, empty);
 }
 
 InstanceState InstanceUpdate::State() const {
-  if (delta_ && (delta_->State() != InstanceState::kUnknown)) {
-    return delta_->State();
-  }
-  if (state_) {
-    return state_->State();
-  }
-  return InstanceState::kUnknown;
+  GET_VALUE_WITH_DEFAULT_VALUE(State, InstanceState::kUnknown);
 }
 
 bool InstanceUpdate::StateChanged() const {
-  return delta_ && (delta_->State() != InstanceState::kUnknown) &&
-         (!state_ || (delta_->State() != state_->State()));
+  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(State, InstanceState::kUnknown);
 }
 
 base::Time InstanceUpdate::LastUpdatedTime() const {
-  if (delta_ && !delta_->LastUpdatedTime().is_null()) {
-    return delta_->LastUpdatedTime();
-  }
-  if (state_ && !state_->LastUpdatedTime().is_null()) {
-    return state_->LastUpdatedTime();
-  }
-
-  return base::Time();
+  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(LastUpdatedTime, is_null,
+                                          base::Time());
 }
 
 bool InstanceUpdate::LastUpdatedTimeChanged() const {
-  return delta_ && !delta_->LastUpdatedTime().is_null() &&
-         (!state_ || (delta_->LastUpdatedTime() != state_->LastUpdatedTime()));
+  IS_VALUE_CHANGED_WITH_CHECK(LastUpdatedTime, is_null);
 }
 
 content::BrowserContext* InstanceUpdate::BrowserContext() const {
-  if (delta_ && delta_->BrowserContext()) {
-    return delta_->BrowserContext();
-  }
-  if (state_ && state_->BrowserContext()) {
-    return state_->BrowserContext();
-  }
-  return nullptr;
+  GET_VALUE(BrowserContext);
 }
 
 bool InstanceUpdate::BrowserContextChanged() const {
-  return delta_ && delta_->BrowserContext() &&
-         (!state_ || (delta_->BrowserContext() != state_->BrowserContext()));
-}
-
-aura::Window* InstanceUpdate::Window() const {
-  if (delta_ && delta_->Window()) {
-    return delta_->Window();
-  }
-  if (state_ && state_->Window()) {
-    return state_->Window();
-  }
-  return nullptr;
-}
-
-bool InstanceUpdate::WindowChanged() const {
-  return delta_ && delta_->Window() &&
-         (!state_ || (delta_->Window() != state_->Window()));
+  IS_VALUE_CHANGED(BrowserContext);
 }
 
 }  // namespace apps
