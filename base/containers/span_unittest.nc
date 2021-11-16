@@ -219,7 +219,7 @@ void WontCompile() {
   auto span = make_span(set);
 }
 
-#elif defined(NCTEST_CONST_VECTOR_DEDUCES_AS_CONST_SPAN)  // [r"fatal error: no viable conversion from 'span<const int, \[...\]>' to 'span<int, \[...\]>'"]
+#elif defined(NCTEST_CONST_VECTOR_DEDUCES_AS_CONST_SPAN)  // [r"fatal error: no viable conversion from 'span<(T|const int), \[...\]>' to 'span<int, \[...\]>'"]
 
 int WontCompile() {
   const std::vector<int> v;
