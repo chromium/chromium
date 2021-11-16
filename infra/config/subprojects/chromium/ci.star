@@ -834,7 +834,7 @@ ci.android_builder(
         short_name = "m",
     ),
     notifies = ["cronet"],
-    triggered_by = ["android-cronet-arm64-rel"],
+    triggered_by = ["ci/android-cronet-arm64-rel"],
 )
 
 ci.android_builder(
@@ -853,7 +853,7 @@ ci.android_builder(
         short_name = "o",
     ),
     notifies = ["cronet"],
-    triggered_by = ["android-cronet-x86-dbg"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.android_builder(
@@ -863,7 +863,7 @@ ci.android_builder(
         short_name = "p",
     ),
     notifies = ["cronet"],
-    triggered_by = ["android-cronet-x86-dbg"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.android_builder(
@@ -873,7 +873,7 @@ ci.android_builder(
         short_name = "10",
     ),
     notifies = ["cronet"],
-    triggered_by = ["android-cronet-x86-dbg"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.android_builder(
@@ -883,7 +883,7 @@ ci.android_builder(
         short_name = "11",
     ),
     notifies = ["cronet"],
-    triggered_by = ["android-cronet-x86-dbg"],
+    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.android_builder(
