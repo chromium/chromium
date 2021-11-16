@@ -79,5 +79,9 @@ const char kWebSQLInThirdPartyContextEnabled[] =
 const char kUserAgentClientHintsGREASEUpdateEnabled[] =
     "policy.user_agent_client_hints_grease_update_enabled";
 
+// Dictionary policy describing a set of URL patterns where copying to the
+// clipboard is not allowed.
+const char kCopyPreventionSettings[] = "policy.copy_prevention_settings";
+
 }  // namespace policy_prefs
 }  // namespace policy

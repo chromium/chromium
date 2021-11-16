@@ -1310,6 +1310,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kCorsNonWildcardRequestHeadersSupport,
                                 true);
+  registry->RegisterDictionaryPref(
+      policy::policy_prefs::kCopyPreventionSettings);
 }
 
 // static

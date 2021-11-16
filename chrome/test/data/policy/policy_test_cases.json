@@ -17311,5 +17311,44 @@
   },
   "KioskCRXManifestUpdateURLIgnored": {
     "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "CopyPreventionSettings": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CopyPreventionSettings": {
+            "enable": [ "*" ],
+            "disable": [ "not-sensitive.example.com" ],
+            "minimum_data_size": 100
+          }
+        },
+        "prefs": {
+          "policy.copy_prevention_settings": {
+            "value": {
+              "enable": [ "*" ],
+              "disable": [ "not-sensitive.example.com" ],
+              "minimum_data_size": 100
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.copy_prevention_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
   }
 }

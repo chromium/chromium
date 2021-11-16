@@ -1551,6 +1551,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserAgentClientHintsGREASEUpdateEnabled,
     policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kCopyPreventionSettings,
+    policy_prefs::kCopyPreventionSettings,
+    base::Value::Type::DICTIONARY},
 };
 // clang-format on
 
