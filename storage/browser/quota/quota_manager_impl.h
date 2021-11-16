@@ -607,6 +607,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::OnceCallback<void(QuotaErrorOr<ValueType>)> reply,
       const base::Location& from_here = base::Location::Current());
 
+  void PostTaskAndReplyWithResultForDBThread(
+      base::OnceCallback<QuotaError(QuotaDatabase*)> task,
+      base::OnceCallback<void(QuotaError)> reply,
+      const base::Location& from_here = base::Location::Current());
+
   static std::tuple<int64_t, int64_t> CallGetVolumeInfo(
       GetVolumeInfoFn get_volume_info_fn,
       const base::FilePath& path);

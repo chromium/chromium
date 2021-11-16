@@ -999,7 +999,7 @@ class QuotaManagerImpl::StorageCleanupHelper : public QuotaTask {
 // modified.
 class QuotaManagerImpl::DumpQuotaTableHelper {
  public:
-  bool DumpQuotaTableOnDBThread(QuotaDatabase* database) {
+  QuotaError DumpQuotaTableOnDBThread(QuotaDatabase* database) {
     DCHECK(database);
     return database->DumpQuotaTable(base::BindRepeating(
         &DumpQuotaTableHelper::AppendEntry, base::Unretained(this)));
@@ -1007,13 +1007,13 @@ class QuotaManagerImpl::DumpQuotaTableHelper {
 
   void DidDumpQuotaTable(const base::WeakPtr<QuotaManagerImpl>& manager,
                          DumpQuotaTableCallback callback,
-                         bool success) {
+                         QuotaError error) {
     if (!manager) {
       // The operation was aborted.
       std::move(callback).Run(QuotaTableEntries());
       return;
     }
-    manager->DidDatabaseWork(success);
+    manager->DidDatabaseWork(error != QuotaError::kDatabaseError);
     std::move(callback).Run(entries_);
   }
 
@@ -1035,7 +1035,7 @@ class QuotaManagerImpl::DumpQuotaTableHelper {
 // modified.
 class QuotaManagerImpl::DumpBucketTableHelper {
  public:
-  bool DumpBucketTableOnDBThread(QuotaDatabase* database) {
+  QuotaError DumpBucketTableOnDBThread(QuotaDatabase* database) {
     DCHECK(database);
     return database->DumpBucketTable(base::BindRepeating(
         &DumpBucketTableHelper::AppendEntry, base::Unretained(this)));
@@ -1043,13 +1043,13 @@ class QuotaManagerImpl::DumpBucketTableHelper {
 
   void DidDumpBucketTable(const base::WeakPtr<QuotaManagerImpl>& manager,
                           DumpBucketTableCallback callback,
-                          bool success) {
+                          QuotaError error) {
     if (!manager) {
       // The operation was aborted.
       std::move(callback).Run(BucketTableEntries());
       return;
     }
-    manager->DidDatabaseWork(success);
+    manager->DidDatabaseWork(error != QuotaError::kDatabaseError);
     std::move(callback).Run(entries_);
   }
 
@@ -1721,7 +1721,6 @@ void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DumpQuotaTableHelper* helper = new DumpQuotaTableHelper;
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&DumpQuotaTableHelper::DumpQuotaTableOnDBThread,
                      base::Unretained(helper)),
       base::BindOnce(&DumpQuotaTableHelper::DidDumpQuotaTable,
@@ -1733,7 +1732,6 @@ void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DumpBucketTableHelper* helper = new DumpBucketTableHelper;
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&DumpBucketTableHelper::DumpBucketTableOnDBThread,
                      base::Unretained(helper)),
       base::BindOnce(&DumpBucketTableHelper::DidDumpBucketTable,
@@ -2319,6 +2317,20 @@ template <typename ValueType>
 void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
     base::OnceCallback<QuotaErrorOr<ValueType>(QuotaDatabase*)> task,
     base::OnceCallback<void(QuotaErrorOr<ValueType>)> reply,
+    const base::Location& from_here) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Deleting manager will post another task to DB sequence to delete
+  // |database_|, therefore we can be sure that database_ is alive when this
+  // task runs.
+  base::PostTaskAndReplyWithResult(
+      db_runner_.get(), from_here,
+      base::BindOnce(std::move(task), base::Unretained(database_.get())),
+      std::move(reply));
+}
+
+void QuotaManagerImpl::PostTaskAndReplyWithResultForDBThread(
+    base::OnceCallback<QuotaError(QuotaDatabase*)> task,
+    base::OnceCallback<void(QuotaError)> reply,
     const base::Location& from_here) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Deleting manager will post another task to DB sequence to delete

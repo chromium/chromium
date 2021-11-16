@@ -909,10 +909,11 @@ bool QuotaDatabase::InsertOrReplaceHostQuota(const std::string& host,
   return statement.Run();
 }
 
-bool QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
+QuotaError QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] = "SELECT * FROM quota";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -924,17 +925,16 @@ bool QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {
         .quota = statement.ColumnInt64(2)};
 
     if (!callback.Run(entry))
-      return true;
+      return QuotaError::kNone;
   }
-
-  return statement.Succeeded();
+  return statement.Succeeded() ? QuotaError::kNone : QuotaError::kDatabaseError;
 }
 
-bool QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
+QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] =
       // clang-format off
@@ -956,17 +956,15 @@ bool QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!storage_key.has_value())
       continue;
-
     BucketTableEntry entry(std::move(bucket_id), std::move(storage_key).value(),
                            static_cast<StorageType>(statement.ColumnInt(2)),
                            statement.ColumnString(3), statement.ColumnInt(4),
                            statement.ColumnTime(5), statement.ColumnTime(6));
 
     if (!callback.Run(entry))
-      return true;
+      return QuotaError::kNone;
   }
-
-  return statement.Succeeded();
+  return statement.Succeeded() ? QuotaError::kNone : QuotaError::kDatabaseError;
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(

@@ -89,13 +89,14 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     }
   };
 
-  bool DumpQuotaTable(QuotaDatabase* quota_database,
-                      const QuotaDatabase::QuotaTableCallback& callback) {
+  QuotaError DumpQuotaTable(QuotaDatabase* quota_database,
+                            const QuotaDatabase::QuotaTableCallback& callback) {
     return quota_database->DumpQuotaTable(callback);
   }
 
-  bool DumpBucketTable(QuotaDatabase* quota_database,
-                       const QuotaDatabase::BucketTableCallback& callback) {
+  QuotaError DumpBucketTable(
+      QuotaDatabase* quota_database,
+      const QuotaDatabase::BucketTableCallback& callback) {
     return quota_database->DumpBucketTable(callback);
   }
 
@@ -809,8 +810,10 @@ TEST_P(QuotaDatabaseTest, DumpQuotaTable) {
 
   using Verifier = EntryVerifier<QuotaTableEntry>;
   Verifier verifier(kTableEntries, std::end(kTableEntries));
-  EXPECT_TRUE(DumpQuotaTable(
-      &db, base::BindRepeating(&Verifier::Run, base::Unretained(&verifier))));
+  EXPECT_EQ(
+      DumpQuotaTable(&db, base::BindRepeating(&Verifier::Run,
+                                              base::Unretained(&verifier))),
+      QuotaError::kNone);
   EXPECT_TRUE(verifier.table.empty());
 }
 
@@ -832,8 +835,10 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
 
   using Verifier = EntryVerifier<Entry>;
   Verifier verifier(kTableEntries, std::end(kTableEntries));
-  EXPECT_TRUE(DumpBucketTable(
-      &db, base::BindRepeating(&Verifier::Run, base::Unretained(&verifier))));
+  EXPECT_EQ(
+      DumpBucketTable(&db, base::BindRepeating(&Verifier::Run,
+                                               base::Unretained(&verifier))),
+      QuotaError::kNone);
   EXPECT_TRUE(verifier.table.empty());
 }
 
