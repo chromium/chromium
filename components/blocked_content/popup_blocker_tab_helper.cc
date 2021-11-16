@@ -41,7 +41,8 @@ struct PopupBlockerTabHelper::BlockedRequest {
 };
 
 PopupBlockerTabHelper::PopupBlockerTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PopupBlockerTabHelper>(*web_contents) {
   blocked_content::SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents);
 }
 

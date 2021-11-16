@@ -286,9 +286,8 @@ void RegisterLocalizedFontPref(user_prefs::PrefRegistrySyncable* registry,
 }  // namespace
 
 PrefsTabHelper::PrefsTabHelper(WebContents* contents)
-    : web_contents_(contents),
-      profile_(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())) {
+    : content::WebContentsUserData<PrefsTabHelper>(*contents),
+      profile_(Profile::FromBrowserContext(contents->GetBrowserContext())) {
   PrefService* prefs = profile_->GetPrefs();
   if (prefs) {
 #if !defined(OS_ANDROID)
@@ -317,7 +316,7 @@ PrefsTabHelper::PrefsTabHelper(WebContents* contents)
   }
 
   blink::RendererPreferences* render_prefs =
-      web_contents_->GetMutableRendererPrefs();
+      GetWebContents().GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(render_prefs, profile_);
 
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
@@ -438,13 +437,14 @@ void PrefsTabHelper::OnThemeChanged() {
 }
 
 void PrefsTabHelper::UpdateWebPreferences() {
-  web_contents_->NotifyPreferencesChanged();
+  GetWebContents().NotifyPreferencesChanged();
 }
 
 void PrefsTabHelper::UpdateRendererPreferences() {
-  blink::RendererPreferences* prefs = web_contents_->GetMutableRendererPrefs();
+  blink::RendererPreferences* prefs =
+      GetWebContents().GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(prefs, profile_);
-  web_contents_->SyncRendererPrefs();
+  GetWebContents().SyncRendererPrefs();
 }
 
 void PrefsTabHelper::OnFontFamilyPrefChanged(const std::string& pref_name) {
@@ -469,9 +469,9 @@ void PrefsTabHelper::OnFontFamilyPrefChanged(const std::string& pref_name) {
     std::string pref_value = prefs->GetString(pref_name);
     if (pref_value.empty()) {
       blink::web_pref::WebPreferences web_prefs =
-          web_contents_->GetOrCreateWebPreferences();
+          GetWebContents().GetOrCreateWebPreferences();
       OverrideFontFamily(&web_prefs, generic_family, script, std::string());
-      web_contents_->SetWebPreferences(web_prefs);
+      GetWebContents().SetWebPreferences(web_prefs);
       return;
     }
   }
@@ -492,7 +492,7 @@ void PrefsTabHelper::NotifyWebkitPreferencesChanged(
   OnFontFamilyPrefChanged(pref_name);
 #endif
 
-  web_contents_->OnWebPreferencesChanged();
+  GetWebContents().OnWebPreferencesChanged();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrefsTabHelper);

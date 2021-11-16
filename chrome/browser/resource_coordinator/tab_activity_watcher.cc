@@ -197,7 +197,8 @@ class TabActivityWatcher::WebContentsData
   };
 
   explicit WebContentsData(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
+      : WebContentsObserver(web_contents),
+        content::WebContentsUserData<WebContentsData>(*web_contents) {
     DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
     web_contents->GetMainFrame()
         ->GetRenderViewHost()

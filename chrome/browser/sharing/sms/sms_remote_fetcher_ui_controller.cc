@@ -37,7 +37,9 @@ SmsRemoteFetcherUiController::GetOrCreateFromWebContents(
 
 SmsRemoteFetcherUiController::SmsRemoteFetcherUiController(
     content::WebContents* web_contents)
-    : SharingUiController(web_contents) {}
+    : SharingUiController(web_contents),
+      content::WebContentsUserData<SmsRemoteFetcherUiController>(
+          *web_contents) {}
 
 SmsRemoteFetcherUiController::~SmsRemoteFetcherUiController() = default;
 

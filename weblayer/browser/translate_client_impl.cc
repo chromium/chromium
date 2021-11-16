@@ -55,6 +55,7 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
 
 TranslateClientImpl::TranslateClientImpl(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TranslateClientImpl>(*web_contents),
       translate_driver_(*web_contents,
                         &web_contents->GetController(),
                         /*url_language_histogram=*/nullptr,

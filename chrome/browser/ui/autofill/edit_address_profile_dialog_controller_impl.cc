@@ -20,7 +20,9 @@ namespace autofill {
 
 EditAddressProfileDialogControllerImpl::EditAddressProfileDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<EditAddressProfileDialogControllerImpl>(
+          *web_contents) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
 }

@@ -18,7 +18,8 @@
 SharedHighlightingPromo::SharedHighlightingPromo(
     content::WebContents* web_contents,
     Browser* browser)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SharedHighlightingPromo>(*web_contents) {
   feature_promo_controller_ = browser->window()->GetFeaturePromoController();
 }
 

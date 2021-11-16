@@ -82,7 +82,8 @@ AppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
 
 AppBannerManagerDesktop::AppBannerManagerDesktop(
     content::WebContents* web_contents)
-    : AppBannerManager(web_contents) {
+    : AppBannerManager(web_contents),
+      content::WebContentsUserData<AppBannerManagerDesktop>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);

@@ -28,7 +28,8 @@
 
 SoundContentSettingObserver::SoundContentSettingObserver(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents), logged_site_muted_ukm_(false) {
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<SoundContentSettingObserver>(*contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =

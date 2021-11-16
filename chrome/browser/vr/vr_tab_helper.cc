@@ -24,7 +24,7 @@ using content::WebContents;
 namespace vr {
 
 VrTabHelper::VrTabHelper(content::WebContents* contents)
-    : web_contents_(contents) {}
+    : content::WebContentsUserData<VrTabHelper>(*contents) {}
 
 VrTabHelper::~VrTabHelper() {}
 
@@ -35,9 +35,9 @@ void VrTabHelper::SetIsInVr(bool is_in_vr) {
   is_in_vr_ = is_in_vr;
 
   blink::web_pref::WebPreferences web_prefs =
-      web_contents_->GetOrCreateWebPreferences();
+      GetWebContents().GetOrCreateWebPreferences();
   web_prefs.immersive_mode_enabled = is_in_vr_;
-  web_contents_->SetWebPreferences(web_prefs);
+  GetWebContents().SetWebPreferences(web_prefs);
 }
 
 /* static */

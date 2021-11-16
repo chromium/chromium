@@ -59,6 +59,7 @@ GURL ContentFaviconDriver::GetManifestURL(content::RenderFrameHost* rfh) {
 ContentFaviconDriver::ContentFaviconDriver(content::WebContents* web_contents,
                                            CoreFaviconService* favicon_service)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ContentFaviconDriver>(*web_contents),
       FaviconDriverImpl(favicon_service) {}
 
 ContentFaviconDriver::~ContentFaviconDriver() = default;

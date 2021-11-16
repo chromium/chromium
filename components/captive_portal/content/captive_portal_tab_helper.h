@@ -106,7 +106,7 @@ class CaptivePortalTabHelper
   // The current main frame navigation happening for the WebContents, or
   // nullptr if there is none. If there are two main frame navigations
   // happening at once, it's the one that started most recently.
-  content::NavigationHandle* navigation_handle_;
+  content::NavigationHandle* navigation_handle_ = nullptr;
 
   // Neither of these will ever be NULL.
   std::unique_ptr<CaptivePortalTabReloader> tab_reloader_;

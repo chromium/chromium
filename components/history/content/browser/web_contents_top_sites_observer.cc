@@ -15,8 +15,9 @@ namespace history {
 WebContentsTopSitesObserver::WebContentsTopSitesObserver(
     content::WebContents* web_contents,
     TopSites* top_sites)
-    : content::WebContentsObserver(web_contents), top_sites_(top_sites) {
-}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsTopSitesObserver>(*web_contents),
+      top_sites_(top_sites) {}
 
 WebContentsTopSitesObserver::~WebContentsTopSitesObserver() {
 }

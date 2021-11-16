@@ -65,9 +65,6 @@ class ReceiverPresentationServiceDelegateImpl
   ReceiverPresentationServiceDelegateImpl(content::WebContents* web_contents,
                                           const std::string& presentation_id);
 
-  // Reference to the WebContents that owns this instance.
-  content::WebContents* const web_contents_;
-
   const std::string presentation_id_;
 
   // This is an unowned pointer to the LocalPresentationManager.

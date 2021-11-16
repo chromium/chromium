@@ -124,8 +124,6 @@ class SearchTabHelper : public content::WebContentsObserver,
       uint8_t line,
       bool accepted);
 
-  content::WebContents* web_contents_;
-
   SearchIPCRouter ipc_router_;
 
   InstantService* instant_service_;

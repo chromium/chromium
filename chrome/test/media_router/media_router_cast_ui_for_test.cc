@@ -176,7 +176,8 @@ void MediaRouterCastUiForTest::OnDialogCreated() {
 
 MediaRouterCastUiForTest::MediaRouterCastUiForTest(
     content::WebContents* web_contents)
-    : MediaRouterUiForTestBase(web_contents) {}
+    : MediaRouterUiForTestBase(web_contents),
+      content::WebContentsUserData<MediaRouterCastUiForTest>(*web_contents) {}
 
 void MediaRouterCastUiForTest::OnDialogModelUpdated(
     CastDialogView* dialog_view) {

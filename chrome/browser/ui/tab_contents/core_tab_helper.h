@@ -130,7 +130,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Content restrictions, used to disable print/copy etc based on content's
   // (full-page plugins for now only) permissions.
-  int content_restrictions_;
+  int content_restrictions_ = 0;
 
   base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 

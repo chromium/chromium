@@ -225,7 +225,8 @@ class ObservingAutofillClient
   }
 
  private:
-  explicit ObservingAutofillClient(content::WebContents* web_contents) {}
+  explicit ObservingAutofillClient(content::WebContents* web_contents)
+      : content::WebContentsUserData<ObservingAutofillClient>(*web_contents) {}
   friend class content::WebContentsUserData<ObservingAutofillClient>;
 
   base::RunLoop* run_loop_ = nullptr;

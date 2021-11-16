@@ -98,7 +98,8 @@ FormInteractionTabHelper::CreateGraphObserver() {
 }
 
 FormInteractionTabHelper::FormInteractionTabHelper(
-    content::WebContents* contents) {}
+    content::WebContents* contents)
+    : content::WebContentsUserData<FormInteractionTabHelper>(*contents) {}
 
 FormInteractionTabHelper::~FormInteractionTabHelper() = default;
 

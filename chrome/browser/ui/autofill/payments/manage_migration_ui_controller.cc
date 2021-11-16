@@ -11,7 +11,8 @@
 namespace autofill {
 
 ManageMigrationUiController::ManageMigrationUiController(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<ManageMigrationUiController>(*web_contents) {
   autofill::LocalCardMigrationBubbleControllerImpl::CreateForWebContents(
       web_contents);
   bubble_controller_ =

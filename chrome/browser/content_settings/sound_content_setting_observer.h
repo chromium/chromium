@@ -73,7 +73,7 @@ class SoundContentSettingObserver
 #endif
 
   // True if we have already logged a SiteMuted UKM event since last navigation.
-  bool logged_site_muted_ukm_;
+  bool logged_site_muted_ukm_ = false;
 
   HostContentSettingsMap* host_content_settings_map_;
 

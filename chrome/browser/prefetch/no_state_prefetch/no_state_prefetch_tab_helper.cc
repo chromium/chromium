@@ -15,7 +15,8 @@ namespace prerender {
 
 NoStatePrefetchTabHelper::NoStatePrefetchTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<NoStatePrefetchTabHelper>(*web_contents) {}
 
 NoStatePrefetchTabHelper::~NoStatePrefetchTabHelper() = default;
 

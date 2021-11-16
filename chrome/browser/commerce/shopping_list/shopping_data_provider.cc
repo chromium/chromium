@@ -37,6 +37,7 @@ ShoppingDataProvider::ShoppingDataProvider(
     content::WebContents* content,
     optimization_guide::OptimizationGuideDecider* optimization_guide)
     : content::WebContentsObserver(content),
+      content::WebContentsUserData<ShoppingDataProvider>(*content),
       run_javascript_on_load_(false),
       optimization_guide_(optimization_guide),
       weak_ptr_factory_(this) {

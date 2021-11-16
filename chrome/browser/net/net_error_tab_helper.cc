@@ -162,6 +162,7 @@ void NetErrorTabHelper::SetIsShowingDownloadButtonInErrorPage(
 
 NetErrorTabHelper::NetErrorTabHelper(WebContents* contents)
     : WebContentsObserver(contents),
+      content::WebContentsUserData<NetErrorTabHelper>(*contents),
       network_diagnostics_receivers_(contents, this),
       network_easter_egg_receivers_(contents, this),
       net_error_page_support_(contents, this),

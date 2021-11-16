@@ -16,7 +16,9 @@ namespace apps {
 
 AudioFocusWebContentsObserver::AudioFocusWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AudioFocusWebContentsObserver>(
+          *web_contents) {}
 
 AudioFocusWebContentsObserver::~AudioFocusWebContentsObserver() = default;
 

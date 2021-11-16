@@ -148,7 +148,7 @@ void RecordConcreteNtp(content::NavigationHandle* navigation_handle) {
 
 SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+      content::WebContentsUserData<SearchTabHelper>(*web_contents),
       ipc_router_(web_contents,
                   this,
                   std::make_unique<SearchIPCRouterPolicyImpl>(web_contents)),
@@ -160,13 +160,13 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
     instant_service_->AddObserver(this);
 
   OmniboxTabHelper::CreateForWebContents(web_contents);
-  OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
+  OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
 }
 
 SearchTabHelper::~SearchTabHelper() {
   if (instant_service_)
     instant_service_->RemoveObserver(this);
-  if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_))
+  if (auto* helper = OmniboxTabHelper::FromWebContents(&GetWebContents()))
     helper->RemoveObserver(this);
 }
 
@@ -186,7 +186,7 @@ void SearchTabHelper::BindEmbeddedSearchConnecter(
 void SearchTabHelper::OnTabActivated() {
   ipc_router_.OnTabActivated();
 
-  if (search::IsInstantNTP(web_contents_) && instant_service_)
+  if (search::IsInstantNTP(web_contents()) && instant_service_)
     instant_service_->OnNewTabPageOpened();
 }
 
@@ -205,7 +205,7 @@ void SearchTabHelper::DidStartNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  if (web_contents_->GetVisibleURL().DeprecatedGetOriginAsURL() ==
+  if (web_contents()->GetVisibleURL().DeprecatedGetOriginAsURL() ==
       GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
     RecordConcreteNtp(navigation_handle);
   }
@@ -214,9 +214,9 @@ void SearchTabHelper::DidStartNavigation(
     // Set the title on any pending entry corresponding to the NTP. This
     // prevents any flickering of the tab title.
     content::NavigationEntry* entry =
-        web_contents_->GetController().GetPendingEntry();
+        web_contents()->GetController().GetPendingEntry();
     if (entry) {
-      web_contents_->UpdateTitleForEntry(
+      web_contents()->UpdateTitleForEntry(
           entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     }
   }
@@ -236,9 +236,9 @@ void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
   // also a race condition between this code and the page's SetTitle call which
   // this rule avoids.
   if (entry->GetTitle().empty() &&
-      search::NavEntryIsInstantNTP(web_contents_, entry)) {
+      search::NavEntryIsInstantNTP(web_contents(), entry)) {
     is_setting_title_ = true;
-    web_contents_->UpdateTitleForEntry(
+    web_contents()->UpdateTitleForEntry(
         entry, l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
     is_setting_title_ = false;
   }
@@ -246,8 +246,8 @@ void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 
 void SearchTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                     const GURL& /* validated_url */) {
-  if (!render_frame_host->GetParent() && search::IsInstantNTP(web_contents_))
-    RecordNewTabLoadTime(web_contents_);
+  if (!render_frame_host->GetParent() && search::IsInstantNTP(web_contents()))
+    RecordNewTabLoadTime(web_contents());
 }
 
 void SearchTabHelper::NavigationEntryCommitted(
@@ -255,7 +255,7 @@ void SearchTabHelper::NavigationEntryCommitted(
   if (!load_details.is_main_frame)
     return;
 
-  if (search::IsInstantNTP(web_contents_)) {
+  if (search::IsInstantNTP(web_contents())) {
     // We (re)create the logger here because
     // 1. The logger tries to detect whether the NTP is being created at startup
     //    or from the user opening a new tab, and if we wait until later, it
@@ -266,14 +266,14 @@ void SearchTabHelper::NavigationEntryCommitted(
     //    be scoped to the life time of a single NTP we reset the logger every
     //    time we reach a new NTP.
     logger_ = std::make_unique<NTPUserDataLogger>(
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
         // We use the NavigationController's URL since it might differ from the
         // WebContents URL which is usually chrome://newtab/.
-        web_contents_->GetController().GetVisibleEntry()->GetURL());
+        web_contents()->GetController().GetVisibleEntry()->GetURL());
     ipc_router_.SetInputInProgress(IsInputInProgress());
   }
 
-  if (InInstantProcess(instant_service_, web_contents_))
+  if (InInstantProcess(instant_service_, web_contents()))
     ipc_router_.OnNavigationEntryCommitted();
 }
 
@@ -287,7 +287,7 @@ void SearchTabHelper::MostVisitedInfoChanged(
 }
 
 void SearchTabHelper::FocusOmnibox(bool focus) {
-  search::FocusOmnibox(focus, web_contents_);
+  search::FocusOmnibox(focus, web_contents());
 }
 
 void SearchTabHelper::OnDeleteMostVisitedItem(const GURL& url) {
@@ -318,16 +318,16 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
   // Don't send oninputstart/oninputend updates in response to focus changes
   // if there's a navigation in progress. This prevents Chrome from sending
   // a spurious oninputend when the user accepts a match in the omnibox.
-  if (web_contents_->GetController().GetPendingEntry() == nullptr)
+  if (web_contents()->GetController().GetPendingEntry() == nullptr)
     ipc_router_.SetInputInProgress(IsInputInProgress());
 }
 
 Profile* SearchTabHelper::profile() const {
-  return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 bool SearchTabHelper::IsInputInProgress() const {
-  return search::IsOmniboxInputInProgress(web_contents_);
+  return search::IsOmniboxInputInProgress(web_contents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);

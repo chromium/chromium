@@ -88,7 +88,9 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
 
 PasswordManagerDriverFactory::PasswordManagerDriverFactory(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PasswordManagerDriverFactory>(
+          *web_contents) {}
 
 PasswordManagerDriverFactory::~PasswordManagerDriverFactory() = default;
 

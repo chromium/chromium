@@ -149,8 +149,9 @@ void SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
 SyncEncryptionKeysTabHelper::SyncEncryptionKeysTabHelper(
     content::WebContents* web_contents,
     syncer::SyncService* sync_service)
-    : content::WebContentsObserver(web_contents), sync_service_(sync_service) {
-  DCHECK(web_contents);
+    : content::WebContentsUserData<SyncEncryptionKeysTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
+      sync_service_(sync_service) {
   DCHECK(sync_service);
 }
 

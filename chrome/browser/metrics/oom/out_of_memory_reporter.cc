@@ -28,6 +28,7 @@ void OutOfMemoryReporter::RemoveObserver(Observer* observer) {
 
 OutOfMemoryReporter::OutOfMemoryReporter(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OutOfMemoryReporter>(*web_contents),
       tick_clock_(std::make_unique<base::DefaultTickClock>()) {
 #if defined(OS_ANDROID)
   // This adds N async observers for N WebContents, which isn't great but

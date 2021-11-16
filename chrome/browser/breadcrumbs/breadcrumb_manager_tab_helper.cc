@@ -31,13 +31,13 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(
     : breadcrumbs::BreadcrumbManagerTabHelper(
           infobars::ContentInfoBarManager::FromWebContents(web_contents)),
       content::WebContentsObserver(web_contents),
-      web_contents_(web_contents) {}
+      content::WebContentsUserData<BreadcrumbManagerTabHelper>(*web_contents) {}
 
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
   BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext())
+      GetWebContents().GetBrowserContext())
       ->AddEvent(event);
 }
 
@@ -63,7 +63,7 @@ void BreadcrumbManagerTabHelper::DidFinishLoad(
     const GURL& validated_url) {
   LogPageLoaded(IsNtpUrl(validated_url), validated_url,
                 /*page_load_success=*/true,
-                web_contents_->GetContentsMimeType());
+                GetWebContents().GetContentsMimeType());
 }
 
 void BreadcrumbManagerTabHelper::DidFailLoad(
@@ -72,12 +72,12 @@ void BreadcrumbManagerTabHelper::DidFailLoad(
     int error_code) {
   LogPageLoaded(IsNtpUrl(validated_url), validated_url,
                 /*page_load_success=*/false,
-                web_contents_->GetContentsMimeType());
+                GetWebContents().GetContentsMimeType());
 }
 
 void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
   const auto visible_security_state =
-      security_state::GetVisibleSecurityState(web_contents_);
+      security_state::GetVisibleSecurityState(&GetWebContents());
   DCHECK(visible_security_state);
   const bool displayed_mixed_content =
       visible_security_state->displayed_mixed_content;
@@ -96,10 +96,6 @@ void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
 void BreadcrumbManagerTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   LogRenderProcessGone();
-}
-
-void BreadcrumbManagerTabHelper::WebContentsDestroyed() {
-  web_contents_ = nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelper);

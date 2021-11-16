@@ -39,7 +39,8 @@ constexpr char kInvalidSetAccessibilityTreeCall[] =
 }  // namespace
 
 PdfPrintManager::PdfPrintManager(content::WebContents* web_contents)
-    : printing::PrintManager(web_contents) {}
+    : printing::PrintManager(web_contents),
+      content::WebContentsUserData<PdfPrintManager>(*web_contents) {}
 
 PdfPrintManager::~PdfPrintManager() = default;
 

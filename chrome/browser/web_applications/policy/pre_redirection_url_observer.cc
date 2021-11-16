@@ -11,7 +11,8 @@ namespace webapps {
 
 PreRedirectionURLObserver::PreRedirectionURLObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PreRedirectionURLObserver>(*web_contents) {}
 
 void PreRedirectionURLObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {

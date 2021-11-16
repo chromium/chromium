@@ -43,7 +43,6 @@ class CommerceHintService
                    std::vector<CartDB::KeyAndValue> proto_pairs);
   void OnOperationFinished(const std::string& operation, bool success);
 
-  content::WebContents* web_contents_;
   CartService* service_;
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
       nullptr;

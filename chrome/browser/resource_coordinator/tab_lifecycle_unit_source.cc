@@ -53,7 +53,9 @@ class TabLifecycleUnitSource::TabLifecycleUnitHolder
  private:
   friend class content::WebContentsUserData<TabLifecycleUnitHolder>;
 
-  explicit TabLifecycleUnitHolder(content::WebContents*) {}
+  explicit TabLifecycleUnitHolder(content::WebContents* web_contents)
+      : content::WebContentsUserData<
+            TabLifecycleUnitSource::TabLifecycleUnitHolder>(*web_contents) {}
 
   std::unique_ptr<TabLifecycleUnit> lifecycle_unit_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

@@ -176,7 +176,9 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<CardUnmaskOtpInputDialogControllerImpl>(
+          *web_contents) {}
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     OtpUnmaskResult otp_unmask_result) {

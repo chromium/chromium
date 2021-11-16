@@ -156,7 +156,8 @@ void HungPluginTabHelper::KillPlugin(int child_id) {
 }
 
 HungPluginTabHelper::HungPluginTabHelper(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<HungPluginTabHelper>(*contents) {}
 
 void HungPluginTabHelper::OnReshowTimer(int child_id) {
   // The timer should have been cancelled if the record isn't in our map

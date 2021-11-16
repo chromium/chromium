@@ -19,7 +19,8 @@ class WebContentsAttachedClass1
   ~WebContentsAttachedClass1() override {}
 
  private:
-  explicit WebContentsAttachedClass1(WebContents* contents) {}
+  explicit WebContentsAttachedClass1(WebContents* contents)
+      : WebContentsUserData<WebContentsAttachedClass1>(*contents) {}
   friend class WebContentsUserData<WebContentsAttachedClass1>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -32,7 +33,8 @@ class WebContentsAttachedClass2
   ~WebContentsAttachedClass2() override {}
 
  private:
-  explicit WebContentsAttachedClass2(WebContents* contents) {}
+  explicit WebContentsAttachedClass2(WebContents* contents)
+      : WebContentsUserData<WebContentsAttachedClass2>(*contents) {}
   friend class WebContentsUserData<WebContentsAttachedClass2>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -141,7 +143,9 @@ class AttachedClassWithParams
   explicit AttachedClassWithParams(WebContents* contents,
                                    int param1,
                                    NonCopyableNonMovableClass&& param2)
-      : param1_(param1), param2_(param2.value()) {}
+      : WebContentsUserData<AttachedClassWithParams>(*contents),
+        param1_(param1),
+        param2_(param2.value()) {}
 
   int param1_;
   int param2_;

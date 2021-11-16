@@ -661,9 +661,9 @@ SSLErrorHandler::SSLErrorHandler(
     network_time::NetworkTimeTracker* network_time_tracker,
     captive_portal::CaptivePortalService* captive_portal_service,
     const GURL& request_url)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<SSLErrorHandler>(*web_contents),
+      content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)),
-      web_contents_(web_contents),
       cert_error_(cert_error),
       ssl_info_(ssl_info),
       request_url_(request_url),
@@ -778,7 +778,7 @@ void SSLErrorHandler::StartHandlingError() {
                    &SSLErrorHandler::ShowSSLInterstitial);
 
       if (g_config.Pointer()->timer_started_callback())
-        g_config.Pointer()->timer_started_callback()->Run(web_contents_);
+        g_config.Pointer()->timer_started_callback()->Run(web_contents());
 
       // Do not check for a captive portal in this case, because a captive
       // portal most likely cannot serve a valid certificate which passes the
@@ -792,7 +792,7 @@ void SSLErrorHandler::StartHandlingError() {
       base::BindRepeating(&SSLErrorHandler::Observe, base::Unretained(this)));
 
   captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
-      captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents_);
+      captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents());
   if (captive_portal_tab_helper) {
     captive_portal_tab_helper->OnSSLCertError(ssl_info_);
   }
@@ -802,7 +802,7 @@ void SSLErrorHandler::StartHandlingError() {
     timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
                  &SSLErrorHandler::ShowSSLInterstitial);
     if (g_config.Pointer()->timer_started_callback())
-      g_config.Pointer()->timer_started_callback()->Run(web_contents_);
+      g_config.Pointer()->timer_started_callback()->Run(web_contents());
     return;
   }
 #endif
@@ -819,7 +819,7 @@ void SSLErrorHandler::ShowCaptivePortalInterstitial(const GURL& landing_url) {
 
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this". It also destroys the timer.
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::ShowMITMSoftwareInterstitial(
@@ -829,7 +829,7 @@ void SSLErrorHandler::ShowMITMSoftwareInterstitial(
   delegate_->ShowMITMSoftwareInterstitial(mitm_software_name);
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::ShowSSLInterstitial() {
@@ -844,7 +844,7 @@ void SSLErrorHandler::ShowSSLInterstitial() {
   delegate_->ShowSSLInterstitial(support_url);
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::ShowBadClockInterstitial(
@@ -854,7 +854,7 @@ void SSLErrorHandler::ShowBadClockInterstitial(
   delegate_->ShowBadClockInterstitial(now, clock_state);
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::ShowDynamicInterstitial(
@@ -885,7 +885,7 @@ void SSLErrorHandler::ShowBlockedInterceptionInterstitial() {
   delegate_->ShowBlockedInterceptionInterstitial();
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::ShowLegacyTLSInterstitial() {
@@ -894,7 +894,7 @@ void SSLErrorHandler::ShowLegacyTLSInterstitial() {
   delegate_->ShowLegacyTLSInterstitial();
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::CommonNameMismatchHandlerCallback(
@@ -947,7 +947,7 @@ void SSLErrorHandler::NavigationStopped() {
 void SSLErrorHandler::DeleteSSLErrorHandler() {
   delegate_.reset();
   // Deletes |this| and also destroys the timer.
-  web_contents_->RemoveUserData(UserDataKey());
+  web_contents()->RemoveUserData(UserDataKey());
 }
 
 void SSLErrorHandler::HandleCertDateInvalidError() {
@@ -970,7 +970,7 @@ void SSLErrorHandler::HandleCertDateInvalidError() {
   }
 
   if (g_config.Pointer()->timer_started_callback())
-    g_config.Pointer()->timer_started_callback()->Run(web_contents_);
+    g_config.Pointer()->timer_started_callback()->Run(web_contents());
 }
 
 void SSLErrorHandler::HandleCertDateInvalidErrorImpl(

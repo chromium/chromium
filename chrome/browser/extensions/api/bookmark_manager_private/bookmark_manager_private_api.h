@@ -123,7 +123,6 @@ class BookmarkManagerPrivateDragEventRouter
                      const std::string& event_name,
                      std::vector<base::Value> args);
 
-  content::WebContents* web_contents_;
   Profile* profile_;
   bookmarks::BookmarkNodeData bookmark_drag_data_;
 

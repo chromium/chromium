@@ -98,6 +98,7 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SearchEngineTabHelper>(*web_contents),
       osdd_handler_receivers_(web_contents, this) {
   DCHECK(web_contents);
 

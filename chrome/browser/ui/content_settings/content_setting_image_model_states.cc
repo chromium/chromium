@@ -11,7 +11,6 @@ ContentSettingImageModelStates::~ContentSettingImageModelStates() = default;
 // static
 ContentSettingImageModelStates* ContentSettingImageModelStates::Get(
     content::WebContents* contents) {
-  DCHECK(contents);
   if (auto* state = FromWebContents(contents))
     return state;
   CreateForWebContents(contents);
@@ -72,7 +71,8 @@ bool ContentSettingImageModelStates::PromoWasShown(ImageType type) const {
 }
 
 ContentSettingImageModelStates::ContentSettingImageModelStates(
-    content::WebContents* contents) {}
+    content::WebContents* contents)
+    : content::WebContentsUserData<ContentSettingImageModelStates>(*contents) {}
 
 void ContentSettingImageModelStates::VerifyType(ImageType type) const {
   CHECK_GE(type, static_cast<ImageType>(0));

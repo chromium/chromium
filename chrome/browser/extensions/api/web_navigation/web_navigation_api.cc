@@ -169,7 +169,8 @@ void WebNavigationEventRouter::PendingWebContentsDestroyed(
 
 WebNavigationTabObserver::WebNavigationTabObserver(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebNavigationTabObserver>(*web_contents) {}
 
 WebNavigationTabObserver::~WebNavigationTabObserver() {}
 

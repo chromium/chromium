@@ -218,7 +218,8 @@ LoadingPredictorTabHelper::NavigationPageDataHolder::
 
 LoadingPredictorTabHelper::LoadingPredictorTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoadingPredictorTabHelper>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* predictor = LoadingPredictorFactory::GetForProfile(profile);

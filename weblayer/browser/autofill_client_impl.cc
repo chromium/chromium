@@ -320,7 +320,8 @@ void AutofillClientImpl::LoadRiskData(
 }
 
 AutofillClientImpl::AutofillClientImpl(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<AutofillClientImpl>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillClientImpl);
 

@@ -195,7 +195,8 @@ class ThumbnailTabHelper::TabStateTracker
 // ThumbnailTabHelper ----------------------------------------------------
 
 ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
-    : state_(std::make_unique<TabStateTracker>(this, contents)),
+    : content::WebContentsUserData<ThumbnailTabHelper>(*contents),
+      state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
           base::BindRepeating(

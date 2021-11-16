@@ -30,7 +30,9 @@ namespace resource_coordinator {
 
 ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ResourceCoordinatorTabHelper>(
+          *web_contents) {
   TabLoadTracker::Get()->StartTracking(web_contents);
   if (memory_instrumentation::MemoryInstrumentation::GetInstance()) {
     auto* rc_parts = g_browser_process->resource_coordinator_parts();

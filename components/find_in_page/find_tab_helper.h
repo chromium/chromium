@@ -133,9 +133,6 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   // the user has issued a new search).
   static int find_request_id_counter_;
 
-  // The WebContents which owns this helper.
-  content::WebContents* web_contents_ = nullptr;
-
   // True if the Find UI is active for this Tab.
   bool find_ui_active_ = false;
 

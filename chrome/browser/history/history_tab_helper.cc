@@ -96,7 +96,8 @@ absl::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
 }  // namespace
 
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<HistoryTabHelper>(*web_contents) {}
 
 HistoryTabHelper::~HistoryTabHelper() = default;
 

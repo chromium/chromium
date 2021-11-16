@@ -53,7 +53,8 @@ content::WebContents* GetPrintPreviewDialog(
 }  // namespace
 
 PrintViewManager::PrintViewManager(content::WebContents* web_contents)
-    : PrintViewManagerBase(web_contents) {}
+    : PrintViewManagerBase(web_contents),
+      content::WebContentsUserData<PrintViewManager>(*web_contents) {}
 
 PrintViewManager::~PrintViewManager() {
   DCHECK_EQ(NOT_PREVIEWING, print_preview_state_);

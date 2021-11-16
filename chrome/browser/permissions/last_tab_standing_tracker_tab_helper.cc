@@ -46,6 +46,8 @@ void LastTabStandingTrackerTabHelper::DidFinishNavigation(
 
 LastTabStandingTrackerTabHelper::LastTabStandingTrackerTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LastTabStandingTrackerTabHelper>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LastTabStandingTrackerTabHelper);

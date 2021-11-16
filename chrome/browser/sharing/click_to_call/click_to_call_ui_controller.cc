@@ -51,7 +51,8 @@ void ClickToCallUiController::ShowDialog(
 
 ClickToCallUiController::ClickToCallUiController(
     content::WebContents* web_contents)
-    : SharingUiController(web_contents) {}
+    : SharingUiController(web_contents),
+      content::WebContentsUserData<ClickToCallUiController>(*web_contents) {}
 
 ClickToCallUiController::~ClickToCallUiController() = default;
 

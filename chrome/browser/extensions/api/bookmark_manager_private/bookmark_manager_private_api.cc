@@ -232,13 +232,13 @@ void BookmarkManagerPrivateAPI::OnListenerAdded(
 
 BookmarkManagerPrivateDragEventRouter::BookmarkManagerPrivateDragEventRouter(
     content::WebContents* web_contents)
-    : web_contents_(web_contents),
-      profile_(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())) {
+    : content::WebContentsUserData<BookmarkManagerPrivateDragEventRouter>(
+          *web_contents),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
   // We need to guarantee the BookmarkTabHelper is created.
-  BookmarkTabHelper::CreateForWebContents(web_contents_);
+  BookmarkTabHelper::CreateForWebContents(web_contents);
   BookmarkTabHelper* bookmark_tab_helper =
-      BookmarkTabHelper::FromWebContents(web_contents_);
+      BookmarkTabHelper::FromWebContents(web_contents);
   bookmark_tab_helper->set_bookmark_drag_delegate(this);
 }
 

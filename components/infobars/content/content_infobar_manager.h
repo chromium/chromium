@@ -73,7 +73,7 @@ class ContentInfoBarManager
   void WebContentsDestroyed() override;
 
   // See description in set_ignore_next_reload().
-  bool ignore_next_reload_;
+  bool ignore_next_reload_ = false;
 };
 
 }  // namespace infobars

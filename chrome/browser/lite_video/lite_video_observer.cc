@@ -79,6 +79,7 @@ void LiteVideoObserver::BindLiteVideoService(
 
 LiteVideoObserver::LiteVideoObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LiteVideoObserver>(*web_contents),
       receivers_(web_contents, this) {
   lite_video_decider_ = GetLiteVideoDeciderFromWebContents(web_contents);
   routing_ids_to_notify_ = {};

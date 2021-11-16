@@ -46,8 +46,6 @@ class VrTabHelper : public content::WebContentsUserData<VrTabHelper> {
 
   friend class content::WebContentsUserData<VrTabHelper>;
 
-  content::WebContents* web_contents_;
-
   // If is_in_vr_ is true, that means that the only content displayed is
   // inside vr (for example, VR browsing or immersive experience
   // on an Android phone with headset on).

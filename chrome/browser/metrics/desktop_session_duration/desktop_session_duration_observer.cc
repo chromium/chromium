@@ -13,7 +13,10 @@ namespace metrics {
 DesktopSessionDurationObserver::DesktopSessionDurationObserver(
     content::WebContents* web_contents,
     DesktopSessionDurationTracker* service)
-    : content::WebContentsObserver(web_contents), service_(service) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<DesktopSessionDurationObserver>(
+          *web_contents),
+      service_(service) {
   RegisterInputEventObserver(web_contents->GetMainFrame()->GetRenderViewHost());
 }
 

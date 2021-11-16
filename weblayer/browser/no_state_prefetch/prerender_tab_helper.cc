@@ -12,7 +12,8 @@
 namespace weblayer {
 
 PrerenderTabHelper::PrerenderTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PrerenderTabHelper>(*web_contents) {}
 
 PrerenderTabHelper::~PrerenderTabHelper() = default;
 

@@ -250,7 +250,6 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   bool IsOnlyCertError(net::CertStatus only_cert_error_expected) const;
 
   std::unique_ptr<Delegate> delegate_;
-  content::WebContents* const web_contents_;
   const int cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;

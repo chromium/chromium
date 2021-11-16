@@ -8,8 +8,9 @@ namespace extensions {
 
 ShellExtensionWebContentsObserver::ShellExtensionWebContentsObserver(
     content::WebContents* web_contents)
-    : ExtensionWebContentsObserver(web_contents) {
-}
+    : ExtensionWebContentsObserver(web_contents),
+      content::WebContentsUserData<ShellExtensionWebContentsObserver>(
+          *web_contents) {}
 
 ShellExtensionWebContentsObserver::~ShellExtensionWebContentsObserver() {
 }

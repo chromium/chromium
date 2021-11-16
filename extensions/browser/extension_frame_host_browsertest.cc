@@ -81,7 +81,9 @@ class TestShellExtensionWebContentsObserver
 
   explicit TestShellExtensionWebContentsObserver(
       content::WebContents* web_contents)
-      : ExtensionWebContentsObserver(web_contents) {}
+      : ExtensionWebContentsObserver(web_contents),
+        content::WebContentsUserData<TestShellExtensionWebContentsObserver>(
+            *web_contents) {}
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

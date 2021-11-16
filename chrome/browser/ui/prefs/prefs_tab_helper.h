@@ -59,7 +59,6 @@ class PrefsTabHelper : public ThemeServiceObserver,
 
   void NotifyWebkitPreferencesChanged(const std::string& pref_name);
 
-  content::WebContents* web_contents_;
   Profile* profile_;
 #if !defined(OS_ANDROID)
   base::CallbackListSubscription default_zoom_level_subscription_;
