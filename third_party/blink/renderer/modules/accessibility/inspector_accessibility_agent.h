@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
 
@@ -75,7 +76,12 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*)
       override;
 
+  void AXEventFired(AXObject* object, ax::mojom::blink::Event event);
+  void AXObjectModified(AXObject* object, bool subtree);
+
  private:
+  void RefreshFrontendNodes();
+  bool MarkAXObjectDirty(AXObject* ax_object);
   // Unconditionally enables the agent, even if |enabled_.Get()==true|.
   // For idempotence, call enable().
   void EnableAndReset();
@@ -107,6 +113,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   Member<InspectedFrames> inspected_frames_;
   Member<InspectorDOMAgent> dom_agent_;
   InspectorAgentState::Boolean enabled_;
+  HashSet<AXID> nodes_requested_;
+  HeapHashSet<WeakMember<AXObject>> dirty_nodes_;
 
   // The agent needs to keep AXContext because it enables caching of a11y nodes.
   HeapHashMap<WeakMember<Document>, std::unique_ptr<AXContext>>

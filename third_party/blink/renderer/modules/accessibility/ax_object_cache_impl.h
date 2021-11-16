@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -80,6 +81,12 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
+
+  // When the accessibility tree view is open in DevTools, we listen for changes
+  // to the tree by registering an InspectorAccessibilityAgent here and notify
+  // the agent when AXEvents are fired or nodes are marked dirty.
+  void AddInspectorAgent(InspectorAccessibilityAgent*);
+  void RemoveInspectorAgent(InspectorAccessibilityAgent*);
 
   void Dispose() override;
 
@@ -392,6 +399,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AXID);
 
  private:
+  HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
+
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
     AXEventParams(AXObject* target,
                   ax::mojom::blink::Event event_type,

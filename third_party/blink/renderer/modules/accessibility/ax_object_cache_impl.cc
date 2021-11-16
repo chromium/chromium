@@ -614,6 +614,15 @@ void AXObjectCacheImpl::Dispose() {
   permission_observer_receiver_.reset();
 }
 
+void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
+  agents_.insert(agent);
+}
+
+void AXObjectCacheImpl::RemoveInspectorAgent(
+    InspectorAccessibilityAgent* agent) {
+  agents_.erase(agent);
+}
+
 AXObject* AXObjectCacheImpl::Root() {
   return GetOrCreate(document_);
 }
@@ -3356,7 +3365,8 @@ void AXObjectCacheImpl::PostPlatformNotification(
     std::transform(event_intents.begin(), event_intents.end(),
                    event.event_intents.begin(),
                    [](const auto& intent) { return intent.key.intent(); });
-
+    for (auto agent : agents_)
+      agent->AXEventFired(obj, event_type);
     web_frame->Client()->PostAccessibilityEvent(event);
   }
 }
@@ -3372,6 +3382,8 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
   if (webframe && webframe->Client())
     webframe->Client()->MarkWebAXObjectDirty(WebAXObject(obj), subtree);
   obj->UpdateCachedAttributeValuesIfNeeded(true);
+  for (auto agent : agents_)
+    agent->AXObjectModified(obj, subtree);
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
@@ -3909,6 +3921,7 @@ void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
 }
 
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(agents_);
   visitor->Trace(document_);
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);

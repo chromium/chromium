@@ -833,6 +833,7 @@ Response InspectorAccessibilityAgent::getRootAXNode(
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   auto& root = *cache.Root();
   *node = BuildProtocolAXNodeForAXObject(root);
+  nodes_requested_.insert(root.AXObjectID());
 
   return Response::Success();
 }
@@ -878,6 +879,7 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
   }
 
   do {
+    nodes_requested_.insert(ax_object->AXObjectID());
     std::unique_ptr<AXNode> ancestor =
         BuildProtocolAXNodeForAXObject(*ax_object);
     (*out_nodes)->emplace_back(std::move(ancestor));
@@ -923,6 +925,9 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
   AddChildren(*ax_object, false, *out_nodes, cache);
+
+  for (AXObject* child : ax_object->ChildrenIncludingIgnored())
+    nodes_requested_.insert(child->AXObjectID());
 
   return Response::Success();
 }
@@ -1053,6 +1058,65 @@ Response InspectorAccessibilityAgent::queryAXTree(
   return Response::Success();
 }
 
+void InspectorAccessibilityAgent::RefreshFrontendNodes() {
+  if (!enabled_.Get())
+    return;
+  auto nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+  for (AXObject* changed_node : dirty_nodes_) {
+    if (changed_node->IsDetached())
+      return;
+    nodes->push_back(BuildProtocolAXNodeForAXObject(*changed_node));
+  }
+  dirty_nodes_.clear();
+  if (!nodes->empty())
+    GetFrontend()->nodesUpdated(std::move(nodes));
+}
+
+void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
+                                               ax::mojom::blink::Event event) {
+  DCHECK(ax_object->AccessibilityIsIncludedInTree());
+  switch (event) {
+    case ax::mojom::blink::Event::kLoadComplete:
+      dirty_nodes_.clear();
+      nodes_requested_.clear();
+      nodes_requested_.insert(ax_object->AXObjectID());
+      GetFrontend()->loadComplete(BuildProtocolAXNodeForAXObject(*ax_object));
+      break;
+    default:
+      AXObjectModified(ax_object, false);
+      break;
+  }
+}
+
+bool InspectorAccessibilityAgent::MarkAXObjectDirty(AXObject* ax_object) {
+  if (nodes_requested_.Contains(ax_object->AXObjectID()))
+    return dirty_nodes_.insert(ax_object).is_new_entry;
+  return false;
+}
+
+void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
+                                                   bool subtree) {
+  DCHECK(ax_object->AccessibilityIsIncludedInTree());
+  if (subtree) {
+    HeapVector<Member<AXObject>> reachable;
+    reachable.push_back(ax_object);
+    while (!reachable.IsEmpty()) {
+      AXObject* descendant = reachable.back();
+      reachable.pop_back();
+      DCHECK(descendant->AccessibilityIsIncludedInTree());
+      if (!MarkAXObjectDirty(descendant))
+        continue;
+      const AXObject::AXObjectVector& children =
+          descendant->ChildrenIncludingIgnored();
+      reachable.AppendRange(children.rbegin(), children.rend());
+    }
+  } else {
+    MarkAXObjectDirty(ax_object);
+  }
+  RefreshFrontendNodes();
+}
+
 void InspectorAccessibilityAgent::EnableAndReset() {
   enabled_.Set(true);
   LocalFrame* frame = inspected_frames_->Root();
@@ -1062,6 +1126,10 @@ void InspectorAccessibilityAgent::EnableAndReset() {
                    HeapHashSet<Member<InspectorAccessibilityAgent>>>());
   }
   EnabledAgents().find(frame)->value->insert(this);
+  for (auto& context : document_to_context_map_.Values()) {
+    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
+    cache.AddInspectorAgent(this);
+  }
 }
 
 protocol::Response InspectorAccessibilityAgent::enable() {
@@ -1075,12 +1143,18 @@ protocol::Response InspectorAccessibilityAgent::disable() {
     return Response::Success();
   enabled_.Set(false);
   document_to_context_map_.clear();
+  nodes_requested_.clear();
+  dirty_nodes_.clear();
   LocalFrame* frame = inspected_frames_->Root();
   DCHECK(EnabledAgents().Contains(frame));
   auto it = EnabledAgents().find(frame);
   it->value->erase(this);
   if (it->value->IsEmpty())
     EnabledAgents().erase(frame);
+  for (auto& context : document_to_context_map_.Values()) {
+    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
+    cache.RemoveInspectorAgent(this);
+  }
   return Response::Success();
 }
 
@@ -1102,8 +1176,10 @@ void InspectorAccessibilityAgent::RetainAXContextForDocument(
     return;
   }
   if (!document_to_context_map_.Contains(document)) {
-    document_to_context_map_.insert(
-        document, std::make_unique<AXContext>(*document, ui::kAXModeComplete));
+    auto context = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
+    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
+    cache.AddInspectorAgent(this);
+    document_to_context_map_.insert(document, std::move(context));
   }
 }
 
@@ -1111,6 +1187,7 @@ void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(dom_agent_);
   visitor->Trace(document_to_context_map_);
+  visitor->Trace(dirty_nodes_);
   InspectorBaseAgent::Trace(visitor);
 }
 

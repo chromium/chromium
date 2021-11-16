@@ -278,6 +278,19 @@ experimental domain Accessibility
       # including nodes that are ignored for accessibility.
       array of AXNode nodes
 
+  # The loadComplete event mirrors the load complete event sent by the browser to assistive
+  # technology when the web page has finished loading.
+  experimental event loadComplete
+    parameters
+      # New document root node.
+      AXNode root
+
+  # The nodesUpdated event is sent every time a previously requested node has changed the in tree.
+  experimental event nodesUpdated
+    parameters
+      # Updated node data.
+      array of AXNode nodes
+
 experimental domain Animation
   depends on Runtime
   depends on DOM
