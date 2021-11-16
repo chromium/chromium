@@ -750,9 +750,6 @@ LayoutUnit ComputeBlockSizeForFragment(
   DCHECK(available_block_size_adjustment == LayoutUnit() ||
          style.IsDisplayTableBox());
 
-  if (constraint_space.IsLegacyTableCell() && intrinsic_size != kIndefiniteSize)
-    return intrinsic_size;
-
   if (constraint_space.IsFixedBlockSize()) {
     LayoutUnit block_size = (constraint_space.AvailableSize().block_size -
                              available_block_size_adjustment)
@@ -762,8 +759,7 @@ LayoutUnit ComputeBlockSizeForFragment(
     return block_size;
   }
 
-  if (constraint_space.IsTableCell() && !constraint_space.IsLegacyTableCell() &&
-      intrinsic_size != kIndefiniteSize)
+  if (constraint_space.IsTableCell() && intrinsic_size != kIndefiniteSize)
     return intrinsic_size;
 
   if (constraint_space.IsAnonymous())
@@ -1296,26 +1292,6 @@ NGBoxStrut ComputeBordersForTest(const ComputedStyle& style) {
   return ComputeBordersInternal(style);
 }
 
-NGBoxStrut ComputeIntrinsicPadding(const NGConstraintSpace& constraint_space,
-                                   const ComputedStyle& style,
-                                   const NGBoxStrut& scrollbar) {
-  DCHECK(constraint_space.IsTableCell());
-
-  // During the "layout" table phase, adjust the given intrinsic-padding to
-  // accommodate the scrollbar.
-  NGBoxStrut intrinsic_padding = constraint_space.TableCellIntrinsicPadding();
-  if (constraint_space.IsFixedBlockSize()) {
-    if (style.VerticalAlign() == EVerticalAlign::kMiddle) {
-      intrinsic_padding.block_start -= scrollbar.block_end / 2;
-      intrinsic_padding.block_end -= scrollbar.block_end / 2;
-    } else {
-      intrinsic_padding.block_end -= scrollbar.block_end;
-    }
-  }
-
-  return intrinsic_padding;
-}
-
 NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
                           const ComputedStyle& style) {
   // If we are producing an anonymous fragment (e.g. a column) we shouldn't
@@ -1335,21 +1311,11 @@ NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode()
           .ClampIndefiniteToZero();
-  NGBoxStrut padding = {
+  return {
       MinimumValueForLength(style.PaddingStart(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingEnd(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingBefore(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingAfter(), percentage_resolution_size)};
-
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
-      style.Display() == EDisplay::kTableCell) {
-    // Compatibility hack to mach legacy layout. Legacy layout floors padding on
-    // the block sides, but not on the inline sides. o.O
-    padding.block_start = LayoutUnit(padding.block_start.Floor());
-    padding.block_end = LayoutUnit(padding.block_end.Floor());
-  }
-
-  return padding;
 }
 
 NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {

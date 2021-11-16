@@ -289,7 +289,7 @@ TEST_P(LayoutBoxTest, LocationContainer) {
   EXPECT_EQ(body, table->LocationContainer());
   EXPECT_EQ(table, tbody->LocationContainer());
   EXPECT_EQ(tbody, row->LocationContainer());
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(row, cell->LocationContainer());
   else
     EXPECT_EQ(tbody, cell->LocationContainer());
@@ -340,7 +340,7 @@ TEST_P(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
   const LayoutBox* cell1 = GetLayoutBoxByElementId("cell1");
   EXPECT_EQ(LayoutPoint(0, 0), cell1->Location());
   // TablesNG cells are container is row, Legacy is section.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(PhysicalOffset(0, 0), cell1->PhysicalLocation());
   else
     EXPECT_EQ(PhysicalOffset(300, 0), cell1->PhysicalLocation());
@@ -351,7 +351,7 @@ TEST_P(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
 
   const LayoutBox* cell2 = GetLayoutBoxByElementId("cell2");
   // TablesNG cells are container is row, Legacy is section.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(LayoutPoint(0, 0), cell2->Location());
   else
     EXPECT_EQ(LayoutPoint(100, 0), cell2->Location());

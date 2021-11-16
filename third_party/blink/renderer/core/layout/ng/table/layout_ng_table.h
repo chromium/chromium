@@ -165,16 +165,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
 
   bool HasCollapsedBorders() const final;
 
-  bool HasColElements() const final {
-    NOTREACHED();
-    return false;
-  }
-
-  bool IsFixedTableLayout() const final {
-    NOT_DESTROYED();
-    return StyleRef().TableLayout() == ETableLayout::kFixed &&
-           !StyleRef().LogicalWidth().IsAuto();
-  }
   int16_t HBorderSpacing() const final {
     NOT_DESTROYED();
     return ShouldCollapseBorders() ? 0 : StyleRef().HorizontalBorderSpacing();

@@ -83,13 +83,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     border_scrollbar_padding_.block_start = LayoutUnit();
   }
 
-  void AdjustBorderScrollbarPaddingForTableCell() {
-    if (!space_->IsTableCell())
-      return;
-    border_scrollbar_padding_ +=
-        ComputeIntrinsicPadding(*space_, *style_, Scrollbar());
-  }
-
   const NGFragmentGeometry& InitialFragmentGeometry() const {
     DCHECK(initial_fragment_geometry_);
     return *initial_fragment_geometry_;

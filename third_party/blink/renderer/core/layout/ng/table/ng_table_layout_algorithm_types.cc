@@ -141,7 +141,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
                                        style.GetWritingDirection(),
                                        /* is_new_fc */ true);
       builder.SetTableCellBorders(cell_border);
-      builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+      builder.SetIsTableCell(true);
       builder.SetCacheSlot(NGCacheSlot::kMeasure);
       if (!is_parallel) {
         // Only consider the ICB-size for the orthogonal fallback inline-size

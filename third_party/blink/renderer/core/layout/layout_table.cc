@@ -316,7 +316,8 @@ LayoutNGTableSectionInterface* LayoutTable::SectionBelowInterface(
     const LayoutNGTableSectionInterface* section,
     SkipEmptySectionsValue skip_empty_sections) const {
   NOT_DESTROYED();
-  return SectionBelow(section->ToLayoutTableSection(), skip_empty_sections);
+  return SectionBelow(To<LayoutTableSection>(section->ToLayoutObject()),
+                      skip_empty_sections);
 }
 LayoutNGTableSectionInterface* LayoutTable::BottomNonEmptySectionInterface()
     const {
@@ -1915,7 +1916,8 @@ void LayoutTable::UpdateCollapsedOuterBorders() const {
 // LayoutNGTableCellInterface API
 bool LayoutTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
   NOT_DESTROYED();
-  const LayoutTableCell& layout_cell = *cell.ToLayoutTableCell();
+  const LayoutTableCell& layout_cell =
+      To<LayoutTableCell>(*cell.ToLayoutObject());
   return !(CellPreceding(layout_cell) || CellAbove(layout_cell));
 }
 

@@ -1580,9 +1580,9 @@ MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
   if (UNLIKELY(IsListBox(this) && StyleRef().LogicalWidth().IsPercentOrCalc()))
     child_sizes.min_size = LayoutUnit();
 
-  if (IsTableCell()) {
+  if (IsTableCellLegacy()) {
     Length table_cell_width =
-        ToInterface<LayoutNGTableCellInterface>(this)->StyleOrColLogicalWidth();
+        To<LayoutTableCell>(this)->StyleOrColLogicalWidth();
     if (table_cell_width.IsFixed() && table_cell_width.Value() > 0) {
       child_sizes.max_size = std::max(
           child_sizes.min_size, AdjustContentBoxLogicalWidthForBoxSizing(

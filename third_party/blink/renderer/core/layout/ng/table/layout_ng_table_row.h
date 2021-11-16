@@ -92,11 +92,6 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
     return this;
   }
 
-  const LayoutTableRow* ToLayoutTableRow() const final {
-    NOTREACHED();
-    return nullptr;
-  }
-
   const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {
     NOT_DESTROYED();
     return this;

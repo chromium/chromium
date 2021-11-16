@@ -202,16 +202,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.EnsureRareData()->min_break_appeal = min_break_appeal;
   }
 
-  void SetIsTableCell(bool is_table_cell, bool is_legacy_table_cell) {
-#if DCHECK_IS_ON()
-    DCHECK(!is_table_cell_set_);
-    is_table_cell_set_ = true;
-#endif
+  void SetIsTableCell(bool is_table_cell) {
     space_.bitfields_.is_table_cell = is_table_cell;
-    if (is_legacy_table_cell) {
-      DCHECK(is_table_cell);
-      space_.EnsureRareData()->is_legacy_table_cell = is_legacy_table_cell;
-    }
   }
 
   void SetIsRestrictedBlockSizeTableCell(bool b) {
@@ -323,18 +315,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 #endif
     if (table_cell_borders != NGBoxStrut())
       space_.EnsureRareData()->SetTableCellBorders(table_cell_borders);
-  }
-
-  void SetTableCellIntrinsicPadding(
-      const NGBoxStrut& table_cell_intrinsic_padding) {
-#if DCHECK_IS_ON()
-    DCHECK(!is_table_cell_intrinsic_padding_set_);
-    is_table_cell_intrinsic_padding_set_ = true;
-#endif
-    if (table_cell_intrinsic_padding != NGBoxStrut()) {
-      space_.EnsureRareData()->SetTableCellIntrinsicPadding(
-          table_cell_intrinsic_padding);
-    }
   }
 
   void SetTableCellAlignmentBaseline(
@@ -501,9 +481,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_optimistic_bfc_block_offset_set_ = false;
   bool is_forced_bfc_block_offset_set_ = false;
   bool is_clearance_offset_set_ = false;
-  bool is_table_cell_set_ = false;
   bool is_table_cell_borders_set_ = false;
-  bool is_table_cell_intrinsic_padding_set_ = false;
   bool is_table_cell_alignment_baseline_set_ = false;
   bool is_table_cell_column_index_set_ = false;
   bool is_table_cell_hidden_for_paint_set_ = false;

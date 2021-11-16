@@ -145,7 +145,7 @@ TEST_F(LayoutTableRowTest, VisualOverflow) {
   auto* row1 = GetRowByElementId("row1");
   // TablesNG row geometry does not include border spacing. Legacy does.
   // All row geometry expectations are different.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(LayoutRect(0, 0, 320, 320), row1->ContentsVisualOverflowRect());
     EXPECT_EQ(LayoutRect(0, 0, 430, 320), row1->SelfVisualOverflowRect());
   } else {
@@ -153,7 +153,7 @@ TEST_F(LayoutTableRowTest, VisualOverflow) {
     EXPECT_EQ(LayoutRect(0, 0, 450, 320), row1->SelfVisualOverflowRect());
   }
   auto* row2 = GetRowByElementId("row2");
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(LayoutRect(-10, -10, 440, 220),
               row2->ContentsVisualOverflowRect());
     EXPECT_EQ(LayoutRect(0, 0, 430, 210), row2->SelfVisualOverflowRect());
@@ -162,7 +162,7 @@ TEST_F(LayoutTableRowTest, VisualOverflow) {
     EXPECT_EQ(LayoutRect(0, 0, 450, 210), row2->SelfVisualOverflowRect());
   }
   auto* row3 = GetRowByElementId("row3");
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(LayoutRect(), row3->ContentsVisualOverflowRect());
     EXPECT_EQ(LayoutRect(0, 0, 430, 100), row3->SelfVisualOverflowRect());
   } else {
@@ -190,7 +190,7 @@ TEST_F(LayoutTableRowTest, VisualOverflowWithCollapsedBorders) {
   auto* row = GetRowByElementId("row");
 
   LayoutRect expected_self_visual_overflow = row->BorderBoxRect();
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // Row's visual overflow does not include collapsed borders.
     // They are painted by the table.
   } else {
@@ -201,7 +201,7 @@ TEST_F(LayoutTableRowTest, VisualOverflowWithCollapsedBorders) {
   EXPECT_EQ(expected_self_visual_overflow, row->SelfVisualOverflowRect());
 
   LayoutRect expected_visual_overflow = row->BorderBoxRect();
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // Row's visual overflow does not include collapsed borders.
     // It does include visual overflow of all cells.
     expected_visual_overflow.ExpandEdges(LayoutUnit(3), LayoutUnit(0),

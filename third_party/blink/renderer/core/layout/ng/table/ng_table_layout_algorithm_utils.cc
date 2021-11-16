@@ -468,7 +468,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   NGConstraintSpaceBuilder builder(table_writing_mode,
                                    cell_style.GetWritingDirection(),
                                    /* is_new_fc */ true);
-  builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+  builder.SetIsTableCell(true);
 
   if (!IsParallelWritingMode(table_writing_mode, cell_style.GetWritingMode())) {
     const PhysicalSize icb_size = cell.InitialContainingBlockSize();

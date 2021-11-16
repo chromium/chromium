@@ -306,12 +306,6 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->TableCellColumnIndex() : 0;
   }
 
-  // Return the "intrinsic" padding for a table-cell.
-  NGBoxStrut TableCellIntrinsicPadding() const {
-    return HasRareData() ? rare_data_->TableCellIntrinsicPadding()
-                         : NGBoxStrut();
-  }
-
   // Return the baseline offset which the table-cell children should align
   // their baseline to.
   absl::optional<LayoutUnit> TableCellAlignmentBaseline() const {
@@ -392,11 +386,6 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Whether the current node is a table-cell.
   bool IsTableCell() const { return bitfields_.is_table_cell; }
-
-  // True if node is either LayoutTableCell or LayoutNGTableCellLegacy
-  bool IsLegacyTableCell() const {
-    return HasRareData() && rare_data_->is_legacy_table_cell;
-  }
 
   // Whether the table-cell fragment should be hidden (not painted) if it has
   // no children.
@@ -794,7 +783,6 @@ class CORE_EXPORT NGConstraintSpace final {
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(kNone)),
           is_line_clamp_context(false),
-          is_legacy_table_cell(false),
           is_restricted_block_size_table_cell(false),
           hide_table_cell_if_empty(false),
           block_direction_fragmentation_type(
@@ -813,7 +801,6 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
           is_line_clamp_context(other.is_line_clamp_context),
-          is_legacy_table_cell(other.is_legacy_table_cell),
           is_restricted_block_size_table_cell(
               other.is_restricted_block_size_table_cell),
           hide_table_cell_if_empty(other.hide_table_cell_if_empty),
@@ -882,7 +869,6 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_offset_at_bfc != other.fragmentainer_offset_at_bfc ||
           data_union_type != other.data_union_type ||
           is_line_clamp_context != other.is_line_clamp_context ||
-          is_legacy_table_cell != other.is_legacy_table_cell ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty != other.hide_table_cell_if_empty ||
@@ -917,8 +903,7 @@ class CORE_EXPORT NGConstraintSpace final {
     bool IsInitialForMaySkipLayout() const {
       if (fragmentainer_block_size != kIndefiniteSize ||
           fragmentainer_offset_at_bfc || is_line_clamp_context ||
-          is_legacy_table_cell || is_restricted_block_size_table_cell ||
-          hide_table_cell_if_empty ||
+          is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           is_inside_balanced_columns || is_in_column_bfc ||
           min_break_appeal != kBreakAppealLastResort)
@@ -1007,24 +992,6 @@ class CORE_EXPORT NGConstraintSpace final {
 
     void SetTableCellBorders(const NGBoxStrut& table_cell_borders) {
       EnsureTableCellData()->table_cell_borders = table_cell_borders;
-    }
-
-    NGBoxStrut TableCellIntrinsicPadding() const {
-      return data_union_type == kTableCellData
-                 ? NGBoxStrut(
-                       LayoutUnit(), LayoutUnit(),
-                       table_cell_data_
-                           .table_cell_intrinsic_padding_block_start,
-                       table_cell_data_.table_cell_intrinsic_padding_block_end)
-                 : NGBoxStrut();
-    }
-
-    void SetTableCellIntrinsicPadding(
-        const NGBoxStrut& table_cell_intrinsic_padding) {
-      EnsureTableCellData()->table_cell_intrinsic_padding_block_start =
-          table_cell_intrinsic_padding.block_start;
-      EnsureTableCellData()->table_cell_intrinsic_padding_block_end =
-          table_cell_intrinsic_padding.block_end;
     }
 
     wtf_size_t TableCellColumnIndex() const {
@@ -1156,7 +1123,6 @@ class CORE_EXPORT NGConstraintSpace final {
 
     unsigned is_line_clamp_context : 1;
 
-    unsigned is_legacy_table_cell : 1;
     unsigned is_restricted_block_size_table_cell : 1;
     unsigned hide_table_cell_if_empty : 1;
 
@@ -1188,10 +1154,6 @@ class CORE_EXPORT NGConstraintSpace final {
         // NOTE: We don't compare |table_cell_alignment_baseline| as it is
         // still possible to hit the cache if this differs.
         return table_cell_borders == other.table_cell_borders &&
-               table_cell_intrinsic_padding_block_start ==
-                   other.table_cell_intrinsic_padding_block_start &&
-               table_cell_intrinsic_padding_block_end ==
-                   other.table_cell_intrinsic_padding_block_end &&
                table_cell_column_index == other.table_cell_column_index &&
                is_hidden_for_paint == other.is_hidden_for_paint &&
                has_collapsed_borders == other.has_collapsed_borders;
@@ -1199,15 +1161,11 @@ class CORE_EXPORT NGConstraintSpace final {
 
       bool IsInitialForMaySkipLayout() const {
         return table_cell_borders == NGBoxStrut() &&
-               table_cell_intrinsic_padding_block_start == LayoutUnit() &&
-               table_cell_intrinsic_padding_block_end == LayoutUnit() &&
                table_cell_column_index == kNotFound && !is_hidden_for_paint &&
                !has_collapsed_borders;
       }
 
       NGBoxStrut table_cell_borders;
-      LayoutUnit table_cell_intrinsic_padding_block_start;
-      LayoutUnit table_cell_intrinsic_padding_block_end;
       wtf_size_t table_cell_column_index = kNotFound;
       absl::optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;

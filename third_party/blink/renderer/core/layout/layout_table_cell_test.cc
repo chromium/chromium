@@ -32,10 +32,10 @@
 namespace blink {
 
 class LayoutTableCellDeathTest : public RenderingTest,
-                                 private ScopedLayoutNGTableForTest {
+                                 private ScopedLayoutNGForTest {
  protected:
   // These tests test Legacy behavior only.
-  LayoutTableCellDeathTest() : ScopedLayoutNGTableForTest(false) {}
+  LayoutTableCellDeathTest() : ScopedLayoutNGForTest(false) {}
 
   void SetUp() override {
     RenderingTest::SetUp();
@@ -155,7 +155,7 @@ TEST_F(LayoutTableCellTest, RepaintContentInTableCell) {
 
 TEST_F(LayoutTableCellTest, IsInStartAndEndColumn) {
   // TablesNG does not have Start/End column API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(
@@ -208,7 +208,7 @@ TEST_F(LayoutTableCellTest, IsInStartAndEndColumn) {
 
 TEST_F(LayoutTableCellTest, IsInStartAndEndColumnRTL) {
   // TablesNG does not have Start/End column API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(
@@ -288,16 +288,16 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
 
   EXPECT_TRUE(table_interface->ShouldCollapseBorders());
 
-  LayoutUnit border_right = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+  LayoutUnit border_right = RuntimeEnabledFeatures::LayoutNGEnabled()
                                 ? LayoutUnit(7.5)
                                 : LayoutUnit(7);
-  LayoutUnit border_left = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+  LayoutUnit border_left = RuntimeEnabledFeatures::LayoutNGEnabled()
                                ? LayoutUnit(7.5)
                                : LayoutUnit(8);
-  LayoutUnit border_top = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+  LayoutUnit border_top = RuntimeEnabledFeatures::LayoutNGEnabled()
                               ? LayoutUnit(1.5)
                               : LayoutUnit(2);
-  LayoutUnit border_bottom = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+  LayoutUnit border_bottom = RuntimeEnabledFeatures::LayoutNGEnabled()
                                  ? LayoutUnit(1.5)
                                  : LayoutUnit(1);
 
@@ -311,7 +311,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
   EXPECT_EQ(border_bottom, cell2box->BorderBottom());
 
   // TablesNG do not have CollapsedBorder APIs.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     auto* cell1 = GetCellByElementId("cell1");
     auto* cell2 = GetCellByElementId("cell2");
     EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
@@ -345,7 +345,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
 
   // TableNG results are completely different, because
   // Legacy has a bug, and rotates the borders.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     cell1_borders = NGPhysicalBoxStrut(LayoutUnit(1.5), LayoutUnit(0),
                                        LayoutUnit(5), LayoutUnit(0));
     cell2_borders = NGPhysicalBoxStrut(LayoutUnit(1.5), LayoutUnit(7.5),
@@ -362,7 +362,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
   EXPECT_EQ(cell2_borders.bottom, cell2box->BorderBottom());
 
   // TablesNG do not have CollapsedBorder APIs.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     auto* cell1 = GetCellByElementId("cell1");
     auto* cell2 = GetCellByElementId("cell2");
     EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
@@ -388,7 +388,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
 TEST_F(LayoutTableCellTest, HasNonCollapsedBorderDecoration) {
   // TablesNG does not use HasNonCollapsedBorderDecoration.
   // It has been replaced by HasCollapsedBorders flag on PhysicalFragment.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <table>

@@ -14,7 +14,7 @@ namespace {
 class LayoutTableSectionTest : public RenderingTest {
  protected:
   LayoutTableSection* GetSectionByElementId(const char* id) {
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableEnabled());
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGEnabled());
     return To<LayoutTableSection>(GetLayoutObjectByElementId(id));
   }
 
@@ -90,7 +90,7 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
 
 TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(
@@ -115,7 +115,7 @@ TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
 
 TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <table>
@@ -153,7 +153,7 @@ TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
 
 TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -244,7 +244,7 @@ TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
 TEST_F(LayoutTableSectionTest,
        DirtiedRowsAndEffectiveColumnsWithCollapsedBorders) {
   // TablesNG does not support DirtiedRowsAndEffectiveColumns.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -341,7 +341,7 @@ static void SetCellsOverflowInRow(LayoutTableRow* row) {
 
 TEST_F(LayoutTableSectionTest, OverflowingCells) {
   // TablesNG does not support the API.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
     <style>

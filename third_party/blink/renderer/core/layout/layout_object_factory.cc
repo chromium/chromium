@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_legacy.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
@@ -189,11 +188,7 @@ LayoutObject* LayoutObjectFactory::CreateListMarker(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateTable(Node& node,
                                               const ComputedStyle& style,
                                               LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGTableEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
-  return CreateObject<LayoutBlock, LayoutNGTable, LayoutTable>(
-      node, legacy, disable_ng_for_type);
+  return CreateObject<LayoutBlock, LayoutNGTable, LayoutTable>(node, legacy);
 }
 
 LayoutTableCaption* LayoutObjectFactory::CreateTableCaption(
@@ -207,43 +202,29 @@ LayoutBlockFlow* LayoutObjectFactory::CreateTableCell(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    return CreateObject<LayoutBlockFlow, LayoutNGTableCell, LayoutTableCell>(
-        node, legacy);
-  } else {
-    return CreateObject<LayoutBlockFlow, LayoutNGTableCellLegacy,
-                        LayoutTableCell>(node, legacy);
-  }
+  return CreateObject<LayoutBlockFlow, LayoutNGTableCell, LayoutTableCell>(
+      node, legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateTableColumn(Node& node,
                                                   const ComputedStyle& style,
                                                   LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGTableEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
-  return CreateObject<LayoutBox, LayoutNGTableColumn, LayoutTableCol>(
-      node, legacy, disable_ng_for_type);
+  return CreateObject<LayoutBox, LayoutNGTableColumn, LayoutTableCol>(node,
+                                                                      legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateTableRow(Node& node,
                                                const ComputedStyle& style,
                                                LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGTableEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
-  return CreateObject<LayoutBox, LayoutNGTableRow, LayoutTableRow>(
-      node, legacy, disable_ng_for_type);
+  return CreateObject<LayoutBox, LayoutNGTableRow, LayoutTableRow>(node,
+                                                                   legacy);
 }
 
 LayoutBox* LayoutObjectFactory::CreateTableSection(Node& node,
                                                    const ComputedStyle& style,
                                                    LegacyLayout legacy) {
-  bool disable_ng_for_type = !RuntimeEnabledFeatures::LayoutNGTableEnabled();
-  if (disable_ng_for_type)
-    UseCounter::Count(node.GetDocument(), WebFeature::kLegacyLayoutByTable);
   return CreateObject<LayoutBox, LayoutNGTableSection, LayoutTableSection>(
-      node, legacy, disable_ng_for_type);
+      node, legacy);
 }
 
 LayoutObject* LayoutObjectFactory::CreateButton(Node& node,

@@ -79,16 +79,6 @@ void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
   scoped_refptr<const NGLayoutResult> result = UpdateInFlowBlockLayout();
   CalculateAndSetMargins(result->GetConstraintSpaceForCaching(),
                          result->PhysicalFragment());
-
-  // The parent table sometimes changes the caption's position after laying it
-  // out. So there's no point in setting the fragment's offset here;
-  // NGBoxFragmentPainter::Paint will have to handle it until table layout is
-  // implemented in NG, in which case that algorithm will set each child's
-  // offsets. See https://crbug.com/788590 for more info.
-  DCHECK(RuntimeEnabledFeatures::LayoutNGTableEnabled() ||
-         !result->PhysicalFragment().IsPlacedByLayoutNG())
-      << "Only a table should be placing table caption fragments and the ng "
-         "table algorithm doesn't exist yet!";
 }
 
 LayoutNGTableInterface* LayoutNGTableCaption::TableInterface() const {

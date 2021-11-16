@@ -1737,8 +1737,6 @@ TEST_F(NGLayoutResultCachingTest, HitOrthogonalRoot) {
 }
 
 TEST_F(NGLayoutResultCachingTest, SimpleTable) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <td id="target1">abc</td>
@@ -1771,8 +1769,6 @@ TEST_F(NGLayoutResultCachingTest, SimpleTable) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTableCellMiddleAlignment) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <td id="target" style="vertical-align: middle;">abc</td>
@@ -1796,8 +1792,6 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellMiddleAlignment) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTableCellBottomAlignment) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <td id="target" style="vertical-align: bottom;">abc</td>
@@ -1821,8 +1815,6 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellBottomAlignment) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitTableCellBaselineAlignment) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       td { vertical-align: baseline; }
@@ -1846,8 +1838,6 @@ TEST_F(NGLayoutResultCachingTest, HitTableCellBaselineAlignment) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTableCellBaselineAlignment) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       td { vertical-align: baseline; }
@@ -1874,8 +1864,6 @@ TEST_F(NGLayoutResultCachingTest, MissTableCellBaselineAlignment) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTablePercent) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       .bfc { display: flow-root; width: 100px; }
@@ -1911,8 +1899,6 @@ TEST_F(NGLayoutResultCachingTest, MissTablePercent) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitTableRowAdd) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tr><td>a</td><td>b</td></tr>
@@ -1938,8 +1924,6 @@ TEST_F(NGLayoutResultCachingTest, HitTableRowAdd) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTableRowAdd) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tr><td>longwordhere</td><td>b</td></tr>
@@ -1965,8 +1949,6 @@ TEST_F(NGLayoutResultCachingTest, MissTableRowAdd) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitTableRowRemove) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tr id="test"><td>text</td><td>more text</td></tr>
@@ -1992,8 +1974,6 @@ TEST_F(NGLayoutResultCachingTest, HitTableRowRemove) {
 }
 
 TEST_F(NGLayoutResultCachingTest, MissTableRowRemove) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tr id="test"><td>text</td><td>more text</td></tr>
@@ -2019,8 +1999,6 @@ TEST_F(NGLayoutResultCachingTest, MissTableRowRemove) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitTableSectionAdd) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tbody><tr><td>a</td><td>b</td></tr></tbody>
@@ -2046,8 +2024,6 @@ TEST_F(NGLayoutResultCachingTest, HitTableSectionAdd) {
 }
 
 TEST_F(NGLayoutResultCachingTest, HitTableSectionRemove) {
-  ScopedLayoutNGTableForTest table_ng(true);
-
   SetBodyInnerHTML(R"HTML(
     <table>
       <tbody id="test"><tr><td>text</td><td>more text</td></tr></tbody>

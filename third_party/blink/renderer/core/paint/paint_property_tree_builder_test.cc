@@ -6124,7 +6124,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
 TEST_P(PaintPropertyTreeBuilderTest, RepeatingTableSectionInPagedMedia) {
   // TablesNG fragmentation has not been implemented. Once it is,
   // this test still will not apply.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(

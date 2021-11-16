@@ -131,7 +131,7 @@ TEST_F(LayoutTableTest, CollapsedBorders) {
 
   // Cells have wider borders.
   auto* table3 = GetTableByElementId("table3");
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // Cell E's border-top won.
     EXPECT_EQ(LayoutUnit(7.5), table3->BorderBefore());
     // Cell H's border-bottom won.
@@ -288,7 +288,7 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
                 GetLayoutObjectByElementId("head")),
             table->TopSectionInterface());
   // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
                   GetLayoutObjectByElementId("body")),
               table->TopNonEmptySectionInterface());
@@ -313,7 +313,7 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
                 GetLayoutObjectByElementId("body")),
             table->TopSectionInterface());
   // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
                   GetLayoutObjectByElementId("body")),
               table->TopNonEmptySectionInterface());
@@ -339,7 +339,7 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
                 GetLayoutObjectByElementId("head")),
             table->TopSectionInterface());
   // TablesNG does not implement these APIs. They are only used by Legacy.
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
                   GetLayoutObjectByElementId("head")),
               table->TopNonEmptySectionInterface());
@@ -371,7 +371,7 @@ TEST_F(LayoutTableTest, VisualOverflowCleared) {
 
 TEST_F(LayoutTableTest, HasNonCollapsedBorderDecoration) {
   // TablesNG does not support DirtiedRowsAndEffectiveColumns.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML("<table id='table'></table>");

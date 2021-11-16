@@ -22,7 +22,7 @@ TEST_F(LayoutTableColTest, LocalVisualRect) {
 
   // TablesNG hidden columns get geometry, because they paint their background
   // into cells.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_FALSE(
         GetLayoutObjectByElementId("col1")->LocalVisualRect().IsEmpty());
   } else {

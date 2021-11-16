@@ -82,11 +82,8 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (ConstraintSpace().IsTableCell()) {
       container_builder_.SetHasCollapsedBorders(
           physical_fragment.HasCollapsedBorders());
-
-      if (!ConstraintSpace().IsLegacyTableCell()) {
-        container_builder_.SetTableCellColumnIndex(
-            physical_fragment.TableCellColumnIndex());
-      }
+      container_builder_.SetTableCellColumnIndex(
+          physical_fragment.TableCellColumnIndex());
     } else {
       DCHECK(!physical_fragment.HasCollapsedBorders());
     }

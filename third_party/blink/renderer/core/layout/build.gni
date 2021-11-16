@@ -572,8 +572,6 @@ blink_core_sources_layout = [
   "ng/table/layout_ng_table_cell.cc",
   "ng/table/layout_ng_table_cell.h",
   "ng/table/layout_ng_table_cell_interface.h",
-  "ng/table/layout_ng_table_cell_legacy.cc",
-  "ng/table/layout_ng_table_cell_legacy.h",
   "ng/table/layout_ng_table_column.cc",
   "ng/table/layout_ng_table_column.h",
   "ng/table/layout_ng_table_column_visitor.h",

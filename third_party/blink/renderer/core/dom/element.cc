@@ -293,16 +293,11 @@ bool DefinitelyNewFormattingContext(const Node& node,
       display == EDisplay::kTableRowGroup ||
       display == EDisplay::kTableHeaderGroup ||
       display == EDisplay::kTableFooterGroup ||
-      display == EDisplay::kTableRow ||
+      display == EDisplay::kTableRow || display == EDisplay::kTableCaption ||
+      display == EDisplay::kTableCell ||
       display == EDisplay::kTableColumnGroup ||
       display == EDisplay::kTableColumn)
     return false;
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
-    // TableNG requires that table parts be either all NG, or all Legacy. In
-    // other words, cells and captions aren't suitable engine boundaries.
-    if (display == EDisplay::kTableCell || display == EDisplay::kTableCaption)
-      return false;
-  }
 
   // ::marker may establish a formatting context but still have some dependency
   // on the originating list item, so return false.

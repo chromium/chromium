@@ -334,7 +334,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
       return ColAndColGroup();
     return SlowColElementAtAbsoluteColumn(absolute_column_index);
   }
-  bool HasColElements() const final {
+  bool HasColElements() const {
     NOT_DESTROYED();
     return has_col_elements_;
   }
@@ -471,10 +471,6 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutObject* ToMutableLayoutObject() final {
     NOT_DESTROYED();
     return this;
-  }
-  bool IsFixedTableLayout() const final {
-    NOT_DESTROYED();
-    return StyleRef().IsFixedTableLayout();
   }
   LayoutNGTableSectionInterface* FirstBodyInterface() const final;
   LayoutNGTableSectionInterface* TopSectionInterface() const final;

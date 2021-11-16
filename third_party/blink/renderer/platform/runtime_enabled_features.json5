@@ -1315,11 +1315,6 @@
       status: "test"
     },
     {
-      name: "LayoutNGTable",
-      depends_on: ["LayoutNG"],
-      status: "stable"
-    },
-    {
       name: "LayoutNGTextCombine",
       depends_on: ["LayoutNG"],
       status: "stable"

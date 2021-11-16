@@ -25,11 +25,8 @@ class LayoutNGTableInterface {
   virtual bool ShouldCollapseBorders() const = 0;
   // TODO(crbug.com/1081425) Method not used by NG, should be removed.
   virtual bool HasCollapsedBorders() const = 0;
-  virtual bool IsFixedTableLayout() const = 0;
   virtual int16_t HBorderSpacing() const = 0;
   virtual int16_t VBorderSpacing() const = 0;
-  // TODO(crbug.com/1081425) Method not used by NG, should be removed.
-  virtual bool HasColElements() const = 0;
   virtual unsigned AbsoluteColumnToEffectiveColumn(
       unsigned absolute_column_index) const = 0;
   virtual void RecalcSectionsIfNeeded() const = 0;

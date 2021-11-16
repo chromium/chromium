@@ -165,12 +165,6 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
       LayoutBlockFlow>::BackgroundIsKnownToBeOpaqueInRect(local_rect);
 }
 
-Length LayoutNGTableCell::StyleOrColLogicalWidth() const {
-  NOT_DESTROYED();
-  // TODO(atotic) TablesNG cannot easily get col width before layout.
-  return StyleRef().LogicalWidth();
-}
-
 // TODO(crbug.com/1079133): Used by AXLayoutObject::RowIndex,
 // verify behaviour is correct.
 unsigned LayoutNGTableCell::RowIndex() const {

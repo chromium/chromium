@@ -413,10 +413,8 @@ static void WriteTextRun(WTF::TextStream& ts,
   int logical_width = (run.X() + run.LogicalWidth()).Ceil() - x;
 
   // FIXME: Table cell adjustment is temporary until results can be updated.
-  if (o.ContainingBlock()->IsTableCell()) {
-    y -= ToInterface<LayoutNGTableCellInterface>(o.ContainingBlock())
-             ->IntrinsicPaddingBefore();
-  }
+  if (o.ContainingBlock()->IsTableCellLegacy())
+    y -= To<LayoutTableCell>(o.ContainingBlock())->IntrinsicPaddingBefore();
 
   ts << "text run at (" << x << "," << y << ") width " << logical_width;
   if (!run.IsLeftToRightDirection() || run.DirOverride()) {

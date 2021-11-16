@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_legacy.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -241,34 +240,22 @@ bool LayoutNGMixin<Base>::IsOfType(LayoutObject::LayoutObjectType type) const {
 
 template <typename Base>
 MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
+  DCHECK(!Base::IsTableCell());
+
   NGBlockNode node(const_cast<LayoutNGMixin<Base>*>(this));
   if (!node.CanUseNewLayout())
     return Base::ComputeIntrinsicLogicalWidths();
 
   NGConstraintSpace space = ConstraintSpaceForMinMaxSizes();
-  MinMaxSizes sizes = node.ComputeMinMaxSizes(node.Style().GetWritingMode(),
-                                              MinMaxSizesType::kContent, space)
-                          .sizes;
-
-  if (Base::IsTableCell()) {
-    // If a table cell, or the column that it belongs to, has a specified fixed
-    // positive inline-size, and the measured intrinsic max size is less than
-    // that, use specified size as max size.
-    LayoutNGTableCellInterface* cell =
-        ToInterface<LayoutNGTableCellInterface>(node.GetLayoutBox());
-    Length table_cell_width = cell->StyleOrColLogicalWidth();
-    if (table_cell_width.IsFixed() && table_cell_width.Value() > 0) {
-      sizes.max_size = std::max(sizes.min_size,
-                                Base::AdjustBorderBoxLogicalWidthForBoxSizing(
-                                    LayoutUnit(table_cell_width.Value())));
-    }
-  }
-
-  return sizes;
+  return node
+      .ComputeMinMaxSizes(node.Style().GetWritingMode(),
+                          MinMaxSizesType::kContent, space)
+      .sizes;
 }
 
 template <typename Base>
 NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
+  DCHECK(!Base::IsTableCell());
   const ComputedStyle& style = Base::StyleRef();
 
   NGConstraintSpaceBuilder builder(style.GetWritingMode(),
@@ -277,15 +264,6 @@ NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
   builder.SetAvailableSize(
       {Base::ContainingBlockLogicalWidthForContent(),
        LayoutBoxUtils::AvailableLogicalHeight(*this, Base::ContainingBlock())});
-
-  // Table cells borders may be collapsed, we can't calculate these directly
-  // from the style.
-  if (Base::IsTableCell()) {
-    DCHECK(Base::IsTableCellLegacy());
-    builder.SetIsTableCell(true, /* is_legacy_table_cell */ true);
-    builder.SetTableCellBorders({Base::BorderStart(), Base::BorderEnd(),
-                                 Base::BorderBefore(), Base::BorderAfter()});
-  }
 
   return builder.ToConstraintSpace();
 }
@@ -482,6 +460,5 @@ template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyText>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutTableCaption>;
-template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutTableCell>;
 
 }  // namespace blink

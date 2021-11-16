@@ -1040,9 +1040,9 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
   for (; block; block = block->ContainingBlock()) {
     float width;
     Length specified_width =
-        block->IsTableCell() ? ToInterface<LayoutNGTableCellInterface>(block)
-                                   ->StyleOrColLogicalWidth()
-                             : block->StyleRef().LogicalWidth();
+        block->IsTableCellLegacy()
+            ? To<LayoutTableCell>(block)->StyleOrColLogicalWidth()
+            : block->StyleRef().LogicalWidth();
     if (specified_width.IsFixed()) {
       if ((width = specified_width.Value()) > 0)
         return width;

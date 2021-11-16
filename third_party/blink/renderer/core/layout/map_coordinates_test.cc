@@ -1363,7 +1363,7 @@ TEST_F(MapCoordinatesTest, Table) {
   // TablesNG and Legacy row inline starts differ:
   // TablesNG inline start does not include border-spacing,
   // Legacy does.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(PhysicalOffset(116, 47), mapped_point);
   else
     EXPECT_EQ(PhysicalOffset(126, 47), mapped_point);
@@ -1381,7 +1381,7 @@ TEST_F(MapCoordinatesTest, Table) {
   ASSERT_TRUE(table->IsTable());
   mapped_point = MapLocalToAncestor(tbody, table, PhysicalOffset(126, 161));
   // TablesNG and Legacy row inline starts differ.
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(PhysicalOffset(141, 290), mapped_point);
   else
     EXPECT_EQ(PhysicalOffset(131, 290), mapped_point);
