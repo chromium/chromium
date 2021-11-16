@@ -126,7 +126,7 @@ base::File OpenNaClReadExecImpl(const base::FilePath& file_path,
   // allow a NaCl inner sandbox escape.
   uint32_t flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
   if (is_executable)
-    flags |= base::File::FLAG_EXECUTE;  // Windows only flag.
+    flags |= base::File::FLAG_WIN_EXECUTE;  // Windows only flag.
   base::File file(file_path, flags);
   if (!file.IsValid())
     return file;
