@@ -32,7 +32,6 @@ struct Device;
 class QuickPairProcessManager;
 class QuickPairMetricsLogger;
 class MessageStreamLookup;
-class BatteryUpdateMessageHandler;
 
 // Implements the Mediator design pattern for the components in the Quick Pair
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
@@ -102,7 +101,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;
   std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
-  std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
+  std::unique_ptr<MessageStreamLookup> message_stream_lookup;
   std::unique_ptr<PairerBroker> pairer_broker_;
   std::unique_ptr<UIBroker> ui_broker_;
   std::unique_ptr<FastPairRepository> fast_pair_repository_;
@@ -110,7 +109,6 @@ class Mediator final : public FeatureStatusTracker::Observer,
   std::unique_ptr<QuickPairMetricsLogger> metrics_logger_;
   std::unique_ptr<FastPairBluetoothConfigDelegate>
       fast_pair_bluetooth_config_delegate_;
-  std::unique_ptr<BatteryUpdateMessageHandler> battery_update_message_handler_;
 
   base::ScopedObservation<FeatureStatusTracker, FeatureStatusTracker::Observer>
       feature_status_tracker_observation_{this};
