@@ -3085,7 +3085,8 @@ extern const char kSettingsLandingPageRedesignDescription[];
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
 
 extern const char kCommanderName[];
 extern const char kCommanderDescription[];
@@ -3096,7 +3097,8 @@ extern const char kDesktopRestructuredLanguageSettingsDescription[];
 extern const char kDesktopDetailedLanguageSettingsName[];
 extern const char kDesktopDetailedLanguageSettingsDescription[];
 
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || defined
+        // (OS_FUCHSIA)
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 #if BUILDFLAG(USE_TCMALLOC)
@@ -3197,7 +3199,7 @@ extern const char kElasticOverscrollDescription[];
 #endif  // defined(OS_WIN) || defined(OS_ANDROID)
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_MAC)
+    defined(OS_MAC) || defined(OS_FUCHSIA)
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 #endif

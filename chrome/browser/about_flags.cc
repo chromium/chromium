@@ -291,6 +291,7 @@ using flags_ui::kDeprecated;
 using flags_ui::kOsAndroid;
 using flags_ui::kOsCrOS;
 using flags_ui::kOsCrOSOwnerOnly;
+using flags_ui::kOsFuchsia;
 using flags_ui::kOsLinux;
 using flags_ui::kOsMac;
 using flags_ui::kOsWin;
@@ -299,11 +300,12 @@ namespace about_flags {
 
 namespace {
 
-const unsigned kOsAll = kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid;
-const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS;
+const unsigned kOsAll =
+    kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia;
+const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsFuchsia;
 
 #if defined(USE_AURA)
-const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS;
+const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS | kOsFuchsia;
 #endif  // USE_AURA
 
 #if defined(USE_AURA)
@@ -973,7 +975,7 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+    defined(OS_WIN) || defined(OS_FUCHSIA)
 const FeatureEntry::FeatureParam kOmniboxDocumentProviderServerScoring[] = {
     {"DocumentUseServerScore", "true"},
     {"DocumentUseClientScore", "false"},
@@ -1181,7 +1183,7 @@ const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
      kOmniboxBookmarkPathsDynamicReplaceUrl,
      base::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
-        // defined(OS_WIN)
+        // defined(OS_WIN) || defined(OS_FUCHSIA)
 
 const FeatureEntry::FeatureVariation
     kOmniboxOnFocusSuggestionsContextualWebVariations[] = {
@@ -2942,7 +2944,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"smooth-scrolling", flag_descriptions::kSmoothScrollingName,
      flag_descriptions::kSmoothScrollingDescription,
      // Mac has a separate implementation with its own setting to disable.
-     kOsLinux | kOsCrOS | kOsWin | kOsAndroid,
+     kOsLinux | kOsCrOS | kOsWin | kOsAndroid | kOsFuchsia,
      ENABLE_DISABLE_VALUE_TYPE(switches::kEnableSmoothScrolling,
                                switches::kDisableSmoothScrolling)},
     {"sms-receiver-cross-device", flag_descriptions::kWebOTPCrossDeviceName,
@@ -3275,7 +3277,7 @@ const FeatureEntry kFeatureEntries[] = {
         "disable-accelerated-video-decode",
         flag_descriptions::kAcceleratedVideoDecodeName,
         flag_descriptions::kAcceleratedVideoDecodeDescription,
-        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux,
+        kOsMac | kOsWin | kOsCrOS | kOsAndroid | kOsLinux | kOsFuchsia,
         SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAcceleratedVideoDecode),
     },
 #endif  // defined(OS_LINUX)
@@ -3761,27 +3763,27 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableManifestId)},
     {"enable-desktop-pwas-sub-apps", flag_descriptions::kDesktopPWAsSubAppsName,
      flag_descriptions::kDesktopPWAsSubAppsDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(blink::features::kDesktopPWAsSubApps)},
     {"enable-desktop-pwas-protocol-handling",
      flag_descriptions::kDesktopPWAsProtocolHandlingName,
      flag_descriptions::kDesktopPWAsProtocolHandlingDescription,
-     kOsWin | kOsLinux | kOsMac,
+     kOsWin | kOsLinux | kOsMac | kOsFuchsia,
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableProtocolHandlers)},
     {"enable-desktop-pwas-url-handling",
      flag_descriptions::kDesktopPWAsUrlHandlingName,
      flag_descriptions::kDesktopPWAsUrlHandlingDescription,
-     kOsWin | kOsLinux | kOsMac,
+     kOsWin | kOsLinux | kOsMac | kOsFuchsia,
      FEATURE_VALUE_TYPE(blink::features::kWebAppEnableUrlHandlers)},
     {"enable-desktop-pwas-window-controls-overlay",
      flag_descriptions::kDesktopPWAsWindowControlsOverlayName,
      flag_descriptions::kDesktopPWAsWindowControlsOverlayDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kWebAppWindowControlsOverlay)},
     {"enable-desktop-pwas-additional-windowing-controls",
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsName,
      flag_descriptions::kDesktopPWAsAdditionalWindowingControlsDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAdditionalWindowingControls)},
     {"enable-desktop-pwas-web-bundles",
      flag_descriptions::kDesktopPWAsWebBundlesName,
@@ -3803,7 +3805,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"global-media-controls-cast-start-stop",
      flag_descriptions::kGlobalMediaControlsCastStartStopName,
      flag_descriptions::kGlobalMediaControlsCastStartStopDescription,
-     kOsWin | kOsMac | kOsLinux,
+     kOsWin | kOsMac | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(media_router::kGlobalMediaControlsCastStartStop)},
     {"allow-all-sites-to-initiate-mirroring",
      flag_descriptions::kAllowAllSitesToInitiateMirroringName,
@@ -4553,7 +4555,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP)},
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+    defined(OS_WIN) || defined(OS_FUCHSIA)
     {"omnibox-experimental-keyword-mode",
      flag_descriptions::kOmniboxExperimentalKeywordModeName,
      flag_descriptions::kOmniboxExperimentalKeywordModeDescription, kOsDesktop,
@@ -4662,7 +4664,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxPreserveLongerShortcutsTextDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kPreserveLongerShortcutsText)},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
-        // defined(OS_WIN)
+        // defined(OS_WIN) || defined(OS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"scheduler-configuration", flag_descriptions::kSchedulerConfigurationName,
@@ -4890,7 +4892,7 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,
      flag_descriptions::kScrollableTabStripDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStrip,
                                     kTabScrollingVariations,
                                     "TabScrolling")},
@@ -4936,12 +4938,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
     {"webui-feedback", flag_descriptions::kWebuiFeedbackName,
      flag_descriptions::kWebuiFeedbackDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUIFeedback)},
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 #if !defined(OS_ANDROID)
     {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
@@ -5311,7 +5313,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-enable-toolbar-status-chip",
      flag_descriptions::kAutofillEnableToolbarStatusChipName,
      flag_descriptions::kAutofillEnableToolbarStatusChipDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableToolbarStatusChip)},
 
     {"unsafely-treat-insecure-origin-as-secure",
@@ -5481,7 +5483,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"destroy-profile-on-browser-close",
      flag_descriptions::kDestroyProfileOnBrowserCloseName,
      flag_descriptions::kDestroyProfileOnBrowserCloseDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDestroyProfileOnBrowserClose)},
 
 #if defined(OS_WIN)
@@ -5552,7 +5554,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharingSendViaSyncDescription, kOsAll,
      FEATURE_VALUE_TYPE(kSharingSendViaSync)},
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
     {"sharing-hub-desktop-app-menu",
      flag_descriptions::kSharingHubDesktopAppMenuName,
      flag_descriptions::kSharingHubDesktopAppMenuDescription, kOsDesktop,
@@ -5561,7 +5564,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharingHubDesktopOmniboxName,
      flag_descriptions::kSharingHubDesktopOmniboxDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(sharing_hub::kSharingHubDesktopOmnibox)},
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
+        // defined(OS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-enable-pip-rounded-corners",
@@ -5884,7 +5888,8 @@ const FeatureEntry kFeatureEntries[] = {
          features::kEnterpriseReportingExtensionManifestVersion)},
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
-     flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsLinux | kOsWin,
+     flag_descriptions::kUnsafeWebGPUDescription,
+     kOsMac | kOsLinux | kOsWin | kOsFuchsia,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
     {"enable-unsafe-fast-js-calls", flag_descriptions::kUnsafeFastJSCallsName,
@@ -5970,7 +5975,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-autofill-credit-card-upload-feedback",
      flag_descriptions::kEnableAutofillCreditCardUploadFeedbackName,
      flag_descriptions::kEnableAutofillCreditCardUploadFeedbackDescription,
-     kOsWin | kOsMac | kOsLinux,
+     kOsWin | kOsMac | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardUploadFeedback)},
 
     {"font-access", flag_descriptions::kFontAccessAPIName,
@@ -5987,14 +5992,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMouseSubframeNoImplicitCapture)},
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
     {"global-media-controls-modern-ui",
      flag_descriptions::kGlobalMediaControlsModernUIName,
      flag_descriptions::kGlobalMediaControlsModernUIDescription,
-     kOsWin | kOsMac | kOsLinux | kOsCrOS,
+     kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsFuchsia,
      FEATURE_VALUE_TYPE(media::kGlobalMediaControlsModernUI)},
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
     {"safety-tips", flag_descriptions::kSafetyTipName,
      flag_descriptions::kSafetyTipDescription, kOsAll,
@@ -6412,7 +6417,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-user-data-snapshot", flag_descriptions::kUserDataSnapshotName,
      flag_descriptions::kUserDataSnapshotDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kUserDataSnapshot)},
 #endif
 
@@ -6847,7 +6852,8 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(language::kForceAppLanguagePrompt)},
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
     {"commander", flag_descriptions::kCommanderName,
      flag_descriptions::kCommanderDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kCommander)},
@@ -7098,25 +7104,25 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVp9kSVCHWDecoding)},
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    defined(OS_MAC)
+    defined(OS_MAC) || defined(OS_FUCHSIA)
     {
         "ui-debug-tools",
         flag_descriptions::kUIDebugToolsName,
         flag_descriptions::kUIDebugToolsDescription,
-        kOsWin | kOsLinux | kOsMac,
+        kOsWin | kOsLinux | kOsMac | kOsFuchsia,
         FEATURE_VALUE_TYPE(features::kUIDebugTools),
     },
 #endif
     {"http-cache-partitioning",
      flag_descriptions::kSplitCacheByNetworkIsolationKeyName,
      flag_descriptions::kSplitCacheByNetworkIsolationKeyDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsAndroid,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(net::features::kSplitCacheByNetworkIsolationKey)},
 
     {"autofill-address-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptName,
      flag_descriptions::kEnableAutofillAddressSavePromptDescription,
-     kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsAndroid,
+     kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
 
     {"detected-source-language-option",
@@ -7237,11 +7243,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kLauncherAppSort)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
     {"enable-desktop-pwas-app-icon-shortcuts-menu-ui",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription,
-     kOsCrOS | kOsMac | kOsLinux,
+     kOsCrOS | kOsMac | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenuUI)},
 #endif
 
@@ -7346,7 +7353,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-passthrough-command-decoder",
      flag_descriptions::kUsePassthroughCommandDecoderName,
      flag_descriptions::kUsePassthroughCommandDecoderDescription,
-     kOsMac | kOsLinux | kOsCrOS | kOsAndroid,
+     kOsMac | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDefaultPassthroughCommandDecoder)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

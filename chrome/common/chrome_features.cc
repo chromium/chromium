@@ -252,7 +252,8 @@ const base::Feature kPreinstalledWebAppInstallation{
     "DefaultWebAppInstallation", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
 // Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS,
 // MacOS and Linux.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{

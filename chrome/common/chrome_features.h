@@ -180,7 +180,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPreinstalledWebAppInstallation;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_FUCHSIA)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsAppIconShortcutsMenuUI;
 #endif
