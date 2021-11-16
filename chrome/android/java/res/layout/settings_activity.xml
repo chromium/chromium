@@ -29,4 +29,10 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
     </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/sheet_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

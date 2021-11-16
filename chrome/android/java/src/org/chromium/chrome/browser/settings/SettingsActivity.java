@@ -54,9 +54,13 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -98,6 +102,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private SnackbarManager mSnackbarManager;
 
+    private ScrimCoordinator mScrim;
+
+    private BottomSheetController mBottomSheetController;
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +141,33 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         setStatusBarColor();
+
+        initBottomSheet();
+    }
+
+    /** Set up the bottom sheet for this activity. */
+    private void initBottomSheet() {
+        ViewGroup sheetContainer = findViewById(R.id.sheet_container);
+        mScrim = new ScrimCoordinator(this,
+                new ScrimCoordinator.SystemUiScrimDelegate() {
+                    @Override
+                    public void setStatusBarScrimFraction(float scrimFraction) {
+                        // TODO: Implement if status bar needs to change color with the scrim.
+                    }
+
+                    @Override
+                    public void setNavigationBarScrimFraction(float scrimFraction) {
+                        // TODO: Implement if navigation bar needs to change color with the scrim.
+                    }
+                },
+                (ViewGroup) sheetContainer.getParent(),
+                ApiCompatibilityUtils.getColor(getResources(), R.color.default_scrim_color));
+
+        // clang-format off
+        mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
+                () -> mScrim, (sheet) -> {}, getWindow(),
+                KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
+        // clang-format on
     }
 
     // OnPreferenceStartFragmentCallback:
