@@ -40,15 +40,4 @@ bool ProjectorController::AreExtendedProjectorFeaturesDisabled() {
   return command_line->HasSwitch(kExtendedProjectorFeaturesDisabled);
 }
 
-ProjectorController::ScopedInstanceResetterForTest::
-    ScopedInstanceResetterForTest()
-    : controller_(g_instance) {
-  g_instance = nullptr;
-}
-
-ProjectorController::ScopedInstanceResetterForTest::
-    ~ScopedInstanceResetterForTest() {
-  g_instance = controller_;
-}
-
 }  // namespace ash

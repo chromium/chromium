@@ -17,10 +17,12 @@ namespace ash {
 // ProjectorControllerImpl.
 class ASH_PUBLIC_EXPORT ProjectorClient {
  public:
-  ProjectorClient() = default;
+  static ProjectorClient* Get();
+
+  ProjectorClient();
   ProjectorClient(const ProjectorClient&) = delete;
   ProjectorClient& operator=(const ProjectorClient&) = delete;
-  virtual ~ProjectorClient() = default;
+  virtual ~ProjectorClient();
 
   virtual void StartSpeechRecognition() = 0;
   virtual void StopSpeechRecognition() = 0;

@@ -22,19 +22,6 @@ class ProjectorClient;
 // Interface to control projector in ash.
 class ASH_PUBLIC_EXPORT ProjectorController {
  public:
-  class ScopedInstanceResetterForTest {
-   public:
-    ScopedInstanceResetterForTest();
-    ScopedInstanceResetterForTest(const ScopedInstanceResetterForTest&) =
-        delete;
-    ScopedInstanceResetterForTest& operator=(
-        const ScopedInstanceResetterForTest&) = delete;
-    ~ScopedInstanceResetterForTest();
-
-   private:
-    ProjectorController* const controller_;
-  };
-
   ProjectorController();
   ProjectorController(const ProjectorController&) = delete;
   ProjectorController& operator=(const ProjectorController&) = delete;

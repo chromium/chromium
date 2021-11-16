@@ -3423,7 +3423,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/ash/keyboard/keyboard_end_to_end_browsertest.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.cc",
         "../browser/ui/ash/multi_user/test_multi_user_window_manager.h",
-        "../browser/ui/ash/projector/projector_annotator_controller_browsertest.cc",
         "../browser/ui/ash/projector/projector_client_impl_browsertest.cc",
         "../browser/ui/ash/projector/projector_navigation_throttle_browsertest.cc",
         "../browser/ui/ash/screen_orientation_delegate_chromeos_browsertest.cc",
@@ -6564,6 +6563,7 @@ test("unit_tests") {
       "../browser/ui/ash/network/network_state_notifier_unittest.cc",
       "../browser/ui/ash/network/tether_notification_presenter_unittest.cc",
       "../browser/ui/ash/notification_badge_color_cache_unittest.cc",
+      "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_controller_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_state_controller_unittest.cc",
       "../browser/ui/ash/quick_answers/quick_answers_ui_controller_unittest.cc",
@@ -6590,6 +6590,7 @@ test("unit_tests") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/resources/vector_icons",
       "//ash/strings",
+      "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/system_extensions:unit_tests",
       "//chrome/browser/chromeos:test_support",
@@ -6619,6 +6620,7 @@ test("unit_tests") {
       "//chromeos/services/nearby/public/cpp:test_support",
       "//chromeos/ui/wm",
       "//components/app_restore:unit_tests",
+      "//components/soda:soda",
     ]
   }
 
