@@ -216,7 +216,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          resource_type == request.resource_type &&
          priority == request.priority &&
          devtools_stack_id == request.devtools_stack_id &&
-         should_reset_appcache == request.should_reset_appcache &&
          is_external_request == request.is_external_request &&
          cors_preflight_policy == request.cors_preflight_policy &&
          originated_from_service_worker ==

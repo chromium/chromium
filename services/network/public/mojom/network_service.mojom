@@ -397,7 +397,7 @@ interface NetworkService {
   // when the raw headers represent untrustworthy input and the URLLoader used
   // lives in a non-sandboxed process. It can also happen from some exotic
   // URLLoader where parsing hasn't been implemented.
-  // In particular, this is used for request served from AppCache, WebBundle,
+  // In particular, this is used for request served from WebBundle,
   // Extensions, etc.
   ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
       => (ParsedHeaders parsed_headers);

@@ -52,16 +52,6 @@ struct URLResponseHead {
   // True if the request accessed the network in the process of retrieving data.
   bool network_accessed = false;
 
-  // The appcache this response was loaded from, or
-  // kAppCacheNoCacheId (hard-coded as 0 because services/network
-  // can't take a dependency on Blink).
-  // TODO(rdsmith): Remove conceptual dependence on appcache.
-  int64 appcache_id = 0;
-
-  // The manifest url of the appcache this response was loaded from.
-  // Note: this value is only populated for main resource requests.
-  url.mojom.Url appcache_manifest_url;
-
   // Detailed timing information used by the WebTiming, HAR and Developer
   // Tools.  Includes socket ID and socket reuse information.
   LoadTimingInfo load_timing;
