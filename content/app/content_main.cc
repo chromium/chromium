@@ -242,7 +242,9 @@ RunContentProcess(ContentMainParams params,
 #if !defined(OS_ANDROID)
   DCHECK(!is_initialized);
 #endif
-  if (!is_initialized) {
+  if (is_initialized) {
+    content_main_runner->ReInitializeParams(std::move(params));
+  } else {
     is_initialized = true;
 #if defined(OS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
     base::allocator::InitializeAllocatorShim();

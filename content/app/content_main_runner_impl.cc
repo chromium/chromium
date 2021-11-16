@@ -714,7 +714,7 @@ int ContentMainRunnerImpl::TerminateForFatalInitializationError() {
 int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // ContentMainDelegate is used by this class, not forwarded to embedders.
   delegate_ = std::exchange(params.delegate, nullptr);
-  content_main_params_ = std::move(params);
+  content_main_params_.emplace(std::move(params));
 
 #if defined(OS_ANDROID)
   // Now that mojo's core is initialized we can enable tracing. Note that only
@@ -755,7 +755,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 // A consequence of this is that you can't use the ctor/dtor-based
 // TRACE_EVENT methods on Linux or iOS builds till after we set this up.
 #if !defined(OS_ANDROID)
-  if (!content_main_params_.ui_task) {
+  if (!content_main_params_->ui_task) {
     // When running browser tests, don't create a second AtExitManager as that
     // interfers with shutdown when objects created before ContentMain is
     // called are destructed when it returns.
@@ -922,7 +922,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #if defined(OS_WIN)
   if (!InitializeSandbox(
           sandbox::policy::SandboxTypeFromCommandLine(command_line),
-          content_main_params_.sandbox_info))
+          content_main_params_->sandbox_info))
     return TerminateForFatalInitializationError();
 #elif defined(OS_MAC)
   if (!sandbox::policy::IsUnsandboxedSandboxType(
@@ -956,10 +956,19 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   return -1;
 }
 
+void ContentMainRunnerImpl::ReInitializeParams(ContentMainParams new_params) {
+  DCHECK(!content_main_params_);
+  // Initialize() already set |delegate_|, expect the same one.
+  DCHECK_EQ(delegate_, new_params.delegate);
+  new_params.delegate = nullptr;
+  content_main_params_.emplace(std::move(new_params));
+}
+
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
 int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   DCHECK(is_initialized_);
+  DCHECK(content_main_params_);
   DCHECK(!is_shutdown_);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -993,25 +1002,23 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   }
 
   MainFunctionParams main_params(command_line);
-  main_params.ui_task = std::move(content_main_params_.ui_task);
+  main_params.ui_task = std::move(content_main_params_->ui_task);
   main_params.created_main_parts_closure =
-      std::move(content_main_params_.created_main_parts_closure);
+      std::move(content_main_params_->created_main_parts_closure);
 #if defined(OS_WIN)
-  main_params.sandbox_info = content_main_params_.sandbox_info;
+  main_params.sandbox_info = content_main_params_->sandbox_info;
 #elif defined(OS_MAC)
-  main_params.autorelease_pool = content_main_params_.autorelease_pool;
+  main_params.autorelease_pool = content_main_params_->autorelease_pool;
 #endif
 
-  const bool start_minimal_browser = content_main_params_.minimal_browser_mode;
+  const bool start_minimal_browser = content_main_params_->minimal_browser_mode;
 
-#if DCHECK_IS_ON()
   // ContentMainParams cannot be wholesaled moved into MainFunctionParams
   // because MainFunctionParams is in common/ and can't depend on
   // ContentMainParams, but this is the effective intent.
-  // |content_main_params_| shouldn't be used after being handed off to
+  // |content_main_params_| shouldn't be reused after being handed off to
   // RunBrowser/RunOtherNamedProcessTypeMain below.
-  content_main_params_ = ContentMainParams{nullptr};
-#endif
+  content_main_params_.reset();
 
   RegisterMainThreadFactories();
 

@@ -16,6 +16,7 @@
 #include "content/public/app/content_main_runner.h"
 #include "content/public/common/main_function_params.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class AtExitManager;
@@ -44,6 +45,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 
   // ContentMainRunner:
   int Initialize(ContentMainParams params) override;
+  void ReInitializeParams(ContentMainParams new_params) override;
   int Run() override;
   void Shutdown() override;
 
@@ -80,7 +82,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   std::unique_ptr<base::AtExitManager> exit_manager_;
 
   // Received in Initialize(), handed-off in Run().
-  ContentMainParams content_main_params_{nullptr};
+  absl::optional<ContentMainParams> content_main_params_;
 };
 
 // The BrowserTestBase on Android does not call ContentMain(). It tries instead
