@@ -211,7 +211,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchDebug,
     &kContextualSearchDelayedIntelligence,
     &kContextualSearchForceCaption,
-    &kContextualSearchLegacyHttpPolicy,
     &kContextualSearchLiteralSearchTap,
     &kContextualSearchLongpressResolve,
     &kContextualSearchMlTapSuppression,
@@ -539,9 +538,6 @@ const base::Feature kContextualSearchDelayedIntelligence{
 
 const base::Feature kContextualSearchForceCaption{
     "ContextualSearchForceCaption", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContextualSearchLegacyHttpPolicy{
-    "ContextualSearchLegacyHttpPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchLiteralSearchTap{
     "ContextualSearchLiteralSearchTap", base::FEATURE_DISABLED_BY_DEFAULT};

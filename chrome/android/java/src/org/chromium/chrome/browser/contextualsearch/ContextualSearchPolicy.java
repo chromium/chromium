@@ -168,7 +168,7 @@ class ContextualSearchPolicy {
         }
 
         // The user must have decided on privacy to resolve page content on HTTPS.
-        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled();
     }
 
     /** @return Whether a long-press gesture can resolve. */
@@ -183,7 +183,7 @@ class ContextualSearchPolicy {
      */
     boolean canSendSurroundings() {
         // The user must have decided on privacy to send page content on HTTPS.
-        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled();
     }
 
     /**
@@ -298,19 +298,6 @@ class ContextualSearchPolicy {
      */
     boolean isLiteralSearchTapEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP);
-    }
-
-    /**
-     * Determines the policy for sending page content when on plain HTTP pages.
-     * Checks a Feature to use our legacy HTTP policy instead of treating HTTP just like HTTPS.
-     * See https://crbug.com/1129969 for details.
-     * @return whether the legacy policy for plain HTTP pages currently applies.
-     */
-    private boolean doesLegacyHttpPolicyApply() {
-        if (!isBasePageHTTP(mNetworkCommunicator.getBasePageUrl())) return false;
-
-        // Check if the legacy behavior is enabled through a feature.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LEGACY_HTTP_POLICY);
     }
 
     /**
