@@ -1288,7 +1288,7 @@ bool GlobalActivityTracker::CreateWithFile(const FilePath& file_path,
   std::unique_ptr<MemoryMappedFile> mapped_file(new MemoryMappedFile());
   bool success = mapped_file->Initialize(
       File(file_path, File::FLAG_CREATE_ALWAYS | File::FLAG_READ |
-                          File::FLAG_WRITE | File::FLAG_SHARE_DELETE),
+                          File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE),
       {0, size}, MemoryMappedFile::READ_WRITE_EXTEND);
   if (!success)
     return false;
