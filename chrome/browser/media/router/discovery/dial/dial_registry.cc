@@ -163,9 +163,9 @@ bool DialRegistry::ReadyToDiscover() {
 
 bool DialRegistry::DiscoverNow() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!ReadyToDiscover()) {
+  if (!ReadyToDiscover())
     return false;
-  }
+
   if (!dial_) {
     OnDialError(DIAL_UNKNOWN);
     return false;
@@ -356,9 +356,6 @@ void DialRegistry::OnConnectionChanged(network::mojom::ConnectionType type) {
       if (dial_) {
         OnDialError(DIAL_NETWORK_DISCONNECTED);
         StopPeriodicDiscovery();
-        // TODO(justinlin): As an optimization, we can probably keep our device
-        // list around and restore it if we reconnected to the exact same
-        // network.
         Clear();
         MaybeSendEvent();
       }
