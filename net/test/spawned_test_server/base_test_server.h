@@ -125,9 +125,6 @@ class BaseTestServer {
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
 
-    // Whether to send a fatal alert immediately after completing the handshake.
-    bool alert_after_handshake = false;
-
     // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
     // random.
     bool simulate_tls13_downgrade = false;

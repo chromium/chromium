@@ -124,6 +124,10 @@ struct NET_EXPORT SSLServerConfig {
   base::RepeatingCallback<bool(const SSL_CLIENT_HELLO*)>
       client_hello_callback_for_testing;
 
+  // If specified, causes the specified alert to be sent immediately after the
+  // handshake.
+  absl::optional<uint8_t> alert_after_handshake_for_testing;
+
   // This is a workaround for BoringSSL's scopers not being copyable. See
   // https://crbug.com/boringssl/431.
   class NET_EXPORT ECHKeysContainer {

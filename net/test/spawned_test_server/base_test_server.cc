@@ -463,8 +463,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
     if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
       arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
     }
-    if (ssl_options_.alert_after_handshake)
-      arguments->SetKey("alert-after-handshake", base::Value());
 
     if (ssl_options_.simulate_tls13_downgrade) {
       arguments->SetKey("simulate-tls13-downgrade", base::Value());

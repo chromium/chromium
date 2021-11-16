@@ -102,8 +102,8 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
 
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
                ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
-               alert_after_handshake, simulate_tls13_downgrade,
-               simulate_tls12_downgrade, tls_max_version):
+               simulate_tls13_downgrade, simulate_tls12_downgrade,
+               tls_max_version):
     self.cert_chain = tlslite.api.X509CertChain()
     self.cert_chain.parsePemList(pem_cert_and_key)
     # Force using only python implementation - otherwise behavior is different
@@ -133,8 +133,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
     # Enable SSLv3 for testing purposes.
     self.ssl_handshake_settings.minVersion = (3, 0)
-    if alert_after_handshake:
-      self.ssl_handshake_settings.alertAfterHandshake = True
     if simulate_tls13_downgrade:
       self.ssl_handshake_settings.simulateTLS13Downgrade = True
     if simulate_tls12_downgrade:
@@ -409,7 +407,6 @@ class ServerRunner(testserver_base.TestServerRunner):
             (host, port), TestPageHandler, pem_cert_and_key,
             self.options.ssl_client_auth, self.options.ssl_client_ca,
             self.options.ssl_client_cert_type,
-            self.options.alert_after_handshake,
             self.options.simulate_tls13_downgrade,
             self.options.simulate_tls12_downgrade, self.options.tls_max_version)
         print('HTTPS server started on https://%s:%d...' %
@@ -524,11 +521,6 @@ class ServerRunner(testserver_base.TestServerRunner):
     self.option_parser.add_option('--ws-basic-auth', action='store_true',
                                   dest='ws_basic_auth',
                                   help='Enable basic-auth for WebSocket')
-    self.option_parser.add_option('--alert-after-handshake',
-                                  dest='alert_after_handshake',
-                                  default=False, action='store_true',
-                                  help='If set, the server will send a fatal '
-                                  'alert immediately after the handshake.')
     self.option_parser.add_option('--simulate-tls13-downgrade',
                                   action='store_true')
     self.option_parser.add_option('--simulate-tls12-downgrade',

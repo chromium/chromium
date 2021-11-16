@@ -852,7 +852,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
 
   // Create an SSLClientSocket object and use it to connect to a test server,
   // then wait for connection results. This must be called after a successful
-  // StartTestServer() call.
+  // StartEmbeddedTestServer() or StartTestServer() call.
   //
   // |ssl_config| The SSL configuration to use.
   // |host_port_pair| The hostname and port to use at the SSL layer. (The
@@ -889,18 +889,12 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   // Adds the server certificate with provided cert status.
-  // Must be called after StartTestServer has been called.
+  // Must be called after StartEmbeddedTestServer has been called.
   void AddServerCertStatusToSSLConfig(CertStatus status,
                                       SSLConfig* ssl_config) {
-    ASSERT_TRUE(spawned_test_server() || embedded_test_server());
-    // Find out the certificate the server is using.
-    scoped_refptr<X509Certificate> server_cert;
-    if (spawned_test_server()) {
-      server_cert = spawned_test_server()->GetCertificate();
-    } else {
-      server_cert = embedded_test_server()->GetCertificate();
-    }
-    // Get the MockCertVerifier to verify it as an EV cert.
+    ASSERT_TRUE(embedded_test_server());
+    scoped_refptr<X509Certificate> server_cert =
+        embedded_test_server()->GetCertificate();
     CertVerifyResult verify_result;
     verify_result.cert_status = status;
     verify_result.verified_cert = server_cert;
@@ -1207,7 +1201,7 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
   // the client successfully false started, |callback.WaitForResult()| will
   // return OK without unblocking transport reads. But Read() will still block.)
   //
-  // Must be called after StartTestServer is called.
+  // Must be called after StartEmbeddedTestServer is called.
   void CreateAndConnectUntilServerFinishedReceived(
       const SSLConfig& client_config,
       TestCompletionCallback* callback,
@@ -2339,14 +2333,10 @@ TEST_P(SSLClientSocketReadTest, Read_WithAsyncZeroReturn) {
 // Tests that fatal alerts from the peer are processed. This is a regression
 // test for https://crbug.com/466303.
 TEST_P(SSLClientSocketReadTest, Read_WithFatalAlert) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  auto tls_max_version = ProtocolVersionToSpawnedTestServer(version());
-  if (!tls_max_version) {
-    return;
-  }
-  ssl_options.tls_max_version = *tls_max_version;
-  ssl_options.alert_after_handshake = true;
-  ASSERT_TRUE(StartTestServer(ssl_options));
+  SSLServerConfig server_config = GetServerConfig();
+  server_config.alert_after_handshake_for_testing = SSL_AD_INTERNAL_ERROR;
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
