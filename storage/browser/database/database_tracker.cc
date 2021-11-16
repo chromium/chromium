@@ -947,7 +947,7 @@ void DatabaseTracker::ClearSessionOnlyOrigins() {
     for (const auto& database : databases) {
       base::File file(
           GetFullDBFilePath(origin, database),
-          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_SHARE_DELETE |
+          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WIN_SHARE_DELETE |
               base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_READ);
     }
     DeleteOrigin(origin, true);

@@ -79,7 +79,8 @@ base::File VfsBackend::OpenFile(const base::FilePath& file_path,
     flags |= base::File::FLAG_WRITE;
 
   if (!(desired_flags & SQLITE_OPEN_MAIN_DB))
-    flags |= base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE;
+    flags |= base::File::FLAG_WIN_EXCLUSIVE_READ |
+             base::File::FLAG_WIN_EXCLUSIVE_WRITE;
 
   if (desired_flags & SQLITE_OPEN_CREATE) {
     flags |= (desired_flags & SQLITE_OPEN_EXCLUSIVE)
@@ -90,13 +91,13 @@ base::File VfsBackend::OpenFile(const base::FilePath& file_path,
   }
 
   if (desired_flags & SQLITE_OPEN_DELETEONCLOSE) {
-    flags |= base::File::FLAG_TEMPORARY | base::File::FLAG_HIDDEN |
+    flags |= base::File::FLAG_TEMPORARY | base::File::FLAG_WIN_HIDDEN |
              base::File::FLAG_DELETE_ON_CLOSE;
   }
 
   // This flag will allow us to delete the file later on from the browser
   // process.
-  flags |= base::File::FLAG_SHARE_DELETE;
+  flags |= base::File::FLAG_WIN_SHARE_DELETE;
 
   // Try to open/create the DB file.
   return base::File(file_path, flags);
