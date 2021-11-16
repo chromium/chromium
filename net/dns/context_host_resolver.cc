@@ -19,6 +19,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
@@ -131,6 +132,14 @@ class ContextHostResolver::WrappedResolveHostRequest
     }
 
     return inner_request_->GetAddressResults();
+  }
+
+  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
+      const override {
+    if (!inner_request_)
+      return absl::nullopt;
+
+    return inner_request_->GetEndpointResults();
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()

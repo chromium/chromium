@@ -128,6 +128,8 @@ component("net") {
     "base/chunked_upload_data_stream.h",
     "base/completion_once_callback.h",
     "base/completion_repeating_callback.h",
+    "base/connection_endpoint_metadata.cc",
+    "base/connection_endpoint_metadata.h",
     "base/data_url.cc",
     "base/data_url.h",
     "base/datagram_buffer.cc",
@@ -2025,6 +2027,8 @@ bundle_data("test_support_bundle_data") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "base/connection_endpoint_metadata_test_util.cc",
+    "base/connection_endpoint_metadata_test_util.h",
     "base/load_timing_info_test_util.cc",
     "base/load_timing_info_test_util.h",
     "base/mock_file_stream.cc",

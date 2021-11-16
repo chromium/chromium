@@ -66,6 +66,7 @@ source_set("dns") {
     "host_resolver_mdns_task.h",
     "host_resolver_proc.cc",
     "host_resolver_proc.h",
+    "host_resolver_results.cc",
     "https_record_rdata.cc",
     "httpssvc_metrics.cc",
     "httpssvc_metrics.h",
@@ -215,6 +216,7 @@ source_set("host_resolver") {
     "dns_config.h",
     "host_cache.h",
     "host_resolver.h",
+    "host_resolver_results.h",
     "mapped_host_resolver.h",
   ]
   public = []
@@ -451,12 +453,14 @@ source_set("test_support") {
   sources = [
     "address_info_test_util.cc",
     "dns_test_util.cc",
+    "host_resolver_results_test_util.cc",
     "mock_host_resolver.cc",
     "test_dns_config_service.cc",
   ]
   public = [
     "address_info_test_util.h",
     "dns_test_util.h",
+    "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
     "test_dns_config_service.h",
   ]

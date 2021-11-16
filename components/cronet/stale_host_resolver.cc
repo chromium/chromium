@@ -21,6 +21,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
@@ -46,6 +47,8 @@ class StaleHostResolver::RequestImpl
   // net::HostResolver::ResolveHostRequest implementation:
   int Start(net::CompletionOnceCallback result_callback) override;
   const absl::optional<net::AddressList>& GetAddressResults() const override;
+  absl::optional<std::vector<net::HostResolverEndpointResult>>
+  GetEndpointResults() const override;
   const absl::optional<std::vector<std::string>>& GetTextResults()
       const override;
   const absl::optional<std::vector<net::HostPortPair>>& GetHostnameResults()
@@ -188,6 +191,15 @@ StaleHostResolver::RequestImpl::GetAddressResults() const {
 
   DCHECK(cache_request_);
   return cache_request_->GetAddressResults();
+}
+
+absl::optional<std::vector<net::HostResolverEndpointResult>>
+StaleHostResolver::RequestImpl::GetEndpointResults() const {
+  if (network_request_)
+    return network_request_->GetEndpointResults();
+
+  DCHECK(cache_request_);
+  return cache_request_->GetEndpointResults();
 }
 
 const absl::optional<std::vector<std::string>>&

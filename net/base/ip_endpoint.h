@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <ostream>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -90,6 +91,9 @@ class NET_EXPORT IPEndPoint {
   IPAddress address_;
   uint16_t port_ = 0;
 };
+
+NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
+                                            const IPEndPoint& ip_endpoint);
 
 }  // namespace net
 

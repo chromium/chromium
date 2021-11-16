@@ -74,6 +74,7 @@
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_protocol.h"
@@ -706,6 +707,19 @@ class HostResolverManager::RequestImpl
     DCHECK(complete_);
     static const base::NoDestructor<absl::optional<AddressList>> nullopt_result;
     return results_ ? results_.value().addresses() : *nullopt_result;
+  }
+
+  absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
+      const override {
+    DCHECK(complete_);
+
+    if (!results_.has_value() || !results_.value().addresses().has_value())
+      return absl::nullopt;
+
+    // TODO(crbug.com/1264933): Use HostResolverEndpointResult internally
+    // instead of converting on output.
+    return HostResolver::AddressListToEndpointResults(
+        results_.value().addresses().value());
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()

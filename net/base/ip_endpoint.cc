@@ -182,4 +182,8 @@ bool IPEndPoint::operator!=(const IPEndPoint& that) const {
   return !(*this == that);
 }
 
+std::ostream& operator<<(std::ostream& os, const IPEndPoint& ip_endpoint) {
+  return os << ip_endpoint.ToString();
+}
+
 }  // namespace net

@@ -27,6 +27,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
@@ -138,7 +139,9 @@ class MockHostResolverBase
     };
 
     using ErrorResult = Error;
-    using RuleResult = absl::variant<AddressList, ErrorResult>;
+    using RuleResult = absl::variant<AddressList,
+                                     std::vector<HostResolverEndpointResult>,
+                                     ErrorResult>;
 
     // If `default_result` is nullopt, every resolve must match an added rule.
     explicit RuleResolver(

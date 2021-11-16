@@ -19,6 +19,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -82,7 +83,17 @@ class NET_EXPORT HostResolver {
     // Address record (A or AAAA) results of the request. Should only be called
     // after Start() signals completion, either by invoking the callback or by
     // returning a result other than |ERR_IO_PENDING|.
+    //
+    // TODO(crbug.com/1264933): Remove and replace all usage with
+    // GetConnectionEndpointResults().
     virtual const absl::optional<AddressList>& GetAddressResults() const = 0;
+
+    // Endpoint results for `A`, `AAAA`, `UNSPECIFIED`, or `HTTPS` requests.
+    // Should only be called after Start() signals completion, either by
+    // invoking the callback or by returning a result other than
+    // `ERR_IO_PENDING`.
+    virtual absl::optional<std::vector<HostResolverEndpointResult>>
+    GetEndpointResults() const = 0;
 
     // Text record (TXT) results of the request. Should only be called after
     // Start() signals completion, either by invoking the callback or by
@@ -400,6 +411,15 @@ class NET_EXPORT HostResolver {
 
   // Helper for squashing error code to a small set of DNS error codes.
   static int SquashErrorCode(int error);
+
+  // Utility to convert an AddressList to an equivalent list of
+  // `HostResolverEndpointResults`. Assumes all addresses in the input list
+  // represent the default non-protocol endpoint.
+  //
+  // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
+  // in `HostResolver` and results.
+  static std::vector<HostResolverEndpointResult> AddressListToEndpointResults(
+      const AddressList& address_list);
 
  protected:
   HostResolver();
