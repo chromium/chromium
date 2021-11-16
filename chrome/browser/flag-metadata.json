@@ -1671,7 +1671,7 @@
   {
     "name": "enable-cros-language-settings-update-2",
     "owners": [ "cros-borders@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-multilingual-typing",
