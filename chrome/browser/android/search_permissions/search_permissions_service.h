@@ -83,6 +83,7 @@ class SearchPermissionsService : public KeyedService {
 
   // Returns whether the given origin matches the DSE origin.
   bool IsDseOrigin(const url::Origin& origin);
+  bool IsDSEAutograntEnabled(ContentSettingsType type);
 
   // Resets the DSE permission for a single ContentSettingsType.
   void ResetDSEPermission(ContentSettingsType type);

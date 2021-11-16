@@ -176,15 +176,8 @@ SearchPermissionsService::SearchPermissionsService(Profile* profile)
 bool SearchPermissionsService::IsPermissionControlledByDSE(
     ContentSettingsType type,
     const url::Origin& requesting_origin) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kRevertDSEAutomaticPermissions)) {
+  if (!IsDSEAutograntEnabled(type))
     return false;
-  }
-
-  if (type != ContentSettingsType::GEOLOCATION &&
-      type != ContentSettingsType::NOTIFICATIONS) {
-    return false;
-  }
 
   if (requesting_origin.scheme() != url::kHttpsScheme)
     return false;
@@ -198,6 +191,16 @@ bool SearchPermissionsService::IsPermissionControlledByDSE(
 bool SearchPermissionsService::IsDseOrigin(const url::Origin& origin) {
   return origin.scheme() == url::kHttpsScheme &&
          origin.IsSameOriginWith(delegate_->GetDSEOrigin());
+}
+
+bool SearchPermissionsService::IsDSEAutograntEnabled(ContentSettingsType type) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kRevertDSEAutomaticPermissions)) {
+    return false;
+  }
+
+  return type == ContentSettingsType::GEOLOCATION ||
+         type == ContentSettingsType::NOTIFICATIONS;
 }
 
 void SearchPermissionsService::ResetDSEPermission(ContentSettingsType type) {

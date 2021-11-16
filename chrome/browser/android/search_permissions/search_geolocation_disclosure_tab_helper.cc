@@ -196,7 +196,7 @@ bool SearchGeolocationDisclosureTabHelper::ShouldShowDisclosureForAPIAccess(
     return false;
 
   if (gIgnoreUrlChecksForTesting)
-    return true;
+    return service->IsDSEAutograntEnabled(ContentSettingsType::GEOLOCATION);
 
   return service->IsPermissionControlledByDSE(ContentSettingsType::GEOLOCATION,
                                               url::Origin::Create(gurl));

@@ -20,12 +20,15 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SearchGeolocationDisclosureTabHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -67,6 +70,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
+    @DisableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
     public void testInfoBarAppears() throws TimeoutException {
         SearchGeolocationDisclosureTabHelper.setIgnoreUrlChecksForTesting();
         Assert.assertEquals(
@@ -143,6 +147,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
+    @DisableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
     public void testInfoBarDismiss() throws TimeoutException {
         SearchGeolocationDisclosureTabHelper.setIgnoreUrlChecksForTesting();
         Assert.assertEquals(
@@ -191,6 +196,20 @@ public class SearchGeolocationDisclosureInfoBarTest {
     public void testNoInfoBarInIncognito() {
         SearchGeolocationDisclosureTabHelper.setIgnoreUrlChecksForTesting();
         mActivityTestRule.newIncognitoTabFromMenu();
+        Assert.assertEquals(
+                "Wrong starting infobar count", 0, mActivityTestRule.getInfoBars().size());
+
+        mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
+        Assert.assertEquals(
+                "Wrong infobar count after search", 0, mActivityTestRule.getInfoBars().size());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "Geolocation"})
+    @EnableFeatures(ChromeFeatureList.REVERT_DSE_AUTOMATIC_PERMISSIONS)
+    public void testNoInfobarWhenAutograntDisabled() throws TimeoutException {
+        SearchGeolocationDisclosureTabHelper.setIgnoreUrlChecksForTesting();
         Assert.assertEquals(
                 "Wrong starting infobar count", 0, mActivityTestRule.getInfoBars().size());
 
