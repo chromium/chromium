@@ -88,6 +88,9 @@ template("system_webview_bundle") {
       proguard_android_sdk_dep = webview_framework_dep
     }
 
+    # For this to be respected, it must also be set on the base module target.
+    strip_unused_resources = is_official_build
+
     forward_variables_from(invoker, "*")
   }
 }

@@ -231,6 +231,13 @@ template("system_webview_apk_or_module_tmpl") {
 
       # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
       short_resource_paths = !is_java_debug
+
+      # Removes unused resources from the apk. Only enabled on official builds
+      # since it adds a slow step and serializes the build graph causing fewer
+      # expensive tasks (eg: proguarding, resource optimization) to be run in
+      # parallel by adding dependencies between them (adds around 10-20
+      # seconds on my machine).
+      strip_unused_resources = is_official_build
     }
 
     if (!_is_bundle_module) {
