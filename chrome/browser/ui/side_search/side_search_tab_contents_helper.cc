@@ -118,7 +118,9 @@ void SideSearchTabContentsHelper::SetSidePanelContentsForTesting(
 
 SideSearchTabContentsHelper::SideSearchTabContentsHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SideSearchTabContentsHelper>(*web_contents) {
+}
 
 SideSearchSideContentsHelper*
 SideSearchTabContentsHelper::GetSideContentsHelper() {

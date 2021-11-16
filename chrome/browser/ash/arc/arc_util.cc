@@ -662,8 +662,9 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
   web_contents->GetController().LoadURLWithParams(load_url_params);
 
   // Add a flag to remember this tab originated in the ARC context.
-  web_contents->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                            std::make_unique<arc::ArcWebContentsData>());
+  web_contents->SetUserData(
+      &arc::ArcWebContentsData::kArcTransitionFlag,
+      std::make_unique<arc::ArcWebContentsData>(web_contents.get()));
 
   return web_contents;
 }

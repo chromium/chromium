@@ -200,8 +200,9 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
 
   if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
     // Add a flag to remember this web_contents originated in the ARC context.
-    web_contents->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                              std::make_unique<arc::ArcWebContentsData>());
+    web_contents->SetUserData(
+        &arc::ArcWebContentsData::kArcTransitionFlag,
+        std::make_unique<arc::ArcWebContentsData>(web_contents));
   }
 }
 

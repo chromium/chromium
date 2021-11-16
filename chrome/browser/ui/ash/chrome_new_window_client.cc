@@ -593,7 +593,7 @@ void ChromeNewWindowClient::OpenUrlFromArc(const GURL& url) {
 
   // Add a flag to remember this tab originated in the ARC context.
   tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                   std::make_unique<arc::ArcWebContentsData>());
+                   std::make_unique<arc::ArcWebContentsData>(tab));
 
   apps::IntentHandlingMetrics::RecordOpenBrowserMetrics(
       apps::IntentHandlingMetrics::AppType::kArc);

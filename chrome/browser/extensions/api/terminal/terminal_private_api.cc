@@ -131,7 +131,8 @@ class TerminalTabHelper
   }
 
  private:
-  explicit TerminalTabHelper(content::WebContents* contents) {}
+  explicit TerminalTabHelper(content::WebContents* contents)
+      : content::WebContentsUserData<TerminalTabHelper>(*contents) {}
 
   friend class content::WebContentsUserData<TerminalTabHelper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();

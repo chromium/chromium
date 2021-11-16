@@ -187,7 +187,8 @@ void SideSearchSideContentsHelper::SetDelegate(Delegate* delegate) {
 
 SideSearchSideContentsHelper::SideSearchSideContentsHelper(
     content::WebContents* web_contents)
-    : webui_load_timer_(web_contents,
+    : content::WebContentsUserData<SideSearchSideContentsHelper>(*web_contents),
+      webui_load_timer_(web_contents,
                         "SideSearch.LoadDocumentTime",
                         "SideSearch.LoadCompletedTime") {
   Observe(web_contents);

@@ -16,7 +16,7 @@ class ArcWebContentsData
  public:
   static const char kArcTransitionFlag[];
 
-  ArcWebContentsData() = default;
+  explicit ArcWebContentsData(content::WebContents* web_contents);
 
   ArcWebContentsData(const ArcWebContentsData&) = delete;
   ArcWebContentsData& operator=(const ArcWebContentsData&) = delete;

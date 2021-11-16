@@ -104,7 +104,8 @@ void DlpContentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 DlpContentTabHelper::DlpContentTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<DlpContentTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 DlpContentRestrictionSet DlpContentTabHelper::GetRestrictionSet() const {
   DlpContentRestrictionSet set;

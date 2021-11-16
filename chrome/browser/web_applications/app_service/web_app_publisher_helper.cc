@@ -734,7 +734,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
               // Add a flag to remember this tab originated in the ARC context.
               web_contents->SetUserData(
                   &arc::ArcWebContentsData::kArcTransitionFlag,
-                  std::make_unique<arc::ArcWebContentsData>());
+                  std::make_unique<arc::ArcWebContentsData>(web_contents));
             }
 #endif
             std::move(success_callback).Run(/*success=*/!!web_contents);

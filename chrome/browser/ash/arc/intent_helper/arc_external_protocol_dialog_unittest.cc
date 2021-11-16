@@ -78,8 +78,9 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
 
     web_contents_ = browser()->tab_strip_model()->GetWebContentsAt(0);
     if (started_from_arc) {
-      web_contents_->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                                 std::make_unique<arc::ArcWebContentsData>());
+      web_contents_->SetUserData(
+          &arc::ArcWebContentsData::kArcTransitionFlag,
+          std::make_unique<arc::ArcWebContentsData>(web_contents_));
     }
   }
 

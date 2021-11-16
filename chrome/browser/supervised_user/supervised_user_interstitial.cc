@@ -85,7 +85,8 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
  private:
   friend class content::WebContentsUserData<TabCloser>;
 
-  explicit TabCloser(WebContents* web_contents) : web_contents_(web_contents) {
+  explicit TabCloser(WebContents* web_contents)
+      : content::WebContentsUserData<TabCloser>(*web_contents) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&TabCloser::CloseTabImpl,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -94,21 +95,20 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
   void CloseTabImpl() {
     // On Android, FindBrowserWithWebContents and TabStripModel don't exist.
 #if !defined(OS_ANDROID)
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+    Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
     DCHECK(browser);
     TabStripModel* tab_strip = browser->tab_strip_model();
     DCHECK_NE(TabStripModel::kNoTab,
-              tab_strip->GetIndexOfWebContents(web_contents_));
+              tab_strip->GetIndexOfWebContents(&GetWebContents()));
     if (tab_strip->count() <= 1) {
       // Don't close the last tab in the window.
-      web_contents_->RemoveUserData(UserDataKey());
+      GetWebContents().RemoveUserData(UserDataKey());
       return;
     }
 #endif
-    web_contents_->Close();
+    GetWebContents().Close();
   }
 
-  WebContents* web_contents_;
   base::WeakPtrFactory<TabCloser> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

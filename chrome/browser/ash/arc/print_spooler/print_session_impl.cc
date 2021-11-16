@@ -232,6 +232,7 @@ PrintSessionImpl::PrintSessionImpl(
     mojo::PendingReceiver<mojom::PrintSessionHost> receiver)
     : ArcCustomTabModalDialogHost(std::make_unique<CustomTab>(arc_window),
                                   web_contents.get()),
+      content::WebContentsUserData<PrintSessionImpl>(*web_contents),
       instance_(std::move(instance)),
       session_receiver_(this, std::move(receiver)),
       web_contents_(std::move(web_contents)) {
