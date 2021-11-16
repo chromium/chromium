@@ -73,7 +73,7 @@ public class ChromeImageViewPreference extends Preference {
 
         setWidgetLayoutResource(R.layout.preference_chrome_image_view);
         setSingleLineTitle(false);
-        setImageColor(R.color.default_icon_color);
+        setImageColor(R.color.default_icon_color_tint_list);
     }
 
     /**

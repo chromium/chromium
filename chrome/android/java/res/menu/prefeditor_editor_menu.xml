@@ -11,7 +11,7 @@
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"
         app:showAsAction="ifRoom"
-        app:iconTint="?attr/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
 
     <item
         android:id="@+id/help_menu_id"

@@ -57,7 +57,7 @@
             android:scaleType="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:tint="?attr/default_icon_color"
+            app:tint="@macro/default_icon_color"
             app:srcCompat="@drawable/new_tab_icon"
             android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
         <TextView

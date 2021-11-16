@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -153,11 +152,9 @@ public class OverlayPanelBaseTest {
             mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(mActivity));
             OverlayPanelManager panelManager = new OverlayPanelManager();
-            mExpandPanel = new MockOverlayPanel(InstrumentationRegistry.getTargetContext(),
-                    mLayoutManager, panelManager, mBrowserControlsStateProvider, mWindowAndroid,
-                    mCompositorViewHolder, mTab);
-            mNoExpandPanel = new NoExpandMockOverlayPanel(
-                    InstrumentationRegistry.getTargetContext(), mLayoutManager, panelManager,
+            mExpandPanel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
+                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
+            mNoExpandPanel = new NoExpandMockOverlayPanel(mActivity, mLayoutManager, panelManager,
                     mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
         });
     }

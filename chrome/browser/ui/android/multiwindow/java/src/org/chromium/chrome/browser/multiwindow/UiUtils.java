@@ -49,7 +49,7 @@ class UiUtils {
 
     Drawable getTintedIcon(@DrawableRes int drawableId) {
         return org.chromium.ui.UiUtils.getTintedDrawable(
-                mContext, drawableId, R.color.default_icon_color);
+                mContext, drawableId, R.color.default_icon_color_tint_list);
     }
 
     /**

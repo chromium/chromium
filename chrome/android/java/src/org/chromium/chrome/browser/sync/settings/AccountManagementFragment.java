@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment.SignOutDialog
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -260,8 +261,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             Drawable newIcon = ApiCompatibilityUtils.getDrawable(
                     getResources(), R.drawable.ic_drive_site_white_24dp);
             newIcon.mutate().setColorFilter(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color),
-                    PorterDuff.Mode.SRC_IN);
+                    SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
             childContent.setIcon(newIcon);
         } else {
             PreferenceScreen prefScreen = getPreferenceScreen();

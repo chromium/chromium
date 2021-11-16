@@ -270,9 +270,9 @@ public class OverlayPanelEventFilterTest {
             mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(mActivity));
 
-            mPanel = new MockOverlayPanel(context, mLayoutManager, new OverlayPanelManager(),
+            mPanel = new MockOverlayPanel(mActivity, mLayoutManager, new OverlayPanelManager(),
                     mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
-            mEventFilter = new OverlayPanelEventFilterWrapper(context, mPanel);
+            mEventFilter = new OverlayPanelEventFilterWrapper(mActivity, mPanel);
 
             mPanel.setSearchBarHeightForTesting(BAR_HEIGHT_DP);
             mPanel.setHeightForTesting(LAYOUT_HEIGHT_DP);

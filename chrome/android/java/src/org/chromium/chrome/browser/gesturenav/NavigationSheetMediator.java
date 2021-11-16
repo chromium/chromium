@@ -91,11 +91,11 @@ class NavigationSheetMediator {
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context.getResources());
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mHistoryIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color);
+                context, R.drawable.ic_history_googblue_24dp, R.color.default_icon_color_tint_list);
         mDefaultIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.ic_chrome, R.color.default_icon_color);
+                context, R.drawable.ic_chrome, R.color.default_icon_color_tint_list);
         mIncognitoIcon = TintedDrawable.constructTintedDrawable(
-                context, R.drawable.incognito_small, R.color.default_icon_color);
+                context, R.drawable.incognito_small, R.color.default_icon_color_tint_list);
         mNewTabText = context.getResources().getString(R.string.menu_new_tab);
         mNewIncognitoTabText = context.getResources().getString(R.string.menu_new_incognito_tab);
     }

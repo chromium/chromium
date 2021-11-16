@@ -173,8 +173,8 @@ public class TabUiThemeProvider {
                 colorRes = isIncognito ? R.color.tab_grid_card_selected_color_incognito
                                        : R.color.tab_grid_card_selected_color;
             } else {
-                colorRes =
-                        isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color;
+                colorRes = isIncognito ? R.color.default_icon_color_light
+                                       : R.color.default_icon_color_baseline;
             }
             return AppCompatResources.getColorStateList(context, colorRes);
         }
@@ -334,7 +334,8 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isTabSelected) {
         if (!themeRefactorEnabled()) {
             return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+                    isIncognito ? R.color.default_icon_color_light
+                                : R.color.default_icon_color_baseline);
         }
         return getTitleTextColor(context, isIncognito, isTabSelected);
     }
@@ -597,7 +598,8 @@ public class TabUiThemeProvider {
     public static ColorStateList getMessageCardCloseButtonTintList(
             Context context, boolean isIncognito) {
         return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+                isIncognito ? R.color.default_icon_color_light
+                            : R.color.default_icon_color_tint_list);
     }
 
     /**

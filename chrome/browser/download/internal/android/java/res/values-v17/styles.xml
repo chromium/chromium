@@ -36,7 +36,7 @@
         <item name="android:layout_height">16dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:scaleType">centerInside</item>
-        <item name="android:tint">?attr/default_icon_color</item>
+        <item name="android:tint">@macro/default_icon_color</item>
     </style>
 
     <!-- Download Home V2 Snowflake Contender Styles -->

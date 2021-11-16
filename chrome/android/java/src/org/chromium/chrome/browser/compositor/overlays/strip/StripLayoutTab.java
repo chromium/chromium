@@ -191,7 +191,7 @@ public class StripLayoutTab implements VirtualView {
         };
         mCloseButton = new TintedCompositorButton(
                 context, 0, 0, closeClickAction, R.drawable.btn_tab_close_normal);
-        mCloseButton.setTintResources(R.color.default_icon_color,
+        mCloseButton.setTintResources(R.color.default_icon_color_tint_list,
                 R.color.default_icon_color_accent1_tint_list, R.color.default_icon_color_light,
                 R.color.modern_blue_300);
         mCloseButton.setIncognito(mIncognito);

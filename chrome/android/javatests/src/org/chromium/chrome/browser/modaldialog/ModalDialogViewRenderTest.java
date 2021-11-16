@@ -111,8 +111,8 @@ public class ModalDialogViewRenderTest extends DummyUiActivityTestCase {
     @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndTitleIcon() throws IOException {
         setUpViews(R.style.Theme_Chromium_ModalDialog_TextPrimaryButton);
-        final Drawable icon = UiUtils.getTintedDrawable(
-                getActivity(), org.chromium.chrome.R.drawable.ic_add, R.color.default_icon_color);
+        final Drawable icon = UiUtils.getTintedDrawable(getActivity(),
+                org.chromium.chrome.R.drawable.ic_add, R.color.default_icon_color_tint_list);
         createModel(mModelBuilder.with(ModalDialogProperties.TITLE, mResources, R.string.title)
                             .with(ModalDialogProperties.TITLE_ICON, icon));
         mRenderTestRule.render(mModalDialogView, "title_and_title_icon");

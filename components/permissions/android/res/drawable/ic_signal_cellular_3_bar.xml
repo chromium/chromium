@@ -4,17 +4,16 @@
      found in the LICENSE file.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:targetApi="21"
         android:width="24dp"
         android:height="24dp"
         android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
+        android:viewportHeight="24.0"
+        android:tint="@macro/default_icon_color">
     <path
         android:pathData="M2,22h20V2z"
         android:fillAlpha=".3"
-        android:fillColor="@color/default_icon_color"/>
+        android:fillColor="@android:color/white"/>
     <path
         android:pathData="M17,7L2,22h15z"
-        android:fillColor="@color/default_icon_color"/>
+        android:fillColor="@android:color/white"/>
 </vector>

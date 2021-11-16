@@ -184,7 +184,7 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
                         mItemView.getResources(), R.color.default_text_color_link)));
         assertThat(closeButton.getImageTintList(),
                 equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color)));
+                        getActivity(), R.color.default_icon_color_tint_list)));
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(description.getCurrentTextColor(),

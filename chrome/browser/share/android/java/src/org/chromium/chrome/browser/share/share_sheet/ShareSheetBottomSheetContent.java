@@ -24,6 +24,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.favicon.IconType;
@@ -323,8 +325,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         RoundedCornerImageView imageView = this.getContentView().findViewById(R.id.image_preview);
         imageView.setImageBitmap(bitmap);
-        imageView.setRoundedFillColor(ApiCompatibilityUtils.getColor(
-                mActivity.getResources(), R.color.default_icon_color));
+        imageView.setRoundedFillColor(SemanticColorUtils.getDefaultIconColor(mActivity));
         imageView.setScaleType(ScaleType.FIT_CENTER);
     }
 
@@ -428,6 +429,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private void setLinkToggleForPreview(@DetailedContentType int detailedContentType) {
         int drawable;
         int contentDescription;
+        @ColorRes
         int skillColor;
 
         if (mLinkToggleState == LinkToggleState.LINK) {
@@ -436,7 +438,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             contentDescription = R.string.link_toggle_include_link;
         } else {
             drawable = R.drawable.link_off;
-            skillColor = R.color.default_icon_color;
+            skillColor = R.color.default_icon_color_tint_list;
             contentDescription = getExcludeLinkToast(detailedContentType);
         }
 

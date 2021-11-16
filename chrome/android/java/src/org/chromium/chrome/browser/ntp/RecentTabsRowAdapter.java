@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -533,9 +533,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 Drawable drawable =
                         FaviconUtils.createRoundedBitmapDrawable(mActivity.getResources(),
                                 Bitmap.createScaledBitmap(historyIcon, size, size, true));
-                drawable.setColorFilter(ApiCompatibilityUtils.getColor(mActivity.getResources(),
-                                                R.color.default_icon_color),
-                        PorterDuff.Mode.SRC_IN);
+                drawable.setColorFilter(
+                        SemanticColorUtils.getDefaultIconColor(mActivity), PorterDuff.Mode.SRC_IN);
                 viewHolder.imageView.setImageDrawable(drawable);
                 viewHolder.itemLayout.getLayoutParams().height =
                         mActivity.getResources().getDimensionPixelSize(

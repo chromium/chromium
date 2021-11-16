@@ -7,8 +7,9 @@
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportHeight="24"
+    android:tint="@macro/default_icon_color">
     <path
-        android:fillColor="@color/default_icon_color"
+        android:fillColor="@android:color/white"
         android:pathData="M7,2v11h3v9l7,-12h-4l3,-8z"/>
 </vector>

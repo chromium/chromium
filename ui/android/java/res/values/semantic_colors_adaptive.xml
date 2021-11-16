@@ -25,7 +25,7 @@
     <color name="default_text_color_on_accent2_container">@color/baseline_secondary_900</color>
 
     <!-- Common icon colors for drawables. -->
-    <color name="default_icon_color">@color/default_icon_color_dark</color>
+    <color name="default_icon_color_baseline">@color/default_icon_color_dark</color>
     <color name="default_icon_color_inverse" tools:ignore="UnusedResources">@color/default_icon_color_inverse_light</color>
     <color name="default_icon_color_accent1_baseline" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
     <color name="default_icon_color_secondary" tools:ignore="UnusedResources">@color/default_icon_color_secondary_dark</color>

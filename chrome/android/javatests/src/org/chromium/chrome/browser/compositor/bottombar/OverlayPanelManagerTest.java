@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -188,10 +187,8 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelRequestingShow() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel panel = new MockOverlayPanel(context, mLayoutManager, panelManager,
+        OverlayPanel panel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
                 mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
                 PanelPriority.MEDIUM, false);
 
@@ -205,10 +202,8 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelClosed() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel panel = new MockOverlayPanel(context, mLayoutManager, panelManager,
+        OverlayPanel panel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
                 mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
                 PanelPriority.MEDIUM, false);
 
@@ -223,15 +218,13 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testHighPrioritySuppressingLowPriority() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, false);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, false);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         lowPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
         highPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -244,15 +237,13 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelRestored() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, true);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, true);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         lowPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
         highPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -266,15 +257,13 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testUnsuppressiblePanelNotRestored() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, false);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, false);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         lowPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
         highPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -288,15 +277,13 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelClosedBeforeRestore() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, true);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, true);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         lowPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
         highPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -312,18 +299,16 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelPriority() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, true);
-        OverlayPanel mediumPriorityPanel = new MockOverlayPanel(context, mLayoutManager,
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, true);
+        OverlayPanel mediumPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
                 panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
                 mTab, PanelPriority.MEDIUM, true);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         // Only one panel is showing, should be medium priority.
         mediumPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -358,18 +343,16 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testSuppressedPanelOrder() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, true);
-        OverlayPanel mediumPriorityPanel = new MockOverlayPanel(context, mLayoutManager,
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, true);
+        OverlayPanel mediumPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
                 panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
                 mTab, PanelPriority.MEDIUM, true);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         // Odd ordering for showing panels should still produce ordered suppression.
         highPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
@@ -399,18 +382,16 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testLatePanelGetsNecessaryVars() {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         OverlayPanelManager panelManager = new OverlayPanelManager();
-        MockOverlayPanel earlyPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
+        MockOverlayPanel earlyPanel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
                 mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
                 PanelPriority.MEDIUM, true);
 
         // Set necessary vars before any other panels are registered in the manager.
-        panelManager.setContainerView(new LinearLayout(InstrumentationRegistry.getTargetContext()));
+        panelManager.setContainerView(new LinearLayout(mActivity));
         panelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));
 
-        MockOverlayPanel latePanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
+        MockOverlayPanel latePanel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
                 mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
                 PanelPriority.MEDIUM, true);
 
@@ -424,8 +405,6 @@ public class OverlayPanelManagerTest {
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testManagerObserver() throws TimeoutException {
-        Context context = InstrumentationRegistry.getTargetContext();
-
         final CallbackHelper shownHelper = new CallbackHelper();
         final CallbackHelper hiddenHelper = new CallbackHelper();
 
@@ -442,12 +421,12 @@ public class OverlayPanelManagerTest {
             }
         });
 
-        OverlayPanel lowPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.LOW, true);
-        OverlayPanel highPriorityPanel = new MockOverlayPanel(context, mLayoutManager, panelManager,
-                mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab,
-                PanelPriority.HIGH, false);
+        OverlayPanel lowPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.LOW, true);
+        OverlayPanel highPriorityPanel = new MockOverlayPanel(mActivity, mLayoutManager,
+                panelManager, mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder,
+                mTab, PanelPriority.HIGH, false);
 
         lowPriorityPanel.requestPanelShow(StateChangeReason.UNKNOWN);
 

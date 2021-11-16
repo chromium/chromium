@@ -26,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.IconType;
@@ -165,8 +166,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
                 mContext.getResources(), R.drawable.gm_filled_videocam_24);
         drawable.setColorFilter(
-                ApiCompatibilityUtils.getColor(mContext.getResources(), R.color.default_icon_color),
-                PorterDuff.Mode.SRC_IN);
+                SemanticColorUtils.getDefaultIconColor(mContext), PorterDuff.Mode.SRC_IN);
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

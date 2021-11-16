@@ -583,7 +583,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      */
     public static ImageButton createCloseButton(Context context) {
         final ColorStateList tint =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color);
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list);
         TypedArray a =
                 context.obtainStyledAttributes(new int[] {android.R.attr.selectableItemBackground});
         Drawable closeButtonBackground = a.getDrawable(0);

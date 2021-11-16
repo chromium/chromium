@@ -291,7 +291,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mWidgetId = widgetId;
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_icon_color);
+                    mContext.getResources(), R.color.default_icon_color_baseline);
             SystemNightModeMonitor.getInstance().addObserver(this);
         }
 
@@ -509,7 +509,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @Override
         public void onSystemNightModeChanged() {
             mIconColor = ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_icon_color);
+                    mContext.getResources(), R.color.default_icon_color_baseline);
             redrawWidget(mWidgetId);
         }
     }

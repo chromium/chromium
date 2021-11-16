@@ -67,7 +67,7 @@ public class SettingsUtils {
      * Creates a {@link Drawable} for the given resource id with the default icon color applied.
      */
     public static Drawable getTintedIcon(Context context, @DrawableRes int resId) {
-        return getTintedIcon(context, resId, R.color.default_icon_color);
+        return getTintedIcon(context, resId, R.color.default_icon_color_tint_list);
     }
 
     /**

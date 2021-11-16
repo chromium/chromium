@@ -44,7 +44,7 @@
         android:layout_height="@dimen/autofill_assistant_minimum_touch_target_size"
         android:padding="@dimen/autofill_assistant_tts_button_padding"
         android:visibility="gone"
-        android:tint="@color/default_icon_color"
+        android:tint="@macro/default_icon_color"
         app:srcCompat="@drawable/ic_volume_on_white_24dp"/>
 
     <org.chromium.ui.widget.ChromeImageView

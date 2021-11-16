@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -183,11 +184,11 @@ public class BookmarkAddEditFolderActivity extends SynchronousInitializationActi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mIsAddMode) {
-            mSaveButton =
-                    menu.add(R.string.save)
-                            .setIcon(TintedDrawable.constructTintedDrawable(this,
-                                    R.drawable.bookmark_check_gray, R.color.default_icon_color))
-                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            final Drawable drawable = TintedDrawable.constructTintedDrawable(
+                    this, R.drawable.bookmark_check_gray, R.color.default_icon_color_tint_list);
+            mSaveButton = menu.add(R.string.save)
+                                  .setIcon(drawable)
+                                  .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else {
             mDeleteButton = menu.add(R.string.bookmark_action_bar_delete)
                                     .setIcon(TintedDrawable.constructTintedDrawable(

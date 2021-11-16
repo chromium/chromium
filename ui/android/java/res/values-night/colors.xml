@@ -15,7 +15,7 @@
     <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_light</color>
 
     <!-- Common icon colors for drawables. -->
-    <color name="default_icon_color">@color/default_icon_color_light</color>
+    <color name="default_icon_color_baseline">@color/default_icon_color_light</color>
     <color name="default_icon_color_inverse">@color/default_icon_color_inverse_dark</color>
     <color name="default_icon_color_accent1_baseline">@color/default_icon_color_blue_light</color>
     <color name="default_icon_color_secondary">@color/default_icon_color_secondary_light</color>

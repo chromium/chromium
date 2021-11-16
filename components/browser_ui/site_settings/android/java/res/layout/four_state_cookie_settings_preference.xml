@@ -57,6 +57,6 @@
         android:gravity="center_vertical"
         android:padding="16dp"
         android:drawablePadding="10dp"
-        app:chromeDrawableTint="@color/default_icon_color"
+        app:chromeDrawableTint="@macro/default_icon_color"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 </LinearLayout>

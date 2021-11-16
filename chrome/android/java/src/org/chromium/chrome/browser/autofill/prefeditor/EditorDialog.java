@@ -663,7 +663,7 @@ public class EditorDialog
     }
 
     private Drawable getTintedBackIcon() {
-        return TintedDrawable.constructTintedDrawable(
-                getContext(), R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color);
+        return TintedDrawable.constructTintedDrawable(getContext(),
+                R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color_tint_list);
     }
 }

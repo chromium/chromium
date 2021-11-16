@@ -16,7 +16,7 @@
         android:layout_marginTop="10dp"
         android:src="@drawable/exclamation_triangle"
         tools:ignore="ContentDescription"
-        app:tint="@color/default_icon_color" />
+        app:tint="@macro/default_icon_color" />
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/text"

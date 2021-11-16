@@ -32,7 +32,7 @@
             android:layout_toEndOf="@id/radio_button"
             android:layout_centerVertical="true"
             android:scaleType="fitCenter"
-            android:tint="@color/default_icon_color"
+            android:tint="@macro/default_icon_color"
             android:visibility="gone" />
 
         <TextView

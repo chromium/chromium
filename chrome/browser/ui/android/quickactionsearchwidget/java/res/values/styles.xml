@@ -10,7 +10,7 @@
         <item name="android:layout_margin">@dimen/quick_action_search_widget_button_margin</item>
         <item name="android:background">@drawable/quick_action_search_widget_small_button_background</item>
         <item name="android:padding">@dimen/quick_action_search_widget_small_button_icon_padding</item>
-        <item name="android:tint">@color/default_icon_color</item>
+        <item name="android:tint">@color/default_icon_color_baseline</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 
@@ -20,7 +20,7 @@
         <item name="android:layout_margin">@dimen/quick_action_search_widget_button_margin</item>
         <item name="android:background">@drawable/quick_action_search_widget_medium_button_background</item>
         <item name="android:padding">@dimen/quick_action_search_widget_medium_button_icon_padding</item>
-        <item name="android:tint">@color/default_icon_color</item>
+        <item name="android:tint">@color/default_icon_color_baseline</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 

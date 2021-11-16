@@ -82,7 +82,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/download_notification_cancel_button"
                 android:src="@drawable/btn_close"
-                app:tint="?attr/default_icon_color" />
+                app:tint="@macro/default_icon_color" />
 
         </LinearLayout>
 

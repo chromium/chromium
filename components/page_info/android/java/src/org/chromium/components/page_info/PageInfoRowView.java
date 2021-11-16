@@ -68,8 +68,10 @@ public class PageInfoRowView extends FrameLayout {
             mIcon.setPadding(p, p, p, p);
         }
         ApiCompatibilityUtils.setImageTintList(mIcon,
-                ColorStateList.valueOf(getResources().getColor(
-                        params.iconTint != 0 ? params.iconTint : R.color.default_icon_color)));
+                params.iconTint != 0
+                        ? ColorStateList.valueOf(getResources().getColor(params.iconTint))
+                        : AppCompatResources.getColorStateList(
+                                getContext(), R.color.default_icon_color_tint_list));
 
         mTitle.setText(params.title);
         mTitle.setVisibility(params.title != null ? VISIBLE : GONE);
