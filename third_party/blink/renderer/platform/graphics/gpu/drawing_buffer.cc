@@ -1146,8 +1146,12 @@ void DrawingBuffer::CopyToVideoFrame(
         src_format, src_size, src_color_space, src_surface_origin, src_mailbox,
         dst_color_space, std::move(callback));
   };
-  CopyToPlatformInternal(frame_pool->GetRasterInterface(), src_buffer,
-                         copy_function);
+  // Ensure that `frame_pool` has not experienced a context loss.
+  // https://crbug.com/1269230
+  auto* raster_interface = frame_pool->GetRasterInterface();
+  if (!raster_interface)
+    return;
+  CopyToPlatformInternal(raster_interface, src_buffer, copy_function);
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {
