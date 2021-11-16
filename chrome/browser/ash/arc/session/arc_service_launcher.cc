@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -60,7 +61,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/arc/appfuse/arc_appfuse_bridge.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/camera/arc_camera_bridge.h"

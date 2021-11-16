@@ -18,3 +18,12 @@ static_library("prefs") {
     "//components/prefs",
   ]
 }
+
+source_set("arc_features") {
+  sources = [
+    "arc_features.cc",
+    "arc_features.h",
+  ]
+
+  deps = [ "//base" ]
+}

@@ -4,11 +4,11 @@
 
 #include "components/arc/session/arc_upgrade_params.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "components/arc/arc_features.h"
 
 namespace arc {
 namespace {

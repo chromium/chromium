@@ -4,11 +4,11 @@
 
 #include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/ignore_result.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/arc/arc_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
 

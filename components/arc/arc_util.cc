@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -19,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
-#include "components/arc/arc_features.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

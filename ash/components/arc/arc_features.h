@@ -4,8 +4,8 @@
 
 // This file defines the public base::FeatureList features for ARC.
 
-#ifndef COMPONENTS_ARC_ARC_FEATURES_H_
-#define COMPONENTS_ARC_ARC_FEATURES_H_
+#ifndef ASH_COMPONENTS_ARC_ARC_FEATURES_H_
+#define ASH_COMPONENTS_ARC_ARC_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -48,4 +48,4 @@ extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ARC_FEATURES_H_
+#endif  // ASH_COMPONENTS_ARC_ARC_FEATURES_H_

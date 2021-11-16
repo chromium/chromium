@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,7 +15,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/media_log.h"

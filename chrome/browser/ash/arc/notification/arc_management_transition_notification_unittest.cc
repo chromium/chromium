@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/session/arc_management_transition.h"
 #include "components/arc/test/fake_app_instance.h"

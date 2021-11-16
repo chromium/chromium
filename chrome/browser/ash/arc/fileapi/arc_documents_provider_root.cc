@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
-#include "components/arc/arc_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
 #include "url/gurl.h"

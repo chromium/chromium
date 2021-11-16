@@ -4,9 +4,9 @@
 
 #include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/arc/arc_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"

@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/usb/usb_host_ui_delegate.h"
 #include "content/public/browser/device_service.h"

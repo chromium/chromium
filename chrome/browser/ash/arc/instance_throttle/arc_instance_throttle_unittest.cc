@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/arc_features.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/power/arc_power_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"

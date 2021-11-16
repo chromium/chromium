@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_features.h"
 #include "components/user_manager/user_manager.h"
 
 namespace chromeos {
