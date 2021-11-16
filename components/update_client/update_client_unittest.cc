@@ -156,7 +156,9 @@ class MockPingManagerImpl : public PingManager {
   MockPingManagerImpl(const MockPingManagerImpl&) = delete;
   MockPingManagerImpl& operator=(const MockPingManagerImpl&) = delete;
 
-  void SendPing(const Component& component, Callback callback) override;
+  void SendPing(const Component& component,
+                const PersistedData& metadata,
+                Callback callback) override;
 
   const std::vector<PingData>& ping_data() const;
 
@@ -176,6 +178,7 @@ MockPingManagerImpl::MockPingManagerImpl(scoped_refptr<Configurator> config)
 MockPingManagerImpl::~MockPingManagerImpl() = default;
 
 void MockPingManagerImpl::SendPing(const Component& component,
+                                   const PersistedData& metadata,
                                    Callback callback) {
   PingData ping_data;
   ping_data.id = component.id_;

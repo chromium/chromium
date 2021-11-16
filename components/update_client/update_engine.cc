@@ -329,7 +329,7 @@ void UpdateEngine::HandleComponentComplete(
     queue.pop();
     if (!component->events().empty()) {
       ping_manager_->SendPing(
-          *component,
+          *component, *metadata_,
           base::BindOnce([](base::OnceClosure callback, int,
                             const std::string&) { std::move(callback).Run(); },
                          std::move(callback)));

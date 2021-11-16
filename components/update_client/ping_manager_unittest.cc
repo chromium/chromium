@@ -19,10 +19,13 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/component.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
+#include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_engine.h"
@@ -54,6 +57,7 @@ class PingManagerTest : public testing::Test,
 
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<PingManager> ping_manager_;
+  std::unique_ptr<PersistedData> metadata_;
 
   int error_ = -1;
   std::string response_;
@@ -61,6 +65,8 @@ class PingManagerTest : public testing::Test,
  private:
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
+  std::unique_ptr<TestActivityDataService> activity_data_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_;
 };
 
 PingManagerTest::PingManagerTest()
@@ -70,6 +76,11 @@ PingManagerTest::PingManagerTest()
 
 void PingManagerTest::SetUp() {
   ping_manager_ = base::MakeRefCounted<PingManager>(config_);
+  pref_ = std::make_unique<TestingPrefServiceSimple>();
+  activity_data_service_ = std::make_unique<TestActivityDataService>();
+  PersistedData::RegisterPrefs(pref_->registry());
+  metadata_ = std::make_unique<PersistedData>(pref_.get(),
+                                              activity_data_service_.get());
 }
 
 void PingManagerTest::TearDown() {
@@ -129,8 +140,12 @@ TEST_P(PingManagerTest, SendPing) {
     component.next_version_ = base::Version("2.0");
     component.AppendEvent(component.MakeEventUpdateComplete());
 
+    metadata_->SetCohort("abc", "c1");
+    metadata_->SetCohortName("abc", "cn1");
+    metadata_->SetCohortHint("abc", "ch1");
+
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -165,6 +180,9 @@ TEST_P(PingManagerTest, SendPing) {
       const auto& app = request->FindKey("app")->GetList()[0];
       EXPECT_EQ("abc", app.FindKey("appid")->GetString());
       EXPECT_EQ("1.0", app.FindKey("version")->GetString());
+      EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
+      EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());
+      EXPECT_EQ("ch1", app.FindKey("cohorthint")->GetString());
       const auto& event = app.FindKey("event")->GetList()[0];
       EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
@@ -191,7 +209,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -231,7 +249,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -271,7 +289,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -299,7 +317,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventUninstalled());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -327,7 +345,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventRegistration());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -384,7 +402,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component, MakePingCallback());
+    ping_manager_->SendPing(component, *metadata_, MakePingCallback());
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -464,7 +482,7 @@ TEST_P(PingManagerTest, RequiresEncryption) {
   component.next_version_ = base::Version("2.0");
   component.AppendEvent(component.MakeEventUpdateComplete());
 
-  ping_manager_->SendPing(component, MakePingCallback());
+  ping_manager_->SendPing(component, *metadata_, MakePingCallback());
   RunThreads();
 
   EXPECT_EQ(-2, error_);
