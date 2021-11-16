@@ -4995,6 +4995,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share content only
       </message>
 
+      <!-- Lightweight Reactions strings -->
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_CREATING_GIF" desc="Message displayed above the progress bar when the reaction GIF is being generated.">
+        Creating GIF <ph name="PERCENT">%1$d<ex>13</ex></ph>%%
+      </message>
+
       <!-- Share Screenshot strings -->
       <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
         Edit

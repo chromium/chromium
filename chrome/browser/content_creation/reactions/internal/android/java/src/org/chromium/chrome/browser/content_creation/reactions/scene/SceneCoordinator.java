@@ -328,6 +328,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         }
     }
 
+    /**
+     * Starts all of the {@link ReactionLayout} animations on the scene.
+     */
+    public void startAnimations() {
+        for (ReactionLayout rl : mReactionLayouts) {
+            rl.getReaction().setSteppingEnabled(false);
+            rl.getReaction().start();
+        }
+    }
+
     private boolean isOutOfBoundsToTheBottomRight(
             RelativeLayout.LayoutParams layoutParams, float rotation) {
         Resources res = mActivity.getResources();
