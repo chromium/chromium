@@ -179,8 +179,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      blink::StorageKey(url_.origin()),
-      FileSystemTypeToQuotaStorageType(url_.type()),
+      url_.storage_key(), FileSystemTypeToQuotaStorageType(url_.type()),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -231,7 +230,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
     QuotaManagerProxy* quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
-      quota_manager_proxy->NotifyWriteFailed(blink::StorageKey(url_.origin()));
+      quota_manager_proxy->NotifyWriteFailed(url_.storage_key());
     }
     if (CancelIfRequested())
       return;
