@@ -11,6 +11,7 @@
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/test/browser_task_environment.h"

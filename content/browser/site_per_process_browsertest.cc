@@ -54,6 +54,7 @@
 #include "cc/input/touch_action.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"

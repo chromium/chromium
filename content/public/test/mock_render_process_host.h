@@ -50,6 +50,7 @@ class URLLoaderFactory;
 namespace content {
 
 class MockRenderProcessHostFactory;
+class ProcessLock;
 class SiteInstance;
 class StoragePartition;
 

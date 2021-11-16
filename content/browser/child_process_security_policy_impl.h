@@ -25,7 +25,6 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
@@ -34,11 +33,11 @@ class GURL;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace network {
 class ResourceRequestBody;
-}
+}  // namespace network
 
 namespace storage {
 class FileSystemContext;
@@ -49,158 +48,8 @@ namespace content {
 
 class BrowserContext;
 class IsolationContext;
+class ProcessLock;
 class ResourceContext;
-class SiteInfo;
-
-// ProcessLock is a core part of Site Isolation, which is used to determine
-// which documents are allowed to load in a process and which site data the
-// process is allowed to access, based on the SiteInfo principal. If a process
-// has a ProcessLock in the "invalid" state, then no SiteInstances have been
-// associated with the process and access should not be granted to anything.
-// Once a process is associated with its first SiteInstance, it transitions to
-// the "locked_to_site" or "allow_any_site" state depending on whether the
-// SiteInstance requires the process to be locked to a specific site or not.
-// If the SiteInstance does not require the process to be locked to a site, the
-// process will transition to the "allow_any_site" state and will allow any
-// site to commit in the process. Such a process can later be upgraded to the
-// "locked_to_site" state if something later determines that the process should
-// only allow access to a single site. Once the process is in the
-// "locked_to_site" state, the process will not be able to access site data from
-// other sites.
-//
-// ProcessLock is currently defined in terms of a single SiteInfo with a process
-// lock URL, but it could be possible to define it in terms of multiple
-// SiteInfos that are compatible with each other (e.g., multiple extensions
-// sharing an extension process).
-//
-// TODO(wjmaclean): Move this into its own .h file.
-class CONTENT_EXPORT ProcessLock {
- public:
-  // Create a lock that that represents a process that is associated with at
-  // least one SiteInstance, but is not locked to a specific site. Any request
-  // that wants to commit in this process must have a StoragePartitionConfig
-  // and web-exposed isolation information (COOP/COEP, for example) that
-  // match the values used to create this lock.
-  static ProcessLock CreateAllowAnySite(
-      const StoragePartitionConfig& storage_partition_config,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
-
-  // Create a lock for a specific UrlInfo. This method can be called from both
-  // the UI and IO threads. Locks created with the same parameters must always
-  // be considered equal independent of what thread they are called on. Special
-  // care must be taken since SiteInfos created on different threads don't
-  // always have the same contents for all their fields (e.g. site_url field is
-  // thread dependent).
-  static ProcessLock Create(const IsolationContext& isolation_context,
-                            const UrlInfo& url_info);
-
-  ProcessLock();
-  explicit ProcessLock(const SiteInfo& site_info);
-  ProcessLock(const ProcessLock& rhs);
-  ProcessLock& operator=(const ProcessLock& rhs);
-
-  ~ProcessLock();
-
-  // Returns true if no information has been set on the lock.
-  bool is_invalid() const { return !site_info_.has_value(); }
-
-  // Returns true if the process is locked, but it is not restricted to a
-  // specific site. Any site is allowed to commit in the process as long as
-  // the request's COOP/COEP information matches the info provided when
-  // the lock was created.
-  bool allows_any_site() const {
-    return site_info_.has_value() && site_info_->process_lock_url().is_empty();
-  }
-
-  // Returns true if the lock is restricted to a specific site and requires
-  // the request's COOP/COEP information to match the values provided when
-  // the lock was created.
-  bool is_locked_to_site() const {
-    return site_info_.has_value() && !site_info_->process_lock_url().is_empty();
-  }
-
-  // Returns the url that corresponds to the SiteInfo the lock is used with. It
-  // will always be the same as the site URL, except in cases where effective
-  // urls are in use. Always empty if the SiteInfo uses the default site url.
-  // TODO(wjmaclean): Delete this accessor once we get to the point where we can
-  // safely just compare ProcessLocks directly.
-  const GURL lock_url() const {
-    return site_info_.has_value() ? site_info_->process_lock_url() : GURL();
-  }
-
-  // Returns whether this ProcessLock is specific to an origin rather than
-  // including subdomains, such as due to opt-in origin isolation. This resolves
-  // an ambiguity of whether a process with a lock_url() like
-  // "https://foo.example" is allowed to include "https://sub.foo.example" or
-  // not.
-  bool is_origin_keyed_process() const {
-    return site_info_.has_value() &&
-           site_info_->requires_origin_keyed_process();
-  }
-
-  // Returns whether this ProcessLock is specific to PDF contents.
-  bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
-
-  // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
-  // lock is used with.
-  StoragePartitionConfig storage_partition_config() const {
-    DCHECK(site_info_.has_value());
-    return site_info_->storage_partition_config();
-  }
-
-  // Representing agent cluster's "cross-origin isolated" concept.
-  // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
-  // This property is renderer process global because we ensure that a
-  // renderer process host only cross-origin isolated agents or only
-  // non-cross-origin isolated agents, not both.
-  WebExposedIsolationInfo web_exposed_isolation_info() const {
-    return site_info_.has_value()
-               ? site_info_->web_exposed_isolation_info()
-               : WebExposedIsolationInfo::CreateNonIsolated();
-  }
-
-  bool is_error_page() const {
-    return site_info_.has_value() && site_info_->is_error_page();
-  }
-
-  // Returns whether lock_url() is at least at the granularity of a site (i.e.,
-  // a scheme plus eTLD+1, like https://google.com).  Also returns true if the
-  // lock is to a more specific origin (e.g., https://accounts.google.com), but
-  // not if the lock is empty or applies to an entire scheme (e.g., file://).
-  bool IsASiteOrOrigin() const;
-
-  bool matches_scheme(const std::string& scheme) const {
-    return scheme == lock_url().scheme();
-  }
-
-  // Returns true if lock_url() has an opaque origin.
-  bool HasOpaqueOrigin() const;
-
-  // Returns true if |origin| matches the lock's origin.
-  bool MatchesOrigin(const url::Origin& origin) const;
-
-  // Returns true if the COOP/COEP origin isolation information in this lock
-  // is set and matches the information in |site_info|.
-  // Returns true if the web-exposed isolation level in this lock is set and
-  // matches (or exceeds) the level set in |site_info|.|.
-  bool IsCompatibleWithWebExposedIsolation(const SiteInfo& site_info) const;
-
-  bool operator==(const ProcessLock& rhs) const;
-  bool operator!=(const ProcessLock& rhs) const;
-  // Defined to allow this object to act as a key for std::map.
-  bool operator<(const ProcessLock& rhs) const;
-
-  std::string ToString() const;
-
- private:
-  // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
-  // (e.g., multiple extensions). This can better restrict what the process has
-  // access to in cases that we don't currently use a ProcessLock.
-  absl::optional<SiteInfo> site_info_;
-};
-
-CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
-                                        const ProcessLock& process_lock);
 
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     : public ChildProcessSecurityPolicy {

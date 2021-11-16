@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"

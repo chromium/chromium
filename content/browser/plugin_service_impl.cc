@@ -27,6 +27,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/plugin_list.h"
 #include "content/browser/ppapi_plugin_process_host.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"

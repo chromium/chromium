@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 
