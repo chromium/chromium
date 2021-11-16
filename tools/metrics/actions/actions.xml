@@ -16696,6 +16696,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarCloseTab">
+  <owner>clank-app-team@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User clicked close tab button in the tablet tab strip. Android Only.
+  </description>
+</action>
+
 <action name="MobileToolbarDownloadPage">
   <owner>dfalcantara@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
@@ -16715,9 +16723,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarNewTab">
-  <obsolete>Deprecated as of 5/2015</obsolete>
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>clank-app-team@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User clicked new tab button in tablet tab strip. Android only.
+  </description>
 </action>
 
 <action name="MobileToolbarNewTabShortcut">
@@ -16818,6 +16828,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarSlideTabs">
+  <owner>clank-app-team@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User started to slide tab to view other tabs in tablet tab strip. Android
+    only.
+  </description>
+</action>
+
 <action name="MobileToolbarStackViewButtonInBrowsingView">
   <owner>mdjones@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -16846,6 +16865,14 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarStackViewNewTab">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileToolbarStartReorderTab">
+  <owner>clank-app-team@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User started to drag a tab to re-order in tablet tab strip. Android only.
+  </description>
 </action>
 
 <action name="MobileToolbarStop">
