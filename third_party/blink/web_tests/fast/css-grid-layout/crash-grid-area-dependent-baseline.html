@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<style>
+#target {
+  display: grid;
+  align-items: baseline;
+  writing-mode: vertical-rl;
+  padding-bottom: 50%;
+  line-height: 800px;
+}
+#target > div {
+  overflow: hidden;
+}
+</style>
+<div style="float: right; width: 20px; height: 20px;"></div>
+<div id="target">
+  <div style="width: -webkit-fill-available">fill-available</div>
+  <div style="width: fit-content">fit-content</div>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(function() {
+    document.body.offsetTop;
+  }, "Test that computing a baseline dependent on its respective grid area's size doesn't crash.");
+</script>

@@ -89,14 +89,12 @@ class NGGridLayoutAlgorithmTest
 
     // Resolve inline size.
     grid_geometry_.column_geometry = algorithm.ComputeUsedTrackSizes(
-        grid_geometry_, grid_properties,
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        grid_geometry_, grid_properties, SizingConstraint::kLayout,
         &column_track_collection_, &grid_items_);
 
     // Resolve block size.
     grid_geometry_.row_geometry = algorithm.ComputeUsedTrackSizes(
-        grid_geometry_, grid_properties,
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        grid_geometry_, grid_properties, SizingConstraint::kLayout,
         &row_track_collection_, &grid_items_);
   }
 
