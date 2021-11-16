@@ -188,7 +188,7 @@ source_set("unit_tests") {
     "password_generation_controller_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "save_password_infobar_delegate_android_unittest.cc",
-    "save_password_message_delegate_unittest.cc",
+    "save_update_password_message_delegate_unittest.cc",
     "update_password_infobar_delegate_android_unittest.cc",
   ]
 
