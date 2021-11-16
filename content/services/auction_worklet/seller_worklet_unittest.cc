@@ -92,7 +92,6 @@ class SellerWorkletTest : public testing::Test {
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_ad_components_.clear();
-    browser_signal_ad_render_fingerprint_ = "ad_render_fingerprint";
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_desireability_ = 1;
   }
@@ -131,7 +130,6 @@ class SellerWorkletTest : public testing::Test {
         ad_metadata_, bid_, auction_config_.Clone(),
         browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
         browser_signal_render_url_, browser_signal_ad_components_,
-        browser_signal_ad_render_fingerprint_,
         browser_signal_bidding_duration_msecs_,
         base::BindOnce(
             [](double expected_score, std::vector<std::string> expected_errors,
@@ -208,8 +206,7 @@ class SellerWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
         auction_config_.Clone(), browser_signal_top_window_origin_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, bid_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
         base::BindOnce(
             [](const absl::optional<std::string>& expected_signals_for_winner,
@@ -316,7 +313,6 @@ class SellerWorkletTest : public testing::Test {
   url::Origin browser_signal_interest_group_owner_;
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
-  std::string browser_signal_ad_render_fingerprint_;
   uint32_t browser_signal_bidding_duration_msecs_;
   double browser_signal_desireability_;
 
@@ -429,48 +425,13 @@ TEST_F(SellerWorkletTest, ScoreAdLogAndError) {
        "https://url.test/ scoreAd() did not return a valid number."});
 }
 
-// Checks that input parameters are correctly passed in.
-TEST_F(SellerWorkletTest, ScoreAdParameters) {
-  // Parameters that are C++ strings, including JSON strings.
-  const struct StringTestCase {
-    // String used in JS to access the parameter.
-    const char* name;
-    bool is_json;
-    // Pointer to location at which the string can be modified.
-    std::string* value_ptr;
-  } kStringTestCases[] = {
-      {
-          "adMetadata",
-          true /* is_json */,
-          &ad_metadata_,
-      },
-      {
-          "browserSignals.adRenderFingerprint",
-          false /* is_json */,
-          &browser_signal_ad_render_fingerprint_,
-      },
-  };
+TEST_F(SellerWorkletTest, ScoreAdMedata) {
+  ad_metadata_ = R"("foo")";
+  RunScoreAdWithReturnValueExpectingResult(R"(adMetadata === "foo" ? 4 : 0)",
+                                           4);
 
-  for (const auto& test_case : kStringTestCases) {
-    SCOPED_TRACE(test_case.name);
-
-    *test_case.value_ptr = "foo";
-    RunScoreAdWithReturnValueExpectingResult(
-        base::StringPrintf(R"(%s == "foo" ? 1 : 2)", test_case.name),
-        test_case.is_json ? 0 : 1);
-
-    *test_case.value_ptr = R"("foo")";
-    RunScoreAdWithReturnValueExpectingResult(
-        base::StringPrintf(R"(%s == "foo" ? 1 : 2)", test_case.name),
-        test_case.is_json ? 1 : 2);
-
-    *test_case.value_ptr = "[1]";
-    RunScoreAdWithReturnValueExpectingResult(
-        base::StringPrintf(R"(%s[0] == 1 ? 4 : %s=="[1]" ? 3 : 0)",
-                           test_case.name, test_case.name),
-        test_case.is_json ? 4 : 3);
-    SetDefaultParameters();
-  }
+  ad_metadata_ = "[1]";
+  RunScoreAdWithReturnValueExpectingResult(R"(adMetadata[0] === 1 ? 4 : 0)", 4);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTopWindowOrigin) {
@@ -664,14 +625,7 @@ TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
       {"https://url.test/:3 Uncaught ReferenceError: Date is not defined."});
 }
 
-TEST_F(SellerWorkletTest, ReportResultParameters) {
-  browser_signal_ad_render_fingerprint_ = "foo";
-  RunReportResultCreatedScriptExpectingResult(
-      R"(browserSignals.adRenderFingerprint == "foo" ? 2 : 1)",
-      std::string() /* extra_code */, "2",
-      absl::nullopt /* expected_report_url */);
-  SetDefaultParameters();
-
+TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
   browser_signal_top_window_origin_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunReportResultCreatedScriptExpectingResult(
@@ -685,8 +639,9 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
       R"(browserSignals.topWindowHostname == "[::1]" ? 3 : 1)",
       std::string() /* extra_code */, "3",
       absl::nullopt /* expected_report_url */);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ReportResultInterestGroupOwner) {
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
   RunReportResultCreatedScriptExpectingResult(
@@ -700,27 +655,29 @@ TEST_F(SellerWorkletTest, ReportResultParameters) {
       R"(browserSignals.interestGroupOwner == "https://[::1]:40000" ? 3 : 1)",
       std::string() /* extra_code */, "3",
       absl::nullopt /* expected_report_url */);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.renderUrl", "sendReportTo(browserSignals.renderUrl)",
       R"("https://foo/")", browser_signal_render_url_);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ReportResultBid) {
   bid_ = 5;
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.bid + typeof browserSignals.bid",
       std::string() /* extra_code */, R"("5number")",
       absl::nullopt /* expected_report_url */);
-  SetDefaultParameters();
+}
 
+TEST_F(SellerWorkletTest, ReportResultDesireability) {
   browser_signal_desireability_ = 10;
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.desirability + typeof browserSignals.desirability",
       std::string() /* extra_code */, R"("10number")",
       absl::nullopt /* expected_report_url */);
-  SetDefaultParameters();
 }
 
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
@@ -813,8 +770,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           ad_metadata_, bid_, auction_config_.Clone(),
           browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
-          browser_signal_ad_components_, browser_signal_ad_render_fingerprint_,
-          browser_signal_bidding_duration_msecs_,
+          browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
           base::BindLambdaForTesting(
               [&run_loop](double score,
                           const std::vector<std::string>& errors) {
@@ -830,8 +786,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       seller_worklet->ReportResult(
           auction_config_.Clone(), browser_signal_top_window_origin_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
-          browser_signal_ad_render_fingerprint_, bid_,
-          browser_signal_desireability_,
+          bid_, browser_signal_desireability_,
           base::BindLambdaForTesting(
               [&run_loop](const absl::optional<std::string>& signals_for_winner,
                           const absl::optional<GURL>& report_url,
@@ -855,7 +810,6 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       ad_metadata_, bid_, auction_config_.Clone(),
       browser_signal_top_window_origin_, browser_signal_interest_group_owner_,
       browser_signal_render_url_, browser_signal_ad_components_,
-      browser_signal_ad_render_fingerprint_,
       browser_signal_bidding_duration_msecs_,
       base::BindOnce([](double score, const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
@@ -875,8 +829,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ReportResult(
       auction_config_.Clone(), browser_signal_top_window_origin_,
-      browser_signal_interest_group_owner_, browser_signal_render_url_,
-      browser_signal_ad_render_fingerprint_, bid_,
+      browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
       browser_signal_desireability_,
       base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
                         const absl::optional<GURL>& report_url,

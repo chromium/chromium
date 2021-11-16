@@ -231,7 +231,6 @@ void BidderWorklet::ReportWin(
     const url::Origin& top_window_origin,
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
-    const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     ReportWinCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -243,8 +242,6 @@ void BidderWorklet::ReportWin(
   report_win_task->top_window_origin = top_window_origin;
   report_win_task->seller_signals_json = seller_signals_json;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
-  report_win_task->browser_signal_ad_render_fingerprint =
-      browser_signal_ad_render_fingerprint;
   report_win_task->browser_signal_bid = browser_signal_bid;
   report_win_task->callback = std::move(callback);
 
@@ -304,7 +301,6 @@ void BidderWorklet::V8State::ReportWin(
     const url::Origin& browser_signal_top_window_origin,
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
-    const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -344,8 +340,6 @@ void BidderWorklet::V8State::ReportWin(
                                 bidding_interest_group_->group.name) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
-      !browser_signals_dict.Set("adRenderFingerprint",
-                                browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid)) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       absl::nullopt /* report_url */,
@@ -760,8 +754,7 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
           &BidderWorklet::V8State::ReportWin, base::Unretained(v8_state_.get()),
           task->auction_signals_json, task->per_buyer_signals_json,
           task->top_window_origin, task->seller_signals_json,
-          task->browser_signal_render_url,
-          task->browser_signal_ad_render_fingerprint, task->browser_signal_bid,
+          task->browser_signal_render_url, task->browser_signal_bid,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

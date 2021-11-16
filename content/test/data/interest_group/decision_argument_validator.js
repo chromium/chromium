@@ -68,10 +68,6 @@ function validateBrowserSignals(browserSignals) {
   const adComponentsJSON = JSON.stringify(browserSignals.adComponents);
   if (adComponentsJSON !== '["https://example.com/render-component"]')
     throw 'Wrong adComponents ' + browserSignals.adComponents;
-  if (browserSignals.adRenderFingerprint === undefined ||
-      browserSignals.adRenderFingerprint === '') {
-    throw 'Wrong adRenderFingerprint ' + browserSignals.adRenderFingerprint;
-  }
   if (browserSignals.biddingDurationMsec < 0)
     throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
 }

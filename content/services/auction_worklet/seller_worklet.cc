@@ -157,7 +157,6 @@ void SellerWorklet::ScoreAd(
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
-    const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -168,7 +167,6 @@ void SellerWorklet::ScoreAd(
           ad_metadata_json, bid, std::move(auction_config),
           browser_signal_top_window_origin, browser_signal_interest_group_owner,
           browser_signal_render_url, browser_signal_ad_components,
-          browser_signal_ad_render_fingerprint,
           browser_signal_bidding_duration_msecs, std::move(callback)));
 }
 
@@ -177,7 +175,6 @@ void SellerWorklet::ReportResult(
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
-    const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     double browser_signal_desirability,
     ReportResultCallback callback) {
@@ -188,9 +185,8 @@ void SellerWorklet::ReportResult(
           &SellerWorklet::V8State::ReportResult,
           base::Unretained(v8_state_.get()), std::move(auction_config),
           browser_signal_top_window_origin, browser_signal_interest_group_owner,
-          browser_signal_render_url, browser_signal_ad_render_fingerprint,
-          browser_signal_bid, browser_signal_desirability,
-          std::move(callback)));
+          browser_signal_render_url, browser_signal_bid,
+          browser_signal_desirability, std::move(callback)));
 }
 
 void SellerWorklet::ConnectDevToolsAgent(
@@ -228,7 +224,6 @@ void SellerWorklet::V8State::ScoreAd(
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
-    const std::string& browser_signal_ad_render_fingerprint,
     uint32_t browser_signal_bidding_duration_msecs,
     ScoreAdCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -267,8 +262,6 @@ void SellerWorklet::V8State::ScoreAd(
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
-      !browser_signals_dict.Set("adRenderFingerprint",
-                                browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs)) {
     PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
@@ -328,7 +321,6 @@ void SellerWorklet::V8State::ReportResult(
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
-    const std::string& browser_signal_ad_render_fingerprint,
     double browser_signal_bid,
     double browser_signal_desirability,
     ReportResultCallback callback) {
@@ -363,8 +355,6 @@ void SellerWorklet::V8State::ReportResult(
           browser_signal_interest_group_owner.Serialize()) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
-      !browser_signals_dict.Set("adRenderFingerprint",
-                                browser_signal_ad_render_fingerprint) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set("desirability", browser_signal_desirability)) {
     PostReportResultCallbackToUserThread(

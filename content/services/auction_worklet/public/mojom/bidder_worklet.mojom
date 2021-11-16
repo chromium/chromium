@@ -145,9 +145,6 @@ interface BidderWorklet {
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
   //
-  // `browser_signal_ad_render_fingerprint` is a hash of the rendering URL,
-  //  eventually to be replaced with a hash of the ad bundle, per spec.
-  //
   // Returns:
   // `report_url` is the URL to request to report the result of the auction
   //  to the bidder. It will be null if no reports are requested, or the
@@ -163,7 +160,6 @@ interface BidderWorklet {
             url.mojom.Origin browser_signal_top_window_origin,
             string seller_signals_json,
             url.mojom.Url browser_signal_render_url,
-            string browser_signal_ad_render_fingerprint,
             double browser_signal_bid) => (
                 url.mojom.Url? report_url,
                 array<string> errors);

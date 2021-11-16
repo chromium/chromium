@@ -85,7 +85,6 @@ class BidderWorklet : public mojom::BidderWorklet {
                  const url::Origin& top_window_origin,
                  const std::string& seller_signals_json,
                  const GURL& browser_signal_render_url,
-                 const std::string& browser_signal_ad_render_fingerprint,
                  double browser_signal_bid,
                  ReportWinCallback callback) override;
   void ConnectDevToolsAgent(
@@ -126,7 +125,6 @@ class BidderWorklet : public mojom::BidderWorklet {
     url::Origin top_window_origin;
     std::string seller_signals_json;
     GURL browser_signal_render_url;
-    std::string browser_signal_ad_render_fingerprint;
     double browser_signal_bid;
 
     ReportWinCallback callback;
@@ -160,7 +158,6 @@ class BidderWorklet : public mojom::BidderWorklet {
                    const url::Origin& browser_signal_top_window_origin,
                    const std::string& seller_signals_json,
                    const GURL& browser_signal_render_url,
-                   const std::string& browser_signal_ad_render_fingerprint,
                    double browser_signal_bid,
                    ReportWinCallbackInternal callback);
 

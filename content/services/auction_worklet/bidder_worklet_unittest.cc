@@ -113,8 +113,6 @@ class BidderWorkletTest : public testing::Test {
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
-    browser_signal_ad_render_fingerprint_ =
-        "browser_signal_ad_render_fingerprint";
     browser_signal_bid_ = 1;
   }
 
@@ -197,8 +195,7 @@ class BidderWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
         auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
-        seller_signals_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+        seller_signals_, browser_signal_render_url_, browser_signal_bid_,
         base::BindOnce(
             [](const absl::optional<GURL>& expected_report_url,
                const std::vector<std::string>& expected_errors,
@@ -350,7 +347,6 @@ class BidderWorkletTest : public testing::Test {
   url::Origin browser_signal_seller_origin_;
   std::string seller_signals_;
   GURL browser_signal_render_url_;
-  std::string browser_signal_ad_render_fingerprint_;
   double browser_signal_bid_;
 
   // Use a single constant start time. Only delta times are provided to scripts,
@@ -1656,8 +1652,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   bidder_worklet->ReportWin(
       auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
-      seller_signals_, browser_signal_render_url_,
-      browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+      seller_signals_, browser_signal_render_url_, browser_signal_bid_,
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
@@ -1693,8 +1688,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
       bidder_worklet->ReportWin(
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           browser_signal_top_window_origin_, seller_signals_,
-          browser_signal_render_url_, browser_signal_ad_render_fingerprint_,
-          browser_signal_bid_,
+          browser_signal_render_url_, browser_signal_bid_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
                   const absl::optional<GURL>& report_url,
@@ -1742,8 +1736,7 @@ TEST_F(BidderWorkletTest, ReportWinNetworkErrorParallel) {
       bidder_worklet->ReportWin(
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           browser_signal_top_window_origin_, seller_signals_,
-          browser_signal_render_url_, browser_signal_ad_render_fingerprint_,
-          browser_signal_bid_,
+          browser_signal_render_url_, browser_signal_bid_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls](
                   const absl::optional<GURL>& report_url,
@@ -1838,13 +1831,6 @@ TEST_F(BidderWorkletTest, ReportWinSellerSignals) {
       "sendReportTo(sellerSignals)", GURL("https://interest.group.name.test/"));
 }
 
-TEST_F(BidderWorkletTest, ReportWinBrowserSignalsAdRenderFingerprint) {
-  browser_signal_ad_render_fingerprint_ = "https://interest.group.name.test/";
-  RunReportWinWithFunctionBodyExpectingResult(
-      "sendReportTo(browserSignals.adRenderFingerprint)",
-      GURL(browser_signal_ad_render_fingerprint_));
-}
-
 TEST_F(BidderWorkletTest, ReportWinInterestGroupOwner) {
   interest_group_owner_ = url::Origin::Create(GURL("https://foo.test/"));
   // Add an extra ".test" because origin's shouldn't have a terminal slash,
@@ -1925,8 +1911,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
     base::RunLoop run_loop;
     bidder_worklet->ReportWin(
         auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
-        seller_signals_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+        seller_signals_, browser_signal_render_url_, browser_signal_bid_,
         base::BindLambdaForTesting(
             [&run_loop](const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {

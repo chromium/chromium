@@ -380,7 +380,6 @@ void AuctionRunner::ScoreBid(BidState* state) {
       state->bidder.bidding_group->group.owner, state->bid_result->render_url,
       state->bid_result->ad_components ? *state->bid_result->ad_components
                                        : std::vector<GURL>(),
-      AdRenderFingerprint(state),
       state->bid_result->bid_duration.InMilliseconds(),
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this),
                      state));
@@ -424,14 +423,6 @@ void AuctionRunner::OnBidScored(BidState* state,
   }
 
   MaybeCompleteAuction();
-}
-
-std::string AuctionRunner::AdRenderFingerprint(const BidState* state) {
-  // TODO(morlovich): "Eventually this fingerprint can be a hash of the ad web
-  // bundle, but while rendering still uses the network, it should just be a
-  // hash of the rendering URL."
-  //
-  return "#####";
 }
 
 absl::optional<std::string> AuctionRunner::PerBuyerSignals(
@@ -482,8 +473,8 @@ void AuctionRunner::ReportSellerResult() {
   seller_worklet_->ReportResult(
       auction_config_.Clone(), browser_signals_->top_frame_origin,
       top_bidder_->bidder.bidding_group->group.owner,
-      top_bidder_->bid_result->render_url, AdRenderFingerprint(top_bidder_),
-      top_bidder_->bid_result->bid, top_bidder_->seller_score,
+      top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
+      top_bidder_->seller_score,
       base::BindOnce(&AuctionRunner::OnReportSellerResultComplete,
                      base::Unretained(this)));
 }
@@ -552,8 +543,7 @@ void AuctionRunner::ReportBidWin(
   top_bidder_->bidder_worklet->ReportWin(
       auction_config_->auction_signals, PerBuyerSignals(top_bidder_),
       browser_signals_->top_frame_origin, signals_for_winner_arg,
-      top_bidder_->bid_result->render_url, AdRenderFingerprint(top_bidder_),
-      top_bidder_->bid_result->bid,
+      top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      base::Unretained(this)));
 }

@@ -231,8 +231,6 @@ constexpr char kCheckingAuctionScript[] = R"(
       throw new Error("wrong topWindowHostname");
     if ("joinCount" in browserSignals)
       throw new Error("wrong kind of browser signals");
-    if (browserSignals.adRenderFingerprint !== "#####")
-      throw new Error("wrong adRenderFingerprint");
     if (typeof browserSignals.biddingDurationMsec !== "number")
       throw new Error("biddingDurationMsec is not a number. huh");
     if (browserSignals.biddingDurationMsec < 0)
@@ -332,7 +330,6 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
                  const url::Origin& top_window_origin,
                  const std::string& seller_signals_json,
                  const GURL& browser_signal_render_url,
-                 const std::string& browser_signal_ad_render_fingerprint,
                  double browser_signal_bid,
                  ReportWinCallback report_win_callback) override {
     // While the real BidderWorklet implementation supports multiple pending
@@ -472,7 +469,6 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
-               const std::string& browser_signal_ad_render_fingerprint,
                uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback score_ad_callback) override {
     score_ad_callback_ = std::move(score_ad_callback);
@@ -488,7 +484,6 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                     const url::Origin& browser_signal_top_window_origin,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
-                    const std::string& browser_signal_ad_render_fingerprint,
                     double browser_signal_bid,
                     double browser_signal_desirability,
                     ReportResultCallback report_result_callback) override {

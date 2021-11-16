@@ -45,9 +45,6 @@ interface SellerWorklet {
   // `browser_signal_ad_component_urls` The `adComponents` array returned by
   //  the BidderWorklet making the bid.
   //
-  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
-  //  eventually to be replaced with a hash of the ad bundle, per spec.
-  //
   // `browser_signal_bidding_duration_msecs` is the duration the BiddingWorklet
   //  took to generate the bid. Taken as milliseconds to reduce granularity of
   //  timing information passed to an untrusted process.
@@ -68,7 +65,6 @@ interface SellerWorklet {
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
-          string browser_signal_ad_render_fingerprint,
           uint32 browser_signal_bidding_duration_msecs) =>
               (double score, array<string> errors);
 
@@ -90,9 +86,6 @@ interface SellerWorklet {
   //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
-  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
-  //  eventually to be replaced with a hash of the ad bundle, per spec.
-  //
   // `browser_signal_bid` The numeric value of the winning bid.
   //
   // `browser_signal_desirability` The score returned by ScoreAd for the
@@ -113,7 +106,6 @@ interface SellerWorklet {
                url.mojom.Origin browser_signal_top_window_origin,
                url.mojom.Origin browser_signal_interest_group_owner,
                url.mojom.Url browser_signal_render_url,
-               string browser_signal_ad_render_fingerprint,
                double browser_signal_bid,
                double browser_signal_desirability) =>
                    (string? signals_for_winner,
