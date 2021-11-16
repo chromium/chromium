@@ -366,12 +366,18 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
                                AccountAdditionSource::kChromeProfileCreation,
                            testing::_))
       .WillOnce(
-          [account](
+          [account, this](
               account_manager::AccountManagerFacade::AccountAdditionSource,
               base::OnceCallback<void(
                   const account_manager::AccountAdditionResult&)> callback) {
             std::move(callback).Run(
                 account_manager::AccountAdditionResult::FromAccount(account));
+            // Notify the mapper that an account has been added.
+            profile_manager()
+                ->profile_manager()
+                ->GetAccountProfileMapper()
+                ->OnAccountUpserted(account);
+            CompleteFacadeGetAccounts({account});
           });
 
   // Request profile creation.

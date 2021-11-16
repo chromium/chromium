@@ -164,7 +164,7 @@ class AccountProfileMapper
       AddAccountCallback callback);
 
   // Callback for `AddAccountHelper`, end of the flow starting with
-  // `AddAccounInternal()`.
+  // `AddAccountInternal()`.
   void OnAddAccountCompleted(AddAccountHelper* helper,
                              AddAccountCallback callback,
                              const absl::optional<AddAccountResult>& result);
@@ -187,6 +187,9 @@ class AccountProfileMapper
   // Returns whether the profile at `profile_path` contains `account`.
   bool ProfileContainsAccount(const base::FilePath& profile_path,
                               const account_manager::AccountKey& account) const;
+
+  // Returns whether the `account_cache_` contains `account`.
+  bool IsAccountInCache(const account_manager::Account& account);
 
   // If there is only a single profile in Lacros, new accounts are added there
   // by default and this returns the corresponding entry. Otherwise, new
@@ -218,8 +221,17 @@ class AccountProfileMapper
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
 
-  // Map of account_manager::Account keyed by GaiaID.
+  // Map of account_manager::Account keyed by GaiaID as provided by the last
+  // `account_manager_facade_.GetAccounts()` result. Contains only Gaia
+  // accounts.
+  // Must be modified only from `OnGetAccountsCompleted()`.
   base::flat_map<std::string, account_manager::Account> account_cache_;
+  // The last state of the `account_cache_` that had been fully processed by
+  // `OnGetAccountsCompleted()`. This state can be several versions behind
+  // `account_cache` while an account addition is in progress.
+  // Must be modified only from `OnGetAccountsCompleted()`.
+  base::flat_map<std::string, account_manager::Account>
+      last_processed_account_cache_;
 
   base::WeakPtrFactory<AccountProfileMapper> weak_factory_{this};
 };

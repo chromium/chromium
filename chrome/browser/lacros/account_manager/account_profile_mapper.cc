@@ -261,12 +261,15 @@ void AccountProfileMapper::UpsertAccountForTesting(
   }
 
   add_account_helpers_.push_back(std::make_unique<AddAccountHelper>(
+      base::BindRepeating(
+          &AccountProfileMapper::IsAccountInCache,
+          // `this` owns the helper, so base::Unretained() is fine.
+          base::Unretained(this)),
       account_manager_facade_, profile_attributes_storage_));
   AddAccountHelper* helper = add_account_helpers_.back().get();
-  account_manager_facade_->UpsertAccountForTesting(  // IN-TEST
-      account, token_value);
-  helper->Start(
-      profile_path, account,
+
+  helper->UpsertAccountForTesting(  // IN-TEST
+      profile_path, account, token_value,
       base::BindOnce(&AccountProfileMapper::OnAddAccountCompleted,
                      weak_factory_.GetWeakPtr(), helper, base::DoNothing()));
 }
@@ -281,6 +284,12 @@ void AccountProfileMapper::RemoveAccountForTesting(
     return;
   }
   account_manager_facade_->RemoveAccountForTesting(account_key);  // IN-TEST
+}
+
+bool AccountProfileMapper::IsAccountInCache(
+    const account_manager::Account& account) {
+  return account.key.account_type() == account_manager::AccountType::kGaia &&
+         account_cache_.contains(account.key.id());
 }
 
 void AccountProfileMapper::AddAccountInternal(
@@ -322,6 +331,10 @@ void AccountProfileMapper::AddAccountInternal(
   }
 
   add_account_helpers_.push_back(std::make_unique<AddAccountHelper>(
+      base::BindRepeating(
+          &AccountProfileMapper::IsAccountInCache,
+          // `this` owns the helper, so base::Unretained() is fine.
+          base::Unretained(this)),
       account_manager_facade_, profile_attributes_storage_));
   AddAccountHelper* helper = add_account_helpers_.back().get();
   helper->Start(
@@ -334,8 +347,8 @@ void AccountProfileMapper::OnAddAccountCompleted(
     AddAccountHelper* helper,
     AddAccountCallback callback,
     const absl::optional<AddAccountResult>& result) {
-  // Note: the new account may or may not be in `account_cache_` yet. It's also
-  // possible (although unlikely) that it was already removed from the OS. As a
+  // Note: the new account may or may not be in `account_cache_`. There is a
+  // small possibility that an account was already removed from the OS. As a
   // result, this function does not use `account_cache_` at all.
   if (result) {
     for (auto& obs : observers_)
@@ -419,18 +432,7 @@ AccountProfileMapper::AddNewGaiaAccounts(
 
 void AccountProfileMapper::OnGetAccountsCompleted(
     const std::vector<account_manager::Account>& system_accounts) {
-  // `AccountManagerFacade` may call `OnAccountUpserted()` before the
-  // `ShowAddAccountDialog()` callback, which may result in this function being
-  // called during the account addition. In this case, return immediately now,
-  // to avoid incorrectly assigning accounts to the main profile. Another call
-  // will be triggered at the end of the account addition to sort things up.
-  if (!add_account_helpers_.empty())
-    return;
-
-  // Update `account_cache_`, and keep a copy of the old cache to call
-  // `OnAccountRemoved()`.
-  base::flat_map<std::string, account_manager::Account> old_cache;
-  account_cache_.swap(old_cache);
+  account_cache_.clear();
   for (const account_manager::Account& account : system_accounts) {
     const account_manager::AccountKey& key = account.key;
     // Filter out non-Gaia accounts.
@@ -438,6 +440,31 @@ void AccountProfileMapper::OnGetAccountsCompleted(
       continue;
     account_cache_.emplace(key.id(), account);
   }
+
+  // `AccountManagerFacade` may call `OnAccountUpserted()` before the
+  // `ShowAddAccountDialog()` callback, which may result in this function being
+  // called during the account addition. In this case, notify helpers and
+  // return immediately now, to avoid incorrectly assigning accounts to the main
+  // profile. Another call will be triggered at the end of the account addition
+  // to sort things up.
+  if (!add_account_helpers_.empty()) {
+    // Create a local copy of `add_account_helpers_` because
+    // `OnAccountCacheUpdated()` may delete a helper in the middle of the
+    // iteration.
+    std::vector<AddAccountHelper*> local_add_account_helpers;
+    local_add_account_helpers.reserve(add_account_helpers_.size());
+    for (const auto& add_account_helper : add_account_helpers_)
+      local_add_account_helpers.push_back(add_account_helper.get());
+
+    for (auto* add_account_helper : local_add_account_helpers)
+      add_account_helper->OnAccountCacheUpdated();
+    return;
+  }
+
+  base::flat_map<std::string, account_manager::Account> old_cache;
+  last_processed_account_cache_.swap(old_cache);
+  last_processed_account_cache_ = account_cache_;
+
   // Accounts that were removed.
   std::vector<std::pair<base::FilePath, std::string>> removed_ids =
       RemoveStaleAccounts();

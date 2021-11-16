@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ADD_ACCOUNT_HELPER_H_
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ADD_ACCOUNT_HELPER_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,7 +30,11 @@ class ProfileAttributesStorage;
 // `AccountProfileMapper`.
 class AddAccountHelper {
  public:
-  AddAccountHelper(account_manager::AccountManagerFacade* facade,
+  using IsAccountInCacheCallback =
+      base::RepeatingCallback<bool(const account_manager::Account&)>;
+
+  AddAccountHelper(IsAccountInCacheCallback is_account_in_cache_callback,
+                   account_manager::AccountManagerFacade* facade,
                    ProfileAttributesStorage* storage);
   ~AddAccountHelper();
 
@@ -48,6 +54,17 @@ class AddAccountHelper {
                  account_manager::Account>& source_or_account,
              AccountProfileMapper::AddAccountCallback callback);
 
+  // Adds or updates an account programmatically without user interaction.
+  // Should only be used in tests.
+  void UpsertAccountForTesting(
+      const base::FilePath& profile_path,
+      const account_manager::Account& account,
+      const std::string& token_value,
+      AccountProfileMapper::AddAccountCallback callback);
+
+  // Notifies an `AddAccountHelper` that the account cache has been updated.
+  void OnAccountCacheUpdated();
+
  private:
   // Called once the user added an account, and before the account is added to
   // the profile.
@@ -57,19 +74,32 @@ class AddAccountHelper {
 
   // Called as part of the account addition flow, if the profile does not
   // already exist.
-  void OnNewProfileCreated(const account_manager::Account& account,
-                           Profile* new_profile,
-                           Profile::CreateStatus status);
+  void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
 
-  // Called after the user added and account and the profile exists. Tries
-  // adding the account in the profile. `profile_path` must not be empty.
+  // Called after the user added and account and the profile exists.
+  // `profile_path` must not be empty.
   void OnShowAddAccountDialogCompletedWithProfilePath(
-      const base::FilePath& profile_path,
-      const account_manager::Account& account);
+      const base::FilePath& profile_path);
 
+  // Attempts to finish the account addition. Proceeds only if all of the
+  // following is true:
+  // - an account has been chosen by the user
+  // - an account has been added to cache
+  // - a profile path has been determined
+  void MaybeCompleteAddAccount();
+
+  IsAccountInCacheCallback is_account_in_cache_callback_;
   account_manager::AccountManagerFacade* const account_manager_facade_;
   ProfileAttributesStorage* const profile_attributes_storage_;
   AccountProfileMapper::AddAccountCallback callback_;
+
+  absl::optional<account_manager::Account> account_;
+  // absl::nullopt means that the path hasn't been determined yet.
+  // An empty path means that the account should be unassigned.
+  absl::optional<base::FilePath> profile_path_;
+
+  bool is_account_in_cache_ = false;
+
   base::WeakPtrFactory<AddAccountHelper> weak_factory_{this};
 };
 
