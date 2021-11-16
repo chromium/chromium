@@ -1128,7 +1128,7 @@ try_.chromium_linux_builder(
         },
     },
     tryjob = try_.job(
-        experiment_percentage = 5,
+        experiment_percentage = 20,
     ),
 )
 
