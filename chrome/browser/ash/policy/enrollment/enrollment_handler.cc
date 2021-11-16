@@ -356,30 +356,31 @@ void EnrollmentHandler::OnPolicyFetched(CloudPolicyClient* client) {
 void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   DCHECK_EQ(client_.get(), client);
 
-  if (enrollment_step_ == STEP_REGISTRATION && client_->is_registered()) {
-    device_mode_ = client_->device_mode();
-    switch (device_mode_) {
-      case DEVICE_MODE_ENTERPRISE:
-      case DEVICE_MODE_DEMO:
-        // Do nothing.
-        break;
-      case DEVICE_MODE_ENTERPRISE_AD:
-        chromeos::UpstartClient::Get()->StartAuthPolicyService();
-        break;
-      default:
-        LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
-        ReportResult(EnrollmentStatus::ForStatus(
-            EnrollmentStatus::REGISTRATION_BAD_MODE));
-        return;
-    }
-    // Only use DMToken from now on.
-    dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
-    SetStep(STEP_POLICY_FETCH);
-    client_->FetchPolicy();
-  } else {
+  if (enrollment_step_ != STEP_REGISTRATION || !client_->is_registered()) {
     LOG(FATAL) << "Registration state changed to " << client_->is_registered()
                << " in step " << enrollment_step_ << ".";
+    return;
   }
+
+  device_mode_ = client_->device_mode();
+  switch (device_mode_) {
+    case DEVICE_MODE_ENTERPRISE:
+    case DEVICE_MODE_DEMO:
+      // Do nothing.
+      break;
+    case DEVICE_MODE_ENTERPRISE_AD:
+      chromeos::UpstartClient::Get()->StartAuthPolicyService();
+      break;
+    default:
+      LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
+      ReportResult(
+          EnrollmentStatus::ForStatus(EnrollmentStatus::REGISTRATION_BAD_MODE));
+      return;
+  }
+  // Only use DMToken from now on.
+  dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
+  SetStep(STEP_POLICY_FETCH);
+  client_->FetchPolicy();
 }
 
 void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {
@@ -485,14 +486,14 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow() {
 void EnrollmentHandler::HandleRegistrationCertificateResult(
     chromeos::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
-  if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
-    client_->RegisterWithCertificate(*register_params_, client_id_,
-                                     dm_auth_.Clone(), pem_certificate_chain,
-                                     sub_organization_, signing_service_.get());
-  } else {
+  if (status != chromeos::attestation::ATTESTATION_SUCCESS) {
     ReportResult(EnrollmentStatus::ForStatus(
         EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
+    return;
   }
+  client_->RegisterWithCertificate(*register_params_, client_id_,
+                                   dm_auth_.Clone(), pem_certificate_chain,
+                                   sub_organization_, signing_service_.get());
 }
 
 void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {
@@ -584,24 +585,24 @@ std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
 void EnrollmentHandler::HandlePolicyValidationResult(
     DeviceCloudPolicyValidator* validator) {
   DCHECK_EQ(STEP_VALIDATION, enrollment_step_);
-  if (validator->success()) {
-    std::string username = validator->policy_data()->username();
-    device_id_ = validator->policy_data()->device_id();
-    policy_ = std::move(validator->policy());
-    if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-      // Don't use robot account for the Active Directory managed devices.
-      skip_robot_auth_ = true;
-      SetStep(STEP_AD_DOMAIN_JOIN);
-      StartJoinAdDomain();
-    } else {
-      domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
-      SetStep(STEP_ROBOT_AUTH_FETCH);
-      device_account_initializer_ =
-          std::make_unique<DeviceAccountInitializer>(client_.get(), this);
-      device_account_initializer_->FetchToken();
-    }
-  } else {
+  if (!validator->success()) {
     ReportResult(EnrollmentStatus::ForValidationError(validator->status()));
+    return;
+  }
+  std::string username = validator->policy_data()->username();
+  device_id_ = validator->policy_data()->device_id();
+  policy_ = std::move(validator->policy());
+  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
+    // Don't use robot account for the Active Directory managed devices.
+    skip_robot_auth_ = true;
+    SetStep(STEP_AD_DOMAIN_JOIN);
+    StartJoinAdDomain();
+  } else {
+    domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
+    SetStep(STEP_ROBOT_AUTH_FETCH);
+    device_account_initializer_ =
+        std::make_unique<DeviceAccountInitializer>(client_.get(), this);
+    device_account_initializer_->FetchToken();
   }
 }
 
