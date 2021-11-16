@@ -9,6 +9,7 @@ namespace content {
 
 // Indicates different types of navigations that can occur that we will handle
 // separately.
+// TODO(crbug.com/1268254): Stop exposing NavigationType outside of //content.
 enum NavigationType {
   // Unknown type.
   NAVIGATION_TYPE_UNKNOWN,
@@ -21,9 +22,12 @@ enum NavigationType {
   // This type of navigation will create a new NavigationEntry, without sharing
   // any (frame-specific) session history entries with other NavigationEntries.
   // Navigation entries created by subframe navigations are NEW_SUBFRAME.
+  // Note: This includes all main frames (e.g. fenced frames), not only the
+  // navigation entries created by navigations in primary main frames.
   NAVIGATION_TYPE_NEW_ENTRY,
 
-  // Navigating to an existing navigation entry. This is the case for:
+  // Navigating the main frame to an existing navigation entry. This is the case
+  // for:
   // - Session history navigations
   // - Reloads, including reloads as a result of the user requesting a
   //   navigation to the same URL (e.g., pressing Enter in the URL bar)
@@ -41,6 +45,8 @@ enum NavigationType {
   // most/all of the contents of the existing NavigationEntry. This means the
   // session history entry for the frame, which might be shared with othe
   // NavigationEntries, will be reused in the updated NavigationEntry.
+  // Note: This includes all main frames (e.g. fenced frames), not only the
+  // navigation entries created by navigations in primary main frames.
   // TODO(https://crbug.com/1226489): Do not reuse the session history entry
   // for the frame (and maybe the NavigationEntry itself) for same-document
   // location.replace().
