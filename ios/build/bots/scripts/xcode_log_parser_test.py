@@ -85,7 +85,7 @@ XCRESULT_ROOT = """
   }
 }"""
 
-REF_ID = """
+REF_ID = b"""
   {
     "actions": {
       "_values": [{
@@ -435,7 +435,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRoot(self, mock_process):
-    mock_process.return_value = '%JSON%'
+    mock_process.return_value = b'%JSON%'
     xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path')
     self.assertTrue(
         os.path.join(XCODE11_DICT['path'], 'usr', 'bin') in os.environ['PATH'])
@@ -445,7 +445,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRef(self, mock_process):
-    mock_process.side_effect = [REF_ID, 'JSON']
+    mock_process.side_effect = [REF_ID, b'JSON']
     xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path',
                                                           'testsRef')
     self.assertEqual(

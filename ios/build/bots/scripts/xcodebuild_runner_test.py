@@ -141,8 +141,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
-    self.mock(test_runner.subprocess, 'check_output', lambda _: 'fake-output')
-    self.mock(test_runner.subprocess, 'check_call', lambda _: 'fake-out')
+    self.mock(test_runner.subprocess, 'check_output', lambda _: b'fake-output')
+    self.mock(test_runner.subprocess, 'check_call', lambda _: b'fake-out')
     self.mock(test_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',

@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import requests
+import sys
 
 LOGGER = logging.getLogger(__name__)
 # VALID_STATUSES is a list of valid status values for test_result['status'].
@@ -71,10 +72,17 @@ def _compose_test_result(test_id,
       } for name in file_artifacts
   }
   if test_log:
+    message = ''
+    if sys.version_info.major < 3:
+      message = base64.b64encode(test_log)
+    else:
+      # Python3 b64encode takes and returns bytes. The result must be
+      # serializable in order for the eventual json.dumps to succeed
+      message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
     test_result['artifacts'].update({
         'Test Log': {
-            'contents': base64.b64encode(test_log)
+            'contents': message
         },
     })
   if not test_result['artifacts']:

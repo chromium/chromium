@@ -400,9 +400,9 @@ class ResultCollection(object):
       logs['flaked tests'] = flaked
     if failed:
       logs['failed tests'] = failed
-    for test, log_lines in failed.iteritems():
+    for test, log_lines in failed.items():
       logs[test] = log_lines
-    for test, log_lines in flaked.iteritems():
+    for test, log_lines in flaked.items():
       logs[test] = log_lines
 
     return logs

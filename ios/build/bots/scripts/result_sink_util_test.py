@@ -62,7 +62,8 @@ class UnitTest(unittest.TestCase):
         'summaryHtml': '<text-artifact artifact-id="Test Log" />',
         'artifacts': {
             'Test Log': {
-                'contents': base64.b64encode(short_log)
+                'contents':
+                    base64.b64encode(short_log.encode('utf-8')).decode('utf-8')
             },
             'name': {
                 'filePath': '/path/to/name'
@@ -89,7 +90,9 @@ class UnitTest(unittest.TestCase):
         'summaryHtml': '<text-artifact artifact-id="Test Log" />',
         'artifacts': {
             'Test Log': {
-                'contents': base64.b64encode(len_4128_str)
+                'contents':
+                    base64.b64encode(len_4128_str.encode('utf-8')
+                                    ).decode('utf-8')
             },
         },
         'tags': [],

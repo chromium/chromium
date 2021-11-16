@@ -39,13 +39,12 @@ class UtilTest(test_runner_test.TestCase):
     """Tests _validate_kwargs."""
     with self.assertRaises(AssertionError) as context:
       TestResult('name', TestStatus.PASS, unknown='foo')
-    expected_message = (
-        'Invalid keyword argument(s) in set([\'unknown\']) passed in!')
+    expected_message = ("Invalid keyword argument(s) in {'unknown'} passed in!")
     self.assertTrue(expected_message in str(context.exception))
     with self.assertRaises(AssertionError) as context:
       ResultCollection(test_log='foo')
     expected_message = (
-        'Invalid keyword argument(s) in set([\'test_log\']) passed in!')
+        "Invalid keyword argument(s) in {'test_log'} passed in!")
     self.assertTrue(expected_message in str(context.exception))
 
   def test_validate_test_status(self):

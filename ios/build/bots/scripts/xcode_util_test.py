@@ -14,10 +14,10 @@ import test_runner_test
 import xcode_util
 
 
-_XCODEBUILD_VERSION_OUTPUT_12 = """Xcode 12.4
+_XCODEBUILD_VERSION_OUTPUT_12 = b"""Xcode 12.4
 Build version 12D4e
 """
-_XCODEBUILD_VERSION_OUTPUT_13 = """Xcode 13.0
+_XCODEBUILD_VERSION_OUTPUT_13 = b"""Xcode 13.0
 Build version 13A5155e
 """
 
@@ -189,7 +189,7 @@ class HelperFunctionTests(XcodeUtilTest):
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_using_new_mac_toolchain(self, mock_check_output):
-    mock_check_output.return_value = """
+    mock_check_output.return_value = b"""
 Mac OS / iOS toolchain management
 
 Usage:  mac_toolchain [command] [arguments]
@@ -207,7 +207,7 @@ Use "mac_toolchain help [command]" for more information about a command."""
 
   @mock.patch('subprocess.check_output', autospec=True)
   def test_using_new_legacy_toolchain(self, mock_check_output):
-    mock_check_output.return_value = """
+    mock_check_output.return_value = b"""
 Mac OS / iOS toolchain management
 
 Usage:  mac_toolchain [command] [arguments]

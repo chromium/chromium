@@ -169,7 +169,7 @@ class Xcode11LogParser(object):
     id_params = ['--id', ref_id] if ref_id else []
     xcresult_command = ['xcresulttool', 'get', '--format', 'json',
                         '--path', xcresult_path] + id_params
-    return subprocess.check_output(xcresult_command).strip()
+    return subprocess.check_output(xcresult_command).decode('utf-8').strip()
 
   @staticmethod
   def _list_of_failed_tests(actions_invocation_record, excluded=None):
@@ -388,7 +388,7 @@ class Xcode11LogParser(object):
                       test['identifier']
                       ['_value']] = test['summaryRef']['id']['_value']
 
-    for test, summary_ref_id in test_summary_refs.iteritems():
+    for test, summary_ref_id in test_summary_refs.items():
       # See SINGLE_TEST_SUMMARY_REF in xcode_log_parser_test.py for an example
       # of |test_summary|.
       test_summary = json.loads(
@@ -457,7 +457,7 @@ class Xcode11LogParser(object):
         'xcresulttool', 'export', '--type', output_type, '--id', ref_id,
         '--path', xcresult, '--output-path', output_path
     ]
-    subprocess.check_output(export_command).strip()
+    subprocess.check_output(export_command).decode('utf-8').strip()
 
   @staticmethod
   def _extract_attachments(test,

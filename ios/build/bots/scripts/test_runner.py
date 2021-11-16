@@ -148,9 +148,9 @@ def get_device_ios_version(udid):
   Returns:
     Device UDID.
   """
-  return subprocess.check_output(['ideviceinfo',
-                                  '--udid', udid,
-                                  '-k', 'ProductVersion']).strip()
+  return subprocess.check_output(
+      ['ideviceinfo', '--udid', udid, '-k',
+       'ProductVersion']).decode('utf-8').strip()
 
 
 def defaults_write(d, key, value):
@@ -254,6 +254,10 @@ def print_process_output(proc,
       timer.cancel()
     if not line:
       break
+    # |line| will be bytes on python3, and therefore must be decoded prior
+    # to rstrip.
+    if sys.version_info.major == 3:
+      line = line.decode('utf-8')
     line = line.rstrip()
     out.append(line)
     if parser:
@@ -263,9 +267,6 @@ def print_process_output(proc,
 
   if parser:
     parser.Finalize()
-  if sys.version_info.major == 3:
-    for index in range(len(out)):
-      out[index] = out[index].decode('utf-8')
   LOGGER.debug('Finished print_process_output.')
   return out
 
@@ -282,7 +283,8 @@ def get_current_xcode_info():
   try:
     out = subprocess.check_output(['xcodebuild', '-version']).splitlines()
     version, build_version = out[0].split(' ')[-1], out[1].split(' ')[-1]
-    path = subprocess.check_output(['xcode-select', '--print-path']).rstrip()
+    path = subprocess.check_output(['xcode-select',
+                                    '--print-path']).decode('utf-8').rstrip()
   except subprocess.CalledProcessError:
     version = build_version = path = None
 
@@ -368,7 +370,8 @@ class TestRunner(object):
     """removes any proxy settings which may remain from a previous run."""
     LOGGER.info('Removing any proxy settings.')
     network_services = subprocess.check_output(
-        ['networksetup', '-listallnetworkservices']).strip().split('\n')
+        ['networksetup',
+         '-listallnetworkservices']).decode('utf-8').strip().split('\n')
     if len(network_services) > 1:
       # We ignore the first line as it is a description of the command's output.
       network_services = network_services[1:]
@@ -610,7 +613,7 @@ class TestRunner(object):
       if self.retries and never_expected_tests:
         LOGGER.warning('%s tests failed and will be retried.\n',
                        len(never_expected_tests))
-        for i in xrange(self.retries):
+        for i in range(self.retries):
           tests_to_retry = list(overall_result.never_expected_tests())
           for test in tests_to_retry:
             LOGGER.info('Retry #%s for %s.\n', i + 1, test)
@@ -761,9 +764,10 @@ class SimulatorTestRunner(TestRunner):
         if os.path.exists(docs_dir) and os.path.exists(metadata_plist):
           cfbundleid = subprocess.check_output([
               '/usr/libexec/PlistBuddy',
-              '-c', 'Print:MCMMetadataIdentifier',
+              '-c',
+              'Print:MCMMetadataIdentifier',
               metadata_plist,
-          ]).rstrip()
+          ]).decode('utf-8').rstrip()
           if cfbundleid == self.cfbundleid:
             shutil.copytree(docs_dir, os.path.join(self.out_dir, 'Documents'))
             return
@@ -917,7 +921,8 @@ class DeviceTestRunner(TestRunner):
     """
     super(DeviceTestRunner, self).__init__(app_path, out_dir, **kwargs)
 
-    self.udid = subprocess.check_output(['idevice_id', '--list']).rstrip()
+    self.udid = subprocess.check_output(['idevice_id',
+                                         '--list']).decode('utf-8').rstrip()
     if len(self.udid.splitlines()) != 1:
       raise DeviceDetectionError(self.udid)
 

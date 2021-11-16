@@ -283,6 +283,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
     self.runner.args.xcode_build_version = 'testXcodeVersion'
     self.runner.args.runtime_cache_prefix = 'test/runtime-ios-'
     self.runner.args.version = '14.4'
+    self.runner.args.out_dir = 'out/dir'
 
   @mock.patch('test_runner.defaults_delete')
   @mock.patch('json.dump')

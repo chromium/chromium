@@ -49,7 +49,7 @@ def get_bundle_id(app_path):
       '-c',
       'Print:CFBundleIdentifier',
       os.path.join(app_path, 'Info.plist'),
-  ]).rstrip().decode("utf-8")
+  ]).decode("utf-8").rstrip()
 
 
 def is_running_rosetta():
@@ -61,7 +61,7 @@ def is_running_rosetta():
     running on an Intel machine.
   """
   translated = subprocess.check_output(
-      ['sysctl', '-i', '-b', 'sysctl.proc_translated'])
+      ['sysctl', '-i', '-b', 'sysctl.proc_translated']).decode('utf-8')
   # "sysctl -b" is expected to return a 4-byte integer response. 1 means the
   # current process is running under Rosetta, 0 means it is not. On x86_64
   # machines, this variable does not exist at all, so "-i" is used to return a

@@ -24,8 +24,8 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
-    self.mock(test_runner.subprocess, 'check_output',
-              lambda _: 'fake-bundle-id')
+    self.mock(test_runner.subprocess,
+              'check_output', lambda _: b'fake-bundle-id')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
@@ -113,14 +113,14 @@ class WprProxySimulatorTestRunnerTest(test_runner_test.TestCase):
       def __init__(self):
         self.line_index = 0
         self.lines = [
-            'Test Case \'-[a 1]\' started.',
-            'Test Case \'-[a 1]\' has uninteresting logs.',
-            'Test Case \'-[a 1]\' passed (0.1 seconds)',
-            'Test Case \'-[b 2]\' started.',
-            'Test Case \'-[b 2]\' passed (0.1 seconds)',
-            'Test Case \'-[c 3]\' started.',
-            'Test Case \'-[c 3]\' has interesting failure info.',
-            'Test Case \'-[c 3]\' failed (0.1 seconds)',
+            b'Test Case \'-[a 1]\' started.',
+            b'Test Case \'-[a 1]\' has uninteresting logs.',
+            b'Test Case \'-[a 1]\' passed (0.1 seconds)',
+            b'Test Case \'-[b 2]\' started.',
+            b'Test Case \'-[b 2]\' passed (0.1 seconds)',
+            b'Test Case \'-[c 3]\' started.',
+            b'Test Case \'-[c 3]\' has interesting failure info.',
+            b'Test Case \'-[c 3]\' failed (0.1 seconds)',
         ]
 
       def readline(self):
