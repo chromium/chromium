@@ -7,6 +7,10 @@
  *
  * This file defines types and an interface, drawings.Canvas, that are safe for
  * export and satisfy the usage in the Chrome PDF annotation mode.
+ *
+ * See
+ * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/pdf/ink/ink_api.js
+ * for usage.
  */
 
 /** @const Namespace */
@@ -99,9 +103,9 @@ drawings.Canvas = class {
    * Returns a copy of the currently-edited PDF with the Ink annotations
    * serialized into it.
    *
-   * @return {!Uint8Array}
+   * @return {!Promise<!Uint8Array>}
    */
-  getPDF() {}
+  async getPDF() {}
 
   /**
    * Returns the currently-edited PDF with the Ink annotations serialized into
@@ -109,9 +113,9 @@ drawings.Canvas = class {
    * should not be issued any further strokes or functions calls until setPDF is
    * called again.
    *
-   * @return {!Uint8Array}
+   * @return {!Promise<!Uint8Array>}
    */
-  getPDFDestructive() {}
+  async getPDFDestructive() {}
 
   /**
    * Set the camera to the provided box in PDF coordinates.
@@ -141,6 +145,13 @@ drawings.Canvas = class {
    * @return {!Promise<undefined>}
    */
   flush() {}
+
+  /**
+   * Returns a Promise that is resolved when no new frames will be requested.
+   *
+   * @return {!Promise<undefined>}
+   */
+  waitForZeroFps() {}
 
   /**
    * Set the out of bounds color drawn around the PDF and between pages.

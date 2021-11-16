@@ -29,16 +29,16 @@ class InkAPI {
   }
 
   /**
-   * @return {!Uint8Array}
+   * @return {!Promise<!Uint8Array>}
    */
-  getPDF() {
+  async getPDF() {
     return this.canvas_.getPDF();
   }
 
   /**
-   * @return {!Uint8Array}
+   * @return {!Promise<!Uint8Array>}
    */
-  getPDFDestructive() {
+  async getPDFDestructive() {
     return this.canvas_.getPDFDestructive();
   }
 
