@@ -104,7 +104,6 @@ export function getRegularImageTiles(images) {
  * @return {!Array<!ImageTile>}
  */
 export function getDarkLightImageTiles(isDarkModeActive, images) {
-  console.log('isDarkModeActive', isDarkModeActive);
   const tileMap = images.reduce((result, next) => {
     if (next.unitId in result) {
       // Add light url to the front and dark url to the back of the preview.
