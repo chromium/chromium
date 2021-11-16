@@ -37,6 +37,24 @@ using QuickUnlockStorage = quick_unlock::QuickUnlockStorage;
 
 constexpr char kFingerprint[] = "pinky";
 
+// Simulate fingerprint authentication.
+void AuthenticateAndCheckThroughHistogram(
+    base::HistogramTester& histogram_tester,
+    FakeBiodClient* biod) {
+  biod->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
+  biod->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Auth.ScanResult"),
+              ::testing::ElementsAre(
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::SUCCESS),
+                               1),
+                  base::Bucket(static_cast<base::HistogramBase::Sample>(
+                                   device::mojom::ScanResult::TOO_FAST),
+                               1)));
+}
+
 class FingerprintUnlockTest : public InProcessBrowserTest {
  public:
   FingerprintUnlockTest() = default;
@@ -64,13 +82,11 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    SetupTestClocks();
-    SetUpQuickUnlock();
-    EnrollFingerprint();
+    biod_ = FakeBiodClient::Get();
   }
 
   void EnrollFingerprint() {
-    FakeBiodClient::Get()->StartEnrollSession(
+    biod_->StartEnrollSession(
         "test-user", std::string(),
         base::BindOnce(&FingerprintUnlockTest::OnStartSession,
                        base::Unretained(this)));
@@ -80,17 +96,16 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
       run_loop.Run();
     }
 
-    FakeBiodClient::Get()->SendEnrollScanDone(
-        kFingerprint, biod::SCAN_RESULT_SUCCESS, true /* is_complete */,
-        -1 /* percent_complete */);
+    biod_->SendEnrollScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS,
+                              true /* is_complete */,
+                              -1 /* percent_complete */);
 
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kQuickUnlockFingerprintRecord, 1);
   }
 
   void AuthenticateWithFingerprint() {
-    FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                            biod::SCAN_RESULT_SUCCESS);
+    biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -196,6 +211,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   }
 
  protected:
+  FakeBiodClient* biod_;  // Non-owning pointer.
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
 
@@ -216,19 +232,147 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
-IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintNotTimedOutTest) {
+// Provides test clocks, quick unlock and an enrolled fingerprint to the tests.
+class FingerprintUnlockEnrollTest : public FingerprintUnlockTest {
+ public:
+  FingerprintUnlockEnrollTest() = default;
+
+  FingerprintUnlockEnrollTest(const FingerprintUnlockEnrollTest&) = delete;
+  FingerprintUnlockEnrollTest& operator=(const FingerprintUnlockEnrollTest&) =
+      delete;
+
+  ~FingerprintUnlockEnrollTest() override = default;
+
+  void SetUpOnMainThread() override {
+    FingerprintUnlockTest::SetUpOnMainThread();
+    SetupTestClocks();
+    SetUpQuickUnlock();
+    EnrollFingerprint();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
+                       FingerprintNotTimedOutTest) {
   base::TimeDelta expiration_time = GetExpirationTime();
   ShowLockScreenAndAdvanceTime(expiration_time / 2, base::Seconds(0));
 }
 
-IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintTimedOutTest) {
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest, FingerprintTimedOutTest) {
   base::TimeDelta expiration_time = GetExpirationTime();
   ShowLockScreenAndAdvanceTime(expiration_time, base::Seconds(0));
 }
 
-IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, TimeoutIncludesSuspendedTime) {
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
+                       TimeoutIncludesSuspendedTime) {
   base::TimeDelta expiration_time = GetExpirationTime();
   ShowLockScreenAndAdvanceTime(expiration_time, expiration_time / 2);
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
+  ScreenLockerTester tester;
+  tester.Lock();
+
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi lock_contents_test(
+      lock_screen_test.contents_view());
+
+  base::RunLoop().RunUntilIdle();
+
+  // No fingerprint record is available yet.
+  FingerprintState initial_state =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(initial_state, FingerprintState::UNAVAILABLE);
+
+  // Simulate a biod late start, giving us fingerprint records.
+  EnrollFingerprint();
+  biod_->SendRestarted();
+  base::RunLoop().RunUntilIdle();
+
+  FingerprintState state_after_getting_records =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(state_after_getting_records, FingerprintState::AVAILABLE_DEFAULT);
+
+  EXPECT_TRUE(tester.IsLocked());
+  base::HistogramTester histogram_tester;
+  // Note that we do not need to start an auth session since this should be
+  // handled automatically by the lock screen when it receives a biod restart
+  // signal.
+  AuthenticateAndCheckThroughHistogram(histogram_tester, biod_);
+  EXPECT_FALSE(tester.IsLocked());
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
+                       ExceedAttemptsAndBiodRestart) {
+  ScreenLockerTester tester;
+  tester.Lock();
+
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi lock_contents_test(
+      lock_screen_test.contents_view());
+
+  base::RunLoop().RunUntilIdle();
+
+  for (int attempt = 0;
+       attempt < quick_unlock::FingerprintStorage::kMaximumUnlockAttempts;
+       attempt++) {
+    FingerprintState state =
+        lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+    EXPECT_EQ(state, FingerprintState::AVAILABLE_DEFAULT);
+    // Simulate bad attempt.
+    biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  FingerprintState state_after_attempts =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(state_after_attempts, FingerprintState::DISABLED_FROM_ATTEMPTS);
+
+  // Emulate another biod restart giving us a different number of records so
+  // `ScreenLocker::UpdateFingerprintStateForUser` can be triggered and so we
+  // can check that the state indeed remains the same.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kQuickUnlockFingerprintRecord, 2);
+  base::RunLoop().RunUntilIdle();
+
+  // Check if we still have `FingerprintState::DISABLED_FROM_ATTEMPTS` status
+  // after a restart.
+  FingerprintState state_after_restart =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(state_after_restart, FingerprintState::DISABLED_FROM_ATTEMPTS);
+}
+
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
+                       BiodFailsAfterLockScreenReady) {
+  ScreenLockerTester tester;
+  tester.Lock();
+
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi lock_contents_test(
+      lock_screen_test.contents_view());
+
+  base::RunLoop().RunUntilIdle();
+
+  FingerprintState initial_state =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(initial_state, FingerprintState::AVAILABLE_DEFAULT);
+
+  // This corresponds to getting no record from biod service, although
+  // fingerprint records were previously recorded for this user.
+  biod_->DestroyAllRecords(base::DoNothing());
+  biod_->SendRestarted();
+  base::RunLoop().RunUntilIdle();
+
+  FingerprintState state_after_bad_session =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(state_after_bad_session, FingerprintState::UNAVAILABLE);
+
+  // Emulate another biod restart, giving a record this time.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kQuickUnlockFingerprintRecord, 1);
+
+  FingerprintState state_after_restart =
+      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+  EXPECT_EQ(state_after_restart, FingerprintState::AVAILABLE_DEFAULT);
 }
 
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, PRE_FingerprintRecordsGone) {
@@ -247,27 +391,22 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintRecordsGone) {
 }
 
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintScanResult) {
-  base::HistogramTester histogram_tester;
+  FakeBiodClient* biod = FakeBiodClient::Get();
 
   // Simulate fingerprint enrollment.
-  FakeBiodClient::Get()->StartEnrollSession(
+  biod->StartEnrollSession(
       "test-user", std::string(),
       base::BindOnce([](const dbus::ObjectPath& result) {}));
-  FakeBiodClient::Get()->SendEnrollScanDone(
-      kFingerprint, biod::SCAN_RESULT_TOO_SLOW, false /* is_complete */,
-      -1 /* percent_complete */);
-  FakeBiodClient::Get()->SendEnrollScanDone(
-      kFingerprint, biod::SCAN_RESULT_SUCCESS, true /* is_complete */,
-      100 /* percent_complete */);
+  biod->SendEnrollScanDone(kFingerprint, biod::SCAN_RESULT_TOO_SLOW,
+                           false /* is_complete */, -1 /* percent_complete */);
+  biod->SendEnrollScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS,
+                           true /* is_complete */, 100 /* percent_complete */);
 
-  // Simulate fingerprint authentication.
-  FakeBiodClient::Get()->StartAuthSession(
-      base::BindOnce([](const dbus::ObjectPath& result) {}));
-  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                          biod::SCAN_RESULT_TOO_FAST);
-  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                          biod::SCAN_RESULT_SUCCESS);
-  base::RunLoop().RunUntilIdle();
+  // Start auth session before authenticate.
+  biod->StartAuthSession(base::BindOnce([](const dbus::ObjectPath& result) {}));
+
+  base::HistogramTester histogram_tester;
+  AuthenticateAndCheckThroughHistogram(histogram_tester, biod);
   EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Enroll.ScanResult"),
               ::testing::ElementsAre(
                   base::Bucket(static_cast<base::HistogramBase::Sample>(
@@ -275,15 +414,6 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintScanResult) {
                                1),
                   base::Bucket(static_cast<base::HistogramBase::Sample>(
                                    device::mojom::ScanResult::TOO_SLOW),
-                               1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Auth.ScanResult"),
-              ::testing::ElementsAre(
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
-                                   device::mojom::ScanResult::SUCCESS),
-                               1),
-                  base::Bucket(static_cast<base::HistogramBase::Sample>(
-                                   device::mojom::ScanResult::TOO_FAST),
                                1)));
 }
 
@@ -294,7 +424,7 @@ constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
 constexpr char kFeatureUsageMetric[] = "ChromeOS.FeatureUsage.Fingerprint";
 
 // Verifies that fingerprint auth success is recorded correctly.
-IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest, FeatureUsageMetrics) {
   ScreenLocker::SetClocksForTesting(test_clock_.get(), test_tick_clock_.get());
 
   // Show lock screen and wait until it is shown.
@@ -304,10 +434,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
   base::HistogramTester histogram_tester;
 
   EXPECT_TRUE(HasStrongAuth());
-  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                          biod::SCAN_RESULT_TOO_FAST);
-  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                          biod::SCAN_RESULT_SUCCESS);
+  biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
+  biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
   tester.WaitForUnlock();
   histogram_tester.ExpectBucketCount(kFingerprintSuccessHistogramName,
                                      /*success=*/1, 1);

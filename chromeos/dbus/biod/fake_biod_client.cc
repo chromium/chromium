@@ -60,6 +60,13 @@ FakeBiodClient* FakeBiodClient::Get() {
   return g_instance;
 }
 
+void FakeBiodClient::SendRestarted() {
+  current_session_ = FingerprintSession::NONE;
+
+  for (auto& observer : observers_)
+    observer.BiodServiceRestarted();
+}
+
 void FakeBiodClient::SendEnrollScanDone(const std::string& fingerprint,
                                         biod::ScanResult type_result,
                                         bool is_complete,

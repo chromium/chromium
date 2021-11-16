@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include "ash/components/audio/sounds.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
-#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/login/lock/views_screen_locker.h"
 #include "chrome/browser/ash/login/login_auth_recorder.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -56,6 +57,7 @@
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -741,6 +743,19 @@ ScreenLocker::~ScreenLocker() {
   }
 }
 
+void ScreenLocker::MaybeStartFingerprintAuthSession(
+    const user_manager::User* primary_user) {
+  // Start a fingerprint authentication session if fingerprint is available for
+  // the primary user. Only the primary user can use fingerprint.
+  if (IsFingerprintAvailableForUser(primary_user)) {
+    VLOG(1) << "Fingerprint is available on lock screen, start fingerprint "
+            << "auth session now.";
+    fp_service_->StartAuthSession();
+  } else {
+    VLOG(1) << "Fingerprint is not available on lock screen";
+  }
+}
+
 void ScreenLocker::ScreenLockReady() {
   locked_ = true;
   base::TimeDelta delta = base::Time::Now() - start_time_;
@@ -754,20 +769,28 @@ void ScreenLocker::ScreenLockReady() {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
-  // Start a fingerprint authentication session if fingerprint is available for
-  // the primary user. Only the primary user can use fingerprint.
-  if (IsFingerprintAvailableForUser(
-          user_manager::UserManager::Get()->GetPrimaryUser())) {
-    VLOG(1) << "Fingerprint is available on lock screen, start fingerprint "
-            << "auth session now.";
-    fp_service_->StartAuthSession();
-  } else {
-    VLOG(1) << "Fingerprint is not available on lock screen";
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+
+  MaybeStartFingerprintAuthSession(primary_user);
+
+  // Update fingerprint state for the user once we get their record.
+  // Note that we do not check if fingerprint is available for this user
+  // because we want to catch an eventual late biod start (which would make us
+  // believe that there is no record and a fortiori no fingerprint available).
+  auto* profile = ProfileHelper::Get()->GetProfileByUser(primary_user);
+  if (profile) {
+    fingerprint_pref_change_registrar_ =
+        std::make_unique<PrefChangeRegistrar>();
+    fingerprint_pref_change_registrar_->Init(profile->GetPrefs());
+    fingerprint_pref_change_registrar_->Add(
+        prefs::kQuickUnlockFingerprintRecord,
+        base::BindRepeating(&ScreenLocker::UpdateFingerprintStateForUser,
+                            base::Unretained(this), primary_user));
   }
 
-  MaybeDisablePinAndFingerprintFromTimeout(
-      "ScreenLockReady",
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+  MaybeDisablePinAndFingerprintFromTimeout("ScreenLockReady",
+                                           primary_user->GetAccountId());
 }
 
 bool ScreenLocker::IsUserLoggedIn(const AccountId& account_id) const {
@@ -778,7 +801,10 @@ bool ScreenLocker::IsUserLoggedIn(const AccountId& account_id) const {
   return false;
 }
 
-void ScreenLocker::OnRestarted() {}
+void ScreenLocker::OnRestarted() {
+  MaybeStartFingerprintAuthSession(
+      user_manager::UserManager::Get()->GetPrimaryUser());
+}
 
 void ScreenLocker::OnEnrollScanDone(device::mojom::ScanResult scan_result,
                                     bool enroll_session_complete,
@@ -930,6 +956,12 @@ void ScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
                                         bool can_authenticate) {
   LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
                                                        can_authenticate);
+}
+
+void ScreenLocker::UpdateFingerprintStateForUser(
+    const user_manager::User* user) {
+  LoginScreen::Get()->GetModel()->SetFingerprintState(
+      user->GetAccountId(), quick_unlock::GetFingerprintStateForUser(user));
 }
 
 }  // namespace ash

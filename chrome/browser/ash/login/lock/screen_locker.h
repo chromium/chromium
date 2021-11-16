@@ -36,6 +36,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+class PrefChangeRegistrar;
+
 namespace ash {
 class ViewsScreenLocker;
 
@@ -220,6 +222,8 @@ class ScreenLocker
 
   void OnFingerprintAuthFailure(const user_manager::User& user);
 
+  void MaybeStartFingerprintAuthSession(const user_manager::User* primary_user);
+
   // Called when the screen lock is ready.
   void ScreenLockReady();
 
@@ -257,6 +261,8 @@ class ScreenLocker
                                                 const AccountId& account_id);
 
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+
+  void UpdateFingerprintStateForUser(const user_manager::User* user);
 
   // Delegate used to talk to the view.
   Delegate* delegate_ = nullptr;
@@ -323,6 +329,8 @@ class ScreenLocker
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 
   SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
+
+  std::unique_ptr<PrefChangeRegistrar> fingerprint_pref_change_registrar_;
 
   base::WeakPtrFactory<ScreenLocker> weak_factory_{this};
 };

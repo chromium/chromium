@@ -13,6 +13,8 @@
 class Profile;
 
 namespace ash {
+enum class FingerprintState;
+
 namespace quick_unlock {
 class AuthToken;
 class FingerprintStorage;
@@ -70,6 +72,10 @@ class QuickUnlockStorage : public KeyedService {
 
   // Fetch the user context if `auth_token` is valid. May return null.
   const UserContext* GetUserContext(const std::string& auth_token);
+
+  // Determines the fingerprint state. This is called at lock screen
+  // initialization or after the fingerprint sensor has restarted.
+  FingerprintState GetFingerprintState();
 
   FingerprintStorage* fingerprint_storage() {
     return fingerprint_storage_.get();

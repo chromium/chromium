@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/login_types.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -86,6 +87,32 @@ const UserContext* QuickUnlockStorage::GetUserContext(
   if (GetAuthToken() && GetAuthToken()->Identifier() != auth_token)
     return nullptr;
   return auth_token_->user_context();
+}
+
+FingerprintState QuickUnlockStorage::GetFingerprintState() {
+  // Fingerprint is not registered for this account.
+  if (!fingerprint_storage_->HasRecord())
+    return FingerprintState::UNAVAILABLE;
+
+  // This should not happen, but could in theory (see
+  // ExceedAttemptsAndBiodRestart test) in the following scenario:
+  // -fingerprint is available, user fails to authenticate multiple times
+  // -biod restarts and gives a different (although positive) number of records
+  // The change in the number of records would trigger a fingerprint state
+  // update for the primary user.
+  if (fingerprint_storage_->ExceededUnlockAttempts())
+    return FingerprintState::DISABLED_FROM_ATTEMPTS;
+
+  // It has been too long since the last authentication.
+  if (!HasStrongAuth())
+    return FingerprintState::DISABLED_FROM_TIMEOUT;
+
+  // Auth is available.
+  if (IsFingerprintAuthenticationAvailable())
+    return FingerprintState::AVAILABLE_DEFAULT;
+
+  // Default to unavailabe.
+  return FingerprintState::UNAVAILABLE;
 }
 
 void QuickUnlockStorage::Shutdown() {

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
@@ -33,6 +32,7 @@
 class AccountId;
 
 namespace ash {
+struct LoginUserInfo;
 class UserBoardView;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };

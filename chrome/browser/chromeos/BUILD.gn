@@ -1829,6 +1829,8 @@ source_set("chromeos") {
     "../ash/login/quick_unlock/auth_token.h",
     "../ash/login/quick_unlock/fingerprint_storage.cc",
     "../ash/login/quick_unlock/fingerprint_storage.h",
+    "../ash/login/quick_unlock/fingerprint_utils.cc",
+    "../ash/login/quick_unlock/fingerprint_utils.h",
     "../ash/login/quick_unlock/pin_backend.cc",
     "../ash/login/quick_unlock/pin_backend.h",
     "../ash/login/quick_unlock/pin_storage_cryptohome.cc",

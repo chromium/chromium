@@ -14,7 +14,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -29,7 +28,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
-#include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -121,39 +120,6 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
 
   *out_multiple_locales = recommended_locales.size() >= 2;
   return available_locales;
-}
-
-// Determines the initial fingerprint state for the given user.
-FingerprintState GetInitialFingerprintState(const user_manager::User* user) {
-  // User must be logged in.
-  if (!user->is_logged_in())
-    return FingerprintState::UNAVAILABLE;
-
-  // Quick unlock storage must be available.
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForUser(user);
-  if (!quick_unlock_storage)
-    return FingerprintState::UNAVAILABLE;
-
-  // Fingerprint is not registered for this account.
-  if (!quick_unlock_storage->fingerprint_storage()->HasRecord())
-    return FingerprintState::UNAVAILABLE;
-
-  // Fingerprint unlock attempts should not be exceeded, as the lock screen has
-  // not been displayed yet.
-  DCHECK(
-      !quick_unlock_storage->fingerprint_storage()->ExceededUnlockAttempts());
-
-  // It has been too long since the last authentication.
-  if (!quick_unlock_storage->HasStrongAuth())
-    return FingerprintState::DISABLED_FROM_TIMEOUT;
-
-  // Auth is available.
-  if (quick_unlock_storage->IsFingerprintAuthenticationAvailable())
-    return FingerprintState::AVAILABLE_DEFAULT;
-
-  // Default to unavailabe.
-  return FingerprintState::UNAVAILABLE;
 }
 
 // Returns true if dircrypto migration check should be performed.
@@ -917,7 +883,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.is_signed_in = user->is_logged_in();
     user_info.is_device_owner = is_owner;
     user_info.can_remove = CanRemoveUser(user);
-    user_info.fingerprint_state = GetInitialFingerprintState(user);
+    user_info.fingerprint_state =
+        quick_unlock::GetFingerprintStateForUser(user);
     user_info.show_pin_pad_for_password = false;
     if (user_manager::known_user::GetIsEnterpriseManaged(
             user->GetAccountId()) &&

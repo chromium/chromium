@@ -14,7 +14,6 @@ class Profile;
 
 namespace ash {
 namespace quick_unlock {
-class FingerprintMetricsReporter;
 
 // The result of fingerprint auth attempt on the lock screen. These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -32,7 +31,8 @@ enum class FingerprintUnlockResult {
 // with the actual fingerprint records state. The class also reports fingerprint
 // metrics.
 class FingerprintStorage final
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public feature_usage::FeatureUsageMetrics::Delegate,
+      public device::mojom::FingerprintObserver {
  public:
   static const int kMaximumUnlockAttempts = 5;
 
@@ -45,6 +45,9 @@ class FingerprintStorage final
   FingerprintStorage& operator=(const FingerprintStorage&) = delete;
 
   ~FingerprintStorage() override;
+
+  // Get actual records to update cached prefs::kQuickUnlockFingerprintRecord.
+  void GetRecordsForUser();
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
@@ -73,6 +76,17 @@ class FingerprintStorage final
 
   int unlock_attempt_count() const { return unlock_attempt_count_; }
 
+  // device::mojom::FingerprintObserver:
+  void OnRestarted() override;
+  void OnEnrollScanDone(device::mojom::ScanResult scan_result,
+                        bool is_complete,
+                        int32_t percent_complete) override;
+  void OnAuthScanDone(
+      device::mojom::ScanResult scan_result,
+      const base::flat_map<std::string, std::vector<std::string>>& matches)
+      override;
+  void OnSessionFailed() override;
+
  private:
   void OnGetRecords(const base::flat_map<std::string, std::string>&
                         fingerprints_list_mapping);
@@ -86,7 +100,9 @@ class FingerprintStorage final
 
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
 
-  std::unique_ptr<FingerprintMetricsReporter> metrics_reporter_;
+  mojo::Receiver<device::mojom::FingerprintObserver>
+      fingerprint_observer_receiver_{this};
+
   std::unique_ptr<feature_usage::FeatureUsageMetrics>
       feature_usage_metrics_service_;
 
