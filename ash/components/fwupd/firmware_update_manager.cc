@@ -22,7 +22,6 @@ FirmwareUpdateManager::FirmwareUpdateManager() {
 
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
-  g_instance->RequestDevices();
 }
 
 FirmwareUpdateManager::~FirmwareUpdateManager() {

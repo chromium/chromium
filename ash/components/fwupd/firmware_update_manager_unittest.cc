@@ -40,9 +40,9 @@ class FirmwareUpdateManagerTest : public testing::Test {
 // TODO(swifton): Rewrite this test with an observer.
 TEST_F(FirmwareUpdateManagerTest, RequestDeviceList) {
   // FirmwareUpdateManager requests devices when it is created.
-  EXPECT_EQ(1, GetOnDevicesResponseCallbackCallCountForTesting());
+  EXPECT_EQ(0, GetOnDevicesResponseCallbackCallCountForTesting());
   firmware_update_manager_.RequestDevices();
-  EXPECT_EQ(2, GetOnDevicesResponseCallbackCallCountForTesting());
+  EXPECT_EQ(1, GetOnDevicesResponseCallbackCallCountForTesting());
 }
 
 // TODO(swifton): Rewrite this test with an observer.
