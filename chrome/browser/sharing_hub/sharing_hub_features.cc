@@ -55,8 +55,8 @@ bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
 const base::Feature kSharingHubDesktopAppMenu{
     "SharingHubDesktopAppMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSharingHubDesktopOmnibox{
-    "SharingHubDesktopOmnibox", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSharingHubDesktopOmnibox{"SharingHubDesktopOmnibox",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDesktopScreenshots{"DesktopScreenshots",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
