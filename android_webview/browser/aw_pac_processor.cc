@@ -72,14 +72,6 @@ int AndroidGetAddrInfoForNetwork(net_handle_t network,
   return getaddrinfofornetwork(network, node, service, hints, res);
 }
 
-net::IPAddress StringToIPAddress(const std::string& address) {
-  net::IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(std::string(address))) {
-    LOG(ERROR) << "Not a supported IP literal: " << std::string(address);
-  }
-  return ip_address;
-}
-
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
   struct ThreadHolder {
     base::Thread thread_;
@@ -479,8 +471,13 @@ void AwPacProcessor::SetNetworkAndLinkAddresses(
   base::android::AppendJavaStringArrayToStringVector(env, jlink_addresses,
                                                      &string_link_addresses);
   std::vector<net::IPAddress> link_addresses;
-  for (std::string const& address : string_link_addresses) {
-    link_addresses.push_back(StringToIPAddress(address));
+  for (const std::string& address : string_link_addresses) {
+    net::IPAddress ip_address;
+    if (ip_address.AssignFromIPLiteral(address)) {
+      link_addresses.push_back(ip_address);
+    } else {
+      LOG(ERROR) << "Not a supported IP literal: " << address;
+    }
   }
 
   GetTaskRunner()->PostTask(
