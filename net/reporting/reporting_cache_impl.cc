@@ -996,6 +996,8 @@ ReportingCacheImpl::FindReportToEvict() const {
 }
 
 void ReportingCacheImpl::ConsistencyCheckClients() const {
+  // TODO(crbug.com/1165308): Remove this CHECK once the investigation is done.
+  CHECK_LE(endpoint_groups_.size(), context_->policy().max_endpoint_count);
 #if DCHECK_IS_ON()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1020,6 +1022,8 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
 
   // Global endpoint cap is respected.
   DCHECK_LE(GetEndpointCount(), context_->policy().max_endpoint_count);
+  // The number of endpoint groups must not exceed the number of endpoints.
+  DCHECK_LE(endpoint_groups_.size(), GetEndpointCount());
 
   // All the endpoints and endpoint groups are accounted for.
   DCHECK_EQ(total_endpoint_count, endpoints_.size());
