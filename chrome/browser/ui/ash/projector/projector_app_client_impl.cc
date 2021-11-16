@@ -21,10 +21,7 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-ProjectorAppClientImpl::ProjectorAppClientImpl()
-    : pending_screencast_manager_(base::BindRepeating(
-          &ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged,
-          base::Unretained(this))) {}
+ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;
 
 signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
@@ -56,9 +53,11 @@ void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
     observer.OnNewScreencastPreconditionChanged(can_start);
 }
 
+// TODO(b/201468756): Implement a PendingScreencastManager to provide the set
+// of PendingScreencast.
 const std::set<ash::PendingScreencast>&
 ProjectorAppClientImpl::GetPendingScreencasts() const {
-  return pending_screencast_manager_.GetPendingScreencasts();
+  return pending_screencasts_;
 }
 
 void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
