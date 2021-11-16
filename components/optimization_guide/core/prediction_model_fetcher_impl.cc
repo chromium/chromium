@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/prediction_model_fetcher.h"
+#include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 
 #include <memory>
 #include <string>
@@ -30,7 +30,7 @@
 
 namespace optimization_guide {
 
-PredictionModelFetcher::PredictionModelFetcher(
+PredictionModelFetcherImpl::PredictionModelFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& optimization_guide_service_get_models_url,
     network::NetworkConnectionTracker* network_connection_tracker)
@@ -45,9 +45,9 @@ PredictionModelFetcher::PredictionModelFetcher(
   CHECK(optimization_guide_service_get_models_url_.SchemeIs(url::kHttpsScheme));
 }
 
-PredictionModelFetcher::~PredictionModelFetcher() = default;
+PredictionModelFetcherImpl::~PredictionModelFetcherImpl() = default;
 
-bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
+bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     const std::vector<proto::ModelInfo>& models_request_info,
     const std::vector<proto::FieldTrial>& active_field_trials,
     proto::RequestContext request_context,
@@ -137,14 +137,14 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&PredictionModelFetcher::OnURLLoadComplete,
+      base::BindOnce(&PredictionModelFetcherImpl::OnURLLoadComplete,
                      base::Unretained(this)));
 
   models_fetched_callback_ = std::move(models_fetched_callback);
   return true;
 }
 
-void PredictionModelFetcher::HandleResponse(
+void PredictionModelFetcherImpl::HandleResponse(
     const std::string& get_models_response_data,
     int net_status,
     int response_code) {
@@ -171,7 +171,7 @@ void PredictionModelFetcher::HandleResponse(
   }
 }
 
-void PredictionModelFetcher::OnURLLoadComplete(
+void PredictionModelFetcherImpl::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {

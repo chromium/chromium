@@ -5,22 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-
-namespace network {
-class NetworkConnectionTracker;
-class SharedURLLoaderFactory;
-class SimpleURLLoader;
-}  // namespace network
 
 namespace optimization_guide {
 
@@ -37,15 +27,11 @@ using ModelsFetchedCallback = base::OnceCallback<void(
 // This class fetches new models from the remote Optimization Guide Service.
 class PredictionModelFetcher {
  public:
-  PredictionModelFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& optimization_guide_service_get_models_url,
-      network::NetworkConnectionTracker* network_connection_tracker);
-
+  PredictionModelFetcher() = default;
   PredictionModelFetcher(const PredictionModelFetcher&) = delete;
   PredictionModelFetcher& operator=(const PredictionModelFetcher&) = delete;
 
-  virtual ~PredictionModelFetcher();
+  virtual ~PredictionModelFetcher() = default;
 
   // Requests PredictionModels and HostModelFeatures from the Optimization Guide
   // Service if a request for them is not already in progress. Returns whether a
@@ -57,44 +43,7 @@ class PredictionModelFetcher {
       const std::vector<proto::FieldTrial>& active_field_trials,
       proto::RequestContext request_context,
       const std::string& locale,
-      ModelsFetchedCallback models_fetched_callback);
-
- private:
-  // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
-
-  // Handles the response from the remote Optimization Guide Service.
-  // |response| is the response body, |status| is the
-  // |net::Error| of the response, and response_code is the HTTP
-  // response code (if available).
-  void HandleResponse(const std::string& response,
-                      int status,
-                      int response_code);
-
-  // Used to hold the callback while the SimpleURLLoader performs the request
-  // asynchronously.
-  ModelsFetchedCallback models_fetched_callback_;
-
-  // The URL for the remote Optimization Guide Service that serves models and
-  // host features.
-  const GURL optimization_guide_service_get_models_url_;
-
-  // Used to hold the GetModelsRequest being constructed and sent as a remote
-  // request.
-  std::unique_ptr<optimization_guide::proto::GetModelsRequest>
-      pending_models_request_;
-
-  // Holds the URLLoader for an active hints request.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  // Used for creating a |url_loader_| when needed for request hints.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Listens to changes around the network connection. Not owned. Guaranteed to
-  // outlive |this|.
-  network::NetworkConnectionTracker* network_connection_tracker_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
+      ModelsFetchedCallback models_fetched_callback) = 0;
 };
 
 }  // namespace optimization_guide
