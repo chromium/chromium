@@ -42489,6 +42489,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL"/>
   <int value="-2147219198" label="GOOPDATEINSTALL_E_INSTALLER_FAILED"/>
   <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
+  <int value="-2147169006" label="DRM_E_TEE_INVALID_CONTEXT"/>
   <int value="-2147168255" label="ITF_E_FONTFILE_UTIL_TOO_MANY_FILES_PER_FACE"/>
   <int value="-2147168254" label="ITF_E_FONTFILE_UTIL_EMPTY_FILE_PATH"/>
   <int value="-2147167999" label="ITF_E_SCANNING_TIMEOUT"/>
