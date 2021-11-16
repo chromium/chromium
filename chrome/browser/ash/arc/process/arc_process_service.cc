@@ -16,6 +16,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
@@ -33,7 +34,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/process_snapshot_server.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"

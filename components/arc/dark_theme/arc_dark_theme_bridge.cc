@@ -4,13 +4,13 @@
 
 #include "components/arc/dark_theme/arc_dark_theme_bridge.h"
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"

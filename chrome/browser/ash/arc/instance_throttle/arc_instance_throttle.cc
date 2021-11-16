@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_switch_throttle_observer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 

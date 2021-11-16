@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"

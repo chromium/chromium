@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -15,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/ime/arc_ime_bridge_impl.h"
 #include "components/arc/ime/arc_ime_util.h"
 #include "components/arc/ime/key_event_result_receiver.h"

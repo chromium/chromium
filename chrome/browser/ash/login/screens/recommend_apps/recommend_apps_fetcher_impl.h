@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features_parser.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/device_configuration.pb.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
-#include "components/arc/arc_features_parser.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

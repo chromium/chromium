@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -36,7 +37,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_management_transition.h"

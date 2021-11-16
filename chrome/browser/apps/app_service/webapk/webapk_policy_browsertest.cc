@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_features_parser.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_features_parser.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"

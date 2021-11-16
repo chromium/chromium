@@ -4,10 +4,10 @@
 
 #include "components/arc/lock_screen/arc_lock_screen_bridge.h"
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/session_manager/core/session_manager.h"

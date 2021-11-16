@@ -43,12 +43,12 @@ source_set("app_service") {
     assert(enable_system_notifications)
 
     deps += [
+      "//ash/components/arc:arc_base",
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
       "//components/app_restore",
-      "//components/arc:arc_base",
       "//components/services/app_service/public/cpp:instance_update",
     ]
   }

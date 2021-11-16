@@ -8,11 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"

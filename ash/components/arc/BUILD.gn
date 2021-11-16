@@ -47,3 +47,28 @@ static_library("arc_base_utils") {
     "//ui/aura",
   ]
 }
+
+static_library("arc_base") {
+  # TODO(hidehiko): Revisit here and move back some files to "arc"
+  # on completion to move ArcSession task to ArcSessionManager.
+  sources = [
+    "arc_browser_context_keyed_service_factory_base.h",
+    "arc_features_parser.cc",
+    "arc_features_parser.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/account_id",
+    "//components/keyed_service/content",
+  ]
+
+  public_deps = [
+    ":arc_base_utils",
+    "//components/arc/mojom",
+    "//components/arc/session",
+    "//components/arc/session:arc_base_enums",
+    "//components/arc/session:connection_holder",
+    "//dbus",
+  ]
+}

@@ -310,6 +310,7 @@ source_set("web_applications") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc:arc_base",
       "//ash/constants",
       "//ash/public/cpp",
       "//ash/webui/camera_app_ui",
@@ -324,7 +325,6 @@ source_set("web_applications") {
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
       "//chromeos/strings",
-      "//components/arc:arc_base",
       "//components/arc/mojom",
     ]
 

@@ -5,11 +5,11 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/wake_lock/arc_wake_lock_bridge.h"

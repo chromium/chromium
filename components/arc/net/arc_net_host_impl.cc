@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -26,7 +27,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/onc_utils.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"

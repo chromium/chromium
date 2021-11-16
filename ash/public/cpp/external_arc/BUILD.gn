@@ -87,7 +87,7 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 
-  assert_no_deps = [ "//compponents/arc:arc_base" ]
+  assert_no_deps = [ "//ash/compponents/arc:arc_base" ]
 }
 
 source_set("test_support") {

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

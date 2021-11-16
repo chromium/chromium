@@ -4863,6 +4863,7 @@ static_library("browser") {
     deps += [
       "//ash",
       "//ash/components/account_manager",
+      "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
       "//ash/components/geolocation",
       "//ash/components/quick_answers",
@@ -4927,7 +4928,6 @@ static_library("browser") {
       "//components/account_manager_core",
       "//components/app_restore",
       "//components/arc",
-      "//components/arc:arc_base",
       "//components/arc/enterprise",
       "//components/arc/mojom",
       "//components/desks_storage",

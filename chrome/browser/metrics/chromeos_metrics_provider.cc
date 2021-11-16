@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features_parser.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
@@ -38,7 +39,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_features_parser.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_registry_simple.h"

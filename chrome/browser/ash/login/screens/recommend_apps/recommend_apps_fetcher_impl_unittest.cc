@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features_parser.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/arc/arc_features_parser.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
