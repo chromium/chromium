@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"

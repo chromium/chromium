@@ -14,6 +14,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_intent_helper_instance.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/arc_service_manager.h"

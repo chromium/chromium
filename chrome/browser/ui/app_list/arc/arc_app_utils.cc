@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
@@ -49,7 +50,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"

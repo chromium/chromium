@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "net/base/url_util.h"

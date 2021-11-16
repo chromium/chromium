@@ -4,8 +4,8 @@
 
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/arc/metrics/arc_metrics_service.h"

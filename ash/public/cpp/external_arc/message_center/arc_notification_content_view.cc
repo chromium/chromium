@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
@@ -13,7 +14,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
 #include "third_party/skia/include/core/SkColor.h"

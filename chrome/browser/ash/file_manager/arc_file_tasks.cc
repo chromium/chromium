@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -28,7 +29,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"

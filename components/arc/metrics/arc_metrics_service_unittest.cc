@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/metrics/histogram_samples.h"
@@ -18,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/prefs/testing_pref_service.h"

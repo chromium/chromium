@@ -198,3 +198,7 @@ static_library("arc_test_support") {
     "//mojo/public/cpp/system",
   ]
 }
+
+source_set("arc_metrics_constants") {
+  sources = [ "metrics/arc_metrics_constants.h" ]
+}

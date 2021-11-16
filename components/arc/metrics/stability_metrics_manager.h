@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 #define COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/sequence_checker.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;

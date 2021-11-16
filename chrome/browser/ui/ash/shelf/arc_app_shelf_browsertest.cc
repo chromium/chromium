@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/exo/shell_surface.h"

@@ -137,8 +137,8 @@ static_library("arc") {
   ]
 
   public_deps = [
-    ":arc_metrics_constants",
     "//ash/components/arc:arc_base",
+    "//ash/components/arc:arc_metrics_constants",
     "//ash/components/arc:prefs",
   ]
 
@@ -211,10 +211,6 @@ static_library("arc") {
     "//ui/wm/public",
     "//url:url",
   ]
-}
-
-source_set("arc_metrics_constants") {
-  sources = [ "metrics/arc_metrics_constants.h" ]
 }
 
 source_set("unit_tests") {
