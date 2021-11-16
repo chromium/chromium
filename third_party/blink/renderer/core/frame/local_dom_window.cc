@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -2142,6 +2143,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(text_suggestion_controller_);
   visitor->Trace(isolated_world_csp_map_);
   visitor->Trace(network_state_observer_);
+  visitor->Trace(dedicated_workers_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
   Supplementable<LocalDOMWindow>::Trace(visitor);
@@ -2177,6 +2179,14 @@ void LocalDOMWindow::DidReceiveUserActivation() {
   for (auto& it : user_activation_observers_) {
     it->DidReceiveUserActivation();
   }
+}
+
+void LocalDOMWindow::AddDedicatedWorker(DedicatedWorker* dedicated_worker) {
+  dedicated_workers_.insert(dedicated_worker);
+}
+
+void LocalDOMWindow::RemoveDedicatedWorker(DedicatedWorker* dedicated_worker) {
+  dedicated_workers_.erase(dedicated_worker);
 }
 
 }  // namespace blink

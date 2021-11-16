@@ -59,6 +59,7 @@ namespace blink {
 class BarProp;
 class CSSStyleDeclaration;
 class CustomElementRegistry;
+class DedicatedWorker;
 class Document;
 class DocumentInit;
 class DOMSelection;
@@ -445,6 +446,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void DidReceiveUserActivation();
 
+  // Adds a DedicatedWorker. This is called when a DedicatedWorker is created in
+  // this ExecutionContext.
+  void AddDedicatedWorker(DedicatedWorker* dedicated_worker);
+
+  // Removes a DedicatedWorker This is called when a DedicatedWorker is
+  // destroyed in this ExecutionContext.
+  void RemoveDedicatedWorker(DedicatedWorker* dedicated_worker);
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -561,6 +570,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Fire "online" and "offline" events.
   Member<NetworkStateObserver> network_state_observer_;
+
+  // The set of DedicatedWorkers that are created in this ExecutionContext.
+  HeapHashSet<Member<DedicatedWorker>> dedicated_workers_;
 };
 
 template <>
