@@ -45,3 +45,17 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
+source_set("data_driven_testing") {
+  testonly = true
+  sources = [
+    "shared_highlighting_data_driven_test.cc",
+    "shared_highlighting_data_driven_test.h",
+  ]
+  data = [ "//components/test/data/shared_highlighting/" ]
+  deps = [
+    "//base:base",
+    "//testing/data_driven_testing",
+    "//testing/gtest",
+  ]
+}
