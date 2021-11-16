@@ -2109,6 +2109,9 @@ Try tapping the mic to ask me anything.
         Components could not be validated. If you are certain you are using
         qualified components updating Chrome OS may resolve this issue.
       </message>
+      <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" desc="The label for the button to start the RMA process.">
+        Get started
+      </message>
       <!-- Network connect page -->
       <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE" desc="Title for the connect to wifi page.">
         Get connected

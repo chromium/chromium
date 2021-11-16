@@ -79,6 +79,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS},
       {"validatedComponentsFailText",
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL},
+      {"getStartedButtonLabel", IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL},
       // Network connect page
       {"connectNetworkTitleText", IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE},
       {"connectNetworkDescriptionText",

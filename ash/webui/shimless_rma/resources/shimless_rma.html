@@ -53,7 +53,7 @@
       id="next" on-click="onNextButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
-      [[i18n('nextButtonLabel')]]
+      [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
     </cr-button>
   </div>
   <!-- TODO(gavindodd): Debug only. Remove this before shipping. -->

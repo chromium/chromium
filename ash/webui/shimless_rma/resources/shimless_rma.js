@@ -47,7 +47,7 @@ export const ButtonState = {
  *  componentIs: string,
  *  requiresReloadWhenShown: boolean,
  *  buttonNext: !ButtonState,
- *  buttonNextLabel: string,
+ *  buttonNextLabelKey: ?string,
  *  buttonCancel: !ButtonState,
  *  buttonBack: !ButtonState,
  * }}
@@ -69,6 +69,7 @@ const StateComponentMapping = {
     componentIs: 'onboarding-landing-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
+    buttonNextLabelKey: 'getStartedButtonLabel',
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
@@ -459,6 +460,17 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.allButtonsDisabled_ = true;
     this.shimlessRmaService_.abortRma().then(
         (result) => this.handleError_(result.error));
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getNextButtonLabel_() {
+    return this.i18n(
+        this.currentPage_.buttonNextLabelKey ?
+            this.currentPage_.buttonNextLabelKey :
+            'nextButtonLabel');
   }
 }
 
