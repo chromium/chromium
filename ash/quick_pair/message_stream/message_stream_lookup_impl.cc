@@ -88,7 +88,7 @@ void MessageStreamLookupImpl::RemoveMessageStream(
 
   // Remove map entry if it exists. It may not exist if it was failed to be
   // created due to a |ConnectToService| error.
-  message_streams_.erase(message_streams_.find(device_address));
+  message_streams_.erase(device_address);
 }
 
 void MessageStreamLookupImpl::CreateMessageStream(
