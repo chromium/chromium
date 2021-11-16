@@ -125,7 +125,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON,
                     ResourcesCompat.getDrawable(mContext.getResources(),
-                            R.drawable.price_tracking_enabled, /*theme=*/null));
+                            R.drawable.price_tracking_enabled_filled, /*theme=*/null));
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
                     mContext.getResources().getString(R.string.enable_price_tracking_menu_item));
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,

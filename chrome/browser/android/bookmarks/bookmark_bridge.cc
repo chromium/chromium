@@ -805,7 +805,7 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
     partner_bookmarks_shim_->GetPartnerBookmarksMatchingProperties(
         query, max_results, &results);
   }
-  DCHECK((int)results.size() <= max_results);
+  DCHECK((int)results.size() <= max_results || max_results == -1);
   for (const bookmarks::BookmarkNode* match : results) {
     if (!IsReachable(match))
       continue;

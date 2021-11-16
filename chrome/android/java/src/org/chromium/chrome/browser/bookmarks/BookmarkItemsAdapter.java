@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -24,8 +25,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserve
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -148,13 +148,6 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         clearHighlight();
         mElements.clear();
 
-        // Show the tag chiplist only for the shopping folder.
-        // TODO(crbug.com/1247825): Clarify how the tag list should interact with promo headers.
-        PowerBookmarkMeta meta = mDelegate.getModel().getPowerBookmarkMeta(mCurrentFolder);
-        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
-            mElements.add(BookmarkListEntry.createChipList());
-        }
-
         // Restore the header, if it exists, then update it.
         if (hasPromoHeader()) {
             mElements.add(BookmarkListEntry.createSyncPromoHeader(mPromoHeaderType));
@@ -166,17 +159,19 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
             mElements.add(BookmarkListEntry.createBookmarkEntry(
                     item, mDelegate.getModel().getPowerBookmarkMeta(bookmarkId)));
-            // Add a divider below the reading list folder.
-            if (item.getId().getType() == BookmarkType.READING_LIST && item.isFolder()) {
-                mElements.add(BookmarkListEntry.createDivider());
-                assert topLevelFoldersShowing();
-            }
         }
 
         if (mCurrentFolder.getType() == BookmarkType.READING_LIST
                 && mDelegate.getCurrentState() != BookmarkUIState.STATE_SEARCHING) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(mElements, mContext);
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)
+                && topLevelFoldersShowing()) {
+            mElements.add(BookmarkListEntry.createDivider());
+            mElements.add(BookmarkListEntry.createShoppingFilter());
+        }
+
         notifyDataSetChanged();
     }
 
@@ -201,14 +196,6 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         ViewHolder holder = new ViewHolder(row) {};
         ((BookmarkRow) row).onDelegateInitialized(mDelegate);
         return holder;
-    }
-
-    private ViewHolder createTagChipListViewHolder(ViewGroup parent) {
-        ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.power_bookmark_tag_chip_list, parent, false);
-        ViewHolder vh = new ViewHolder(row) {};
-        ((PowerBookmarkTagChipList) row).init(mDelegate.getModel());
-        return vh;
     }
 
     @Override
@@ -240,8 +227,10 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 return new ViewHolder(
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.horizontal_divider, parent, false)) {};
-            case ViewType.TAG_CHIP_LIST:
-                return createTagChipListViewHolder(parent);
+            case ViewType.SHOPPING_FILTER:
+                return new ViewHolder(
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.shopping_filter_row, parent, false)) {};
             default:
                 assert false;
                 return null;
@@ -279,9 +268,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 // We need this in case we are change state during a pulse.
                 ViewHighlighter.turnOffHighlight(holder.itemView);
             }
-        } else if (holder.getItemViewType() == ViewType.TAG_CHIP_LIST) {
-            PowerBookmarkTagChipList tagChipList = ((PowerBookmarkTagChipList) holder.itemView);
-            tagChipList.setBookmarkFolder(mCurrentFolder);
+        } else if (holder.getItemViewType() == ViewType.SHOPPING_FILTER) {
+            LinearLayout layout = ((LinearLayout) holder.itemView);
+            layout.setClickable(true);
+            layout.setOnClickListener(
+                    (view) -> { mDelegate.openFolder(BookmarkId.SHOPPING_FOLDER); });
         }
     }
 
@@ -373,7 +364,10 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             setBookmarks(mDelegate.getModel().getChildIDs(folder));
         }
 
-        if (folder.getType() == BookmarkType.READING_LIST) {
+        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) {
+            mDelegate.getSelectableListLayout().setEmptyViewText(
+                    R.string.tracked_products_empty_list_title, R.string.bookmark_no_result);
+        } else if (folder.getType() == BookmarkType.READING_LIST) {
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
             mDelegate.getSelectableListLayout().setEmptyViewText(

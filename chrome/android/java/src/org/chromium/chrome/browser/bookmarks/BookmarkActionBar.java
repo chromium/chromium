@@ -175,7 +175,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
     @Override
     public void onFolderStateSet(BookmarkId folder) {
         mCurrentFolder = mDelegate.getModel().getBookmarkById(folder);
-
         getMenu().findItem(R.id.search_menu_id).setVisible(true);
         getMenu().findItem(R.id.edit_menu_id).setVisible(mCurrentFolder.isEditable());
 
@@ -186,7 +185,10 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             return;
         }
 
-        if (mDelegate.getModel().getTopLevelFolderParentIDs().contains(mCurrentFolder.getParentId())
+        if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
+            setTitle(R.string.price_tracking_bookmarks_filter_title);
+        } else if (mDelegate.getModel().getTopLevelFolderParentIDs().contains(
+                           mCurrentFolder.getParentId())
                 && TextUtils.isEmpty(mCurrentFolder.getTitle())) {
             setTitle(R.string.bookmarks);
         } else {

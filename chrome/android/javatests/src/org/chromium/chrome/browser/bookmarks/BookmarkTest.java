@@ -1742,6 +1742,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.
     EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
+    @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testReadingListFolderShown() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
         openBookmarkManager();
@@ -1749,7 +1750,7 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
-        Assert.assertEquals("Wrong number of top level elements.", 3, getAdapter().getItemCount());
+        Assert.assertEquals("Wrong number of top level elements.", 2, getAdapter().getItemCount());
 
         // Reading list should show in the root folder.
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
@@ -1758,11 +1759,8 @@ public class BookmarkTest {
         Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
                 getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
-
-        Assert.assertEquals("The 2nd view should be a divider.", BookmarkListEntry.ViewType.DIVIDER,
-                getAdapter().getItemViewType(1));
-        Assert.assertEquals("The 3rd view should be a normal folder.",
-                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(2));
+        Assert.assertEquals("The 2rd view should be a normal folder.",
+                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(1));
     }
 
     /**
@@ -2099,6 +2097,28 @@ public class BookmarkTest {
 
         mRenderTestRule.render(
                 manager.getView(), "bookmarks_visual_refresh_bookmarksandfolders_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
+    public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mManager.openFolder(mBookmarkModel.getRootFolderId()); });
+
+        onView(withText("Tracked products")).perform(click());
+        final BookmarkDelegate delegate = getBookmarkManager();
+        final BookmarkActionBar toolbar = ((BookmarkManager) delegate).getToolbarForTests();
+
+        // Check that we are in the mobile bookmarks folder.
+        Assert.assertEquals("Tracked products", toolbar.getTitle());
+        Assert.assertEquals(SelectableListToolbar.NAVIGATION_BUTTON_BACK,
+                toolbar.getNavigationButtonForTests());
     }
 
     /**

@@ -19,6 +19,8 @@ class BookmarkUIState {
     static final int STATE_FOLDER = 2;
     static final int STATE_SEARCHING = 3;
     private static final int STATE_INVALID = 0;
+    private static final String SHOPPING_FILTER_URL =
+            UrlConstants.BOOKMARKS_FOLDER_URL + "/shopping";
 
     /**
      * One of the STATE_* constants.
@@ -41,8 +43,17 @@ class BookmarkUIState {
         return state;
     }
 
+    static BookmarkUIState createShoppingFilterState() {
+        BookmarkUIState state = new BookmarkUIState();
+        state.mState = STATE_FOLDER;
+        state.mUrl = SHOPPING_FILTER_URL;
+        state.mFolder = BookmarkId.SHOPPING_FOLDER;
+        return state;
+    }
+
     static BookmarkUIState createFolderState(BookmarkId folder,
             BookmarkModel bookmarkModel) {
+        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) return createShoppingFilterState();
         return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
     }
 
@@ -50,6 +61,7 @@ class BookmarkUIState {
      * @see #createStateFromUrl(Uri, BookmarkModel)
      */
     static BookmarkUIState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
+        if (SHOPPING_FILTER_URL.equals(url)) return createShoppingFilterState();
         return createStateFromUrl(Uri.parse(url), bookmarkModel);
     }
 
@@ -106,6 +118,7 @@ class BookmarkUIState {
      */
     boolean isValid(BookmarkModel bookmarkModel) {
         if (mUrl == null || mState == STATE_INVALID) return false;
+        if (mUrl.equals(SHOPPING_FILTER_URL)) return true;
 
         if (mState == STATE_FOLDER) {
             return mFolder != null && bookmarkModel.doesBookmarkExist(mFolder);

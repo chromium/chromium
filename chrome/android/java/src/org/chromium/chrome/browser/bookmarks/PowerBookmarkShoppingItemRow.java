@@ -168,7 +168,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
 
     private void updatePriceTrackingImageForCurrentState() {
         mEndStartButtonView.setImageResource(mIsPriceTrackingEnabled
-                        ? R.drawable.price_tracking_enabled
+                        ? R.drawable.price_tracking_enabled_filled
                         : R.drawable.price_tracking_disabled);
     }
 

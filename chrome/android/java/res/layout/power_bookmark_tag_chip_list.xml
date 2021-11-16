@@ -7,6 +7,8 @@
 
 <view class="org.chromium.chrome.browser.bookmarks.PowerBookmarkTagChipList"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
     android:id="@+id/power_bookmark_tag_chip_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />

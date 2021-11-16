@@ -410,6 +410,13 @@ public class BookmarkBridge {
     public BookmarkItem getBookmarkById(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
+
+        if (BookmarkId.SHOPPING_FOLDER.equals(id)) {
+            return new BookmarkItem(id, /*title=*/null, /*url=*/null,
+                    /*isFolder=*/true, /*parentId=*/getRootFolderId(), /*isEditable=*/false,
+                    /*isManaged=*/false, /*dateAdded=*/0L, /*read=*/false);
+        }
+
         return BookmarkBridgeJni.get().getBookmarkByID(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
@@ -582,6 +589,9 @@ public class BookmarkBridge {
     public List<BookmarkId> getChildIDs(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
+        if (BookmarkId.SHOPPING_FOLDER.equals(id)) {
+            return searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);
+        }
         List<BookmarkId> result = new ArrayList<BookmarkId>();
         BookmarkBridgeJni.get().getChildIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), result);
