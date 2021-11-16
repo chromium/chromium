@@ -8,6 +8,7 @@
  * or out.
  */
 
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -16,6 +17,7 @@ import '../site_favicon.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -29,10 +31,18 @@ interface RepeaterEvent {
   }
 }
 
+export interface ZoomLevelsElement {
+  $: {
+    empty: HTMLElement,
+    listContainer: HTMLElement,
+    list: IronListElement,
+  };
+}
+
 const ZoomLevelsElementBase = ListPropertyUpdateMixin(
     SiteSettingsMixin(WebUIListenerMixin(PolymerElement)));
 
-class ZoomLevelsElement extends ZoomLevelsElementBase {
+export class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {
     return 'zoom-levels';
   }
@@ -85,6 +95,12 @@ class ZoomLevelsElement extends ZoomLevelsElementBase {
   private removeZoomLevel_(event: RepeaterEvent) {
     const site = this.sites_[event.model.index];
     this.browserProxy.removeZoomLevel(site.origin);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'zoom-levels': ZoomLevelsElement;
   }
 }
 

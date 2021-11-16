@@ -79,7 +79,7 @@ non_preprocessed_files = [
   "pref_util_tests.js",
   "privacy_review_page_test.js",
   "privacy_sandbox_test.ts",
-  "protocol_handlers_tests.js",
+  "protocol_handlers_tests.ts",
   "recent_site_permissions_test.js",
   "reset_page_test.js",
   "reset_profile_banner_test.js",
@@ -125,7 +125,7 @@ non_preprocessed_files = [
   "test_search_engines_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.ts",
   "test_util.ts",
-  "zoom_levels_tests.js",
+  "zoom_levels_tests.ts",
 ]
 
 if (!is_chromeos_ash && !is_chromeos_lacros) {

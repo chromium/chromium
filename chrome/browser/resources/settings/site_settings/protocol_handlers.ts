@@ -79,10 +79,16 @@ interface AppRepeaterEvent extends Event {
   }
 }
 
+export interface ProtocolHandlersElement {
+  $: {
+    defaultButton: HTMLButtonElement,
+  };
+}
+
 const ProtocolHandlersElementBase =
     WebUIListenerMixin(SiteSettingsMixin(PolymerElement));
 
-class ProtocolHandlersElement extends ProtocolHandlersElementBase {
+export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   static get is() {
     return 'protocol-handlers';
   }
@@ -319,6 +325,12 @@ class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     this.actionMenuModel_ = event.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
         event.target as HTMLElement);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'protocol-handlers': ProtocolHandlersElement;
   }
 }
 

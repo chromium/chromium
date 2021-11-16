@@ -163,7 +163,9 @@ type ProtocolHandlerEntry = {
 };
 
 export type ZoomLevelEntry = {
+  displayName: string,
   origin: string,
+  originForFavicon: string,
   setting: string,
   source: string,
   zoom: string,

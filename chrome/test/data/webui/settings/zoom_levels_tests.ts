@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -13,21 +14,18 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 suite('ZoomLevels', function() {
   /**
    * A zoom levels category created before each test.
-   * @type {ZoomLevels}
    */
-  let testElement;
+  let testElement: ZoomLevelsElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy = null;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
    * An example zoom list.
-   * @type {!Array<ZoomLevelEntry>}
    */
-  const zoomList = [
+  const zoomList: ZoomLevelEntry[] = [
     {
       origin: 'http://www.google.com',
       displayName: 'http://www.google.com',
@@ -52,15 +50,10 @@ suite('ZoomLevels', function() {
     return initPage();
   });
 
-  teardown(function() {
-    testElement.remove();
-    testElement = null;
-  });
-
   /** @return {!Promise} */
   function initPage() {
     browserProxy.reset();
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('zoom-levels');
     document.body.appendChild(testElement);
     return browserProxy.whenCalled('fetchZoomLevels').then(() => {
@@ -70,20 +63,20 @@ suite('ZoomLevels', function() {
 
   /**
    * Fetch the remove button from the list.
-   * @param {!HTMLElement} listContainer The list to use for the lookup.
-   * @param {number} index The index of the child element (which site) to
+   * @param listContainer The list to use for the lookup.
+   * @param index The index of the child element (which site) to
    *     fetch.
    */
-  function getRemoveButton(listContainer, index) {
-    return listContainer.children[index].querySelector('cr-icon-button');
+  function getRemoveButton(listContainer: HTMLElement, index: number) {
+    return listContainer.children[index]!.querySelector('cr-icon-button')!;
   }
 
   test('empty zoom state', function() {
     const list = testElement.$.list;
     assertTrue(!!list);
-    assertEquals(0, list.items.length);
+    assertEquals(0, list.items!.length);
     assertEquals(
-        0, testElement.shadowRoot.querySelectorAll('.list-item').length);
+        0, testElement.shadowRoot!.querySelectorAll('.list-item').length);
     assertFalse(testElement.$.empty.hidden);
   });
 
@@ -94,10 +87,10 @@ suite('ZoomLevels', function() {
         .then(function() {
           const list = testElement.$.list;
           assertTrue(!!list);
-          assertEquals(2, list.items.length);
+          assertEquals(2, list.items!.length);
           assertTrue(testElement.$.empty.hidden);
           assertEquals(
-              2, testElement.shadowRoot.querySelectorAll('.list-item').length);
+              2, testElement.shadowRoot!.querySelectorAll('.list-item').length);
 
           const removeButton = getRemoveButton(testElement.$.listContainer, 0);
           assertTrue(!!removeButton);
