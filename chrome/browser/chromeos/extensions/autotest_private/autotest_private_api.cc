@@ -12,6 +12,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/app_types.h"
@@ -135,7 +136,6 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_service.h"

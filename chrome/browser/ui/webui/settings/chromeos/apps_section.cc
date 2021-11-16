@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/apps_section.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,7 +26,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "components/app_restore/features.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"

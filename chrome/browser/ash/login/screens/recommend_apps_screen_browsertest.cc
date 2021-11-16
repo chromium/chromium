@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

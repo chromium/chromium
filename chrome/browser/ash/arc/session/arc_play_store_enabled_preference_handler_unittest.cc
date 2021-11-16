@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,7 +28,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_arc_session.h"

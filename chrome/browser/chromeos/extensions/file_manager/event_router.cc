@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -52,7 +53,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"

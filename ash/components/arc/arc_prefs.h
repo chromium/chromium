@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ARC_PREFS_H_
-#define COMPONENTS_ARC_ARC_PREFS_H_
+#ifndef ASH_COMPONENTS_ARC_ARC_PREFS_H_
+#define ASH_COMPONENTS_ARC_ARC_PREFS_H_
 
-#include "components/arc/arc_export.h"
+#include "ash/components/arc/arc_export.h"
 
 class PrefRegistrySimple;
 
@@ -59,4 +59,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace prefs
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ARC_PREFS_H_
+#endif  // ASH_COMPONENTS_ARC_ARC_PREFS_H_

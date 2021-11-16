@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/resource/resource_bundle.h"
 

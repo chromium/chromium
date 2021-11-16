@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
 
 namespace {

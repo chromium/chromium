@@ -13,8 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_prefs.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/metrics/stability_metrics_manager.h"

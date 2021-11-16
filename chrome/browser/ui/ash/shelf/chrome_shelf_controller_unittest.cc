@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
@@ -110,7 +111,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"

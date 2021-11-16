@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -29,7 +30,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"

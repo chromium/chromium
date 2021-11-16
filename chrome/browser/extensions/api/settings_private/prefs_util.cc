@@ -58,6 +58,7 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
@@ -78,7 +79,6 @@
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/account_manager_core/pref_names.h"
-#include "components/arc/arc_prefs.h"
 #include "ui/chromeos/events/pref_names.h"
 #endif
 

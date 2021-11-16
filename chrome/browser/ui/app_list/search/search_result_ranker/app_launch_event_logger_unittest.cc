@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"

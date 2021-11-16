@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -21,7 +22,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"

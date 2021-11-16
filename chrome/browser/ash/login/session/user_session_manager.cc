@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -133,7 +134,6 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/arc/arc_prefs.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/pref_service_flags_storage.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/note_taking_client.h"
 #include "base/bind.h"
@@ -43,7 +44,6 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_common.mojom.h"

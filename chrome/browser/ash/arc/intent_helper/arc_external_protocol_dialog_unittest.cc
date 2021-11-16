@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

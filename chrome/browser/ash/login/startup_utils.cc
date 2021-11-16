@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

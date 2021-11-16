@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/connection_holder_util.h"

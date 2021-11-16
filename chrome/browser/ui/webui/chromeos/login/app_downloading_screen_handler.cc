@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/resource/resource_bundle.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

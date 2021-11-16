@@ -7,6 +7,7 @@
 #include <cmath>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "extensions/common/extension.h"

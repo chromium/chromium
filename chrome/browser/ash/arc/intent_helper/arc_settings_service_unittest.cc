@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -22,7 +23,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"

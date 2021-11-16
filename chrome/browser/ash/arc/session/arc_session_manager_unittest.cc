@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -54,7 +55,6 @@
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"

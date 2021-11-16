@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"

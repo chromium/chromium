@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -36,7 +37,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"

@@ -139,7 +139,7 @@ static_library("arc") {
   public_deps = [
     ":arc_base",
     ":arc_metrics_constants",
-    ":prefs",
+    "//ash/components/arc:prefs",
   ]
 
   deps = [
@@ -210,23 +210,6 @@ static_library("arc") {
     "//ui/gfx",
     "//ui/wm/public",
     "//url:url",
-  ]
-}
-
-static_library("prefs") {
-  sources = [
-    "arc_export.h",
-    "arc_prefs.cc",
-    "arc_prefs.h",
-  ]
-
-  defines = [ "ARC_IMPLEMENTATION" ]
-
-  deps = [
-    "//build:chromeos_buildflags",
-    "//components/arc/session:arc_base_enums",
-    "//components/guest_os:prefs",
-    "//components/prefs",
   ]
 }
 

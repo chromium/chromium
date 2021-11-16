@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -21,7 +22,6 @@
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/prefs/pref_service.h"

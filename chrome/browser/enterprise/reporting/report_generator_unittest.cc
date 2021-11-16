@@ -28,9 +28,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/test/fake_app_instance.h"
 #endif
 

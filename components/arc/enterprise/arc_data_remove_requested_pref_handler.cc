@@ -4,8 +4,8 @@
 
 #include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/memory/ptr_util.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

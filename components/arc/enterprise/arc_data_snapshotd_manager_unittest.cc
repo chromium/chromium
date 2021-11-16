@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/arc/test/fake_apps_tracker.h"

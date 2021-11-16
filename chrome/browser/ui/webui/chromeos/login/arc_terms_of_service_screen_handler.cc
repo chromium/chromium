@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
@@ -24,7 +25,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "components/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"

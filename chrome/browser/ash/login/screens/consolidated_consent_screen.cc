@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
@@ -26,7 +27,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"

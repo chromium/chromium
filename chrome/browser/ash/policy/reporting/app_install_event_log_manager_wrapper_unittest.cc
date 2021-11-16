@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"

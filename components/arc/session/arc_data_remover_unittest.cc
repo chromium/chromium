@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -17,7 +18,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

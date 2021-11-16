@@ -4,10 +4,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
 #include "components/arc/session/arc_data_remover.h"
 #include "components/prefs/testing_pref_service.h"

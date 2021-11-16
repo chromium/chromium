@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -62,7 +63,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/prefs/pref_service.h"
