@@ -56,6 +56,7 @@ source_set("autofill") {
     "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/prefs",
+    "//components/sync/driver",
     "//components/variations/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

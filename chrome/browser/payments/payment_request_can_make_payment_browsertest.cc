@@ -42,7 +42,7 @@ class PaymentRequestCanMakePaymentTestBase
         GetActiveWebContents()->GetBrowserContext());
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile);
-    personal_data_manager->SetSyncServiceForTest(&sync_service_);
+    personal_data_manager->OnSyncServiceInitialized(&sync_service_);
   }
 
   void NavigateTo(const std::string& file_path) {

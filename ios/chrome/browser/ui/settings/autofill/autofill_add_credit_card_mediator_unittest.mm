@@ -31,6 +31,7 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    personal_data_manager_->OnSyncServiceInitialized(nullptr);
 
     add_credit_card_mediator_delegate_mock_ =
         OCMProtocolMock(@protocol(AddCreditCardMediatorDelegate));

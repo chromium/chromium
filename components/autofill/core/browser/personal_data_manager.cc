@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -368,37 +369,30 @@ void PersonalDataManager::Shutdown() {
 
 void PersonalDataManager::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  if (sync_service_ != sync_service) {
-    // Before the sync service pointer gets changed, remove the observer.
-    if (sync_service_)
-      sync_service_->RemoveObserver(this);
-
-    sync_service_ = sync_service;
-
-    if (!sync_service_) {
-      ResetFullServerCards();
-      return;
-    }
-
+  // Before the sync service pointer gets changed, remove the observer.
+  if (sync_service_)
+    sync_service_->RemoveObserver(this);
+  sync_service_ = sync_service;
+  if (sync_service_)
     sync_service_->AddObserver(this);
-    // Re-mask all server cards if the upload state is not active.
-    bool is_upload_not_active =
-        syncer::GetUploadToGoogleState(
-            sync_service_, syncer::ModelType::AUTOFILL_WALLET_DATA) ==
-        syncer::UploadState::NOT_ACTIVE;
-    if (is_upload_not_active) {
-      ResetFullServerCards();
-    }
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableAccountWalletStorage)) {
-      // Use the ephemeral account storage when the user didn't enable the sync
-      // feature explicitly.
-      database_helper_->SetUseAccountStorageForServerData(
-          !sync_service->IsSyncFeatureEnabled());
-    }
 
-    MigrateUserOptedInWalletSyncTransportIfNeeded();
+  // Re-mask all server cards if the upload state is not active.
+  const bool is_upload_not_active =
+      syncer::GetUploadToGoogleState(sync_service_,
+                                     syncer::ModelType::AUTOFILL_WALLET_DATA) ==
+      syncer::UploadState::NOT_ACTIVE;
+  if (is_upload_not_active)
+    ResetFullServerCards();
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAccountWalletStorage)) {
+    // Use the ephemeral account storage when the user didn't enable the sync
+    // feature explicitly.
+    database_helper_->SetUseAccountStorageForServerData(
+        sync_service && !sync_service_->IsSyncFeatureEnabled());
   }
+
+  MigrateUserOptedInWalletSyncTransportIfNeeded();
 }
 
 void PersonalDataManager::OnURLsDeleted(
@@ -520,18 +514,23 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
     }
   }
 
-  // If all requests have responded, then all personal data is loaded.
-  // We need to check if the server database is set here, because we won't have
-  // the server data yet if we don't have the database.
-  if (!HasPendingQueries() && database_helper_->GetServerDatabase()) {
-    // On initial data load, is_data_loaded_ will be false here.
-    if (!is_data_loaded_) {
-      is_data_loaded_ = true;
-      personal_data_manager_cleaner_
-          ->CleanupDataAndNotifyPersonalDataObservers();
-    } else {
-      NotifyPersonalDataObserver();
-    }
+  if (HasPendingQueries())
+    return;
+
+  if (!database_helper_->GetServerDatabase()) {
+    DLOG(WARNING) << "There are no pending queries but the server database "
+                     "wasn't set yet, so some data might be missing. Maybe "
+                     "OnSyncServiceInitialized() wasn't called yet.";
+    return;
+  }
+
+  // All personal data is loaded, notify observers. |is_data_loaded_| is false
+  // if this is the initial load.
+  if (!is_data_loaded_) {
+    is_data_loaded_ = true;
+    personal_data_manager_cleaner_->CleanupDataAndNotifyPersonalDataObservers();
+  } else {
+    NotifyPersonalDataObserver();
   }
 }
 
@@ -980,17 +979,6 @@ void PersonalDataManager::AddServerCreditCardForTest(
 
 bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
   return database_helper_->IsUsingAccountStorageForServerData();
-}
-
-void PersonalDataManager::SetSyncServiceForTest(
-    syncer::SyncService* sync_service) {
-  if (sync_service_)
-    sync_service_->RemoveObserver(this);
-
-  sync_service_ = sync_service;
-
-  if (sync_service_)
-    sync_service_->AddObserver(this);
 }
 
 void PersonalDataManager::AddOfferDataForTest(
@@ -2379,6 +2367,9 @@ bool PersonalDataManager::HasPendingQueries() {
 }
 
 void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
+  if (!sync_service_)
+    return;
+
   CoreAccountInfo primary_account = sync_service_->GetAccountInfo();
   if (primary_account.IsEmpty())
     return;

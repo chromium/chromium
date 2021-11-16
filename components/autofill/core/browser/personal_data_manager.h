@@ -113,8 +113,11 @@ class PersonalDataManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // Called once the sync service is known to be instantiated. Note that it may
-  // not be started, but it's preferences can be queried.
+  // Wires the circular sync service dependency. |sync_service| is either null
+  // (sync disabled by CLI) or outlives this object. This method is called once
+  // in production code, but may be called again in tests to replace the real
+  // service with a stub. |sync_service| may not have started yet but its
+  // preferences can already be queried.
   virtual void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
   // history::HistoryServiceObserver
@@ -238,10 +241,6 @@ class PersonalDataManager : public KeyedService,
   // Returns whether server credit cards are stored in account (i.e. ephemeral)
   // storage.
   bool IsUsingAccountStorageForServerDataForTest() const;
-
-  // Sets which SyncService to use and observe in a test. |sync_service| is not
-  // owned by this class and must outlive |this|.
-  void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
   // Adds the offer data to local cache for tests. This does not affect data in
   // the real database.

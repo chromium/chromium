@@ -407,7 +407,7 @@ void AutofillMetricsTest::SetUp() {
 
   personal_data_ = std::make_unique<TestPersonalDataManager>();
   personal_data_->SetPrefService(autofill_client_.GetPrefs());
-  personal_data_->SetSyncServiceForTest(&sync_service_);
+  personal_data_->OnSyncServiceInitialized(&sync_service_);
 
   payments::TestPaymentsClient* payments_client =
       new payments::TestPaymentsClient(autofill_driver_->GetURLLoaderFactory(),

@@ -7375,7 +7375,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
-  personal_data_->SetSyncServiceForTest(nullptr);
+  personal_data_->OnSyncServiceInitialized(nullptr);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #else   // !defined(OS_ANDROID) && !defined(OS_IOS) &&
@@ -7450,7 +7450,7 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
-  personal_data_->SetSyncServiceForTest(nullptr);
+  personal_data_->OnSyncServiceInitialized(nullptr);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS) &&

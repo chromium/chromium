@@ -136,7 +136,7 @@ class CreditCardSaveManagerTest : public testing::Test {
                         /*strike_database=*/nullptr,
                         /*image_fetcher=*/nullptr,
                         /*is_off_the_record=*/false);
-    personal_data_.SetSyncServiceForTest(&sync_service_);
+    personal_data_.OnSyncServiceInitialized(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),

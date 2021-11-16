@@ -66,7 +66,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
-    personal_data_.SetSyncServiceForTest(&sync_service_);
+    personal_data_.OnSyncServiceInitialized(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
