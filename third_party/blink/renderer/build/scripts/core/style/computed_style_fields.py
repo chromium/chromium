@@ -185,7 +185,10 @@ class Field(object):
             assert self.is_inherited or not self.is_independent, \
                 'Only inherited fields can be independent'
 
+            suffix = ['is', 'inherited']
+            if 'getter' in self.computed_style_custom_functions:
+                suffix.append('internal')
             self.is_inherited_method_name = name_source.to_function_name(
-                suffix=['is', 'inherited'])
+                suffix=suffix)
         assert len(kwargs) == 0, \
             'Unexpected arguments provided to Field: ' + str(kwargs)

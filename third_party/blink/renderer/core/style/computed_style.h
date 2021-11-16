@@ -135,6 +135,7 @@ class InternalVisitedTextFillColor;
 class InternalVisitedTextStrokeColor;
 class LightingColor;
 class OutlineColor;
+class PointerEvents;
 class Position;
 class Resize;
 class StopColor;
@@ -248,6 +249,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::InternalVisitedTextStrokeColor;
   friend class css_longhand::LightingColor;
   friend class css_longhand::OutlineColor;
+  friend class css_longhand::PointerEvents;
   friend class css_longhand::Position;
   friend class css_longhand::Resize;
   friend class css_longhand::StopColor;
@@ -2186,6 +2188,13 @@ class ComputedStyle : public ComputedStyleBase,
   }
   void SetIsForcedInert() { SetInertnessInternal(Inertness::kForced); }
 
+  // Pointer-events utility functions.
+  EPointerEvents UsedPointerEvents() const {
+    if (IsInert())
+      return EPointerEvents::kNone;
+    return PointerEventsInternal();
+  }
+
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   void ApplyTextDecorations(const Color& parent_text_decoration_color,
@@ -2256,7 +2265,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Visibility utility functions.
   bool VisibleToHitTesting() const {
     return Visibility() == EVisibility::kVisible &&
-           PointerEvents() != EPointerEvents::kNone;
+           UsedPointerEvents() != EPointerEvents::kNone;
   }
 
   // Animation utility functions.
@@ -2693,6 +2702,7 @@ class ComputedStyle : public ComputedStyleBase,
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }
+  EPointerEvents PointerEvents() const { return PointerEventsInternal(); }
   EResize Resize() const { return ResizeInternal(); }
 
   bool IsInlineSizeContainer() const {

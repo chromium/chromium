@@ -322,7 +322,7 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
   LayoutObject* layout_object = element.GetLayoutObject();
   DCHECK(!layout_object || layout_object->Style());
   if (!layout_object ||
-      layout_object->StyleRef().PointerEvents() == EPointerEvents::kNone)
+      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone)
     return false;
 
   if (!IsIntersectionOrEnclosureTarget(layout_object))

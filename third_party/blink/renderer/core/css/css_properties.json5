@@ -3436,6 +3436,7 @@
     {
       name: "pointer-events",
       property_methods: ["CSSValueFromComputedStyleInternal"],
+      computed_style_custom_functions: ["getter"],
       independent: true,
       inherited: true,
       field_template: "keyword",

@@ -309,7 +309,7 @@ bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
   const ComputedStyle& style = line_layout_item.StyleRef();
   PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_TEXT_HITTESTING,
                                   result.GetHitTestRequest(),
-                                  style.PointerEvents());
+                                  style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
   if (hit_rules.can_hit_bounding_box ||

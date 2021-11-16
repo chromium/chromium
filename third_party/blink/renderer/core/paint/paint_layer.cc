@@ -3457,8 +3457,8 @@ bool PaintLayer::AttemptDirectCompositingUpdate(
   // Changes in pointer-events affect hit test visibility of the scrollable
   // area and its |m_scrollsOverflow| value which determines if the layer
   // requires composited scrolling or not.
-  if (scrollable_area_ &&
-      layout_object_->StyleRef().PointerEvents() != old_style->PointerEvents())
+  if (scrollable_area_ && layout_object_->StyleRef().UsedPointerEvents() !=
+                              old_style->UsedPointerEvents())
     return false;
 
   UpdateTransform(old_style, GetLayoutObject().StyleRef());

@@ -105,7 +105,7 @@ inline bool IsVisibleToPaint(const NGFragmentItem& item,
 inline bool IsVisibleToHitTest(const ComputedStyle& style,
                                const HitTestRequest& request) {
   return request.IgnorePointerEventsNone() ||
-         style.PointerEvents() != EPointerEvents::kNone;
+         style.UsedPointerEvents() != EPointerEvents::kNone;
 }
 
 inline bool IsVisibleToHitTest(const NGFragmentItem& item,
@@ -117,7 +117,7 @@ inline bool IsVisibleToHitTest(const NGFragmentItem& item,
   if (item.IsHiddenForPaint())
     return false;
   PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_TEXT_HITTESTING,
-                                  request, style.PointerEvents());
+                                  request, style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
   if (hit_rules.can_hit_bounding_box ||
@@ -1930,7 +1930,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       hit_test_self = false;
     } else if (fragment.IsSvgText()) {
       pointer_events_bounding_box =
-          fragment.Style().PointerEvents() == EPointerEvents::kBoundingBox;
+          fragment.Style().UsedPointerEvents() == EPointerEvents::kBoundingBox;
       hit_test_self = pointer_events_bounding_box;
     }
   }
@@ -2271,7 +2271,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
   }
 
   if (cursor.ContainerFragment().IsSvgText() &&
-      item.Style().PointerEvents() != EPointerEvents::kBoundingBox)
+      item.Style().UsedPointerEvents() != EPointerEvents::kBoundingBox)
     return false;
 
   // Now hit test ourselves.
