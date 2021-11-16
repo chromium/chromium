@@ -44,10 +44,6 @@ if (window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN) {
     test(function() {
       assert_false('requestMediaKeySystemAccess' in navigator);
     }, 'requestMediaKeySystemAccess');
-
-    test(function() {
-      assert_false('applicationCache' in window);
-    }, 'applicationCache');
 }
 </script>
 </body>
