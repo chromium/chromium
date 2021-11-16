@@ -2714,7 +2714,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   ClipPathOperation* clip_path_operation =
       GetLayoutObject().StyleRef().ClipPath();
   DCHECK(clip_path_operation);
-  if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation* clip_path =
         To<ShapeClipPathOperation>(clip_path_operation);
     return !clip_path
@@ -2722,7 +2722,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
                           GetLayoutObject().StyleRef().EffectiveZoom())
                 .Contains(ToGfxPointF(point));
   }
-  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper =
       GetSVGResourceAsType(*ResourceInfo(), clip_path_operation);
   if (!clipper)

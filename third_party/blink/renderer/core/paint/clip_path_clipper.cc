@@ -86,7 +86,7 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
                                   bool uses_zoomed_reference_box) {
   DCHECK(HasCompositeClipPathAnimation(clip_path_owner));
   DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
-            ClipPathOperation::SHAPE);
+            ClipPathOperation::kShape);
 
   float zoom = uses_zoomed_reference_box
                    ? clip_path_owner.StyleRef().EffectiveZoom()
@@ -127,7 +127,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
 
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
-  if (clip_path.GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path.GetType() == ClipPathOperation::kShape) {
     auto zoom =
         UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
     auto& shape = To<ShapeClipPathOperation>(clip_path);
@@ -138,7 +138,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     return bounding_box;
   }
 
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper)
@@ -195,7 +195,7 @@ static absl::optional<Path> PathBasedClipInternal(
     return path;
   }
 
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::SHAPE);
+  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
   auto& shape = To<ShapeClipPathOperation>(clip_path);
   float zoom = uses_zoomed_reference_box
                    ? clip_path_owner.StyleRef().EffectiveZoom()

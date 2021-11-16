@@ -33,7 +33,7 @@
 namespace blink {
 
 SVGPaint::SVGPaint() = default;
-SVGPaint::SVGPaint(Color color) : color(color), type(SVG_PAINTTYPE_COLOR) {}
+SVGPaint::SVGPaint(Color color) : color(color), type(SVGPaintType::kColor) {}
 SVGPaint::SVGPaint(const SVGPaint& paint) = default;
 
 SVGPaint::~SVGPaint() = default;

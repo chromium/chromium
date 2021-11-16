@@ -291,13 +291,13 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
   if (!clip_path_operation)
     return true;
-  if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
     return clip_path.GetPath(FloatRect(reference_box), 1)
         .Contains(ToGfxPointF(location.TransformedPoint()));
   }
-  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   SVGResourceClient* client = SVGResources::GetClient(object);
   auto* clipper = GetSVGResourceAsType(
       *client, To<ReferenceClipPathOperation>(*clip_path_operation));

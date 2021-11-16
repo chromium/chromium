@@ -1495,11 +1495,11 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   if (ClipPathOperation* operation = style.ClipPath()) {
-    if (operation->GetType() == ClipPathOperation::SHAPE) {
+    if (operation->GetType() == ClipPathOperation::kShape) {
       return ValueForBasicShape(
           style, To<ShapeClipPathOperation>(operation)->GetBasicShape());
     }
-    if (operation->GetType() == ClipPathOperation::REFERENCE) {
+    if (operation->GetType() == ClipPathOperation::kReference) {
       AtomicString url = To<ReferenceClipPathOperation>(operation)->Url();
       return MakeGarbageCollected<cssvalue::CSSURIValue>(url);
     }

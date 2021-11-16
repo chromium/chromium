@@ -1663,19 +1663,19 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
   }
 
   if (local_value->IsURIValue()) {
-    paint.type = SVG_PAINTTYPE_URI;
+    paint.type = SVGPaintType::kUri;
     paint.resource = ConvertElementReference(state, *local_value);
   } else {
     auto* local_identifier_value = DynamicTo<CSSIdentifierValue>(local_value);
     if (local_identifier_value &&
         local_identifier_value->GetValueID() == CSSValueID::kNone) {
       paint.type =
-          !paint.resource ? SVG_PAINTTYPE_NONE : SVG_PAINTTYPE_URI_NONE;
+          !paint.resource ? SVGPaintType::kNone : SVGPaintType::kUriNone;
     } else {
       // TODO(fs): Pass along |for_visited_link|.
       paint.color = ConvertStyleColor(state, *local_value);
       paint.type =
-          !paint.resource ? SVG_PAINTTYPE_COLOR : SVG_PAINTTYPE_URI_COLOR;
+          !paint.resource ? SVGPaintType::kColor : SVGPaintType::kUriColor;
     }
   }
   return paint;

@@ -2389,19 +2389,19 @@ CSSValue* ComputedStyleUtils::StrokeDashArrayToCSSValueList(
 
 CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
                                                const ComputedStyle& style) {
-  if (paint.type >= SVG_PAINTTYPE_URI_NONE) {
+  if (paint.type >= SVGPaintType::kUriNone) {
     CSSValueList* values = CSSValueList::CreateSpaceSeparated();
     values->Append(
         *MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl()));
-    if (paint.type == SVG_PAINTTYPE_URI_NONE) {
+    if (paint.type == SVGPaintType::kUriNone) {
       values->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-    } else if (paint.type == SVG_PAINTTYPE_URI_COLOR) {
+    } else if (paint.type == SVGPaintType::kUriColor) {
       values->Append(*CurrentColorOrValidColor(style, paint.GetColor(),
                                                CSSValuePhase::kComputedValue));
     }
     return values;
   }
-  if (paint.type == SVG_PAINTTYPE_NONE)
+  if (paint.type == SVGPaintType::kNone)
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
   return CurrentColorOrValidColor(style, paint.GetColor(),

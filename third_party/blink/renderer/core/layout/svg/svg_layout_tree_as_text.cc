@@ -751,7 +751,7 @@ void WriteResources(WTF::TextStream& ts,
   if (const ClipPathOperation* clip_path = style.ClipPath()) {
     if (LayoutSVGResourceClipper* clipper =
             GetSVGResourceAsType(*client, clip_path)) {
-      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
+      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::kReference);
       const auto& clip_path_reference =
           To<ReferenceClipPathOperation>(*clip_path);
       WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
