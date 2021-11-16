@@ -6723,12 +6723,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "ChromeVariations": 1
         },
         "prefs": {
           "variations_restrictions_by_policy": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 1
           }
         }
       }
@@ -6992,11 +7003,21 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.cecpq2_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
         "policies": {
-          "CECPQ2Enabled": true
+          "CECPQ2Enabled": false
         },
         "prefs": {
           "ssl.cecpq2_enabled": {
+            "value": false,
             "location": "local_state"
           }
         }
@@ -7017,13 +7038,26 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "certificate_transparency.excluded_hosts": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "CertificateTransparencyEnforcementDisabledForUrls": [
             "example.com"
           ]
         },
         "prefs": {
-          "certificate_transparency.excluded_hosts": {}
+          "certificate_transparency.excluded_hosts": {
+            "value": [
+              "example.com"
+            ]
+          }
         }
       }
     ]
@@ -7039,13 +7073,26 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "certificate_transparency.excluded_spkis": {
+            "default_value":[]
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "CertificateTransparencyEnforcementDisabledForCas": [
             "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
           ]
         },
         "prefs": {
-          "certificate_transparency.excluded_spkis": {}
+          "certificate_transparency.excluded_spkis": {
+            "value":[
+              "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+          }
         }
       }
     ]
@@ -7061,13 +7108,26 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "certificate_transparency.excluded_legacy_spkis": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "CertificateTransparencyEnforcementDisabledForLegacyCas": [
             "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
           ]
         },
         "prefs": {
-          "certificate_transparency.excluded_legacy_spkis": {}
+          "certificate_transparency.excluded_legacy_spkis": {
+            "value": [
+              "sha256/AAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+          }
         }
       }
     ]
@@ -15966,6 +16026,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser.clear_data.browsing_data_lifetime": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value when SyncDisabled is true.",
         "policies": {
           "BrowsingDataLifetime": [
             {
@@ -15989,6 +16058,25 @@
             ]
           }
         }
+      },
+      {
+        "note": "Simple value when SyncDisabled is false.",
+        "policies": {
+          "BrowsingDataLifetime": [
+            {
+              "data_types": [
+                "browsing_history"
+              ],
+              "time_to_live_in_hours": 2
+            }
+          ],
+          "SyncDisabled": false
+        },
+        "prefs": {
+          "browser.clear_data.browsing_data_lifetime": {
+            "default_value": []
+          }
+        }
       }
     ]
   },
@@ -16008,6 +16096,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser.clear_data.clear_on_exit": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value when SyncDisabled is true.",
         "policies": {
           "ClearBrowsingDataOnExitList": [
             "browsing_history"
@@ -16019,6 +16116,20 @@
             "value": [
               "browsing_history"
             ]
+          }
+        }
+      },
+      {
+        "note": "Simple value when SyncDisabled is false.",
+        "policies": {
+          "ClearBrowsingDataOnExitList": [
+            "browsing_history"
+          ],
+          "SyncDisabled": false
+        },
+        "prefs": {
+          "browser.clear_data.clear_on_exit": {
+            "default_value": []
           }
         }
       }
@@ -16336,6 +16447,16 @@
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autogenerated.theme.policy.color": {
+            "default_value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserThemeColor": "#000000"
         },

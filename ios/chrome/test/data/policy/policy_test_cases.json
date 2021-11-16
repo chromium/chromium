@@ -120,12 +120,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "ChromeVariations": 1
         },
         "prefs": {
           "variations_restrictions_by_policy": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 1
           }
         }
       }
