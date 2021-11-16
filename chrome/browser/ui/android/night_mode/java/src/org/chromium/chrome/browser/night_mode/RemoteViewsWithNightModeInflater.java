@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +55,9 @@ public class RemoteViewsWithNightModeInflater {
     private static View inflateNormally(RemoteViews remoteViews, ViewGroup parent) {
         try {
             return remoteViews.apply(ContextUtils.getApplicationContext(), parent);
-        } catch (RemoteViews.ActionException | InflateException | Resources.NotFoundException e) {
+        } catch (RuntimeException e) {
+            // Catching a general RuntimeException is ugly, but RemoteViews are passed in by the
+            // client app, so can contain all sorts of problems, eg. b/205503898.
             Log.e(TAG, "Failed to inflate the RemoteViews", e);
             return null;
         }
@@ -91,8 +92,9 @@ public class RemoteViewsWithNightModeInflater {
 
             remoteViews.reapply(appContext, view);
             return view;
-        } catch (RemoteViews.ActionException | InflateException | Resources.NotFoundException
-                | PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
+            // Catching a general RuntimeException is ugly, but RemoteViews are passed in by the
+            // client app, so can contain all sorts of problems, eg b/205503898.
             Log.e(TAG, "Failed to inflate the RemoteViews", e);
             return null;
         }
