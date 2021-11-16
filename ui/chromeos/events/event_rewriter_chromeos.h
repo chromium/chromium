@@ -210,6 +210,20 @@ class EventRewriterChromeOS : public EventRewriter {
   static KeyboardTopRowLayout GetKeyboardTopRowLayout(
       const InputDevice& keyboard_device);
 
+  // Given a keyboard device, identify the type of keyboard, and the top row
+  // layout, if applicable. |out_type| and |out_layout| are always updated. If
+  // |out_scan_code_map| is non-null, and the top row layout is of type
+  // kKbdTopRowLayoutCustom, then the custom layout information will be parsed
+  // and written to the supplied map. Returns false on some errors of
+  // identifying the keyboard, however out_type and out_layout will always be
+  // updated.
+  static bool IdentifyKeyboard(
+      const InputDevice& keyboard_device,
+      EventRewriterChromeOS::DeviceType* out_type,
+      EventRewriterChromeOS::KeyboardTopRowLayout* out_layout,
+      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>*
+          out_scan_code_map);
+
   // Given a keyboard device, returns true if we get back the Assistant key
   // property without getting an error. Property value is stored in
   // |has_assistant_key|.
@@ -289,10 +303,13 @@ class EventRewriterChromeOS : public EventRewriter {
   int RewriteLocatedEvent(const Event& event);
   int RewriteModifierClick(const MouseEvent& event, int* flags);
 
-  // Reads the keyboard mapping for new CrOS keyboards that support
-  // supplying a custom layout via sysfs and stores it mapped to
+  // For new CrOS keyboards that support supplying a custom layout via sysfs,
+  // takes a mapping read by IdentifyKeyboard, and stores it mapped to
   // |keyboard_device| in |top_row_scan_code_map_|.
-  bool StoreCustomTopRowMapping(const ui::InputDevice& keyboard_device);
+  bool StoreCustomTopRowMapping(
+      const ui::InputDevice& keyboard_device,
+      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>
+          top_row_map);
 
   // Handle Function <-> Action key remapping for new CrOS keyboards that
   // support supplying a custom layout via sysfs.

@@ -63,11 +63,24 @@ constexpr char kKbdTopRowLayout2Tag[] = "2";
 constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
 constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
+// A tag that should fail parsing for the top row layout.
+constexpr char kKbdTopRowLayoutInvalidTag[] = "X";
+
 // A default example of the layout string read from the function_row_physmap
 // sysfs attribute. The values represent the scan codes for each position
 // in the top row, which maps to F-Keys.
 constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
+
+// A tag that should fail parsing for the top row custom scan code string.
+constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
+
+// Values for enum output parameters to IdentifyKeyboard() that do not
+// match any enum types.
+constexpr auto kImpossibleDeviceType =
+    static_cast<ui::EventRewriterChromeOS::DeviceType>(-1);
+constexpr auto kImpossibleKeyboardTopRowLayout =
+    static_cast<ui::EventRewriterChromeOS::KeyboardTopRowLayout>(-1);
 
 class TestEventRewriterContinuation
     : public ui::test::TestEventRewriterContinuation {
@@ -229,10 +242,11 @@ class EventRewriterTest : public ChromeAshTestBase {
     int_pref->SetValue(static_cast<int>(modifierKey));
   }
 
-  void SetupKeyboard(const std::string& name,
-                     const std::string& layout = "",
-                     ui::InputDeviceType type = ui::INPUT_DEVICE_INTERNAL,
-                     bool has_custom_top_row = false) {
+  ui::InputDevice SetupKeyboard(
+      const std::string& name,
+      const std::string& layout = "",
+      ui::InputDeviceType type = ui::INPUT_DEVICE_INTERNAL,
+      bool has_custom_top_row = false) {
     // Add a fake device to udev.
     const ui::InputDevice keyboard(kKeyboardDeviceId, type, name, /*phys=*/"",
                                    base::FilePath(kKbdSysPath), /*vendor=*/-1,
@@ -266,6 +280,8 @@ class EventRewriterTest : public ChromeAshTestBase {
     rewriter_->ResetStateForTesting();
     rewriter_->KeyboardDeviceAddedForTesting(kKeyboardDeviceId);
     rewriter_->set_last_keyboard_device_id_for_testing(kKeyboardDeviceId);
+
+    return keyboard;
   }
 
   void TestKeyboard(const std::string& name,
@@ -4121,6 +4137,109 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
     // No notification expected for this case.
     EXPECT_EQ(message_center_.NotificationCount(), 0);
   }
+}
+
+TEST_F(EventRewriterTest, IdentifyKeyboardUnspecified) {
+  ui::InputDevice input_device =
+      SetupKeyboard("Internal Keyboard", kKbdTopRowLayoutUnspecified,
+                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false);
+
+  auto out_type = kImpossibleDeviceType;
+  auto out_layout = kImpossibleKeyboardTopRowLayout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      scan_code_map;
+
+  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
+      input_device, &out_type, &out_layout, &scan_code_map);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(out_type, ui::EventRewriterChromeOS::kDeviceInternalKeyboard);
+  EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayoutDefault);
+  EXPECT_TRUE(scan_code_map.empty());
+}
+
+TEST_F(EventRewriterTest, IdentifyKeyboardInvalidLayoutTag) {
+  ui::InputDevice input_device =
+      SetupKeyboard("Internal Keyboard", kKbdTopRowLayoutInvalidTag,
+                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/false);
+
+  auto out_type = kImpossibleDeviceType;
+  auto out_layout = kImpossibleKeyboardTopRowLayout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      scan_code_map;
+
+  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
+      input_device, &out_type, &out_layout, &scan_code_map);
+  EXPECT_FALSE(result);
+  EXPECT_EQ(out_type, ui::EventRewriterChromeOS::kDeviceUnknown);
+  EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayoutDefault);
+  EXPECT_TRUE(scan_code_map.empty());
+}
+
+TEST_F(EventRewriterTest, IdentifyKeyboardInvalidCustomLayout) {
+  ui::InputDevice input_device =
+      SetupKeyboard("Internal Keyboard", kKbdInvalidCustomTopRowLayout,
+                    ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true);
+
+  auto out_type = kImpossibleDeviceType;
+  auto out_layout = kImpossibleKeyboardTopRowLayout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      scan_code_map;
+
+  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
+      input_device, &out_type, &out_layout, &scan_code_map);
+  // Unparsable custom top row layout attributes are ignored and the
+  // keyboard treated as default layout.
+  EXPECT_TRUE(result);
+  EXPECT_EQ(out_type, ui::EventRewriterChromeOS::kDeviceInternalKeyboard);
+  EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayoutDefault);
+  EXPECT_TRUE(scan_code_map.empty());
+}
+
+TEST_F(EventRewriterTest, IdentifyKeyboardExternalChrome) {
+  ui::InputDevice input_device =
+      SetupKeyboard("External Chrome Keyboard", kKbdTopRowLayout2Tag,
+                    ui::INPUT_DEVICE_UNKNOWN, /*has_custom_top_row=*/false);
+
+  auto out_type = kImpossibleDeviceType;
+  auto out_layout = kImpossibleKeyboardTopRowLayout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      scan_code_map;
+
+  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
+      input_device, &out_type, &out_layout, &scan_code_map);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(out_type,
+            ui::EventRewriterChromeOS::kDeviceExternalChromeOsKeyboard);
+  EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayout2);
+  EXPECT_TRUE(scan_code_map.empty());
+}
+
+TEST_F(EventRewriterTest, IdentifyKeyboardCustomLayout) {
+  ui::InputDevice input_device = SetupKeyboard(
+      "Internal Custom Layout Keyboard", kKbdDefaultCustomTopRowLayout,
+      ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true);
+
+  auto out_type = kImpossibleDeviceType;
+  auto out_layout = kImpossibleKeyboardTopRowLayout;
+  base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
+      scan_code_map;
+
+  bool result = ui::EventRewriterChromeOS::IdentifyKeyboard(
+      input_device, &out_type, &out_layout, &scan_code_map);
+
+  EXPECT_TRUE(result);
+  EXPECT_EQ(out_type, ui::EventRewriterChromeOS::kDeviceInternalKeyboard);
+  EXPECT_EQ(out_layout, ui::EventRewriterChromeOS::kKbdTopRowLayoutCustom);
+
+  // Basic inspection to match kKbdDefaultCustomTopRowLayout
+  EXPECT_EQ(15, scan_code_map.size());
+
+  ASSERT_TRUE(scan_code_map.contains(1));
+  EXPECT_EQ(ui::VKEY_F1, scan_code_map[1].key_code);
+  ASSERT_TRUE(scan_code_map.contains(2));
+  EXPECT_EQ(ui::VKEY_F2, scan_code_map[2].key_code);
+  ASSERT_TRUE(scan_code_map.contains(15));
+  EXPECT_EQ(ui::VKEY_F15, scan_code_map[15].key_code);
 }
 
 TEST_F(EventRewriterAshTest, StickyKeyEventDispatchImpl) {
