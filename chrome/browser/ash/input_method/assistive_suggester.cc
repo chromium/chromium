@@ -143,6 +143,20 @@ bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
          IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled();
 }
 
+bool AssistiveSuggester::IsAssistiveFeatureAllowed(
+    const AssistiveFeature& feature) {
+  switch (feature) {
+    case AssistiveFeature::kEmojiSuggestion:
+      return suggester_switch_->IsEmojiSuggestionAllowed();
+    case AssistiveFeature::kMultiWordSuggestion:
+      return suggester_switch_->IsMultiWordSuggestionAllowed();
+    case AssistiveFeature::kPersonalInfoSuggestion:
+      return suggester_switch_->IsPersonalInfoSuggestionAllowed();
+    default:
+      return false;
+  }
+}
+
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
   return base::FeatureList::IsEnabled(features::kAssistPersonalInfo) &&
          profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled);

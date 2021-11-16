@@ -28,6 +28,12 @@ namespace input_method {
 // dismiss the suggestion according to the user action.
 class AssistiveSuggester : public SuggestionsSource {
  public:
+  enum AssistiveFeature {
+    kEmojiSuggestion,
+    kMultiWordSuggestion,
+    kPersonalInfoSuggestion,
+  };
+
   AssistiveSuggester(
       InputMethodEngine* engine,
       Profile* profile,
@@ -36,6 +42,10 @@ class AssistiveSuggester : public SuggestionsSource {
   ~AssistiveSuggester() override;
 
   bool IsAssistiveFeatureEnabled();
+
+  // Is the given assisitive feature blocked from being shown to a user given
+  // the current browser context.
+  bool IsAssistiveFeatureAllowed(const AssistiveFeature& feature);
 
   // SuggestionsSource overrides
   std::vector<ime::TextSuggestion> GetSuggestions() override;

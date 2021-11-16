@@ -62,13 +62,15 @@ std::string GetPrefKeyForEngineId(const std::string& engine_id) {
 mojom::LatinSettingsPtr CreateLatinSettings(
     const base::Value& input_method_specific_pref,
     const PrefService& prefs,
-    const std::string& engine_id) {
+    const std::string& engine_id,
+    const InputFieldContext& context) {
   auto settings = mojom::LatinSettings::New();
   settings->autocorrect = input_method_specific_pref
                               .FindIntKey("physicalKeyboardAutoCorrectionLevel")
                               .value_or(0) > 0;
   settings->predictive_writing =
-      features::IsAssistiveMultiWordEnabled() &&
+      context.multiword_enabled && context.multiword_allowed &&
+      !context.lacros_enabled &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
       IsUsEnglishEngine(engine_id);
   return settings;
@@ -162,7 +164,8 @@ mojom::PinyinSettingsPtr CreatePinyinSettings(
 
 mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
-    const std::string& engine_id) {
+    const std::string& engine_id,
+    const InputFieldContext& context) {
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
   const base::DictionaryValue& all_input_method_pref =
@@ -185,8 +188,8 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
                                          : empty_value;
 
   if (IsFstEngine(engine_id)) {
-    return mojom::InputMethodSettings::NewLatinSettings(
-        CreateLatinSettings(input_method_specific_pref, prefs, engine_id));
+    return mojom::InputMethodSettings::NewLatinSettings(CreateLatinSettings(
+        input_method_specific_pref, prefs, engine_id, context));
   }
   if (IsKoreanEngine(engine_id)) {
     return mojom::InputMethodSettings::NewKoreanSettings(

@@ -30,6 +30,33 @@ using ::chromeos::ime::TextSuggestionType;
 
 const char kEmojiData[] = "happy,😀;😃;😄";
 
+class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
+ public:
+  explicit FakeSuggesterSwitch(EnabledSuggestions enabled_suggestions)
+      : enabled_suggestions_(enabled_suggestions) {}
+  ~FakeSuggesterSwitch() override = default;
+
+  // AssistiveSuggesterDelegate overrides
+  bool IsEmojiSuggestionAllowed() override {
+    return enabled_suggestions_.emoji_suggestions;
+  }
+
+  bool IsMultiWordSuggestionAllowed() override {
+    return enabled_suggestions_.multi_word_suggestions;
+  }
+
+  bool IsPersonalInfoSuggestionAllowed() override {
+    return enabled_suggestions_.personal_info_suggestions;
+  }
+
+  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
+    std::move(callback).Run(enabled_suggestions_);
+  }
+
+ private:
+  EnabledSuggestions enabled_suggestions_;
+};
+
 class AssistiveSuggesterTest : public testing::Test {
  protected:
   AssistiveSuggesterTest() { profile_ = std::make_unique<TestingProfile>(); }
@@ -232,32 +259,23 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
- public:
-  explicit FakeSuggesterSwitch(EnabledSuggestions enabled_suggestions)
-      : enabled_suggestions_(enabled_suggestions) {}
-  ~FakeSuggesterSwitch() override = default;
+TEST_F(AssistiveSuggesterTest,
+       QueriesAssistiveSuggesterSwitchWhenDeterminingIfFeatureAllowed) {
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      engine_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(
+          FakeSuggesterSwitch::EnabledSuggestions{
+              .emoji_suggestions = true,
+              .multi_word_suggestions = true,
+              .personal_info_suggestions = true}));
 
-  // AssistiveSuggesterDelegate overrides
-  bool IsEmojiSuggestionAllowed() override {
-    return enabled_suggestions_.emoji_suggestions;
-  }
-
-  bool IsMultiWordSuggestionAllowed() override {
-    return enabled_suggestions_.multi_word_suggestions;
-  }
-
-  bool IsPersonalInfoSuggestionAllowed() override {
-    return enabled_suggestions_.personal_info_suggestions;
-  }
-
-  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
-    std::move(callback).Run(enabled_suggestions_);
-  }
-
- private:
-  EnabledSuggestions enabled_suggestions_;
-};
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
+      AssistiveSuggester::AssistiveFeature::kEmojiSuggestion));
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
+      AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion));
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
+      AssistiveSuggester::AssistiveFeature::kPersonalInfoSuggestion));
+}
 
 class AssistiveSuggesterMultiWordTest : public testing::Test {
  protected:

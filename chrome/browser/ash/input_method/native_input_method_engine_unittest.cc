@@ -52,6 +52,33 @@ using ::testing::StrictMock;
 constexpr char kEngineIdUs[] = "xkb:us::eng";
 constexpr char kEngineIdEs[] = "xkb:es::spa";
 
+class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
+ public:
+  explicit FakeSuggesterSwitch(EnabledSuggestions enabled_suggestions)
+      : enabled_suggestions_(enabled_suggestions) {}
+  ~FakeSuggesterSwitch() override = default;
+
+  // AssistiveSuggesterDelegate overrides
+  bool IsEmojiSuggestionAllowed() override {
+    return enabled_suggestions_.emoji_suggestions;
+  }
+
+  bool IsMultiWordSuggestionAllowed() override {
+    return enabled_suggestions_.multi_word_suggestions;
+  }
+
+  bool IsPersonalInfoSuggestionAllowed() override {
+    return enabled_suggestions_.personal_info_suggestions;
+  }
+
+  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
+    std::move(callback).Run(enabled_suggestions_);
+  }
+
+ private:
+  EnabledSuggestions enabled_suggestions_;
+};
+
 class MockInputMethod : public ime::mojom::InputMethod {
  public:
   void Bind(mojo::PendingReceiver<ime::mojom::InputMethod> receiver,
@@ -421,7 +448,8 @@ TEST_F(NativeInputMethodEngineTest,
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
+  NativeInputMethodEngine engine(std::make_unique<FakeSuggesterSwitch>(
+      FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions = true}));
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 

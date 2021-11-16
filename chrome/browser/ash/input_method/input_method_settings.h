@@ -11,9 +11,16 @@
 namespace ash {
 namespace input_method {
 
+struct InputFieldContext {
+  bool lacros_enabled = false;
+  bool multiword_enabled = false;
+  bool multiword_allowed = false;
+};
+
 chromeos::ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
-    const std::string& engine_id);
+    const std::string& engine_id,
+    const InputFieldContext& context);
 
 }  // namespace input_method
 }  // namespace ash
