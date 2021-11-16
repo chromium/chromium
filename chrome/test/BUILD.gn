@@ -7353,6 +7353,7 @@ test("unit_tests") {
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
       "../browser/enterprise/connectors/device_trust/key_management/browser:unit_tests",
+      "../browser/enterprise/connectors/device_trust/key_management/browser/commands:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core",
       "../browser/enterprise/connectors/device_trust/key_management/core:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence",

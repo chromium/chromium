@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -105,7 +106,8 @@ void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&KeyRotationLauncher::LaunchKeyRotation,
-                     base::Unretained(key_rotation_launcher_.get()), nonce),
+                     base::Unretained(key_rotation_launcher_.get()), nonce,
+                     base::DoNothing()),
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationStarted,
                      weak_factory_.GetWeakPtr()));
 }

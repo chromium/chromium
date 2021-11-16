@@ -22,7 +22,8 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   ~KeyRotationLauncherImpl() override;
 
   // KeyRotationLauncher:
-  bool LaunchKeyRotation(const std::string& nonce) override;
+  bool LaunchKeyRotation(const std::string& nonce,
+                         KeyRotationCommand::Callback callback) override;
 
  private:
   policy::BrowserDMTokenStorage* dm_token_storage_;

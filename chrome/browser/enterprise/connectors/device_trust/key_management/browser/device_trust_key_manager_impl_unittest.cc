@@ -121,7 +121,7 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_WithPersistedKey) {
 TEST_F(DeviceTrustKeyManagerImplTest, Initialization_WithoutPersistedKey) {
   SetUpNoKey();
 
-  EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string()))
+  EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), testing::_))
       .WillOnce(testing::Return(true));
 
   key_manager()->StartInitialization();

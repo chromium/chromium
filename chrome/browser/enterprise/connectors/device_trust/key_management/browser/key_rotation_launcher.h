@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 
 namespace policy {
 class BrowserDMTokenStorage;
@@ -23,11 +24,12 @@ class KeyRotationLauncher {
       policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service);
 
-  virtual ~KeyRotationLauncher();
+  virtual ~KeyRotationLauncher() = default;
 
   // Builds a key rotation payload using `nonce`, and then kicks off a key
   // rotation command. Returns true if the command was correctly triggered.
-  virtual bool LaunchKeyRotation(const std::string& nonce)
+  virtual bool LaunchKeyRotation(const std::string& nonce,
+                                 KeyRotationCommand::Callback callback)
       WARN_UNUSED_RESULT = 0;
 };
 
