@@ -4090,6 +4090,7 @@
 <translation id="5265562206369321422">ក្រៅបណ្ដាញច្រើនជាងមួយសប្តាហ៍</translation>
 <translation id="5265797726250773323">មានបញ្ហា​ពេល​កំពុងដំឡើង</translation>
 <translation id="5266113311903163739">កំហុសឆ្គងនាំចូលអាជ្ញាធរវិញ្ញាបនប័ត្រ</translation>
+<translation id="526622169288322445">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">ការបោះពុម្ពបានបរាជ័យ</translation>
 <translation id="5275352920323889391">ឆ្កែ</translation>
 <translation id="527605982717517565">អនុញ្ញាតឲ្យ JavaScript នៅលើ <ph name="HOST" /> ជានិច្ច</translation>
@@ -5469,6 +5470,7 @@
 <translation id="6775163072363532304">ឧបករណ៍ដែលអាចប្រើ​បាននឹងបង្ហាញ​នៅទីនេះ។</translation>
 <translation id="6777817260680419853">​បាន​ទប់ស្កាត់​ការបញ្ជូន​បន្ត</translation>
 <translation id="6778737459546443941">មាតាបិតារបស់អ្នកមិនទាន់យល់ព្រមនៅឡើយទេ</translation>
+<translation id="6779092717724412415">ដើម្បីបង្កើតការរំលេចបែបនេះ សូមជ្រើសរើសអត្ថបទណាមួយ រួចចុចកណ្ដុរខាងស្ដាំ។</translation>
 <translation id="6779447100905857289">រទេះ​របស់អ្នក</translation>
 <translation id="677965093459947883">តូច​ណាស់​</translation>
 <translation id="6781005693196527806">&amp;គ្រប់គ្រងម៉ាស៊ីន​ស្វែងរក...</translation>
@@ -6284,6 +6286,7 @@
 <translation id="7625823789272218216">ផ្ទាំងថ្មីនៅខាងឆ្វេង</translation>
 <translation id="7628201176665550262">អត្រាផ្ទុកឡើងវិញ</translation>
 <translation id="7629827748548208700">ផ្ទាំង៖ <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">ឧបករណ៍​នេះស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER" /> និងតម្រូវឱ្យអ្នកចូលគណនី​គ្រប់ពេល។</translation>
 <translation id="7631014249255418691">បានបម្រុងទុក​កម្មវិធី និង​ឯកសារ Linux ដោយ​ជោគជ័យ​ហើយ</translation>
 <translation id="7631205654593498032">នៅពេលភ្ជាប់​ឧបករណ៍​របស់អ្នក មានន័យ​ថាអ្នក​យល់ព្រមឱ្យ <ph name="DEVICE_TYPE" /> របស់អ្នក​អាច៖</translation>
 <translation id="7631887513477658702">បើកឯកសារប្រភេទនេះជានិច្ច</translation>

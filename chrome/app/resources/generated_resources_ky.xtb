@@ -4090,6 +4090,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5265562206369321422">Бир аптадан ашык офлайнда</translation>
 <translation id="5265797726250773323">Орнотуу учурунда ката кетти</translation>
 <translation id="5266113311903163739">Тастыктама борборунун импорттоо катасы</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> боюнча башка аракеттер</translation>
 <translation id="5269977353971873915">Басылып чыкпай калды</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ичинде JavaScript'ке ар дайым уруксат берилсин</translation>
@@ -5468,6 +5469,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6775163072363532304">Жеткиликтүү түзмөктөр бул жерде көрүнөт.</translation>
 <translation id="6777817260680419853">Багыттоо бөгөттөлгөн</translation>
 <translation id="6778737459546443941">Ата-энеңиз буга уруксат бере элек</translation>
+<translation id="6779092717724412415">Ушул сыяктуу бөлүп көрсөтүү үчүн каалаган текстти тандап, оң баскычты чыкылдатыңыз.</translation>
 <translation id="6779447100905857289">себеттериңиз</translation>
 <translation id="677965093459947883">Өтө кичине</translation>
 <translation id="6781005693196527806">&amp;Издөө каражаттарын башкаруу…</translation>
@@ -6283,6 +6285,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7625823789272218216">Сол жакка жаңы өтмөк кошуу</translation>
 <translation id="7628201176665550262">Жаңыртуу ылдамдыгы</translation>
 <translation id="7629827748548208700">Өтмөк: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Бул түзмөк <ph name="MANAGER" /> тарабынан башкарылат жана аккаунтка улам кирип турууну талап кылат.</translation>
 <translation id="7631014249255418691">Linux колдонмолору менен файлдарынын камдык көчүрмөлөрү ийгиликтүү сакталды</translation>
 <translation id="7631205654593498032">Түзмөктөрүңүздү туташтыруу менен <ph name="DEVICE_TYPE" /> түзмөгүнө төмөнкүлөрдү аткарууга уруксат бересиз:</translation>
 <translation id="7631887513477658702">Мындай түрдөгү файлдар &amp;ар дайым ачылсын</translation>

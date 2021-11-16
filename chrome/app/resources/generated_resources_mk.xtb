@@ -2405,6 +2405,7 @@
 <translation id="3449393517661170867">Нов прозорец со картички</translation>
 <translation id="3449839693241009168">Притисни <ph name="SEARCH_KEY" /> за да испратиш команди на <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Процент на зафаќање во состојба на неактивност</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање.</translation>
 <translation id="3451753556629288767">Дозволено да отвора типови датотеки</translation>
 <translation id="3452999110156026232">Пристап за родители</translation>
 <translation id="3453612417627951340">Бара авторизација</translation>
@@ -4090,6 +4091,7 @@
 <translation id="5265562206369321422">Исклучен повеќе од една недела</translation>
 <translation id="5265797726250773323">Грешка при инсталирањето</translation>
 <translation id="5266113311903163739">Грешка при увоз на орган за сертификати</translation>
+<translation id="526622169288322445">Повеќе дејства за <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Печатењето не успеа</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Секогаш дозволи JavaScript на <ph name="HOST" /></translation>
@@ -4271,6 +4273,7 @@
 <translation id="5472627187093107397">Зачувувај лозинки за сајтов</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-кодот мора да содржи најмалку еден знак}one{PIN-кодот мора да содржи најмалку # знак}other{PIN-кодот мора да содржи најмалку # знака}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
 <translation id="5483785310822538350">Отповикај го пристапот до датотеката и уредот</translation>
@@ -4693,6 +4696,7 @@
 <translation id="592880897588170157">Преземај ги PDF-датотеките наместо автоматски да ги отвораш во Chrome</translation>
 <translation id="592919310198008711">Кога ќе кликнам на екстензијата</translation>
 <translation id="5932124097031739492">Linux е успешно надграден.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Сајтот прикажува нападни или лажни реклами</translation>
 <translation id="59324397759951282">USB-уред од <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Немате доволно достапни лиценци за да го регистрирате уредов со хардвер на Google Meet. Контактирајте со одделот за продажба за да купите уште. Ако сметате дека поракава ви е испратена по грешка, контактирајте со поддршката.</translation>
@@ -5466,6 +5470,7 @@
 <translation id="6775163072363532304">Достапните уреди ќе се појават тука.</translation>
 <translation id="6777817260680419853">Пренасочувањето е блокирано</translation>
 <translation id="6778737459546443941">Родителот уште не го одобрил</translation>
+<translation id="6779092717724412415">За да нагласите текст слично на ова, изберете текст и кликнете со десното копче.</translation>
 <translation id="6779447100905857289">вашите кошнички</translation>
 <translation id="677965093459947883">Многу мал</translation>
 <translation id="6781005693196527806">&amp;Управувајте со пребарувачите…</translation>
@@ -5611,6 +5616,7 @@
 <translation id="6914783257214138813">Вашите лозинки ќе бидат видливи за секој што може да ја види извезената датотека.</translation>
 <translation id="6916590542764765824">Управувај со наставки</translation>
 <translation id="6919868320029503575">Слаби лозинки</translation>
+<translation id="6919952941889172531">Да се вклучи и „Подобрено безбедно прелистување“ за профилов на Chrome?</translation>
 <translation id="6920989436227028121">Отвори како обична картичка</translation>
 <translation id="6921104647315081813">Избриши ги активностите</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> не може да се отвори</translation>
@@ -6280,6 +6286,7 @@
 <translation id="7625823789272218216">Нова картичка налево</translation>
 <translation id="7628201176665550262">Брзина на освежување</translation>
 <translation id="7629827748548208700">Картичка: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382"><ph name="MANAGER" /> управува со уредов и бара да се најавувате секој пат.</translation>
 <translation id="7631014249255418691">Успешно е направен бекап на апликациите и датотеките на Linux</translation>
 <translation id="7631205654593498032">Кога ќе ги поврзете уредите, се согласувате дека вашиот <ph name="DEVICE_TYPE" /> може:</translation>
 <translation id="7631887513477658702">&amp;Секогаш отворај датотеки од овој тип</translation>
