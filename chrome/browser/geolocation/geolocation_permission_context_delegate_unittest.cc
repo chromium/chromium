@@ -9,6 +9,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
@@ -105,6 +106,10 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 #if defined(OS_ANDROID)
 TEST_F(GeolocationPermissionContextDelegateTests,
        SearchGeolocationInIncognito) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      permissions::features::kRevertDSEAutomaticPermissions);
+
   GURL requesting_frame(kDSETestUrl);
 
   SearchPermissionsService* service =

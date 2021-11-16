@@ -76,7 +76,7 @@ const base::Feature kRevisedOriginHandling{"PermissionsRevisedOriginHandling",
 // When enabled, the Default Search Engine does not automatically receive the
 // "geolocation" and "notifications" permissions. DSE only applies to Android.
 const base::Feature kRevertDSEAutomaticPermissions{
-    "RevertDSEAutomaticPermissions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RevertDSEAutomaticPermissions", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
 }  // namespace features

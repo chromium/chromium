@@ -84,8 +84,12 @@ class SearchPermissionsServiceTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
 
-    // Because notification channel settings aren't tied to the profile, they
-    // will persist across tests. We need to make sure they're clean here.
+    features_.InitAndDisableFeature(
+        permissions::features::kRevertDSEAutomaticPermissions);
+
+    // Because notification channel settings aren't tied to the profile,
+    // they will persist across tests. We need to make sure they're clean
+    // here.
     ClearContentSettings(ContentSettingsType::NOTIFICATIONS);
 
     auto test_delegate = std::make_unique<TestSearchEngineDelegate>();
@@ -168,6 +172,8 @@ class SearchPermissionsServiceTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
+
+  base::test::ScopedFeatureList features_;
 
   // This is owned by the SearchPermissionsService which is owned by the
   // profile.

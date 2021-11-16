@@ -2241,6 +2241,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   // removed and an explicit wait should be added.
   task_environment()->RunUntilIdle();
 
+#if defined(OS_ANDROID)
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      permissions::features::kRevertDSEAutomaticPermissions);
+#endif  // OS_ANDROID
+
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   const GURL kOrigin3("http://host3.com:1");
