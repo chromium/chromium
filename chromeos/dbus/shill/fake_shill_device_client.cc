@@ -340,8 +340,6 @@ void FakeShillDeviceClient::AddDevice(const std::string& device_path,
   properties->SetKey(shill::kDBusServiceProperty,
                      base::Value(modemmanager::kModemManager1ServiceName));
   if (type == shill::kTypeCellular) {
-    properties->SetKey(shill::kCellularAllowRoamingProperty,
-                       base::Value(false));
     properties->SetKey(shill::kCellularPolicyAllowRoamingProperty,
                        base::Value(false));
   }

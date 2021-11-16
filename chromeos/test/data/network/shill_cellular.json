@@ -1,6 +1,7 @@
 {
   "AutoConnect": true,
   "Type": "cellular",
+  "Cellular.AllowRoaming": true,
   "Cellular.APN": {
     "apn": "test-apn",
     "authentication": "chap",

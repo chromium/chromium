@@ -4,6 +4,7 @@
   "Name": "Test Network",
   "Cellular.ActivationState": "activated",
   "Cellular.ActivationType": "OTASP",
+  "Cellular.AllowRoaming": true,
   "Cellular.EID": "test_eid",
   "Cellular.ICCID": "test_iccid",
   "Cellular.NetworkTechnology": "LTE Advanced",
@@ -27,7 +28,6 @@
   "Device": {
     // This dictionary contains Device properties and not Service properties as
     // above.
-    "Cellular.AllowRoaming": true,
     "Cellular.APNList": [
       {
         "apn": "test-apn0",
@@ -56,6 +56,7 @@
       "country": "us",
       "name": "cellular_provider"
     },
+    "Cellular.PolicyAllowRoaming": true,
     "Cellular.SIMLockStatus": {
       "LockType": "sim-pin",
       "LockEnabled": true

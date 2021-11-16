@@ -93,8 +93,8 @@ void DeviceNetworkConfigurationUpdater::Init() {
   // data roaming should be allowed if this is a Cellular First device.
   if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged() &&
       chromeos::switches::IsCellularFirstDevice()) {
-    network_device_handler_->SetCellularAllowRoaming(
-        /*allow_roaming=*/true, /*policy_allow_roaming=*/true);
+    network_device_handler_->SetCellularPolicyAllowRoaming(
+        /*policy_allow_roaming=*/true);
   } else {
     // Apply the roaming setting initially.
     OnDataRoamingSettingChanged();
@@ -170,8 +170,7 @@ void DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged() {
           ? data_roaming_setting
           : true;
 
-  network_device_handler_->SetCellularAllowRoaming(data_roaming_setting,
-                                                   policy_allow_roaming);
+  network_device_handler_->SetCellularPolicyAllowRoaming(policy_allow_roaming);
 }
 
 }  // namespace policy

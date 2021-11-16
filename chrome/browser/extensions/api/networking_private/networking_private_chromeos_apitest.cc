@@ -212,6 +212,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     // Add the Cellular Service.
     AddService(kCellular1ServicePath, "cellular1", shill::kTypeCellular,
                shill::kStateIdle);
+    service_test()->SetServiceProperty(kCellular1ServicePath,
+                                       shill::kCellularAllowRoamingProperty,
+                                       base::Value(false));
     service_test()->SetServiceProperty(
         kCellular1ServicePath, shill::kAutoConnectProperty, base::Value(true));
     service_test()->SetServiceProperty(kCellular1ServicePath,

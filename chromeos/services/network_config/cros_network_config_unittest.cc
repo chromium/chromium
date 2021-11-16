@@ -1338,9 +1338,7 @@ TEST_F(CrosNetworkConfigTest, AllowRoaming) {
   const char* kGUID = "cellular_guid";
   mojom::ManagedPropertiesPtr properties = GetManagedProperties(kGUID);
 
-  ASSERT_TRUE(properties->type_properties->get_cellular()->allow_roaming);
-  ASSERT_FALSE(
-      properties->type_properties->get_cellular()->allow_roaming->active_value);
+  ASSERT_FALSE(properties->type_properties->get_cellular()->allow_roaming);
 
   auto config = mojom::ConfigProperties::New();
   auto cellular_config = mojom::CellularConfigProperties::New();

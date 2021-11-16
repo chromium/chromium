@@ -83,14 +83,15 @@ TEST_F(ShillDeviceClientTest, PropertyChanged) {
   dbus::Signal signal(shill::kFlimflamDeviceInterface,
                       shill::kMonitorPropertyChanged);
   dbus::MessageWriter writer(&signal);
-  writer.AppendString(shill::kCellularAllowRoamingProperty);
+  writer.AppendString(shill::kCellularPolicyAllowRoamingProperty);
   writer.AppendVariantOfBool(kValue);
 
   // Set expectations.
   const base::Value value(kValue);
   MockPropertyChangeObserver observer;
-  EXPECT_CALL(observer, OnPropertyChanged(shill::kCellularAllowRoamingProperty,
-                                          ValueEq(ByRef(value))))
+  EXPECT_CALL(observer,
+              OnPropertyChanged(shill::kCellularPolicyAllowRoamingProperty,
+                                ValueEq(ByRef(value))))
       .Times(1);
 
   // Add the observer
@@ -104,8 +105,9 @@ TEST_F(ShillDeviceClientTest, PropertyChanged) {
   client_->RemovePropertyChangedObserver(dbus::ObjectPath(kExampleDevicePath),
                                          &observer);
 
-  EXPECT_CALL(observer, OnPropertyChanged(shill::kCellularAllowRoamingProperty,
-                                          ValueEq(ByRef(value))))
+  EXPECT_CALL(observer,
+              OnPropertyChanged(shill::kCellularPolicyAllowRoamingProperty,
+                                ValueEq(ByRef(value))))
       .Times(0);
 
   // Run the signal callback again and make sure the observer isn't called.
@@ -121,14 +123,14 @@ TEST_F(ShillDeviceClientTest, GetProperties) {
   writer.OpenArray("{sv}", &array_writer);
   dbus::MessageWriter entry_writer(NULL);
   array_writer.OpenDictEntry(&entry_writer);
-  entry_writer.AppendString(shill::kCellularAllowRoamingProperty);
+  entry_writer.AppendString(shill::kCellularPolicyAllowRoamingProperty);
   entry_writer.AppendVariantOfBool(kValue);
   array_writer.CloseContainer(&entry_writer);
   writer.CloseContainer(&array_writer);
 
   // Set expectations.
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetKey(shill::kCellularAllowRoamingProperty, base::Value(kValue));
+  value.SetKey(shill::kCellularPolicyAllowRoamingProperty, base::Value(kValue));
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
@@ -148,13 +150,13 @@ TEST_F(ShillDeviceClientTest, SetProperty) {
   PrepareForMethodCall(
       shill::kSetPropertyFunction,
       base::BindRepeating(&ExpectStringAndValueArguments,
-                          shill::kCellularAllowRoamingProperty, &value),
+                          shill::kCellularPolicyAllowRoamingProperty, &value),
       response.get());
   // Call method.
   base::MockCallback<base::OnceClosure> mock_closure;
   base::MockCallback<ShillDeviceClient::ErrorCallback> mock_error_callback;
   client_->SetProperty(dbus::ObjectPath(kExampleDevicePath),
-                       shill::kCellularAllowRoamingProperty, value,
+                       shill::kCellularPolicyAllowRoamingProperty, value,
                        mock_closure.Get(), mock_error_callback.Get());
   EXPECT_CALL(mock_closure, Run()).Times(1);
   EXPECT_CALL(mock_error_callback, Run(_, _)).Times(0);
@@ -171,11 +173,11 @@ TEST_F(ShillDeviceClientTest, ClearProperty) {
   PrepareForMethodCall(
       shill::kClearPropertyFunction,
       base::BindRepeating(&ExpectStringArgument,
-                          shill::kCellularAllowRoamingProperty),
+                          shill::kCellularPolicyAllowRoamingProperty),
       response.get());
   // Call method.
   client_->ClearProperty(dbus::ObjectPath(kExampleDevicePath),
-                         shill::kCellularAllowRoamingProperty,
+                         shill::kCellularPolicyAllowRoamingProperty,
                          base::BindOnce(&ExpectNoResultValue));
   // Run the message loop.
   base::RunLoop().RunUntilIdle();

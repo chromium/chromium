@@ -232,6 +232,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     service_test()->AddService(kCellularServicePath, kCellularGuid,
                                kCellularName, shill::kTypeCellular,
                                shill::kStateOnline, true /* visible */);
+    service_test()->SetServiceProperty(kCellularServicePath,
+                                       shill::kCellularAllowRoamingProperty,
+                                       base::Value(false));
     service_test()->SetServiceProperty(
         kCellularServicePath, shill::kAutoConnectProperty, base::Value(true));
     service_test()->SetServiceProperty(

@@ -470,15 +470,6 @@ void ShillToONCTranslator::TranslateCellularWithState() {
         kCellularDeviceTable, network_state_);
     std::unique_ptr<base::DictionaryValue> nested_object =
         nested_translator.CreateTranslatedONCObject();
-    // Do not let any value for |::onc::cellular::kAllowRoaming| that was
-    // translated using the device table override the value that was translated
-    // using the cellular with state table.
-    // TODO(crbug.com/1232818): Remove when
-    // |shill::kCellularAllowRoamingProperty| usage as a Shill device property
-    // is fully deprecated.
-    if (onc_object_->FindKey(::onc::cellular::kAllowRoaming)) {
-      nested_object->RemoveKey(::onc::cellular::kAllowRoaming);
-    }
     onc_object_->MergeDictionary(nested_object.get());
 
     // Both the Scanning property and the ProviderRequiresRoaming property are
