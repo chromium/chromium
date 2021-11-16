@@ -123,7 +123,10 @@ source_set("unit_tests") {
 }
 if (is_ios) {
   fuzzer_test("form_activity_tab_helper_fuzzer") {
-    additional_configs = [ "//build/config/compiler:enable_arc" ]
+    additional_configs = [
+      "//build/config/compiler:enable_arc",
+      "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
+    ]
     sources = [ "form_activity_tab_helper_fuzzer.mm" ]
     deps = [
       ":form_util",
