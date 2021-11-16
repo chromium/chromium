@@ -70,6 +70,8 @@ void NotificationInputContainer::Init() {
   SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  button_->SetTooltipText(
+      l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId()));
 
   OnAfterUserAction(textfield_);
   AddChildView(button_);
