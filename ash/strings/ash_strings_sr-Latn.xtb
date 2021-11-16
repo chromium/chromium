@@ -119,6 +119,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1743570585616704562">Nije prepoznat</translation>
 <translation id="1746730358044914197">Metode unosa konfiguriše administrator.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
+<translation id="1750088060796401187">Maksimalni broj radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite radnu površinu da biste otvorili novu.</translation>
 <translation id="1761222317188459878">Uključite/isključite mrežnu vezu. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Tasterska prečica <ph name="LAUNCHER_KEY_NAME" /> + tačka je promenjena. Da biste koristili taster za umetanje, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Pomeri nadesno</translation>
@@ -200,6 +201,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2352467521400612932">Podešavanja pisaljke</translation>
 <translation id="2354174487190027830">Aktiviranje mreže <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Nastavite</translation>
+<translation id="2360625459710946148">Promeni redosled prema:</translation>
 <translation id="2367186422933365202">Ne možete da se prijavite na Chromebook</translation>
 <translation id="2369165858548251131">„Zdravo“ na kineskom</translation>
 <translation id="2390318262976603432">Podešavanja lokaliteta</translation>
@@ -326,6 +328,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="334252345105450327">Napravi snimak ekrana</translation>
 <translation id="3351879221545518001">Trenutno prebacujete ekran.</translation>
 <translation id="3364721542077212959">Alatke za pisaljku</translation>
+<translation id="3365977133351922112">Telefon je previše daleko. Približite ga.</translation>
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3371140690572404006">Uređaj sa USB priključkom tipa C (desni prednji port)</translation>
 <translation id="3375634426936648815">Povezano</translation>
@@ -594,6 +597,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5176318573511391780">Snimi deo ekrana</translation>
 <translation id="5199367439331364630">Da biste se prijavili na Chromebook-u, unesite lozinku</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još 1 obaveštenje}one{Još # obaveštenje}few{Još # obaveštenja}other{Još # obaveštenja}}</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5208059991603368177">Uključeno</translation>
@@ -697,6 +701,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5977415296283489383">Slušalice</translation>
 <translation id="5978382165065462689">Delite kontrolu nad ekranom preko Daljinske pomoći.</translation>
 <translation id="5980301590375426705">Zatvori kao gost</translation>
+<translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
 <translation id="5992218262414051481">Režim visokog kontrasta je omogućen. Pritisnite Ctrl + taster za pretragu + H ponovo da biste ga isključili.</translation>
 <translation id="6018164090099858612">Izlazak iz režima sa preslikavanjem</translation>
@@ -878,6 +883,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7398254312354928459">Mrežna veza je promenjena</translation>
 <translation id="7405710164030118432">Da biste otključali uređaj, unesite pristupni kôd roditelja za Family Link</translation>
 <translation id="7406608787870898861">Dovršite podešavanje mobilne mreže</translation>
+<translation id="740790383907119240">Prečice za aplikacije</translation>
 <translation id="741244894080940828">konverziju</translation>
 <translation id="7413851974711031813">Pritisnite Escape da biste zatvorili</translation>
 <translation id="742594950370306541">Kamera se koristi.</translation>
@@ -980,6 +986,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
+<translation id="8120151603115102514">Telefon nema zaključani ekran. Da biste otključali Chromebook, unesite lozinku.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132487352815776550">Zaustavi titl</translation>
@@ -1029,6 +1036,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth na Chromebook-u je isključen. Da biste otključali Chromebook, unesite lozinku.</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>

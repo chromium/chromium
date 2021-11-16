@@ -785,7 +785,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird „Fast Transition“ nicht verwendet.</translation>
 <translation id="1972134432340252414">Alte Erweiterungspunkte im Browserprozess blockieren</translation>
 <translation id="1977581177449752640">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remotezugriff ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Setzen Sie die Richtlinie auf <ph name="WILDCARD_VALUE" />, um alle verfügbaren Clientzertifikate zu verwenden. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
-<translation id="1984423899110408165">Onlinerecherchen auf der Chrome-Verlaufsseite anzeigen</translation>
 <translation id="1988345404999458987">Mit dieser Richtlinie können Konfigurationen verfügbarer Druckserver zur Verfügung gestellt werden.
 
       So können Sie <ph name="PRODUCT_OS_NAME" />-Geräten Konfigurationen externer Druckserver als JSON-Datei zur Verfügung stellen.
@@ -1499,14 +1498,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
       Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.</translation>
-<translation id="2725944143509568512">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
-
-      Ist die Richtlinie aktiviert, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
-
-      Wenn die Richtlinie deaktiviert ist, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
-
-      Ist die Richtlinie nicht konfiguriert, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
-      </translation>
 <translation id="2730419309754848345">Standardeinstellung „PDF als Bild drucken“</translation>
 <translation id="2731627323327011390">Verwendung von <ph name="PRODUCT_OS_NAME" />-Zertifikaten für ARC-Apps deaktivieren</translation>
 <translation id="2742843273354638707">Hiermit werden die Chrome Web Store App und der zugehörige Fußzeilenlink auf der "Neuer Tab"-Seite und im App Launcher von <ph name="PRODUCT_OS_NAME" /> ausgeblendet.
@@ -1680,6 +1671,10 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_GEOLOCATION_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="2922511125678964398">Erlauben, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
+<translation id="2931888116345994552">Mit der Richtlinie werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern sie nicht festgelegt oder auf „Aktiviert“ gesetzt ist.
+
+      Wenn sie auf „Deaktiviert“ gesetzt ist, werden die Komponenten nicht aktualisiert. Für einige Komponenten gelten jedoch Ausnahmen: Updates von Komponenten, die keinen ausführbaren Code enthalten und wesentlich für die Sicherheit des Browsers sind, werden nicht deaktiviert.
+      Beispiele für solche Komponenten sind Zertifikatssperrlisten und Unterressourcenfilter.</translation>
 <translation id="2939988360019366928">Zulassen, dass die neuesten <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />-Ergebnisse in der Seitenleiste eines Browsers angezeigt werden</translation>
 <translation id="2940127076681735544">Ist für die Richtlinie eine gültige URL angegeben, lädt <ph name="PRODUCT_NAME" /> die Websiteliste von dieser URL herunter und wendet die Regeln so an, als wären sie mit der Richtlinie "<ph name="SITELIST_POLICY_NAME" />" konfiguriert worden.
 
@@ -2735,6 +2730,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> deaktiviert.</translation>
 <translation id="4203879074082863035">Nur Drucker in der Zulassungsliste werden Nutzern angezeigt</translation>
+<translation id="4204327073692415353">Nutzer nicht auffordern, auf dem Anmeldebildschirm ein Clientzertifikat auszuwählen</translation>
 <translation id="4205316772333487392">Verwendung von SafeSearch in der Google Suche erzwingen</translation>
 <translation id="4209297478239988291">Mit dieser Richtlinie wird die Bedienungshilfe "Automatisch klicken" aktiviert.
 
@@ -5452,6 +5448,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7477231245051133709">Bedienungshilfe "Mono-Audio" aktivieren</translation>
 <translation id="7477239290070847560">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
+<translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>
 <translation id="7491720878670299691">Häufigkeit, mit der Netzwerkdaten gepollt und auf Ereignisse geprüft werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 1 Minute.</translation>
@@ -5547,6 +5544,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Einheitenumrechnung über „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Einheitenumrechnung über „Schnellinfo“ deaktiviert.</translation>
+<translation id="7587345076013230465">Nutzer auffordern, auf dem Anmeldebildschirm das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt</translation>
 <translation id="7590188804371204512">Hiermit kann die Installation externer Erweiterungen verwaltet werden.
 
       Wenn diese Einstellung aktiviert ist, wird die Installation externer Erweiterungen blockiert.
@@ -6606,7 +6604,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8839799083601163225">Mit dieser Richtlinie kann festgelegt werden, ob der Netzwerkdienstprozess in einer Sandbox ausgeführt wird.
       Wenn die Richtlinie aktiviert ist, wird der Netzwerkdienstprozess in einer Sandbox ausgeführt.
       Ist sie deaktiviert, erfolgt die Ausführung des Netzwerkdienstprozesses nicht in einer Sandbox. Dadurch entstehen zusätzliche Sicherheitsrisiken für den Nutzer, die auf die Ausführung des Netzwerkdienstes ohne Sandbox zurückzuführen sind.
-      Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für die Netzwerk-Sandbox zum Einsatz. Dies kann abhängig vom <ph name="PRODUCT_NAME" />-Release, aktuell laufenden Feldtests und der Plattform variieren.
+      Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für die Netzwerk-Sandbox zum Einsatz. Diese kann abhängig vom <ph name="PRODUCT_NAME" />-Release, aktuell laufenden Feldtests und der Plattform variieren.
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Netzwerk-Sandbox zu deaktivieren, falls sie Drittanbieter-Software einsetzen, die einen Konflikt mit der Netzwerkdienst-Sandbox verursacht.</translation>
 <translation id="8842208363354615697">Aktivieren des Nur-HTTPS-Modus erlauben</translation>
 <translation id="885147810817138322">Nutzern Empfehlungen zu Medien anzeigen</translation>

@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
+<translation id="360089215033199597">Свързването с Wi-Fi се препоръчва, тъй като ще улесни поправката.
+        Мрежата ви ще бъде запазена.</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
@@ -480,6 +482,7 @@
 <translation id="816013303019725643">Въведете кода за отключване:</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
+<translation id="8217675307824400706">Установяване на връзка</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="8286154143153872371">Моля, свържете се с мрежа и презаредете страницата, за да прегледате тапета.</translation>

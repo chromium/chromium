@@ -595,6 +595,7 @@
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">O dispositivo está bloqueado</translation>
 <translation id="1612019740169791082">A configuración do teu contedor non permite realizar cambios no tamaño do disco. Se queres axustar a cantidade de espazo reservado para Linux, fai unha copia de seguranza e restaura os datos nun contedor novo.</translation>
+<translation id="1613019471223620622">Mostrar contrasinal de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">É posible que consumises o teu límite de datos móbiles. Visita o portal de activación de <ph name="NAME" /> para comprar máis datos</translation>
 <translation id="161460670679785907">Non se puido detectar o teu teléfono</translation>
 <translation id="1615337439947999338">Gardar na túa Conta de Google (<ph name="EMAIL" />)</translation>
@@ -1202,6 +1203,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Fonte de información sen nome</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Debes seleccionar polo menos un álbum da galería de arte</translation>
 <translation id="2224551243087462610">Editar o nome do cartafol</translation>
@@ -2906,6 +2908,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3957844511978444971">Para confirmar a selección destas opcións de configuración de servizos de Google, toca Aceptar.</translation>
 <translation id="3958088479270651626">Importar marcadores e configuración</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Modo de lector</translation>
 <translation id="3964480518399667971">Desactivar rede móbil</translation>
 <translation id="3965811923470826124">Con</translation>
 <translation id="3965965397408324205">Saír de <ph name="PROFILE_NAME" /></translation>
@@ -3321,6 +3324,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4444304522807523469">Acceso aos escáneres de documentos conectados a través de USB ou que se atopan na rede local</translation>
 <translation id="4444512841222467874">Se non se libera espazo, é posible que se eliminen automaticamente usuarios e datos.</translation>
 <translation id="4446933390699670756">Duplicado</translation>
+<translation id="4448914100439890108">Ocultar contrasinal de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">O teu nome de usuario pertence á conta de empresa da túa organización. Para rexistrar dispositivos na conta, verifica a propiedade do dominio na consola de administración. Se queres realizar esta verificación, deberás ter privilexios administrativos sobre a conta.</translation>
 <translation id="4449996769074858870">Esta pestana está reproducindo audio.</translation>
 <translation id="4450274068924249931">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación. Se activas o protector de pantalla, esta permanecerá acesa durante a carga.</translation>
@@ -3844,6 +3848,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5009463889040999939">Cambiando nome de perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="5010043101506446253">Autoridade de certificación</translation>
 <translation id="5015344424288992913">Resolvendo proxy...</translation>
+<translation id="5016491575926936899">Podes enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet, responder cando recibas notificacións de conversas e desbloquear o dispositivo <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Podes navegar polas páxinas cun cursor de texto. Preme Control+Buscar+7 para desactivar esta función.</translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
@@ -4432,6 +4437,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5638309510554459422">Busca extensións e temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Volve cargar esta páxina e agarda para ver máis opcións</translation>
 <translation id="5640133431808313291">Xestionar chaves de seguranza</translation>
+<translation id="5641608986289282154">Empeza a utilizar <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Asinante de CRL</translation>
 <translation id="5643321261065707929">Rede de pago por consumo</translation>
 <translation id="5643620609347735571">Borrar e continuar</translation>

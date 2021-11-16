@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Не распазнана</translation>
 <translation id="1746730358044914197">Метады ўводу наладжаны адміністратарам.</translation>
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
+<translation id="1750088060796401187">Дазволеная колькасць сталоў – <ph name="MAX_DESK_LIMIT" />. Каб адкрыць новы стол, выдаліце адзін з папярэдніх.</translation>
 <translation id="1761222317188459878">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + кропка. Каб выканаць дзеянне клавішы Insert, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>

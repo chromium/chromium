@@ -186,6 +186,7 @@
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
 <translation id="4131410914670010031">흑백</translation>
+<translation id="4140251671072434548">RMA 서버 잠금 해제 수행</translation>
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
 <translation id="4155551848414053977">스캐너가 켜져 있으며 네트워크 또는 직접 연결을 통해 사용 가능한지 확인하세요.</translation>
@@ -472,6 +473,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">잠금 해제 코드 입력:</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8217675307824400706">연결</translation>

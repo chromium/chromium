@@ -35,6 +35,7 @@
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1197267115302279827">Перемістити закладки</translation>
 <translation id="1201402288615127009">Далі</translation>
+<translation id="1202892408424955784">Відстежувані товари</translation>
 <translation id="1204037785786432551">Завантажити дані за посиланням</translation>
 <translation id="1206892813135768548">Копіювати текст посилання</translation>
 <translation id="1208340532756947324">Щоб синхронізувати й персоналізувати дані на пристроях, увімкніть синхронізацію</translation>
@@ -81,6 +82,7 @@
 <translation id="1414981605391750300">З’єднання з Google. Це може зайняти хвилину…</translation>
 <translation id="1416550906796893042">Версія додатка</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1448440926884431741">Впорядковуйте відстежувані товари в закладках</translation>
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Виберіть мову Chrome</translation>
 <translation id="147113415845704694">Спробуйте запитати "Яка сьогодні погода?"</translation>
@@ -133,6 +135,7 @@
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
+<translation id="1894023287452300670">Відстежуйте ціну тут</translation>
 <translation id="1905320231301365059">Файли, які ви завантажуєте в режимі анонімного перегляду, можуть переглядати всі користувачі цього пристрою.</translation>
 <translation id="1910950723001426294">Список параметрів спільного доступу закрито.</translation>
 <translation id="1918175104945982129">Інтерфейс надання згоди на голосовий пошук через Асистента відкрито на половину висоти</translation>
@@ -344,6 +347,7 @@
 <translation id="3029704984691124060">Парольні фрази не збігаються</translation>
 <translation id="3031225630520268969">Інтерфейс надання згоди на голосовий пошук через Асистента</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
 <translation id="3046945242843292318">Переходьте на цей сайт швидше</translation>
 <translation id="305593374596241526">Геодані вимкнено. Увімкніть їх у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
@@ -502,6 +506,7 @@
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4045764304651014138">Дані про використання</translation>
+<translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="4056223980640387499">Сепія</translation>
 <translation id="4060598801229743805">Панель інструментів розташовано вгорі екрана</translation>
 <translation id="4062305924942672200">Правова інформація</translation>
@@ -555,6 +560,7 @@
 <translation id="4409271659088619928">Ваша пошукова система – <ph name="DSE" />. Перегляньте її вказівки щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="4411535500181276704">Спрощений режим</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
+<translation id="4425140285732600465">Ціна відстежується. Отримуйте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4450672886426705087">Результати з Пошуку Google.</translation>
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
@@ -752,6 +758,7 @@
 <translation id="5548606607480005320">Перевірка безпеки</translation>
 <translation id="5555525474779371165">Виберіть вид захисту в Безпечному перегляді</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
+<translation id="555816257274242153">Відстеження ціни зупинено</translation>
 <translation id="5561549206367097665">Очікується мережа…</translation>
 <translation id="5568069709869097550">Не вдалося ввійти</translation>
 <translation id="55737423895878184">Геодані та сповіщення дозволено</translation>
@@ -802,9 +809,11 @@
 <translation id="5833984609253377421">Поділитися посиланням</translation>
 <translation id="5834764604050996579">Щоб зісканувати QR-код, надайте Chrome доступ до камери</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Впорядковуйте відстежувані товари в закладках через значок папки</translation>
 <translation id="5853623416121554550">призупинено</translation>
 <translation id="5854512288214985237">Компанія Google не отримуватиме статистику та звіти про аварійне завершення роботи</translation>
 <translation id="5855546874025048181">Уточнити: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Сталася помилка. Не вдалось оновити відстеження ціни.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5862731021271217234">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію</translation>
@@ -860,6 +869,7 @@
 <translation id="6140912465461743537">Країна або регіон</translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
+<translation id="6150320133806434356">Закладку збережено</translation>
 <translation id="6154478581116148741">Щоб експортувати паролі з цього пристрою, увімкніть блокування екрана</translation>
 <translation id="6159335304067198720">Заощадження даних: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Історію буде видалено на всіх синхронізованих пристроях.</translation>
@@ -874,6 +884,7 @@
 Наприклад, деякі веб-сайти можуть реагувати на такий запит, показуючи вам рекламу, не пов’язану з іншими веб-сайтами, які ви відвідали. Багато веб-сайтів і надалі збиратимуть та використовуватимуть ваші дані веб-перегляду, наприклад, щоб покращувати систему безпеки, пропонувати вміст, рекламу й рекомендації, а також генерувати статистику для звітів.</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
+<translation id="6277722725779679269">Не вдалось оновити відстеження ціни</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Ви можете надсилати вкладки між пристроями, на яких увійшли в той самий обліковий запис Google</translation>
@@ -907,6 +918,7 @@
 <translation id="6411219469806822692">Не вдається прокрутити далі вгору. Спробуйте почати вище на сторінці.</translation>
 <translation id="6412673304250309937">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігається в Chrome. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати Безпечному перегляду URL-адреси, зокрема уривки вмісту сторінки.</translation>
 <translation id="641643625718530986">Друк…</translation>
+<translation id="6422857128426228781">Відстежувані товари можна переглянути тут</translation>
 <translation id="6433501201775827830">Виберіть пошукову систему</translation>
 <translation id="6434309073475700221">Відхилити</translation>
 <translation id="6437478888915024427">Інформація про сторінку</translation>
@@ -984,6 +996,7 @@
 <translation id="6817747507826986771">Швидко діліться цією сторінкою. Щоб змінити функцію цієї кнопки, натисніть і втримуйте її.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Вибрано вкладку "<ph name="TAB_TITLE" />"</translation>
+<translation id="6828070228333235514">Зупинити відстеження ціни</translation>
 <translation id="6846298663435243399">Завантаження…</translation>
 <translation id="6850409657436465440">Завантаження ще триває</translation>
 <translation id="6850830437481525139">Закрито вкладок: <ph name="TAB_COUNT" /></translation>
@@ -1300,6 +1313,7 @@
 <translation id="8571213806525832805">Останні 4 тижні</translation>
 <translation id="8572344201470131220">Зображення скопійовано</translation>
 <translation id="8583805026567836021">Очищення даних облікового запису</translation>
+<translation id="859046281437143747">Відстежувати ціну через кнопку "Більше опцій"</translation>
 <translation id="860043288473659153">Ім’я та прізвище власника картки</translation>
 <translation id="8602358303461588329">Вікно "Увійти в Chrome" закрите.</translation>
 <translation id="860282621117673749">Сповіщення про зниження цін</translation>

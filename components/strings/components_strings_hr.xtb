@@ -156,6 +156,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1422930527989633628">Može tražiti dopuštenje za otkrivanje Bluetooth uređaja u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Spremnik za slaganje u snopove 7</translation>
+<translation id="142858679511221695">Korisnik oblaka</translation>
 <translation id="1428729058023778569">Upozorenje vam se prikazuje jer ova web-lokacija ne podržava HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1432581352905426595">Upravljaj tražilicama</translation>
@@ -712,6 +713,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3329013043687509092">Zasićenje</translation>
 <translation id="3333762389743153920">Ne ispunjava kriterije virtualne kartice</translation>
 <translation id="3338095232262050444">Sigurno</translation>
+<translation id="3339446062576134663">Oblak (Ash)</translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="3360103848165129075">List rukovatelja plaćanjima</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" /> sljedeće informacije:
@@ -734,6 +736,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3380365263193509176">Nepoznata pogreška</translation>
 <translation id="3380864720620200369">ID klijenta:</translation>
 <translation id="3381668585148405088">Potvrdite kupnju</translation>
+<translation id="3383566085871012386">Trenutačni redoslijed prednosti</translation>
 <translation id="3387261909427947069">Načini plaćanja</translation>
 <translation id="3391030046425686457">Adresa za dostavu</translation>
 <translation id="3391482648489541560">uređivanje datoteka</translation>
@@ -1401,6 +1404,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5478437291406423475">B6/C4 (omotnica)</translation>
 <translation id="5481076368049295676">Ovaj sadržaj može pokušati na vaš uređaj instalirati opasan softver koji krade ili briše podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Dodajte važeću adresu</translation>
+<translation id="5485973315555778056">Stroj u oblaku</translation>
 <translation id="5490432419156082418">Adrese i više</translation>
 <translation id="5492298309214877701">Web-lokacija na intranetu tvrtke, organizacije ili škole ima isti URL kao i vanjska web-lokacija.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1434,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5571083550517324815">Preuzimanje na toj adresi nije moguće. Odaberite drugu adresu.</translation>
 <translation id="5580958916614886209">Provjerite mjesec isteka, pa pokušajte ponovo</translation>
 <translation id="5586446728396275693">Nema nijedne spremljene adrese</translation>
+<translation id="5587987780934666589">Korisnik platforme</translation>
 <translation id="5593349413089863479">Veza nije potpuno sigurna</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="5598944008576757369">Odaberite način plaćanja</translation>
@@ -2114,6 +2119,7 @@ Dodatne pojedinosti:
 <translation id="7953569069500808819">Rubni šav pri vrhu</translation>
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7961015016161918242">Nikad</translation>
+<translation id="7962467575542381659">Stroj platforme</translation>
 <translation id="7966803981046576691">Vrsta poslovnog računa</translation>
 <translation id="79682505114836835">Vrijednost "<ph name="VALUE" />" nije važeća heksadecimalna boja.</translation>
 <translation id="7968982339740310781">Prikaži pojedinosti</translation>

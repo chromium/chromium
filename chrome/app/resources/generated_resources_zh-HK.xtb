@@ -599,7 +599,7 @@
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的裝置已鎖定</translation>
 <translation id="1612019740169791082">您的容器並未設定至可以支援調整磁碟大小。如要調整保留給 Linux 的空間數量，請先備份容器，然後再復原至新容器。</translation>
-<translation id="1613019471223620622">在 <ph name="DOMAIN" /> 上顯示 <ph name="USERNAME" /> 的密碼</translation>
+<translation id="1613019471223620622">喺 <ph name="DOMAIN" /> 上面顯示 <ph name="USERNAME" /> 嘅密碼</translation>
 <translation id="1614511179807650956">您可能已用盡流動數據配額。前往 <ph name="NAME" /> 啟用入口網站即可購買更多數據用量。</translation>
 <translation id="161460670679785907">無法偵測您的手機</translation>
 <translation id="1615337439947999338">儲存在 Google 帳戶 (<ph name="EMAIL" />) 中</translation>
@@ -1215,7 +1215,7 @@
 <translation id="2220529011494928058">報告問題</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
-<translation id="222201875806112242">未命名的媒體來源</translation>
+<translation id="222201875806112242">未命名嘅媒體來源</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
@@ -2928,6 +2928,7 @@
 <translation id="3957844511978444971">輕按 [接受]，即表示您確認選擇這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
 <translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
@@ -3344,7 +3345,7 @@
 <translation id="4444304522807523469">存取透過 USB 外接或區域網絡上的文件掃描器</translation>
 <translation id="4444512841222467874">如未釋出可用儲存空間，系統可能會自動移除使用者和資料。</translation>
 <translation id="4446933390699670756">鏡像</translation>
-<translation id="4448914100439890108">在 <ph name="DOMAIN" /> 上隱藏 <ph name="USERNAME" /> 的密碼</translation>
+<translation id="4448914100439890108">喺 <ph name="DOMAIN" /> 上面隱藏 <ph name="USERNAME" /> 嘅密碼</translation>
 <translation id="4449948729197510913">您的使用者名稱屬於您機構的企業帳戶。如要將裝置註冊至此帳戶，請先在管理控制台驗證網域擁有權。您需要擁有帳戶的管理員權限才能進行驗證。</translation>
 <translation id="4449996769074858870">這個分頁正在播放音效檔案。</translation>
 <translation id="4450274068924249931">在螢幕閒置時顯示相片、時間、天氣和媒體資訊。啟用螢幕保護程式後，螢幕在充電時亦會保持開啟。</translation>
@@ -3870,7 +3871,7 @@
 <translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="5010043101506446253">憑證授權單位</translation>
 <translation id="5015344424288992913">正在解析 Proxy…</translation>
-<translation id="5016491575926936899">你可以從電腦傳送訊息、分享網際網路連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5016491575926936899">您可從電腦發短訊、分享互聯網連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">您可使用文字游標導覽網頁。按 Ctrl+Search+7 鍵即可關閉。</translation>
 <translation id="5017828934289857214">稍後提醒我</translation>
 <translation id="5018207570537526145">開啟擴充程式網站</translation>

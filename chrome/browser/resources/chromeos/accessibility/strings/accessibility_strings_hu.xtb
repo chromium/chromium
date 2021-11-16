@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{szögletes berekesztő zárójel}other{# szögletes berekesztő zárójel}}</translation>
 <translation id="3494946239022273294">menüelem</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{kérdőjel}other{# kérdőjel}}</translation>
+<translation id="3505359110822747654">ChromeVox-menük összecsukása</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{csúcsos ékezet}other{# csúcsos ékezet}}</translation>
 <translation id="352577523970648069">Szerkeszthető szövegmező</translation>
 <translation id="3538907380453898475">leirlista</translation>

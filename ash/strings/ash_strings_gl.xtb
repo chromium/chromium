@@ -119,6 +119,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1743570585616704562">Non se recoñece</translation>
 <translation id="1746730358044914197">O teu administrador configura os métodos de entrada.</translation>
 <translation id="1747827819627189109">Teclado en pantalla activado</translation>
+<translation id="1750088060796401187">Só se permite un máximo de <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir outro, quita un dos anteriores.</translation>
 <translation id="1761222317188459878">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Cambiouse o atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + Punto. Para utilizar a tecla Inserir, preme <ph name="LAUNCHER_KEY_NAME" /> + Maiúsculas + Retroceso.</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>

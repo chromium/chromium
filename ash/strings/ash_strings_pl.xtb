@@ -119,6 +119,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1743570585616704562">Nie rozpoznano</translation>
 <translation id="1746730358044914197">Metody wprowadzania zostały skonfigurowane przez administratora.</translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
+<translation id="1750088060796401187">Dopuszczalna liczba biurek to <ph name="MAX_DESK_LIMIT" />. Jeśli chcesz otworzyć nowe, usuń jedno z dotychczasowych.</translation>
 <translation id="1761222317188459878">Włącz lub wyłącz połączenie sieciowe. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + kropka został zmieniony. Aby użyć klawisza Insert, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>

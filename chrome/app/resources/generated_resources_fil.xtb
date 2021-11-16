@@ -1234,6 +1234,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2232751457155581899">Puwede ring hilingin ng mga site na i-track ang posisyon ng iyong camera</translation>
 <translation id="2232876851878324699">Naglalaman ang file ng isang certificate, na hindi na-import:</translation>
 <translation id="2233502537820838181">&amp;Higit pang impormasyon</translation>
+<translation id="223356358902285214">Aktibidad sa Web at App</translation>
 <translation id="2234876718134438132">Sync at mga serbisyo ng Google</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238379619048995541">Data ng Estado ng Dalas</translation>
@@ -1923,6 +1924,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2923006468155067296">Ila-lock ngayon ang iyong <ph name="DEVICE_TYPE" />.
 Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart card.</translation>
 <translation id="2923234477033317484">Alisin ang account na ito</translation>
+<translation id="2923644930701689793">I-access ang camera roll ng iyong telepono</translation>
 <translation id="2926085873880284723">I-restore ang mga default na shortcut</translation>
 <translation id="2926620265753325858">Hindi sinusuportahan ang <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">Storage ng Cache</translation>
@@ -2927,6 +2929,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3957844511978444971">I-tap ang “Tanggapin” para kumpirmahin ang iyong pagpili sa mga setting ng mga serbisyo ng Google na ito.</translation>
 <translation id="3958088479270651626">I-import ang mga bookmark at setting</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3964480518399667971">I-off ang Cellular network</translation>
 <translation id="3965811923470826124">Gamit ang</translation>
 <translation id="3965965397408324205">Lumabas sa <ph name="PROFILE_NAME" /></translation>
@@ -3114,6 +3117,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4168015872538332605">Ang ilang setting ni <ph name="PRIMARY_EMAIL" /> ay ibinabahagi sa iyo. Naaapektuhan lang ng mga setting na ito ang iyong account kapag gumagamit ng multiple na pag-sign in.</translation>
 <translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4170314459383239649">I-clear sa Paglabas</translation>
+<translation id="417096670996204801">Pumili ng profile</translation>
 <translation id="4175137578744761569">Light purple at puti</translation>
 <translation id="4175737294868205930">Matagalang storage</translation>
 <translation id="4176463684765177261">Hindi pinapaganana</translation>

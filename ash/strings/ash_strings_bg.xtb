@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Не е разпознато</translation>
 <translation id="1746730358044914197">Методите на въвеждане са конфигурирани от администратора ви.</translation>
 <translation id="1747827819627189109">Екранната клавиатура е активирана</translation>
+<translation id="1750088060796401187">Допускат се до <ph name="MAX_DESK_LIMIT" /> работни къта. Премахнете някой от съществуващите, за да създадете нов.</translation>
 <translation id="1761222317188459878">Превключване на връзката с мрежа. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Клавишната комбинация <ph name="LAUNCHER_KEY_NAME" /> + точка се промени. За да използвате клавиша Insert, натиснете клавиша <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>

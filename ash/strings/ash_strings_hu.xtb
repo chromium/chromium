@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Nem sikerült felismerni</translation>
 <translation id="1746730358044914197">A rendszergazda állította be a beviteli módszereket.</translation>
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
+<translation id="1750088060796401187">Csak <ph name="MAX_DESK_LIMIT" /> asztal engedélyezett. Távolítsa el valamelyik asztalt, ha újat kíván nyitni.</translation>
 <translation id="1761222317188459878">Hálózati kapcsolat ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">A(z) <ph name="LAUNCHER_KEY_NAME" /> + pont billentyűkombináció módosult. A Beillesztés billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace billentyűkombinációt.</translation>
 <translation id="1771761307086386028">Görgetés jobbra</translation>
@@ -200,6 +201,7 @@
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2360625459710946148">Átrendezés a következő szerint:</translation>
 <translation id="2367186422933365202">Nem lehet bejelentkezni a Chromebookra</translation>
 <translation id="2369165858548251131">„Helló” kínai nyelven</translation>
 <translation id="2390318262976603432">Nyelv- és országkód beállításai</translation>
@@ -700,6 +702,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5977415296283489383">Fülhallgató</translation>
 <translation id="5978382165065462689">A képernyő irányításának megosztása a Távsegítség szolgáltatás keretein belül.</translation>
 <translation id="5980301590375426705">Kilépés vendégként</translation>
+<translation id="598407983968395253">Sablon használata</translation>
 <translation id="598882571027504733">A frissítés lekéréséhez indítsa újra a Chromebookot a csatlakoztatott billentyűzet segítségével.</translation>
 <translation id="5992218262414051481">Nagy kontrasztú mód bekapcsolva. Kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+H billentyűparancsot.</translation>
 <translation id="6018164090099858612">Kilépés a tükrözési módból</translation>

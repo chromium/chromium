@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{pravá hranatá závorka}few{# pravé hranaté závorky}many{# right brackets}other{# pravých hranatých závorek}}</translation>
 <translation id="3494946239022273294">pol nabíd</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{otazník}few{# otazníky}many{# question marks}other{# otazníků}}</translation>
+<translation id="3505359110822747654">Sbalit nabídky ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{stříška}few{# stříšky}many{# carets}other{# stříšek}}</translation>
 <translation id="352577523970648069">Upravitelné textové pole</translation>
 <translation id="3538907380453898475">seznpopisů</translation>

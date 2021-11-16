@@ -119,6 +119,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1743570585616704562">Nerozpoznáno</translation>
 <translation id="1746730358044914197">Metody zadávání nastavuje váš administrátor.</translation>
 <translation id="1747827819627189109">Softwarová klávesnice je aktivována</translation>
+<translation id="1750088060796401187">Je povoleno max. <ph name="MAX_DESK_LIMIT" /> ploch. Pokud chcete otevřít novou plochu, odstraňte stávající.</translation>
 <translation id="1761222317188459878">Přepnout připojení k síti. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + tečka se změnila. Pokud chcete použít klávesu Insert, stiskněte klávesu <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Posunout doprava</translation>

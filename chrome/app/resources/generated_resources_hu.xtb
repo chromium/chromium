@@ -599,6 +599,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611432201750675208">Eszköze zárolva van</translation>
 <translation id="1612019740169791082">A tárolónál nincs beállítva a lemezátméretezés támogatása. Ha módosítani szeretné a Linux számára lefoglalt területet, készítsen biztonsági másolatot az adatokról, majd állítsa vissza őket új tárolóban.</translation>
+<translation id="1613019471223620622"><ph name="USERNAME" /> jelszavának megjelenítése a következőhöz: <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Valószínűleg elérte a mobiladat-használatra vonatkozó korlátozást. További adatforgalom vásárlásához keresse fel a(z) <ph name="NAME" /> aktiválási portált.</translation>
 <translation id="161460670679785907">Nem sikerült észlelni a telefont</translation>
 <translation id="1615337439947999338">Mentés a Google-fiókba (<ph name="EMAIL" />)</translation>
@@ -1214,6 +1215,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2220529011494928058">Probléma bejelentése</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Névtelen médiaforrás</translation>
 <translation id="2224444042887712269">Ez a beállítás a következő fiókhoz tartozik: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Legalább egy Művészeti albumot ki kell választani</translation>
 <translation id="2224551243087462610">Mappa nevének szerkesztése</translation>
@@ -2921,6 +2923,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3957844511978444971">Koppintson az „Elfogadás” lehetőségre a Google-szolgáltatások jelen beállításainak megerősítéséhez.</translation>
 <translation id="3958088479270651626">Könyvjelzők és beállítások importálása</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Olvasási mód</translation>
 <translation id="3964480518399667971">Mobilhálózat kikapcsolása</translation>
 <translation id="3965811923470826124">Biztonságos névfeloldó</translation>
 <translation id="3965965397408324205">Kilépés a(z) <ph name="PROFILE_NAME" /> profilból</translation>
@@ -3336,6 +3339,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4444304522807523469">USB-kapcsolaton vagy a helyi hálózaton keresztül csatlakoztatott szkennerek elérése</translation>
 <translation id="4444512841222467874">Ha nem szabadít fel tárhelyet, előfordulhat, hogy a rendszer automatikusan eltávolít bizonyos felhasználókat és adatokat.</translation>
 <translation id="4446933390699670756">Tükrözött</translation>
+<translation id="4448914100439890108"><ph name="USERNAME" /> jelszavának elrejtése a következőhöz: <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Felhasználóneve a szervezet vállalati fiókjához tartozik. Először igazolnia kell a domain tulajdonjogát a Felügyeleti Konzolban, csak ezután regisztrálhat eszközt. Az igazolás végrehajtásához rendszergazdajogokkal kell rendelkeznie a fiókban.</translation>
 <translation id="4449996769074858870">Ez a lap hangot játszik le.</translation>
 <translation id="4450274068924249931">Tétlen képernyőjén megjelenhetnek fotók, az idő, az időjárás vagy a hírek. A képernyővédő engedélyezésével a kijelző bekapcsolva marad töltés közben.</translation>
@@ -3860,6 +3864,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5009463889040999939">Profil átnevezése. Ez eltarthat néhány percig.</translation>
 <translation id="5010043101506446253">Tanúsítványkibocsátó</translation>
 <translation id="5015344424288992913">Proxy azonosítása folyamatban...</translation>
+<translation id="5016491575926936899">Számítógépről küldhet SMS-t, megoszthatja az internetkapcsolatot, válaszolhat a beszélgetések értesítéseire, és feloldhatja <ph name="DEVICE_TYPE" /> eszköze zárolását a telefonjával.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5017643436812738274">Az oldalakon szövegkurzorral navigálhat. A funkció kikapcsolásához használja a Ctrl + Keresés + 7 billentyűkombinációt.</translation>
 <translation id="5017828934289857214">Emlékeztessen később</translation>
 <translation id="5018207570537526145">Bővítmény webhelyének megnyitása</translation>
@@ -4452,6 +4457,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5638309510554459422">Bővítményeket és témákat a <ph name="BEGIN_LINK" />Chrome Internetes áruházban<ph name="END_LINK" /> kereshet</translation>
 <translation id="5639549361331209298">Az oldal újratöltése – további lehetőségek megtekintéséhez tartsa lenyomva.</translation>
 <translation id="5640133431808313291">Biztonsági hardverkulcsok kezelése</translation>
+<translation id="5641608986289282154">A(z) <ph name="DEVICE_OS" /> használatának megkezdése</translation>
 <translation id="5642508497713047">Tanúsítvány-visszavonási lista aláírója</translation>
 <translation id="5643321261065707929">Forgalomkorlátos hálózat</translation>
 <translation id="5643620609347735571">Törlés és folytatás</translation>

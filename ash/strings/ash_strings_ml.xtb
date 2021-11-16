@@ -354,6 +354,15 @@
 <translation id="3509391053705095206">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="3513798432020909783">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_EMAIL" /> ആണ്</translation>
+<translation id="3518604429872942239">സ്റ്റാറ്റസ് ട്രേ, സമയം <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{ഒരു മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3552189655002856821">വൈഫൈ ഓഫാണ്</translation>
@@ -376,6 +385,7 @@
 <translation id="3630697955794050612">ഓഫാണ്</translation>
 <translation id="3631369015426612114">ഇനിപ്പറയുന്നതിൽ നിന്നുള്ള അറിയിപ്പുകൾ അനുവദിക്കുക</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="3649505501900178324">അപ്‌ഡേറ്റ് കാലാവധി കഴിഞ്ഞിരിക്കുന്നു</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക</translation>
@@ -458,6 +468,7 @@
 <translation id="4215497585250573029">VPN ക്രമീകരണം</translation>
 <translation id="4217571870635786043">പറഞ്ഞ് കൊടുക്കൽ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു</translation>
+<translation id="4223947355273782392">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളുമായി കൂടുതൽ വേഗത്തിൽ ജോടിയാക്കുന്നതിന് <ph name="EMAIL" /> എന്നതിൽ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>

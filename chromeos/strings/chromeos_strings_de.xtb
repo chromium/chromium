@@ -159,6 +159,8 @@
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="3583278742022654445">Schwaches Signal. Gehen Sie näher an die Quelle des WLAN-Signals heran.</translation>
 <translation id="3595596368722241419">Akku voll</translation>
+<translation id="360089215033199597">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen.
+        Ihr Netzwerk wird gespeichert.</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
 <translation id="3606583719724308068">Hohe Latenz zu HTTPS-Websites</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
@@ -482,6 +484,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="816013303019725643">Geben Sie den Entsperrcode ein:</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
+<translation id="8217675307824400706">Verbindung herstellen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8286154143153872371">Stellen Sie bitte eine Verbindung zu einem Netzwerk her und laden Sie die Seite neu, um den Hintergrund anzusehen.</translation>

@@ -159,6 +159,8 @@
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="3583278742022654445">Ασθενές σήμα. Δοκιμάστε να πλησιάσετε περισσότερο την πηγή του σήματος Wi-Fi.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
+<translation id="360089215033199597">Συνιστάται η σύνδεση σε Wi-Fi για να διευκολύνετε τη διαδικασία επισκευής.
+        Το δίκτυό σας θα αποθηκευτεί.</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
@@ -187,6 +189,7 @@
 <translation id="409427325554347132">Αποθήκευση λεπτομερειών δοκιμής</translation>
 <translation id="4111761024568264522">Οθόνη αφής USB</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
+<translation id="4140251671072434548">Εκτέλεση ξεκλειδώματος διακομιστή εξουσιοδότησης επιστροφής εμπορικών προϊόντων (RMA)</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
@@ -478,8 +481,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Αίτημα για μετρητές επισκεψιμότητας</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Εισαγάγετε τον κωδικό ξεκλειδώματος:</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
+<translation id="8217675307824400706">Συνδεθείτε</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>

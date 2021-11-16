@@ -263,6 +263,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
 <translation id="2561519700418191927">Vaizdo įrašų peržiūros</translation>
 <translation id="2567385386134582609">VAIZDAS</translation>
+<translation id="2567545343356994513">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių</translation>
 <translation id="2571711316400087311">Siūlyti siųsti puslapius kitomis kalbomis į „Google“ vertėją</translation>
 <translation id="2581165646603367611">Bus išvalyti slapukai, talpykla ir kiti svetainių duomenys, kurių „Chrome“ nelaiko svarbiais.</translation>
 <translation id="2587052924345400782">Pasiekiama naujesnė versija</translation>
@@ -491,6 +492,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="395377504920307820">Naudoti be paskyros</translation>
 <translation id="3958287878205277013">Jei norite išvalyti naršymo inkognito režimu istoriją iš įrenginio, uždarykite visus inkognito skirtukus.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{„Chrome“ įkels puslapį, kai bus paruošta}one{„Chrome“ įkels puslapius, kai bus paruošta}few{„Chrome“ įkels puslapius, kai bus paruošta}many{„Chrome“ įkels puslapius, kai bus paruošta}other{„Chrome“ įkels puslapius, kai bus paruošta}}</translation>
+<translation id="3962119236270174787">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi</translation>
 <translation id="3962957115499249330">Matysite pranešimą, kai šis atsisiuntimas prasidės naudojant „Wi-Fi“.</translation>
 <translation id="3963007978381181125">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“. Tik jūsų slaptafrazę žinantis asmuo gali skaityti šifruotus duomenis. Slaptafrazė nesiunčiama į sistemą „Google“ ir joje nesaugoma. Pamiršę slaptafrazę arba norėdami pakeisti šį nustatymą turėsite iš naujo nustatyti sinchronizavimą. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
@@ -964,6 +966,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6627583120233659107">Redaguoti aplanką</translation>
 <translation id="6633067410344541938">Atrakinti inkognito režimą</translation>
 <translation id="663674369910034433">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyse <ph name="BEGIN_LINK1" />„Sinchronizavimas“<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google“ paslaugos“<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Blokuoti visą laiką</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6643649862576733715">Rūšiuoti pagal išsaugotų duomenų kiekį</translation>
 <translation id="6648459603387803038">Administratorius gali nuotoliniu būdu keisti naršyklės sąranką. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.</translation>
@@ -1091,6 +1094,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7435356471928173109">Išjungė jūsų administratorius</translation>
 <translation id="7437998757836447326">Atsijungimas nuo „Chrome“</translation>
 <translation id="7438641746574390233">Kai įjungtas supaprastintasis režimas, „Chrome“ naudoja „Google“ serverius, kad puslapiai būtų įkeliami greičiau. Kai įjungtas supaprastintasis režimas, itin lėti puslapiai perrašomi, kad būtų įkeliamas tik svarbiausias turinys. Supaprastintasis režimas netaikomas inkognito skirtukams.</translation>
+<translation id="7443901082822119557">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="7444811645081526538">Daugiau kategorijų</translation>
 <translation id="7453467225369441013">Būsite atjungti nuo daugelio svetainių. Nebūsite atjungti nuo „Google“ paskyros.</translation>
 <translation id="7454641608352164238">Nepakanka vietos</translation>
@@ -1198,6 +1202,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="799576009106109668">Naršysite greičiau, nes turinys įkeliamas proaktyviai remiantis tinklalapiu, kuriame šiuo metu lankotės</translation>
 <translation id="7998918019931843664">Iš naujo atidarykite uždarytą skirtuko lapą</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
+<translation id="8006818846907410687">Blokuoti naudojant inkognito režimą</translation>
 <translation id="8013372441983637696">Taip pat išvalyti jūsų „Chrome“ duomenis iš šio įrenginio</translation>
 <translation id="8015452622527143194">Grąžinti numatytąjį puslapio turinio dydį</translation>
 <translation id="8026334261755873520">Išvalyti naršymo duomenis</translation>
@@ -1245,6 +1250,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8223642481677794647">Sklaidos kanalo kortelės meniu</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
 <translation id="825412236959742607">Šis puslapis naudoja per daug atminties, todėl „Chrome“ pašalino šiek tiek turinio.</translation>
+<translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8260126382462817229">Bandykite prisijungti dar kartą</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="82619448491672958">Žr. kitus skirtukus</translation>

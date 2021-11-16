@@ -786,7 +786,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì người dùng không thể sử dụng tính năng Chuyển đổi nhanh.</translation>
 <translation id="1972134432340252414">Chặn các điểm tiện ích cũ trong Quá trình chạy trình duyệt</translation>
 <translation id="1977581177449752640">Nếu bạn đặt chính sách này, máy chủ truy cập từ xa sẽ dùng một chứng chỉ máy khách có tên thường gọi (CN) của nhà phát hành cụ thể để xác thực theo <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Để dùng chứng chỉ máy khách có sẵn, hãy đặt chính sách này thành <ph name="WILDCARD_VALUE" />. Tính năng này sẽ bị tắt nếu bạn để trống hoặc không đặt chính sách này.</translation>
-<translation id="1984423899110408165">Hiển thị hành trình trên trang Nhật ký duyệt web trên Chrome</translation>
 <translation id="1988345404999458987">Cung cấp cấu hình của các máy chủ máy in hiện có.
 
       Chính sách này cho phép bạn cung cấp cấu hình của các máy chủ máy in bên ngoài cho thiết bị <ph name="PRODUCT_OS_NAME" /> dưới dạng tệp JSON.
@@ -1517,14 +1516,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2725855586003209701">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo danh sách người dùng thiết bị đã đăng nhập gần đây.
 
       Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo danh sách người dùng.</translation>
-<translation id="2725944143509568512">Chính sách này kiểm soát chế độ hiển thị của hành trình trên trang Nhật ký duyệt web trên Chrome.
-
-      Nếu bạn đặt chính sách này thành Bật, hành trình sẽ hiển thị tại chrome://history/journeys.
-
-      Nếu bạn đặt chính sách này thành Tắt, hành trình sẽ không hiển thị tại chrome://history/journeys.
-
-      Nếu bạn không đặt chính sách này, thì theo mặc định, hành trình sẽ hiển thị tại chrome://history/journeys và người dùng có thể thay đổi chế độ hiển thị của hành trình.
-      </translation>
 <translation id="2730419309754848345">Lựa chọn In tệp PDF dưới dạng hình ảnh mặc định</translation>
 <translation id="2731627323327011390">Tắt sử dụng chứng chỉ <ph name="PRODUCT_OS_NAME" /> đối với ứng dụng ARC</translation>
 <translation id="2742843273354638707">Ẩn ứng dụng Cửa hàng Chrome trực tuyến và liên kết chân trang khỏi Trang thẻ mới và trình chạy ứng dụng <ph name="PRODUCT_OS_NAME" />.

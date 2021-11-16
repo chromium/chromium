@@ -119,6 +119,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1743570585616704562">Ei tuvastatud</translation>
 <translation id="1746730358044914197">Sisestusmeetodid seadistab teie administraator.</translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
+<translation id="1750088060796401187">Lubatud on ainult <ph name="MAX_DESK_LIMIT" /> töölauda. Uue töölaua avamiseks eemaldage mõni olemasolev töölaud.</translation>
 <translation id="1761222317188459878">Lülitab võrguühenduse sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Klaviatuuri otseteed <ph name="LAUNCHER_KEY_NAME" /> + punktiklahv on muudetud. Lisamisklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + tõstuklahvi + tagasilükkeklahvi.</translation>
 <translation id="1771761307086386028">Keri paremale</translation>

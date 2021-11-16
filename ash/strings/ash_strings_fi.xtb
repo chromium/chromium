@@ -119,6 +119,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1743570585616704562">Ei tunnistettu</translation>
 <translation id="1746730358044914197">Järjestelmänvalvoja on määrittänyt syöttötavat.</translation>
 <translation id="1747827819627189109">Ruutunäppäimistö otettiin käyttöön</translation>
+<translation id="1750088060796401187">Vain <ph name="MAX_DESK_LIMIT" /> työpöytää sallittu. Poista jokin työpöytä, jotta voit avata uuden.</translation>
 <translation id="1761222317188459878">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + piste on muuttunut. Jos haluat käyttää Insert-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vaihto + askelpalautin.</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>

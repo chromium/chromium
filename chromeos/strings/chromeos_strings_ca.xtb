@@ -159,6 +159,8 @@
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="3583278742022654445">Intensitat del senyal fluixa. Prova d'apropar-te a la font de senyal de la Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria carregada.</translation>
+<translation id="360089215033199597">Es recomana connectar-se a la Wi-Fi per facilitar el procés de reparació.
+        La teva xarxa es desarà.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
@@ -482,6 +484,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="816013303019725643">Introdueix el codi de desbloqueig:</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
+<translation id="8217675307824400706">Connecta't</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>

@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1–8</translation>
 <translation id="3837047332182291558">Klaviatuuri eredamaks muutmine (ainult taustvalgusega klaviatuuride puhul)</translation>
 <translation id="3949671998904569433">koma</translation>
+<translation id="3976707995992061296">Määrab aktiivse akna kõikidele töölaudadele või tühistab määramise</translation>
 <translation id="3976863468609830880">Riiulis viimasel ikoonil klõpsamine</translation>
 <translation id="3994783594793697310">Ekraani suumitaseme lähtestamine</translation>
 <translation id="4026843240379844265">Aktiivse akna teisaldamine ekraanide vahel</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Ekraanil sissesuumimine</translation>
 <translation id="634687982629734605">Fookuse vahetamine järgmiste vahel: olekuala (kus on kuvatud teie kontopilt), käivitaja, aadressiriba, järjehoidjariba (kui see on nähtav), avatud veebileht, allalaadimiste riba (kui see on nähtav) Kui kuvatud on esiletõstetav dialoog, teisaldage fookus sinna.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /> <ph name="SEPARATOR" /> <ph name="KEY" /></translation>
+<translation id="6372960562287888784">Aktiveerib 1–8. töölaua.</translation>
 <translation id="6395172954772765143">Teksti valimine kuni rea lõpuni</translation>
 <translation id="6425378783626925378">Riiulis ikoonidel 1–8 klõpsamine</translation>
 <translation id="6435207348963613811">Riiulis eelmise üksuse esiletõstmine</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Peidetud failide kuvamine rakenduses Failid</translation>
 <translation id="8717459106217102612">Eelmise sõna või tähe valimine</translation>
 <translation id="8727232706774971183">Märguannete vaatamine</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1–8</translation>
 <translation id="8855885154700222542">Täisekraani klahv</translation>
 <translation id="8881584919399569791">Aktiivne aken teisaldatakse vasakpoolsele töölauale</translation>
 <translation id="88986195241502842">Lehe lõppu</translation>

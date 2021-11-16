@@ -595,6 +595,7 @@
 <translation id="161042844686301425">Plavozelena</translation>
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
 <translation id="1612019740169791082">Kontejner nije konfigurisan za promene veličine diska. Da biste prilagodili količinu prostora koja se rezerviše za Linux, napravite rezervnu kopiju i vratite je u novi kontejner.</translation>
+<translation id="1613019471223620622">Pregledajte lozinku za <ph name="USERNAME" /> na <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Možda ste iskoristili dozvoljenu količinu podataka za mobilne uređaje. Posetite portal za aktivaciju <ph name="NAME" /> da biste kupili još podataka</translation>
 <translation id="161460670679785907">Nismo uspeli da otkrijemo telefon</translation>
 <translation id="1615337439947999338">Sačuvaj na Google nalogu (<ph name="EMAIL" />)</translation>
@@ -1202,6 +1203,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2220529011494928058">Prijavi problem</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Neimenovani izvori medija</translation>
 <translation id="2224444042887712269">Vlasnik ovog podešavanja je <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Mora da bude izabran bar jedan album likovne galerije</translation>
 <translation id="2224551243087462610">Izmena imena direktorijuma</translation>
@@ -2392,6 +2394,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3449393517661170867">Novi prozor sa karticama</translation>
 <translation id="3449839693241009168">Pritisnite <ph name="SEARCH_KEY" /> da biste poslali komande u <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Procenat zauzetosti stanja mirovanja</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje.</translation>
 <translation id="3451753556629288767">Otvaranje tipova fajlova je dozvoljeno</translation>
 <translation id="3452999110156026232">Roditeljski pristup</translation>
 <translation id="3453612417627951340">Potrebno je ovlašćenje</translation>
@@ -2907,6 +2910,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3957844511978444971">Dodirnite „Prihvati“ da biste potvrdili izbor podešavanja ovih Google usluga.</translation>
 <translation id="3958088479270651626">Uvezite obeleživače i podešavanja</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Režim čitaoca</translation>
 <translation id="3964480518399667971">Isključi mobilnu mrežu</translation>
 <translation id="3965811923470826124">Sa razrešivačem</translation>
 <translation id="3965965397408324205">Zatvori <ph name="PROFILE_NAME" /></translation>
@@ -3322,6 +3326,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4444304522807523469">Pristup skenerima za dokumente priključenim preko USB-a ili na lokalnoj mreži</translation>
 <translation id="4444512841222467874">Ako ne oslobodite prostor, korisnici i podaci će možda automatski biti uklonjeni.</translation>
 <translation id="4446933390699670756">Preslikano</translation>
+<translation id="4448914100439890108">Sakrijte lozinku za <ph name="USERNAME" /> na <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Vaše korisničko ime pripada nalogu preduzeća vaše organizacije. Da biste registrovali uređaje na nalogu, potvrdite vlasništvo nad domenom na administratorskoj konzoli. Za potvrdu su vam potrebne administrativne privilegije.</translation>
 <translation id="4449996769074858870">Ova kartica reprodukuje zvuk.</translation>
 <translation id="4450274068924249931">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju. Ako omogućite čuvar ekrana, ekran će ostati uključen tokom punjenja.</translation>
@@ -3845,6 +3850,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5009463889040999939">Menja se ime profila. To može da potraje nekoliko minuta.</translation>
 <translation id="5010043101506446253">Autoritet za izdavanje sertifikata</translation>
 <translation id="5015344424288992913">Određuje se proksi...</translation>
+<translation id="5016491575926936899">Možete da šaljete SMS-ove sa računara, delite internet vezu, odgovarate na obaveštenja o konverzaciji i otključate <ph name="DEVICE_TYPE" /> pomoću telefona.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Možete da se krećete stranicama pomoću kursora za tekst. Pritisnite Ctrl+Search+7 da biste to isključili.</translation>
 <translation id="5017828934289857214">Podseti me kasnije</translation>
 <translation id="5018207570537526145">Otvori veb-sajta dodatka</translation>
@@ -4257,6 +4263,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5472627187093107397">Čuvaj lozinke za ovaj sajt</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora da sadrži bar jedan znak}one{PIN mora da sadrži bar # znak}few{PIN mora da sadrži bar # znaka}other{PIN mora da sadrži bar # znakova}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> zahteva da se odmah povežete na WiFi i da preuzmete ažuriranje. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).</translation>
 <translation id="5481273127572794904">Nije im dozvoljeno da automatski preuzimaju više fajlova</translation>
 <translation id="5481941284378890518">Dodaj obližnje štampače</translation>
 <translation id="5483785310822538350">Opozovi pristup datotekama i uređaju</translation>
@@ -4434,6 +4441,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5638309510554459422">Pronađite dodatke i teme u <ph name="BEGIN_LINK" />Chrome veb-prodavnici<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ponovo učitajte ovu stranicu, zadržite da biste videli više opcija</translation>
 <translation id="5640133431808313291">Upravljajte bezbednosnim ključevima</translation>
+<translation id="5641608986289282154">Počnite da koristite <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL potpisnik</translation>
 <translation id="5643321261065707929">Mreža sa ograničenjem</translation>
 <translation id="5643620609347735571">Obriši i nastavi</translation>
@@ -4682,6 +4690,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="592880897588170157">Preuzmite PDF datoteke da se ne bi automatski otvarale u Chrome-u</translation>
 <translation id="592919310198008711">Kada kliknem na dodatak</translation>
 <translation id="5932124097031739492">Linux je nadograđen.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> zahteva da odmah ažurirate <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="59324397759951282">USB proizvođača <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nemate dovoljno dostupnih licenci za registrovanje ovog Google Meet hardverskog uređaja. Obratite se sektoru prodaje da biste kupili još licenci. Ako smatrate da se ova poruka prikazuje greškom, obratite se podršci.</translation>

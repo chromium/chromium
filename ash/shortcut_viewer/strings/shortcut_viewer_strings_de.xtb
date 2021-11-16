@@ -89,6 +89,7 @@
 <translation id="379295446891231126">"<ph name="CTRL" />" <ph name="SEPARATOR" /> 1 bis 8</translation>
 <translation id="3837047332182291558">Helligkeit der Tastaturbeleuchtung erhöhen (nur für beleuchtete Tastaturen)</translation>
 <translation id="3949671998904569433">Komma</translation>
+<translation id="3976707995992061296">Legen Sie fest, ob das aktive Fenster allen Desktops zugewiesen wird</translation>
 <translation id="3976863468609830880">Auf das letzte Symbol in der Ablage klicken</translation>
 <translation id="3994783594793697310">Display-Zoomstufe zurücksetzen</translation>
 <translation id="4026843240379844265">Aktive Fenster zwischen den Bildschirmen verschieben</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Display heranzoomen</translation>
 <translation id="634687982629734605">Fokus wechseln zwischen: Statusbereich (Bereich mit Kontobild), Launcher, Adressleiste, Lesezeichenleiste (falls sichtbar), offene Webseite und Downloadleiste (falls sichtbar). Wenn ein fokussierbares Dialogfeld angezeigt wird, können Sie den Fokus stattdessen darauf richten.</translation>
 <translation id="6359811074279051077">"<ph name="MODIFIER" />" <ph name="SEPARATOR" /> "<ph name="KEY" />"</translation>
+<translation id="6372960562287888784">Den ersten bis achten Desktop aktivieren.</translation>
 <translation id="6395172954772765143">Text bis zum Zeilenende markieren</translation>
 <translation id="6425378783626925378">Auf Symbole 1 bis 8 in der Ablage klicken</translation>
 <translation id="6435207348963613811">Vorheriges Element in der Ablage markieren</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Verborgene Dateien in der App "Dateien" anzeigen</translation>
 <translation id="8717459106217102612">Vorheriges Wort oder vorherigen Buchstaben markieren</translation>
 <translation id="8727232706774971183">Benachrichtigungen ansehen</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 bis 8</translation>
 <translation id="8855885154700222542">Taste für Vollbildmodus</translation>
 <translation id="8881584919399569791">Aktives Fenster in nächsten Desktop links verschieben</translation>
 <translation id="88986195241502842">Bildlauf nach unten</translation>

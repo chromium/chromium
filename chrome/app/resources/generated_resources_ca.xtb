@@ -596,6 +596,7 @@
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">El dispositiu està bloquejat</translation>
 <translation id="1612019740169791082">La configuració del contenidor no admet canvis de mida del disc. Per ajustar la quantitat d'espai que es reserva per a Linux, crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
+<translation id="1613019471223620622">Mostra la contrasenya per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">És possible que hagis esgotat la quantitat assignada de dades mòbils. Visita el portal d'activació <ph name="NAME" /> per comprar més dades.</translation>
 <translation id="161460670679785907">No es pot detectar el telèfon</translation>
 <translation id="1615337439947999338">Desa al teu Compte de Google (<ph name="EMAIL" />)</translation>
@@ -1202,6 +1203,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2220529011494928058">Informa d'un problema</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> i <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Font multimèdia sense nom</translation>
 <translation id="2224444042887712269">Aquesta configuració pertany a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
 <translation id="2224551243087462610">Edita el nom de la carpeta</translation>
@@ -1218,6 +1220,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2232751457155581899">Els llocs web poden demanar permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="2232876851878324699">El fitxer contenia un certificat que no s'ha importat:</translation>
 <translation id="2233502537820838181">&amp;Més informació</translation>
+<translation id="223356358902285214">Activitat al web i en aplicacions</translation>
 <translation id="2234876718134438132">Sincronització i serveis de Google</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
 <translation id="2238379619048995541">Dades de l'estat de freqüència</translation>
@@ -1904,6 +1907,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2923006468155067296">El teu dispositiu <ph name="DEVICE_TYPE" /> es bloquejarà ara.
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
 <translation id="2923234477033317484">Suprimeix aquest compte</translation>
+<translation id="2923644930701689793">Accedeix al carret del teu telèfon</translation>
 <translation id="2926085873880284723">Restaura les dreceres predeterminades</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> no s'admet.</translation>
 <translation id="2927017729816812676">Emmagatzematge a la memòria cau</translation>
@@ -2907,6 +2911,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3957844511978444971">Toca Accepta per confirmar la configuració dels serveis de Google que has seleccionat.</translation>
 <translation id="3958088479270651626">Importa les adreces d'interès i la configuració</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Mode de lector</translation>
 <translation id="3964480518399667971">Desactiva la xarxa mòbil</translation>
 <translation id="3965811923470826124">Amb</translation>
 <translation id="3965965397408324205">Surt del perfil <ph name="PROFILE_NAME" /></translation>
@@ -3094,6 +3099,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4168015872538332605">Alguns paràmetres de configuració que pertanyen a <ph name="PRIMARY_EMAIL" /> es comparteixen amb l'usuari. Aquests paràmetres només afecten el vostre compte quan s'utilitza l'inici de sessió múltiple.</translation>
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4170314459383239649">Esborra en sortir</translation>
+<translation id="417096670996204801">Selecciona un perfil</translation>
 <translation id="4175137578744761569">Porpra clar i blanc</translation>
 <translation id="4175737294868205930">Emmagatzematge permanent</translation>
 <translation id="4176463684765177261">Desactivat</translation>
@@ -3322,6 +3328,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4444304522807523469">Accedir als escàners del document adjunts mitjançant USB o a la xarxa local</translation>
 <translation id="4444512841222467874">Si no alliberes espai, pot ser que se suprimeixin dades i usuaris automàticament.</translation>
 <translation id="4446933390699670756">Duplicat</translation>
+<translation id="4448914100439890108">Amaga la contrasenya per a <ph name="USERNAME" /> a <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">El teu nom d'usuari pertany al compte d'empresa de la teva organització. Per inscriure dispositius al compte, primer has de verificar la propietat del domini a la consola d'administració. Per verificar-la, hauràs de tenir privilegis administratius al compte.</translation>
 <translation id="4449996769074858870">En aquesta pestanya s'està reproduint àudio.</translation>
 <translation id="4450274068924249931">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia. La pantalla romandrà encesa mentre es carrega el dispositiu si s'activa l'estalvi de pantalla.</translation>
@@ -3845,6 +3852,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5009463889040999939">S'està canviant el nom del perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="5010043101506446253">Autoritats certificadores</translation>
 <translation id="5015344424288992913">Resolent el servidor intermediari...</translation>
+<translation id="5016491575926936899">Pots enviar missatges de text des de l'ordinador, compartir la connexió a Internet, respondre a les notificacions de conversa i desbloquejar el dispositiu <ph name="DEVICE_TYPE" /> amb el telèfon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Pots navegar per les pàgines amb un cursor de text. Prem Ctrl+Cerca+7 per desactivar aquesta funció.</translation>
 <translation id="5017828934289857214">Recorda-m'ho més tard</translation>
 <translation id="5018207570537526145">Obre el lloc web de l'extensió</translation>
@@ -4437,6 +4445,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5638309510554459422">Cerca extensions i temes a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Torneu a carregar aquesta pàgina, espereu per veure més opcions</translation>
 <translation id="5640133431808313291">Gestiona les claus de seguretat</translation>
+<translation id="5641608986289282154">Comença a utilitzar <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Signant de CRL</translation>
 <translation id="5643321261065707929">Xarxa d'ús mesurat</translation>
 <translation id="5643620609347735571">Esborra i continua</translation>

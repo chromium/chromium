@@ -78,6 +78,7 @@
 <translation id="2016697457005847575">Kokeile ongelmanratkaisuohjeita</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
+<translation id="2104796393919810494">Korjaus valmis</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -158,6 +159,8 @@
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="3583278742022654445">Heikko signaalin voimakkuus. Kokeile siirtyä lähemmäs Wi-Fi-signaalin lähdettä.</translation>
 <translation id="3595596368722241419">Akku täynnä</translation>
+<translation id="360089215033199597">Korjaus sujuu helpommin, jos muodostat yhteyden Wi-Fi-verkkoon.
+        Verkkosi tallennetaan.</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
@@ -186,6 +189,7 @@
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
+<translation id="4140251671072434548">Avaa palvelin tuotepalautusvaltuutusta varten</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
@@ -477,8 +481,10 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Lisää avauskoodi:</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
+<translation id="8217675307824400706">Muodosta yhteys</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
 <translation id="8246209727385807362">Tuntematon operaattori</translation>
 <translation id="8286154143153872371">Yhdistä verkkoon ja päivitä sivu nähdäksesi taustakuvan.</translation>

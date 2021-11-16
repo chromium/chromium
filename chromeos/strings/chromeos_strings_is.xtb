@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi net með mælda notkun</translation>
 <translation id="3583278742022654445">Lítill sendistyrkur. Prófaðu að færa þig nær WiFi-sendibúnaðinum.</translation>
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
+<translation id="360089215033199597">Ráðlagt er að tengjast Wi-Fi til að einfalda viðgerðarferlið.
+        Netkerfið þitt verður vistað.</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
@@ -481,6 +483,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="816013303019725643">Sláðu inn kóðann til að taka úr lás:</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
+<translation id="8217675307824400706">Kominn tími til að tengjast</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8246209727385807362">Óþekkt símafyrirtæki</translation>
 <translation id="8286154143153872371">Tengstu neti og endurhladdu síðuna til að sjá veggfóður.</translation>

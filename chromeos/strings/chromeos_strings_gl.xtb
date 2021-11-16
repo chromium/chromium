@@ -157,6 +157,8 @@
 <translation id="357889014807611375">wifi de pago por consumo</translation>
 <translation id="3583278742022654445">A intensidade do sinal é débil. Proba a poñerte máis preto da fonte do sinal wifi.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
+<translation id="360089215033199597">Recomendámosche que te conectes á wifi para que o proceso de reparación sexa máis sinxelo.
+        Gardarase a túa rede.</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
@@ -185,6 +187,7 @@
 <translation id="409427325554347132">Gardar detalles da proba</translation>
 <translation id="4111761024568264522">Panel táctil con conexión por USB</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
+<translation id="4140251671072434548">Levar a cabo o desbloqueo do servidor de autorización de devolución de mercadoría</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
@@ -474,8 +477,10 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Mete o código de desbloqueo:</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
+<translation id="8217675307824400706">Conéctate</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>
 <translation id="8286154143153872371">Para ver o fondo de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>

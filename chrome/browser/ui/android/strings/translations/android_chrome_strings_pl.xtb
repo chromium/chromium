@@ -35,6 +35,7 @@
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
 <translation id="1201402288615127009">Dalej</translation>
+<translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204037785786432551">Pobierz link</translation>
 <translation id="1206892813135768548">Kopiuj tekst linku</translation>
 <translation id="1208340532756947324">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację</translation>
@@ -81,6 +82,7 @@
 <translation id="1414981605391750300">Łączę się z Google. Może to chwilę potrwać…</translation>
 <translation id="1416550906796893042">Wersja aplikacji</translation>
 <translation id="1430915738399379752">Drukuj</translation>
+<translation id="1448440926884431741">Porządkuj obserwowane produkty w Zakładkach</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
 <translation id="1466383950273130737">Wybierz język Chrome</translation>
 <translation id="147113415845704694">Powiedz na przykład „Jaka jest prognoza na dzisiaj”?</translation>
@@ -133,6 +135,7 @@
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1883903952484604915">Moje pliki</translation>
 <translation id="189358972401248634">Inne języki</translation>
+<translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="1905320231301365059">Pliki pobrane w trybie incognito może zobaczyć każdy użytkownik tego urządzenia.</translation>
 <translation id="1910950723001426294">Lista opcji udostępniania jest zamknięta.</translation>
 <translation id="1918175104945982129">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został otwarty na połowę wysokości</translation>
@@ -344,6 +347,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3029704984691124060">Hasła nie pasują do siebie</translation>
 <translation id="3031225630520268969">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poproś o pomoc<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037517125981011456">Pokazuje prośby o zalogowanie się w Chrome</translation>
 <translation id="3046945242843292318">Następnym razem otwórz tę stronę szybciej</translation>
 <translation id="305593374596241526">Lokalizacja jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -502,6 +506,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4016425174436051808">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# godzina}few{# godziny}many{# godzin}other{# godziny}}</translation>
 <translation id="4045764304651014138">Dane o korzystaniu</translation>
+<translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opcje dostępne na górze ekranu</translation>
 <translation id="4062305924942672200">Informacje prawne</translation>
@@ -555,6 +560,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4411535500181276704">Wersja uproszczona</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
+<translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4450672886426705087">Wyniki z wyszukiwarki Google.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
@@ -752,6 +758,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="5555525474779371165">Wybierz poziom ochrony Bezpiecznego przeglądania</translation>
 <translation id="5556459405103347317">Odśwież</translation>
+<translation id="555816257274242153">Nie monitoruję już ceny</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
 <translation id="5568069709869097550">Nie można się zalogować</translation>
 <translation id="55737423895878184">Lokalizacja i powiadomienia są włączone</translation>
@@ -802,9 +809,11 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5833984609253377421">Udostępnij link</translation>
 <translation id="5834764604050996579">Aby zeskanować kod QR, zezwól Chrome na używanie aparatu</translation>
 <translation id="5839058148541733625">Dinozaur w Chrome</translation>
+<translation id="5842437907245493289">Porządkuj obserwowane produkty w Zakładkach za pomocą ikony folderu</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
 <translation id="5854512288214985237">Statystyki ani raporty o awariach nie są przesyłane do Google</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Coś poszło nie tak. Nie udało się zaktualizować monitorowanej ceny.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5860491529813859533">Włącz</translation>
 <translation id="5862731021271217234">Aby korzystać z kart ze swoich innych urządzeń, włącz synchronizację</translation>
@@ -860,6 +869,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbn
 <translation id="6140912465461743537">Kraj/region</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>
+<translation id="6150320133806434356">Zakładka została zapisana</translation>
 <translation id="6154478581116148741">Włącz blokadę ekranu w ustawieniach, by wyeksportować hasła z urządzenia</translation>
 <translation id="6159335304067198720">Oszczędność danych: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Usuwa historię ze wszystkich zsynchronizowanych urządzeń.</translation>
@@ -874,6 +884,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbn
 Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy bez związku ze stronami odwiedzonymi przez Ciebie wcześniej. Wiele stron będzie nadal gromadzić dane przeglądania i używać ich na przykład do poprawy bezpieczeństwa, pokazywania treści, reklam i rekomendacji oraz do generowania statystyk.</translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
 <translation id="6277522088822131679">Podczas drukowania strony wystąpił problem. Spróbuj ponownie.</translation>
+<translation id="6277722725779679269">Nie udało się zaktualizować monitorowanej ceny</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6292420053234093573">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Możesz przesyłać karty między urządzeniami zalogowanymi na to samo konto Google</translation>
@@ -907,6 +918,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6411219469806822692">Nie można przejść wyżej. Zacznij w górnej części strony.</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="641643625718530986">Drukuj…</translation>
+<translation id="6422857128426228781">Tutaj znajdziesz obserwowane produkty</translation>
 <translation id="6433501201775827830">Wybierz wyszukiwarkę</translation>
 <translation id="6434309073475700221">Odrzuć</translation>
 <translation id="6437478888915024427">Informacje o stronie</translation>
@@ -984,6 +996,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6817747507826986771">Szybko udostępnij tę stronę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
 <translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
+<translation id="6828070228333235514">Przestań monitorować cenę</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
 <translation id="6850830437481525139">Zamknięte karty: <ph name="TAB_COUNT" /></translation>
@@ -1300,6 +1313,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8572344201470131220">Obraz został skopiowany</translation>
 <translation id="8583805026567836021">Usuwam dane konta</translation>
+<translation id="859046281437143747">Monitoruj cenę za pomocą przycisku Więcej opcji</translation>
 <translation id="860043288473659153">Imię i nazwisko posiadacza karty</translation>
 <translation id="8602358303461588329">Logowanie się w Chrome, zamknięte.</translation>
 <translation id="860282621117673749">Alerty o obniżkach cen</translation>

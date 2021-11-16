@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> unha tecla do 1 ao 8</translation>
 <translation id="3837047332182291558">Aumenta o brillo do teclado (só para teclados retroiluminados)</translation>
 <translation id="3949671998904569433">coma</translation>
+<translation id="3976707995992061296">Activa/desactiva a asignación da ventá activa a todos os escritorios</translation>
 <translation id="3976863468609830880">Fai clic na última icona do estante</translation>
 <translation id="3994783594793697310">Restablece o nivel de zoom da pantalla</translation>
 <translation id="4026843240379844265">Move a ventá activa entre as pantallas</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Achega o zoom da pantalla</translation>
 <translation id="634687982629734605">Alterna entre a área de estado (onde aparece a imaxe da túa conta), o menú de aplicacións, a barra de enderezos, a barra de marcadores (se está visible), a páxina web que está aberta e a barra de descargas (se está visible). Se se mostra un cadro de diálogo que se pode enfocar, move alí o enfoque.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Activa do escritorio 1 ao 8.</translation>
 <translation id="6395172954772765143">Selecciona texto ao final da liña</translation>
 <translation id="6425378783626925378">Fai clic nas iconas do 1 ao 8 do estante</translation>
 <translation id="6435207348963613811">Destaca o elemento anterior do estante</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Mostra os ficheiros ocultos na aplicación Ficheiros</translation>
 <translation id="8717459106217102612">Selecciona a letra ou a palabra anterior</translation>
 <translation id="8727232706774971183">Consulta as túas notificacións</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Move a ventá activa á parte esquerda do escritorio</translation>
 <translation id="88986195241502842">Avanzar páxina</translation>

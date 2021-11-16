@@ -157,6 +157,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1428146450423315676">7. kötegelő</translation>
+<translation id="142858679511221695">Felhőalapú szolgáltatás – felhasználó</translation>
 <translation id="1428729058023778569">Azért látja ezt a figyelmeztetést, mert ez a webhely nem támogatja a HTTPS-t. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
@@ -717,6 +718,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3329013043687509092">Telítettség</translation>
 <translation id="3333762389743153920">Nem használható virtuális kártyával</translation>
 <translation id="3338095232262050444">Biztonságos</translation>
+<translation id="3339446062576134663">Felhőszolgáltatás (Ash)</translation>
 <translation id="3355823806454867987">Proxybeállítások módosítása...</translation>
 <translation id="3360103848165129075">Fizetési információk munkalapja</translation>
 <translation id="3361596688432910856">A Chrome <ph name="BEGIN_EMPHASIS" />nem menti<ph name="END_EMPHASIS" /> a következő adatokat:
@@ -740,6 +742,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3380365263193509176">Ismeretlen hiba</translation>
 <translation id="3380864720620200369">Ügyfél-azonosító:</translation>
 <translation id="3381668585148405088">Vásárlás igazolása</translation>
+<translation id="3383566085871012386">Jelenlegi fontossági sorrend</translation>
 <translation id="3387261909427947069">Fizetési módok</translation>
 <translation id="3391030046425686457">Szállítási cím</translation>
 <translation id="3391482648489541560">fájlszerkesztés</translation>
@@ -1409,6 +1412,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5478437291406423475">B6/C4 (boríték)</translation>
 <translation id="5481076368049295676">Lehet, hogy ez a tartalom megpróbál olyan veszélyes szoftvert telepíteni az eszközre, amely ellophatja vagy törölheti az Ön adatait. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Érvényes címet adjon meg</translation>
+<translation id="5485973315555778056">Felhőalapú szolgáltatás – gép</translation>
 <translation id="5490432419156082418">Címek és egyebek</translation>
 <translation id="5492298309214877701">Ennek a vállalati, szervezeti vagy iskolai intraneten található webhelynek az URL-címe megegyezik egy külső webhely URL-címével.
     <ph name="LINE_BREAK" />
@@ -1438,6 +1442,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5571083550517324815">Ezen a címen nem lehetséges az átvétel. Válasszon másik címet.</translation>
 <translation id="5580958916614886209">Ellenőrizze a lejárati hónapot, majd próbálja újra</translation>
 <translation id="5586446728396275693">Nincsenek mentett címek</translation>
+<translation id="5587987780934666589">Platform – felhasználó</translation>
 <translation id="5593349413089863479">A kapcsolat nem teljesen biztonságos</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="5598944008576757369">Fizetési mód kiválasztása</translation>
@@ -2126,6 +2131,7 @@ További részletek:
 <translation id="7953569069500808819">Éltűzés felül</translation>
 <translation id="7956713633345437162">Mobilos könyvjelzők</translation>
 <translation id="7961015016161918242">Soha</translation>
+<translation id="7962467575542381659">Platform – gép</translation>
 <translation id="7966803981046576691">Munka fióktípusa</translation>
 <translation id="79682505114836835">A(z) „<ph name="VALUE" />” érvénytelen hexadecimális színkód.</translation>
 <translation id="7968982339740310781">Részletek megjelenítése</translation>
@@ -2280,6 +2286,7 @@ További részletek:
 <translation id="8438476240229491014">Jegyezze meg ezt a beállítást</translation>
 <translation id="8438786541497918448">Engedélyezi a kamera és a mikrofon használatát?</translation>
 <translation id="8446884382197647889">További információ</translation>
+<translation id="8449836157089738489">Az összes megnyitása új lapcsoportban</translation>
 <translation id="8457125768502047971">Határozatlan</translation>
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 hitelkártya}other{# hitelkártya}}</translation>

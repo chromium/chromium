@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Otevřít na nové kartě ve skup.</translation>
 <translation id="1103142993930332957">Pomoci Chrome zlepšit?</translation>
 <translation id="1105960400813249514">Snímky obrazovky</translation>
+<translation id="1108938384783527433">Synchronizace historie</translation>
 <translation id="1110914759170138831">Zvýraznění bylo zkráceno</translation>
 <translation id="1111673857033749125">Zde se objeví záložky, které jste si uložili v ostatních zařízeních.</translation>
 <translation id="1113597929977215864">Zapnout zjednodušené zobrazení</translation>
@@ -35,6 +36,7 @@
 <translation id="1177863135347784049">Vlastní</translation>
 <translation id="1197267115302279827">Přesunutí záložek</translation>
 <translation id="1201402288615127009">Další</translation>
+<translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204037785786432551">Stáhnout odkaz</translation>
 <translation id="1206892813135768548">Zkopírovat text odkazu</translation>
 <translation id="1208340532756947324">Chcete-li synchronizovat a přizpůsobit různá zařízení, zapněte synchronizaci</translation>
@@ -81,6 +83,7 @@
 <translation id="1414981605391750300">Kontaktování Googlu. Může to chvíli trvat…</translation>
 <translation id="1416550906796893042">Verze aplikace</translation>
 <translation id="1430915738399379752">Tisk</translation>
+<translation id="1448440926884431741">Sledované produkty můžete třídit v záložkách</translation>
 <translation id="1450753235335490080">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
 <translation id="147113415845704694">Zkuste říct „Jaké je dnes počasí?“</translation>
@@ -133,6 +136,7 @@
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
+<translation id="1894023287452300670">Tady můžete sledovat cenu</translation>
 <translation id="1905320231301365059">Soubory, které stáhnete v anonymním režimu, může vidět kdokoli, kdo použije toto zařízení.</translation>
 <translation id="1910950723001426294">Seznam možností sdílení je zavřený.</translation>
 <translation id="1918175104945982129">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta otevřené do poloviny výšky</translation>
@@ -157,6 +161,7 @@
 <translation id="2000419248597011803">Odesílá soubory cookie a vyhledávací dotazy z adresního řádku a vyhledávacího pole a několik souborů cookie vašemu výchozímu vyhledávači</translation>
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
+<translation id="2020309681647789787">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
 <translation id="204321170514947529">Aplikace <ph name="APP_NAME" /> má také data v Chromu</translation>
@@ -344,6 +349,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
 <translation id="3031225630520268969">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037517125981011456">Zobrazuje výzvy k přihlášení do Chromu</translation>
 <translation id="3046945242843292318">Příště tento web můžete mít při ruce</translation>
 <translation id="305593374596241526">Určování polohy je vypnuté, zapnete jej v <ph name="BEGIN_LINK" />nastavení zařízení Android<ph name="END_LINK" />.</translation>
@@ -502,6 +508,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="4016425174436051808">Sledování nelze zapnout. Něco se pokazilo.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}few{# h}many{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Údaje o využití</translation>
+<translation id="405399507749852140">Pokud cena na některém webu klesne, dostanete upozornění</translation>
 <translation id="4056223980640387499">Sépie</translation>
 <translation id="4060598801229743805">Možnosti jsou k dispozici u horního okraje obrazovky</translation>
 <translation id="4062305924942672200">Právní informace</translation>
@@ -555,6 +562,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="4409271659088619928">Váš vyhledávač je <ph name="DSE" />. Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="4411535500181276704">Zjednodušený režim</translation>
 <translation id="4415276339145661267">Spravovat účet Google</translation>
+<translation id="4425140285732600465">Sledování ceny. Pokud cena na některém webu klesne, dostanete upozornění.</translation>
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
 <translation id="4450672886426705087">Výsledky vyhledávání z Googlu.</translation>
 <translation id="4452411734226507615">Zavřít kartu <ph name="TAB_TITLE" /></translation>
@@ -752,6 +760,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5548606607480005320">Bezpečnostní kontrola</translation>
 <translation id="5555525474779371165">Zvolte si stupeň Bezpečného prohlížení</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
+<translation id="555816257274242153">Sledování ceny bylo ukončeno</translation>
 <translation id="5561549206367097665">Čekání na síť…</translation>
 <translation id="5568069709869097550">Nepodařilo se přihlásit</translation>
 <translation id="55737423895878184">Určování polohy a oznámení jsou povoleny</translation>
@@ -802,9 +811,11 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5833984609253377421">Sdílet odkaz</translation>
 <translation id="5834764604050996579">Pokud chcete naskenovat QR kód, umožněte Chromu používat kameru</translation>
 <translation id="5839058148541733625">Dinosauří hra pro Chrome</translation>
+<translation id="5842437907245493289">Sledované produkty můžete třídit v záložkách, které zobrazíte pomocí ikony složky</translation>
 <translation id="5853623416121554550">pozastaveno</translation>
 <translation id="5854512288214985237">Do Googlu nejsou odsílány žádné statistiky ani zprávy o selhání</translation>
 <translation id="5855546874025048181">Zpřesnit: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Došlo k chybě. Sledování ceny se nepodařilo aktualizovat.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
 <translation id="5862731021271217234">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci</translation>
@@ -849,6 +860,7 @@ Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou do
 <translation id="6070730414166672373">Kontaktování banky\u2026</translation>
 <translation id="6085886413119427067">Určuje způsob připojení k webům přes zabezpečené připojení</translation>
 <translation id="60923314841986378">Zbývá: <ph name="HOURS" /> h</translation>
+<translation id="6095578583683628124">Pokud je Google zároveň váš výchozí vyhledávač, budou se zobrazovat lepší, kontextově relevantní návrhy</translation>
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6111020039983847643">využitá data</translation>
 <translation id="6112702117600201073">Obnovování stránky</translation>
@@ -860,6 +872,7 @@ Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou do
 <translation id="6140912465461743537">Země/Region</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="614940544461990577">Zkuste:</translation>
+<translation id="6150320133806434356">Záložka uložena</translation>
 <translation id="6154478581116148741">Chcete-li z tohoto zařízení exportovat svá hesla, zapněte v Nastavení zámek obrazovky</translation>
 <translation id="6159335304067198720">Úspora dat: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Vymaže historii ze všech synchronizovaných zařízení.</translation>
@@ -874,6 +887,7 @@ Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou do
 Některé weby mohou například na tento požadavek reagovat tak, že vám zobrazí reklamy, které nejsou založeny na ostatních navštívených webových stránkách. Řada webů bude i nadále shromažďovat vaše údaje o prohlížení a používat je například ke zlepšení zabezpečení, poskytování obsahu, reklam a doporučení a ke generování statistik pro přehledy.</translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6277522088822131679">Při tištění stránky došlo k problému. Zkuste to prosím znovu.</translation>
+<translation id="6277722725779679269">Sledování ceny se nepodařilo aktualizovat</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6292420053234093573">Používáním Chromu vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />doplňujícími smluvními podmínkami prohlížeče Chrome a systému Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Mezi zařízeními přihlášenými ke stejnému účtu Google lze posílat karty</translation>
@@ -907,6 +921,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6411219469806822692">Výše už přejít nelze. Zkuste začít výše na stránce.</translation>
 <translation id="6412673304250309937">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky.</translation>
 <translation id="641643625718530986">Tisk…</translation>
+<translation id="6422857128426228781">Tady najdete sledované produkty</translation>
 <translation id="6433501201775827830">Vyberte vyhledávač</translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6437478888915024427">Informace o stránce</translation>
@@ -984,6 +999,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6817747507826986771">Rychle tuto stránku sdílet. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
 <translation id="6820686453637990663">Bezpečnostní kód platební karty (CVC)</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, karta, vybráno</translation>
+<translation id="6828070228333235514">Ukončit sledování ceny</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="6850409657436465440">Stahování stále probíhá</translation>
 <translation id="6850830437481525139">Zavřené karty: <ph name="TAB_COUNT" /></translation>
@@ -1300,6 +1316,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8571213806525832805">Poslední 4 týdny</translation>
 <translation id="8572344201470131220">Obrázek byl zkopírován</translation>
 <translation id="8583805026567836021">Mazání dat účtu</translation>
+<translation id="859046281437143747">Pomocí nabídky Další možnosti lze sledovat cenu</translation>
 <translation id="860043288473659153">Jméno držitele karty</translation>
 <translation id="8602358303461588329">Přihlášení do Chromu, zavřeno.</translation>
 <translation id="860282621117673749">Upozornění na pokles ceny</translation>
@@ -1397,6 +1414,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="9148126808321036104">Znovu přihlásit</translation>
 <translation id="9155898266292537608">Hledat můžete také rychlým klepnutím na slovo</translation>
 <translation id="9158770349521403363">Sdílet pouze obsah</translation>
+<translation id="916446198114569890">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>

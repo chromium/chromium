@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">לא מזוהה</translation>
 <translation id="1746730358044914197">מנהל המערכת שלך מגדיר את שיטות הקלט.</translation>
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
+<translation id="1750088060796401187">מותר להשתמש ב-<ph name="MAX_DESK_LIMIT" /> שולחנות עבודה וירטואליים לכל היותר. צריך להסיר שולחן עבודה וירטואלי כדי לפתוח אחד חדש.</translation>
 <translation id="1761222317188459878">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">‏מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + נקודה השתנו. כדי להשתמש במקש Insert, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + Shift + ‏Backspace.</translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>

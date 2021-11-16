@@ -53,6 +53,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2123055963409958220">Tulungang pahusayin ang Chrome sa pamamagitan ng pag-ulat sa <ph name="BEGIN_LINK" />mga kasalukuyang setting<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Paki-restart ang Chrome ngayon</translation>
 <translation id="2189289170880510015">I-customize ang ilan sa pinakamahalagang opsyon sa privacy ng Chrome</translation>
+<translation id="2258103955319320201">Para ma-access ang iyong mga bagay sa Chrome browser sa lahat ng device mo, mag-sign in, pagkatapos ay i-on ang pag-sync</translation>
 <translation id="2290014774651636340">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Google Chrome.</translation>
 <translation id="2290095356545025170">Sigurado ka bang nais mong i-uninstall ang Google Chrome?</translation>
 <translation id="2309047409763057870">Pangalawang pag-install ito ng Google Chrome at hindi ito maaaring gawing iyong default na browser.</translation>
@@ -217,6 +218,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6506909944137591434">Kailangan ng Chrome ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
+<translation id="6594121454516132231">Makita kung paano ka planong bantayan ng Chrome mula sa cross-site na pagsubaybay habang pinapanatili ang bukas na web</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
 <translation id="6679975945624592337">Hayaang Tumakbo sa Background ang Google Chrome</translation>
 <translation id="6696915334902295848">Kailangan ng Chrome ng pahintulot sa mikropono para sa site na ito</translation>
@@ -231,6 +233,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6989339256997917931">Na-update na ang Google Chrome, ngunit hindi mo pa ito ginamit sa huling 30 araw.</translation>
 <translation id="7025800014283535195">Puwede kang magpalipat-lipat sa mga profile sa Chrome dito</translation>
 <translation id="7062128746136194023">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chrome. Hindi pinapayagang idagdag ang <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>
+<translation id="7085332316435785646">Piliin kung isasama ang history ng Chrome para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>
 <translation id="7088681679121566888">Updated ang Chrome</translation>
 <translation id="7098166902387133879">Ginagamit ng Google Chrome ang iyong mikropono.</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
@@ -255,6 +258,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7651907282515937834">Logo ng Chrome Enterprise</translation>
 <translation id="7665553140559834626">Ilunsad ulit para ma-update ang Chrome OS</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
+<translation id="7748512868279796735">Available ang mga sumusunod na account para sa profile sa Chrome na ito</translation>
 <translation id="7761834446675418963">I-click ang iyong pangalan upang buksan ang Chrome at simulan ang pagba-browse.</translation>
 <translation id="7777080907402804672">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="7781002470561365167">May magagamit na bagong bersyon ng Google Chrome.</translation>
@@ -286,6 +290,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Ang profile sa trabaho na ito ay ganap na hiwalay sa iyong personal na profile.</translation>
 <translation id="8556340503434111824">May available na bagong bersyon ng Google Chrome, at mas mabilis ito kaysa sa dati.</translation>
+<translation id="8571790202382503603">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Pinapadali nitong mapaghiwalay ang trabaho at kasiyahan.</translation>
 <translation id="8614913330719544658">Hindi gumagana ang Google Chrome. Ilunsad muli ngayon?</translation>
 <translation id="861702415419836452">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="8625237574518804553">{0,plural, =1{Muling ilulunsad ang Chrome sa loob ng 1 minuto}one{Muling ilulunsad ang Chrome sa loob ng # minuto}other{Muling ilulunsad ang Chrome sa loob ng # na minuto}}</translation>

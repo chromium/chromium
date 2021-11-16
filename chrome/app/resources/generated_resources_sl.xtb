@@ -1236,6 +1236,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2232751457155581899">Spletna mesta lahko zahtevajo spremljanje položaja kamere</translation>
 <translation id="2232876851878324699">V datoteki je bilo eno potrdilo, ki ni bilo uvoženo:</translation>
 <translation id="2233502537820838181">&amp;Več informacij</translation>
+<translation id="223356358902285214">Dejavnost v spletu in aplikacijah</translation>
 <translation id="2234876718134438132">Sinhroniz. in Googlove storitve</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
 <translation id="2238379619048995541">Podatki o stanju frekvence</translation>
@@ -1925,6 +1926,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2923006468155067296">Naprava <ph name="DEVICE_TYPE" /> se bo zdaj zaklenila.
 Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translation>
 <translation id="2923234477033317484">Odstrani ta račun</translation>
+<translation id="2923644930701689793">Dostopajte do fotografij iz naprave v telefonu.</translation>
 <translation id="2926085873880284723">Obnovi privzete bližnjice</translation>
 <translation id="2926620265753325858">Naprava <ph name="DEVICE_NAME" /> ni podprta.</translation>
 <translation id="2927017729816812676">Shramba predpomnilnika</translation>
@@ -2930,6 +2932,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3957844511978444971">Dotaknite se gumba »Sprejmem«, da potrdite izbiro teh nastavitev za Googlove storitve.</translation>
 <translation id="3958088479270651626">Uvoz zaznamkov in nastavitev</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Način bralnika</translation>
 <translation id="3964480518399667971">Izklop mobilnega omrežja</translation>
 <translation id="3965811923470826124">S/z</translation>
 <translation id="3965965397408324205">Zapri <ph name="PROFILE_NAME" /></translation>
@@ -3117,6 +3120,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4168015872538332605">Nekatere nastavitve, ki se nanašajo na uporabnika <ph name="PRIMARY_EMAIL" />, so deljene z vami. Te nastavitve vplivajo na vaš račun samo pri uporabi prijave z več računi.</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
 <translation id="4170314459383239649">Izbriši ob izhodu</translation>
+<translation id="417096670996204801">Izbira profila</translation>
 <translation id="4175137578744761569">Svetlo vijolična in bela</translation>
 <translation id="4175737294868205930">Trajno shranjevanje</translation>
 <translation id="4176463684765177261">Onemogočeno</translation>

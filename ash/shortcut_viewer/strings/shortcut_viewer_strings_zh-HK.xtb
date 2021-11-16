@@ -151,7 +151,7 @@
 <translation id="6340769215862220182">放大顯示</translation>
 <translation id="634687982629734605">在以下位置之間切換焦點：狀態區 (帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁及下載列 (如有顯示)。如果畫面上有可成為焦點的對話框，焦點會改為移至對話框。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
-<translation id="6372960562287888784">啟用第 1 個到第 8 個桌面。</translation>
+<translation id="6372960562287888784">啟動第 1 到第 8 個桌面。</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
 <translation id="6425378783626925378">按一下捷徑列中的第 1-8 個圖示</translation>
 <translation id="6435207348963613811">突顯捷徑列中的上一個項目</translation>
@@ -207,7 +207,7 @@
 <translation id="8644639153978066712">在「檔案」應用程式中顯示隱藏的檔案</translation>
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8727232706774971183">查看通知</translation>
-<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 到 8 鍵</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 到 8</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8881584919399569791">將使用中的視窗移至左側桌面</translation>
 <translation id="88986195241502842">下一頁</translation>

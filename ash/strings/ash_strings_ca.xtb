@@ -119,6 +119,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1743570585616704562">No s'ha reconegut</translation>
 <translation id="1746730358044914197">Els mètodes d'introducció estan configurats per l'administrador.</translation>
 <translation id="1747827819627189109">Teclat en pantalla activat</translation>
+<translation id="1750088060796401187">Només es permeten <ph name="MAX_DESK_LIMIT" /> escriptoris. Suprimeix un escriptori per obrir-ne un altre.</translation>
 <translation id="1761222317188459878">Activa o desactiva la connexió a la xarxa. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Les tecles de drecera <ph name="LAUNCHER_KEY_NAME" />+punt han canviat. Per utilitzar la tecla d'inserció, prem <ph name="LAUNCHER_KEY_NAME" />+Maj+Retrocés.</translation>
 <translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
@@ -375,6 +376,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Desa el dispositiu <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Grava el micròfon</translation>
@@ -457,6 +459,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
+<translation id="4223947355273782392">Desa el dispositiu <ph name="NAME" /> al compte <ph name="EMAIL" /> perquè es vinculi ràpidament als teus altres dispositius</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>

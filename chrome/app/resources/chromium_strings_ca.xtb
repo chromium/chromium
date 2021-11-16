@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Reinicia per actualitzar &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Amb aquesta acció, se suprimirà 1 element d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chromium com a <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Per comprovar si les teves altres contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Tria si vols incloure l'historial de Chromium per obtenir experiències més personalitzades als serveis de Google</translation>
 <translation id="2174178932569897599">Personalitza Chromium</translation>
 <translation id="2185166961232948079">Chromium - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chromium com vulguin.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
+<translation id="251127392410688874">Consulta què farà Chromium per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert</translation>
 <translation id="2535480412977113886">Chromium OS no ha pogut sincronitzar les vostres dades perquè la informació d'inici de sessió del vostre compte no està actualitzada.</translation>
 <translation id="2560420686485554789">Chromium necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="2572494885440352020">Aplicació d'ajuda de Chromium</translation>
@@ -223,6 +225,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="734373864078049451">El vostre web, les adreces d'interès i altres coses de Chromium resideixen aquí.</translation>
 <translation id="7349591376906416160">L'administrador del sistema ha configurat Chromium perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7398989605938454041">Els perfils de Chromium et permeten separar tot el teu contingut de Chromium. Així et serà més fàcil separar la feina de la diversió.</translation>
 <translation id="7448255348454382571">Reinicia Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera</translation>
@@ -242,6 +245,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7828947555739565424">Ja existeix un perfil de Chromium amb aquest compte en aquest dispositiu</translation>
 <translation id="7857220146454061152">Per obtenir actualitzacions de Chromium en un futur, necessitaràs OS X 10.11 o una versió posterior. Aquest ordinador utilitza OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les noves funcions ni de les correccions de seguretat.</translation>
+<translation id="788352880609666695">Els comptes següents estan disponibles per a aquest perfil de Chromium</translation>
 <translation id="7898472181347242998">Per veure si el dispositiu està actualitzat, ves a la <ph name="LINK_BEGIN" />configuració de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
@@ -254,6 +258,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8290862415967981663">Chromium ha bloquejat aquest fitxer perquè pot ser perillós.</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>
+<translation id="8357820681460164151">Per accedir al teu contingut del navegador Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 dia}other{Reinicia Chromium en # dies}}</translation>
 <translation id="8453117565092476964">L'arxiu d'instal·lació està malmès o no és vàlid. Torneu a baixar Chromium.</translation>
 <translation id="8493179195440786826">Chromium no està actualitzat</translation>

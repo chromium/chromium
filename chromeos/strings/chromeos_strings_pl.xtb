@@ -156,6 +156,8 @@
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="3583278742022654445">Słaby sygnał. Zbliż się do źródła sygnału Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
+<translation id="360089215033199597">Aby ułatwić proces naprawy, zalecamy połączenie się przez Wi-Fi.
+        Oszczędzisz dane sieciowe.</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
@@ -473,6 +475,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="816013303019725643">Wpisz kod odblokowania:</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
+<translation id="8217675307824400706">Połącz się</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>

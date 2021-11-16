@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
+<translation id="1857850044054738019">Odaberite ovu opciju ako se obnavljaju zalihe uređaja ili se obnavlja za distribuciju novom korisniku.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
@@ -76,6 +77,7 @@
 <translation id="2016697457005847575">Isprobajte upute za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Više postavki</translation>
+<translation id="2104796393919810494">Popravak je dovršen</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -156,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi s ograničenim prometom</translation>
 <translation id="3583278742022654445">Signal je slab. Pokušajte se približiti izvoru Wi-Fi signala.</translation>
 <translation id="3595596368722241419">Baterija je puna</translation>
+<translation id="360089215033199597">Preporučuje se povezivanje s Wi-Fijem radi lakšeg popravka.
+        Mreža će se spremiti.</translation>
 <translation id="360565022852130722">Wi-Fi mreža zaštićena je slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latencija do HTTPS web-lokacija</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -197,6 +201,7 @@
 <translation id="4244962993387259361">Da biste testirali memoriju, najmanje 500 MB mora biti slobodno. Da biste oslobodili prostor, otvorite Postavke &gt; Upravljanje pohranom.</translation>
 <translation id="4258281355379922695">Latencija HTTP-a</translation>
 <translation id="4271957103967917607">Prikaži na cijelom zaslonu</translation>
+<translation id="4275799948641988986">Tko će nakon popravka koristiti uređaj?</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata pogreška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika/slike</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
@@ -261,6 +266,7 @@
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">To je jedina stranica. To će vas vratiti na početni zaslon skeniranja.</translation>
+<translation id="5061169534910302641">Ažuriraj verziju i pokreni ponovo</translation>
 <translation id="5088172560898466307">Naziv hosta poslužitelja</translation>
 <translation id="5089810972385038852">Savezna država</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
@@ -412,6 +418,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7297226631177386107">Povezivanje s HTTPS web-lokacijama putem vatrozida nije uspjelo</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Uređaj će se vratiti drugom vlasniku</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
@@ -419,6 +426,8 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7415801143053185905">Vrlo visoka latencija HTTP-a</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7451112128070628323">Odaberite ovu opciju ako se vlasništvo uređaja ne mijenja.
+        Na primjer, uređaj se prebacuje na drugu osobu u organizaciji.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
@@ -473,6 +482,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="816013303019725643">Unesite kôd za otključavanje:</translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
+<translation id="8217675307824400706">Povežite se</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali pozadinu.</translation>
@@ -544,6 +554,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutačna upotreba</translation>
+<translation id="9095415590198785865">Uređaj će se vratiti izvornom vlasniku</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skeniranje stranice <ph name="PAGE_NUMBER" /></translation>

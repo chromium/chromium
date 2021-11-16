@@ -596,6 +596,7 @@
 <translation id="161042844686301425">Samawati-Kijani</translation>
 <translation id="1611432201750675208">Kifaa chako kimefungwa</translation>
 <translation id="1612019740169791082">Metadata yako haijawekewa mipangilio ya kubadilisha ukubwa wa diski. Ili urekebishe kiasi cha nafasi iliyowekewa Linux, hifadhi nakala za data iliyomo kisha urejeshe kwenye metadata mpya.</translation>
+<translation id="1613019471223620622">Onyesha nenosiri la <ph name="USERNAME" /> linalotumika kwenye <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Huenda umetumia mgawo wako wote wa data ya mtandao wa simu. Tembelea tovuti ya urejeshaji ya <ph name="NAME" /> ili ununue data zaidi</translation>
 <translation id="161460670679785907">Imeshindwa kutambua simu yako</translation>
 <translation id="1615337439947999338">Hifadhi katika Akaunti yako ya Google (<ph name="EMAIL" />)</translation>
@@ -1211,6 +1212,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2220572644011485463">PIN au nenosiri</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Chanzo cha maudhui kisicho na jina</translation>
 <translation id="2224444042887712269">Mipangilio hii ni ya <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Unahitaji kuchagua angalau albamu moja ya matunzio ya Sanaa</translation>
 <translation id="2224551243087462610">Badilisha jina la folda</translation>
@@ -2921,6 +2923,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3957844511978444971">Gusa “Kubali” ili uthibitishe chaguo lako la mipangilio hii ya huduma za Google.</translation>
 <translation id="3958088479270651626">Leta alamisho na mipangilio</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Hali ya Usomaji</translation>
 <translation id="3964480518399667971">Zima Mtandao wa Simu</translation>
 <translation id="3965811923470826124">Ukitumia</translation>
 <translation id="3965965397408324205">Funga <ph name="PROFILE_NAME" /></translation>
@@ -3334,6 +3337,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4444304522807523469">Fikia vichunguzi vya hati vilivyoambatishwa kupitia USB au kwenye mtandao wa karibu</translation>
 <translation id="4444512841222467874">Ikiwa hakuna nafasi ya kuhifadhi, huenda watumiaji pamoja na data ikaondolewa kiotomatiki.</translation>
 <translation id="4446933390699670756">Inayoakisiwa</translation>
+<translation id="4448914100439890108">Ficha nenosiri la <ph name="USERNAME" /> linalotumika kwenye <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Jina lako la mtumiaji linamilikiwa na akaunti ya kazini ya shirika lako. Ili uandikishe vifaa kwenye akaunti, thibitisha kwanza umiliki wa kikoa katika Dashibodi ya Msimamizi. Utahitaji ruhusa za msimamizi kwenye akaunti ili uthibitishe.</translation>
 <translation id="4449996769074858870">Kichupo hiki kinacheza sauti.</translation>
 <translation id="4450274068924249931">Onyesha picha, saa, hali ya hewa na maelezo ya maudhui wakati skrini haitumiki. Ukiwasha taswira ya skrini, skrini yako haitazimwa wakati wa kuchaji.</translation>
@@ -3858,6 +3862,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5009463889040999939">Inabadilisha jina la wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="5010043101506446253">Mamlaka ya cheti</translation>
 <translation id="5015344424288992913">Inatafuta seva mbadala...</translation>
+<translation id="5016491575926936899">Unaweza kutuma SMS kwenye kompyuta yako, kushiriki muunganisho wako wa intaneti, kujibu arifa za mazungumzo na kufungua <ph name="DEVICE_TYPE" /> yako kwa kutumia simu yako.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Unaweza kupitia kurasa kwa kutumia kiteuzi. Bonyeza Ctrl+Search+7 ili uzime.</translation>
 <translation id="5017828934289857214">Nikumbushe Baadaye</translation>
 <translation id="5018207570537526145">Fungua tovuti ya kiendelezi</translation>
@@ -4448,6 +4453,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5638309510554459422">Pata viendelezi na mandhari katika <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Pakia upya ukurasa huu, shikilia ili kuona chaguo zaidi</translation>
 <translation id="5640133431808313291">Dhibiti funguo za usalama</translation>
+<translation id="5641608986289282154">Anza kutumia <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Kitia Sahihi cha CRL</translation>
 <translation id="5643321261065707929">Mtandao unaopima data</translation>
 <translation id="5643620609347735571">Futa na uendelee</translation>

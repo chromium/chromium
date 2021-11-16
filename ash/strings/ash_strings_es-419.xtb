@@ -119,6 +119,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1743570585616704562">No se reconoció</translation>
 <translation id="1746730358044914197">Tu administrador configura los métodos de entrada.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
+<translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="1761222317188459878">Activar o desactivar la conexión de red: <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1771761307086386028">Desplazar hacia la derecha</translation>

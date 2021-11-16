@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
+<translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> டெஸ்க்குகள் மட்டுமே அனுமதிக்கப்படும். புதிய டெஸ்க்கைத் திறக்க, ஏற்கெனவே உள்ள டெஸ்க்குகளில் ஒன்றை அகற்றவும்.</translation>
 <translation id="1761222317188459878">நெட்வொர்க் இணைப்பை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + Period. Insert பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + Shift + Backspace பட்டன்களை அழுத்தவும்.</translation>
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>

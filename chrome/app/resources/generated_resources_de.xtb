@@ -593,6 +593,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Gerät gesperrt</translation>
 <translation id="1612019740169791082">Ihr Container unterstützt keine Anpassungen der Laufwerkgröße. Wenn Sie den Speicherplatz anpassen möchten, der für Linux reserviert wurde, machen Sie eine Sicherungskopie und stellen Sie die Anwendung in einem neuen Container wieder her.</translation>
+<translation id="1613019471223620622">Passwort für <ph name="USERNAME" /> in <ph name="DOMAIN" /> anzeigen</translation>
 <translation id="1614511179807650956">Sie haben eventuell Ihr mobiles Datenkontingent aufgebraucht. Besuchen Sie das <ph name="NAME" />-Aktivierungsportal, um weiteres Datenkontingent zu kaufen.</translation>
 <translation id="161460670679785907">Ihr Smartphone wurde nicht erkannt</translation>
 <translation id="1615337439947999338">Im Google-Konto speichern (<ph name="EMAIL" />)</translation>
@@ -1200,6 +1201,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2220529011494928058">Problem melden</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Unbenannte Medienquelle</translation>
 <translation id="2224444042887712269">Inhaber dieser Einstellung ist <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Es muss mindestens ein Art Gallery-Album ausgewählt werden</translation>
 <translation id="2224551243087462610">Ordnername bearbeiten</translation>
@@ -2906,6 +2908,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3957844511978444971">Tippen Sie auf "Annehmen", um die ausgewählten Einstellungen für diese Google-Dienste zu bestätigen.</translation>
 <translation id="3958088479270651626">Lesezeichen und Einstellungen importieren</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Lesemodus</translation>
 <translation id="3964480518399667971">Mobilfunknetz ausschalten</translation>
 <translation id="3965811923470826124">Mit</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> beenden</translation>
@@ -3321,6 +3324,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4444304522807523469">Auf Dokumentenscanner zugreifen, die per USB angeschlossen sind oder sich im lokalen Netzwerk befinden</translation>
 <translation id="4444512841222467874">Wenn kein Speicherplatz freigegeben wird, können Nutzer und Daten automatisch entfernt werden.</translation>
 <translation id="4446933390699670756">Gespiegelt</translation>
+<translation id="4448914100439890108">Passwort für <ph name="USERNAME" /> in <ph name="DOMAIN" /> ausblenden</translation>
 <translation id="4449948729197510913">Ihr Nutzername gehört zum Unternehmenskonto Ihrer Organisation. Wenn Sie Geräte für das Konto registrieren möchten, müssen Sie zuerst in der Admin-Konsole die Domaininhaberschaft verifizieren. Sie benötigen Administratorberechtigungen für das zu verifizierende Konto.</translation>
 <translation id="4449996769074858870">In diesem Tab wird Audio wiedergegeben.</translation>
 <translation id="4450274068924249931">Wenn Ihr Bildschirm inaktiv ist, können Sie sich Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen. Mit dem Bildschirmschoner bleibt der Bildschirm auch während dem Laden an.</translation>
@@ -3842,6 +3846,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5009463889040999939">Profil wird umbenannt. Das kann einige Minuten dauern.</translation>
 <translation id="5010043101506446253">Zertifizierungsstelle</translation>
 <translation id="5015344424288992913">Proxy auflösen...</translation>
+<translation id="5016491575926936899">Sie können SMS von Ihrem Computer senden, Ihre Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und Ihr <ph name="DEVICE_TYPE" /> mit Ihrem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Sie können sich mit einem Textcursor auf den Seiten bewegen. Drücken Sie die Tastenkombination Strg + Suchtaste + 7, um die Tastaturnavigation zu deaktivieren.</translation>
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5018207570537526145">Erweiterungs-Website öffnen</translation>
@@ -4432,6 +4437,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5638309510554459422">Im <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> nach Erweiterungen und Designs suchen</translation>
 <translation id="5639549361331209298">Seite aktualisieren, für weitere Optionen gedrückt halten</translation>
 <translation id="5640133431808313291">Sicherheitsschlüssel verwalten</translation>
+<translation id="5641608986289282154">Verwendung von <ph name="DEVICE_OS" /> starten</translation>
 <translation id="5642508497713047">CRL-Signaturgeber</translation>
 <translation id="5643321261065707929">Kostenpflichtiges Netzwerk</translation>
 <translation id="5643620609347735571">Löschen und fortfahren</translation>

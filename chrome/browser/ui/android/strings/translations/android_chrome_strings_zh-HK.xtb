@@ -83,7 +83,7 @@
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘的時間…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
 <translation id="1430915738399379752">列印</translation>
-<translation id="1448440926884431741">在書籤中整理所追蹤的產品</translation>
+<translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
@@ -136,7 +136,7 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
-<translation id="1894023287452300670">追蹤這個地區的價格</translation>
+<translation id="1894023287452300670">在此處追蹤價格</translation>
 <translation id="1905320231301365059">此裝置的其他使用者仍看到您在無痕模式中下載的檔案。</translation>
 <translation id="1910950723001426294">閂咗分享選項清單。</translation>
 <translation id="1918175104945982129">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示在畫面下半部</translation>
@@ -263,7 +263,7 @@
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
-<translation id="2567545343356994513">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制</translation>
+<translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
@@ -349,7 +349,7 @@
 <translation id="3029704984691124060">複雜密碼不符</translation>
 <translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
-<translation id="3037177537145227281">追蹤價格</translation>
+<translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3046945242843292318">之後可更快前往此網站</translation>
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
@@ -492,7 +492,7 @@
 <translation id="395377504920307820">使用時不登入帳戶</translation>
 <translation id="3958287878205277013">如要清除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入您的網頁}other{Chrome 準備就緒後將載入您的網頁}}</translation>
-<translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
+<translation id="3962119236270174787">對已知的危險網站、下載檔案及擴充程式提供標準保護功能</translation>
 <translation id="3962957115499249330">透過 Wi-Fi 開始下載時，系統會顯示通知。</translation>
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 無法檢查密碼</translation>
@@ -508,7 +508,7 @@
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4045764304651014138">使用情況資料</translation>
-<translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
+<translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4060598801229743805">選項位於螢幕頂部</translation>
 <translation id="4062305924942672200">法律資料</translation>
@@ -562,7 +562,7 @@
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4411535500181276704">精簡模式</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
-<translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
+<translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，系統將通知您。</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450672886426705087">Google 的搜尋結果。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
@@ -811,7 +811,7 @@
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5834764604050996579">如要掃瞄 QR 碼，請允許 Chrome 使用攝錄機</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
-<translation id="5842437907245493289">在書籤中按一下 [資料夾] 圖示即可整理所追蹤的產品</translation>
+<translation id="5842437907245493289">按一下「書籤」中的「資料夾」圖示即可整理追蹤的產品</translation>
 <translation id="5853623416121554550">已暫停</translation>
 <translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
 <translation id="5855546874025048181">修正搜尋：<ph name="REFINE_TEXT" /></translation>
@@ -872,7 +872,7 @@
 <translation id="6140912465461743537">國家/地區</translation>
 <translation id="6141988275892716286">確認下載</translation>
 <translation id="614940544461990577">建議做法：</translation>
-<translation id="6150320133806434356">書籤已儲存</translation>
+<translation id="6150320133806434356">已儲存書籤</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6159335304067198720">節省 <ph name="PERCENT" /> 的數據用量</translation>
 <translation id="6159729262978459665">清除所有已同步裝置上的記錄。</translation>
@@ -921,7 +921,7 @@
 <translation id="6411219469806822692">無法再往上移動。請嘗試從上一頁開始。</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
 <translation id="641643625718530986">列印…</translation>
-<translation id="6422857128426228781">此處會顯示已追蹤的產品</translation>
+<translation id="6422857128426228781">這裡會顯示您追蹤的產品</translation>
 <translation id="6433501201775827830">選取您的搜尋引擎</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6437478888915024427">網頁資訊</translation>
@@ -1094,7 +1094,7 @@
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
 <translation id="7438641746574390233">開啟精簡模式後，Chrome 會使用 Google 伺服器以加快網頁載入。精簡模式重新編寫緩慢的網頁，讓網頁只載入重要內容。 精簡模式不會套用至無痕分頁。</translation>
-<translation id="7443901082822119557">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
+<translation id="7443901082822119557">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。有些網站的功能可能無法正常運作。</translation>
 <translation id="7444811645081526538">更多類別</translation>
 <translation id="7453467225369441013">您會登出大部分的網站，但不會因此登出 Google 帳戶。</translation>
 <translation id="7454641608352164238">空間不足</translation>
@@ -1250,7 +1250,7 @@
 <translation id="8223642481677794647">資訊提供卡選單</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="825412236959742607">這個網頁使用過多記憶體，因此 Chrome 已移除部分內容。</translation>
-<translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
+<translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="82619448491672958">查看其他分頁</translation>
@@ -1316,7 +1316,7 @@
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8572344201470131220">已複製圖片</translation>
 <translation id="8583805026567836021">正在清除帳戶數據</translation>
-<translation id="859046281437143747">透過 [更多] 選項按鈕追蹤價格</translation>
+<translation id="859046281437143747">使用「更多選項」按鈕追蹤價格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登入 Chrome，閂咗。</translation>
 <translation id="860282621117673749">降價快訊</translation>

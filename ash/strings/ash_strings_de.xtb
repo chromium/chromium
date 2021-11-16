@@ -119,6 +119,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1743570585616704562">Nicht erkannt</translation>
 <translation id="1746730358044914197">Die Eingabemethoden werden von Ihrem Administrator konfiguriert.</translation>
 <translation id="1747827819627189109">Bildschirmtastatur aktiviert</translation>
+<translation id="1750088060796401187">Es sind maximal <ph name="MAX_DESK_LIMIT" /> Desktops zulässig. Entfernen Sie einen Desktop, um einen neuen zu öffnen.</translation>
 <translation id="1761222317188459878">Netzwerkverbindung aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Die Tastenkombination „<ph name="LAUNCHER_KEY_NAME" /> + Punkt“ hat sich geändert. Wenn Sie jetzt die Einfügen-Taste benötigen, drücken Sie die „<ph name="LAUNCHER_KEY_NAME" />-Taste + Umschalttaste + Rücktaste“.</translation>
 <translation id="1771761307086386028">Nach rechts scrollen</translation>

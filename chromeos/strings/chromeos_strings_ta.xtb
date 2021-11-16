@@ -159,6 +159,8 @@
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
 <translation id="3583278742022654445">சிக்னல் மோசமாக உள்ளது. வைஃபை சிக்னலை வழங்கும் சாதனத்திற்கு அருகில் செல்லவும்.</translation>
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
+<translation id="360089215033199597">பழுதுபார்க்கும் செயலாக்கத்தை எளிதாக்க வைஃபையுடன் இணைக்குமாறு பரிந்துரைக்கிறோம்.
+        உங்கள் நெட்வொர்க் சேமிக்கப்படும்.</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
@@ -187,6 +189,7 @@
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4111761024568264522">USB டச்பேட்</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
+<translation id="4140251671072434548">RMA சேவையக அன்லாக்கைச் செயல்படுத்துங்கள்</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
@@ -478,8 +481,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">அன்லாக் செய்வதற்கான குறியீட்டை டைப் செய்யவும்:</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
+<translation id="8217675307824400706">இணையத்துடன் இணைத்திடுங்கள்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
 <translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>

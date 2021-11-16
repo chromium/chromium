@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Egyéni</translation>
 <translation id="1197267115302279827">Könyvjelzők áthelyezése</translation>
 <translation id="1201402288615127009">Tovább</translation>
+<translation id="1202892408424955784">Nyomon követett termékek</translation>
 <translation id="1204037785786432551">Link letöltése</translation>
 <translation id="1206892813135768548">Link szövegének másolása</translation>
 <translation id="1208340532756947324">Az eszközök közötti szinkronizáláshoz és személyre szabáshoz kapcsolja be a szinkronizálást</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Kapcsolatfelvétel a Google-lal… ez eltarthat pár percig…</translation>
 <translation id="1416550906796893042">Alkalmazás verziószáma</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
+<translation id="1448440926884431741">A nyomon követett termékeket a Könyvjelzők között rendszerezheti</translation>
 <translation id="1450753235335490080">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
 <translation id="147113415845704694">Próbálkozzon a következő kérdéssel: „What's the weather today?” (Milyen lesz ma az időjárás?)</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
+<translation id="1894023287452300670">Itt követheti nyomon az árat</translation>
 <translation id="1905320231301365059">Az inkognitó módban letöltött fájlok az eszköz minden felhasználója számára hozzáférhetők.</translation>
 <translation id="1910950723001426294">A megosztási lehetőségek listája össze van csukva.</translation>
 <translation id="1918175104945982129">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete félmagasságban megnyitva</translation>
@@ -260,6 +263,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2561519700418191927">Videó-előnézetek</translation>
 <translation id="2567385386134582609">KÉP</translation>
+<translation id="2567545343356994513">Gyorsabb, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen</translation>
 <translation id="2571711316400087311">Más nyelvű oldalak Google Fordítónak való küldésének felajánlása</translation>
 <translation id="2581165646603367611">Ezzel törli a cookie-kat, a gyorsítótárat, valamint a webhelyek összes olyan adatát, amelyről a Chrome úgy véli, hogy nem fontos.</translation>
 <translation id="2587052924345400782">Rendelkezésre áll új verzió</translation>
@@ -345,6 +349,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3029704984691124060">Az összetett jelszavak nem egyeznek</translation>
 <translation id="3031225630520268969">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037517125981011456">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="3046945242843292318">Következő alkalommal gyorsabban juthat el erre a webhelyre</translation>
 <translation id="305593374596241526">A Helyadatok szolgáltatás ki van kapcsolva; bekapcsolhatja az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
@@ -487,6 +492,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="395377504920307820">Fiók nélküli használat</translation>
 <translation id="3958287878205277013">Az inkognitó mód böngészési előzményeinek az eszközről való törléséhez zárja be az összes lapot.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{A Chrome betölti az oldalt, amint lehetséges}other{A Chrome betölti az oldalakat, amint lehetséges}}</translation>
+<translation id="3962119236270174787">Normál védelem azon webhelyekkel, letöltésekkel és bővítményekkel szemben, amelyekről ismert, hogy veszélyesek</translation>
 <translation id="3962957115499249330">Értesítést kap, amikor ez a letöltés elindul Wi-Fi-hálózaton.</translation>
 <translation id="3963007978381181125">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3969142555815019568">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
@@ -502,6 +508,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="4045764304651014138">Használati adatok</translation>
+<translation id="405399507749852140">Értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4060598801229743805">A lehetőségek a képernyő tetején találhatók</translation>
 <translation id="4062305924942672200">Jogi információk</translation>
@@ -555,6 +562,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4411535500181276704">Egyszerűsített mód</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
+<translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4450672886426705087">Keresési találatok a Google-tól.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
@@ -752,6 +760,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
 <translation id="5555525474779371165">Válassza ki, hogy milyen védelmet nyújtson a Biztonságos Böngészés</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
+<translation id="555816257274242153">Árkövetés leállítva</translation>
 <translation id="5561549206367097665">Várakozás a hálózatra…</translation>
 <translation id="5568069709869097550">Nem sikerült a bejelentkezés</translation>
 <translation id="55737423895878184">Helyadatok és értesítések engedélyezve</translation>
@@ -802,9 +811,11 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5833984609253377421">Link megosztása</translation>
 <translation id="5834764604050996579">QR-kód beolvasásához engedélyezze a kamera használatát a Chrome számára</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">A nyomon követett termékeket a Könyvjelzők között, a mappa ikonjánál rendszerezheti</translation>
 <translation id="5853623416121554550">szüneteltetve</translation>
 <translation id="5854512288214985237">A rendszer nem küld statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5855546874025048181">Pontosítás: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Hiba történt. Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5860491529813859533">Bekapcsolás</translation>
 <translation id="5862731021271217234">Ha a többi eszközén lévő lapjait is szeretné elérni, kapcsolja be a szinkronizálást</translation>
@@ -861,6 +872,7 @@ A Privacy Sandbox próbaverziói még mindig aktív fejlesztés alatt állnak, �
 <translation id="6140912465461743537">Ország/régió</translation>
 <translation id="6141988275892716286">Letöltés megerősítése</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>
+<translation id="6150320133806434356">A könyvjelző mentése megtörtént</translation>
 <translation id="6154478581116148741">Kapcsolja be a képernyőzárat a Beállítások menüben, hogy exportálhassa az ezen az eszközön tárolt jelszavait</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" />-os adatmegtakarítás</translation>
 <translation id="6159729262978459665">Az összes szinkronizált eszközről törli az előzményeket.</translation>
@@ -875,6 +887,7 @@ A Privacy Sandbox próbaverziói még mindig aktív fejlesztés alatt állnak, �
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
+<translation id="6277722725779679269">Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6292420053234093573">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Átküldheti a lapokat ugyanazzal a Google-fiókkal bejelentkezett eszközei között</translation>
@@ -908,6 +921,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6411219469806822692">Nem lehet feljebb menni. Próbálkozzon a lap fentebbi részével való kezdéssel.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="641643625718530986">Nyomtatás…</translation>
+<translation id="6422857128426228781">Itt találhatja a nyomon követett termékeket</translation>
 <translation id="6433501201775827830">Keresőmotor kiválasztása</translation>
 <translation id="6434309073475700221">Elvetés</translation>
 <translation id="6437478888915024427">Oldaladatok</translation>
@@ -952,6 +966,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6627583120233659107">Mappa szerkesztése</translation>
 <translation id="6633067410344541938">Inkognitó lapok zárolásának feloldása</translation>
 <translation id="663674369910034433">A <ph name="BEGIN_LINK1" />Szinkronizálás<ph name="END_LINK1" /> és a <ph name="BEGIN_LINK2" />Google-szolgáltatások<ph name="END_LINK2" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
+<translation id="6640207029842583248">Letiltás mindig</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6643649862576733715">Rendezés a megtakarított adatmennyiség szerint</translation>
 <translation id="6648459603387803038">A rendszergazda távolról módosítani tudja a böngészőbeállításokat. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik.</translation>
@@ -984,6 +999,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6817747507826986771">Az oldal gyors megosztása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, lap, kiválasztva</translation>
+<translation id="6828070228333235514">Árkövetés leállítása</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
 <translation id="6850409657436465440">A letöltés még mindig folyamatban van</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> lap bezárva</translation>
@@ -1078,6 +1094,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
 <translation id="7437998757836447326">Kijelentkezés a Chrome-ból</translation>
 <translation id="7438641746574390233">Amikor be van kapcsolva az Egyszerűsített mód, a Chrome a Google szervereit használja az oldalak felgyorsítására. Az Egyszerűsített mód átírja a nagyon lassú oldalakat, hogy csak a fontos tartalmakat töltsék be. Az Egyszerűsített mód nem használható inkognitó lapokon.</translation>
+<translation id="7443901082822119557">Inkognitómódban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy lássák a különböző webhelyeken végzett böngészési tevékenységeit például annak érdekében, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="7444811645081526538">További kategóriák</translation>
 <translation id="7453467225369441013">A rendszer a legtöbb webhelyről kijelentkezteti Önt, de Google-fiókjából nem.</translation>
 <translation id="7454641608352164238">Nincs elég tárhely</translation>
@@ -1185,6 +1202,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="799576009106109668">Gyorsabban böngészhet, mivel a rendszer proaktív módon tölti be a tartalmat az aktuálisan felkeresett weboldal alapján.</translation>
 <translation id="7998918019931843664">Bezárt lap megnyitása</translation>
 <translation id="8004582292198964060">Böngésző</translation>
+<translation id="8006818846907410687">Letiltás az Inkognitó mód használata közben</translation>
 <translation id="8013372441983637696">Az Ön Chrome-adatai is törlődjenek erről az eszközről</translation>
 <translation id="8015452622527143194">Minden visszaállítása alapértelmezett méretűre</translation>
 <translation id="8026334261755873520">Böngészési adatok törlése</translation>
@@ -1232,6 +1250,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8223642481677794647">A hírcsatornakártya menüje</translation>
 <translation id="8250920743982581267">Dokumentumok</translation>
 <translation id="825412236959742607">Ez az oldal túl sok memóriát használ, ezért a Chrome eltávolított egyes tartalmakat.</translation>
+<translation id="8255617931166444521">A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék az Ön, csak a saját webhelyükön végzett böngészési tevékenységeit</translation>
 <translation id="8260126382462817229">Próbáljon meg újra bejelentkezni</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="82619448491672958">További lapok megtekintése</translation>
@@ -1297,6 +1316,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
 <translation id="8572344201470131220">Kép vágólapra másolva</translation>
 <translation id="8583805026567836021">Fiókadatok törlése</translation>
+<translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
 <translation id="8602358303461588329">Bejelentkezés a Chrome-ba, bezárva.</translation>
 <translation id="860282621117673749">Árcsökkenési értesítések</translation>

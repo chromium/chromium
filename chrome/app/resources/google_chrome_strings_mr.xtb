@@ -52,6 +52,7 @@
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chrome ला आणखी चांगले बनवण्यात मदत करा</translation>
 <translation id="2151406531797534936">कृपया आता Chrome रीस्टार्ट करा</translation>
 <translation id="2189289170880510015">Chrome चे गोपनीयतेशी संबंधित काही सर्वात महत्त्वाचे पर्याय कस्टमाइझ करा</translation>
+<translation id="2258103955319320201">तुमच्या Chrome ब्राउझरवरील आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा</translation>
 <translation id="2290014774651636340">Google API की गहाळ आहेत. Google Chrome ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="2290095356545025170">तुमची खात्री आहे की तुम्ही Google Chrome अनइंस्टॉल करू इच्छिता?</translation>
 <translation id="2309047409763057870">ही Google Chrome ची दुय्यम स्थापना असून त्यास तुमचा डीफॉल्ट ब्राउझर बनवू शकत नाही.</translation>
@@ -215,6 +216,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6506909944137591434">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमच्या कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
+<translation id="6594121454516132231">खुल्या वेबचे संरक्षण करत असताना, क्रॉस-साइट ट्रॅकिंगपासून तुमचे रक्षण करण्यासाठी Chrome कशी योजना आखते ते पहा</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
 <translation id="6696915334902295848">Chrome ला या साइटसाठी मायक्रोफोनची परवानगी आवश्यक आहे</translation>
@@ -229,6 +231,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6989339256997917931">Google Chrome अपडेट केला गेला, परंतु तुम्ही तो किमान 30 दिवसांपासून वापरलेला नाही.</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
 <translation id="7062128746136194023">तुमच्या पालकांनी Chrome साठी "साइट, अ‍ॅप्स आणि एक्स्टेंशनकरिता परवानग्या" सुरू केल्या आहेत. हे <ph name="EXTENSION_TYPE_PARAMETER" /> जोडण्याची अनुमती नाही.</translation>
+<translation id="7085332316435785646">Google सेवांमध्ये आणखी पर्सनलाइझ केलेल्या अनुभवासाठी Chrome इतिहासाचा समावेश करायचा की नाही हे ठरवा</translation>
 <translation id="7088681679121566888">Chrome अप टू डेट आहे</translation>
 <translation id="7098166902387133879">Google Chrome तुमचा मायक्रोफोन वापरत आहे.</translation>
 <translation id="7106741999175697885">टास्क मॅनेजर – Google Chrome</translation>
@@ -253,6 +256,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7651907282515937834">Chrome एंटरप्राइझ लोगो</translation>
 <translation id="7665553140559834626">&amp;Chrome OS अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="7747138024166251722">इन्स्टॉलर तात्पुरती डिरेक्टरी तयार करू शकत नाही. कृपया सॉफ्टवेअर इंस्टॉल करण्यासाठी रिक्त डिस्क स्थान आणि परवानगी पहा.</translation>
+<translation id="7748512868279796735">खालील खाती या Chrome प्रोफाइलसाठी उपलब्ध आहेत</translation>
 <translation id="7761834446675418963">Chrome उघडण्यासाठी तुमचे नाव क्लिक करा आणि ब्राउझिंग सुरू करा.</translation>
 <translation id="7777080907402804672">इमेजचे उपयोगी वर्णन नसल्यास, Chrome तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात. तुम्ही हे सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="7781002470561365167">Google Chrome ची नवी आवृत्ती उपलब्ध आहे. </translation>
@@ -284,6 +288,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ही कार्य प्रोफाइल तुमच्या वैयक्तिक प्रोफाइलपेक्षा पूर्णपणे स्वतंत्र आहे.</translation>
 <translation id="8556340503434111824">Google Chrome ची नवीन आवृत्ती उपलब्ध आहे, आणि ही नेहमीपेक्षा द्रुत आहे. </translation>
+<translation id="8571790202382503603">Chrome प्रोफाइल वापरून तुम्ही तुमच्या सर्व गोष्टी Chrome वर वेगवेगळ्या ठेवू शकता. ती काम आणि मनोरंजन यामध्ये विभागणी करणे सोपे करते.</translation>
 <translation id="8614913330719544658">Google Chrome प्रतिसाद देत नाही. त्वरित पुन्हा लाँच करायचा?</translation>
 <translation id="861702415419836452">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome एका मिनिटामध्ये पुन्हा लॉंच होईल}other{Chrome # मिनिटांमध्ये पुन्हा लॉंच होईल}}</translation>

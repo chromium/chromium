@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1-től 8-ig</translation>
 <translation id="3837047332182291558">Billentyűzet megvilágításának erősítése (csak háttérvilágítással rendelkező billentyűzeteknél)</translation>
 <translation id="3949671998904569433">vessző</translation>
+<translation id="3976707995992061296">Annak be-, illetve kikapcsolása, hogy az aktív ablak minden asztalhoz hozzá legyen-e rendelve</translation>
 <translation id="3976863468609830880">A polcon lévő utolsó ikonra kattintás</translation>
 <translation id="3994783594793697310">Kijelző nagyítási szintjének visszaállítása</translation>
 <translation id="4026843240379844265">Aktív ablak áthelyezése egyik kijelzőről a másikra</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Kijelző nagyítása</translation>
 <translation id="634687982629734605">Fókuszváltás a következők között: állapotsor (ahol a fiókjához tartozó kép jelenik meg), Indító, címsáv, könyvjelzősáv (ha látható), a megnyitott weboldal és a letöltéssáv (ha látható). Ha fókuszálható párbeszédpanel jelenik meg, helyezze inkább oda a fókuszt.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Az 1–8. asztal aktiválása.</translation>
 <translation id="6395172954772765143">Szöveg kijelölése a sor végéig</translation>
 <translation id="6425378783626925378">A polcon lévő ikonokra kattintás (1–8-ig)</translation>
 <translation id="6435207348963613811">Az előző elem kiemelése a polcon</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Rejtett fájlok megjelenítése a Fájlok alkalmazásban</translation>
 <translation id="8717459106217102612">Az előző szó vagy betű kijelölése</translation>
 <translation id="8727232706774971183">Az értesítések megtekintése</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-től 8-ig</translation>
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8881584919399569791">Az aktív ablaknak a bal oldali asztalra helyezése</translation>
 <translation id="88986195241502842">Lapozás lefelé</translation>

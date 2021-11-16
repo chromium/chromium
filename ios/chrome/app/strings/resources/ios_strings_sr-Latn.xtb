@@ -107,6 +107,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1894205589103145703">Došlo je do problema pri prijavljivanju.</translation>
 <translation id="1911619930368729126">Otpremi u Google disk</translation>
 <translation id="1923342640370224680">Prethodni sat</translation>
+<translation id="1930989359703290198">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga. Nalozi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1952172573699511566">Veb-sajtovi će prikazivati tekst na željenom jeziku kada je to moguće.</translation>
 <translation id="1965935827552890526">Završite ono što ste radili u drugom otvorenom Chrome prozoru.</translation>
@@ -387,6 +388,8 @@ Podaci se šifruju pomoću pristupne fraze za sinhronizaciju. Unesite je da bis
 <translation id="4802417911091824046">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhronizaciju<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Ovim upravlja organizacija.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Nevažeći broj kartice</translation>
 <translation id="4808744395915275922">Ažuriranja</translation>
 <translation id="4818522717893377262">Dodajte jezik…</translation>

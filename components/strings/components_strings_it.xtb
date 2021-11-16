@@ -156,6 +156,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1422930527989633628">Può chiedere di rilevare i dispositivi Bluetooth nelle vicinanze</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1428146450423315676">Fascicolatore 7</translation>
+<translation id="142858679511221695">Utente Cloud</translation>
 <translation id="1428729058023778569">Questo avviso è stato visualizzato perché il sito non supporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
@@ -709,6 +710,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3329013043687509092">Saturazione</translation>
 <translation id="3333762389743153920">Non idonea per carta virtuale</translation>
 <translation id="3338095232262050444">Sicuro</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Modifica impostazioni proxy...</translation>
 <translation id="3360103848165129075">Foglio per la gestione dei pagamenti</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />non salverà<ph name="END_EMPHASIS" /> le seguenti informazioni:
@@ -731,6 +733,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3380365263193509176">Errore sconosciuto</translation>
 <translation id="3380864720620200369">ID client:</translation>
 <translation id="3381668585148405088">Verifica l'acquisto</translation>
+<translation id="3383566085871012386">Ordine di precedenza corrente</translation>
 <translation id="3387261909427947069">Metodi di pagamento</translation>
 <translation id="3391030046425686457">Indirizzo di consegna</translation>
 <translation id="3391482648489541560">modifica di file</translation>
@@ -1398,6 +1401,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Questi contenuti potrebbero cercare di installare sul tuo dispositivo software pericoloso che si impossessa delle tue informazioni o le elimina. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Aggiungi un indirizzo valido</translation>
+<translation id="5485973315555778056">Macchina Cloud</translation>
 <translation id="5490432419156082418">Indirizzi e altro</translation>
 <translation id="5492298309214877701">Il sito nell'Intranet dell'azienda, dell'organizzazione o della scuola ha lo stesso URL del sito web esterno.
     <ph name="LINE_BREAK" />
@@ -1427,6 +1431,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5571083550517324815">Impossibile ritirare dall'indirizzo specificato. Seleziona un indirizzo diverso.</translation>
 <translation id="5580958916614886209">Controlla il mese di scadenza e riprova</translation>
 <translation id="5586446728396275693">Nessun indirizzo salvato</translation>
+<translation id="5587987780934666589">Utente della piattaforma</translation>
 <translation id="5593349413089863479">La connessione non è completamente sicura</translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="5598944008576757369">Scegli il metodo di pagamento</translation>
@@ -2110,6 +2115,7 @@ Ulteriori dettagli:
 <translation id="7953569069500808819">Impuntura in alto</translation>
 <translation id="7956713633345437162">Preferiti su disp. mobili</translation>
 <translation id="7961015016161918242">Mai</translation>
+<translation id="7962467575542381659">Macchina della piattaforma</translation>
 <translation id="7966803981046576691">Tipo di account lavoro</translation>
 <translation id="79682505114836835">Il valore "<ph name="VALUE" />" è un colore esadecimale non valido.</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>

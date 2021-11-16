@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Sérsniðið</translation>
 <translation id="1197267115302279827">Færa bókamerki</translation>
 <translation id="1201402288615127009">Áfram</translation>
+<translation id="1202892408424955784">Vaktaðar vörur</translation>
 <translation id="1204037785786432551">Hlaða niður tengli</translation>
 <translation id="1206892813135768548">Afrita texta tengils</translation>
 <translation id="1208340532756947324">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Hefur samband við Google. Þetta gæti tekið smástund…</translation>
 <translation id="1416550906796893042">Útgáfa forrits</translation>
 <translation id="1430915738399379752">Prenta</translation>
+<translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
 <translation id="1450753235335490080">Ekki er hægt að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Velja tungumál Chrome</translation>
 <translation id="147113415845704694">Prófaðu „What’s the weather today?“</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
+<translation id="1894023287452300670">Vakta verð hér</translation>
 <translation id="1905320231301365059">Skrár sem þú hleður niður í huliðsstillingu eru áfram sýnilegar öllum sem nota þetta tæki.</translation>
 <translation id="1910950723001426294">Listi yfir deilingarvalkosti er lokaður.</translation>
 <translation id="1918175104945982129">Samþykkisviðmót raddleitar Hjálpara opið á hálfum skjánum</translation>
@@ -346,6 +349,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3029704984691124060">Aðgangsorð stemma ekki</translation>
 <translation id="3031225630520268969">Samþykkisviðmót raddleitar Hjálpara</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Fá aðstoð<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Vaktar verð</translation>
 <translation id="3037517125981011456">Sýnir innskráningartilkynningar í Chrome</translation>
 <translation id="3046945242843292318">Opna þetta vefsvæði hraðar í næsta sinn</translation>
 <translation id="305593374596241526">Slökkt er á staðsetningum. Kveiktu á þeim í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -504,6 +508,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# klst.}one{# klst.}other{# klst.}}</translation>
 <translation id="4045764304651014138">Notkunargögn</translation>
+<translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4060598801229743805">Valkosti er að finna ofarlega á skjánum</translation>
 <translation id="4062305924942672200">Lagalegar upplýsingar</translation>
@@ -557,6 +562,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4409271659088619928">Leitarvélin þín er <ph name="DSE" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
 <translation id="4411535500181276704">Léttútgáfa</translation>
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
+<translation id="4425140285732600465">Vaktar verð. Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði.</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4450672886426705087">Leitarniðurstöður Google.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
@@ -754,6 +760,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5548606607480005320">Öryggisathugun</translation>
 <translation id="5555525474779371165">Veldu vernd öruggrar vefskoðunar</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
+<translation id="555816257274242153">Hætti að vakta verð</translation>
 <translation id="5561549206367097665">Bíður eftir neti…</translation>
 <translation id="5568069709869097550">Innskráning mistókst</translation>
 <translation id="55737423895878184">Staðsetning og tilkynningar eru leyfðar</translation>
@@ -804,9 +811,11 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5833984609253377421">Deila tengli</translation>
 <translation id="5834764604050996579">Leyfðu Chrome að nota myndavélina til að skanna inn QR-kóða</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Notaðu bókamerki undir möpputákninu til að flokka vörur sem þú vaktar</translation>
 <translation id="5853623416121554550">hlé</translation>
 <translation id="5854512288214985237">Engin mæligildi eða hrunskýrslur eru sendar til Google</translation>
 <translation id="5855546874025048181">Þrengja: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Eitthvað fór úrskeiðis. Ekki tókst að uppfæra „Vakta verð“.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5862731021271217234">Kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum</translation>
@@ -863,6 +872,7 @@ Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum sv�
 <translation id="6140912465461743537">Land/svæði</translation>
 <translation id="6141988275892716286">Staðfesta niðurhal</translation>
 <translation id="614940544461990577">Prófaðu að:</translation>
+<translation id="6150320133806434356">Bókamerki vistað</translation>
 <translation id="6154478581116148741">Kveiktu á skjálás í stillingunum til að flytja aðgangsorðin þín út úr þessu tæki</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> gagnasparnaður</translation>
 <translation id="6159729262978459665">Hreinsar feril úr öllum samstilltum tækjum.</translation>
@@ -877,6 +887,7 @@ Prufuútgáfur Privacy Sandbox eru enn í þróun og eru í boði á völdum sv�
 Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að birta þér auglýsingar sem ekki byggja á öðrum vefsvæðum sem þú hefur heimsótt. Mörg vefsvæði munu áfram safna vefnotkunargögnunum þínum og nota þau, til dæmis til að auka öryggi, birta efni, auglýsingar og tillögur og útbúa talnagögn um notkun.</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6277522088822131679">Vandamál kom upp við að prenta síðuna. Reyndu aftur.</translation>
+<translation id="6277722725779679269">Ekki tókst að uppfæra „Vakta verð“</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6292420053234093573">Með því að nota Chrome samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" />og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Þú getur sent flipa á milli tækja sem eru skráð inn á sama Google reikninginn</translation>
@@ -910,6 +921,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6411219469806822692">Kemst ekki ofar. Prófaðu að byrja ofar á síðunni.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="641643625718530986">Prenta...</translation>
+<translation id="6422857128426228781">Hér sérðu vörur sem þú vaktar</translation>
 <translation id="6433501201775827830">Veldu leitarvélina þína</translation>
 <translation id="6434309073475700221">Fleygja</translation>
 <translation id="6437478888915024427">Upplýsingar um síðu</translation>
@@ -987,6 +999,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6817747507826986771">Deildu þessari síðu á skjótan hátt. Haltu fingri á þessari flýtileið til að breyta henni.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, flipi, valinn</translation>
+<translation id="6828070228333235514">Hætta að vakta verð</translation>
 <translation id="6846298663435243399">Hleður…</translation>
 <translation id="6850409657436465440">Enn er verið að sækja</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> flipum lokað</translation>
@@ -1303,6 +1316,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8571213806525832805">Síðastliðnar fjórar vikur</translation>
 <translation id="8572344201470131220">Mynd afrituð</translation>
 <translation id="8583805026567836021">Hreinsar reikningsgögn</translation>
+<translation id="859046281437143747">Nota hnappinn „Fleiri valkostir“ til að vakta verð</translation>
 <translation id="860043288473659153">Nafn korthafa</translation>
 <translation id="8602358303461588329">Skrá inn á Chrome, lokað.</translation>
 <translation id="860282621117673749">Tilkynningar um verðlækkanir</translation>

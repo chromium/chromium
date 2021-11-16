@@ -119,6 +119,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1743570585616704562">Identifierades inte</translation>
 <translation id="1746730358044914197">Inmatningsmetoderna konfigureras av administratören.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
+<translation id="1750088060796401187">Bara <ph name="MAX_DESK_LIMIT" /> skrivbord tillåts. Ta bort ett skrivbord om du vill öppna ett nytt.</translation>
 <translation id="1761222317188459878">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + punkt har ändrats. Om du vill använda Insert-tangenten trycker du på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Backsteg.</translation>
 <translation id="1771761307086386028">Scrolla åt höger</translation>

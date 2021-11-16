@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Δεν αναγνωρίστηκε</translation>
 <translation id="1746730358044914197">Οι μέθοδοι εισαγωγής έχουν διαμορφωθεί από τον διαχειριστή σας.</translation>
 <translation id="1747827819627189109">Το πληκτρολόγιο οθόνης είναι ενεργοποιημένο</translation>
+<translation id="1750088060796401187">Επιτρέπονται μόνο <ph name="MAX_DESK_LIMIT" /> γραφεία. Καταργήστε ένα γραφείο για να ανοίξετε ένα άλλο.</translation>
 <translation id="1761222317188459878">Εναλλαγή σύνδεσης δικτύου. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + τελεία έχει αλλάξει. Για να χρησιμοποιήσετε το κουμπί Insert, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>

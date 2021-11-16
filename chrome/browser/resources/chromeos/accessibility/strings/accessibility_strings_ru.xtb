@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{закрывающая квадратная скобка}one{# закрывающая квадратная скобка}few{# закрывающие квадратные скобки}many{# закрывающих квадратных скобок}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{вопросительный знак}one{# вопросительный знак}few{# вопросительных знака}many{# вопросительных знаков}other{# question marks}}</translation>
+<translation id="3505359110822747654">Свернуть меню ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{циркумфлекс}one{# циркумфлекс}few{# циркумфлекса}many{# циркумфлексов}other{# carets}}</translation>
 <translation id="352577523970648069">Редактируемое текстовое поле</translation>
 <translation id="3538907380453898475">dscrplst</translation>

@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Дошло је до проблема при пријављивању.</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
 <translation id="1923342640370224680">Претходни сат</translation>
+<translation id="1930989359703290198">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Додирните двапут да бисте копирали.</translation>
 <translation id="1952172573699511566">Веб-сајтови ће приказивати текст на жељеном језику када је то могуће.</translation>
 <translation id="1965935827552890526">Завршите оно што сте радили у другом отвореном Chrome прозору.</translation>
@@ -387,6 +388,8 @@
 <translation id="4802417911091824046">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а.
 
 Да бисте променили ово подешавање, <ph name="BEGIN_LINK" />ресетујте синхронизацију<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Овим управља организација.
+<ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Неважећи број картице</translation>
 <translation id="4808744395915275922">Ажурирања</translation>
 <translation id="4818522717893377262">Додајте језик…</translation>

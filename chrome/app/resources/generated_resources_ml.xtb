@@ -1220,6 +1220,7 @@
 <translation id="2232751457155581899">നിങ്ങളുടെ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാം</translation>
 <translation id="2232876851878324699">ഫയലില്‍ ഒരു സർട്ടിഫിക്കറ്റ് ഉണ്ടായിരുന്നു, അത് ഇമ്പോർട്ട് ചെയ്തിട്ടില്ല:</translation>
 <translation id="2233502537820838181">&amp;കൂടുതൽ വിവരങ്ങൾ</translation>
+<translation id="223356358902285214">വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി</translation>
 <translation id="2234876718134438132">സമന്വയവും Google സേവനങ്ങളും</translation>
 <translation id="2235344399760031203">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്‍തു</translation>
 <translation id="2238379619048995541">ആവൃത്തി നില ഡാറ്റ</translation>
@@ -1906,6 +1907,7 @@
 <translation id="2923006468155067296">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഇപ്പോൾ ലോക്ക് ചെയ്യും.
 <ph name="DOMAIN" />-ൽ തുടരുന്നതിന് നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്ത നിലയിൽ തുടരേണ്ടതുണ്ട്.</translation>
 <translation id="2923234477033317484">ഈ അക്കൗണ്ട് നീക്കം ചെയ്യുക</translation>
+<translation id="2923644930701689793">നിങ്ങളുടെ ഫോണിന്റെ ക്യാമറ റോൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2926085873880284723">ഡിഫോൾട്ട് കുറുക്കുവഴികൾ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> എന്നതിന് പിന്തുണയില്ല.</translation>
 <translation id="2927017729816812676">കാഷെ സ്‌റ്റോറേജ്</translation>
@@ -2346,6 +2348,7 @@
 <translation id="3413122095806433232">CA നല്‍‌കുന്നയാളുകള്‍‌: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">വലുപ്പം:</translation>
 <translation id="3414966631182382431">നിങ്ങളുടെ <ph name="BEGIN_LINK" />ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /><ph name="MANAGER" /> ആണ്</translation>
+<translation id="341589277604221596">തത്സമയ ക്യാപ്ഷൻ - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">എപ്പോഴും പൂർണ്ണ URL-കൾ കാണിക്കുക</translation>
 <translation id="3417835166382867856">ടാബുകൾ തിരയുക</translation>
 <translation id="3417836307470882032">24 മണിക്കൂര്‍ ക്ലോക്ക്</translation>
@@ -2909,6 +2912,7 @@
 <translation id="3957844511978444971">ഈ Google സേവന ക്രമീകരണത്തിന്‍റെ തിരഞ്ഞെടുപ്പ് സ്ഥിരീകരിക്കാൻ “അംഗീകരിക്കുന്നു” ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="3958088479270651626">ബുക്ക്മാർക്കുകളും ക്രമീകരണവും ഇമ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">റീഡർ മോഡ്</translation>
 <translation id="3964480518399667971">സെല്ലുലാർ നെറ്റ്‌വർക്ക് ഓഫാക്കുക</translation>
 <translation id="3965811923470826124">ഉൾപ്പെടുത്തുക</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> എന്നതിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
@@ -3096,6 +3100,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-ന് സ്വന്തമായ ചില ക്രമീകരണങ്ങൾ നിങ്ങളുമായി പങ്കിടുന്നു. ഒന്നിലധികം സൈൻ ഇന്നുകൾ ഉപയോഗിക്കുമ്പോൾ മാത്രം ഈ ക്രമീകരണങ്ങൾ നിങ്ങളുടെ അക്കൗണ്ടിനെ ബാധിക്കുന്നു.</translation>
 <translation id="4169535189173047238">അനുവദിക്കരുത്</translation>
 <translation id="4170314459383239649">പുറത്തുകടക്കുമ്പോൾ മായ്‌ക്കുക</translation>
+<translation id="417096670996204801">ഒരു പ്രൊഫൈൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4175137578744761569">ഇളം പർപ്പിളും വെള്ളയും</translation>
 <translation id="4175737294868205930">സ്ഥിരമായ സ്‌റ്റോറേജ്</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
@@ -7179,6 +7184,7 @@
 <translation id="8540136935098276800">ശരിയായി ഫോർമാറ്റ് ചെയ്‌ത URL നൽകുക</translation>
 <translation id="8540503336857689453">സുരക്ഷാ കാരണങ്ങളാൽ, മറച്ചിരിക്കുന്ന നെറ്റ്‌വർക്ക് ഉപയോഗിക്കുന്നത് ശുപാർശ ചെയ്യുന്നില്ല.</translation>
 <translation id="854071720451629801">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
+<translation id="8540942859441851323">ദാതാവിന് റോമിംഗ് ആവശ്യമാണ്</translation>
 <translation id="8541462173655894684">പ്രിന്റ് സെർവറിൽ നിന്ന് പ്രിന്ററുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8541838361296720865">“<ph name="ACTION" />” അസൈൻ ചെയ്യാൻ ഒരു സ്വിച്ചോ കീബോർഡ് കീയോ അമർത്തുക</translation>
 <translation id="8542618328173222274">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും സൈറ്റിന് ഉപയോഗിക്കണമെങ്കിൽ ചോദിക്കുക</translation>

@@ -2920,6 +2920,7 @@
 <translation id="3957844511978444971">የእነዚህ Google አገልግሎቶች ቅንብሮች ምርጫን ለማረጋገጥ «ተቀበል»ን መታ ያድርጉ።</translation>
 <translation id="3958088479270651626">ዕልባቶችን እና ቅንብሮችን አስመጣ</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">የአንባቢ ሁነታ</translation>
 <translation id="3964480518399667971">ተንቀሳቃሽ አውታረ መረብን አጥፋ</translation>
 <translation id="3965811923470826124">ከ</translation>
 <translation id="3965965397408324205">ከ<ph name="PROFILE_NAME" /> ውጣ</translation>
@@ -4089,6 +4090,7 @@
 <translation id="5265562206369321422">ከአንድ ሳምንት በላይ ከመስመር ውጪ</translation>
 <translation id="5265797726250773323">በመጫን ወቅት ስህተት</translation>
 <translation id="5266113311903163739">የእውቅና ማረጋገጫ ስልጣን የማስመጣት ስህተት</translation>
+<translation id="526622169288322445">ለ<ph name="ADDRESS_SUMMARY" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="5269977353971873915">ማተም አልተሳካም</translation>
 <translation id="5275352920323889391">ውሻ</translation>
 <translation id="527605982717517565">ሁልጊዜ በ<ph name="HOST" /> ላይ ጃቫስክሪፕት ፍቀድ</translation>
@@ -5473,6 +5475,7 @@
 <translation id="6775163072363532304">የሚገኙ መሣሪያዎች እዚህ ላይ ይታያሉ።</translation>
 <translation id="6777817260680419853">አቅጣጫ ማዞር ታግዷል</translation>
 <translation id="6778737459546443941">የእርስዎ ወላጅ ገና አላጸደቁትም</translation>
+<translation id="6779092717724412415">እንደዚህ አይነት ድምቀት ለመፍጠር ማንኛውንም ጽሑፍ ይምረጡ እና የቀኝ-ጠቅ ያድርጉ።</translation>
 <translation id="6779447100905857289">የእርስዎ ተሳቢዎች</translation>
 <translation id="677965093459947883">በጣም ትንሽ</translation>
 <translation id="6781005693196527806">&amp;የፍለጋ ፕሮግራሞችን ያስተዳድሩ...</translation>
@@ -6289,6 +6292,7 @@
 <translation id="7625823789272218216">በግራ በኩል አዲስ ትር</translation>
 <translation id="7628201176665550262">የዕድሳት ፍጥነት</translation>
 <translation id="7629827748548208700">ትር፦ <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">ይህ መሣሪያ በ<ph name="MANAGER" /> የሚተዳደር ሲሆን በየጊዜው በመለያ እንዲገቡ ይጠይቀዎታል።</translation>
 <translation id="7631014249255418691">Linux መተግበሪያዎች እና ፋይሎች በተሳካ ሁኔታ በምትኬ ተቀምጠዋል</translation>
 <translation id="7631205654593498032">መሣሪያዎችዎን ሲያገናኙ የእርስዎ <ph name="DEVICE_TYPE" /> እነዚህን ማድረግ እንደሚችል ይስማማሉ፦</translation>
 <translation id="7631887513477658702">&amp;ሁልጊዜ እንዲህ አይነት ፋይሎችን ክፈት</translation>

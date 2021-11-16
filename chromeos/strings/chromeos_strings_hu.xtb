@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1851218745569890714">Videokonferencia</translation>
+<translation id="1857850044054738019">Akkor válassza ezt a lehetőséget, ha az eszközt újraértékesítik vagy felújítják
+        új ügyfél számára történő értékesítéshez.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardver ellenőrzése</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
@@ -157,6 +159,8 @@
 <translation id="357889014807611375">mért adatforgalmú Wi-Fi</translation>
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
+<translation id="360089215033199597">A javítási folyamat leegyszerűsítéséhez javasoljuk, hogy csatlakozzon a Wi-Fi-hálózathoz.
+        A hálózatát menteni fogja a rendszer.</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
@@ -185,6 +189,7 @@
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
+<translation id="4140251671072434548">Visszáru-engedélyezés szerverfeloldásának végrehajtása</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4147897805161313378">Google Fotók</translation>
 <translation id="4155551848414053977">Győződjön meg arról, hogy a szkenner be van kapcsolva, és hogy hozzáférhető a hálózaton vagy közvetlen kapcsolaton keresztül</translation>
@@ -197,6 +202,7 @@
 <translation id="4244962993387259361">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Tárhely felszabadításához lépjen a Beállítások &gt; Tárhelykezelő menübe.</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
 <translation id="4271957103967917607">Teljes képernyős nézet</translation>
+<translation id="4275799948641988986">A javítást követően ki fogja használni az eszközt?</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4378373042927530923">Nem fut</translation>
@@ -413,6 +419,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7297226631177386107">Nem lehet a tűzfalon keresztül HTTPS-protokollt használó webhelyekhez csatlakozni</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Az eszköznek más lesz a tulajdonosa</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
@@ -420,6 +427,9 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva}}</translation>
+<translation id="7451112128070628323">Akkor válassza ezt a lehetőséget, ha az eszköz tulajdonosa nem változik.
+        Ha például az eszközt másik személynek adják át
+        a szervezeten belül.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">MAC-cím</translation>
@@ -471,8 +481,10 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Adja meg a feloldás kódját:</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
+<translation id="8217675307824400706">Csatlakozás</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8246209727385807362">Ismeretlen szolgáltató</translation>
 <translation id="8286154143153872371">A háttérkép megtekintése érdekében csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
@@ -544,6 +556,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
+<translation id="9095415590198785865">Az eszköznek ugyanaz lesz a tulajdonosa</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Frissítse a következőhöz tartozó jegyet: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>

@@ -76,6 +76,7 @@
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
+<translation id="2104796393919810494">Labošana pabeigta</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Pieejamais apjoms: <ph name="AVAILABLE_MEMORY" /> GB no <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -156,6 +157,8 @@
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="3583278742022654445">Vājš signāls. Pārvietojieties tuvāk Wi-Fi signāla avotam.</translation>
 <translation id="3595596368722241419">Akumulators pilns</translation>
+<translation id="360089215033199597">Ieteicams izveidot savienojumu ar Wi-Fi tīklu, lai atvieglotu labošanu.
+        Jūsu tīkls tiks saglabāts.</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
@@ -260,6 +263,7 @@
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupas nosaukums</translation>
 <translation id="5051044138948155788">Šī ir vienīgā lapa. Tiks atvērts skenēšanas sākuma ekrāns.</translation>
+<translation id="5061169534910302641">Atjaunināt versiju un restartēt</translation>
 <translation id="5088172560898466307">Servera nosaukums</translation>
 <translation id="5089810972385038852">Štats</translation>
 <translation id="5142961317498132443">Autentifikācija</translation>
@@ -471,6 +475,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
+<translation id="8217675307824400706">Savienojuma izveide</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
 <translation id="8286154143153872371">Izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu, lai skatītu fona tapeti.</translation>

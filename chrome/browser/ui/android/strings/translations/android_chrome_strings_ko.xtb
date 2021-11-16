@@ -263,6 +263,7 @@
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2561519700418191927">동영상 미리보기</translation>
 <translation id="2567385386134582609">이미지</translation>
+<translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
 <translation id="2571711316400087311">다른 언어로 된 페이지를 Google 번역으로 전송하는 옵션 제공</translation>
 <translation id="2581165646603367611">이를 통해 쿠키, 캐시 및 Chrome에서 중요하다고 간주하지 않는 사이트의 기타 데이터가 삭제됩니다.</translation>
 <translation id="2587052924345400782">최신 버전 사용 가능</translation>
@@ -491,6 +492,7 @@
 <translation id="395377504920307820">계정 없이 사용</translation>
 <translation id="3958287878205277013">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 시크릿 탭을 닫으세요.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{준비가 완료되면 Chrome에서 페이지를 로드합니다.}other{준비가 완료되면 Chrome에서 페이지를 로드합니다.}}</translation>
+<translation id="3962119236270174787">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
 <translation id="3962957115499249330">Wi-Fi를 통해 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="3963007978381181125">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
@@ -964,6 +966,7 @@
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
 <translation id="663674369910034433">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
+<translation id="6640207029842583248">항상 차단</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6643649862576733715">저장된 데이터 양에 따라 정렬</translation>
 <translation id="6648459603387803038">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
@@ -1091,6 +1094,7 @@
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7437998757836447326">Chrome에서 로그아웃</translation>
 <translation id="7438641746574390233">라이트 모드가 사용 설정되어 있으면 Chrome이 Google 서버를 사용하여 페이지를 더 빠르게 로드합니다. 라이트 모드에서는 속도가 아주 느린 페이지를 다시 작성하여 꼭 필요한 콘텐츠만 로드합니다. 시크릿 탭에는 라이트 모드가 적용되지 않습니다.</translation>
+<translation id="7443901082822119557">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="7444811645081526538">카테고리 더보기</translation>
 <translation id="7453467225369441013">대부분의 사이트에서 로그아웃됩니다. Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="7454641608352164238">저장공간 부족</translation>
@@ -1198,6 +1202,7 @@
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
+<translation id="8006818846907410687">시크릿 모드 사용 중에 차단</translation>
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
@@ -1245,6 +1250,7 @@
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="825412236959742607">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 일부 콘텐츠를 삭제했습니다.</translation>
+<translation id="8255617931166444521">사이트에서 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8260126382462817229">다시 로그인해 주세요.</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="82619448491672958">다른 탭 보기</translation>

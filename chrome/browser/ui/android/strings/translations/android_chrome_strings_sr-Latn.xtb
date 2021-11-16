@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1197267115302279827">Premesti obeleživače</translation>
 <translation id="1201402288615127009">Dalje</translation>
+<translation id="1202892408424955784">Proizvodi koje pratite</translation>
 <translation id="1204037785786432551">Preuzmi link</translation>
 <translation id="1206892813135768548">Kopiraj tekst linka</translation>
 <translation id="1208340532756947324">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Kontaktiramo Google. To može malo da potraje...</translation>
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="147113415845704694">Probajte da pitate „Kakvo će biti vreme danas?“</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome je zastareo</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
+<translation id="1894023287452300670">Pratite cenu ovde</translation>
 <translation id="1905320231301365059">Fajlovi koje preuzmete u režimu bez arhiviranja su i dalje vidljivi za svakoga ko koristi ovaj uređaj.</translation>
 <translation id="1910950723001426294">Lista opcija za deljenje je zatvorena.</translation>
 <translation id="1918175104945982129">Korisnički interfejs za saglasnost za glasovnu pretragu Pomoćnika otvoren je do polovine ekrana</translation>
@@ -346,6 +349,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3029704984691124060">Pristupne fraze se ne podudaraju</translation>
 <translation id="3031225630520268969">Korisnički interfejs za saglasnost za glasovnu pretragu Pomoćnika</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Prati se cena</translation>
 <translation id="3037517125981011456">Prikazuje upite za prijavljivanje u Chrome</translation>
 <translation id="3046945242843292318">Sledeći put brže pristupite ovom sajtu</translation>
 <translation id="305593374596241526">Lokacija je isključena; uključite je u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
@@ -504,6 +508,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4016425174436051808">Praćenje nije uspelo. Došlo je do greške.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# č}one{# č}few{# č}other{# č}}</translation>
 <translation id="4045764304651014138">Podaci o korišćenju</translation>
+<translation id="405399507749852140">Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4060598801229743805">Opcije su dostupne pri vrhu ekrana</translation>
 <translation id="4062305924942672200">Pravne informacije</translation>
@@ -557,6 +562,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="4409271659088619928">Vaš pretraživač je <ph name="DSE" />. Pogledajte uputstva tog pretraživača za brisanje istorije pretrage ako je to primenjivo.</translation>
 <translation id="4411535500181276704">Lite režim</translation>
 <translation id="4415276339145661267">Upravljajte Google nalogom</translation>
+<translation id="4425140285732600465">Cena se prati. Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu.</translation>
 <translation id="4427306783828095590">Poboljšana zaštita nudi više mogućnosti za blokiranje „pecanja“ i malvera</translation>
 <translation id="4450672886426705087">Rezultati pretrage sa Google-a.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
@@ -754,6 +760,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
+<translation id="555816257274242153">Praćenje cena je zaustavljeno</translation>
 <translation id="5561549206367097665">Čeka se mreža...</translation>
 <translation id="5568069709869097550">Ne mogu da se prijavim</translation>
 <translation id="55737423895878184">Lokacija i obaveštenja su dozvoljeni</translation>
@@ -804,9 +811,11 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5833984609253377421">Deli link</translation>
 <translation id="5834764604050996579">Da biste skenirali QR kôd, dozvolite da Chrome koristi kameru</translation>
 <translation id="5839058148541733625">Chrome dinosaurus</translation>
+<translation id="5842437907245493289">Organizujte proizvode koje pratite u Obeleživačima pomoću ikone foldera</translation>
 <translation id="5853623416121554550">pauzirano</translation>
 <translation id="5854512288214985237">Google-u se ne šalju statistika ni izveštaji o otkazivanju</translation>
 <translation id="5855546874025048181">Preciziraj: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Došlo je do greške. Ažuriranje praćenja cene nije uspelo.</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5860491529813859533">Uključi</translation>
 <translation id="5862731021271217234">Da bi vam kartice bile dostupne na drugim uređajima, uključite sinhronizaciju</translation>
@@ -863,6 +872,7 @@ Aktivno programiranje proba Zaštićenog okruženja privatnosti je još uvek u 
 <translation id="6140912465461743537">Zemlja/regija</translation>
 <translation id="6141988275892716286">Potvrdite preuzimanje</translation>
 <translation id="614940544461990577">Pokušajte:</translation>
+<translation id="6150320133806434356">Obeleživač je sačuvan</translation>
 <translation id="6154478581116148741">Uključite zaključavanje ekrana u Podešavanjima da biste izvezli lozinke sa uređaja</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> uštede podataka</translation>
 <translation id="6159729262978459665">Briše istoriju sa svih sinhronizovanih uređaja.</translation>
@@ -877,6 +887,7 @@ Aktivno programiranje proba Zaštićenog okruženja privatnosti je još uvek u 
 Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa koji nisu zasnovani na drugim veb-sajtovima koje ste posetili. Mnogi veb-sajtovi će ipak prikupljati i koristiti podatke pregledanja, na primer, radi poboljšanja bezbednosti, pružanja sadržaja, oglasa i preporuka, kao i radi generisanja statistike izveštavanja.</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
+<translation id="6277722725779679269">Ažuriranje praćenja cena nije uspelo</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Ako koristite Chrome, prihvatate <ph name="BEGIN_LINK1" />Google uslove korišćenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne uslove korišćenja usluge za Google Chrome i Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Možete da šaljete kartice s jednog uređaja na drugi ako ste na njih prijavljeni pomoću istog Google naloga</translation>
@@ -910,6 +921,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6411219469806822692">Ne možete da odete više. Probajte da počnete sa veće visine na stranici.</translation>
 <translation id="6412673304250309937">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chrome-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chrome može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="641643625718530986">Štampaj...</translation>
+<translation id="6422857128426228781">Ovde ćete pronaći proizvode koje pratite</translation>
 <translation id="6433501201775827830">Izaberite pretraživač</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6437478888915024427">Informacije o stranici</translation>
@@ -987,6 +999,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6817747507826986771">Brzo delite ovu stranicu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, kartica, izabrana</translation>
+<translation id="6828070228333235514">Zaustavi praćenje cena</translation>
 <translation id="6846298663435243399">Učitava se...</translation>
 <translation id="6850409657436465440">Preuzimanje je još uvek u toku</translation>
 <translation id="6850830437481525139">Zatvorenih kartica: <ph name="TAB_COUNT" /></translation>
@@ -1303,6 +1316,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
 <translation id="8572344201470131220">Slika je kopirana</translation>
 <translation id="8583805026567836021">Brisanje podataka o nalogu</translation>
+<translation id="859046281437143747">Pratite cenu pomoću dugmeta Još opcija</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
 <translation id="8602358303461588329">Prijavljivanje u Chrome, zatvoreno.</translation>
 <translation id="860282621117673749">Obaveštenja o sniženjima</translation>

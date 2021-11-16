@@ -597,6 +597,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611432201750675208">Urządzenie jest zablokowane</translation>
 <translation id="1612019740169791082">Konfiguracja kontenera nie pozwala na zmiany rozmiaru dysku. Aby zmienić ilość miejsca zarezerwowanego dla Linuksa, utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
+<translation id="1613019471223620622">Pokaż hasło użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Możliwe, że masz już wykorzystany limit mobilnej transmisji danych. Odwiedź portal aktywacji <ph name="NAME" />, by kupić dodatkowy pakiet danych.</translation>
 <translation id="161460670679785907">Nie można wykryć telefonu</translation>
 <translation id="1615337439947999338">Zapisz na koncie Google (<ph name="EMAIL" />)</translation>
@@ -1199,6 +1200,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2220529011494928058">Zgłoś problem</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Źródło multimedialne bez nazwy</translation>
 <translation id="2224444042887712269">To ustawienie należy do <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Musi być wybrany co najmniej jeden album z Galerii sztuki</translation>
 <translation id="2224551243087462610">Edytuj nazwę folderu</translation>
@@ -2897,6 +2899,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3957844511978444971">Kliknij „Akceptuję”, by potwierdzić wybór tych ustawień usług Google.</translation>
 <translation id="3958088479270651626">Importuj zakładki i ustawienia</translation>
 <translation id="3960566196862329469">Konfiguracja ONC</translation>
+<translation id="3963721102035795474">Tryb czytnika</translation>
 <translation id="3964480518399667971">Wyłącz sieć komórkową</translation>
 <translation id="3965811923470826124">Za pomocą</translation>
 <translation id="3965965397408324205">Zamknij: <ph name="PROFILE_NAME" /></translation>
@@ -3311,6 +3314,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4444304522807523469">Dostęp do skanerów podłączonych przez USB lub do sieci lokalnej</translation>
 <translation id="4444512841222467874">Jeśli nie zwiększysz ilości wolnego miejsca, może dojść do automatycznego usunięcia danych i kont użytkowników.</translation>
 <translation id="4446933390699670756">Zduplikowany</translation>
+<translation id="4448914100439890108">Ukryj hasło użytkownika <ph name="USERNAME" /> w domenie <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Twoja nazwa użytkownika jest połączona z kontem służbowym Twojej organizacji. Aby zarejestrować urządzenie na koncie, potwierdź w konsoli administracyjnej, że jesteś właścicielem domeny. Aby to zrobić, musisz mieć uprawnienia administratora konta.</translation>
 <translation id="4449996769074858870">Ta karta odtwarza dźwięk.</translation>
 <translation id="4450274068924249931">Kiedy nie korzystasz z ekranu, wyświetlają się na nim zdjęcia, godzina, pogoda i informacje o odtwarzanych multimediach. Włączenie wygaszacza ekranu powoduje też, że ekran jest włączony podczas ładowania.</translation>
@@ -3834,6 +3838,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5009463889040999939">Zmieniam nazwę profilu. Może to potrwać kilka minut.</translation>
 <translation id="5010043101506446253">Urząd certyfikacji</translation>
 <translation id="5015344424288992913">Łączenie z proxy...</translation>
+<translation id="5016491575926936899">Możesz teraz pisać SMS-y na komputerze, udostępniać swoje połączenie z internetem, odpowiadać na powiadomienia o rozmowach i odblokowywać urządzenie <ph name="DEVICE_TYPE" /> telefonem.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Możesz poruszać się po stronach przy użyciu kursora tekstowego. Aby wyłączyć tę opcję, naciśnij Ctrl+Search+7.</translation>
 <translation id="5017828934289857214">Przypomnij mi później</translation>
 <translation id="5018207570537526145">Otwórz stronę rozszerzeń</translation>
@@ -4418,6 +4423,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5638309510554459422">Znajdź rozszerzenia i motywy w <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Załaduj tę stronę ponownie. Przytrzymaj, by wyświetlić więcej opcji</translation>
 <translation id="5640133431808313291">Zarządzanie kluczami bezpieczeństwa</translation>
+<translation id="5641608986289282154">Zacznij używać <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Podmiot podpisujący listę CRL</translation>
 <translation id="5643321261065707929">Sieć z pomiarem użycia danych</translation>
 <translation id="5643620609347735571">Usuń i kontynuuj</translation>

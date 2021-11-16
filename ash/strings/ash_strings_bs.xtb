@@ -376,6 +376,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3630697955794050612">isključeno</translation>
 <translation id="3631369015426612114">Omogućite obavještenja iz sljedećih izvora</translation>
 <translation id="3638400994746983214">Uključite/isključite ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Rok za ažuriranje je prekoračen</translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Snimanje zvuka putem mikrofona</translation>
@@ -458,6 +459,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4215497585250573029">Postavke za VPN</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4221957499226645091">Aplikacija <ph name="APP_NAME" /> je instalirana i pauzirana</translation>
+<translation id="4223947355273782392">Sačuvajte uređaj <ph name="NAME" /> na račun <ph name="EMAIL" /> za brže uparivanje s drugim uređajima</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>

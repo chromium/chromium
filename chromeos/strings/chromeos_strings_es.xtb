@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
 <translation id="3583278742022654445">Intensidad de la señal débil. Acércate a la fuente de la señal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batería al máximo</translation>
+<translation id="360089215033199597">Se recomienda conectarse a la red Wi‑Fi para facilitar el proceso de reparación.
+        Tu red se guardará.</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
@@ -186,6 +188,7 @@
 <translation id="409427325554347132">Guardar detalles de la prueba</translation>
 <translation id="4111761024568264522">Panel táctil USB</translation>
 <translation id="4131410914670010031">Blanco y negro</translation>
+<translation id="4140251671072434548">Realizar RMA Server Unlock</translation>
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
@@ -476,8 +479,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
+<translation id="816013303019725643">Escribe el código de desbloqueo:</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
+<translation id="8217675307824400706">Conéctate</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8246209727385807362">Operador desconocido</translation>
 <translation id="8286154143153872371">Conéctate a una red y vuelve a cargar la página para ver el fondo de pantalla.</translation>

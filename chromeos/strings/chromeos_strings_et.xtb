@@ -156,6 +156,8 @@
 <translation id="357889014807611375">mahupõhine WiFi</translation>
 <translation id="3583278742022654445">Signaal on nõrk. Liikuge WiFi-signaali allikale lähemale.</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
+<translation id="360089215033199597">Paranduse lihtsustamiseks on soovitatav luua WiFi-ühendus.
+        Teie võrk salvestatakse.</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
@@ -474,6 +476,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="816013303019725643">Sisestage avamiskood:</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
+<translation id="8217675307824400706">Looge ühendus</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
 <translation id="8286154143153872371">Taustapildi vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>

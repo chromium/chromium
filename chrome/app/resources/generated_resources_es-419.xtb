@@ -593,6 +593,7 @@
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
 <translation id="1612019740169791082">La configuración del contenedor no permite cambiar el tamaño del disco. Si quieres modificar el espacio reservado para Linux, realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
+<translation id="1613019471223620622">Mostrar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Es posible que hayas agotado los datos móviles. Accede al portal de activación de <ph name="NAME" /> para comprar más datos.</translation>
 <translation id="161460670679785907">No se puede detectar tu teléfono</translation>
 <translation id="1615337439947999338">Guardar en tu Cuenta de Google (<ph name="EMAIL" />)</translation>
@@ -1200,6 +1201,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2220529011494928058">Informar un problema</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Fuente de contenido multimedia sin nombre</translation>
 <translation id="2224444042887712269">Esta configuración pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de Galería de arte.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
@@ -2906,6 +2908,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3957844511978444971">Presiona "Aceptar" para confirmar la selección de esta configuración de los servicios de Google.</translation>
 <translation id="3958088479270651626">Importar favoritos y configuración</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3964480518399667971">Desactivar la red móvil</translation>
 <translation id="3965811923470826124">Con</translation>
 <translation id="3965965397408324205">Salir de <ph name="PROFILE_NAME" /></translation>
@@ -3321,6 +3324,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
 <translation id="4444512841222467874">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
 <translation id="4446933390699670756">Duplicado</translation>
+<translation id="4448914100439890108">Ocultar contraseña de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Tu nombre de usuario pertenece a la cuenta empresarial de tu organización. Si deseas inscribir dispositivos en la cuenta, primero debes revisar la propiedad del dominio en la Consola del administrador. Deberás tener privilegios administrativos de la cuenta que deseas verificar.</translation>
 <translation id="4449996769074858870">Esta pestaña está reproduciendo audio.</translation>
 <translation id="4450274068924249931">Cuando la pantalla está inactiva, muestra información sobre el contenido multimedia, fotos, la hora y el tiempo. Si habilitas el protector de pantalla, mantendrá la pantalla encendida durante la carga.</translation>
@@ -3844,6 +3848,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5009463889040999939">Se está cambiando el nombre del perfil. Es posible que este proceso demore unos minutos.</translation>
 <translation id="5010043101506446253">Autoridad de certificación</translation>
 <translation id="5015344424288992913">Resolviendo proxy...</translation>
+<translation id="5016491575926936899">Puedes enviar mensajes de texto desde tu computadora, compartir tu conexión a Internet, responder a conversaciones desde las notificaciones y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Puedes navegar páginas con un cursor de texto. Presiona Ctrl+Buscar+7 para desactivar esta función.</translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5018207570537526145">Abrir el sitio web de la extensión</translation>
@@ -4434,6 +4439,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5638309510554459422">Encuentra extensiones y temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Vuelve a cargar esta página y espera para ver más opciones.</translation>
 <translation id="5640133431808313291">Administrar llaves de seguridad</translation>
+<translation id="5641608986289282154">Empieza a utilizar <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Firmante de la CRL</translation>
 <translation id="5643321261065707929">Red de uso medido</translation>
 <translation id="5643620609347735571">Borrar y continuar</translation>

@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Не распознано</translation>
 <translation id="1746730358044914197">Способы ввода настраиваются администратором</translation>
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
+<translation id="1750088060796401187">Достигнуто максимальное количество рабочих столов (<ph name="MAX_DESK_LIMIT" />). Удалите рабочий стол, чтобы открыть новый.</translation>
 <translation id="1761222317188459878">Изменить настройки сетевого подключения. <ph name="STATE_TEXT" />.</translation>
 <translation id="1768366657309696705">Функция сочетания клавиш <ph name="LAUNCHER_KEY_NAME" /> + . (точка) изменилась. Чтобы использовать клавишу Insert, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Вправо</translation>

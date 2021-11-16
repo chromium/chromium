@@ -159,6 +159,8 @@
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
 <translation id="3583278742022654445">సిగ్నల్ సామర్థ్యం బలహీనంగా ఉంది. Wi-Fi సిగ్నల్ సోర్స్‌కు కొద్దిగా దగ్గరగా వెళ్ళడానికి ట్రై చేయండి.</translation>
 <translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
+<translation id="360089215033199597">రిపేర్ ప్రాసెస్‌ను సులభతరం చేయడానికి Wi-Fiకు కనెక్ట్ చేయమని సిఫార్సు చేస్తున్నాము.
+        మీ నెట్‌వర్క్ సేవ్ చేయబడుతుంది.</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3606583719724308068">HTTPS వెబ్‌సైట్‌లలో ప్రతిస్పందన సమయం ఎక్కువగా ఉంది</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
@@ -187,6 +189,7 @@
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="4111761024568264522">USB టచ్‌ప్యాడ్</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
+<translation id="4140251671072434548">RMA సర్వర్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google ఫోటోలు</translation>
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
@@ -477,8 +480,10 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ట్రాఫిక్ కౌంటర్‌ల కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">అన్‌లాక్ కోడ్‌ను ఎంటర్ చేయండి:</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
+<translation id="8217675307824400706">కనెక్ట్ అవ్వండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8246209727385807362">తెలియని క్యారియర్</translation>
 <translation id="8286154143153872371">వాల్‌పేపర్‌ను చూడటానికి, దయచేసి నెట‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>

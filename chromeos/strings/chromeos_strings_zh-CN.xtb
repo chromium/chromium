@@ -188,6 +188,7 @@
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4111761024568264522">USB 触控板</translation>
 <translation id="4131410914670010031">黑白色</translation>
+<translation id="4140251671072434548">执行 RMA 服务器解锁</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
@@ -478,6 +479,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">请输入解锁代码：</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8217675307824400706">连接到网络</translation>

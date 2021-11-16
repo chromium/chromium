@@ -784,7 +784,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
 <translation id="1972134432340252414">Bloquear los puntos de extensiones heredados del proceso del navegador</translation>
 <translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
-<translation id="1984423899110408165">Mostrar clústeres del historial en la página del historial de Chrome</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
       Esta política permite ofrecer archivos JSON de configuración de servidores de impresión externos para dispositivos con el <ph name="PRODUCT_OS_NAME" />.
@@ -1513,14 +1512,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2725855586003209701">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la lista de usuarios.</translation>
-<translation id="2725944143509568512">Esta política controla la visibilidad de los clústeres del historial en la página del historial de Chrome.
-
-      Si habilitas la política, los clústeres del historial podrán verse en chrome://history/journeys.
-
-      Si la inhabilitas, los clústeres de historial no podrán verse en chrome://history/journeys.
-
-      Si no estableces la política, los clústeres del historial podrán verse en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de estos clústeres.
-      </translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> para apps de ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el vínculo de la parte inferior de la página Nueva pestaña y del Selector de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
@@ -1694,6 +1685,10 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no la estableces, se aplicará la política <ph name="ASK_GEOLOCATION_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2922511125678964398">Permitir que la autenticación de portales cautivos ignore la configuración de proxy</translation>
+<translation id="2931888116345994552">Si habilitas la política o no la estableces, se permitirán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
+
+      Si la inhabilitas, no se permitirán las actualizaciones. Sin embargo, algunos componentes están exceptuados de esta política: no se inhabilitarán las actualizaciones de componentes que no contengan código ejecutable y que sean fundamentales para la seguridad del navegador.
+      Los ejemplos de estos componentes incluyen las listas de revocación de certificados y los filtros de subrecursos.</translation>
 <translation id="2939988360019366928">Permitir que se muestren los resultados más recientes de <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> en el panel lateral de un navegador</translation>
 <translation id="2940127076681735544">Si estableces esta política con una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="SITELIST_POLICY_NAME" />.
 
@@ -2748,6 +2743,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si inhabilitas la política, se desactivará <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4203879074082863035">Los usuarios solo ven las impresoras en la lista blanca</translation>
+<translation id="4204327073692415353">No solicitar al usuario que seleccione un certificado de cliente en la pantalla de acceso</translation>
 <translation id="4205316772333487392">Forzar el uso de SafeSearch en la Búsqueda de Google</translation>
 <translation id="4209297478239988291">Habilita la función de accesibilidad de clic automático.
 
@@ -5475,6 +5471,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio mono</translation>
 <translation id="7477239290070847560">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD)</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
+<translation id="7486205887492534734">Notificar cuando coinciden varios certificados en la pantalla de acceso</translation>
 <translation id="7491720878670299691">Es la tasa a la que se registran los datos de red y se buscan eventos. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 1 minuto.</translation>
@@ -5572,6 +5569,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si habilitas la política o no la estableces, se habilitará la conversión de unidades de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitará la conversión de unidades de Respuestas rápidas.</translation>
+<translation id="7587345076013230465">Notificar al usuario que debe seleccionar el certificado de cliente cada vez que la política de selección automática coincida con varios certificados en la pantalla de acceso</translation>
 <translation id="7590188804371204512">Controla la instalación de extensiones externas.
 
       Si se habilita esta configuración, se impide la instalación de extensiones externas.

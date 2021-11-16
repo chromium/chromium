@@ -599,6 +599,7 @@
 <translation id="161042844686301425">Cyanblå</translation>
 <translation id="1611432201750675208">Enheten är låst</translation>
 <translation id="1612019740169791082">Behållaren har inte konfigurerats för att ändra storlek på disken. Om du vill justera hur mycket utrymme som reserverats för Linux gör du en säkerhetskopia och återställer den i en ny behållare.</translation>
+<translation id="1613019471223620622">Visa lösenord för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Du kan ha använt din tillåtna mängd mobildata. Besök aktiveringsportalen <ph name="NAME" /> om du vill köpa mer data</translation>
 <translation id="161460670679785907">Mobilen hittades inte</translation>
 <translation id="1615337439947999338">Spara i Google-kontot (<ph name="EMAIL" />)</translation>
@@ -1215,6 +1216,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Namnlös mediekälla</translation>
 <translation id="2224444042887712269">Den här inställningen tillhör <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
 <translation id="2224551243087462610">Redigera mappnamn</translation>
@@ -2923,6 +2925,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3957844511978444971">Tryck på Godkänn om du vill bekräfta valet av dessa inställningar för Googles tjänster.</translation>
 <translation id="3958088479270651626">Importera bokmärken och inställningar</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Läsarläge</translation>
 <translation id="3964480518399667971">Inaktivera mobilnätverk</translation>
 <translation id="3965811923470826124">Med</translation>
 <translation id="3965965397408324205">Stäng <ph name="PROFILE_NAME" /></translation>
@@ -3338,6 +3341,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4444304522807523469">Åtkomst till dokumentskannrar som är anslutna via USB eller i det lokala nätverket</translation>
 <translation id="4444512841222467874">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
 <translation id="4446933390699670756">Speglat</translation>
+<translation id="4448914100439890108">Dölj lösenord för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Ditt användarnamn tillhör din organisations jobbkonto. Börja med att verifiera domänägare i administratörskonsolen om du vill registrera enheter på kontot. Du behöver ha administratörsbehörighet på kontot för verifieringen.</translation>
 <translation id="4449996769074858870">Ljud spelas upp på den här fliken.</translation>
 <translation id="4450274068924249931">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet. Skärmen stängs inte av medan enheten laddas när skärmsläckaren är aktiverad.</translation>
@@ -3862,6 +3866,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
 <translation id="5010043101506446253">Certifikatutfärdare</translation>
 <translation id="5015344424288992913">Tolkar proxy...</translation>
+<translation id="5016491575926936899">Du kan skicka sms från datorn, dela internetanslutning, svara på aviseringar om konversationer och låsa upp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Du kan navigera på sidor med en textmarkör. Tryck på Ctrl+Sök+7 om du vill inaktivera detta.</translation>
 <translation id="5017828934289857214">Påminn mig senare</translation>
 <translation id="5018207570537526145">Öppna webbplatsen för tillägget</translation>
@@ -4450,6 +4455,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5638309510554459422">Hitta tillägg och teman i <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Uppdatera sidan och vänta om du vill se fler alternativ</translation>
 <translation id="5640133431808313291">Hantera säkerhetsnycklar</translation>
+<translation id="5641608986289282154">Börja använda <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL-signerare</translation>
 <translation id="5643321261065707929">Nätverk med datapriser</translation>
 <translation id="5643620609347735571">Rensa och fortsätt</translation>

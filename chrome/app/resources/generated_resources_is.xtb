@@ -600,6 +600,7 @@
 <translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1611432201750675208">Tækið er læst</translation>
 <translation id="1612019740169791082">Geymirinn þinn er ekki stilltur á að styðja breytingar á diskstærð. Til að breyta því hversu mikið pláss er frátekið fyrir Linux skaltu taka öryggisafrit og endurheimta í nýjan geymi.</translation>
+<translation id="1613019471223620622">Sýna aðgangsorð fyrir <ph name="USERNAME" /> á <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Þú gætir hafa klárað farsímagagnamagnið þitt. Farðu á virkjunargátt <ph name="NAME" /> til að kaupa meira gagnamagn</translation>
 <translation id="161460670679785907">Síminn fannst ekki</translation>
 <translation id="1615337439947999338">Vista á Google reikningnum þínum (<ph name="EMAIL" />)</translation>
@@ -1216,6 +1217,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2220529011494928058">Tilkynna vandamál</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Ónefndur uppruni efnis</translation>
 <translation id="2224444042887712269">Þessi stilling tilheyrir <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Velja verður að lágmarki eitt albúm listasafns</translation>
 <translation id="2224551243087462610">Breyta heiti möppu</translation>
@@ -2923,6 +2925,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3957844511978444971">Ýttu á „Samþykkja“ til að staðfesta að þú hafir valið þessar stillingar fyrir þjónustu Google.</translation>
 <translation id="3958088479270651626">Flytja inn bókamerki og stillingar</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">Lestrarstilling</translation>
 <translation id="3964480518399667971">Slökkva á farsímakerfi</translation>
 <translation id="3965811923470826124">Með</translation>
 <translation id="3965965397408324205">Hætta sem <ph name="PROFILE_NAME" /></translation>
@@ -3338,6 +3341,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4444304522807523469">Fá aðgang að skjalaskönnum sem tengdir eru um USB eða á staðarnetinu</translation>
 <translation id="4444512841222467874">Ef ekki er losað um pláss verða notendur og gögn fjarlægð sjálfkrafa.</translation>
 <translation id="4446933390699670756">Speglað</translation>
+<translation id="4448914100439890108">Fela aðgangsorð fyrir <ph name="USERNAME" /> á <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Notandanafn þitt tilheyrir vinnureikningi fyrirtækis. Til að skrá tæki á reikninginn skaltu fyrst staðfesta eignarhald lénsins í Stjórnborði stjórnanda. Þú þarft að vera með stjórnandaréttindi á reikningnum til að staðfesta.</translation>
 <translation id="4449996769074858870">Þessi flipi er að spila hljóð.</translation>
 <translation id="4450274068924249931">Þegar skjárinn er aðgerðarlaus er hægt að birta myndir, tíma, veður og upplýsingar úr fjölmiðlum. Áfram er kveikt á skjánum ef skjávarinn er virkur.</translation>
@@ -3862,6 +3866,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5009463889040999939">Endurnefnir prófíl. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="5010043101506446253">Vottunarstöð</translation>
 <translation id="5015344424288992913">Leysir úr proxy-þjóni...</translation>
+<translation id="5016491575926936899">Þú getur sent skilaboð úr tölvunni, deilt nettengingunni þinni, svarað samtalstilkynningum og opnað <ph name="DEVICE_TYPE" /> með símanum þínum.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Þú getur skoðað síður með textabendli. Ýttu á Ctrl+leitarhnapp+7 til að slökkva.</translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
 <translation id="5018207570537526145">Opna vefsvæði viðbótar</translation>
@@ -4450,6 +4455,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5638309510554459422">Þú finnur viðbætur og þemu í <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Endurhlaða þessa síðu, haltu inni til að sjá fleiri valkosti</translation>
 <translation id="5640133431808313291">Stjórna öryggislyklum</translation>
+<translation id="5641608986289282154">Byrja að nota <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">CRL-undirritun</translation>
 <translation id="5643321261065707929">Net með mældri notkun</translation>
 <translation id="5643620609347735571">Hreinsa og halda áfram</translation>

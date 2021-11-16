@@ -389,6 +389,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{права квадратна дужка}one{# права квадратна дужка}few{# праві квадратні дужки}many{# правих квадратних дужок}other{# right brackets}}</translation>
 <translation id="3494946239022273294">пункт меню</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{знак запитання}one{# знак запитання}few{# знаки запитання}many{# знаків запитання}other{# question marks}}</translation>
+<translation id="3505359110822747654">Згорнути меню ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{знак вставки}one{# знак вставки}few{# знаки вставки}many{# знаків вставки}other{# carets}}</translation>
 <translation id="352577523970648069">Текстове поле, яке можна редагувати</translation>
 <translation id="3538907380453898475">список описів</translation>

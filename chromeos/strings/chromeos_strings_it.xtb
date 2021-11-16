@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Annullamento scansione…</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
+<translation id="1857850044054738019">Seleziona questa opzione se il dispositivo viene rifornito o ricondizionato per la
+        distribuzione a un nuovo cliente.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Ti servono almeno 500 MB di spazio libero per eseguire un test di memoria. Per liberare spazio, vai a Impostazioni &gt; Gestione dello spazio di archiviazione.</translation>
 <translation id="4258281355379922695">Latenza HTTP</translation>
 <translation id="4271957103967917607">Visualizza a schermo intero</translation>
+<translation id="4275799948641988986">Dopo la riparazione, chi utilizzerà il dispositivo?</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4378373042927530923">Non eseguito</translation>
@@ -411,6 +414,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7297226631177386107">Impossibile collegarti tramite firewall ai siti web HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Il dispositivo passerà a un altro proprietario</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
@@ -418,6 +422,9 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}one{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
+<translation id="7451112128070628323">Seleziona questa opzione se la proprietà del dispositivo non cambierà.
+        Ad esempio, il dispositivo viene assegnato a un'altra persona
+        all'interno di un'organizzazione.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Indirizzo MAC</translation>
@@ -542,6 +549,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
+<translation id="9095415590198785865">Il dispositivo resterà dello stesso proprietario</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>

@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Kohandatud</translation>
 <translation id="1197267115302279827">Teisalda järjehoidjad</translation>
 <translation id="1201402288615127009">Järgmine</translation>
+<translation id="1202892408424955784">Jälgitavad tooted</translation>
 <translation id="1204037785786432551">Allalaadimislink</translation>
 <translation id="1206892813135768548">Kopeeri lingi tekst</translation>
 <translation id="1208340532756947324">Seadmete vahel sünkroonimiseks ja isikupärastamiseks lülitage sünkroonimine sisse</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Google'iga ühenduse võtmine. See võib natuke aega võtta …</translation>
 <translation id="1416550906796893042">Rakenduse versioon</translation>
 <translation id="1430915738399379752">Printimine</translation>
+<translation id="1448440926884431741">Korrastage jälgitavaid tooteid teenusega Bookmarks</translation>
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
 <translation id="1466383950273130737">Valige Chrome'i keel</translation>
 <translation id="147113415845704694">Proovige otsingut „Milline ilm täna on?“</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
 <translation id="189358972401248634">Teised keeled</translation>
+<translation id="1894023287452300670">Siin saate hinda jälgida</translation>
 <translation id="1905320231301365059">Inkognito režiimis alla laaditud failid on teistele selle seadme kasutajatele siiski nähtavad.</translation>
 <translation id="1910950723001426294">Jagamisvalikute loend on suletud.</translation>
 <translation id="1918175104945982129">Assistendi häälotsingu sisu kasutajaliides on avatud poolel kõrgusel</translation>
@@ -346,6 +349,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3029704984691124060">Paroolid ei ühti</translation>
 <translation id="3031225630520268969">Assistendi häälotsingu sisu kasutajaliides</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Küsige abi<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Jälgite hinda</translation>
 <translation id="3037517125981011456">Kuvatakse viibad Chrome'i sisselogimiseks</translation>
 <translation id="3046945242843292318">Liikuge järgmine kord sellele saidile kiiremini</translation>
 <translation id="305593374596241526">Asukoht on välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -504,6 +508,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4016425174436051808">Ei saanud jälgida. Midagi läks valesti.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Kasutusandmed</translation>
+<translation id="405399507749852140">Teile saadetakse märguanne, kui hind mõnel saidil langeb</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4060598801229743805">Ekraani ülaosas saadaolevad valikud</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>
@@ -557,6 +562,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4411535500181276704">Lihtsustatud režiim</translation>
 <translation id="4415276339145661267">Google'i konto haldamine</translation>
+<translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
 <translation id="4450672886426705087">Google'i otsingutulemused</translation>
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
@@ -754,6 +760,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5548606607480005320">Ohutuskontroll</translation>
 <translation id="5555525474779371165">Valige oma Google'i ohutu sirvimise kaitse</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
+<translation id="555816257274242153">Hinna jälgimine peatati</translation>
 <translation id="5561549206367097665">Võrguühenduse ootamine …</translation>
 <translation id="5568069709869097550">Ei saa sisse logida</translation>
 <translation id="55737423895878184">Asukoht ja märguanded on lubatud</translation>
@@ -804,9 +811,11 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5833984609253377421">Jaga linki</translation>
 <translation id="5834764604050996579">QR-koodi skannimiseks lubage Chrome'il oma kaamerat kasutada</translation>
 <translation id="5839058148541733625">Chrome'i dinosaurusemäng</translation>
+<translation id="5842437907245493289">Korrastage jälgitavaid tooteid teenuses Bookmarks kaustaikooni kaudu</translation>
 <translation id="5853623416121554550">peatatud</translation>
 <translation id="5854512288214985237">Statistikat ega krahhiaruandeid Google'ile ei saadeta</translation>
 <translation id="5855546874025048181">Täpsustamine: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Midagi läks valesti. Funktsiooni Hindade jälgimine ei õnnestunud värskendada.</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5862731021271217234">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse</translation>
@@ -863,6 +872,7 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="6140912465461743537">Riik/piirkond</translation>
 <translation id="6141988275892716286">Allalaadimise kinnitamine</translation>
 <translation id="614940544461990577">Proovige järgmist.</translation>
+<translation id="6150320133806434356">Järjehoidja salvestatud</translation>
 <translation id="6154478581116148741">Seadmes olevate paroolide eksportimiseks lülitage seadetes ekraanilukk sisse.</translation>
 <translation id="6159335304067198720">Andmemahu kokkuhoid: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Kustutab ajaloo kõigist sünkroonitud seadmetest.</translation>
@@ -877,6 +887,7 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teile reklaame, mis ei põhine muudel külastatud veebisaitidel. Paljud veebisaidid koguvad ning kasutavad endiselt teie sirvimisandmeid, näiteks turvalisuse parandamiseks, sisu, reklaamide ja soovituste pakkumiseks ning aruandlusstatistika loomiseks.</translation>
 <translation id="6264376385120300461">Laadi ikkagi alla</translation>
 <translation id="6277522088822131679">Lehe printimisel ilmnes probleem. Proovige uuesti.</translation>
+<translation id="6277722725779679269">Funktsiooni Hindade jälgimine ei õnnestunud värskendada</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6292420053234093573">Chrome'i kasutades nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Saate vahelehti saata seadmete vahel, mis on sisse logitud sama Google'i kontoga</translation>
@@ -910,6 +921,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6411219469806822692">Kõrgemale ei saa minna. Alustage lehel eestpoolt.</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="641643625718530986">Printimine ...</translation>
+<translation id="6422857128426228781">Siit leiate oma jälgitavad tooted</translation>
 <translation id="6433501201775827830">Valige oma otsingumootor</translation>
 <translation id="6434309073475700221">Loobu</translation>
 <translation id="6437478888915024427">Lehe teave</translation>
@@ -987,6 +999,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6817747507826986771">Jagage kiirelt seda lehte. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, vaheleht, valitud</translation>
+<translation id="6828070228333235514">Peata hinna jälgimine</translation>
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="6850409657436465440">Allalaadimine on endiselt pooleli</translation>
 <translation id="6850830437481525139">Suleti <ph name="TAB_COUNT" /> vahelehte</translation>
@@ -1303,6 +1316,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8571213806525832805">Viimased 4 nädalat</translation>
 <translation id="8572344201470131220">Pilt on kopeeritud</translation>
 <translation id="8583805026567836021">Kontoandmete kustutamine</translation>
+<translation id="859046281437143747">Jälgige hinda nupu Rohkem valikuid kaudu</translation>
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>
 <translation id="8602358303461588329">Chrome'i sisselogimine, suletud.</translation>
 <translation id="860282621117673749">Hinnalanguse märguanded</translation>

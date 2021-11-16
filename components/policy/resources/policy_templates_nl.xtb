@@ -776,7 +776,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als je het beleid niet toepast of niet instelt, wordt Fast Transition niet gebruikt.</translation>
 <translation id="1972134432340252414">Verouderde extensiepunten in het browserproces blokkeren</translation>
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
-<translation id="1984423899110408165">Geschiedenisclusters tonen op de Chrome-geschiedenispagina</translation>
 <translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
 
       Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
@@ -1489,14 +1488,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2725855586003209701">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met apparaatgebruikers die onlangs zijn ingelogd.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de lijst met gebruikers niet.</translation>
-<translation id="2725944143509568512">Dit beleid bepaalt de zichtbaarheid van geschiedenisclusters op de Chrome-geschiedenispagina.
-
-      Als je het beleid toepast, zijn geschiedenisclusters zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet toepast, zijn geschiedenisclusters niet zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet instelt, zijn geschiedenisclusters standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van geschiedenisclusters wijzigen.
-      </translation>
 <translation id="2730419309754848345">Pdf standaard afdrukken als afbeelding</translation>
 <translation id="2731627323327011390">Gebruik van certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps uitzetten</translation>
 <translation id="2742843273354638707">De app en voettekstlink voor de Chrome Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher van <ph name="PRODUCT_OS_NAME" />.

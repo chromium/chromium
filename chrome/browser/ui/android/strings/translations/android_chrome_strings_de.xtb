@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1197267115302279827">Lesezeichen verschieben</translation>
 <translation id="1201402288615127009">Weiter</translation>
+<translation id="1202892408424955784">Beobachtete Produkte</translation>
 <translation id="1204037785786432551">Link herunterladen</translation>
 <translation id="1206892813135768548">Linktext kopieren</translation>
 <translation id="1208340532756947324">Aktivieren Sie die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Google wird kontaktiert. Das kann einen Moment dauern.</translation>
 <translation id="1416550906796893042">App-Version</translation>
 <translation id="1430915738399379752">Drucken</translation>
+<translation id="1448440926884431741">Sie können Ihre beobachteten Produkte in den Lesezeichen organisieren</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> kann nicht geteilt werden</translation>
 <translation id="1466383950273130737">Sprache für Chrome auswählen</translation>
 <translation id="147113415845704694">Sagen Sie zum Beispiel „Wie ist das Wetter heute?“</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
+<translation id="1894023287452300670">Hier den Preis beobachten</translation>
 <translation id="1905320231301365059">Dateien, die Sie im Inkognitomodus herunterladen, sind trotzdem für alle sichtbar, die dieses Gerät verwenden.</translation>
 <translation id="1910950723001426294">Die Liste der Freigabeoptionen ist geschlossen.</translation>
 <translation id="1918175104945982129">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant halb geöffnet</translation>
@@ -346,6 +349,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3029704984691124060">Passphrasen stimmen nicht überein.</translation>
 <translation id="3031225630520268969">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hilfe aufrufen<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3037517125981011456">Aufforderungen für die Anmeldung in Chrome werden angezeigt</translation>
 <translation id="3046945242843292318">Diese Seite beim nächsten Mal schneller aufrufen</translation>
 <translation id="305593374596241526">Die Standortermittlung ist deaktiviert. Sie können sie in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
@@ -504,6 +508,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4016425174436051808">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Nutzungsdaten</translation>
+<translation id="405399507749852140">Sie werden bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Optionen sind oben auf dem Bildschirm verfügbar</translation>
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
@@ -557,6 +562,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4409271659088619928">Sie haben <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
 <translation id="4411535500181276704">Lite-Modus</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
+<translation id="4425140285732600465">Preis wird beobachtet. Sie werden bei einem Preisnachlass benachrichtigt.</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4450672886426705087">Google-Suchergebnisse.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
@@ -754,6 +760,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="555816257274242153">Preis wird nicht mehr beobachtet</translation>
 <translation id="5561549206367097665">Warten auf Netzwerk…</translation>
 <translation id="5568069709869097550">Anmeldung nicht möglich</translation>
 <translation id="55737423895878184">Standortermittlung und Benachrichtigungen sind erlaubt</translation>
@@ -804,9 +811,11 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5833984609253377421">Link teilen</translation>
 <translation id="5834764604050996579">Chrome braucht Zugriff auf Ihre Kamera, um QR-Codes zu scannen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Sie können Ihre beobachteten Produkte in den Lesezeichen über das Ordnersymbol organisieren</translation>
 <translation id="5853623416121554550">pausiert</translation>
 <translation id="5854512288214985237">Es werden keine Statistiken oder Absturzberichte an Google gesendet</translation>
 <translation id="5855546874025048181">Eingrenzen: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Es gab ein Problem. „Preis beobachten“ konnte nicht aktualisiert werden.</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5862731021271217234">Aktivieren Sie die Synchronisierung, um Ihre Tabs von Ihren anderen Geräten abzurufen</translation>
@@ -863,6 +872,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6140912465461743537">Land/Region</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
+<translation id="6150320133806434356">Lesezeichen ist gespeichert</translation>
 <translation id="6154478581116148741">Aktivieren Sie die Displaysperre unter "Einstellungen", um Ihre Passwörter aus dem Gerät zu exportieren</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> Einsparungen bei der Datennutzung</translation>
 <translation id="6159729262978459665">Löscht den Verlauf auf allen synchronisierten Geräten.</translation>
@@ -877,6 +887,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites Sie zuvor besucht haben. Viele Websites erfassen weiterhin Ihre Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6277522088822131679">Beim Drucken der Seite ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.</translation>
+<translation id="6277722725779679269">„Preis beobachten“ konnte nicht aktualisiert werden</translation>
 <translation id="6278428485366576908">Design</translation>
 <translation id="6292420053234093573">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu.</translation>
 <translation id="6294610283659775533">Sie können Tabs zwischen Geräten senden, auf denen Sie mit demselben Google-Konto angemeldet sind.</translation>
@@ -910,6 +921,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6411219469806822692">Screenshot kann nicht nach oben erweitert werden. Beginnen Sie weiter oben auf der Seite.</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="641643625718530986">Drucken...</translation>
+<translation id="6422857128426228781">Hier finden Sie Ihre beobachteten Produkte</translation>
 <translation id="6433501201775827830">Suchmaschine auswählen</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6437478888915024427">Seiteninfo</translation>
@@ -987,6 +999,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6817747507826986771">Diese Seite schnell teilen. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Tab „<ph name="TAB_TITLE" />“ ausgewählt</translation>
+<translation id="6828070228333235514">Preis nicht mehr beobachten</translation>
 <translation id="6846298663435243399">Wird geladen…</translation>
 <translation id="6850409657436465440">Download noch in Bearbeitung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
@@ -1303,6 +1316,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8572344201470131220">Bild kopiert</translation>
 <translation id="8583805026567836021">Kontodaten werden gelöscht</translation>
+<translation id="859046281437143747">Über die Schaltfläche „Weitere Optionen“ können Sie den Preis beobachten</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
 <translation id="8602358303461588329">In Chrome anmelden, geschlossen.</translation>
 <translation id="860282621117673749">Benachrichtigungen bei Preisnachlässen</translation>

@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Не розпізнано</translation>
 <translation id="1746730358044914197">Адміністратор налаштував методи введення.</translation>
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
+<translation id="1750088060796401187">Максимальна кількість робочих столів – <ph name="MAX_DESK_LIMIT" />. Щоб додати новий робочий стіл, вилучіть старий.</translation>
 <translation id="1761222317188459878">Увімкнути/вимкнути з’єднання з мережею. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Комбінацію клавіш <ph name="LAUNCHER_KEY_NAME" /> + крапка змінено. Щоб скористатися клавішею Insert, натисніть <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>

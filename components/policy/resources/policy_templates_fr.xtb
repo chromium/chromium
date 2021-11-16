@@ -707,6 +707,17 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
 <translation id="186719019195685253">Indique l'action à effectuer lorsque le délai d'inactivité est atteint en cas de fonctionnement sur une source d'alimentation CA.</translation>
+<translation id="1881649377321404593">
+      Cette règle a été retirée de la version M80, car elle n'est plus nécessaire
+      depuis que WebDriver est compatible avec toutes les règles existantes.
+
+      Elle permet aux utilisateurs de la fonctionnalité WebDriver d'ignorer les règles pouvant affecter son fonctionnement.
+
+      Actuellement, cette règle désactive les règles SitePerProcess et IsolateOrigins.
+
+      Si elle est activée, WebDriver pourra ignorer les règles non compatibles.
+
+      Si elle est désactivée ou qu'elle n'est pas configurée, la fonctionnalité WebDriver ne sera pas autorisée à ignorer les règles non compatibles.</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
 <translation id="1894790493260633497">Activer le mode d'impression d'images de fond par défaut</translation>
@@ -2761,6 +2772,17 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
 
       Sous <ph name="MS_WIN_NAME" />, cette fonctionnalité n'est disponible que sur les instances jointes à un domaine <ph name="MS_AD_NAME" />, s'exécutant sous Windows 10 Pro ou bénéficiant de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
+<translation id="4268014245533736105">Chrome bloquera les navigations vers des protocoles externes dans
+      un iFrame en bac à sable. Consultez https://chromestatus.com/features/5680742077038592.
+
+      Si cette règle est définie sur "True", Chrome bloque ces navigations.
+
+      Si elle est définie sur "False", Chrome ne peut pas les bloquer.
+
+      Elle est définie par défaut sur "True" (fonctionnalité de sécurité activée).
+
+      Les administrateurs qui ont besoin de plus de temps pour mettre à jour leur site interne concerné par cette nouvelle restriction peuvent utiliser cette règle. Cette règle d'entreprise est temporaire et sera normalement supprimée après la version 104 de <ph name="PRODUCT_NAME" />.
+      </translation>
 <translation id="4268586991084547853">Meilleure compatibilité avec les listes des sites Microsoft IE/Edge en mode Entreprise.</translation>
 <translation id="4269859918103560644">Laisser l'utilisateur décider</translation>
 <translation id="4274691295133617461">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès en lecture aux fichiers et répertoires qui figurent dans le système de fichiers du système d'exploitation hôte via l'API File System. Si cette règle est définie sur "2", l'accès est refusé.
@@ -4127,6 +4149,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5997543603646547632">Utiliser le format d'horloge 24 h par défaut</translation>
 <translation id="5997846976342452720">Indiquer si l'outil de recherche de plug-ins doit être désactivé (obsolète)</translation>
 <translation id="5998198091336830580">Cette règle fait partie du groupe atomique suivant (seules les règles issues de la source ayant la plus haute priorité dans le groupe sont appliquées) :</translation>
+<translation id="6004575267180297869">
+      Indique si les modules WebAssembly peuvent être envoyés vers une autre fenêtre ou un autre nœud de calcul en multi-origine. Le partage de modules WebAssembly en multi-origine deviendra obsolète lors de l'abandon de document.domain. Consultez https://github.com/mikewest/deprecating-document-domain. Cette règle permet de réactiver le partage de modules WebAssembly en multi-origine pour prolonger la période de transition du processus d'abandon.
+
+      Lorsque cette règle est définie sur "True", les sites peuvent aussi envoyer des modules WebAssembly en multi-origine sans restrictions.
+
+      Lorsqu'elle est définie sur "False", les sites peuvent uniquement envoyer des modules WebAssembly vers des fenêtres et des nœuds de calcul dans la même origine.</translation>
 <translation id="6009062900206392980">Définissez cette règle sur "None" pour désactiver la loupe sur l'écran de connexion.
 
        Si vous définissez cette règle, les utilisateurs peuvent temporairement activer ou désactiver la loupe. Lorsque l'écran de connexion s'actualise ou qu'il reste inactif pendant une minute, il revient à son état d'origine.
@@ -4303,6 +4331,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable audio si la configuration des logiciels de sécurité qu'elles utilisent interfère avec le bac à sable.</translation>
 <translation id="624818583115864448">port 554 (peut être débloqué jusqu'au 15/10/2021)</translation>
 <translation id="6252773211180267325">Ne pas empêcher <ph name="BOREALIS_NAME" /> de fonctionner pour un utilisateur</translation>
+<translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
 <translation id="6265892395051519509">Autoriser l'accès aux capteurs sur ces sites</translation>
 <translation id="6273015149273504999">
@@ -4385,6 +4414,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
+<translation id="6331943515692769234">Forcez l'utilisation de l'algorithme GREASE user-agent précédent.</translation>
 <translation id="6332546092866098577">Bloquer l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="6334330017384340264">Cette règle détermine les applications et URL qui doivent être autorisées pour les restrictions d'utilisation spécifiques pour chaque application.
         La liste d'autorisation configurée est destinée aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné avec des limites de temps spécifiques à chaque application.
@@ -4724,6 +4754,12 @@ Si vous sélectionnez les options suivantes :
 
       Remarque : cette règle concerne également les extensions et les applications à installer d'office via la règle <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtrer les sites de premier niveau (mais pas les iFrame intégrés) présentant des contenus réservés aux adultes</translation>
+<translation id="6733851879899284032">
+      Indique si SharedArrayBuffer peut être utilisé dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, <ph name="PRODUCT_NAME" /> nécessitera un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffer à partir de <ph name="PRODUCT_NAME" /> 91 (25/05/2021). Pour en savoir plus, consultez https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      Lorsque cette règle est définie sur "True", les sites peuvent utiliser SharedArrayBuffer sans aucune restriction.
+
+      Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser SharedArrayBuffer que dans un contexte isolé multi-origine.</translation>
 <translation id="6735701345096330595">Forcer l'activation des langues de la vérification orthographique</translation>
 <translation id="6740611636377710500">Autoriser cet appareil à exécuter PluginVm.
 
@@ -4914,6 +4950,9 @@ Si vous sélectionnez les options suivantes :
 <translation id="6929746927224321095">Désactiver la saisie automatique</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
 <translation id="6940243892299228102">Ne pas autoriser les utilisateurs à se servir de modèles de bureau</translation>
+<translation id="694071740172924905">Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE des indications du client user-agent aligne l'algorithme GREASE user-agent sur les dernières spécifications.
+      La spécification mise à jour peut entraîner un dysfonctionnement de certains sites qui appliquent des restrictions concernant les caractères que peuvent contenir les requêtes. Pour en savoir plus, consultez les spécifications : https://wicg.github.io/ua-client-hints/#grease
+      Si cette règle est désactivée ou n'est pas définie, la fonctionnalité de mise à jour GREASE des indications du client user-agent est activée. Si cette règle est désactivée, l'algorithme GREASE user-agent précédent est utilisé.</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="6946652757373377924">
       Cette règle a été supprimée dans M77.
@@ -5274,6 +5313,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle n'est pas définie, par défaut, ce mode de partage ne sera pas autorisé pour les utilisateurs gérés par une entreprise et sera autorisé pour les utilisateurs non gérés.</translation>
 <translation id="7295019613773647480">Activer les utilisateurs supervisés</translation>
+<translation id="7297476773981993405">Autorisez l'exécution de l'algorithme GREASE user-agent mis à jour.</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
 <translation id="731208205557053914">Transmettre des informations sur les données VPD</translation>
@@ -5381,6 +5421,12 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
+<translation id="7498595166686106721">
+      La règle display-capture permissions-policy restreint l'accès à getDisplayMedia(), conformément à cette spécification : https://www.w3.org/TR/screen-capture/#feature-policy-integration. Mais, si cette règle est désactivée, cette exigence n'est pas appliquée, et getDisplayMedia() est autorisé depuis des contextes qui seraient autrement interdits. Cette règle d'entreprise est temporaire et sera normalement supprimée après la version 100 de <ph name="PRODUCT_NAME" />. Elle permet de débloquer les utilisateurs de la version Enterprise dont l'application ne respecte pas les spécifications, mais qui a besoin de temps pour être résolue.
+
+      Si cette règle est activée, ou si elle n'est pas configurée, les sites peuvent uniquement appeler getDisplayMedia() depuis les contextes ajoutés à la liste d'autorisation par la règle display-capture permissions-policy.
+
+      Si cette règle est désactivée, les sites peuvent appeler getDisplayMedia() même depuis les contextes qui ne sont pas ajoutés à la liste d'autorisation par la règle display-capture permissions policy. Notez que d'autres restrictions peuvent quand même s'appliquer.</translation>
 <translation id="7506745375479451616">Permet de spécifier la commande à utiliser pour ouvrir les URL dans <ph name="PRODUCT_NAME" /> lors du changement de navigateur depuis <ph name="IE_PRODUCT_NAME" />. Cette règle peut être définie sur le chemin d'accès à un fichier exécutable ou sur <ph name="PRODUCT_NAME_PLACEHOLDER" /> pour détecter automatiquement l'emplacement d'installation de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.
@@ -6000,6 +6046,19 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8266778278542911985">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux ports série. Si elle est définie sur "2", l'accès aux ports série est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="8267887696930711948">Cette règle a été abandonnée dans la version M69. Utilisez la règle
+      OverrideSecurityRestrictionsOnInsecureOrigin à la place.
+
+      Cette règle répertorie les origines (URL) ou les modèles de nom d'hôte (par exemple, "*.example.com") non soumis aux restrictions de sécurité applicables aux origines non sécurisées.
+
+      L'objectif est de permettre aux organisations d'autoriser les origines pour les anciennes applications qui ne peuvent pas déployer TLS, ou de configurer un serveur intermédiaire pour les développements Web internes. Cela permet aux développeurs de tester les fonctionnalités nécessitant des contextes sécurisés sans avoir à déployer TLS sur le serveur intermédiaire. Cette règle empêche également que la mention "Non sécurisé" soit attribuée à une origine dans l'omnibox.
+
+      Définir une liste d'URL dans cette règle a le même effet qu'utiliser l'indicateur de ligne de commande "--unsafely-treat-insecure-origin-as-secure" avec une liste des URL en question séparées par une virgule. Si la règle est définie, elle remplace l'indicateur de ligne de commande.
+
+      Cette règle a été abandonnée dans la version M69, au profit de la règle OverrideSecurityRestrictionsOnInsecureOrigin. Elle est remplacée par OverrideSecurityRestrictionsOnInsecureOrigin lorsque les deux règles coexistent.
+
+      Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Activer l'interface utilisateur liée à la connexion sur le bureau hôte lorsqu'une connexion est active</translation>
 <translation id="8274603902181597201">Nettoyer le répertoire d'accueil eCryptfs de l'utilisateur et employer un nouveau répertoire d'accueil chiffré avec ext4.</translation>

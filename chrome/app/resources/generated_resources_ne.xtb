@@ -1218,6 +1218,7 @@
 <translation id="2232751457155581899">साइटहरूले तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="2232876851878324699">फाइलमा एउटा प्रमाणपत्र समावेश थियो, जुन आयात गरिएको थिएन:</translation>
 <translation id="2233502537820838181">&amp;थप जानकारी</translation>
+<translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
 <translation id="2234876718134438132">सिंक तथा Google सेवाहरू</translation>
 <translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2238379619048995541">फ्रिक्वेन्सी स्थिति डाटा</translation>
@@ -1905,6 +1906,7 @@
 <translation id="2923006468155067296">तपाईंको <ph name="DEVICE_TYPE" /> अब लक हुने छ।
 <ph name="DOMAIN" /> मा तपाईंले आफ्नो स्मार्ट कार्ड इन्सर्ट गरिराख्नु पर्ने हुन्छ।</translation>
 <translation id="2923234477033317484">यो खाता हटाउनुहोस्</translation>
+<translation id="2923644930701689793">आफ्नो फोनको क्यामेरा रोलमा भएका फोटोहरू डाउनलोड गर्नुहोस्</translation>
 <translation id="2926085873880284723">डिफल्ट सर्टकटहरू पुनर्स्थापना गर्नुहोस्</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> प्रयोग गर्न मिल्दैन।</translation>
 <translation id="2927017729816812676">केस भण्डारण</translation>
@@ -2908,6 +2910,7 @@
 <translation id="3957844511978444971">आफूले गरेका Google का सेवाहरूसम्बन्धी यी सेटिङहरूको चयनको पनि पुष्टि गर्न “स्वीकार गर्नुहोस्” नामक बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="3958088479270651626">पृष्ठमञ्जूषाहरू र सेटिङहरू आयात गर्नुहोस्</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3964480518399667971">सेलुलर नेटवर्क अफ गर्नुहोस्</translation>
 <translation id="3965811923470826124">यससँग</translation>
 <translation id="3965965397408324205">बाहिरिन निस्कनुहोस् <ph name="PROFILE_NAME" /></translation>
@@ -3095,6 +3098,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
 <translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
 <translation id="4170314459383239649">बाहिर निस्कँदा मेट्नुहोस्‌</translation>
+<translation id="417096670996204801">कुनै प्रोफाइल छनौट गर्नुहोस्</translation>
 <translation id="4175137578744761569">हल्का बैजनी र सेतो</translation>
 <translation id="4175737294868205930">स्थायी भण्डारण</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>

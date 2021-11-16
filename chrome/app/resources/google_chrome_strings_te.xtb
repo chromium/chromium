@@ -49,6 +49,7 @@
 <translation id="2123055963409958220">Chromeను మెరుగుపరచడంలో సహాయపడటానికి <ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయండి</translation>
 <translation id="2151406531797534936">దయచేసి Chromeను ఇప్పుడే మళ్ళీ ప్రారంభించండి</translation>
 <translation id="2189289170880510015">Chrome యొక్క ముఖ్యమైన గోప్యతా ఎంపికలు కొన్నింటిని అనుకూలంగా మార్చండి</translation>
+<translation id="2258103955319320201">మీ అన్ని పరికరాలలో మీ Chrome బ్రౌజర్ సంబంధిత అంశాలను యాక్సెస్ చేయడానికి, సైన్ ఇన్ చేసి, ఆపై సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="2290014774651636340">Google API కీలు లేవు. Google Chrome కార్యాచరణలో కొంత భాగం నిలిపివేయబడుతుంది.</translation>
 <translation id="2290095356545025170">మీరు Google Chromeను ఖచ్చితంగా అన్‌ఇన్‌స్టాల్ చేయాలని అనుకుంటున్నారా?</translation>
 <translation id="2309047409763057870">ఇది Google Chrome యొక్క రెండవ ఇన‌స్ట‌లేష‌న్. దీన్ని మీ డిఫాల్ట్ బ్రౌజర్‌గా చేయడం సాధ్యపడదు.</translation>
@@ -195,6 +196,7 @@
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
 <translation id="6070348360322141662">అదనపు భద్రత దృష్ట్యా, Google Chrome మీ డేటాను ఎన్‌క్రిప్ట్ చేస్తుంది</translation>
 <translation id="608006075545470555">ఈ బ్రౌజర్‌కు వర్క్ ప్రొఫైల్‌ను జోడించండి</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome ఇప్పుడు మెరుగైంది</translation>
 <translation id="6145313976051292476">Chromeలో PDFలను తెరవండి</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -208,6 +210,7 @@
 <translation id="6506909944137591434">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromeకు కెమెరా అనుమతి అవసరం</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS సిస్టమ్</translation>
+<translation id="6594121454516132231">వెబ్‌ను సంరక్షిస్తూనే మిమ్మల్ని క్రాస్-సైట్ ట్రాకింగ్ నుండి రక్షించడం కోసం Chrome ఎలా ప్లాన్ చేసుకుందో చూడండి</translation>
 <translation id="6676384891291319759">ఇంటర్నెట్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="6679975945624592337">Google Chromeను నేపథ్యంలో అమలు అయ్యేందుకు అనుమతించండి</translation>
 <translation id="6696915334902295848">ఈ సైట్ కోసం Chromeకు మైక్రోఫోన్ అనుమతి అవసరం</translation>
@@ -222,6 +225,7 @@
 <translation id="6989339256997917931">Google Chrome నవీకరింబడింది, కానీ మీరు దీన్ని కనీసం 30 రోజులు ఉయోగించలేరు.</translation>
 <translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైల్‌ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
 <translation id="7062128746136194023">Chromeలో సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లకు సంబంధించిన అనుమతులను మీ తల్లి/తండ్రి ఆఫ్ చేశారు. ఈ <ph name="EXTENSION_TYPE_PARAMETER" />ను జోడించడానికి అనుమతి లేదు.</translation>
+<translation id="7085332316435785646">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chrome హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
 <translation id="7098166902387133879">Google Chrome మీ మైక్రోఫోన్‌ని ఉపయోగిస్తోంది.</translation>
 <translation id="7106741999175697885">విధి నిర్వాహకుడు - Google Chrome</translation>
@@ -246,6 +250,7 @@
 <translation id="7651907282515937834">Chrome ఎంటర్‌ప్రైజ్ లోగో</translation>
 <translation id="7665553140559834626">&amp;Chrome OSను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="7747138024166251722">ఇన్‌స్టాలర్ ఒక తాత్కాలిక డైరక్టరీని సృష్టించలేకపోయింది. సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి దయచేసి ఖాళీ డిస్క్ స్థలం, అనుమతిని తనిఖీ చేయండి.</translation>
+<translation id="7748512868279796735">ఈ Chrome ప్రొఫైల్‌కు కింది ఖాతాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="7761834446675418963">Chromeను తెరిచి, బ్రౌజింగ్‌ను ప్రారంభించడానికి మీ పేరును క్లిక్ చేయండి.</translation>
 <translation id="7777080907402804672">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chrome ప్రయత్నిస్తుంది. వివరణలను సృష్టించడానికి, చిత్రాలు Googleకు పంపబడతాయి. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="7781002470561365167">Google Chrome యొక్క కొత్త వెర్షన్ ఇప్పుడు అందుబాటులో ఉంది.</translation>
@@ -277,6 +282,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ఈ వర్క్ ప్రొఫైల్, మీ వ్యక్తిగత ప్రొఫైల్ నుండి పూర్తిగా భిన్నంగా ఉంది.</translation>
 <translation id="8556340503434111824">Google Chrome యొక్క కొత్త వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>
+<translation id="8571790202382503603">మీ మొత్తం Chrome అంశాలను మీ Chrome ప్రొఫైల్‌లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="8614913330719544658">Google Chrome స్పందించడం లేదు. ఇప్పుడే పునఃప్రారంభించాలా?</translation>
 <translation id="861702415419836452">మీ పరిసరాల 3D మ్యాప్‌ను సృష్టించడానికి Chromeకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 నిమిషంలో Chrome తిరిగి ప్రారంభించబడుతుంది}other{# నిమిషాల్లో Chrome తిరిగి ప్రారంభించబడుతుంది}}</translation>
