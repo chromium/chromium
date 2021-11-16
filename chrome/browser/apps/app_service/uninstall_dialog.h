@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -83,7 +84,7 @@ class UninstallDialog {
                   apps::mojom::AppType app_type,
                   const std::string& app_id,
                   const std::string& app_name,
-                  apps::mojom::IconKeyPtr icon_key,
+                  apps::mojom::IconKeyPtr mojom_icon_key,
                   IconLoader* icon_loader,
                   gfx::NativeWindow parent_window,
                   UninstallCallback uninstall_callback);
@@ -99,7 +100,10 @@ class UninstallDialog {
 
  private:
   // Callback invoked when the icon is loaded.
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(IconValuePtr icon_value);
+
+  // TODO(crbug.com/1253250): Will be removed soon.
+  void OnLoadMojomIcon(apps::mojom::IconValuePtr mojom_icon_value);
 
   Profile* const profile_;
   const apps::mojom::AppType app_type_;

@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"
 
@@ -24,7 +25,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
                                  apps::mojom::AppType app_type,
                                  const std::string& app_id,
                                  const std::string& app_name,
-                                 apps::mojom::IconKeyPtr icon_key,
+                                 apps::mojom::IconKeyPtr mojom_icon_key,
                                  apps::IconLoader* icon_loader,
                                  gfx::NativeWindow parent_window,
                                  UninstallCallback uninstall_callback)
@@ -45,8 +46,8 @@ UninstallDialog::UninstallDialog(Profile* profile,
     case apps::mojom::AppType::kCrostini:
       // Crostini icons might be a big image, and not fit the size, so add the
       // resize icon effect, to resize the image.
-      icon_key->icon_effects = static_cast<apps::IconEffects>(
-          icon_key->icon_effects | apps::IconEffects::kResizeAndPad);
+      mojom_icon_key->icon_effects = static_cast<apps::IconEffects>(
+          mojom_icon_key->icon_effects | apps::IconEffects::kResizeAndPad);
       break;
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
@@ -61,12 +62,23 @@ UninstallDialog::UninstallDialog(Profile* profile,
   constexpr bool kAllowPlaceholderIcon = false;
   // Currently ARC apps only support 48*48 native icon.
   int32_t size_hint_in_dip = kUninstallIconSize;
-  auto icon_type = apps::mojom::IconType::kStandard;
-  icon_loader->LoadIconFromIconKey(
-      app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-      kAllowPlaceholderIcon,
-      base::BindOnce(&UninstallDialog::OnLoadIcon,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    std::unique_ptr<IconKey> icon_key =
+        ConvertMojomIconKeyToIconKey(mojom_icon_key);
+    auto icon_type = IconType::kStandard;
+    icon_loader->LoadIconFromIconKey(
+        ConvertMojomAppTypToAppType(app_type), app_id, *icon_key, icon_type,
+        size_hint_in_dip, kAllowPlaceholderIcon,
+        base::BindOnce(&UninstallDialog::OnLoadIcon,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    auto mojom_icon_type = apps::mojom::IconType::kStandard;
+    icon_loader->LoadIconFromIconKey(
+        app_type, app_id, std::move(mojom_icon_key), mojom_icon_type,
+        size_hint_in_dip, kAllowPlaceholderIcon,
+        base::BindOnce(&UninstallDialog::OnLoadMojomIcon,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 UninstallDialog::~UninstallDialog() = default;
@@ -88,8 +100,8 @@ void UninstallDialog::SetDialogCreatedCallbackForTesting(
   dialog_created_callback_ = std::move(callback);
 }
 
-void UninstallDialog::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
+void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
+  auto icon_type = IconType::kStandard;
   if (icon_value->icon_type != icon_type) {
     OnDialogClosed(false, false, false);
     return;
@@ -108,6 +120,11 @@ void UninstallDialog::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
   if (!dialog_created_callback_.is_null()) {
     std::move(dialog_created_callback_).Run();
   }
+}
+
+void UninstallDialog::OnLoadMojomIcon(
+    apps::mojom::IconValuePtr mojom_icon_value) {
+  OnLoadIcon(ConvertMojomIconValueToIconValue(std::move(mojom_icon_value)));
 }
 
 }  // namespace apps

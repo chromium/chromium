@@ -75,6 +75,33 @@ absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
 
 std::unique_ptr<IconLoader::Releaser>
 AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
+    AppType app_type,
+    const std::string& app_id,
+    const IconKey& icon_key,
+    IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  if (overriding_icon_loader_for_testing_) {
+    return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
+        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+        allow_placeholder_icon, std::move(callback));
+  }
+
+  auto* publisher = host_->GetPublisher(app_type);
+  if (!publisher) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+
+  RecordAppLaunchMetrics(IconLoadingMethod::kViaNonMojomCall);
+  publisher->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
+                      allow_placeholder_icon, std::move(callback));
+  return nullptr;
+}
+
+std::unique_ptr<IconLoader::Releaser>
+AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IconKeyPtr icon_key,
@@ -164,6 +191,11 @@ void AppServiceProxyBase::Initialize() {
                               std::make_unique<apps::AppIconSource>(profile_));
 }
 
+AppPublisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
+  auto it = publishers_.find(app_type);
+  return it == publishers_.end() ? nullptr : it->second;
+}
+
 mojo::Remote<apps::mojom::AppService>& AppServiceProxyBase::AppService() {
   return app_service_;
 }
@@ -193,6 +225,19 @@ void AppServiceProxyBase::RegisterPublisher(AppType app_type,
 absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
     const std::string& app_id) {
   return outer_icon_loader_.GetIconKey(app_id);
+}
+
+std::unique_ptr<apps::IconLoader::Releaser>
+AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
+                                         const std::string& app_id,
+                                         const IconKey& icon_key,
+                                         IconType icon_type,
+                                         int32_t size_hint_in_dip,
+                                         bool allow_placeholder_icon,
+                                         apps::LoadIconCallback callback) {
+  return outer_icon_loader_.LoadIconFromIconKey(
+      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+      allow_placeholder_icon, std::move(callback));
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>

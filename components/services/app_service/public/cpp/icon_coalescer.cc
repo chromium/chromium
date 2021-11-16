@@ -49,6 +49,105 @@ absl::optional<IconKey> IconCoalescer::GetIconKey(const std::string& app_id) {
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
+    AppType app_type,
+    const std::string& app_id,
+    const IconKey& icon_key,
+    IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!wrapped_loader_) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+
+  if (icon_type != IconType::kUncompressed &&
+      icon_type != IconType::kStandard) {
+    return wrapped_loader_->LoadIconFromIconKey(
+        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+        allow_placeholder_icon, std::move(callback));
+  }
+
+  scoped_refptr<RefCountedReleaser> shared_releaser;
+  IconLoader::Key key(app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+                      allow_placeholder_icon);
+
+  auto iter = non_immediate_requests_.find(key);
+  if (iter != non_immediate_requests_.end()) {
+    // Coalesce this request with an in-flight one.
+    //
+    // |iter->second| is a CallbackAndReleaser. |iter->second.second| is a
+    // scoped_refptr<RefCountedReleaser>.
+    shared_releaser = iter->second.second;
+  } else {
+    // There is no in-flight request to coalesce with. Instead, forward on the
+    // request to the wrapped IconLoader.
+    //
+    // Calling the |wrapped_loader_|'s LoadIconFromIconKey implementation might
+    // invoke the passed OnceCallback (binding this class' OnLoadIcon method)
+    // immediately (now), or at a later time. In both cases, we have to invoke
+    // (now or later) the |callback| that was passed to this function.
+    //
+    // If it's later, then we stash |callback| in |non_immediate_requests_|,
+    // and look up that same |non_immediate_requests_| during OnLoadIcon.
+    //
+    // If it's now, then inserting into the |non_immediate_requests_| would be
+    // tricky, as we'd have to then unstash the |callback| out of the
+    // |non_immediate_requests_| (recall that a OnceCallback can be std::move'd
+    // but not copied), but there are potentially multiple entries with the
+    // same key, and any multimap iterator might be invalidated if calling into
+    // the |wrapped_loader_| caused other code to call back into this
+    // IconCoalescer and mutate that multimap.
+    //
+    // Instead, |possibly_immediate_requests_| and |immediate_responses_| keeps
+    // track of now vs later.
+    //
+    // If it's now (if OnLoadIcon is called when the current |seq_num| is in
+    // |possibly_immediate_requests_|), then OnLoadIcon will populate
+    // |immediate_responses_| with that |seq_num|. We then run |callback| now,
+    // right after |wrapped_loader_->LoadIconFromIconKey| returns.
+    //
+    // Otherwise we have asynchronously dispatched the underlying icon loading
+    // request, so store |callback| in |non_immediate_requests_| to be run
+    // later, when the asynchronous request resolves.
+    uint64_t seq_num = next_sequence_number_++;
+    possibly_immediate_requests_.insert(seq_num);
+
+    std::unique_ptr<IconLoader::Releaser> unique_releaser =
+        wrapped_loader_->LoadIconFromIconKey(
+            app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+            allow_placeholder_icon,
+            base::BindOnce(&IconCoalescer::OnLoadIcon,
+                           weak_ptr_factory_.GetWeakPtr(), key, seq_num));
+
+    possibly_immediate_requests_.erase(seq_num);
+
+    auto iv_iter = immediate_responses_.find(seq_num);
+    if (iv_iter != immediate_responses_.end()) {
+      IconValuePtr iv = std::move(iv_iter->second);
+      immediate_responses_.erase(iv_iter);
+      std::move(callback).Run(std::move(iv));
+      return unique_releaser;
+    }
+
+    shared_releaser =
+        base::MakeRefCounted<RefCountedReleaser>(std::move(unique_releaser));
+  }
+
+  non_immediate_requests_.insert(std::make_pair(
+      key, std::make_pair(std::move(callback), shared_releaser)));
+
+  return std::make_unique<IconLoader::Releaser>(
+      nullptr,
+      // The callback does nothing explicitly, but after it runs, it implicitly
+      // decrements the scoped_refptr's shared reference count, and therefore
+      // possibly deletes the underlying IconLoader::Releaser.
+      base::BindOnce([](scoped_refptr<RefCountedReleaser>) {},
+                     std::move(shared_releaser)));
+}
+
+std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::IconKeyPtr mojom_icon_key,
@@ -120,14 +219,15 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
         wrapped_loader_->LoadIconFromIconKey(
             app_type, app_id, std::move(mojom_icon_key), icon_type,
             size_hint_in_dip, allow_placeholder_icon,
-            base::BindOnce(&IconCoalescer::OnLoadIcon,
+            base::BindOnce(&IconCoalescer::OnLoadMojomIcon,
                            weak_ptr_factory_.GetWeakPtr(), key, seq_num));
 
     possibly_immediate_requests_.erase(seq_num);
 
     auto iv_iter = immediate_responses_.find(seq_num);
     if (iv_iter != immediate_responses_.end()) {
-      apps::mojom::IconValuePtr iv = std::move(iv_iter->second);
+      apps::mojom::IconValuePtr iv =
+          ConvertIconValueToMojomIconValue(std::move(iv_iter->second));
       immediate_responses_.erase(iv_iter);
       std::move(callback).Run(std::move(iv));
       return unique_releaser;
@@ -138,7 +238,9 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
   }
 
   non_immediate_requests_.insert(std::make_pair(
-      key, std::make_pair(std::move(callback), shared_releaser)));
+      key,
+      std::make_pair(IconValueToMojomIconValueCallback(std::move(callback)),
+                     shared_releaser)));
 
   return std::make_unique<IconLoader::Releaser>(
       nullptr,
@@ -151,7 +253,7 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
 void IconCoalescer::OnLoadIcon(IconLoader::Key key,
                                uint64_t sequence_number,
-                               apps::mojom::IconValuePtr icon_value) {
+                               IconValuePtr icon_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (possibly_immediate_requests_.find(sequence_number) !=
@@ -189,7 +291,7 @@ void IconCoalescer::OnLoadIcon(IconLoader::Key key,
   // Synchronous invocation keep the call stack's "how did I get here"
   // information, which is useful when debugging.
 
-  std::vector<apps::mojom::Publisher::LoadIconCallback> callbacks;
+  std::vector<apps::LoadIconCallback> callbacks;
   callbacks.reserve(count);
   for (auto iter = range.first; iter != range.second; ++iter) {
     // |iter->second| is a CallbackAndReleaser. |iter->second.first| is a
@@ -200,17 +302,25 @@ void IconCoalescer::OnLoadIcon(IconLoader::Key key,
   non_immediate_requests_.erase(range.first, range.second);
 
   for (auto& callback : callbacks) {
-    apps::mojom::IconValuePtr iv;
+    IconValuePtr iv;
     if (--count == 0) {
       iv = std::move(icon_value);
     } else {
-      iv = apps::mojom::IconValue::New();
+      iv = std::make_unique<IconValue>();
       iv->icon_type = icon_value->icon_type;
       iv->uncompressed = icon_value->uncompressed;
       iv->is_placeholder_icon = icon_value->is_placeholder_icon;
     }
     std::move(callback).Run(std::move(iv));
   }
+}
+
+void IconCoalescer::OnLoadMojomIcon(
+    IconLoader::Key key,
+    uint64_t sequence_number,
+    apps::mojom::IconValuePtr mojom_icon_value) {
+  OnLoadIcon(key, sequence_number,
+             ConvertMojomIconValueToIconValue(std::move(mojom_icon_value)));
 }
 
 }  // namespace apps

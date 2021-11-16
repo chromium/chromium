@@ -89,6 +89,17 @@ class AppServiceProxyBase : public KeyedService,
 
   // apps::IconLoader overrides.
   absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::unique_ptr<Releaser> LoadIconFromIconKey(
+      AppType app_type,
+      const std::string& app_id,
+      const IconKey& icon_key,
+      IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback) override;
+
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,
@@ -281,6 +292,16 @@ class AppServiceProxyBase : public KeyedService,
 
     // apps::IconLoader overrides.
     absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+    std::unique_ptr<Releaser> LoadIconFromIconKey(
+        AppType app_type,
+        const std::string& app_id,
+        const IconKey& icon_key,
+        IconType icon_type,
+        int32_t size_hint_in_dip,
+        bool allow_placeholder_icon,
+        apps::LoadIconCallback callback) override;
+
+    // TODO(crbug.com/1253250): Will be removed soon.
     std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,
@@ -304,6 +325,8 @@ class AppServiceProxyBase : public KeyedService,
   // operation that depends on a fully instantiated AppServiceProxy (i.e. to
   // avoid calling other virtual methods in the AppServiceProxy constructor).
   virtual void Initialize();
+
+  AppPublisher* GetPublisher(AppType app_type);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
