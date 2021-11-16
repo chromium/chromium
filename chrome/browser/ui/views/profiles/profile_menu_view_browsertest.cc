@@ -27,7 +27,9 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -48,11 +50,13 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -74,6 +78,11 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
+#endif
 
 namespace {
 
@@ -126,6 +135,29 @@ Profile* CreateTestingProfile(const base::FilePath& path) {
 std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
   return feature_engagement::CreateTestTracker();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
+ public:
+  explicit FakeAccountManagerUITestObserver(
+      FakeAccountManagerUI* account_manager_ui)
+      : account_manager_ui_(account_manager_ui) {
+    scoped_observation_.Observe(account_manager_ui_);
+  }
+  ~FakeAccountManagerUITestObserver() override = default;
+
+  void WaitForReauthAccountDialogShown() { reauth_run_loop_.Run(); }
+
+  // FakeAccountManagerUI::Observer:
+  void OnReauthAccountDialogShown() override { reauth_run_loop_.Quit(); }
+
+ private:
+  FakeAccountManagerUI* account_manager_ui_;
+  base::RunLoop reauth_run_loop_;
+  base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
+      scoped_observation_{this};
+};
+#endif
 
 }  // namespace
 
@@ -495,6 +527,77 @@ INSTANTIATE_TEST_SUITE_P(NetworkOnOrOff,
                          ProfileMenuViewSignoutTestWithNetwork,
                          ::testing::Bool());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Test suite that sets up a primary sync account in an error state and
+// simulates a click on the sync error button.
+class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
+                                           public InProcessBrowserTest {
+ public:
+  ProfileMenuViewSyncErrorButtonTest() = default;
+
+  CoreAccountInfo account_info() const { return account_info_; }
+
+  bool Reauth() {
+    OpenProfileMenu(browser());
+    if (HasFatalFailure())
+      return false;
+    static_cast<ProfileMenuView*>(profile_menu_view())
+        ->OnSyncErrorButtonClicked(AvatarSyncErrorType::kAuthError);
+    return true;
+  }
+
+  void SetUpOnMainThread() override {
+    // Add an account.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    account_info_ = signin::MakePrimaryAccountAvailable(
+        identity_manager, "foo@example.com", signin::ConsentLevel::kSync);
+    signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+    ASSERT_TRUE(
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info_.account_id));
+  }
+
+ private:
+  CoreAccountInfo account_info_;
+};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthDialog) {
+  FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
+  ASSERT_TRUE(account_manager_ui);
+  FakeAccountManagerUITestObserver observer(account_manager_ui);
+
+  ASSERT_TRUE(Reauth());
+
+  observer.WaitForReauthAccountDialogShown();
+  EXPECT_TRUE(account_manager_ui->IsDialogShown());
+  EXPECT_EQ(1,
+            account_manager_ui->show_account_reauthentication_dialog_calls());
+}
+#else
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
+  // Start from a page that is not the NTP.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_EQ(0, tab_strip->active_index());
+  EXPECT_NE(GURL(chrome::kChromeUINewTabURL),
+            tab_strip->GetActiveWebContents()->GetURL());
+
+  // Reauth creates a new tab.
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ASSERT_TRUE(Reauth());
+  tab_waiter.Wait();
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_EQ(1, tab_strip->active_index());
+  content::WebContents* reauth_page = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(signin::GetChromeSyncURLForDice(account_info().email,
+                                            google_util::kGoogleHomepageURL),
+            reauth_page->GetURL());
+}
+#endif
 
 // This class is used to test the existence, the correct order and the call to
 // the correct action of the buttons in the profile menu. This is done by
