@@ -182,12 +182,6 @@ template("msvc_toolchain") {
       coverage_wrapper =
           rebase_path("//build/toolchain/clang_code_coverage_wrapper.py",
                       root_build_dir)
-      if (is_win) {
-        # Disable writing out bytecode because this causes contention over
-        # access to the .pyc which causes scaling problems on Windows. See
-        # https://crbug.com/1266174 for details.
-        coverage_wrapper = "-B " + coverage_wrapper
-      }
       coverage_wrapper = coverage_wrapper + " --target-os=" + target_os
       if (toolchain_coverage_instrumentation_input_file != "") {
         coverage_wrapper =
