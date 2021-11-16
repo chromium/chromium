@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
@@ -51,8 +52,12 @@ class AppServiceAppIconLoader : public AppIconLoader,
   void CallLoadIcon(const std::string& app_id, bool allow_placeholder_icon);
 
   // Callback invoked when the icon is loaded.
-  void OnLoadIcon(const std::string& app_id,
-                  apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(const std::string& app_id, apps::IconValuePtr icon_value);
+
+  // Callback invoked when the icon is loaded.
+  // TODO(crbug.com/1251501): Remove this mojom callback.
+  void OnLoadMojomIcon(const std::string& app_id,
+                       apps::mojom::IconValuePtr icon_value);
 
   // Returns true if the app_id does exist in icon_map_.
   bool Exist(const std::string& app_id);

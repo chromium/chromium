@@ -33,10 +33,11 @@
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -355,11 +356,12 @@ bool AppServiceProxyChromeOs::MaybeShowLaunchPreventionDialog(
 
 void AppServiceProxyChromeOs::LoadIconForDialog(
     const apps::AppUpdate& update,
-    apps::mojom::Publisher::LoadIconCallback callback) {
-  apps::mojom::IconKeyPtr icon_key = update.IconKey();
+    apps::LoadIconCallback callback) {
+  apps::mojom::IconKeyPtr mojom_icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
-  auto icon_type = apps::mojom::IconType::kStandard;
+  auto app_type = update.AppType();
+  auto icon_type = IconType::kStandard;
 
   // For browser tests, load the app icon, because there is no family link
   // logo for browser tests.
@@ -367,25 +369,37 @@ void AppServiceProxyChromeOs::LoadIconForDialog(
   // For non_child profile, load the app icon, because the app is blocked by
   // admin.
   if (!dialog_created_callback_.is_null() || !profile_->IsChild()) {
-    LoadIconFromIconKey(update.AppType(), update.AppId(), std::move(icon_key),
-                        icon_type, kIconSize, kAllowPlaceholderIcon,
-                        std::move(callback));
+    if (base::FeatureList::IsEnabled(
+            features::kAppServiceLoadIconWithoutMojom)) {
+      if (!mojom_icon_key) {
+        std::move(callback).Run(std::make_unique<IconValue>());
+        return;
+      }
+      std::unique_ptr<IconKey> icon_key =
+          ConvertMojomIconKeyToIconKey(mojom_icon_key);
+      LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), update.AppId(),
+                          *icon_key, icon_type, kIconSize,
+                          kAllowPlaceholderIcon, std::move(callback));
+    } else {
+      LoadIconFromIconKey(
+          app_type, update.AppId(), std::move(mojom_icon_key),
+          apps::mojom::IconType::kStandard, kIconSize, kAllowPlaceholderIcon,
+          MojomIconValueToIconValueCallback(std::move(callback)));
+    }
     return;
   }
 
   // Load the family link kite logo icon for the app pause dialog or the app
   // block dialog for the child profile.
-  LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type), kIconSize,
-                       IDR_SUPERVISED_USER_ICON, kAllowPlaceholderIcon,
-                       IconEffects::kNone,
-                       IconValueToMojomIconValueCallback(std::move(callback)));
+  LoadIconFromResource(icon_type, kIconSize, IDR_SUPERVISED_USER_ICON,
+                       kAllowPlaceholderIcon, IconEffects::kNone,
+                       std::move(callback));
 }
 
 void AppServiceProxyChromeOs::OnLoadIconForBlockDialog(
     const std::string& app_name,
-    apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != icon_type) {
+    IconValuePtr icon_value) {
+  if (icon_value->icon_type != IconType::kStandard) {
     return;
   }
 
@@ -403,9 +417,8 @@ void AppServiceProxyChromeOs::OnLoadIconForPauseDialog(
     const std::string& app_id,
     const std::string& app_name,
     const PauseData& pause_data,
-    apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != icon_type) {
+    IconValuePtr icon_value) {
+  if (icon_value->icon_type != IconType::kStandard) {
     OnPauseDialogClosed(app_type, app_id);
     return;
   }

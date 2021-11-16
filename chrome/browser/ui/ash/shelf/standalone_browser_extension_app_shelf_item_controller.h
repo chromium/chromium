@@ -16,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -82,7 +83,11 @@ class StandaloneBrowserExtensionAppShelfItemController
   using ShelfItem = ash::ShelfItem;
 
   // Called by AppServiceProxy once an icon has been loaded.
-  void DidLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void DidLoadIcon(apps::IconValuePtr icon_value);
+
+  // Called by AppServiceProxy once an icon has been loaded.
+  // TODO(crbug.com/1251501): Remove this mojom callback.
+  void DidLoadMojomIcon(apps::mojom::IconValuePtr icon_value);
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;

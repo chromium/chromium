@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 
@@ -32,16 +34,27 @@ StandaloneBrowserExtensionAppShelfItemController::
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       ChromeShelfController::instance()->profile());
 
-  apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
   constexpr bool kAllowPlaceholderIcon = false;
   constexpr int32_t kIconSize = 48;
-  auto icon_type = apps::mojom::IconType::kStandard;
-  icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-      apps::mojom::AppType::kStandaloneBrowserExtension, shelf_id.app_id,
-      std::move(icon_key), icon_type, kIconSize, kAllowPlaceholderIcon,
-      base::BindOnce(
-          &StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon,
-          weak_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    apps::IconKey icon_key;
+    auto icon_type = apps::IconType::kStandard;
+    icon_loader_releaser_ = proxy->LoadIconFromIconKey(
+        apps::AppType::kStandaloneBrowserExtension, shelf_id.app_id, icon_key,
+        icon_type, kIconSize, kAllowPlaceholderIcon,
+        base::BindOnce(
+            &StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
+    auto icon_type = apps::mojom::IconType::kStandard;
+    icon_loader_releaser_ = proxy->LoadIconFromIconKey(
+        apps::mojom::AppType::kStandaloneBrowserExtension, shelf_id.app_id,
+        std::move(icon_key), icon_type, kIconSize, kAllowPlaceholderIcon,
+        base::BindOnce(
+            &StandaloneBrowserExtensionAppShelfItemController::DidLoadMojomIcon,
+            weak_factory_.GetWeakPtr()));
+  }
 
   context_menu_ = std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
       shelf_id.app_id,
@@ -211,7 +224,7 @@ size_t StandaloneBrowserExtensionAppShelfItemController::WindowCount() {
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon(
-    apps::mojom::IconValuePtr icon_value) {
+    apps::IconValuePtr icon_value) {
   icon_ = icon_value->uncompressed;
 
   if (ItemAddedToShelf()) {
@@ -221,6 +234,11 @@ void StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon(
     ash::ShelfModel::Get()->Set(index, item);
     return;
   }
+}
+
+void StandaloneBrowserExtensionAppShelfItemController::DidLoadMojomIcon(
+    apps::mojom::IconValuePtr icon_value) {
+  DidLoadIcon(apps::ConvertMojomIconValueToIconValue(std::move(icon_value)));
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::OnWindowDestroying(

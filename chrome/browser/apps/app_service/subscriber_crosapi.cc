@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace {
@@ -130,16 +132,31 @@ void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
 }
 
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
-                                 apps::mojom::IconKeyPtr icon_key,
+                                 apps::mojom::IconKeyPtr mojom_icon_key,
                                  IconType icon_type,
                                  int32_t size_hint_in_dip,
                                  apps::LoadIconCallback callback) {
+  if (!mojom_icon_key) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->LoadIconFromIconKey(
-      proxy->AppRegistryCache().GetAppType(app_id), app_id, std::move(icon_key),
-      ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
-      /*allow_placeholder_icon=*/false,
-      MojomIconValueToIconValueCallback(std::move(callback)));
+  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    std::unique_ptr<IconKey> icon_key =
+        ConvertMojomIconKeyToIconKey(mojom_icon_key);
+    proxy->LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), app_id,
+                               *icon_key, icon_type, size_hint_in_dip,
+                               /*allow_placeholder_icon=*/false,
+                               std::move(callback));
+  } else {
+    proxy->LoadIconFromIconKey(
+        app_type, app_id, std::move(mojom_icon_key),
+        ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
+        /*allow_placeholder_icon=*/false,
+        MojomIconValueToIconValueCallback(std::move(callback)));
+  }
 }
 
 void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,

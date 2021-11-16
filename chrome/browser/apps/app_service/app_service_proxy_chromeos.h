@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -152,18 +153,18 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase,
 
   // Loads the icon for the app block dialog or the app pause dialog.
   void LoadIconForDialog(const apps::AppUpdate& update,
-                         apps::mojom::Publisher::LoadIconCallback callback);
+                         apps::LoadIconCallback callback);
 
   // Callback invoked when the icon is loaded for the block app dialog.
   void OnLoadIconForBlockDialog(const std::string& app_name,
-                                apps::mojom::IconValuePtr icon_value);
+                                IconValuePtr icon_value);
 
   // Callback invoked when the icon is loaded for the pause app dialog.
   void OnLoadIconForPauseDialog(apps::mojom::AppType app_type,
                                 const std::string& app_id,
                                 const std::string& app_name,
                                 const PauseData& pause_data,
-                                apps::mojom::IconValuePtr icon_value);
+                                IconValuePtr icon_value);
 
   // Invoked when the user clicks the 'OK' button of the pause app dialog.
   // AppService stops the running app and applies the paused app icon effect.
