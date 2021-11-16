@@ -28,5 +28,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.chromiumos",
   "recipe": "chromium"
 }

@@ -6,5 +6,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.fyi",
   "recipe": "chromium"
 }

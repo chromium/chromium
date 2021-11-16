@@ -11,6 +11,11 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.mac",
   "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium",
+    "ios"
+  ],
   "xcode_build_version": "13a233"
 }

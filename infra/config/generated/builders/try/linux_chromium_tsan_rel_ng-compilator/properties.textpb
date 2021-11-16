@@ -13,6 +13,7 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "tryserver.chromium.linux",
   "orchestrator": {
     "builder_group": "tryserver.chromium.linux",
     "builder_name": "linux_chromium_tsan_rel_ng"

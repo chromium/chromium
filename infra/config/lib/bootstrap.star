@@ -30,12 +30,28 @@ load("//project.star", "settings")
 load("./builder_config.star", _ = "builder_config")  # @unused
 
 _NON_BOOTSTRAPPED_PROPERTIES = [
+    # The led_recipes_tester recipe examines the recipe property in the input
+    # properties of the build definition retrieved using led to determine which
+    # builders' recipes are affected by the change. Bootstrapped properties
+    # won't appear in the retrieved build definition, so don't bootstrap this.
+    "recipe",
+
     # Sheriff-o-Matic queries for builder_group in the input properties to find
-    # builds for the main sheriff rotation. Bootstrapped properties don't appear
-    # in the build's input properties, so don't bootstrap this property.
+    # builds for the main sheriff rotation and Findit reads the builder_group
+    # from the input properties of an analyzed build to set the builder group
+    # for the target builder when triggering the rerun builder. Bootstrapped
+    # properties don't appear in the build's input properties, so don't
+    # bootstrap this property.
     # TODO(gbeaty) When finalized input properties are exported to BQ, remove
     # this.
     "builder_group",
+
+    # Sheriff-o-Matic will query for sheriff_rotations in the input properties
+    # to determine which sheriff rotation a build belongs to. Bootstrapped
+    # properties don't appear in the build's input properties, so don't
+    # bootstrap this property.
+    # TODO(gbeaty) When finalized input properties are exported to BQ, remove
+    # this.
     "sheriff_rotations",
 ]
 
@@ -130,7 +146,7 @@ def _bootstrap_properties(ctx):
             builder_properties = json.decode(builder.properties)
             for p in _NON_BOOTSTRAPPED_PROPERTIES:
                 if p in builder_properties:
-                    non_bootstrapped_properties[p] = builder_properties.pop(p)
+                    non_bootstrapped_properties[p] = builder_properties[p]
             ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
             if bootstrap:

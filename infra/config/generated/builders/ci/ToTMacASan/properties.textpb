@@ -6,7 +6,11 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.clang",
   "perf_dashboard_machine_group": "ChromiumClang",
   "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.clang"
+  ],
   "xcode_build_version": "12d4e"
 }

@@ -89,5 +89,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "infra",
   "recipe": "chromium"
 }

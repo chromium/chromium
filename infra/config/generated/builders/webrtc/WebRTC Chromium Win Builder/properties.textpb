@@ -12,6 +12,7 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.webrtc",
   "perf_dashboard_machine_group": "ChromiumWebRTC",
   "recipe": "chromium"
 }

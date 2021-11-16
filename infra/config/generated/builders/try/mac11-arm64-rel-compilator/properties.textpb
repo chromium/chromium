@@ -12,6 +12,7 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "tryserver.chromium.mac",
   "orchestrator": {
     "builder_group": "tryserver.chromium.mac",
     "builder_name": "mac11-arm64-rel"

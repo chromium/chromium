@@ -12,6 +12,7 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.goma",
   "recipe": "chromium",
   "xcode_build_version": "13a233"
 }

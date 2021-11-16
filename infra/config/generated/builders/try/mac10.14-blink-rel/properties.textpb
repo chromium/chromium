@@ -11,5 +11,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "tryserver.blink",
   "recipe": "chromium_trybot"
 }

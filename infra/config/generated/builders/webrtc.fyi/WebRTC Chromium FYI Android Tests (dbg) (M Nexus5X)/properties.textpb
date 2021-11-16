@@ -6,5 +6,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.webrtc.fyi",
   "recipe": "chromium"
 }

@@ -13,5 +13,10 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium"
+  "builder_group": "chromium.memory",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium",
+    "android"
+  ]
 }

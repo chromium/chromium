@@ -13,5 +13,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.android.fyi",
   "recipe": "chromium"
 }

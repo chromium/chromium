@@ -13,5 +13,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "tryserver.chromium.linux",
   "recipe": "chromium_trybot"
 }

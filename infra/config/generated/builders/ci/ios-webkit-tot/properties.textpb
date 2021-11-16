@@ -11,6 +11,7 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.fyi",
   "recipe": "chromium",
   "xcode_build_version": "13a1030dwk"
 }

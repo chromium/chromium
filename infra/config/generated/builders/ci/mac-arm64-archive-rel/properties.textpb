@@ -19,5 +19,9 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium"
+  "builder_group": "chromium",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

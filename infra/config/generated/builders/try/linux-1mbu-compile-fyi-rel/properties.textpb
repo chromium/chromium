@@ -16,5 +16,6 @@
   "bot_update_experiments": [
     "no_sync"
   ],
+  "builder_group": "tryserver.chromium.linux",
   "recipe": "chromium_trybot"
 }

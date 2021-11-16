@@ -11,5 +11,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "chromium.updater",
   "recipe": "chromium"
 }
