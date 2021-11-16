@@ -6072,7 +6072,6 @@ crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure 
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
 # DevTools roll
-crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Failure Pass ]
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
 
 # Flaky test
