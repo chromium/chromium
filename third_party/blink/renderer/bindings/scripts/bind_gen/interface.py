@@ -665,6 +665,28 @@ def _make_blink_api_call(code_node,
                          cg_context,
                          num_of_args=None,
                          overriding_args=None):
+    """
+    Returns an expression of Blink C++ function call.
+
+    This function doesn't create a complete C++ statement.  The returned string
+    should be used to create an appropriate symbol binding like
+    `bind_return_value` does.  (Actually `bind_return_value` is the only
+    expected caller except for [NoAllocDirectCall] hack.)
+
+    Args:
+        code_node: A CodeNode which is supposed to contain the returned
+            expression.
+        cg_context: A CodeGenContext of the target IDL construct.
+        num_of_args: The number of arguments to be passed to the function.
+            This is used to determine which overload should be called.
+        overriding_args: By default, the function is called with the arguments
+            which are bound by `bind_blink_api_arguments`.  This argument has
+            priority over them, and allows that the function is called with
+            the explicitly given arguments.
+
+    Returns:
+        C++ expression of a function call, e.g. "func(arg1, arg2, ...)".
+    """
     assert isinstance(code_node, SymbolScopeNode)
     assert isinstance(cg_context, CodeGenContext)
     assert num_of_args is None or isinstance(num_of_args, int)
@@ -747,6 +769,10 @@ def _make_blink_api_call(code_node,
             _format("{};", expr),
             "})",
         ])
+        code_node.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+            ]))
     return expr
 
 
@@ -2451,6 +2477,10 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
           "${blink_receiver}, &${v8_arg_callback_options});"),
         EmptyNode(),
     ])
+    body.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+        ]))
 
     blink_arguments = list(
         map(lambda arg: "${{{}}}".format(arg.blink_arg_name), arg_list))
