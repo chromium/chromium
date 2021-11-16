@@ -1081,6 +1081,9 @@ FileSystemAccessManagerImpl::operation_runner() {
   return operation_runner_;
 }
 
+// TODO(https://crbug.com/1270739): Determine if `root` should be refactored to
+// be a FileSystemURL type instead of GURL both here and in
+// FileSystemContext::OpenFileSystem.
 void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
     const BindingContext& binding_context,
     GetSandboxedFileSystemCallback callback,
@@ -1099,14 +1102,11 @@ void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           PermissionStatus::GRANTED, base::FilePath());
 
-  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
-  // replaced with a more meaningful value
   std::move(callback).Run(
       file_system_access_error::Ok(),
       CreateDirectoryHandle(
           binding_context,
-          context()->CrackURL(root,
-                              blink::StorageKey(url::Origin::Create(root))),
+          context()->CrackURL(root, binding_context.storage_key),
           SharedHandleState(permission_grant, permission_grant)));
 }
 
