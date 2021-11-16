@@ -676,12 +676,7 @@ int OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
 
 int OmniboxFieldTrial::OnDeviceHeadSuggestDelaySuggestRequestMs(
     bool is_incognito) {
-  const int kDefaultDelayNonIncognito =
-#if defined(OS_IOS)
-      100;
-#else
-      0;
-#endif  // defined(OS_IOS)
+  const int kDefaultDelayNonIncognito = 0;
   return is_incognito ? 0
                       : base::GetFieldTrialParamByFeatureAsInt(
                             omnibox::kOnDeviceHeadProviderNonIncognito,
