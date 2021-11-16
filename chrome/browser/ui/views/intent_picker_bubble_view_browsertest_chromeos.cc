@@ -81,20 +81,36 @@ class FakeIconLoader : public apps::IconLoader {
   ~FakeIconLoader() override = default;
 
   std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-      apps::mojom::AppType app_type,
+      apps::AppType app_type,
       const std::string& app_id,
-      apps::mojom::IconKeyPtr icon_key,
-      apps::mojom::IconType icon_type,
+      const apps::IconKey& icon_key,
+      apps::IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      apps::mojom::Publisher::LoadIconCallback callback) override {
-    auto iv = apps::mojom::IconValue::New();
+      apps::LoadIconCallback callback) override {
+    auto iv = std::make_unique<apps::IconValue>();
     iv->icon_type = icon_type;
     iv->uncompressed = gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
     iv->is_placeholder_icon = false;
 
     std::move(callback).Run(std::move(iv));
     return nullptr;
+  }
+
+  std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
+      apps::mojom::AppType app_type,
+      const std::string& app_id,
+      apps::mojom::IconKeyPtr mojom_icon_key,
+      apps::mojom::IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::mojom::Publisher::LoadIconCallback callback) override {
+    auto icon_key = apps::ConvertMojomIconKeyToIconKey(mojom_icon_key);
+    return LoadIconFromIconKey(
+        apps::ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
+        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
+        allow_placeholder_icon,
+        apps::IconValueToMojomIconValueCallback(std::move(callback)));
   }
 };
 }  // namespace

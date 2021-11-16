@@ -59,8 +59,6 @@ class IconLoader {
 
   // This can return nullptr, meaning that the IconLoader does not track when
   // the icon is no longer actively used by the caller.
-  // TODO(crbug.com/1253250): Modify this function as a pure virtual function
-  // and modify the test code to add the non mojom load icon interface.
   virtual std::unique_ptr<Releaser> LoadIconFromIconKey(
       AppType app_type,
       const std::string& app_id,
@@ -68,7 +66,7 @@ class IconLoader {
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
-      apps::LoadIconCallback callback);
+      apps::LoadIconCallback callback) = 0;
 
   // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
   // GetIconKey(app_id), etc)".

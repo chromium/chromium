@@ -288,8 +288,10 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":app_types",
     ":app_update",
     ":icon_loader",
+    ":icon_types",
     ":intents",
     ":preferred_apps",
     ":publisher",

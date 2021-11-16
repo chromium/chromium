@@ -13,6 +13,8 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
@@ -31,6 +33,8 @@
 #include "chrome/common/chrome_features.h"
 #endif
 
+// TODO(crbug.com/1253250):  Remove mojom related test cases.
+
 namespace apps {
 
 class AppServiceProxyTest : public testing::Test {
@@ -41,8 +45,8 @@ class AppServiceProxyTest : public testing::Test {
    public:
     void FlushPendingCallbacks() {
       for (auto& callback : pending_callbacks_) {
-        auto iv = apps::mojom::IconValue::New();
-        iv->icon_type = apps::mojom::IconType::kUncompressed;
+        auto iv = std::make_unique<IconValue>();
+        iv->icon_type = IconType::kUncompressed;
         iv->uncompressed =
             gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
         iv->is_placeholder_icon = false;
@@ -58,6 +62,20 @@ class AppServiceProxyTest : public testing::Test {
 
    private:
     std::unique_ptr<Releaser> LoadIconFromIconKey(
+        AppType app_type,
+        const std::string& app_id,
+        const IconKey& icon_key,
+        IconType icon_type,
+        int32_t size_hint_in_dip,
+        bool allow_placeholder_icon,
+        apps::LoadIconCallback callback) override {
+      if (icon_type == IconType::kUncompressed) {
+        pending_callbacks_.push_back(std::move(callback));
+      }
+      return nullptr;
+    }
+
+    std::unique_ptr<Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,
         apps::mojom::IconKeyPtr icon_key,
@@ -66,34 +84,19 @@ class AppServiceProxyTest : public testing::Test {
         bool allow_placeholder_icon,
         apps::mojom::Publisher::LoadIconCallback callback) override {
       if (icon_type == apps::mojom::IconType::kUncompressed) {
-        pending_callbacks_.push_back(std::move(callback));
+        pending_callbacks_.push_back(
+            IconValueToMojomIconValueCallback(std::move(callback)));
       }
       return nullptr;
     }
 
     int num_inner_finished_callbacks_ = 0;
-    std::vector<apps::mojom::Publisher::LoadIconCallback> pending_callbacks_;
+    std::vector<apps::LoadIconCallback> pending_callbacks_;
   };
-
-  UniqueReleaser LoadIcon(apps::IconLoader* loader, const std::string& app_id) {
-    static constexpr auto app_type = apps::mojom::AppType::kWeb;
-    static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
-    static constexpr int32_t size_hint_in_dip = 1;
-    static bool allow_placeholder_icon = false;
-
-    return loader->LoadIcon(app_type, app_id, icon_type, size_hint_in_dip,
-                            allow_placeholder_icon,
-                            base::BindOnce(&AppServiceProxyTest::OnLoadIcon,
-                                           base::Unretained(this)));
-  }
 
   void OverrideAppServiceProxyInnerIconLoader(AppServiceProxy* proxy,
                                               apps::IconLoader* icon_loader) {
     proxy->OverrideInnerIconLoaderForTesting(icon_loader);
-  }
-
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-    num_outer_finished_callbacks_++;
   }
 
   int NumOuterFinishedCallbacks() { return num_outer_finished_callbacks_; }
@@ -103,7 +106,38 @@ class AppServiceProxyTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(AppServiceProxyTest, IconCache) {
+class AppServiceProxyIconTest : public AppServiceProxyTest,
+                                public ::testing::WithParamInterface<bool> {
+ protected:
+  bool IsLoadIconWithoutMojomEnabled() const { return GetParam(); }
+
+  UniqueReleaser LoadIcon(apps::IconLoader* loader, const std::string& app_id) {
+    static constexpr int32_t size_hint_in_dip = 1;
+    static bool allow_placeholder_icon = false;
+
+    if (IsLoadIconWithoutMojomEnabled()) {
+      static constexpr auto app_type = AppType::kWeb;
+      static constexpr auto icon_type = IconType::kUncompressed;
+      return loader->LoadIcon(
+          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+          base::BindOnce([](int* num_callbacks,
+                            apps::IconValuePtr icon) { ++(*num_callbacks); },
+                         &num_outer_finished_callbacks_));
+    } else {
+      static constexpr auto app_type = apps::mojom::AppType::kWeb;
+      static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
+      return loader->LoadIcon(
+          app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+          base::BindOnce(
+              [](int* num_callbacks, apps::mojom::IconValuePtr icon) {
+                ++(*num_callbacks);
+              },
+              &num_outer_finished_callbacks_));
+    }
+  }
+};
+
+TEST_P(AppServiceProxyIconTest, IconCache) {
   // This is mostly a sanity check. For an isolated, comprehensive unit test of
   // the IconCache code, see icon_cache_unittest.cc.
   //
@@ -149,7 +183,7 @@ TEST_F(AppServiceProxyTest, IconCache) {
   EXPECT_EQ(3, NumOuterFinishedCallbacks());
 }
 
-TEST_F(AppServiceProxyTest, IconCoalescer) {
+TEST_P(AppServiceProxyIconTest, IconCoalescer) {
   // This is mostly a sanity check. For an isolated, comprehensive unit test of
   // the IconCoalescer code, see icon_coalescer_unittest.cc.
   //
@@ -238,6 +272,12 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
 }
+
+// The parameter indicates whether the kAppServiceLoadIconWithoutMojom feature
+// is enabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppServiceProxyIconTest,
+                         ::testing::Values(true, false));
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
