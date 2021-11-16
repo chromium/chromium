@@ -399,7 +399,7 @@ OperationID FileSystemOperationRunner::OpenFile(const FileSystemURL& url,
   if (file_flags &
       (base::File::FLAG_CREATE | base::File::FLAG_OPEN_ALWAYS |
        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_OPEN_TRUNCATED |
-       base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_WRITE |
+       base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_WRITE |
        base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WRITE_ATTRIBUTES)) {
     PrepareForWrite(id, url);
   } else {
