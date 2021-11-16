@@ -71,6 +71,9 @@ class DevToolsDataSource : public content::URLDataSource {
   // command-line flag.
   void StartCustomDataRequest(const GURL& url, GotDataCallback callback);
 
+  bool MaybeHandleCustomRequest(const std::string& path,
+                                GotDataCallback* callback);
+
   virtual void StartNetworkRequest(
       const GURL& url,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

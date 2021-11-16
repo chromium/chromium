@@ -193,6 +193,32 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsBlankURLWithQueryParam) {
 
 // devtools/remote path
 
+TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURLWithSwitch) {
+  const char* flag_value = "http://example.com/example/path/";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kCustomDevtoolsFrontend, flag_value);
+  const GURL path =
+      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRequest(path.path());
+  EXPECT_TRUE(data_received());
+  EXPECT_EQ(data(), "url: http://example.com/example/path/devtools_app.html");
+}
+
+TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteFileURLWithSwitch) {
+#if defined(OS_WIN)
+  const char* flag_value = "file://C:/tmp/";
+#else
+  const char* flag_value = "file://tmp/";
+#endif
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kCustomDevtoolsFrontend, flag_value);
+  const GURL path =
+      DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
+  StartRequest(path.path());
+  EXPECT_TRUE(data_received());
+  EXPECT_EQ(data(), "file: devtools_app.html");
+}
+
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsRemoteURL) {
   const GURL path =
       DevToolsUrl().Resolve(DevToolsRemotePath(kDevToolsUITestFrontEndUrl));
