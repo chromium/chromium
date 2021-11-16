@@ -5,12 +5,14 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content"
     style="@style/ListItemContainerV2">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <ImageView
       android:id="@+id/start_icon"
-      style="@style/ListItemStartIconV2" />
+      style="@style/ListItemStartIconV2"
+      android:importantForAccessibility="no" />
 
     <!-- TODO(crbug.com/1244152) Extract and share this title/description layout. -->
     <LinearLayout

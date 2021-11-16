@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscription.Subscripti
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.ui.widget.ChipView;
@@ -99,6 +100,10 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             long currentPrice) {
         assert mCurrencyFormatter != null;
 
+        mStartIconView.setOutlineProvider(
+                new RoundedCornerOutlineProvider(getResources().getDimensionPixelSize(
+                        R.dimen.list_item_v2_start_icon_corner_radius)));
+        mStartIconView.setClipToOutline(true);
         mImageFetcher.fetchImage(
                 ImageFetcher.Params.create(leadImageUrl, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
                         mDesiredImageSize, mDesiredImageSize),
@@ -149,7 +154,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         updatePriceTrackingImageForCurrentState();
         Callback<Integer> subscriptionCallback = (status) -> {
             mSubscriptionChangeInProgress = false;
-            // TODO(crbug.com/1243383): Consult UX on a fallback if this fails.
+            // TODO(crbug.com/1243383): Handle the failure edge case.
             if (status != SubscriptionsManager.StatusCode.OK) return;
             mIsPriceTrackingEnabled = !mIsPriceTrackingEnabled;
             updatePriceTrackingImageForCurrentState();
@@ -158,11 +163,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             if (mSubscriptionChangeInProgress) return;
             mSubscriptionChangeInProgress = true;
 
-            if (mIsPriceTrackingEnabled) {
-                mSubscriptionsManager.unsubscribe(mSubscription, subscriptionCallback);
-            } else {
-                mSubscriptionsManager.subscribe(mSubscription, subscriptionCallback);
-            }
+            PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
+                    mBookmarkId, !mIsPriceTrackingEnabled, subscriptionCallback);
         });
     }
 

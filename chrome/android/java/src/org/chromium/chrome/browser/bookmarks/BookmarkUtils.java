@@ -35,14 +35,13 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -84,11 +83,14 @@ public class BookmarkUtils {
      * @param fromCustomTab boolean indicates whether it is called by Custom Tab.
      * @param bookmarkType Type of the added bookmark.
      * @param callback Invoked with the resulting bookmark ID, which could be null if unsuccessful.
+     * @param fromExplicitTrackUi Whether the bookmark was added directly from a tracking ui (e.g.
+     *         the shopping "track price" button).
      */
     public static void addOrEditBookmark(@Nullable BookmarkItem existingBookmarkItem,
             BookmarkModel bookmarkModel, Tab tab, SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController, Activity activity, boolean fromCustomTab,
-            @BookmarkType int bookmarkType, Callback<BookmarkId> callback) {
+            @BookmarkType int bookmarkType, Callback<BookmarkId> callback,
+            boolean fromExplicitTrackUi) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
             startEditActivity(activity, existingBookmarkItem.getId());
@@ -98,8 +100,8 @@ public class BookmarkUtils {
 
         // TODO(crbug.com/1252228): Reading list support needs some tests.
         if (BookmarkFeatures.isImprovedSaveFlowEnabled()) {
-            BookmarkId newBookmarkId = addBookmarkAndShowSaveFlow(
-                    activity, bookmarkModel, tab, bottomSheetController, bookmarkType);
+            BookmarkId newBookmarkId = addBookmarkAndShowSaveFlow(activity, bookmarkModel, tab,
+                    bottomSheetController, bookmarkType, fromExplicitTrackUi);
             callback.onResult(newBookmarkId);
             return;
         }
@@ -144,7 +146,7 @@ public class BookmarkUtils {
 
     private static BookmarkId addBookmarkAndShowSaveFlow(Activity activity,
             BookmarkModel bookmarkModel, Tab tab, BottomSheetController bottomSheetController,
-            @BookmarkType int bookmarkType) {
+            @BookmarkType int bookmarkType, boolean fromExplicitTrackUi) {
         BookmarkId bookmarkId;
         // TODO(crbug.com/1252228): Reading list support needs some tests.
         bookmarkId = addBookmarkInternal(activity, bookmarkModel, tab.getTitle(),
@@ -154,7 +156,7 @@ public class BookmarkUtils {
                         new CommerceSubscriptionsServiceFactory()
                                 .getForLastUsedProfile()
                                 .getSubscriptionsManager());
-        bookmarkSaveFlowCoordinator.show(bookmarkId, /*fromExplicitTrackUi=*/false);
+        bookmarkSaveFlowCoordinator.show(bookmarkId, fromExplicitTrackUi);
 
         return bookmarkId;
     }
@@ -284,8 +286,7 @@ public class BookmarkUtils {
             title = context.getResources().getString(R.string.new_tab_title);
         }
         // The shopping list experiment saves extra metadata along with the bookmark.
-        if (ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)) {
+        if (ShoppingFeatures.isShoppingListEnabled()) {
             bookmarkId = bookmarkModel.addPowerBookmark(
                     webContents, parent, bookmarkModel.getChildCount(parent), title, url);
         } else {
@@ -528,21 +529,6 @@ public class BookmarkUtils {
     public static @ColorRes int getFolderIconTint(@BookmarkType int type) {
         return (type == BookmarkType.READING_LIST) ? R.color.default_icon_color_accent1_tint_list
                                                    : R.color.default_icon_color_tint_list;
-    }
-
-    /**
-     * Retrieve the save flow title for the given bookmark.
-     *
-     * @param context The current Android {@link Context}.
-     * @param bookmarkId The {@link BookmarkId} to get the title for.
-     * @return The title associated with the given bookmarkId.
-     */
-    public static String getSaveFlowTitleForBookmark(
-            Context context, BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta) {
-        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
-            return context.getResources().getString(R.string.price_tracking_title);
-        }
-        return context.getResources().getString(R.string.bookmark_save_flow_title);
     }
 
     /**
