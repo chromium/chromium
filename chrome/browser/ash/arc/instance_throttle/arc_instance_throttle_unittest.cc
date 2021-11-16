@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -25,7 +26,6 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/arc/test/fake_power_instance.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

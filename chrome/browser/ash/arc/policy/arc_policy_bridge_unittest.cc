@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -34,7 +35,6 @@
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/arc/test/fake_policy_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

@@ -24,6 +24,7 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
+   "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
   ],

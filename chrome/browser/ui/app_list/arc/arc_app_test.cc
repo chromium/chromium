@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
@@ -28,7 +29,6 @@
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/arc/test/fake_intent_helper_instance.h"

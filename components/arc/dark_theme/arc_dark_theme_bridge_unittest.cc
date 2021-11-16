@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_dark_theme_instance.h"
 #include "components/arc/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"

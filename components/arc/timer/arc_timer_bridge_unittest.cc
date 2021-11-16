@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -19,7 +20,6 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_timer_instance.h"
 #include "components/arc/test/test_browser_context.h"
 #include "components/arc/timer/arc_timer_bridge.h"

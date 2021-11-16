@@ -6,13 +6,13 @@
 
 #include <string>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_cast_receiver_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

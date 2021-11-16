@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
@@ -40,7 +41,6 @@
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"

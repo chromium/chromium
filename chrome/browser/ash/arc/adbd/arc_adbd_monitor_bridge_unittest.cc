@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_adbd_monitor_instance.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/arc/test/test_browser_context.h"

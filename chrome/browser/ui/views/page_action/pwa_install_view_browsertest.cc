@@ -49,13 +49,13 @@
 #include "ui/views/view_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

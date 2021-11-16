@@ -92,3 +92,17 @@ static_library("compat_mode_test_support") {
     "//ui/views:test_support",
   ]
 }
+
+static_library("notification_test_support") {
+  testonly = true
+  sources = [
+    "test/connection_holder_util.h",
+    "test/fake_notifications_instance.cc",
+    "test/fake_notifications_instance.h",
+  ]
+
+  public_deps = [
+    "//components/arc/mojom:notifications",
+    "//components/arc/session:connection_holder",
+  ]
+}

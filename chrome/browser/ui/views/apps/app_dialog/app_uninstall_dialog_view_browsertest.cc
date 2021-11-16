@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"

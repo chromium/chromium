@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -36,7 +37,6 @@
 #include "components/account_id/account_id.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"

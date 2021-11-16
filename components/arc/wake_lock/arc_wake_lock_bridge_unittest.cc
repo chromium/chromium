@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_power_instance.h"
 #include "components/arc/test/fake_wake_lock_instance.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"

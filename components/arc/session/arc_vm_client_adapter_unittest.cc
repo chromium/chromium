@@ -18,6 +18,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -50,7 +51,6 @@
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_host.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/user_names.h"
