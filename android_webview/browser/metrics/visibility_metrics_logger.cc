@@ -4,7 +4,9 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
+#include "android_webview/common/aw_features.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -306,6 +308,8 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
 }
 
 void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
+  if (!base::FeatureList::IsEnabled(features::kWebViewMeasureScreenCoverage))
+    return;
   for (size_t i = 0; i < base::size(open_web_screen_portion_tracked_duration_);
        i++) {
     int32_t elapsed_seconds =
