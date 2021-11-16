@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/chromeos_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -27,13 +27,15 @@ namespace weekly_time_utils {
 // Put time in milliseconds which is added to local time to get GMT time to
 // |offset| considering daylight from |clock|. Return true if there was no
 // error.
-CHROMEOS_EXPORT bool GetOffsetFromTimezoneToGmt(const std::string& timezone,
-                                                base::Clock* clock,
-                                                int* offset);
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+bool GetOffsetFromTimezoneToGmt(const std::string& timezone,
+                                base::Clock* clock,
+                                int* offset);
 
-CHROMEOS_EXPORT bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
-                                                base::Clock* clock,
-                                                int* offset);
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
+                                base::Clock* clock,
+                                int* offset);
 
 // The output is in the format "EEEE jj:mm a".
 // Example: For a WeeklyTime(4 /* day_of_week */,
@@ -43,23 +45,26 @@ CHROMEOS_EXPORT bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
 // Similarly, the output will be "Donnerstag 05:00" in a German locale in a GMT
 // timezone (there may be slight changes in formatting due to different
 // standards in different locales).
-CHROMEOS_EXPORT std::u16string WeeklyTimeToLocalizedString(
-    const WeeklyTime& weekly_time,
-    base::Clock* clock);
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
+                                           base::Clock* clock);
 
 // Convert time intervals from |timezone| to GMT timezone. Timezone agnostic
 // intervals are not supported.
-CHROMEOS_EXPORT std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
     const std::vector<WeeklyTimeInterval>& intervals);
 
 // Checks if |time| is contained in one of the |intervals|. Timezone agnostic
 // intervals are not supported.
-CHROMEOS_EXPORT bool Contains(const base::Time& time,
-                              const std::vector<WeeklyTimeInterval>& intervals);
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+bool Contains(const base::Time& time,
+              const std::vector<WeeklyTimeInterval>& intervals);
 
 // Returns next start or end interval time after |current_time|, or
 // absl::nullopt in case |weekly_time_intervals| is empty.
-CHROMEOS_EXPORT absl::optional<base::Time> GetNextEventTime(
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+absl::optional<base::Time> GetNextEventTime(
     const base::Time& current_time,
     const std::vector<WeeklyTimeInterval>& weekly_time_intervals);
 

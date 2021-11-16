@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/chromeos_export.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,7 +18,7 @@ namespace policy {
 // WeeklyTime class contains day of week and time. Day of week is number from 1
 // to 7 (1 = Monday, 2 = Tuesday, etc.) Time is in milliseconds from the
 // beginning of the day.
-class CHROMEOS_EXPORT WeeklyTime {
+class COMPONENT_EXPORT(CHROMEOS_POLICY) WeeklyTime {
  public:
   // Dictionary value key constants for testing.
   static const char kDayOfWeek[];
@@ -118,9 +118,9 @@ class CHROMEOS_EXPORT WeeklyTime {
 };
 
 // Constructs a WeeklyTime from an exploded base::Time.
-CHROMEOS_EXPORT WeeklyTime
-GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
-                          const absl::optional<int> timezone_offset);
+COMPONENT_EXPORT(CHROMEOS_POLICY)
+WeeklyTime GetWeeklyTimeFromExploded(const base::Time::Exploded& exploded,
+                                     const absl::optional<int> timezone_offset);
 
 }  // namespace policy
 

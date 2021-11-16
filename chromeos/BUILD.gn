@@ -6,7 +6,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
-import("//third_party/protobuf/proto_library.gni")
 import("./tast_control.gni")
 
 if (is_chromeos_device) {
@@ -21,7 +20,6 @@ config("chromeos_implementation") {
 }
 
 component("chromeos") {
-  public_deps = []
   deps = [
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus/constants",
@@ -37,25 +35,18 @@ component("chromeos") {
       configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
     }
 
-    public_deps += [ "//components/policy/proto" ]
     deps += [
       ":chromeos_export",
       "//base",
       "//base:i18n",
       "//chromeos/dbus",
+      "//chromeos/policy",
       "//google_apis",
       "//services/network/public/cpp:cpp",
-      "//third_party/protobuf:protobuf_lite",
     ]
     sources += [
       "hugepage_text/hugepage_text.cc",
       "hugepage_text/hugepage_text.h",
-      "policy/weekly_time/time_utils.cc",
-      "policy/weekly_time/time_utils.h",
-      "policy/weekly_time/weekly_time.cc",
-      "policy/weekly_time/weekly_time.h",
-      "policy/weekly_time/weekly_time_interval.cc",
-      "policy/weekly_time/weekly_time_interval.h",
       "printing/cups_printer_status.cc",
       "printing/cups_printer_status.h",
       "printing/epson_driver_matching.cc",
@@ -178,14 +169,13 @@ test("chromeos_unittests") {
       "//chromeos/memory:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
+      "//chromeos/policy:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",
       "//chromeos/startup:unit_tests",
       "//chromeos/tpm:unit_tests",
       "//chromeos/utils:unit_tests",
       "//components/onc",
-      "//components/policy:generated",
-      "//components/policy/proto",
       "//components/prefs:test_support",
       "//components/proxy_config",
       "//crypto",
@@ -196,13 +186,9 @@ test("chromeos_unittests") {
       "//net:test_support",
       "//services/network:test_support",
       "//services/network/public/cpp",
-      "//third_party/icu",
       "//url",
     ]
     sources += [
-      "policy/weekly_time/time_utils_unittest.cc",
-      "policy/weekly_time/weekly_time_interval_unittest.cc",
-      "policy/weekly_time/weekly_time_unittest.cc",
       "printing/cups_printer_status_unittest.cc",
       "printing/epson_driver_matching_unittest.cc",
       "printing/fake_printer_config_cache.cc",

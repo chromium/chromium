@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/values.h"
-#include "chromeos/chromeos_export.h"
 #include "chromeos/policy/weekly_time/weekly_time.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +19,7 @@ namespace policy {
 // Interval can be wrapped across the end of the week.
 // Interval is empty if start = end. Empty intervals aren't allowed.
 // Both WeeklyTimes need to have the same timezone_offset.
-class CHROMEOS_EXPORT WeeklyTimeInterval {
+class COMPONENT_EXPORT(CHROMEOS_POLICY) WeeklyTimeInterval {
  public:
   // Dictionary value key constants for testing.
   static const char kStart[];

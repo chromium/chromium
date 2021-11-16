@@ -288,6 +288,7 @@ source_set("chromeos") {
     "//chromeos/login/session",
     "//chromeos/memory",
     "//chromeos/network",
+    "//chromeos/policy",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/services/cros_healthd/public/cpp",
