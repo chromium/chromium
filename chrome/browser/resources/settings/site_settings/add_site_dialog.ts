@@ -153,4 +153,10 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'add-site-dialog': AddSiteDialogElement;
+  }
+}
+
 customElements.define(AddSiteDialogElement.is, AddSiteDialogElement);

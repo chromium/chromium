@@ -4,38 +4,36 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AndroidInfoBrowserProxyImpl,ContentSetting,ContentSettingsTypes,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {Router} from 'chrome://settings/settings.js';
+import {AndroidInfoBrowserProxyImpl, ContentSetting, ContentSettingsTypes, SiteListElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, Router} from 'chrome://settings/settings.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TEST_ANDROID_SMS_ORIGIN, TestAndroidInfoBrowserProxy} from './test_android_info_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
 
 // clang-format on
 
 suite('SiteListChromeOS', function() {
   /**
    * A site list element created before each test.
-   * @type {SiteList}
    */
-  let testElement;
+  let testElement: SiteListElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy = null;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
    * Mock AndroidInfoBrowserProxy to use during test.
-   * @type {TestAndroidInfoBrowserProxy}
    */
-  let androidInfoBrowserProxy = null;
+  let androidInfoBrowserProxy: TestAndroidInfoBrowserProxy;
 
   /**
    * An example Javascript pref for android_sms notification setting.
-   * @type {SiteSettingsPref}
    */
-  let prefsAndroidSms;
+  let prefsAndroidSms: SiteSettingsPref;
 
   // Initialize a site-list before each test.
   setup(function() {
@@ -53,7 +51,7 @@ suite('SiteListChromeOS', function() {
     androidInfoBrowserProxy = new TestAndroidInfoBrowserProxy();
     AndroidInfoBrowserProxyImpl.setInstance(androidInfoBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('site-list');
     testElement.searchFilter = '';
     document.body.appendChild(testElement);
@@ -72,12 +70,6 @@ suite('SiteListChromeOS', function() {
   function setUpAndroidSmsNotifications() {
     browserProxy.setPrefs(prefsAndroidSms);
     testElement.categorySubtype = ContentSetting.ALLOW;
-    // Some route is needed, but the actual route doesn't matter.
-    testElement.currentRoute = {
-      page: 'dummy',
-      section: 'privacy',
-      subpage: ['site-settings', 'site-settings-category-location'],
-    };
     testElement.category = ContentSettingsTypes.NOTIFICATIONS;
   }
 
@@ -96,20 +88,20 @@ suite('SiteListChromeOS', function() {
           browserProxy.whenCalled('getExceptionList'),
         ])
         .then(results => {
-          const contentType = results[1];
+          const contentType = results[1] as ContentSettingsTypes;
           flush();
           assertEquals(ContentSettingsTypes.NOTIFICATIONS, contentType);
           assertEquals(2, testElement.sites.length);
 
           assertEquals(
-              prefsAndroidSms.exceptions[contentType][0].origin,
-              testElement.sites[0].origin);
-          assertTrue(testElement.sites[0].showAndroidSmsNote);
+              prefsAndroidSms.exceptions[contentType][0]!.origin,
+              testElement.sites[0]!.origin);
+          assertTrue(testElement.sites[0]!.showAndroidSmsNote!);
 
           assertEquals(
-              prefsAndroidSms.exceptions[contentType][1].origin,
-              testElement.sites[1].origin);
-          assertEquals(undefined, testElement.sites[1].showAndroidSmsNote);
+              prefsAndroidSms.exceptions[contentType][1]!.origin,
+              testElement.sites[1]!.origin);
+          assertEquals(undefined, testElement.sites[1]!.showAndroidSmsNote);
         });
   });
 });

@@ -17,6 +17,7 @@ preprocessed_files = [
   "route_tests.js",
   "security_page_test.ts",
   "settings_toggle_button_tests.ts",
+  "site_list_entry_tests.ts",
   "test_about_page_browser_proxy.ts",
   "test_lifetime_browser_proxy.ts",
   "test_sync_browser_proxy.ts",
@@ -105,9 +106,8 @@ non_preprocessed_files = [
   "site_details_tests.js",
   "site_entry_tests.js",
   "site_favicon_test.js",
-  "site_list_entry_tests.js",
-  "site_list_tests.js",
-  "site_settings_page_test.js",
+  "site_list_tests.ts",
+  "site_settings_page_test.ts",
   "startup_urls_page_test.ts",
   "sync_account_control_test.js",
   "sync_test_util.ts",
@@ -148,7 +148,7 @@ if (!is_mac && !is_chromeos_ash) {
 if (is_chromeos_ash) {
   non_preprocessed_files += [
     "people_page_test_cros.js",
-    "site_list_tests_cros.js",
+    "site_list_tests_cros.ts",
     "test_android_info_browser_proxy.ts",
   ]
 } else {

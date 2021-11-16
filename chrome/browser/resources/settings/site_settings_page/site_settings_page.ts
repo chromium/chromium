@@ -409,6 +409,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
     };
   }
 
+  prefs: Object;
   focusConfig: FocusConfig;
   private permissionsExpanded_: boolean;
   private contentExpanded_: boolean;
@@ -438,6 +439,12 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
   /** @return Class for the all site settings link */
   private getClassForSiteSettingsAllLink_(): string {
     return this.noRecentSitePermissions_ ? '' : 'hr';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-site-settings-page': SettingsSiteSettingsPageElement;
   }
 }
 

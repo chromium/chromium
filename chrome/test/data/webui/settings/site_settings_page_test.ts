@@ -10,29 +10,24 @@ import {ContentSetting, defaultSettingLabel, NotificationSetting, SettingsSiteSe
 import {CrLinkRowElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise,flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
 suite('SiteSettingsPage', function() {
-  /** @type {?TestSiteSettingsPrefsBrowserProxy} */
-  let siteSettingsBrowserProxy = null;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let page: SettingsSiteSettingsPageElement;
 
-  /** @type {SettingsSiteSettingsPageElement} */
-  let page;
-
-  /** @type {Array<string>} */
-  const testLabels = ['test label 1', 'test label 2'];
+  const testLabels: string[] = ['test label 1', 'test label 2'];
 
   function setupPage() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
+    siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]!);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsSiteSettingsPageElement} */ (
-        document.createElement('settings-site-settings-page'));
+    page = document.createElement('settings-site-settings-page');
     page.prefs = {
       generated: {
         notification: {
@@ -52,10 +47,8 @@ suite('SiteSettingsPage', function() {
   });
 
   test('DefaultLabels', function() {
-    assertEquals(
-        'a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b', null));
-    assertEquals(
-        'b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b', null));
+    assertEquals('a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b'));
+    assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b'));
     assertEquals('a', defaultSettingLabel(ContentSetting.ALLOW, 'a', 'b', 'c'));
     assertEquals('b', defaultSettingLabel(ContentSetting.BLOCK, 'a', 'b', 'c'));
     assertEquals(
@@ -72,9 +65,9 @@ suite('SiteSettingsPage', function() {
     setupPage();
     await siteSettingsBrowserProxy.whenCalled('getCookieSettingDescription');
     flush();
-    const cookiesLinkRow = /** @type {!CrLinkRowElement} */ (
-        page.shadowRoot.querySelector('#basicContentList')
-            .shadowRoot.querySelector('#cookies'));
+    const cookiesLinkRow =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!;
     assertEquals(testLabels[0], cookiesLinkRow.subLabel);
 
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
@@ -82,9 +75,9 @@ suite('SiteSettingsPage', function() {
   });
 
   test('NotificationsLinkRowSublabel', async function() {
-    const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
-        page.shadowRoot.querySelector('#basicPermissionsList')
-            .shadowRoot.querySelector('#notifications'));
+    const notificationsLinkRow =
+        page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#notifications')!;
 
     page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
     await flushTasks();
@@ -109,11 +102,10 @@ suite('SiteSettingsPage', function() {
 
   test('ProtectedContentRow', function() {
     setupPage();
-    page.shadowRoot.querySelector('#expandContent').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
     flush();
     assertTrue(isChildVisible(
-        /** @type {!HTMLElement} */ (
-            page.shadowRoot.querySelector('#advancedContentList')),
+        page.shadowRoot!.querySelector('#advancedContentList')!,
         '#protected-content'));
   });
 });

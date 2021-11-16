@@ -41,6 +41,7 @@ export interface SiteListElement {
   $: {
     addSite: HTMLElement,
     category: HTMLElement,
+    listContainer: HTMLElement,
     tooltip: PaperTooltipElement,
   };
 }
