@@ -35,8 +35,7 @@ class GuestOsExternalProtocolHandlerTest : public testing::Test {
   vm_tools::apps::ApplicationList& app_list() { return app_list_; }
 
   void AddApp(const std::string& desktop_file_id,
-              const std::string& mime_type,
-              const base::Time last_launch) {
+              const std::string& mime_type) {
     vm_tools::apps::App& app = *app_list_.add_apps();
     app.set_desktop_file_id(desktop_file_id);
     app.mutable_name()->add_values();
@@ -51,28 +50,32 @@ class GuestOsExternalProtocolHandlerTest : public testing::Test {
 };
 
 TEST_F(GuestOsExternalProtocolHandlerTest, TestNoRegisteredApps) {
-  AddApp("id", "not-scheme", base::Time());
+  AddApp("id", "not-scheme");
   GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
 
   EXPECT_FALSE(guest_os::GetHandler(profile(), GURL("testscheme:12341234")));
 }
 
 TEST_F(GuestOsExternalProtocolHandlerTest, SingleRegisteredApp) {
-  AddApp("id", "x-scheme-handler/testscheme", base::Time());
+  AddApp("id", "x-scheme-handler/testscheme");
   GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
 
   EXPECT_TRUE(guest_os::GetHandler(profile(), GURL("testscheme:12341234")));
 }
 
 TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
-  AddApp("id1", "x-scheme-handler/testscheme", base::Time::FromTimeT(1));
-  AddApp("id2", "x-scheme-handler/testscheme", base::Time::FromTimeT(2));
+  AddApp("id1", "x-scheme-handler/testscheme");
+  AddApp("id2", "x-scheme-handler/testscheme");
   GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
+
+  GuestOsRegistryService(profile()).AppLaunched(
+      GuestOsRegistryService::GenerateAppId("id1", "vm_name",
+                                            "container_name"));
 
   absl::optional<GuestOsRegistryService::Registration> registration =
       GetHandler(profile(), GURL("testscheme:12341234"));
   EXPECT_TRUE(registration);
-  EXPECT_EQ("id2", registration->DesktopFileId());
+  EXPECT_EQ("id1", registration->DesktopFileId());
 }
 
 TEST_F(GuestOsExternalProtocolHandlerTest, OffTheRecordProfile) {
@@ -102,7 +105,7 @@ class GuestOsExternalProtocolHandlerBorealisTest
     app_list().set_vm_type(vm_tools::apps::ApplicationList::BOREALIS);
     CHECK(base::Base64Decode(borealis::kAllowedScheme, borealis_scheme_output));
     CHECK(base::Base64Decode(borealis::kURLAllowlist[0], borealis_url_output));
-    AddApp("id", "x-scheme-handler/" + *borealis_scheme_output, base::Time());
+    AddApp("id", "x-scheme-handler/" + *borealis_scheme_output);
     GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
   }
 
