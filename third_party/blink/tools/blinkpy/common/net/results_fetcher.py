@@ -33,8 +33,10 @@ import re
 import six.moves.urllib.request
 import six.moves.urllib.parse
 import six.moves.urllib.error
+import time
 
 from blinkpy.common.memoized import memoized
+from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.net.web import Web
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.filesystem import FileSystem
@@ -142,6 +144,76 @@ class TestResultsFetcher(object):
     def accumulated_results_url_base(self, builder_name):
         return self.builder_results_url_base(
             builder_name) + '/results/layout-test-results'
+
+    def get_invocation(self, build):
+        """Returns the invocation for a build
+        """
+        return "invocations/build-%s" % build.build_id
+
+    def do_request_with_retries(self, method, url, data, headers):
+        for i in range(5):
+            try:
+                response = self.web.request(method, url, data=data, headers=headers)
+                return response
+            except six.moves.urllib.error.URLError:
+                _log.warning("Meet URLError...")
+                if i < 4:
+                    time.sleep(10)
+        _log.error("Http request failed for %s" % data)
+        return None
+
+    def fetch_results_from_resultdb(self, host, builds, predicate):
+        """Returns a list of test results from ResultDB
+        """
+        luci_token = LuciAuth(host).get_access_token()
+
+        url = 'https://results.api.cr.dev/prpc/luci.resultdb.v1.ResultDB/QueryTestResults'
+        header = {
+            'Authorization': 'Bearer ' + luci_token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+        rv = []
+        page_token = None
+        request_more = True
+        invocations = [self.get_invocation(build) for build in builds]
+        data = {
+            "invocations": invocations,
+        }
+        if predicate:
+            data.update({"predicate": predicate})
+        while request_more:
+            request_more = False
+            if page_token:
+                data.update({"pageToken": page_token})
+            req_body = json.dumps(data).encode("utf-8")
+            _log.debug("Sending QueryTestResults request. Url: %s with Body: %s" %
+                       (url, req_body))
+
+            response = self.do_request_with_retries('POST', url, req_body, header)
+            if response is None:
+                continue
+
+            if response.getcode() == 200:
+                response_body = response.read()
+
+                # This string always appear at the beginning of the RPC response
+                # from ResultDB.
+                RESPONSE_PREFIX = b")]}'"
+                if response_body.startswith(RESPONSE_PREFIX):
+                    response_body = response_body[len(RESPONSE_PREFIX):]
+                res = json.loads(response_body)
+                if res:
+                    rv.extend(res['testResults'])
+                    page_token = res.get('nextPageToken')
+                    if page_token:
+                        request_more = True
+            else:
+                _log.error(
+                    "Failed to get test results from ResultDB (status=%s)" %
+                    response.status)
+                _log.debug("Full QueryTestResults response: %s" % str(response))
+        return rv
 
     @memoized
     def fetch_results(self, build, full=False, step_name=None):

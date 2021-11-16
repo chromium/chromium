@@ -31,7 +31,8 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import Expectation, ResultType
 from blinkpy.web_tests.port.android import (
     PRODUCTS, PRODUCTS_TO_STEPNAMES, PRODUCTS_TO_BROWSER_TAGS,
-    PRODUCTS_TO_EXPECTATION_FILE_PATHS, ANDROID_DISABLED_TESTS)
+    PRODUCTS_TO_EXPECTATION_FILE_PATHS, ANDROID_DISABLED_TESTS,
+    ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
 
 _log = logging.getLogger(__name__)
 
@@ -50,6 +51,17 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                 ANDROID_DISABLED_TESTS:
                 host.filesystem.read_text_file(ANDROID_DISABLED_TESTS)})
         self._baseline_expectations = TestExpectations(self.port)
+        assert(len(self.options.android_product) == 1)
+        product = self.options.android_product[0]
+        if product == ANDROID_WEBLAYER:
+            self.testid_prefix = "ninja://weblayer/shell/android:weblayer_shell_wpt/"
+            self.test_suite = "weblayer_shell_wpt"
+        elif product == ANDROID_WEBVIEW:
+            self.testid_prefix = "ninja://android_webview/test:system_webview_wpt/"
+            self.test_suite = "system_webview_wpt"
+        elif product == CHROME_ANDROID:
+            self.testid_prefix = "ninja://chrome/android:chrome_public_wpt/"
+            self.test_suite = "chrome_public_wpt"
 
     def expectations_files(self):
         # We need to put all the Android expectation files in
@@ -159,14 +171,13 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
                     test=test, reason=self.UMBRELLA_BUG,
                     results={ResultType.Skip}, tags=tags, raw_tags=tags)
 
-    def _get_expectations_from_baseline(self, test_name):
-        exps_test_name = 'external/wpt/%s' % test_name
+    def _get_expectations_from_baseline(self, exps_test_name):
         expectation_line = self._baseline_expectations.get_expectations(
             exps_test_name)
         results_from_expectation = expectation_line.results
         if expectation_line.is_default_pass:
             # Expectation is default pass, also check baseline expectation
-            if self.port.expected_subtest_failure(test_name):
+            if self.port.expected_subtest_failure(exps_test_name):
                 results_from_expectation = set([ResultType.Failure])
         return results_from_expectation
 
@@ -207,7 +218,7 @@ class AndroidWPTExpectationsUpdater(WPTExpectationsUpdater):
 
         exp_lines_dict_by_product = defaultdict(dict)
         for results_test_name, platform_results in test_to_results.items():
-            exps_test_name = 'external/wpt/%s' % results_test_name
+            exps_test_name = results_test_name
             for configs, test_results in platform_results.items():
                 for config in configs:
                     path = browser_to_exp_path[config.browser]
