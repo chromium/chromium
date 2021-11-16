@@ -2314,7 +2314,7 @@
     ],
 
     'gpu_tests_wayland_release_bot_reclient': [
-      'gpu_tests', 'release_bot_reclient', 'linux_wayland',
+      'gpu_tests', 'release_bot_reclient', 'linux_wayland', 'ozone_headless',
     ],
 
     'gpu_tests_release_bot_minimal_symbols': [
@@ -2424,7 +2424,7 @@
 
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'linux_wayland',
+      'linux_wayland', 'ozone_headless',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
@@ -3742,6 +3742,10 @@
 
     'ozone': {
       'gn_args': 'use_ozone=true',
+    },
+
+    'ozone_headless': {
+      'gn_args': 'ozone_platform_headless=true',
     },
 
     'linux_wayland': {

@@ -846,6 +846,7 @@
       "is_debug": false,
       "ozone_auto_platforms": false,
       "ozone_platform": "wayland",
+      "ozone_platform_headless": true,
       "ozone_platform_wayland": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
