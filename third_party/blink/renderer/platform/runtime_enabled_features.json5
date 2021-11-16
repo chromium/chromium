@@ -196,16 +196,6 @@
       status: "experimental",
     },
     {
-      // Force disabled if blink::features::kAppCache is disabled, and this
-      // will override any origin trial setting.
-      // Disabled if blink::features::kAppCacheRequireOriginTrial is enabled,
-      // but can be turned back on by the origin trial.
-      // Otherwise, on by default.
-      name: "AppCache",
-      status: "stable",
-      origin_trial_feature_name: "AppCache",
-    },
-    {
       name: "AppHistory",
       origin_trial_feature_name: "AppHistory",
       status: "experimental",

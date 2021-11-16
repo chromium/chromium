@@ -50,8 +50,6 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
 }
 
 TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
-  base::test::ScopedFeatureList f;
-  f.InitAndDisableFeature(blink::features::kAppCache);
   BrowserTaskEnvironment task_environment;
   TestBrowserContext browser_context;
   base::FilePath appcache_path;

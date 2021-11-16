@@ -108,8 +108,6 @@ public final class ProductionSupportedFlagList {
                             + "security checks."),
             Flag.baseFeature(AwFeatures.WEBVIEW_BROTLI_SUPPORT,
                     "Enables brotli compression support in WebView."),
-            Flag.baseFeature(BlinkFeatures.APP_CACHE,
-                    "Controls AppCache to facilitate testing against future removal."),
             Flag.baseFeature(AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                     "Only allow extra headers added via loadUrl() to be sent to the same origin "
                             + "as the original request."),

@@ -448,9 +448,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
 
-  if (trial_name == "AppCache")
-    return base::FeatureList::IsEnabled(features::kAppCache);
-
   if (trial_name == "ComputePressure")
     return base::FeatureList::IsEnabled(features::kComputePressure);
 
