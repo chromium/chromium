@@ -231,7 +231,9 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     if (crash_reporter::IsCrashpadRunning()) {
       static crash_reporter::CrashKeyString<4> key("hang-report");
       crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
-      base::FilePath path(base::SysNSStringToUTF8(_UTEDirectory));
+      NSString* intermediate_dump = [_UTEDirectory
+          stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+      base::FilePath path(base::SysNSStringToUTF8(intermediate_dump));
       crash_reporter::DumpWithoutCrashAndDeferProcessingAtPath(path);
       if (!self.running) {
         UMA_HISTOGRAM_ENUMERATION(
