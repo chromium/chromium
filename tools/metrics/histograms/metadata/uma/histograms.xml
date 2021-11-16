@@ -243,7 +243,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.DataValidation.LogNormal" units="random values"
-    expires_after="2021-11-14">
+    expires_after="never">
+<!-- expires-never: needed for ensuring correct UMA operation -->
+
   <owner>sweilun@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
