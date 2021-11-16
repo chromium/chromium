@@ -53,6 +53,15 @@ class AssistantClientImpl : public AssistantClientV1 {
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
 
+  // Timer related:
+  void AddTimeToTimer(const std::string& id,
+                      const base::TimeDelta& duration) override;
+  void PauseTimer(const std::string& timer_id) override;
+  void RemoveTimer(const std::string& timer_id) override;
+  void ResumeTimer(const std::string& timer_id) override;
+  void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) override;
   void AddAlarmTimerEventObserver(
       GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) override;

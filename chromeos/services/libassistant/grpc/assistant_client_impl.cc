@@ -15,6 +15,7 @@
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
@@ -25,6 +26,7 @@
 #include "chromeos/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/services_status_observer.h"
+#include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
 #include "libassistant/shared/public/assistant_manager.h"
 
 namespace chromeos {
@@ -34,8 +36,15 @@ namespace {
 
 // Rpc call config constants.
 constexpr int kMaxRpcRetries = 5;
+constexpr int kDefaultTimeoutMs = 5000;
+
+// Interaction related calls has longer timeout.
 constexpr int kAssistantInteractionDefaultTimeoutMs = 20000;
+
 const chromeos::libassistant::StateConfig kDefaultStateConfig =
+    chromeos::libassistant::StateConfig{kMaxRpcRetries, kDefaultTimeoutMs};
+
+const chromeos::libassistant::StateConfig kInteractionDefaultStateConfig =
     chromeos::libassistant::StateConfig{kMaxRpcRetries,
                                         kAssistantInteractionDefaultTimeoutMs};
 
@@ -88,11 +97,15 @@ bool AssistantClientImpl::StartGrpcServices() {
 }
 
 void AssistantClientImpl::ResetAllDataAndShutdown() {
+  // ResetAllDataAndShutdown request may have high latency. Server
+  // recommendation is to set proper deadlines for every RPC.
+  constexpr int kResetAllDataAndShutdownTimeoutMs = 10000;
+  StateConfig custom_config(kMaxRpcRetries, kResetAllDataAndShutdownTimeoutMs);
   libassistant_client_.CallServiceMethod(
       ::assistant::api::ResetAllDataAndShutdownRequest(),
       GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
           /*request_name=*/__func__),
-      kDefaultStateConfig);
+      custom_config);
 }
 
 void AssistantClientImpl::SendDisplayRequest(
@@ -101,7 +114,7 @@ void AssistantClientImpl::SendDisplayRequest(
       request,
       GetLoggingCallback<::assistant::api::OnDisplayRequestResponse>(
           /*request_name=*/__func__),
-      kDefaultStateConfig);
+      kInteractionDefaultStateConfig);
 }
 
 void AssistantClientImpl::AddDisplayEventObserver(
@@ -130,7 +143,7 @@ void AssistantClientImpl::SendVoicelessInteraction(
             std::move(on_done).Run(response.success());
           },
           std::move(on_done)),
-      kDefaultStateConfig);
+      kInteractionDefaultStateConfig);
 }
 
 void AssistantClientImpl::RegisterActionModule(
@@ -162,10 +175,79 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
   ::assistant::api::SetInternalOptionsRequest request;
   *request.mutable_internal_options() = std::move(internal_options);
 
+  // SetInternalOptions request causes AssistantManager reconfiguration.
+  constexpr int kAssistantReconfigureInternalDefaultTimeoutMs = 20000;
+  StateConfig custom_config(kMaxRpcRetries,
+                            kAssistantReconfigureInternalDefaultTimeoutMs);
   libassistant_client_.CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
+      custom_config);
+}
+
+void AssistantClientImpl::AddTimeToTimer(const std::string& id,
+                                         const base::TimeDelta& duration) {
+  ::assistant::api::AddTimeToTimerRequest request;
+  request.set_timer_id(id);
+  request.set_extra_time_seconds(duration.InSeconds());
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::AddTimeToTimerResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::PauseTimer(const std::string& timer_id) {
+  ::assistant::api::PauseTimerRequest request;
+  request.set_timer_id(timer_id);
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::PauseTimerResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::RemoveTimer(const std::string& timer_id) {
+  ::assistant::api::RemoveTimerRequest request;
+  request.set_timer_id(timer_id);
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::RemoveTimerResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::ResumeTimer(const std::string& timer_id) {
+  ::assistant::api::ResumeTimerRequest request;
+  request.set_timer_id(timer_id);
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::ResumeTimerResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::GetTimers(
+    base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+        on_done) {
+  ::assistant::api::GetTimersResponse response;
+
+  libassistant_client_.CallServiceMethod(
+      ::assistant::api::GetTimersRequest(),
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 const std::vector<assistant::AssistantTimer>&)> on_done,
+             const grpc::Status& status,
+             const ::assistant::api::GetTimersResponse& response) {
+            if (status.ok()) {
+              std::move(on_done).Run(
+                  ConstructAssistantTimersFromProto(response.timers()));
+            } else {
+              std::move(on_done).Run(/*timers=*/{});
+            }
+          },
+          std::move(on_done)),
       kDefaultStateConfig);
 }
 

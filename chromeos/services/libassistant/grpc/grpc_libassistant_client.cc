@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
@@ -84,6 +85,37 @@ GetLibassistGrpcMethodName<::assistant::api::SetInternalOptionsRequest>() {
   // called during or after bootup is completed.
   return chromeos::assistant::GetLibassistGrpcMethodName(
       "BootupSettingsService", "SetInternalOptions");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::AddTimeToTimerRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
+                                                         "AddTimeToTimer");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::PauseTimerRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
+                                                         "PauseTimer");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::RemoveTimerRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
+                                                         "RemoveTimer");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::ResumeTimerRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
+                                                         "ResumeTimer");
+}
+
+template <>
+std::string GetLibassistGrpcMethodName<::assistant::api::GetTimersRequest>() {
+  return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
+                                                         "GetTimers");
 }
 
 GrpcLibassistantClient::GrpcLibassistantClient(

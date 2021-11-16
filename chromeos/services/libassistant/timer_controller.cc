@@ -6,6 +6,7 @@
 
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
@@ -62,7 +63,12 @@ class TimerController::TimerListener
       const ::assistant::api::OnAlarmTimerEventRequest& request) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    NotifyTimerStatusChanged(ConstructAssistantTimersFromProto(request));
+    // Only handle timer event in this timer listener.
+    auto& alarm_timer_event = request.event();
+    if (alarm_timer_event.has_on_timer_state_changed()) {
+      NotifyTimerStatusChanged(ConstructAssistantTimersFromProto(
+          alarm_timer_event.on_timer_state_changed().timer_params()));
+    }
   }
 
   // Notify our timer delegate on any timer status change. |timers| contains

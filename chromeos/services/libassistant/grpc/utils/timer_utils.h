@@ -15,6 +15,7 @@ class OnAlarmTimerEventRequest;
 namespace params {
 enum class TimerStatus;
 class Timer;
+class TimerParams;
 }  // namespace params
 
 }  // namespace api
@@ -27,8 +28,9 @@ namespace libassistant {
 CreateOnAlarmTimerEventRequestProtoForV1(
     const std::vector<chromeos::assistant::AssistantTimer>& all_curr_timers);
 
+// `timer_params` contains the information of all the current timers.
 std::vector<assistant::AssistantTimer> ConstructAssistantTimersFromProto(
-    const ::assistant::api::OnAlarmTimerEventRequest& input);
+    const ::assistant::api::params::TimerParams& timer_params);
 
 void ConvertAssistantTimerToProtoTimer(const assistant::AssistantTimer& input,
                                        ::assistant::api::params::Timer* output);
