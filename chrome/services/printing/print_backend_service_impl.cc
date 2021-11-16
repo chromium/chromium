@@ -428,7 +428,9 @@ mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
 #endif
     .show_system_dialog =
         document_container.target_type == mojom::PrintTargetType::kSystemDialog,
+#if defined(OS_WIN)
     .page_count = 0,
+#endif
   };
   context->ApplyPrintSettings(document->settings());
   mojom::ResultCode result = context->UpdatePrinterSettings(printer_settings);

@@ -167,7 +167,9 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
 #endif
     .show_system_dialog =
         job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false),
+#if defined(OS_WIN)
     .page_count = job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0)
+#endif
   };
   return UpdatePrinterSettings(printer_settings);
 }
@@ -178,7 +180,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
   ResetSettings();
   settings_ = std::move(job_settings);
 
-  return UpdatePrinterSettings({.show_system_dialog = false, .page_count = 0});
+  return UpdatePrinterSettings({.show_system_dialog = false});
 }
 #endif
 

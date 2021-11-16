@@ -50,9 +50,11 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
     // Whether to show the system dialog.
     bool show_system_dialog;
 
+#if defined(OS_WIN)
     // If showing the system dialog, the number of pages in the to-be-printed
-    // PDF.
+    // PDF. Only used on Windows.
     int page_count;
+#endif
   };
 
   PrintingContext(const PrintingContext&) = delete;
