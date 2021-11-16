@@ -27,8 +27,6 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
       return "ConsoleAPI";
     case mojom::ConsoleMessageSource::kStorage:
       return "Storage";
-    case mojom::ConsoleMessageSource::kAppCache:
-      return "AppCache";
     case mojom::ConsoleMessageSource::kRendering:
       return "Rendering";
     case mojom::ConsoleMessageSource::kSecurity:

@@ -39,8 +39,6 @@ const char* MessageSourceToString(blink::mojom::ConsoleMessageSource source) {
       return "ConsoleAPI";
     case blink::mojom::ConsoleMessageSource::kStorage:
       return "Storage";
-    case blink::mojom::ConsoleMessageSource::kAppCache:
-      return "AppCache";
     case blink::mojom::ConsoleMessageSource::kRendering:
       return "Rendering";
     case blink::mojom::ConsoleMessageSource::kSecurity:

@@ -17,7 +17,6 @@ enum ConsoleMessageSource {
   kNetwork,
   kConsoleApi,
   kStorage,
-  kAppCache,
   kRendering,
   kSecurity,
   kOther,

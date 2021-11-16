@@ -31,8 +31,6 @@ String MessageSourceValue(mojom::blink::ConsoleMessageSource source) {
       return protocol::Log::LogEntry::SourceEnum::Network;
     case mojom::blink::ConsoleMessageSource::kStorage:
       return protocol::Log::LogEntry::SourceEnum::Storage;
-    case mojom::blink::ConsoleMessageSource::kAppCache:
-      return protocol::Log::LogEntry::SourceEnum::Appcache;
     case mojom::blink::ConsoleMessageSource::kRendering:
       return protocol::Log::LogEntry::SourceEnum::Rendering;
     case mojom::blink::ConsoleMessageSource::kSecurity:
