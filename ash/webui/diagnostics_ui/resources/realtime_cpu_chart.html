@@ -1,16 +1,16 @@
 <style include="diagnostics-shared diagnostics-fonts">
   g.tick line {
-    stroke: var(--google-grey-200);
+    stroke: var(--cros-button-label-color-primary);
     stroke-width: 1px;
     shape-rendering: crispEdges;
   }
 
   g.tick:first-of-type line {
-    stroke: var(--google-grey-700);
+    stroke: var(--cros-color-secondary);
   }
 
   g.tick text {
-    color: var(--google-grey-700);
+    color: var(--cros-color-secondary);
     line-height: 18px;
     @apply --diagnostics-chart-tick-font;
   }
@@ -28,14 +28,14 @@
     fill: url(#user-gradient);
     shape-render: optimizeSpeed;
     stroke-width: 1.5px;
-    stroke: var(--google-blue-600);
+    stroke: var(--cros-color-prominent);
   }
 
   .system-area {
     fill: url(#system-gradient);
     shape-render: optimizeSpeed;
     stroke-width: 1.5px;
-    stroke: var(--google-yellow-600);
+    stroke: var(--cros-color-warning);
   }
 
   .gradient-blue {
@@ -85,11 +85,11 @@
   }
 
   #legend-bar.user {
-    background-color: var(--google-blue-600);
+    background-color: var(--cros-color-prominent);
   }
 
   #legend-bar.system {
-    background-color: var(--google-yellow-600);
+    background-color: var(--cros-color-warning);
   }
 </style>
 <svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">
