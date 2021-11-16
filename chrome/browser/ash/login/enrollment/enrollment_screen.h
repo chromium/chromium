@@ -225,6 +225,11 @@ class EnrollmentScreen
   void TakeTpmOwnership();
   // Processes a reply from tpm_manager.
   void OnTpmStatusResponse(const ::tpm_manager::TakeOwnershipReply& reply);
+  // Checks install attribute status to make sure that it is FIRST_INSTALL, in
+  // this case we proceed with the enrollment. In other cases we either try to
+  // wait for the FIRST_INSTALL status, or show a TpmErrorScreen with an ability
+  // to reboot the device.
+  void CheckInstallAttributesState();
 
   EnrollmentScreenView* view_;
   ScreenExitCallback exit_callback_;
@@ -238,8 +243,14 @@ class EnrollmentScreen
 
   bool enrollment_failed_once_ = false;
   bool enrollment_succeeded_ = false;
+
   // Check tpm before enrollment starts if --tpm-is-dynamic switch is enabled.
   bool tpm_checked_ = false;
+  // Number of retries to get other than TPM_NOT_OWNED install attributes state.
+  int install_state_retries_ = 0;
+  // Timer for install attribute to resolve.
+  base::OneShotTimer wait_state_timer_;
+
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
   net::BackoffEntry::Policy retry_policy_;

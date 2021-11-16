@@ -34,6 +34,7 @@
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -91,6 +92,9 @@ std::string GetEnterpriseDomainManager() {
 }
 
 constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
+
+// Max number of retries to check install attributes state.
+constexpr int kMaxInstallAttributesStateCheckRetries = 60;
 
 }  // namespace
 
@@ -213,6 +217,10 @@ void EnrollmentScreen::CreateEnrollmentHelper() {
 }
 
 void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
+  if (switches::IsTpmDynamic()) {
+    wait_state_timer_.Stop();
+    install_state_retries_ = 0;
+  }
   if (!enrollment_helper_) {
     std::move(callback).Run();
     return;
@@ -306,10 +314,13 @@ void EnrollmentScreen::OnTpmStatusResponse(
     const ::tpm_manager::TakeOwnershipReply& reply) {
   if (is_hidden() || tpm_checked_)
     return;
+  if (reply.status() == ::tpm_manager::STATUS_SUCCESS) {
+    CheckInstallAttributesState();
+    return;
+  }
   tpm_checked_ = true;
   VLOG(1) << "OnTpmStatusResponse: status=" << reply.status();
   switch (reply.status()) {
-    case ::tpm_manager::STATUS_SUCCESS:
     case ::tpm_manager::STATUS_NOT_AVAILABLE:
       ShowImpl();
       break;
@@ -318,6 +329,45 @@ void EnrollmentScreen::OnTpmStatusResponse(
       break;
     case ::tpm_manager::STATUS_DBUS_ERROR:
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void EnrollmentScreen::CheckInstallAttributesState() {
+  if (install_state_retries_++ >= kMaxInstallAttributesStateCheckRetries) {
+    tpm_checked_ = true;
+    ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
+    return;
+  }
+  user_data_auth::InstallAttributesState state =
+      chromeos::install_attributes_util::InstallAttributesGetStatus();
+  VLOG(1) << "InstallAttributesState: state = " << static_cast<int>(state);
+  if (state == user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
+    // There may be some processes running in the background, we need to try
+    // again and set a reasonable timeout here to show an error if nothing
+    // changes.
+    wait_state_timer_.Start(FROM_HERE, base::Seconds(1), this,
+                            &EnrollmentScreen::CheckInstallAttributesState);
+    return;
+  }
+  tpm_checked_ = true;
+  switch (state) {
+    case user_data_auth::InstallAttributesState::UNKNOWN:
+      // This means that some interprocess communication error may occur and we
+      // suggest a reboot.
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
+      break;
+    case user_data_auth::InstallAttributesState::FIRST_INSTALL:
+      // This means that TPM is ready to write and we are good to go.
+      ShowImpl();
+      break;
+    case user_data_auth::InstallAttributesState::VALID:
+      // Valid to read, but can't rewrite. Need to clear the TPM.
+    case user_data_auth::InstallAttributesState::INVALID:
+      // Invalid to read. Need to clear the TPM.
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;
     default:
       NOTREACHED();
