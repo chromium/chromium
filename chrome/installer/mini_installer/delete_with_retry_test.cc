@@ -172,7 +172,7 @@ TEST_F(DeleteWithRetryTest, DeleteMappedFile) {
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   ASSERT_TRUE(file.IsValid()) << file.error_details();
 
   // Map the file into the process's address space, thereby preventing deletes.
@@ -202,7 +202,7 @@ TEST_F(DeleteWithRetryTest, DeleteInUseFile) {
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   ASSERT_TRUE(file.IsValid()) << file.error_details();
 
   // Try to delete the file, expecting that a retry-induced sleep takes place.
@@ -234,7 +234,7 @@ TEST_F(DeleteWithRetryTest, DeleteReadOnlyNoSharing) {
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   ASSERT_TRUE(file.IsValid()) << file.error_details();
 
   // Try to delete the file, expecting that a retry-induced sleep takes place.
@@ -278,7 +278,7 @@ TEST_F(DeleteWithRetryTest, LastRetrySucceeds) {
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   ASSERT_TRUE(file.IsValid()) << file.error_details();
 
   // Try to delete the file, expecting that a retry-induced sleep takes place.
