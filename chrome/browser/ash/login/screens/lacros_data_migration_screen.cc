@@ -10,6 +10,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace ash {
 namespace {
@@ -56,6 +59,8 @@ void LacrosDataMigrationScreen::ShowImpl() {
 
   // Show the screen.
   view_->Show();
+
+  GetWakeLock()->RequestWakeLock();
 }
 
 void LacrosDataMigrationScreen::OnProgressUpdate(int progress) {
@@ -73,6 +78,28 @@ void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
   }
 }
 
-void LacrosDataMigrationScreen::HideImpl() {}
+void LacrosDataMigrationScreen::HideImpl() {
+  GetWakeLock()->CancelWakeLock();
+}
+
+device::mojom::WakeLock* LacrosDataMigrationScreen::GetWakeLock() {
+  // |wake_lock_| is lazy bound and reused, even after a connection error.
+  if (wake_lock_)
+    return wake_lock_.get();
+
+  mojo::PendingReceiver<device::mojom::WakeLock> receiver =
+      wake_lock_.BindNewPipeAndPassReceiver();
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+  content::GetDeviceService().BindWakeLockProvider(
+      wake_lock_provider.BindNewPipeAndPassReceiver());
+  wake_lock_provider->GetWakeLockWithoutContext(
+      device::mojom::WakeLockType::kPreventAppSuspension,
+      device::mojom::WakeLockReason::kOther,
+      "Profile migration is in progress...", std::move(receiver));
+  return wake_lock_.get();
+}
 
 }  // namespace ash
