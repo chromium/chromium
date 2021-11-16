@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -71,29 +72,13 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    syncer::SyncServiceImpl* sync_service =
-        SyncServiceFactory::GetAsSyncServiceImplForProfile(
-            browser()->profile());
-
-    sync_service->OverrideNetworkForTest(
-        fake_server::CreateFakeServerHttpPostProviderFactory(
-            GetFakeServer()->AsWeakPtr()));
-
-    std::string username;
-    if (username.empty()) {
-      username = "user@example.com";
-    }
-
-    std::unique_ptr<SyncServiceImplHarness> harness =
-        SyncServiceImplHarness::Create(
-            browser()->profile(), username, "password",
-            SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
+    ASSERT_TRUE(SetupClients());
 
     // Sign the profile in.
-    ASSERT_TRUE(harness->SignInPrimaryAccount());
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
     CoreAccountInfo current_info =
-        IdentityManagerFactory::GetForProfile(browser()->profile())
+        IdentityManagerFactory::GetForProfile(GetProfile(0))
             ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     // Need to update hosted domain since it is not populated.
     AccountInfo account_info;
@@ -102,25 +87,24 @@ class ChromePasswordProtectionServiceSyncBrowserTest : public SyncTest {
     account_info.email = current_info.email;
     account_info.hosted_domain = "domain.com";
     signin::UpdateAccountInfoForAccount(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        account_info);
+        IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
-    ASSERT_TRUE(harness->SetupSync());
+    ASSERT_TRUE(GetClient(0)->SetupSync());
   }
 
   safe_browsing::ChromePasswordProtectionService* GetService(
       bool is_incognito) {
     return ChromePasswordProtectionService::GetPasswordProtectionService(
-        is_incognito ? browser()->profile()->GetPrimaryOTRProfile(
+        is_incognito ? GetProfile(0)->GetPrimaryOTRProfile(
                            /*create_if_needed=*/true)
-                     : browser()->profile());
+                     : GetProfile(0));
   }
 
   void ConfigureEnterprisePasswordProtection(
       PasswordProtectionTrigger trigger_type) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    GetProfile(0)->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger, trigger_type);
-    browser()->profile()->GetPrefs()->SetString(
+    GetProfile(0)->GetPrefs()->SetString(
         prefs::kPasswordProtectionChangePasswordURL,
         embedded_test_server()->GetURL(kChangePasswordUrl).spec());
   }
@@ -131,12 +115,13 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   ConfigureEnterprisePasswordProtection(
       PasswordProtectionTrigger::PASSWORD_REUSE);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  chrome::NewTab(GetBrowser(0));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+      GetBrowser(0), embedded_test_server()->GetURL(kLoginPageUrl)));
   base::HistogramTester histograms;
   // Shows interstitial on current web_contents.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   safe_browsing::ReusedPasswordAccountType reused_password_account_type;
   reused_password_account_type.set_account_type(
       safe_browsing::ReusedPasswordAccountType::GSUITE);
@@ -145,12 +130,12 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
       reused_password_account_type);
   service->ShowInterstitial(web_contents, reused_password_account_type);
   content::WebContents* interstitial_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(interstitial_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
   // chrome://reset-password page should be opened in a new foreground tab.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, GetBrowser(0)->tab_strip_model()->count());
   ASSERT_EQ(GURL(chrome::kChromeUIResetPasswordURL),
             interstitial_web_contents->GetVisibleURL());
   EXPECT_THAT(histograms.GetAllSamples("PasswordProtection.InterstitialString"),
@@ -164,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   content::TestNavigationObserver observer1(interstitial_web_contents,
                                             /*number_of_navigations=*/1);
   observer1.Wait();
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(browser()
+  EXPECT_EQ(2, GetBrowser(0)->tab_strip_model()->count());
+  EXPECT_EQ(GetBrowser(0)
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),
