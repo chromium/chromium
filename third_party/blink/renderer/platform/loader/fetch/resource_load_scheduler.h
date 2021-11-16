@@ -304,9 +304,6 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   // Gets the highest priority pending request that is allowed to be run.
   bool GetNextPendingRequest(ClientId* id);
 
-  // Determines whether or not a low-priority request should be delayed.
-  bool ShouldDelay(PendingRequestMap::iterator found) const;
-
   // Returns whether we can throttle a request with the given option based
   // on life cycle state.
   bool IsClientDelayable(ThrottleOption option) const;
