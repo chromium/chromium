@@ -240,8 +240,10 @@ const CGFloat kEditIconLength = 18;
         constraintEqualToAnchor:_identifyingIconButton.leadingAnchor];
 
     _standardConstraints = @[
-      [_textField.firstBaselineAnchor
-          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
+      [_textLabel.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_textField.centerYAnchor
+          constraintEqualToAnchor:_textLabel.centerYAnchor],
       [_textField.leadingAnchor
           constraintEqualToAnchor:_textLabel.trailingAnchor
                          constant:kLabelAndFieldGap],
