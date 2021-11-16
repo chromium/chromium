@@ -49,6 +49,15 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
       countries: {
         type: Array,
       },
+
+      /**
+       * Indicate whether a country has been selected.
+       * @private {boolean}
+       */
+      is_country_selected_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -60,6 +69,12 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
      * @private {boolean}
      */
     this.configuration_applied_ = false;
+
+    /**
+     * Country id of the option if no real country is selected.
+     * @private {string}
+     */
+    this.country_not_selected_id_ = 'N/A';
   }
 
   /** @override */
@@ -196,6 +211,8 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   onCountrySelected_(event) {
     chrome.send(
         'DemoPreferencesScreen.setDemoModeCountry', [event.detail.value]);
+    this.is_country_selected_ =
+        event.detail.value !== this.country_not_selected_id_;
   }
 
   /**

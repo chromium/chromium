@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -197,6 +198,8 @@ std::vector<LocaleInfo> GetSupportedLocales() {
 
 // static
 constexpr char DemoSession::kSupportedCountries[][3];
+
+constexpr char DemoSession::kCountryNotSelectedId[];
 
 // static
 std::string DemoSession::DemoConfigToString(
@@ -360,14 +363,24 @@ base::Value DemoSession::GetCountryList() {
   const std::string current_country =
       g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
   const std::string current_locale = g_browser_process->GetApplicationLocale();
+  // TODO(b/203105588): Use the new way of base::Value to create the country
+  // list.
   for (const std::string country : kSupportedCountries) {
     base::DictionaryValue dict;
     dict.SetString("value", country);
     dict.SetString(
         "title", l10n_util::GetDisplayNameForCountry(country, current_locale));
-    dict.SetBoolean("selected", current_country == country);
+    dict.SetBoolean("selected", false);
     country_list.Append(std::move(dict));
   }
+  base::DictionaryValue countryNotSelectedDict;
+  countryNotSelectedDict.SetString("value", DemoSession::kCountryNotSelectedId);
+  countryNotSelectedDict.SetString(
+      "title",
+      l10n_util::GetStringUTF16(
+          IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE));
+  countryNotSelectedDict.SetBoolean("selected", true);
+  country_list.Append(std::move(countryNotSelectedDict));
   return country_list;
 }
 

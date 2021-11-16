@@ -919,6 +919,9 @@
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL" desc="The label of the button that is shown on preferences screen and that confirms chosen configuration and shows next demo setup screen.">
     OK
   </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE" desc="The title of country not selected option for demo mode preference screen.">
+    Please select a country
+  </message>
   <message name="IDS_OOBE_DEMO_SETUP_PROGRESS_SCREEN_TITLE" desc="The title of the dialog that is shown when demo mode setup is in progress.">
     Starting Demo Mode
   </message>

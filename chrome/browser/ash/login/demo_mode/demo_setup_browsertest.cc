@@ -369,6 +369,13 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
     test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
   }
+
+  std::string GetQueryForCountrySelectOptionFromCountryCode(
+      const std::string country_code) {
+    return base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
+                         ".shadowRoot.querySelector('option[value=\"",
+                         country_code, "\"]').innerHTML"});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -487,7 +494,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   // Verify the country names are displayed correctly. Regression test for
   // potential country code changes.
   const base::flat_map<std::string, std::string> kCountryCodeToNameMap(
-      {{"us", "United States"},
+      {{"N/A", "Please select a country"},
+       {"us", "United States"},
        {"be", "Belgium"},
        {"ca", "Canada"},
        {"dk", "Denmark"},
@@ -507,14 +515,25 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
     const auto it = kCountryCodeToNameMap.find(country_code);
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =
-        base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
-                      ".shadowRoot.querySelector('option[value=\"", country_code,
-                      "\"]').innerHTML"});
+        GetQueryForCountrySelectOptionFromCountryCode(country_code);
     EXPECT_EQ(it->second, test::OobeJS().GetString(query));
   }
 
+  // Check if default value "N/A" and value exists.
+  // Will update to use locale to determine the country.
+  const auto it =
+      kCountryCodeToNameMap.find(DemoSession::kCountryNotSelectedId);
+  ASSERT_NE(kCountryCodeToNameMap.end(), it);
+  const std::string query =
+      GetQueryForCountrySelectOptionFromCountryCode("N/A");
+  EXPECT_EQ(it->second, test::OobeJS().GetString(query));
+  test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
+
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
   // Select France as the Demo Mode country.
   test::OobeJS().SelectElementInPath("fr", kDemoPreferencesCountrySelect);
+  test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   UseOnlineModeOnNetworkScreen();

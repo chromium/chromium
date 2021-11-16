@@ -80,6 +80,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
       "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
       "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
 
+  static constexpr char kCountryNotSelectedId[] = "N/A";
+
   DemoSession(const DemoSession&) = delete;
   DemoSession& operator=(const DemoSession&) = delete;
 
