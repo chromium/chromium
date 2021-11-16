@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/net/connection_type_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
@@ -222,6 +223,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)recordNumNTPTabAtStartup:(int)numTabs;
 // Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
 + (void)recordNumNTPTabAtResume:(int)numTabs;
+// Logs the number of live NTP tabs with UMAHistogramCount100 and allows
+// testing.
++ (void)recordNumLiveNTPTabAtResume:(int)numTabs;
 
 @end
 
@@ -285,6 +289,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
   int numTabs = 0;
   int numNTPTabs = 0;
+  int numLiveNTPTabs = 0;
   for (SceneState* scene in scenes) {
     if (!scene.interfaceProvider) {
       // The scene might not yet be initiated.
@@ -301,6 +306,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
         numNTPTabs++;
       }
     }
+    BrowserViewController* bvc = scene.interfaceProvider.currentInterface.bvc;
+    numLiveNTPTabs += [bvc liveNTPCount];
   }
 
   if (startupInformation.isColdStart) {
@@ -309,6 +316,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   } else {
     [self recordNumTabAtResume:numTabs];
     [self recordNumNTPTabAtResume:numNTPTabs];
+    // Only log at resume since there are likely no live NTPs on startup.
+    [self recordNumLiveNTPTabAtResume:numLiveNTPTabs];
   }
 
   if (UIAccessibilityIsVoiceOverRunning()) {
@@ -560,6 +569,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
 + (void)recordNumNTPTabAtResume:(int)numTabs {
   base::UmaHistogramCounts100("Tabs.NTPCountAtResume", numTabs);
+}
+
++ (void)recordNumLiveNTPTabAtResume:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.LiveNTPCountAtResume", numTabs);
 }
 
 - (void)setBreakpadUploadingEnabled:(BOOL)enableUploading {
