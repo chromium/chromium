@@ -987,7 +987,7 @@ void PersistAcceptCH(const GURL& url,
                                std::move(duration));
 }
 
-CONTENT_EXPORT std::vector<WebClientHintsType> LookupAcceptCHForCommit(
+std::vector<WebClientHintsType> LookupAcceptCHForCommit(
     const GURL& url,
     ClientHintsControllerDelegate* delegate,
     FrameTreeNode* frame_tree_node) {
