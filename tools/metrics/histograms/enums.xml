@@ -62002,6 +62002,15 @@ Called by update_net_trust_anchors.py.-->
       label="Background customization unavailable due to search provider"/>
 </enum>
 
+<enum name="NTPBrokenViewHierarchyRelationship">
+  <int value="0" label="ELM collection containing Content Suggestions fixed"/>
+  <int value="1" label="Discover feed containing ELM collection fixed"/>
+  <int value="2" label="Discover feed wrapper containing Discover feed fixed"/>
+  <int value="3" label="NTP containing Discover feed wrapper fixed"/>
+  <int value="4"
+      label="Content suggestions view controller not cleaned up on restart"/>
+</enum>
+
 <enum name="NTPCustomizeAction">
   <int value="0" label="'Chrome backgrounds' menu item clicked."/>
   <int value="1" label="'Upload an image' menu item clicked."/>

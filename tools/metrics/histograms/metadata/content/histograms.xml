@@ -713,6 +713,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
+    enum="NTPBrokenViewHierarchyRelationship" expires_after="M99">
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    When the NTP view hierarchy is fixed upon NTP creation, this hisotgram logs
+    which part was broken. Temporary log used to gather info for
+    crbug.com/1262536.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.CommitMutationCount"
     units="operations" expires_after="2020-10-01">
   <owner>carlosk@chromium.org</owner>
