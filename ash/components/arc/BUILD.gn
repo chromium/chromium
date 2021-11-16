@@ -27,3 +27,23 @@ source_set("arc_features") {
 
   deps = [ "//base" ]
 }
+
+static_library("arc_base_utils") {
+  sources = [
+    "arc_util.cc",
+    "arc_util.h",
+  ]
+
+  public_deps = [ ":arc_features" ]
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/dbus:concierge_proto",
+    "//chromeos/dbus:dbus",
+    "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/upstart:upstart",
+    "//components/exo",
+    "//ui/aura",
+  ]
+}

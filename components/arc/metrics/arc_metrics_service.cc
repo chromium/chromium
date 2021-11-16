@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/exo/wm_helper.h"

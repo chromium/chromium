@@ -36,11 +36,11 @@ static_library("external_arc") {
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
   deps = [
     "//ash",
+    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//components/account_id",
-    "//components/arc:arc_base_utils",
     "//components/arc:arc_metrics_constants",
     "//components/arc/mojom:notifications",
     "//components/arc/session:connection_holder",

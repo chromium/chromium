@@ -213,26 +213,6 @@ static_library("arc") {
   ]
 }
 
-static_library("arc_base_utils") {
-  sources = [
-    "arc_util.cc",
-    "arc_util.h",
-  ]
-
-  public_deps = [ "//ash/components/arc:arc_features" ]
-  deps = [
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base",
-    "//chromeos/dbus:concierge_proto",
-    "//chromeos/dbus:dbus",
-    "//chromeos/dbus/session_manager",
-    "//chromeos/dbus/upstart:upstart",
-    "//components/exo",
-    "//ui/aura",
-  ]
-}
-
 static_library("arc_base") {
   # TODO(hidehiko): Revisit here and move back some files to "arc"
   # on completion to move ArcSession task to ArcSessionManager.
@@ -249,7 +229,7 @@ static_library("arc_base") {
   ]
 
   public_deps = [
-    ":arc_base_utils",
+    "//ash/components/arc:arc_base_utils",
     "//components/arc/mojom",
     "//components/arc/session",
     "//components/arc/session:arc_base_enums",

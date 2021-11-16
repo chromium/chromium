@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_scoped_pref_update.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/arc/arc_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"

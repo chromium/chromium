@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner.h"
-#include "components/arc/arc_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {

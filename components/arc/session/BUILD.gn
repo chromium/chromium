@@ -38,6 +38,7 @@ static_library("session") {
   deps = [
     ":arc_base_enums",
     ":connection_holder",
+    "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:prefs",
     "//ash/constants:constants",
@@ -50,7 +51,6 @@ static_library("session") {
     "//chromeos/dbus/upstart",
     "//chromeos/memory:memory",
     "//chromeos/system:system",
-    "//components/arc:arc_base_utils",
     "//components/arc/enterprise",
     "//components/arc/mojom",
     "//components/prefs:prefs",

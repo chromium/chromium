@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/connection_holder_util.h"

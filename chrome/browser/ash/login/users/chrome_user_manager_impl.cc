@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_pref_names.h"
@@ -94,7 +95,6 @@
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/policy_constants.h"

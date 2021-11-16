@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

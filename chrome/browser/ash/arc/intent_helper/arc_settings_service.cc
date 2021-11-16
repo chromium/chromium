@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -37,7 +38,6 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/backup_settings.mojom.h"
 #include "components/arc/mojom/pip.mojom.h"

@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/devicetype.h"
@@ -33,7 +34,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_util.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"

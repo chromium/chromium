@@ -9,12 +9,12 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/adaptive_icon_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"

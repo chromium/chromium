@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/user_manager/user_manager.h"

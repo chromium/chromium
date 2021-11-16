@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/features.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"

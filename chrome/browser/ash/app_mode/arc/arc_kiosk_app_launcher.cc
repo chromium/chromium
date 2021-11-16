@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/window_properties.h"

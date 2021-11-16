@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"

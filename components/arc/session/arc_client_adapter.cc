@@ -4,7 +4,7 @@
 
 #include "components/arc/session/arc_client_adapter.h"
 
-#include "components/arc/arc_util.h"
+#include "ash/components/arc/arc_util.h"
 #include "components/arc/session/arc_container_client_adapter.h"
 #include "components/arc/session/arc_vm_client_adapter.h"
 

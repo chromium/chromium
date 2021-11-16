@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
@@ -11,7 +12,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/permission.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/class_property.h"

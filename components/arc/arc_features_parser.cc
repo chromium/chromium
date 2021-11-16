@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -15,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
-#include "components/arc/arc_util.h"
 
 namespace arc {
 

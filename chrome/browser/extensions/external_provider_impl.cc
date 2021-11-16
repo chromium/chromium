@@ -53,6 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"
-#include "components/arc/arc_util.h"
 #include "extensions/common/constants.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"

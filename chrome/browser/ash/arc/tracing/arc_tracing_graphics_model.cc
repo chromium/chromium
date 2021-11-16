@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
-#include "components/arc/arc_util.h"
 #include "ui/events/types/event_type.h"
 
 namespace arc {

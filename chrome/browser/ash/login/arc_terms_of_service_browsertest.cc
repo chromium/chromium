@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/callback_helpers.h"
@@ -45,7 +46,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/arc_util.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"

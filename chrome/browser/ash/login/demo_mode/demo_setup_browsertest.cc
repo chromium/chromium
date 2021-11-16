@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/bind.h"
@@ -53,7 +54,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_util.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

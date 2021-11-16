@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ARC_UTIL_H_
-#define COMPONENTS_ARC_ARC_UTIL_H_
+#ifndef ASH_COMPONENTS_ARC_ARC_UTIL_H_
+#define ASH_COMPONENTS_ARC_ARC_UTIL_H_
 
 // This file contains utility to see ARC functionality status controlled by
 // outside of ARC, e.g. CommandLine flag, attribute of global data/state,
@@ -207,4 +207,4 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ARC_UTIL_H_
+#endif  // ASH_COMPONENTS_ARC_ARC_UTIL_H_

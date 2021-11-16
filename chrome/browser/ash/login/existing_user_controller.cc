@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -96,7 +97,6 @@
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -40,7 +41,6 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"

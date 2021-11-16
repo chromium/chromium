@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -90,7 +91,6 @@
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/disks/mount_point.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
