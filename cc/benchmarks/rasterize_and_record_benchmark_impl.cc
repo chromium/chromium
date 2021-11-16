@@ -196,6 +196,9 @@ void RasterizeAndRecordBenchmarkImpl::RunOnLayer(PictureLayerImpl* layer) {
     return;
   }
 
+  if (layer->ShouldAdjustRasterScale())
+    layer->RecalculateRasterScales();
+
   int text_pixels =
       layer->GetRasterSource()->GetDisplayItemList()->AreaOfDrawText(
           layer->visible_layer_rect());
@@ -218,13 +221,14 @@ void RasterizeAndRecordBenchmarkImpl::RunOnLayer(PictureLayerImpl* layer) {
           settings.skewport_extrapolation_limit_in_screen_pixels,
           settings.max_preraster_distance_in_screen_pixels);
 
-  PictureLayerTiling* tiling =
-      tiling_set->AddTiling(gfx::AxisTransform2d(), layer->GetRasterSource());
+  PictureLayerTiling* tiling = tiling_set->AddTiling(
+      gfx::AxisTransform2d(layer->raster_contents_scale_, {}),
+      layer->GetRasterSource());
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
   RasterSource* raster_source = tiling->raster_source().get();
-  for (PictureLayerTiling::CoverageIterator it(tiling, 1.f,
-                                               layer->visible_layer_rect());
+  for (PictureLayerTiling::CoverageIterator it(
+           tiling, tiling->contents_scale_key(), layer->visible_layer_rect());
        it; ++it) {
     DCHECK(*it);
 

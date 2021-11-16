@@ -176,6 +176,8 @@ class CC_EXPORT PictureLayerImpl
   }
 
  protected:
+  friend class RasterizeAndRecordBenchmarkImpl;
+
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id);
   PictureLayerTiling* AddTiling(const gfx::AxisTransform2d& contents_transform);
   void RemoveAllTilings();
