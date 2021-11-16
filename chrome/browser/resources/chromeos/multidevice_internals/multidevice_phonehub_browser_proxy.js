@@ -116,6 +116,14 @@ export class MultidevicePhoneHubBrowserProxy {
   }
 
   /**
+   * Resets Recent Photos onboarding UI to not having been dismissed for the
+   * real PhoneHubManager.
+   */
+  resetCameraRollOnboardingUiDismissed() {
+    chrome.send('resetCameraRollOnboardingUiDismissed');
+  }
+
+  /**
    * Sets the camera roll manager.
    * @param {!CameraRollManager} cameraRollManager The camera roll with fake
    *     values.

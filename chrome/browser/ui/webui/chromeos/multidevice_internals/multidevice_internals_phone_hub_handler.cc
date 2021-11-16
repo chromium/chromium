@@ -214,6 +214,12 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterDeprecatedMessageCallback(
+      "resetCameraRollOnboardingUiDismissed",
+      base::BindRepeating(&MultidevicePhoneHubHandler::
+                              HandleResetCameraRollOnboardingUiDismissed,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setCameraRoll",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetCameraRoll,
                           base::Unretained(this)));
@@ -578,6 +584,14 @@ void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   prefs->SetBoolean(phonehub::prefs::kHasDismissedSetupRequiredUi, false);
   PA_LOG(VERBOSE) << "Reset kHasDismissedSetupRequiredUi pref";
+}
+
+void MultidevicePhoneHubHandler::HandleResetCameraRollOnboardingUiDismissed(
+    const base::ListValue* args) {
+  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
+  prefs->SetBoolean(
+      chromeos::phonehub::prefs::kHasDismissedCameraRollOnboardingUi, false);
+  PA_LOG(VERBOSE) << "Reset kHasDismissedCameraRollOnboardingUi pref";
 }
 
 void MultidevicePhoneHubHandler::HandleSetCameraRoll(
