@@ -18,8 +18,9 @@ BitmapRequest::BitmapRequest(
 
 BitmapRequest::~BitmapRequest() = default;
 
-BitmapRequest& BitmapRequest::operator=(BitmapRequest&& other) = default;
+BitmapRequest& BitmapRequest::operator=(BitmapRequest&& other) noexcept =
+    default;
 
-BitmapRequest::BitmapRequest(BitmapRequest&& other) = default;
+BitmapRequest::BitmapRequest(BitmapRequest&& other) noexcept = default;
 
 }  // namespace paint_preview

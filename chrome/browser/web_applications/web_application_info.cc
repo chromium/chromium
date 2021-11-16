@@ -37,9 +37,9 @@ IconBitmaps::IconBitmaps() = default;
 
 IconBitmaps::~IconBitmaps() = default;
 
-IconBitmaps::IconBitmaps(const IconBitmaps&) noexcept = default;
+IconBitmaps::IconBitmaps(const IconBitmaps&) = default;
 
-IconBitmaps::IconBitmaps(IconBitmaps&&) = default;
+IconBitmaps::IconBitmaps(IconBitmaps&&) noexcept = default;
 
 IconBitmaps& IconBitmaps::operator=(const IconBitmaps&) = default;
 
