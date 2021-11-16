@@ -159,6 +159,8 @@
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
 <translation id="3583278742022654445">‏قوة الإشارة ضعيفة. يُرجى الاقتراب من مصدر إشارة شبكة Wi-Fi.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
+<translation id="360089215033199597">‏لتنفيذ عملية الإصلاح بسهولة، ننصح بالاتصال بشبكة Wi-Fi.
+        سيتم حفظ بيانات شبكتك.</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
@@ -482,6 +484,7 @@
 <translation id="816013303019725643">إدخال رمز فتح القفل:</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
+<translation id="8217675307824400706">الاتصال بالإنترنت</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>

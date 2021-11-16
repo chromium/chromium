@@ -390,6 +390,7 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{قوس متوسط أيمن واحد}zero{# right brackets}two{قوسان متوسطان أيمنان (#)}few{# أقواس متوسطة يمنى}many{# قوسًا متوسطًا أيمنًا}other{# من الأقواس المتوسطة اليمنى}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{علامة استفهام واحدة}zero{# question marks}two{علامتا استفهام (#)}few{# علامات استفهام}many{# علامة استفهام}other{# من علامات الاستفهام}}</translation>
+<translation id="3505359110822747654">‏تصغير قوائم ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{علامة إقحام واحدة}zero{# carets}two{علامتا إقحام (#)}few{# علامات إقحام}many{# علامة إقحام}other{# من علامات الإقحام}}</translation>
 <translation id="352577523970648069">حقل نص قابل للتعديل</translation>
 <translation id="3538907380453898475">dscrplst</translation>

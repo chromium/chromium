@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1851218745569890714">Videovergaderingen</translation>
+<translation id="1857850044054738019">Selecteer deze optie als het apparaat weer aan de voorraad wordt toegevoegd of wordt refurbished voor distributie naar een nieuwe klant.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevisie</translation>
 <translation id="1905710495812624430">Maximumaantal toegestane pogingen overschreden.</translation>
@@ -199,6 +200,7 @@
 <translation id="4244962993387259361">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Ga naar Instellingen &gt; Opslagbeheer om ruimte vrij te maken.</translation>
 <translation id="4258281355379922695">HTTP-vertraging</translation>
 <translation id="4271957103967917607">Bekijken op volledig scherm</translation>
+<translation id="4275799948641988986">Door wie wordt het apparaat na reparatie gebruikt?</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
@@ -241,6 +243,7 @@
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
+<translation id="4839698083503556542">Je eigen film maken</translation>
 <translation id="484790837831576105">(Android) DNS-omzetting</translation>
 <translation id="4848429997038228357">ACTIEF</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Nog {0} poging}other{<ph name="ERROR_MESSAGE" /> Nog {0} pogingen}}</translation>
@@ -414,6 +417,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7297226631177386107">Kan geen verbinding maken met HTTPS-websites via een firewall</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Het apparaat gaat naar een andere eigenaar</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
@@ -421,6 +425,8 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
+<translation id="7451112128070628323">Selecteer deze optie als het eigendom van het apparaat niet verandert.
+        Het apparaat wordt bijvoorbeeld overgedragen aan een andere persoon binnen een organisatie.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
@@ -547,6 +553,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
+<translation id="9095415590198785865">Het apparaat gaat naar dezelfde eigenaar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>

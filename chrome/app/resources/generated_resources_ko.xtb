@@ -2362,6 +2362,7 @@
 <translation id="3413122095806433232">CA 발행기관: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="3414966631182382431"><ph name="MANAGER" />에서 내 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />합니다</translation>
+<translation id="341589277604221596">실시간 자막 - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">항상 전체 URL 표시</translation>
 <translation id="3417835166382867856">탭 검색</translation>
 <translation id="3417836307470882032">24시간제</translation>
@@ -4096,6 +4097,7 @@
 <translation id="5265562206369321422">1주 이상 오프라인 상태</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
 <translation id="5275352920323889391">개</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
@@ -5480,6 +5482,7 @@
 <translation id="6775163072363532304">사용 가능한 기기가 여기에 표시됩니다.</translation>
 <translation id="6777817260680419853">리디렉션이 차단됨</translation>
 <translation id="6778737459546443941">부모님이 아직 승인하지 않았습니다.</translation>
+<translation id="6779092717724412415">이와 같이 강조표시하려면 텍스트를 선택하고 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="6779447100905857289">장바구니</translation>
 <translation id="677965093459947883">아주 작게</translation>
 <translation id="6781005693196527806">검색엔진 관리(&amp;M)…</translation>
@@ -6296,6 +6299,7 @@
 <translation id="7625823789272218216">새 좌측 탭</translation>
 <translation id="7628201176665550262">새로고침 빈도</translation>
 <translation id="7629827748548208700">탭: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7631014249255418691">Linux 앱 및 파일이 성공적으로 백업되었습니다.</translation>
 <translation id="7631205654593498032">기기를 연결하면 <ph name="DEVICE_TYPE" />에서 다음 작업을 처리하는 것에 동의하게 됩니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>
@@ -7191,6 +7195,7 @@
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="8540503336857689453">보안상의 이유로 숨겨진 네트워크의 사용은 권장되지 않습니다.</translation>
 <translation id="854071720451629801">읽음으로 표시</translation>
+<translation id="8540942859441851323">제공업체에서 로밍을 요청합니다.</translation>
 <translation id="8541462173655894684">인쇄 서버에서 프린터를 찾을 수 없습니다.</translation>
 <translation id="8541838361296720865">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.</translation>
 <translation id="8542618328173222274">사이트에서 내 가상 현실 기기 및 데이터를 사용하려고 할 때 확인</translation>

@@ -82,6 +82,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="124116460088058876">Więcej języków</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Pogrubienie</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Tab, a potem Enter</translation>
 <translation id="1250759482327835220">Aby następnym razem zapłacić szybciej, zapisz kartę oraz imię, nazwisko i adres rozliczeniowy na swoim koncie Google.</translation>
 <translation id="1252799212227771492">Przycisk Utwórz arkusz; naciśnij Enter, aby szybko utworzyć nowy Arkusz Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (zsynchronizowane)</translation>
@@ -318,6 +319,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="192020519938775529">{COUNT,plural, =0{Brak}=1{1 witryna}few{# witryny}many{# witryn}other{# witryny}}</translation>
 <translation id="1923390796829649802">Przycisk zarządzania ustawieniami ułatwień dostępu; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Enter</translation>
 <translation id="1924727005275031552">Nowy</translation>
+<translation id="1927439593081478069">Przycisk Uruchom kontrolę zabezpieczeń Chrome; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Enter</translation>
 <translation id="1939175642807587452">Może prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="1945968466830820669">Możesz stracić dostęp do swojego konta organizacji lub paść ofiarą kradzieży tożsamości. Chromium zaleca natychmiastową zmianę hasła.</translation>
 <translation id="1947454675006758438">Zszywka w prawym górnym rogu</translation>
@@ -337,6 +339,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2003709556000175978">Zresetuj teraz swoje hasło</translation>
 <translation id="2003775180883135320">Cztery otwory u góry</translation>
 <translation id="201174227998721785">Zarządzaj uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome</translation>
+<translation id="2019607688127825327">Przycisk Zarządzaj ustawieniami ułatwień dostępu; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome, naciśnij Enter</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
 <translation id="2025186561304664664">Ustawiono automatyczne konfigurowanie proxy.</translation>
 <translation id="2025891858974379949">Treść niezabezpieczona</translation>
@@ -502,6 +505,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2556876185419854533">&amp;Cofnij edycję</translation>
 <translation id="2570734079541893434">Zarządzaj ustawieniami</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2576880857912732701">Przycisk Zarządzaj ustawieniami zabezpieczeń; aby zarządzać Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome, naciśnij Enter</translation>
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2587730715158995865">Wydawca: <ph name="ARTICLE_PUBLISHER" />. Przeczytaj ten artykuł i inne (<ph name="OTHER_ARTICLE_COUNT" />).</translation>
 <translation id="2587841377698384444">Identyfikator interfejsu API katalogu:</translation>
@@ -546,6 +550,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2713444072780614174">Biały</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zarządzać informacjami o płatnościach i danymi kart kredytowych w ustawieniach Chrome.</translation>
 <translation id="2721148159707890343">Żądanie wykonane pomyślnie</translation>
+<translation id="2723669454293168317">Uruchom kontrolę zabezpieczeń w ustawieniach Chrome</translation>
 <translation id="2726001110728089263">Taca boczna</translation>
 <translation id="2728127805433021124">Certyfikat serwera został podpisany przy użyciu słabego algorytmu podpisu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Uruchomienie diagnostyki połączeń<ph name="END_LINK" /></translation>
@@ -576,6 +581,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2859806420264540918">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy.</translation>
 <translation id="287596039013813457">Przyjazny</translation>
 <translation id="2876489322757410363">Opuszczasz tryb incognito, aby zapłacić w aplikacji zewnętrznej. Czy chcesz kontynuować?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="2878197950673342043">Składanie krzyżowe</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Rozmieszczenie okien</translation>
@@ -681,6 +687,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3229041911291329567">Informacje o wersji urządzenia i przeglądarki</translation>
 <translation id="323107829343500871">Wpisz kod CVC karty <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Zawsze wykrywaj ważną treść na tej stronie</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby dostosować wygląd przeglądarki, naciśnij Tab, a potem Enter.</translation>
 <translation id="3240791268468473923">Arkusz dotyczący braku pasujących danych uwierzytelniających na potrzeby bezpiecznych płatności jest otwarty</translation>
 <translation id="3249845759089040423">Dynamiczny</translation>
 <translation id="3252266817569339921">Francuski</translation>
@@ -724,6 +731,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
       • utworzyć mapę 3D otoczenia i śledzić pozycję kamery,
       • używać Twojej kamery.</translation>
 <translation id="337363190475750230">Anulowano obsługę</translation>
+<translation id="3375754925484257129">Uruchom kontrolę zabezpieczeń Chrome</translation>
 <translation id="3377144306166885718">Serwer użył przestarzałej wersji protokołu TLS.</translation>
 <translation id="3377188786107721145">Podczas przetwarzania zasady wystąpił błąd</translation>
 <translation id="3377736046129930310">Używaj blokady ekranu, by szybciej potwierdzać karty</translation>
@@ -764,6 +772,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3462200631372590220">Ukryj zaawansowane</translation>
 <translation id="3467763166455606212">Wymagane jest imię i nazwisko posiadacza karty</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, obecnie otwarta. Naciśnij klawisz Tab, a potem Enter, by przełączyć się na otwartą kartę</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zamknąć wszystkie otwarte okna incognito, naciśnij Tab, a potem Enter.</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3484560055331845446">Możesz stracić dostęp do swojego konta Google. Chrome zaleca natychmiastową zmianę hasła. Zobaczysz prośbę, by się zalogować.</translation>
 <translation id="3487845404393360112">Taca 4</translation>
@@ -802,6 +811,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3611395257124510155">Karta wirtualna <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Rozmiar 2</translation>
 <translation id="361438452008624280">Pozycja listy „<ph name="LANGUAGE_ID" />”: nieznany lub nieobsługiwany język.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić kontrolę zabezpieczeń w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3615877443314183785">Wpisz prawidłową datę ważności</translation>
 <translation id="36224234498066874">Wyczyść dane przeglądania...</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
@@ -1592,6 +1602,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6218753634732582820">Usunąć ten adres z Chromium?</translation>
 <translation id="622039917539443112">Składanie równoległe</translation>
 <translation id="6221345481584921695">Bezpieczne przeglądanie Google <ph name="BEGIN_LINK" />wykryło ostatnio złośliwe oprogramowanie<ph name="END_LINK" /> na <ph name="SITE" />. Strony, które zazwyczaj są bezpieczne, zostają czasem zainfekowane destrukcyjnym oprogramowaniem. Źródłem złośliwej zawartości jest <ph name="SUBRESOURCE_HOST" /> – znany dystrybutor złośliwego oprogramowania.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="6234122620015464377">Przycięcie po każdym dokumencie</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6241121617266208201">Ukryj sugestie</translation>
@@ -1610,6 +1621,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6279098320682980337">Nie uzupełniono numeru karty wirtualnej? Kliknij dane karty, które chcesz skopiować</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6282194474023008486">Kod pocztowy</translation>
+<translation id="6285507000506177184">Przycisk Zarządzaj pobranymi plikami w Chrome; aby zarządzać pobranymi plikami w Chrome, naciśnij Enter</translation>
 <translation id="6289939620939689042">Kolor strony</translation>
 <translation id="6290238015253830360">Tutaj wyświetlą się proponowane artykuły</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1725,6 +1737,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6689249931105087298">Względna z kompresją punktu czerni</translation>
 <translation id="6689271823431384964">Chrome proponuje zalogowanym użytkownikom zapisywanie kart na koncie Google. Możesz to zmienić w ustawieniach. Imię i nazwisko posiadacza karty pochodzi z Twojego konta.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby znaleźć swoje urządzenie na koncie Google, naciśnij Tab, a potem Enter</translation>
+<translation id="6696588630955820014">Przycisk Udostępnij tę kartę; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Enter</translation>
 <translation id="6698381487523150993">Utworzono:</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
@@ -1930,6 +1943,7 @@ Dodatkowe informacje:
 <translation id="7392089738299859607">Zmień adres</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7400418766976504921">Adres URL</translation>
+<translation id="7403392780200267761">Udostępnij tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji</translation>
 <translation id="7403591733719184120">Twoje urządzenie <ph name="DEVICE_NAME" /> jest zarządzane</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ten błąd występuje, jeśli na komputerze z systemem Windows masz zainstalowane oprogramowanie Superfish.&lt;/p&gt;
       &lt;p&gt;Wykonaj te czynności, by tymczasowo wyłączyć to oprogramowanie i połączyć się z internetem. Będziesz potrzebować uprawnień administratora.&lt;/p&gt;
@@ -2159,6 +2173,7 @@ Dodatkowe informacje:
 <translation id="810875025413331850">Nie znaleziono żadnych urządzeń w pobliżu.</translation>
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="8118489163946903409">Forma płatności</translation>
+<translation id="8124639700796374294">Przycisk Dostosuj Chrome; aby dostosować wygląd przeglądarki, naciśnij Enter</translation>
 <translation id="8127301229239896662">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie zostało prawidłowo zainstalowane na komputerze lub w sieci. Poproś administratora o rozwiązanie tego problemu.</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
@@ -2341,6 +2356,7 @@ Dodatkowe informacje:
 <translation id="87601671197631245">Ta strona używa nieaktualnej konfiguracji zabezpieczeń, co oznacza, że Twoje dane (np. hasła, wiadomości i numery kart kredytowych) mogą być zagrożone podczas przesyłania na tę stronę.</translation>
 <translation id="8761567432415473239">Funkcja Bezpieczne przeglądanie Google ostatnio <ph name="BEGIN_LINK" />znalazła szkodliwe<ph name="END_LINK" /> programy na <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Urządzenie USB</translation>
+<translation id="8763986294015493060">Zamknij wszystkie otwarte okna incognito</translation>
 <translation id="8766943070169463815">Arkusz uwierzytelniania danych logowania na potrzeby bezpiecznych płatności jest otwarty</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Ponów usunięcie</translation>
@@ -2354,6 +2370,7 @@ Dodatkowe informacje:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="882338992931677877">Szczelina ręczna</translation>
+<translation id="8834380158646307944">Przycisk Zamknij okna incognito; aby zamknąć wszystkie otwarte okna incognito, naciśnij Enter</translation>
 <translation id="883848425547221593">Inne zakładki</translation>
 <translation id="884264119367021077">Adres wysyłki</translation>
 <translation id="884923133447025588">Nie znaleziono mechanizmu unieważniania.</translation>
@@ -2407,6 +2424,7 @@ Dodatkowe informacje:
 <translation id="9020200922353704812">Wymagany jest adres rozliczeniowy karty kredytowej</translation>
 <translation id="9020542370529661692">Ta strona została przetłumaczona na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Tab, a potem Enter</translation>
 <translation id="9025348182339809926">(Nieważny)</translation>
 <translation id="9030265603405983977">Monochromatyczny</translation>
 <translation id="9035022520814077154">Błąd zabezpieczeń</translation>

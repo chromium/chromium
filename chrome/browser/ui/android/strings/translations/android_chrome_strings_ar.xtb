@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">مخصص</translation>
 <translation id="1197267115302279827">نقل الإشارات المرجعية</translation>
 <translation id="1201402288615127009">التالي</translation>
+<translation id="1202892408424955784">المنتجات التي يتم تتبُّع أسعارها</translation>
 <translation id="1204037785786432551">تنزيل الرابط</translation>
 <translation id="1206892813135768548">نسخ نص الرابط</translation>
 <translation id="1208340532756947324">للمزامنة والتخصيص على جميع الأجهزة، يمكنك تفعيل المزامنة.</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">‏جارٍ الاتصال بـ Google. قد يستغرق ذلك دقيقة واحدة...</translation>
 <translation id="1416550906796893042">إصدار التطبيق</translation>
 <translation id="1430915738399379752">طباعة</translation>
+<translation id="1448440926884431741">يمكنك تنظيم منتجاتك التي تتتبّع سعرها في "إشارات مرجعية".</translation>
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1466383950273130737">‏اختيار لغة Chrome</translation>
 <translation id="147113415845704694">جرِب سؤال "ما هي حالة الطقس اليوم؟"</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
 <translation id="189358972401248634">لغات أخرى</translation>
+<translation id="1894023287452300670">يمكنك تتبُّع السعر من هنا.</translation>
 <translation id="1905320231301365059">إنّ الملفات التي يتم تنزيلها في وضع التصفُّح المتخفي تظهر لجميع مستخدمي هذا الجهاز.</translation>
 <translation id="1910950723001426294">قائمة خيارات المشاركة مغلقة.</translation>
 <translation id="1918175104945982129">‏تم فتح واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google" في نصف الشاشة.</translation>
@@ -346,6 +349,7 @@
 <translation id="3029704984691124060">عبارات المرور غير متطابقة</translation>
 <translation id="3031225630520268969">‏واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google"</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">يتم حاليًا تتبُّع السعر</translation>
 <translation id="3037517125981011456">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
 <translation id="3046945242843292318">الوصول إلى هذا الموقع الإلكتروني بسرعة أكبر في المرة القادمة</translation>
 <translation id="305593374596241526">‏تحديد الموقع الجغرافي متوقف، يمكنك تفعيله من <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
@@ -504,6 +508,7 @@
 <translation id="4016425174436051808">تتعذّر متابعة الخلاصة. حدث خطأ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
 <translation id="4045764304651014138">بيانات الاستخدام</translation>
+<translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
 <translation id="4060598801229743805">الخيارات متاحة بالقرب من أعلى الشاشة</translation>
 <translation id="4062305924942672200">المعلومات القانونية</translation>
@@ -557,6 +562,7 @@
 <translation id="4409271659088619928">محرّك البحث المستخدَم لديك هو <ph name="DSE" />. يمكنك الاطّلاع على تعليمات محرّك البحث الذي تستخدمه بشأن حذف سجلّ البحث إذا كان يوفّر هذه الميزة.</translation>
 <translation id="4411535500181276704">الوضع البسيط</translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
+<translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
 <translation id="4450672886426705087">‏نتائج بحث من Google</translation>
 <translation id="4452411734226507615">إغلاق علامة التبويب <ph name="TAB_TITLE" /></translation>
@@ -754,6 +760,7 @@
 <translation id="5548606607480005320">التحقّق من الأمان</translation>
 <translation id="5555525474779371165">اختيار حماية "التصفُّح الآمن"</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
+<translation id="555816257274242153">تم إيقاف ميزة تتبُّع السعر.</translation>
 <translation id="5561549206367097665">في انتظار الشبكة...</translation>
 <translation id="5568069709869097550">تعذّر الدخول</translation>
 <translation id="55737423895878184">مسموح بالإشعارات وتحديد الموقع الجغرافي</translation>
@@ -804,9 +811,11 @@
 <translation id="5833984609253377421">مشاركة الرابط</translation>
 <translation id="5834764604050996579">‏لمسح رمز استجابة سريعة ضوئيًا، يُرجى السماح لمتصفّح Chrome باستخدام الكاميرا.</translation>
 <translation id="5839058148541733625">‏لعبة الديناصور في Chrome</translation>
+<translation id="5842437907245493289">يمكنك تنظيم منتجاتك التي تتتبّع سعرها في "إشارات مرجعية" من رمز المجلد.</translation>
 <translation id="5853623416121554550">متوقف مؤقتًا</translation>
 <translation id="5854512288214985237">‏لا يتم إرسال تقارير الأعطال أو الإحصاءات إلى Google.</translation>
 <translation id="5855546874025048181">تحسين: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">حدث خطأ. تعذّر تحديث ميزة تتبُّع السعر.</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5862731021271217234">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تفعيل المزامنة.</translation>
@@ -863,6 +872,7 @@
 <translation id="6140912465461743537">الدولة/الإقليم</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
+<translation id="6150320133806434356">تم حفظ الإشارة المرجعية</translation>
 <translation id="6154478581116148741">تشغيل قفل الشاشة في الإعدادات لتصدير كلمات المرور من هذا الجهاز</translation>
 <translation id="6159335304067198720">توفير البيانات بنسبة <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها.</translation>
@@ -877,6 +887,7 @@
 على سبيل المثال، قد تستجيب بعض المواقع الإلكترونية لهذا الطلب عبر عرض إعلانات لا تستند إلى المواقع الإلكترونية الأخرى التي زرتها، بينما ستظل العديد من المواقع الإلكترونية تجمع بيانات تصفّحك وتستخدمها - مثلاً لتحسين الأمان وتقديم محتوى وخدمات وإعلانات واقتراحات وإعداد تقارير بالإحصاءات.</translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
+<translation id="6277722725779679269">تعذّر تحديث ميزة تتبُّع السعر</translation>
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6292420053234093573">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">‏يمكنك إرسال علامات التبويب من وإلى الأجهزة التي تم من خلالها تسجيل الدخول إلى حساب Google نفسه.</translation>
@@ -910,6 +921,7 @@
 <translation id="6411219469806822692">لا يمكن السحب أعلى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أعلى في الصفحة.</translation>
 <translation id="6412673304250309937">‏يعمل على التحقّق من عناوين URL التي تحتوي على قائمة بمواقع إلكترونية غير آمنة مُخزّنة في Chrome. وإذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسل متصفّح Chrome أيضًا عناوين URL تتضمّن أجزاء من محتوى الصفحة إلى "التصفّح الآمن".</translation>
 <translation id="641643625718530986">طباعة…</translation>
+<translation id="6422857128426228781">ستتمكّن من العثور هنا على منتجاتك التي تتتبّع سعرها.</translation>
 <translation id="6433501201775827830">اختيار محرك البحث</translation>
 <translation id="6434309073475700221">تجاهل</translation>
 <translation id="6437478888915024427">معلومات الصفحة</translation>
@@ -987,6 +999,7 @@
 <translation id="6817747507826986771">يتيح لك هذا الزر مشاركة هذه الصفحة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">تم اختيار علامة التبويب <ph name="TAB_TITLE" />.</translation>
+<translation id="6828070228333235514">إيقاف ميزة تتبُّع السعر</translation>
 <translation id="6846298663435243399">جارٍ التحميل…</translation>
 <translation id="6850409657436465440">لا يزال التنزيل قيد التقدُّم</translation>
 <translation id="6850830437481525139">تم إغلاق <ph name="TAB_COUNT" /> علامة تبويب</translation>
@@ -1303,6 +1316,7 @@
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
 <translation id="8572344201470131220">تم نسخ الصورة.</translation>
 <translation id="8583805026567836021">محو بيانات الحساب</translation>
+<translation id="859046281437143747">يمكنك تتبُّع سعر المنتج من خلال الزر "خيارات إضافية".</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8602358303461588329">‏تسجيل الدخول إلى Chrome، تم إغلاق البطاقة السفلية.</translation>
 <translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>

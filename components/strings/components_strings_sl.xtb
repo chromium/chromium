@@ -157,6 +157,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="1428146450423315676">Zlagalnik 7</translation>
+<translation id="142858679511221695">Uporabnik v oblaku</translation>
 <translation id="1428729058023778569">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
@@ -719,6 +720,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3329013043687509092">Nasičenost</translation>
 <translation id="3333762389743153920">Ni ustrezna za virtualno kartico</translation>
 <translation id="3338095232262050444">Varno</translation>
+<translation id="3339446062576134663">Oblak (Ash)</translation>
 <translation id="3355823806454867987">Spremeni nastavitve proxyja ...</translation>
 <translation id="3360103848165129075">List rutine za obravnavo plačil</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ne shrani<ph name="END_EMPHASIS" /> teh podatkov:
@@ -742,6 +744,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3380365263193509176">Neznana napaka</translation>
 <translation id="3380864720620200369">ID odjemalca:</translation>
 <translation id="3381668585148405088">Potrdite nakup</translation>
+<translation id="3383566085871012386">Trenutni vrstni red prednosti</translation>
 <translation id="3387261909427947069">Plačilna sredstva</translation>
 <translation id="3391030046425686457">Naslov za dostavo</translation>
 <translation id="3391482648489541560">urejanje datotek</translation>
@@ -1411,6 +1414,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Ta vsebina morda v napravi poskuša namestiti nevarno programsko opremo, ki ukrade ali izbriše vaše podatke. <ph name="BEGIN_LINK" />Vseeno prikaži<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Dodajanje veljavnega naslova</translation>
+<translation id="5485973315555778056">Računalnik v oblaku</translation>
 <translation id="5490432419156082418">Naslovi in drugo</translation>
 <translation id="5492298309214877701">To spletno mesto v intranetu podjetja, organizacije ali šole ima enak URL kot zunanje spletno mesto.
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5571083550517324815">Prevzem na tem naslovu ni mogoč. Izberite drugega.</translation>
 <translation id="5580958916614886209">Preverite mesec poteka veljavnosti in poskusite znova</translation>
 <translation id="5586446728396275693">Ni shranjenih naslovov</translation>
+<translation id="5587987780934666589">Uporabnik v okolju</translation>
 <translation id="5593349413089863479">Povezava ni povsem varna</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="5598944008576757369">Izbira plačilnega sredstva</translation>
@@ -2128,6 +2133,7 @@ Dodatne podrobnosti:
 <translation id="7953569069500808819">Robni šiv zgoraj</translation>
 <translation id="7956713633345437162">Mobilni zaznamki</translation>
 <translation id="7961015016161918242">Nikoli</translation>
+<translation id="7962467575542381659">Računalnik v okolju</translation>
 <translation id="7966803981046576691">Vrsta računa za opravilo</translation>
 <translation id="79682505114836835">Vrednost »<ph name="VALUE" />« je neveljavna šestnajstiška barva.</translation>
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>

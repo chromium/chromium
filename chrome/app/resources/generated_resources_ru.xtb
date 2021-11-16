@@ -2341,6 +2341,7 @@
 <translation id="3413122095806433232">Издатели центра сертификации: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="3414966631182382431">Вашим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> <ph name="MANAGER" />.</translation>
+<translation id="341589277604221596">Автоматические субтитры – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Всегда показывать URL полностью</translation>
 <translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3417836307470882032">24-часовой формат времени</translation>
@@ -7160,6 +7161,7 @@
 <translation id="8540136935098276800">Введите URL в правильном формате.</translation>
 <translation id="8540503336857689453">Не рекомендуется использовать скрытую сеть из соображений безопасности</translation>
 <translation id="854071720451629801">Отметить как прочитанное</translation>
+<translation id="8540942859441851323">Оператор требует включить мобильный интернет-роуминг</translation>
 <translation id="8541462173655894684">На сервере печати принтеры не найдены.</translation>
 <translation id="8541838361296720865">Нажмите на переключатель или клавишу, чтобы назначить их для действия "<ph name="ACTION" />".</translation>
 <translation id="8542618328173222274">Запрашивать разрешение на использование сайтами устройств и данных виртуальной реальности</translation>

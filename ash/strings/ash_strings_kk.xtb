@@ -327,6 +327,7 @@
 <translation id="334252345105450327">Скриншот түсіру</translation>
 <translation id="3351879221545518001">Экранды трансляциялап жатырсыз.</translation>
 <translation id="3364721542077212959">Стилус құралдары</translation>
+<translation id="3365977133351922112">Телефоныңыз тым алыста. Оны жақындатыңыз.</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3371140690572404006">USB-C құрылғысы (оң жақ алдыңғы порты)</translation>
 <translation id="3375634426936648815">Қосылды</translation>
@@ -595,6 +596,7 @@
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5176318573511391780">Экранның бір бөлігін жазу</translation>
 <translation id="5199367439331364630">Chromebook құрылғысына кіру үшін құпия сөзді енгізіңіз.</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Тағы 1 хабарландыру}other{Тағы # хабарландыру}}</translation>
 <translation id="5207949376430453814">Мәтін курсорын бөлектеу</translation>
 <translation id="5208059991603368177">Қосулы</translation>
@@ -880,6 +882,7 @@
 <translation id="7398254312354928459">Желі ауысты</translation>
 <translation id="7405710164030118432">Құрылғының құлпын ашу үшін Family Link ата-анаға арналған кіру кодын енгізіңіз.</translation>
 <translation id="7406608787870898861">Мобильдік желіні реттеуді аяқтаңыз</translation>
+<translation id="740790383907119240">Қолданба таңбашалары</translation>
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7413851974711031813">Жабу үшін Escape пернесін басыңыз.</translation>
 <translation id="742594950370306541">Камера пайдаланылуда.</translation>
@@ -982,6 +985,7 @@
 <translation id="8061464966246066292">Жоғары контраст</translation>
 <translation id="8098591350844501178">Экран мазмұнын <ph name="RECEIVER_NAME" /> құрылғысына трансляциялауды тоқтату</translation>
 <translation id="8113423164597455979">Қосулы</translation>
+<translation id="8120151603115102514">Телефоныңызда құлып экраны жоқ. Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8132487352815776550">Субтитрді өшіру</translation>
@@ -1031,6 +1035,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Бас тарту үшін Alt+Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> етіп өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
+<translation id="85123341071060231">Chromebook құрылғысында Bluetooth өшірулі. Оның құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>

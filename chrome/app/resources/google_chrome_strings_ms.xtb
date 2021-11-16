@@ -49,6 +49,7 @@
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Sila mulakan semula Chrome sekarang</translation>
 <translation id="2189289170880510015">Sesuaikan beberapa pilihan privasi Chrome yang paling penting</translation>
+<translation id="2258103955319320201">Untuk mengakses bahan penyemak imbas Chrome anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
 <translation id="2290014774651636340">Kunci API Google tiada. Sesetengah fungsi Google Chrome akan dilumpuhkan.</translation>
 <translation id="2290095356545025170">Adakah anda pasti anda mahu menyahpasang Google Chrome?</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
@@ -195,6 +196,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="5941830788786076944">Jadikan Google Chrome penyemak imbas lalai</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome kini lebih baik</translation>
 <translation id="6145313976051292476">Buka PDF dalam Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -208,6 +210,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistem OS Chrome</translation>
+<translation id="6594121454516132231">Lihat perancangan Chrome untuk melindungi anda daripada penjejakan rentas laman sambil memelihara web terbuka</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Biarkan Google Chrome Dijalankan Di Latar Belakang</translation>
 <translation id="6696915334902295848">Chrome memerlukan kebenaran mikrofon untuk laman ini</translation>
@@ -222,6 +225,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6989339256997917931">Google Chrome telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
 <translation id="7062128746136194023">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chrome. Tindakan menambah <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
+<translation id="7085332316435785646">Pilih sama ada untuk memasukkan sejarah Chrome untuk mendapatkan pengalaman yang lebih diperibadikan dalam Perkhidmatan Google</translation>
 <translation id="7088681679121566888">Chrome sudah dikemas kini</translation>
 <translation id="7098166902387133879">Google Chrome menggunakan mikrofon anda.</translation>
 <translation id="7106741999175697885">Pengurus Tugas - Google Chrome</translation>
@@ -246,6 +250,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7665553140559834626">Lancarkan semula untuk mengemas kini &amp;OS Chrome</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
+<translation id="7748512868279796735">Akaun berikut tersedia untuk profil Chrome ini</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="7781002470561365167">Terdapat versi Google Chrome baharu yang tersedia.</translation>
@@ -277,6 +282,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8556340503434111824">Terdapat versi baharu Google Chrome yang tersedia, dan ia lebih pantas daripada biasa.</translation>
+<translation id="8571790202382503603">Dengan profil Chrome anda dapat mengasingkan semua bahan Chrome anda. Ini akan lebih memudahkan pengasingan antara bahan kerja dengan bahan untuk keseronokan.</translation>
 <translation id="8614913330719544658">Google Chrome tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan dilancarkan semula dalam masa seminit}other{Chrome akan dilancarkan semula dalam masa # minit}}</translation>

@@ -354,6 +354,15 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3509391053705095206">Kan nie jou foon kry nie. Maak seker jou foon se Bluetooth is aangeskakel.</translation>
 <translation id="3510164367642747937">Lig muismerker uit</translation>
 <translation id="3513798432020909783">Rekening word bestuur deur <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3518604429872942239">Statuslaai, tyd <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Dateer toestel binne 1 minuut op}other{Dateer toestel binne # minute op}}</translation>
 <translation id="353086728817903341">Gekoppel aan <ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
@@ -376,6 +385,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3630697955794050612">af</translation>
 <translation id="3631369015426612114">Laat kennisgewings van die volgende af toe</translation>
 <translation id="3638400994746983214">Wissel privaatheidskerm. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Stoor <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Tyd vir 'n opdatering</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
 <translation id="3665889125180354336">Neem mikrofoon op</translation>
@@ -459,6 +469,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4215497585250573029">VPN-instellings</translation>
 <translation id="4217571870635786043">Diktee</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />; geïnstalleerde program; onderbreek</translation>
+<translation id="4223947355273782392">Stoor <ph name="NAME" /> in <ph name="EMAIL" /> om vinniger met jou ander toestelle saamgebind te word</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>

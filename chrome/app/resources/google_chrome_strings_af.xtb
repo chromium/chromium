@@ -53,6 +53,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
 <translation id="2151406531797534936">Herbegin Chrome asseblief nou</translation>
 <translation id="2189289170880510015">Pasmaak 'n paar van Chrome se belangrikste privaatheidkeuses</translation>
+<translation id="2258103955319320201">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chrome-blaaiergoed te kry</translation>
 <translation id="2290014774651636340">Google API-sleutels ontbreek. Sommige funksies van Google Chrome sal gedeaktiveer word.</translation>
 <translation id="2290095356545025170">Is jy seker jy wil Google Chrome deïnstalleer?</translation>
 <translation id="2309047409763057870">Dit is 'n sekondêre installering van Chrome en kan nie jou verstekblaaier gemaak word nie.</translation>
@@ -217,6 +218,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6506909944137591434">Chrome het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS-stelsel</translation>
+<translation id="6594121454516132231">Sien hoe Chrome beplan om jou teen kruiswerfnasporing te beveilig terwyl dit die oop web in stand hou</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6696915334902295848">Chrome het mikrofoontoestemming vir hierdie werf nodig</translation>
@@ -231,6 +233,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6989339256997917931">Google Chrome is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
 <translation id="7025800014283535195">Jy kan hier tussen Chrome-profiele wissel</translation>
 <translation id="7062128746136194023">Jou ouer het "Toestemmings vir werwe, programme en uitbreidings" vir Chrome afgeskakel. Hierdie <ph name="EXTENSION_TYPE_PARAMETER" /> mag nie bygevoeg word nie.</translation>
+<translation id="7085332316435785646">Kies of jy Chrome-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="7088681679121566888">Chrome is op datum</translation>
 <translation id="7098166902387133879">Google Chrome gebruik tans jou mikrofoon.</translation>
 <translation id="7106741999175697885">Taakbestuurder – Google Chrome</translation>
@@ -255,6 +258,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7651907282515937834">Chrome-onderneminglogo</translation>
 <translation id="7665553140559834626">Begin weer om &amp;Chrome OS op te dateer</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
+<translation id="7748512868279796735">Die volgende rekeninge is vir hierdie Chrome-profiel beskikbaar</translation>
 <translation id="7761834446675418963">Klik jou naam om Chrome oop te maak en te begin blaai.</translation>
 <translation id="7777080907402804672">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="7781002470561365167">Daar is 'n nuwe weergawe van Google Chrome beskikbaar.</translation>
@@ -286,6 +290,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Hierdie werkprofiel is heeltemal apart van jou persoonlike profiel.</translation>
 <translation id="8556340503434111824">Daar is 'n nuwe weergawe van Google Chrome beskikbaar en dit is vinniger as ooit.</translation>
+<translation id="8571790202382503603">Met Chrome-profiele kan jy al jou Chrome-goed skei. Dit maak dit makliker om tussen werk en pret te verdeel.</translation>
 <translation id="8614913330719544658">Google Chrome reageer nie. Herbegin nou?</translation>
 <translation id="861702415419836452">Chrome moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sal oor 1 minuut herbegin}other{Chrome sal oor # minute herbegin}}</translation>

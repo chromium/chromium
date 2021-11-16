@@ -120,6 +120,7 @@
 <translation id="1743570585616704562">لم يتم التعرف عليها</translation>
 <translation id="1746730358044914197">يتم إعداد طرق الإدخال بواسطة المشرف.</translation>
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
+<translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
 <translation id="1761222317188459878">تبديل الاتصال بالشبكة. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">‏تم تغيير اختصار لوحة المفاتيح <ph name="LAUNCHER_KEY_NAME" /> + مفتاح Period. لاستخدام مفتاح Insert، اضغط على مفتاح <ph name="LAUNCHER_KEY_NAME" /> + Shift + مفتاح Backspace.</translation>
 <translation id="1771761307086386028">التمرير لليمين</translation>

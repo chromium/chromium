@@ -52,6 +52,7 @@
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />වත්මන් සැකසීම්<ph name="END_LINK" /> වාර්තා කිරීමෙන් Chrome වඩා යහපත් කිරීමට උදවු වන්න</translation>
 <translation id="2151406531797534936">දැන් Chrome යළි අරඹන්න</translation>
 <translation id="2189289170880510015">Chrome හි වඩාත්ම වැදගත් පෞද්ගලිකත්ව තේරීම් කිහිපයක් අභිරුචිකරණය කරන්න</translation>
+<translation id="2258103955319320201">ඔබගේ සියලු උපාංග හරහා ඔබගේ Chrome බ්‍රවුසර දේවල්වලට ප්‍රවේශ වීමට, පුරා සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="2290014774651636340">Google API යතුරු අහිමිව ඇත. Google Chrome හි ඇතැම් ක්‍රියාකාරීත්ව අක්‍රීය වනු ඇත.</translation>
 <translation id="2290095356545025170">ඔබට Google Chrome ඉවත්කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="2309047409763057870">මෙය Google Chrome හි දෙවන ස්ථාපනයක් වන අතර, ඔබේ පෙරනිමි බ්‍රව්සරය කළ නොහැකිය.</translation>
@@ -216,6 +217,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6506909944137591434">ඔබගේ වටපිටාවේ 3D සිතියමක් තැනීමට Chrome හට කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS පද්ධතිය</translation>
+<translation id="6594121454516132231">විවෘත වෙබය සංරක්ෂණය කරන අතරතුර හරස්-අඩවි ලුහුබැඳීමෙන් ඔබව ආරක්ෂා කිරීමට Chrome සැලසුම් කරන ආකාරය බලන්න</translation>
 <translation id="6676384891291319759">අන්තර්ජාලය වෙත පිවිසෙන්න</translation>
 <translation id="6679975945624592337">Chrome Run හට පසුබිම ධාවනය වීමට ඉඩ දෙන්න</translation>
 <translation id="6696915334902295848">මෙම අඩවිය සඳහා Chrome හට මයික්‍රෆෝන අවසරය අවශ්‍යයි</translation>
@@ -230,6 +232,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6989339256997917931">Google ක්‍රෝම් යාවත්කාල වී ඇත. නමුත් ඔබ එය අවම වශයෙන් දින 30ක් වත් භාවිත කර නොමැත.</translation>
 <translation id="7025800014283535195">ඔබට මෙහිදී Chrome පැතිකඩවල් අතර මාරු විය හැකිය</translation>
 <translation id="7062128746136194023">ඔබේ මාපිය Chrome සඳහා "වෙබ් අඩවි, යෙදුම් සහ දිගු සඳහා වන අවසර" අක්‍රිය කර ඇත. මෙම <ph name="EXTENSION_TYPE_PARAMETER" /> එක් කිරීමට අවසර නැත.</translation>
+<translation id="7085332316435785646">Google සේවාවල වඩාත් පුද්ගලිකකරණය කළ අත්දැකීම් සඳහා Chrome ඉතිහාසය ඇතුළත් කළ යුතුද යන්න තෝරන්න</translation>
 <translation id="7088681679121566888">Chrome යාවත්කාලීනයි</translation>
 <translation id="7098166902387133879">Google Chrome ඔබගේ මයික්‍රෆෝනය භාවිතා කරමින් සිටී.</translation>
 <translation id="7106741999175697885">ක්‍රියාවලි පාලක - Google Chrome</translation>
@@ -254,6 +257,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7651907282515937834">Chrome ව්‍යවසාය ලාංඡනය</translation>
 <translation id="7665553140559834626">&amp;Chrome OS යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="7747138024166251722">ස්ථාපකයට තාවකාලික නාමාවලියක් තැනිය නොහැකි විය. කරුණාකර හිස් ඉඩ හා මෘදුකාංග ස්ථාපනයට හිස් තැටි ඉඩ පිරික්සන්න.</translation>
+<translation id="7748512868279796735">මෙම Chrome පැතිකඩ සඳහා පහත ගිණුම් තිබේ</translation>
 <translation id="7761834446675418963">ක්‍රෝම් විවෘත කිරීමට ඔබේ නම ක්ලික් කර ගවේෂණය අරඹන්න.</translation>
 <translation id="7777080907402804672">රූපයකට ප්‍රයෝජනවත් විස්තරයක් නොමැති නම්, Chrome ඔබට විස්තරයක් ලබා දීමට උත්සාහ කරයි. විස්තර නිර්මාණ කිරීමට, රූප Google වෙත යවනු ලැබේ. ඔබට ඕනෑම වේලාවක සැකසීම් තුළින් මෙය අක්‍රිය කළ හැක.</translation>
 <translation id="7781002470561365167">Google Chrome හි නව අනුවාදයක් පවතී.</translation>
@@ -285,6 +289,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">මෙම කාර්යාල පැතිකඩ ඔබගේ පුද්ගලික පැතිකඩෙන් සම්පූර්ණයෙන්ම වෙන්ව ඇත.</translation>
 <translation id="8556340503434111824">Google Chrome හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
+<translation id="8571790202382503603">Chrome පැතිකඩවල් සමඟ ඔබට ඔබගේ සියලු Chrome දේවල් වෙන් කළ හැකිය. මෙය වැඩ සහ විනෝදය වෙන් කිරීම පහසු කරයි.</translation>
 <translation id="8614913330719544658">Google Chrome ප්‍රතිචාර නොදක්වයි. යළි දියත් කරන්නද?</translation>
 <translation id="861702415419836452">Chrome හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 විනාඩියකින් යළි දියත් වෙයි}one{Chrome විනාඩි # කින් යළි දියත් වෙයි}other{Chrome විනාඩි # කින් යළි දියත් වෙයි}}</translation>

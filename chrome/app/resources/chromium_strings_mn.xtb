@@ -28,6 +28,7 @@
 <translation id="1981611865800294956">&amp;Chromium OS-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2008474315282236005">Энэ нь төхөөрөмжөөс 1 зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2020032459870799438">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chromium-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chromium-н түүхийг багтаах эсэхээ сонгоно уу</translation>
 <translation id="2174178932569897599">Chromium-г өөрчлөх</translation>
 <translation id="2185166961232948079">Chromium - Сүлжээнд нэвтрэх - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Хэрэв та компьютероо дундаа ашиглаж байгаа бол таны найз нөхөд, гэр бүл  тусдаа хайлт хийж,  өөрсдийн хүссэнээрээ Chromium-ыг тохируулж болно.</translation>
@@ -39,6 +40,7 @@
 <translation id="2401032172288869980">Chromium-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="2483889755041906834">Chromium-д</translation>
 <translation id="2485422356828889247">Устгах</translation>
+<translation id="251127392410688874">Chromium нээлттэй вебийг хадгалах явцдаа таныг сайт хооронд хянахаас хэрхэн хамгаалахаар төлөвлөж байгааг харна уу</translation>
 <translation id="2535480412977113886">Таны бүртгэлийн мэдээлэл хэтэрхий хуучирсан байгаа учраас Chromium OS-аас таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="2560420686485554789">Файл татахын тулд Chromium-д сангийн хандалт шаардлагатай</translation>
 <translation id="2572494885440352020">Chromium-ийн туслагч</translation>
@@ -221,6 +223,7 @@
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="734373864078049451">Таны веб хуудас, хавчуурга, болон бусад Chromium-ийн зүйлс энд байдаг.</translation>
 <translation id="7349591376906416160">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
+<translation id="7398989605938454041">Та Chromium-н профайлуудаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Энэ нь ажил болон зугаацдаг зүйлсээ тусад нь байлгахад илүү хялбар болгоно.</translation>
 <translation id="7448255348454382571">Chromium OS-г дахин эхлүүлэх</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Дев</translation>
 <translation id="7451052299415159299">Энэ сайтыг ашиглахын тулд Chromium-д таны камерт хандах зөвшөөрөл шаардлагатай</translation>
@@ -241,6 +244,7 @@
 <translation id="7828947555739565424">Энэ бүртгэлтэй Chromium-н профайл аль хэдийн энэ төхөөрөмж дээр байна</translation>
 <translation id="7857220146454061152">Google Chromium-н цаашдын шинэчлэлтийг авахын тулд танд OS X 10.11 буюу түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер OS X 10.10 хувилбарыг ашиглаж байна.</translation>
 <translation id="7867198900892795913">Chromium-г хамгийн сүүлийн хувилбарт шинэчлээгүй тул та шинэ онцлог болон аюулгүй байдлын засвар авах боломжгүй байна.</translation>
+<translation id="788352880609666695">Дараах бүртгэлүүд Chromium-н энэ профайлд боломжтой байна</translation>
 <translation id="7898472181347242998">Таны төхөөрөмж шинэчлэгдсэн эсэхийг харахын тулд <ph name="LINK_BEGIN" />Chromium үйлдлийн системийн тохиргоо<ph name="LINK_END" /> руу очно уу</translation>
 <translation id="7937630085815544518">Та Chromium-д <ph name="USER_EMAIL_ADDRESS" />-аар нэвтэрсэн байна. Нэвтрэхийн тулд ижил данс хэрэглэнэ үү.</translation>
 <translation id="7975919845073681630">Энэ нь Chromium-н хоёр дахь суулгалт тул таны өгөгдмөл хөтчөөр сонгох боломжгүй.</translation>
@@ -253,6 +257,7 @@
 <translation id="8290862415967981663">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
 <translation id="8330519371938183845">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> өмнө нь Chromium-г ашиглаж байсан</translation>
+<translation id="8357820681460164151">Та бүх төхөөрөмж дээрээ Chromium хөтчийн зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium-г 1 хоногийн дотор дахин ажиллуулна уу}other{Chromium-г # хоногийн дотор дахин ажиллуулна уу}}</translation>
 <translation id="8453117565092476964">Суулгагчийн архив устгагдсан эсвэл хүчингүй болсон байна. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="8493179195440786826">Chromium нь хуучирсан байна</translation>

@@ -157,6 +157,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1422930527989633628">Kan vragen of deze site bluetooth-apparaten in de buurt mag vinden</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1428146450423315676">Stapeleenheid 7</translation>
+<translation id="142858679511221695">Cloud-gebruiker</translation>
 <translation id="1428729058023778569">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
@@ -713,6 +714,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3333762389743153920">Niet geschikt als virtuele kaart</translation>
 <translation id="3338095232262050444">Beveiligd</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
 <translation id="3360103848165129075">Blad voor betalingshandler</translation>
 <translation id="3361596688432910856">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chrome:
@@ -736,6 +738,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3380864720620200369">Klant-ID:</translation>
 <translation id="3381668585148405088">Je aankoop verifiëren</translation>
+<translation id="3383566085871012386">Huidige voorrangsvolgorde</translation>
 <translation id="3387261909427947069">Betaalmethoden</translation>
 <translation id="3391030046425686457">Afleveradres</translation>
 <translation id="3391482648489541560">bestanden bewerken</translation>
@@ -1403,6 +1406,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5478437291406423475">B6/C4 (envelop)</translation>
 <translation id="5481076368049295676">Deze content probeert mogelijk gevaarlijke software op je apparaat te installeren die je gegevens steelt of verwijdert. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Voeg een geldig adres toe</translation>
+<translation id="5485973315555778056">Cloud-apparaat</translation>
 <translation id="5490432419156082418">Adressen en meer</translation>
 <translation id="5492298309214877701">Deze site op het intranet van het bedrijf, de organisatie of de school heeft dezelfde URL als een externe website.
     <ph name="LINE_BREAK" />
@@ -1432,6 +1436,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5571083550517324815">Kan niet ophalen van dit adres. Selecteer een ander adres.</translation>
 <translation id="5580958916614886209">Controleer de vervalmaand en probeer het opnieuw</translation>
 <translation id="5586446728396275693">Geen opgeslagen adressen</translation>
+<translation id="5587987780934666589">Platformgebruiker</translation>
 <translation id="5593349413089863479">Verbinding is niet volledig beveiligd</translation>
 <translation id="5595485650161345191">Adres bewerken</translation>
 <translation id="5598944008576757369">Betaalmethode kiezen</translation>
@@ -2119,6 +2124,7 @@ Aanvullende informatie:
 <translation id="7953569069500808819">Inbinden met nietjes boven</translation>
 <translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7961015016161918242">Nooit</translation>
+<translation id="7962467575542381659">Platformapparaat</translation>
 <translation id="7966803981046576691">Type taakaccount</translation>
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
 <translation id="7968982339740310781">Details bekijken</translation>

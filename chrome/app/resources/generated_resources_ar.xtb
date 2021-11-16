@@ -600,6 +600,7 @@
 <translation id="161042844686301425">سماوي</translation>
 <translation id="1611432201750675208">تم قفل جهازك</translation>
 <translation id="1612019740169791082">‏لا تتيح الحاوية الخاصة بك تغيير حجم القرص. لضبط مقدار المساحة المخصّصة لنظام Linux، يُرجى الاحتفاظ بنسخة احتياطية ثم استعادتها في حاوية جديدة.</translation>
+<translation id="1613019471223620622">عرض كلمة المرور للمستخدم <ph name="USERNAME" /> ضِمن النطاق <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">يبدو أنك قد استنفدت القدر المتاح لك من بيانات الجوّال. يُمكنك الانتقال إلى منفذ تفعيل <ph name="NAME" /> لشراء مزيد من البيانات.</translation>
 <translation id="161460670679785907">يتعذَّر رصد هاتفك.</translation>
 <translation id="1615337439947999338">‏حفظ كلمة المرور في حسابك على Google (<ph name="EMAIL" />)</translation>
@@ -1207,6 +1208,7 @@
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">يجب اختيار ألبوم واحد على الأقل من "معرض الفنون".</translation>
 <translation id="2224551243087462610">تعديل اسم المجلد</translation>
@@ -3328,6 +3330,7 @@
 <translation id="4444304522807523469">‏الدخول إلى الماسحات الضوئية للمستند الملحق عبر جهاز USB أو على الشبكة المحلية</translation>
 <translation id="4444512841222467874">إذا لم تتوفر مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيًا.</translation>
 <translation id="4446933390699670756">معكوس</translation>
+<translation id="4448914100439890108">عدم عرض كلمة المرور للمستخدم <ph name="USERNAME" /> ضِمن النطاق <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">يتبع اسم المستخدِم إلى حساب العمل الخاص بمؤسستك. ولتسجيل الأجهزة في الحساب، يجب أولاً إثبات ملكية النطاق في "وحدة تحكُّم المشرف". وستحتاج إلى امتيازات المشرف في الحساب لإثبات ملكية النطاق.</translation>
 <translation id="4449996769074858870">تشغّل علامة التبويب هذه صوتًا.</translation>
 <translation id="4450274068924249931">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط. ويسمح تفعيل شاشة التوقُّف بمواصلة تشغيل شاشتك أثناء شحن الجهاز.</translation>
@@ -3851,6 +3854,7 @@
 <translation id="5009463889040999939">جارٍ إعادة تسمية الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="5010043101506446253">صلاحية الشهادة</translation>
 <translation id="5015344424288992913">إثبات هوية الخادم الوسيط...</translation>
+<translation id="5016491575926936899">يمكنك إرسال رسائل نصية من جهاز الكمبيوتر ومشاركة اتصالك بالإنترنت والرد على إشعارات المحادثات وفتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">‏يمكنك التنقُّل بين الصفحات باستخدام مؤشر النص، ويمكنك الضغط على Ctrl+Search+7 لإيقافه.</translation>
 <translation id="5017828934289857214">تذكيري لاحقًا</translation>
 <translation id="5018207570537526145">فتح الموقع الإلكتروني الخاص بالإضافة</translation>
@@ -4441,6 +4445,7 @@
 <translation id="5638309510554459422">‏يمكنك العثور على الإضافات والمظاهر في <ph name="BEGIN_LINK" />سوق Chrome الإلكتروني<ph name="END_LINK" />.</translation>
 <translation id="5639549361331209298">إعادة تحميل هذه الصفحة، انتظر لمشاهدة المزيد من الخيارات</translation>
 <translation id="5640133431808313291">إدارة مفاتيح الأمان</translation>
+<translation id="5641608986289282154">بدء استخدام <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">‏التوقيع على قوائم إبطال الشهادات (CRL)</translation>
 <translation id="5643321261065707929">شبكة تفرض تكلفة استخدام</translation>
 <translation id="5643620609347735571">محو ومتابعة</translation>

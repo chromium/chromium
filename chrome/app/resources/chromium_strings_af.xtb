@@ -28,6 +28,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1981611865800294956">Begin weer om &amp;Chromium OS op te dateer</translation>
 <translation id="2008474315282236005">Dit sal 1 item op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Meld by Chromium aan<ph name="END_LINK" /> om te kyk of jou ander wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
+<translation id="2049376729098081731">Kies of jy Chromium-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="2174178932569897599">Pasmaak Chromium</translation>
 <translation id="2185166961232948079">Chromium – Netwerkaanmelding – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">As jy 'n rekenaar deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê.</translation>
@@ -39,6 +40,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
+<translation id="251127392410688874">Sien hoe Chromium beplan om jou teen kruiswerfnasporing te beveilig terwyl dit die oop web in stand hou</translation>
 <translation id="2535480412977113886">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie, omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="2560420686485554789">Chromium het bergingtoegang nodig om lêers af te laai</translation>
 <translation id="2572494885440352020">Chromium-helper</translation>
@@ -225,6 +227,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="734373864078049451">Jou web, boekmerke en ander Chromium-goed woon hier.</translation>
 <translation id="7349591376906416160">Jou stelseladministrateur het Chromium opgestel om <ph name="ALTERNATIVE_BROWSER_NAME" /> oop te maak om by <ph name="TARGET_URL_HOSTNAME" /> in te gaan.</translation>
+<translation id="7398989605938454041">Met Chromium-profiele kan jy al jou Chromium-goed skei. Dit maak dit makliker om tussen werk en pret te verdeel.</translation>
 <translation id="7448255348454382571">Herbegin Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
@@ -245,6 +248,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7828947555739565424">'n Chromium-profiel met hierdie rekening bestaan reeds op hierdie toestel</translation>
 <translation id="7857220146454061152">Jy het OS X 10.11 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium kon nie na die nuutste weergawe opdateer nie en daarom het jy nie nuwe kenmerke en sekuriteitregstellings nie.</translation>
+<translation id="788352880609666695">Die volgende rekeninge is vir hierdie Chromium-profiel beskikbaar</translation>
 <translation id="7898472181347242998">Gaan na <ph name="LINK_BEGIN" />Chromium OS-instellings<ph name="LINK_END" /> om te sien of jou toestel op datum is</translation>
 <translation id="7937630085815544518">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chromium aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
 <translation id="7975919845073681630">Dit is 'n sekondêre installering van Chromium en kan nie jou verstekblaaier gemaak word nie.</translation>
@@ -257,6 +261,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8290862415967981663">Hierdie lêer kan gevaarlik wees en daarom het Chromium dit geblokkeer.</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>
+<translation id="8357820681460164151">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-blaaiergoed te kry.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Herbegin Chromium binne 'n dag}other{Herbegin Chromium binne # dae}}</translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>

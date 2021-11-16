@@ -2353,6 +2353,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3413122095806433232">CA väljastajad: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Suurus:</translation>
 <translation id="3414966631182382431">Teie <ph name="BEGIN_LINK" />brauserit haldab<ph name="END_LINK" /> <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Reaalajas subtiitrid – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Kuva alati täielikud URL-id</translation>
 <translation id="3417835166382867856">Otsige vahelehtedelt</translation>
 <translation id="3417836307470882032">24-tunnine kell</translation>
@@ -7184,6 +7185,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
 <translation id="8540503336857689453">Turvakaalutlustel ei soovitata peidetud võrku kasutada.</translation>
 <translation id="854071720451629801">Märgi loetuks</translation>
+<translation id="8540942859441851323">Teenusepakkuja nõuab andmeside rändlust</translation>
 <translation id="8541462173655894684">Prindiserverist ei leitud ühtegi printerit</translation>
 <translation id="8541838361296720865">Vajutage lülitit või klahvi klaviatuuril, et see toimingule „<ph name="ACTION" />“ määrata</translation>
 <translation id="8542618328173222274">Küsi, kui sait soovib kasutada teie virtuaalreaalsuse seadmeid ja andmeid</translation>

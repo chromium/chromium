@@ -15,7 +15,7 @@
 <translation id="1100066534610197918">Otvori u novoj kartici i grupi</translation>
 <translation id="1103142993930332957">Želite li pomoći da poboljšamo Chrome?</translation>
 <translation id="1105960400813249514">Snimanje ekrana</translation>
-<translation id="1108938384783527433">Sinkronizacija povijesti</translation>
+<translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1110914759170138831">Istaknuta stavka je skraćena</translation>
 <translation id="1111673857033749125">Oznake koje sačuvate na drugim uređajima će se pojaviti ovdje.</translation>
 <translation id="1113597929977215864">Prikaži pojednostavljeni prikaz</translation>
@@ -161,7 +161,7 @@
 <translation id="2000419248597011803">Šalje neke kolačiće i pretraživanja s trake za adresu i iz okvira za pretraživanje vašem zadanom pretraživaču</translation>
 <translation id="200114059308480249">Obuhvatiti okružujući tekst u pretraživanjima na Googleu?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
-<translation id="2020309681647789787">Vaša će povijest biti na svim vašim sinkroniziranim uređajima kako biste mogli nastaviti ono što radite</translation>
+<translation id="2020309681647789787">Na svim vašim sinhroniziranim uređajima ćete imati historiju, pa možete nastaviti s onim što ste radili</translation>
 <translation id="2021896219286479412">Kontr. web lok. na cijelom ekr.</translation>
 <translation id="2038563949887743358">Uključivanje zahtjeva za verziju web lokacije za računar</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> također ima podatke u Chromeu</translation>
@@ -860,7 +860,7 @@ Probni periodi Okruženja zaštićene privatnosti i dalje su u fazi aktivnog raz
 <translation id="6070730414166672373">Kontaktiranje banke\u2026</translation>
 <translation id="6085886413119427067">Određuje način povezivanja s web lokacijama putem sigurne veze</translation>
 <translation id="60923314841986378">Broj preostalih sati: <ph name="HOURS" /></translation>
-<translation id="6095578583683628124">Ako vam je Google i zadana tražilica, prikazivat će vam se bolji, kontekstualno relevantni prijedlozi</translation>
+<translation id="6095578583683628124">Ako je Google vaš zadani pretraživač, vidjet ćete bolje, kontekstualno relevantne prijedloge</translation>
 <translation id="6108923351542677676">U toku je postavljanje…</translation>
 <translation id="6111020039983847643">količina korištenih podataka</translation>
 <translation id="6112702117600201073">Osvježavanje stranice</translation>
@@ -1414,7 +1414,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
 <translation id="9155898266292537608">Također možete pretraživati brzim dodirom riječi</translation>
 <translation id="9158770349521403363">Dijeli samo sadržaj</translation>
-<translation id="916446198114569890">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
+<translation id="916446198114569890">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="9169507124922466868">Historija navigacije je napola otvorena</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provjereno prije 1 minutu}one{Provjereno prije # minutu}few{Provjereno prije # minute}other{Provjereno prije # minuta}}</translation>
 <translation id="9204836675896933765">Ostao je još 1 fajl</translation>

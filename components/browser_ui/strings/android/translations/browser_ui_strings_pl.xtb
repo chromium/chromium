@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
 <translation id="2490684707762498678">Zarządzane przez <ph name="APP_NAME" /></translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 plik cookie w użyciu}few{# pliki cookie w użyciu}many{# plików cookie w użyciu}other{# pliku cookie w użyciu}}</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
+<translation id="848952951823693243">Zawsze żądaj strony mobilnej</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>

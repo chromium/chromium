@@ -385,6 +385,7 @@
 <translation id="3630697955794050612">បិទ</translation>
 <translation id="3631369015426612114">អនុញ្ញាត​ការជូន​ដំណឹង​ពីបញ្ជី​ខាងក្រោម</translation>
 <translation id="3638400994746983214">បិទ/បើកអេក្រង់ឯកជនភាព។ <ph name="STATE_TEXT" />។</translation>
+<translation id="3640092422335864171">រក្សាទុក <ph name="NAME" /></translation>
 <translation id="3649505501900178324">ហួសពេលដំឡើងកំណែ​</translation>
 <translation id="366222428570480733">អ្នកប្រើប្រាស់​ដែលគ្រប់គ្រង​ដោយ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">ថតសំឡេង​ដោយ​ប្រើ​មីក្រូហ្វូន</translation>
@@ -467,6 +468,7 @@
 <translation id="4215497585250573029">ការ​កំណត់ VPN</translation>
 <translation id="4217571870635786043">ការសរសេរ​តាមអាន​</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, កម្មវិធី​ដែលបាន​ដំឡើង ហើយ​បានផ្អាក</translation>
+<translation id="4223947355273782392">រក្សាទុក <ph name="NAME" /> នៅក្នុង <ph name="EMAIL" /> ដើម្បីផ្គូផ្គងកាន់តែរហ័សជាមួយឧបករណ៍ផ្សេងទៀតរបស់អ្នក</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">បើកការកំណត់</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>

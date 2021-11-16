@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1428146450423315676">스태커 7</translation>
+<translation id="142858679511221695">Cloud 사용자</translation>
 <translation id="1428729058023778569">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
@@ -715,6 +716,7 @@
 <translation id="3329013043687509092">채도</translation>
 <translation id="3333762389743153920">가상 카드로 사용할 수 없음</translation>
 <translation id="3338095232262050444">보안 연결</translation>
+<translation id="3339446062576134663">Cloud(Ash)</translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
 <translation id="3360103848165129075">결제 핸들러 시트</translation>
 <translation id="3361596688432910856">Chrome에 다음 정보가 <ph name="BEGIN_EMPHASIS" />저장되지 않습니다<ph name="END_EMPHASIS" />.
@@ -738,6 +740,7 @@
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3380864720620200369">클라이언트 ID:</translation>
 <translation id="3381668585148405088">구매 확인</translation>
+<translation id="3383566085871012386">현재 우선 순서</translation>
 <translation id="3387261909427947069">결제 수단</translation>
 <translation id="3391030046425686457">배송지 주소</translation>
 <translation id="3391482648489541560">파일 수정</translation>
@@ -1402,6 +1405,7 @@
 <translation id="5478437291406423475">B6/C4(봉투)</translation>
 <translation id="5481076368049295676">이 콘텐츠는 사용자의 정보를 도용하거나 삭제하는 위험한 소프트웨어를 기기에 설치하려 할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
+<translation id="5485973315555778056">Cloud 머신</translation>
 <translation id="5490432419156082418">주소 및 기타</translation>
 <translation id="5492298309214877701">회사, 조직, 학교 인트라넷의 해당 사이트가 외부 웹사이트와 동일한 URL을 갖고 있습니다.
     <ph name="LINE_BREAK" />
@@ -1431,6 +1435,7 @@
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="5586446728396275693">저장된 주소 없음</translation>
+<translation id="5587987780934666589">플랫폼 사용자</translation>
 <translation id="5593349413089863479">연결 보안이 완벽하지 않음</translation>
 <translation id="5595485650161345191">주소 수정</translation>
 <translation id="5598944008576757369">결제 수단 선택</translation>
@@ -2118,6 +2123,7 @@
 <translation id="7953569069500808819">상단 에지 스티치</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
+<translation id="7962467575542381659">플랫폼 머신</translation>
 <translation id="7966803981046576691">작업 계정 유형</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" 값은 유효하지 않은 16진수 색상입니다.</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>

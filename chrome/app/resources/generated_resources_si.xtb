@@ -1222,6 +1222,7 @@
 <translation id="2232751457155581899">අඩවි ඔබේ කැමරාවේ ස්ථානය හඹා යාමට ඉල්ලිය හැකිය</translation>
 <translation id="2232876851878324699">ගොනුවෙහි සහතිකයක් අඩංගුය, එය ආනයනය කළ එකක් නොවේ:</translation>
 <translation id="2233502537820838181">වැඩිදුර තොරතුරු</translation>
+<translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="2234876718134438132">සමමුහුව සහ Google සේවා</translation>
 <translation id="2235344399760031203">තෙවන පාර්ශ්ව කුකී අවහිර කළා</translation>
 <translation id="2238379619048995541">සංඛ්‍යාත තත්ව දත්ත</translation>
@@ -1910,6 +1911,7 @@
 <translation id="2923006468155067296">දැන් ඔබගේ <ph name="DEVICE_TYPE" /> අගුලු දමනු ඇත.
 <ph name="DOMAIN" /> හට ඔබ ඔබගේ ස්මාර්ට් කාඩ්පත ඇතුළු කර තබා ගැනීමට අවශ්‍යයි.</translation>
 <translation id="2923234477033317484">මෙම ගිණුම ඉවත් කරන්න</translation>
+<translation id="2923644930701689793">ඔබගේ දුරකථනයේ කැමරා රෝල වෙත ප්‍රවේශ වන්න</translation>
 <translation id="2926085873880284723">පෙරනිමි කෙටිමං ප්‍රතිසාධනය</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> සඳහා සහාය නොදක්වයි.</translation>
 <translation id="2927017729816812676">හැඹිලි ගබඩාව</translation>
@@ -3103,6 +3105,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />ට අයත් සමහර සැකසුම් ඔබ සමග බෙදාගනිමින් සිටී. මෙම සැකසුම් බහුවිධ පිරීම භාවිතා කරන විට පමණක් මෙම සැකසුම් ඔබගේ ගිණුමට බලපායි.</translation>
 <translation id="4169535189173047238">අවසර නොදෙන්න</translation>
 <translation id="4170314459383239649">පිටවීමේදී හිස් කරන්න</translation>
+<translation id="417096670996204801">පැතිකඩක් තෝරා ගන්න</translation>
 <translation id="4175137578744761569">ලා දම් සහ සුදු</translation>
 <translation id="4175737294868205930">අනවරත ගබඩාව</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>

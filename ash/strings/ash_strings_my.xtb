@@ -376,6 +376,7 @@
 <translation id="3630697955794050612">ပိတ်ထားသည်</translation>
 <translation id="3631369015426612114">အောက်ပါတို့ထံမှ အကြောင်းကြားချက်များကို ခွင့်ပြုရန်</translation>
 <translation id="3638400994746983214">ကိုယ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> ကိုသိမ်းခြင်း</translation>
 <translation id="3649505501900178324">အပ်ဒိတ် ရက်လွန်နေသည်</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="3665889125180354336">မိုက်ခရိုဖုန်းအသံဖမ်းရန်</translation>
@@ -458,6 +459,7 @@
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ခဏရပ်ထားသည်</translation>
+<translation id="4223947355273782392">အခြားစက်များသို့ အမြန်တွဲချိတ်ရန် <ph name="NAME" /> ကို <ph name="EMAIL" /> သို့သိမ်းပါ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>

@@ -77,6 +77,7 @@
 <translation id="2016697457005847575">トラブルシューティングの手順を試す</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">詳細設定</translation>
+<translation id="2104796393919810494">修復を完了しました</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB / <ph name="TOTAL_MEMORY" /> GB 使用可能</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -185,6 +186,7 @@
 <translation id="409427325554347132">テストの詳細を保存</translation>
 <translation id="4111761024568264522">USB タッチパッド</translation>
 <translation id="4131410914670010031">白黒</translation>
+<translation id="4140251671072434548">RMA サーバーのロック解除を実行</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4155551848414053977">スキャナの電源がオンになっていて、ネットワーク経由または直接接続して使用できることを確認してください</translation>
@@ -475,6 +477,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8132480444149501833">トラフィック カウンタをリクエスト</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">ロック解除コードを入力:</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>

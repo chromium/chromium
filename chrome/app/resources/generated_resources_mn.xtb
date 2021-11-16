@@ -1227,6 +1227,7 @@
 <translation id="2232751457155581899">Сайтууд таны камерын байрлалыг хянахыг хүсэх боломжтой</translation>
 <translation id="2232876851878324699">Файлд импортолж аваагүй нэг гэрчилгээ агуулагдсан байна:</translation>
 <translation id="2233502537820838181">&amp; Дэлгэрэнгүй мэдээлэл</translation>
+<translation id="223356358902285214">Веб, аппын үйл ажиллагаа</translation>
 <translation id="2234876718134438132">Синк болон Google-н үйлчилгээ</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2238379619048995541">Хадгалагдсан мэдээллийн давтамж</translation>
@@ -1916,6 +1917,7 @@
 <translation id="2923006468155067296">Таны <ph name="DEVICE_TYPE" />-г одоо түгжинэ.
 <ph name="DOMAIN" /> таныг ухаалаг картаа оруулсан хэвээр байхыг шаардана.</translation>
 <translation id="2923234477033317484">Энэ бүртгэлийг устгах</translation>
+<translation id="2923644930701689793">Утасны камераараа авсан зургийн цомогт хандаарай</translation>
 <translation id="2926085873880284723">Өгөгдмөл товчлолыг сэргээх</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" />-г дэмждэггүй.</translation>
 <translation id="2927017729816812676">Нөөшийн сан</translation>
@@ -2356,6 +2358,7 @@
 <translation id="3413122095806433232">Гэрчилгээжүүлэлт олгогч: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
 <translation id="3414966631182382431"><ph name="MANAGER" /> таны <ph name="BEGIN_LINK" />хөтчийг удирддаг<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">Шууд тайлбар - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Үргэлж бүтэн URL-г харуулах</translation>
 <translation id="3417835166382867856">Табуудыг хайх</translation>
 <translation id="3417836307470882032">24 цагтай цаг ашиглах</translation>
@@ -3107,6 +3110,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-тэй холбоотой зарим тохиргоог танд үзүүлэх боломжтой болгосон байна. Энэхүү тохиргоо нь зөвхөн олон нэрээр зэрэг хандалт хийж байх үед таны хаягт нөлөөлөх болно.</translation>
 <translation id="4169535189173047238">Зөвшөөрөхгүй</translation>
 <translation id="4170314459383239649">Гарахад устгах</translation>
+<translation id="417096670996204801">Профайл сонгох</translation>
 <translation id="4175137578744761569">Цайвар ягаан ба цагаан</translation>
 <translation id="4175737294868205930">Байнгын сан</translation>
 <translation id="4176463684765177261">Хаасан</translation>
@@ -4090,6 +4094,7 @@
 <translation id="5265562206369321422">Нэг долоо хоногоос дээш хугацаагаар сүлжээнд холбогдон ашиглаагүй байна.</translation>
 <translation id="5265797726250773323">Суулгах явцад алдаа гарлаа</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-н бусад үйлдэл</translation>
 <translation id="5269977353971873915">Хэвлэх үйлдэл амжилтгүй болсон байна</translation>
 <translation id="5275352920323889391">Нохой</translation>
 <translation id="527605982717517565"><ph name="HOST" />-д байгаа JavaScript-ийг үргэлж зөвшөөрөх</translation>
@@ -5473,6 +5478,7 @@
 <translation id="6775163072363532304">Боломжтой байгаа төхөөрөмжүүд энд харагдана.</translation>
 <translation id="6777817260680419853">Дахин чиглүүлэлтийг блоклосон</translation>
 <translation id="6778737459546443941">Таны эцэг эх үүнийг зөвшөөрөөгүй байна</translation>
+<translation id="6779092717724412415">Үүнтэй адил тодруулга үүсгэхийн тулд дурын текст сонгож, баруун талыг товшино уу.</translation>
 <translation id="6779447100905857289">таны сагс</translation>
 <translation id="677965093459947883">Маш жижиг</translation>
 <translation id="6781005693196527806">&amp;Хайлтын системийг удирдах...</translation>
@@ -6289,6 +6295,7 @@
 <translation id="7625823789272218216">Шинэ табыг зүүн тийш нь</translation>
 <translation id="7628201176665550262">Сэргээх хурд</translation>
 <translation id="7629827748548208700">Цонх: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Энэ төхөөрөмжийг <ph name="MANAGER" /> удирддаг бөгөөд танаас тухай бүрд нэвтрэхийг шаардаж байна.</translation>
 <translation id="7631014249255418691">Linux аппууд болон файлуудыг амжилттай нөөцөллөө</translation>
 <translation id="7631205654593498032">Төхөөрөмжүүдээ холбосноор та <ph name="DEVICE_TYPE" />-даа дараах зөвшөөрлийг олгож байна:</translation>
 <translation id="7631887513477658702">Энэ төрлийн файлуудыг байнга нээдэг байх</translation>
@@ -7181,6 +7188,7 @@
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>
 <translation id="8540503336857689453">Нуусан сүлжээг ашиглахыг аюулгүй байдлын шалтгаануудын улмаас санал болгодоггүй.</translation>
 <translation id="854071720451629801">Уншсан гэж тэмдэглэх</translation>
+<translation id="8540942859441851323">Үйлчилгээ үзүүлэгчээс шаардсан роуминг</translation>
 <translation id="8541462173655894684">Хэвлэх серверээс ямар ч хэвлэгч олдсонгүй</translation>
 <translation id="8541838361296720865">Сэлгүүр эсвэл гарын товчийг “<ph name="ACTION" />”-д оноохын тулд дээр нь дарна уу</translation>
 <translation id="8542618328173222274">Сайт таны виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглах хүсэлтэй үед асуух</translation>

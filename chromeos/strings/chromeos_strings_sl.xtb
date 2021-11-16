@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Preklic optičnega branja</translation>
 <translation id="1851218745569890714">Videokonference</translation>
+<translation id="1857850044054738019">Izberite to možnost, če bo ta naprava vrnjena med zaloge ali obnovljena za
+        distribucijo novi stranki.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
@@ -200,6 +202,7 @@
 <translation id="4244962993387259361">Če želite izvajati preizkus pomnilnika, potrebujete najmanj 500 MB prostora. Če želite sprostiti prostor, odprite »Nastavitve &gt; Upravljanje shrambe«.</translation>
 <translation id="4258281355379922695">Zakasnitev HTTP</translation>
 <translation id="4271957103967917607">Ogled v celozaslonskem načinu</translation>
+<translation id="4275799948641988986">Kdo bo po popravilu uporabljal napravo?</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Ni se izvedlo</translation>
@@ -416,6 +419,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7297226631177386107">Ni mogoče vzpostaviti povezave s spletnimi mesti HTTPS prek požarnega zidu.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Naprava bo dobila drugega lastnika</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
@@ -423,6 +427,9 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
+<translation id="7451112128070628323">Izberite to možnost, če se lastništvo naprave na spreminja.
+        Ta naprava se na primer prenaša na drugo osebo
+        v organizaciji.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
@@ -549,6 +556,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>
+<translation id="9095415590198785865">Naprava se prenaša k istemu lastniku</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>

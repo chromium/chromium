@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
 <translation id="1851218745569890714">Mikutano ya Video</translation>
+<translation id="1857850044054738019">Teua chaguo hili ikiwa kifaa kinaletwa dukani baada ya kuisha au kinarekebishwa
+        ili kisambazwe kwa mteja mpya.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Sahihisho la maunzi</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
@@ -200,6 +202,7 @@
 <translation id="4244962993387259361">Unahitaji nafasi ya hifadhi ya angalau MB 500 ili uweze kufanya jaribio la Hifadhi. Ili ufute baadhi ya faili na upate nafasi, nenda kwenye Mipangilio &gt; Kudhibiti nafasi ya hifadhi.</translation>
 <translation id="4258281355379922695">Muda wa Kusubiri Maombi ya HTTPS</translation>
 <translation id="4271957103967917607">Angalia Skrini Nzima</translation>
+<translation id="4275799948641988986">Baada ya kurekebishwa, ni nani atakayetumia kifaa hiki?</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
@@ -415,6 +418,7 @@
 <translation id="7297226631177386107">Imeshindwa kuunganisha kwenye tovuti za HTTPS kupitia kinga mtandao</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Kifaa kitaenda kwa mmiliki tofauti</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
 <translation id="7359657277149375382">Aina ya faili</translation>
@@ -422,6 +426,9 @@
 <translation id="7415801143053185905">Muda mwingi sana wa kusubiri maombi ya HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Imemaliza kuchanganua. Ukurasa mmoja umechanganuliwa}other{Imemaliza kuchanganua. Kurasa {NUMBER_OF_PAGES} zimechanganuliwa}}</translation>
+<translation id="7451112128070628323">Teua chaguo hili ikiwa umiliki wa kifaa haubadiliki.
+        Kwa mfano, ikiwa kifaa kinapewa mtu tofauti
+         ndani ya shirika.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7487067081878637334">Teknolojia</translation>
 <translation id="7490813197707563893">Anwani ya MAC</translation>
@@ -548,6 +555,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Matumizi ya sasa</translation>
+<translation id="9095415590198785865">Kifaa kitaenda kwa mmiliki yule yule</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Onyesha upya tiketi ya <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" /></translation>

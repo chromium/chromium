@@ -2346,6 +2346,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3413122095806433232">CA-uitgevers: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="3414966631182382431">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Live ondertiteling - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Altijd volledige URL's bekijken</translation>
 <translation id="3417835166382867856">Tabbladen doorzoeken</translation>
 <translation id="3417836307470882032">Militaire tijd</translation>
@@ -5610,6 +5611,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6914783257214138813">Je wachtwoorden zijn zichtbaar voor iedereen die het geëxporteerde bestand kan bekijken.</translation>
 <translation id="6916590542764765824">Extensies beheren</translation>
 <translation id="6919868320029503575">Zwakke wachtwoorden</translation>
+<translation id="6919952941889172531">De uitgebreide versie van Safe Browsing ook aanzetten voor dit Chrome-profiel?</translation>
 <translation id="6920989436227028121">Openen als normaal tabblad</translation>
 <translation id="6921104647315081813">Activiteiten wissen</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> kan niet worden geopend</translation>
@@ -7172,6 +7174,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>
 <translation id="8540503336857689453">Het wordt om veiligheidsredenen niet aangeraden om een verborgen netwerk te gebruiken.</translation>
 <translation id="854071720451629801">Markeren als gelezen</translation>
+<translation id="8540942859441851323">Roaming vereist door provider</translation>
 <translation id="8541462173655894684">Er zijn geen printers gevonden op de printerserver</translation>
 <translation id="8541838361296720865">Druk op een schakelaar of toets op het toetsenbord om deze toe te wijzen voor de actie <ph name="ACTION" /></translation>
 <translation id="8542618328173222274">Vragen als een site je virtualreality-apparaten en -gegevens wil gebruiken</translation>

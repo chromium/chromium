@@ -2339,6 +2339,7 @@
 <translation id="3413122095806433232">ผู้ออก CA: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">ขนาด:</translation>
 <translation id="3414966631182382431"><ph name="BEGIN_LINK" />เบราว์เซอร์ของคุณได้รับการจัดการ<ph name="END_LINK" />โดย <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">คำบรรยายสด - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">แสดง URL แบบเต็มเสมอ</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3417836307470882032">เวลาแบบทหาร</translation>
@@ -4069,6 +4070,7 @@
 <translation id="5265562206369321422">ออฟไลน์นานกว่าหนึ่งสัปดาห์</translation>
 <translation id="5265797726250773323">เกิดข้อผิดพลาดระหว่างติดตั้ง</translation>
 <translation id="5266113311903163739">ข้อผิดพลาดเกี่ยวกับการนำเข้าผู้ออกใบรับรอง</translation>
+<translation id="526622169288322445">การดำเนินการเพิ่มเติมสำหรับ <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">การพิมพ์ล้มเหลว</translation>
 <translation id="5275352920323889391">สุนัข</translation>
 <translation id="527605982717517565">อนุญาตให้เรียกใช้ JavaScript บน <ph name="HOST" /> เสมอ</translation>
@@ -5445,6 +5447,7 @@
 <translation id="6775163072363532304">อุปกรณ์ที่ใช้ได้จะแสดงที่นี่</translation>
 <translation id="6777817260680419853">การเปลี่ยนเส้นทางถูกบล็อก</translation>
 <translation id="6778737459546443941">ผู้ปกครองยังไม่ได้อนุมัติเว็บไซต์นี้</translation>
+<translation id="6779092717724412415">เลือกข้อความแล้วคลิกขวาเพื่อสร้างไฮไลต์ในลักษณะนี้</translation>
 <translation id="6779447100905857289">รถเข็นของคุณ</translation>
 <translation id="677965093459947883">เล็กมาก</translation>
 <translation id="6781005693196527806">&amp;จัดการเครื่องมือค้นหา...</translation>
@@ -6259,6 +6262,7 @@
 <translation id="7625823789272218216">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="7628201176665550262">อัตราการรีเฟรช</translation>
 <translation id="7629827748548208700">แท็บ: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">อุปกรณ์นี้จัดการโดย <ph name="MANAGER" /> และกำหนดให้คุณลงชื่อเข้าใช้ทุกครั้ง</translation>
 <translation id="7631014249255418691">สำรองข้อมูลแอปและไฟล์ Linux เรียบร้อยแล้ว</translation>
 <translation id="7631205654593498032">เมื่อเชื่อมต่ออุปกรณ์ คุณยินยอมให้ <ph name="DEVICE_TYPE" /> ดำเนินการดังนี้</translation>
 <translation id="7631887513477658702">&amp;เปิดไฟล์ประเภทนี้เสมอ</translation>
@@ -7152,6 +7156,7 @@
 <translation id="8540136935098276800">ป้อน URL ที่มีรูปแบบที่ถูกต้อง</translation>
 <translation id="8540503336857689453">ไม่แนะนำให้ใช้เครือข่ายที่ซ่อนอยู่ด้วยเหตุผลด้านความปลอดภัย</translation>
 <translation id="854071720451629801">ทำเครื่องหมายว่าอ่านแล้ว</translation>
+<translation id="8540942859441851323">จำเป็นต้องใช้โรมมิ่งจากผู้ให้บริการ</translation>
 <translation id="8541462173655894684">ไม่พบเครื่องพิมพ์จากเซิร์ฟเวอร์การพิมพ์</translation>
 <translation id="8541838361296720865">กดสวิตช์หรือแป้นบนแป้นพิมพ์ที่จะกำหนดให้กับ "<ph name="ACTION" />"</translation>
 <translation id="8542618328173222274">ถามเมื่อเว็บไซต์ต้องการใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>

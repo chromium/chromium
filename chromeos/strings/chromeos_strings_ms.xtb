@@ -158,6 +158,8 @@
 <translation id="357889014807611375">Wi-Fi bermeter</translation>
 <translation id="3583278742022654445">Kekuatan isyarat lemah. Cuba bergerak lebih rapat ke sumber isyarat Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateri penuh</translation>
+<translation id="360089215033199597">Anda disyorkan supaya menyambung kepada Wi-Fi untuk memudahkan lagi proses pembaikan.
+        Rangkaian anda akan disimpan.</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
@@ -480,6 +482,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="816013303019725643">Masukkan kod buka kunci:</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
+<translation id="8217675307824400706">Berhubung</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="8286154143153872371">Sila sambung kepada rangkaian dan muatkan semula halaman untuk melihat kertas dinding.</translation>

@@ -599,6 +599,7 @@
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611432201750675208">Peranti anda dikunci</translation>
 <translation id="1612019740169791082">Bekas anda tidak dikonfigurasikan untuk menyokong pengubahan saiz cakera. Untuk melaraskan jumlah ruang yang dirizabkan untuk Linux, buat sandaran, kemudian pulihkan dalam bekas baharu.</translation>
+<translation id="1613019471223620622">Tunjukkan kata laluan untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Anda mungkin telah menggunakan kesemua peruntukan data mudah alih anda. Lawati portal pengaktifan <ph name="NAME" /> untuk membeli lagi data</translation>
 <translation id="161460670679785907">Tidak dapat mengesan telefon anda</translation>
 <translation id="1615337439947999338">Simpan dalam Google Account anda (<ph name="EMAIL" />)</translation>
@@ -1215,6 +1216,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2220529011494928058">Laporkan isu</translation>
 <translation id="2220572644011485463">PIN atau kata laluan</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Sumber media tidak bernama.</translation>
 <translation id="2224444042887712269">Tetapan ini milik <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Sekurang-kurangnya satu album Galeri seni perlu dipilih</translation>
 <translation id="2224551243087462610">Edit nama folder</translation>
@@ -1231,6 +1233,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2232751457155581899">Tapak boleh meminta untuk menjejak kedudukan kamera anda</translation>
 <translation id="2232876851878324699">Fail ini mengandungi satu sijil, yang tidak diimport:</translation>
 <translation id="2233502537820838181">&amp;Maklumat lanjut</translation>
+<translation id="223356358902285214">Aktiviti Web &amp; Apl</translation>
 <translation id="2234876718134438132">Segerak dan perkhidmatan Google</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
 <translation id="2238379619048995541">Data Keadaan Kekerapan</translation>
@@ -1920,6 +1923,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> anda akan dikunci sekarang.
 <ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.</translation>
 <translation id="2923234477033317484">Alih keluar akaun ini</translation>
+<translation id="2923644930701689793">Akses gulungan kamera telefon anda</translation>
 <translation id="2926085873880284723">Pulihkan pintasan lalai</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> tidak disokong.</translation>
 <translation id="2927017729816812676">Storan Cache</translation>
@@ -3113,6 +3117,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4168015872538332605">Beberapa tetapan milik <ph name="PRIMARY_EMAIL" /> sedang dikongsikan dengan anda. Tetapan ini hanya mempengaruhi akaun anda semasa menggunakan berbilang log masuk.</translation>
 <translation id="4169535189173047238">Jangan benarkan</translation>
 <translation id="4170314459383239649">Kosongkan Apabila Keluar</translation>
+<translation id="417096670996204801">Pilih profil</translation>
 <translation id="4175137578744761569">Ungu cerah dan putih</translation>
 <translation id="4175737294868205930">Storan berterusan</translation>
 <translation id="4176463684765177261">Dilumpuhkan</translation>
@@ -3341,6 +3346,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4444304522807523469">Akses pengimbas dokumen yang disambungkan melalui USB atau pada rangkaian tempatan</translation>
 <translation id="4444512841222467874">Jika ruang tidak dikosongkan, pengguna dan data mungkin dialih keluar secara automatik.</translation>
 <translation id="4446933390699670756">Dicerminkan</translation>
+<translation id="4448914100439890108">Sembunyikan kata laluan untuk <ph name="USERNAME" /> di <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Nama pengguna anda kepunyaan akaun perusahaan organisasi anda. Untuk mendaftarkan peranti ke akaun ini, sahkan pemilikan domain dalam Konsol pentadbiran dahulu. Anda memerlukan keistimewaan pentadbir pada akaun untuk melakukan pengesahan itu.</translation>
 <translation id="4449996769074858870">Tab ini sedang memainkan audio.</translation>
 <translation id="4450274068924249931">Apabila skrin anda melahu, tunjukkan foto, masa, cuaca dan maklumat media. Tindakan mendayakan penyelamat skrin akan memastikan paparan anda terus dihidupkan semasa pengecasan.</translation>
@@ -3865,6 +3871,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5009463889040999939">Menamakan semula profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="5010043101506446253">Pihak berkuasa sijil</translation>
 <translation id="5015344424288992913">Menyelesaikan proksi...</translation>
+<translation id="5016491575926936899">Anda boleh menghantar mesej teks daripada komputer, berkongsi sambungan Internet, membalas pemberitahuan perbualan dan membuka kunci <ph name="DEVICE_TYPE" /> menggunakan telefon anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Anda boleh menukar halaman dengan kursor teks. Tekan Ctrl+Search+7 untuk mematikannya.</translation>
 <translation id="5017828934289857214">Ingatkan Saya Kemudian</translation>
 <translation id="5018207570537526145">Buka laman web sambungan</translation>
@@ -4455,6 +4462,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5638309510554459422">Cari sambungan dan tema di <ph name="BEGIN_LINK" />Gedung Web Chrome<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Muat semula halaman ini, tahan untuk melihat lagi pilihan</translation>
 <translation id="5640133431808313291">Urus kunci keselamatan</translation>
+<translation id="5641608986289282154">Mula menggunakan <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Penandatangan CRL</translation>
 <translation id="5643321261065707929">Rangkaian bermeter</translation>
 <translation id="5643620609347735571">Kosongkan dan teruskan</translation>

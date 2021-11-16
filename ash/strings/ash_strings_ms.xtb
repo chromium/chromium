@@ -119,6 +119,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1746730358044914197">Kaedah masukan dikonfigurasi oleh pentadbir anda.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
+<translation id="1750088060796401187">Hanya <ph name="MAX_DESK_LIMIT" /> meja dibenarkan. Alih keluar satu meja untuk membuka meja baharu.</translation>
 <translation id="1761222317188459878">Togol sambungan rangkaian. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Noktah telah berubah. Untuk menggunakan kekunci Insert, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Shift + Undur Ruang.</translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
@@ -384,6 +385,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3630697955794050612">dimatikan</translation>
 <translation id="3631369015426612114">Benarkan pemberitahuan daripada yang berikut</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Simpan <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="3665889125180354336">Rakam mikrofon</translation>
@@ -467,6 +469,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4215497585250573029">Tetapan VPN</translation>
 <translation id="4217571870635786043">Pengimlakan</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
+<translation id="4223947355273782392">Simpan <ph name="NAME" /> pada <ph name="EMAIL" /> untuk penggandingan yang lebih pantas dengan peranti anda yang lain</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>

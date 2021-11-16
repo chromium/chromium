@@ -260,6 +260,7 @@
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2561519700418191927">動画プレビュー</translation>
 <translation id="2567385386134582609">画像</translation>
+<translation id="2567545343356994513">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します</translation>
 <translation id="2571711316400087311">他の言語のページを Google で翻訳するか尋ねる</translation>
 <translation id="2581165646603367611">Chrome で重要度が低いと判断されるサイトの Cookie やキャッシュなどのデータを削除します。</translation>
 <translation id="2587052924345400782">新しいバージョンをご利用いただけます</translation>
@@ -487,6 +488,7 @@
 <translation id="395377504920307820">アカウントなしで使用</translation>
 <translation id="3958287878205277013">シークレット モードでの閲覧履歴をデバイスから消去するには、すべてのシークレット タブを閉じます。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{準備ができると Chrome でページが読み込まれます}other{準備ができると Chrome でページが読み込まれます}}</translation>
+<translation id="3962119236270174787">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します</translation>
 <translation id="3962957115499249330">Wi-Fi 接続時にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="3963007978381181125">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome でパスワードを確認できません</translation>
@@ -952,6 +954,7 @@
 <translation id="6627583120233659107">フォルダを編集</translation>
 <translation id="6633067410344541938">シークレット モードのロックを解除</translation>
 <translation id="663674369910034433">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK1" />同期<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google サービス<ph name="END_LINK2" />をご覧ください</translation>
+<translation id="6640207029842583248">常にブロックする</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6643649862576733715">データ節約量で並べ替え</translation>
 <translation id="6648459603387803038">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
@@ -1078,6 +1081,7 @@
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
 <translation id="7437998757836447326">Chrome からログアウト</translation>
 <translation id="7438641746574390233">ライトモードをオンにすると、Chrome では Google のサーバーを使用してページの読み込みを高速化します。特に読み込みの遅いページでは、ライトモードにより、主要コンテンツのみを読み込むようページが書き換えられます。なお、ライトモードはシークレット タブには適用されません。</translation>
+<translation id="7443901082822119557">シークレット モードのとき、サイトは、Cookie を使用して、別のサイトでのあなたの閲覧アクティビティを確認することができません。広告をカスタマイズできないなど、一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="7444811645081526538">その他のカテゴリ</translation>
 <translation id="7453467225369441013">ほとんどのサイトからログアウトします。Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="7454641608352164238">空き容量が不足しています</translation>
@@ -1185,6 +1189,7 @@
 <translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
+<translation id="8006818846907410687">シークレット モードのときはブロックする</translation>
 <translation id="8013372441983637696">Chrome データもこのデバイスから削除する</translation>
 <translation id="8015452622527143194">ページ上のすべての要素をデフォルトのサイズに戻す</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
@@ -1232,6 +1237,7 @@
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="825412236959742607">このページは大量のメモリを使用しているため、Chrome により一部のコンテンツが削除されました。</translation>
+<translation id="8255617931166444521">サイトは、Cookie を使用して、そのサイトでのあなたの閲覧アクティビティのみを確認できます</translation>
 <translation id="8260126382462817229">もう一度ログインしてみてください</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="82619448491672958">他のタブを表示</translation>

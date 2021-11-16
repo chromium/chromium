@@ -107,6 +107,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1894205589103145703">Podczas logowania coś poszło nie tak.</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
 <translation id="1923342640370224680">Ostatnia godzina</translation>
+<translation id="1930989359703290198">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
 <translation id="1952172573699511566">Gdy będzie to możliwe, tekst na stronach internetowych będzie się wyświetlać w Twoim preferowanym języku.</translation>
 <translation id="1965935827552890526">Dokończ czynności rozpoczęte w innym otwartym oknie Chrome.</translation>
@@ -384,6 +385,8 @@ Dane zostały zaszyfrowane z użyciem Twojego hasła synchronizacji. Wpisz je, 
 <translation id="4802417911091824046">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Zarządzana przez Twoją organizację.
+<ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Nieprawidłowy numer karty</translation>
 <translation id="4808744395915275922">Zmiany</translation>
 <translation id="4818522717893377262">Dodaj język...</translation>

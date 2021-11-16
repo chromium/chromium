@@ -4073,6 +4073,7 @@
 <translation id="5265562206369321422">1 週間以上オフライン</translation>
 <translation id="5265797726250773323">インストール中にエラーが発生しました</translation>
 <translation id="5266113311903163739">認証局インポート エラー</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> に対するその他の操作</translation>
 <translation id="5269977353971873915">印刷の失敗</translation>
 <translation id="5275352920323889391">犬</translation>
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
@@ -5453,6 +5454,7 @@
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
 <translation id="6777817260680419853">リダイレクトがブロックされました</translation>
 <translation id="6778737459546443941">保護者がまだサイトを開くことを許可していません</translation>
+<translation id="6779092717724412415">このように選択箇所を指定するには、テキストを選択して右クリックします。</translation>
 <translation id="6779447100905857289">カート</translation>
 <translation id="677965093459947883">極小</translation>
 <translation id="6781005693196527806">検索エンジンを管理(&amp;M)...</translation>
@@ -6269,6 +6271,7 @@
 <translation id="7625823789272218216">左側の新しいタブ</translation>
 <translation id="7628201176665550262">リフレッシュ レート</translation>
 <translation id="7629827748548208700">タブ:<ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7631014249255418691">Linux のアプリとファイルが正常にバックアップされました</translation>
 <translation id="7631205654593498032">デバイスを接続する場合、<ph name="DEVICE_TYPE" /> による次の操作を許可することになります。</translation>
 <translation id="7631887513477658702">この種類のファイルは常に開く(&amp;A)</translation>
