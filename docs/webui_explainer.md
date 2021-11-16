@@ -267,10 +267,11 @@ void OvenHandler::RegisterMessages() {
 void OvenHandler::HandleBakeDonuts(base::Value::ConstListView args) {
   AllowJavascript();
 
+  // IMPORTANT: Fully validate `args`.
   CHECK_EQ(1u, args.size());
-  // JavaScript numbers are doubles.
-  double num_donuts = args[0].GetDouble();
-  GetOven()->BakeDonuts(static_cast<int>(num_donuts));
+  int num_donuts = args[0].GetInt();
+  CHECK_GT(num_donuts, 0);
+  GetOven()->BakeDonuts(num_donuts);
 }
 ```
 
