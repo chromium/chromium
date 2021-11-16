@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,6 +33,8 @@
 
 namespace ash {
 namespace quick_answers {
+
+using ::ash::AccessibilityManager;
 
 namespace {
 
@@ -183,10 +184,7 @@ gfx::Size UserConsentView::CalculatePreferredSize() const {
 void UserConsentView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
   // button, otherwise retain to read out its contents.
-  if (!ash::Shell::Get()
-           ->accessibility_controller()
-           ->spoken_feedback()
-           .enabled()) {
+  if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
     no_thanks_button_->RequestFocus();
   }
 }
@@ -208,10 +206,7 @@ void UserConsentView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 std::vector<views::View*> UserConsentView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
   // The view itself is not included in focus loop, unless screen-reader is on.
-  if (ash::Shell::Get()
-          ->accessibility_controller()
-          ->spoken_feedback()
-          .enabled()) {
+  if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
     focusable_views.push_back(this);
   }
   focusable_views.push_back(no_thanks_button_);

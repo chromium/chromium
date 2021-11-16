@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
 #include "ash/components/quick_answers/quick_answers_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -32,6 +31,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/painter.h"
@@ -457,10 +457,8 @@ void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
       container->AddChildView(std::make_unique<views::View>());
 
   // Setup an invisible web view to play phonetics audio.
-  AshWebView::InitParams contents_params;
-  contents_params.suppress_navigation = true;
   phonetics_audio_web_view_ = container->AddChildView(
-      AshWebViewFactory::Get()->Create(contents_params));
+      std::make_unique<views::WebView>(ProfileManager::GetActiveUserProfile()));
   phonetics_audio_web_view_->SetVisible(false);
 
   auto* layout = phonetics_audio_view->SetLayoutManager(
@@ -619,7 +617,7 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
 
 void QuickAnswersView::OnPhoneticsAudioButtonPressed(
     const GURL& phonetics_audio) {
-  phonetics_audio_web_view_->Navigate(phonetics_audio);
+  phonetics_audio_web_view_->LoadInitialURL(phonetics_audio);
 }
 
 }  // namespace ash

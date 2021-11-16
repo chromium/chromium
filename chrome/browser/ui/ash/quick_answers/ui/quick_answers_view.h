@@ -15,11 +15,11 @@ namespace views {
 class ImageButton;
 class Label;
 class LabelButton;
+class WebView;
 }  // namespace views
 
 namespace ash {
 
-class AshWebView;
 class QuickAnswersUiController;
 class QuickAnswersPreTargetHandler;
 
@@ -92,7 +92,7 @@ class QuickAnswersView : public views::View {
   views::ImageButton* phonetics_audio_button_ = nullptr;
 
   // Invisible web view to play phonetics audio for definition results.
-  AshWebView* phonetics_audio_web_view_ = nullptr;
+  views::WebView* phonetics_audio_web_view_ = nullptr;
 
   std::unique_ptr<QuickAnswersPreTargetHandler> quick_answers_view_handler_;
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;

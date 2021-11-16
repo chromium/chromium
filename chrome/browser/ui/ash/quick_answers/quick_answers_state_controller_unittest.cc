@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"

@@ -5,16 +5,13 @@
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 
 #include "ash/components/quick_answers/quick_answers_model.h"
-#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,7 +63,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
-  NewWindowDelegate::GetInstance()->OpenUrl(
+  NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kGoogleSearchUrlPrefix +
            net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
       /*from_user_interaction=*/true);
@@ -146,7 +143,7 @@ void QuickAnswersUiController::OnReportQueryButtonPressed() {
   controller_->DismissQuickAnswers(
       QuickAnswersExitPoint::kReportQueryButtonClick);
 
-  NewWindowDelegate::GetInstance()->OpenFeedbackPage(
+  NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
       NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
       base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));
 }
