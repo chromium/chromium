@@ -3698,6 +3698,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_VIRTUAL_DESKS_ALERT_WINDOW_MOVED_FROM_ACTIVE_DESK" desc="A window in active desk got be moved to another virtual desk.">
         Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> moved from Desk <ph name="ACTIVE_DESK">$2</ph> to Desk <ph name="TARGET_DESK">$3</ph>
       </message>
+      <message name="IDS_ASH_VIRTUAL_DESKS_ASSIGNED_TO_ALL_DESKS" desc="A window is assigned to all desks.">
+        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> assigned to all desks.
+      </message>
+      <message name="IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS" desc="A window is unassigned from all desks.">
+        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> unassigned from all desks.
+      </message>
 
       <!-- Alt Tab -->
       <message name="IDS_ASH_ALT_TAB_ALL_DESKS_MODE" desc="Alt-tab shows windows from all desks.">

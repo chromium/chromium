@@ -711,12 +711,21 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   UMA_HISTOGRAM_ENUMERATION(
       kMoveWindowFromActiveDeskHistogramName,
       DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks);
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_VIRTUAL_DESKS_ASSIGNED_TO_ALL_DESKS, window->GetTitle()));
 }
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     NotifyAllDesksForContentChanged();
+    Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS,
+            window->GetTitle()));
   }
 }
 
