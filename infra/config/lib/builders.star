@@ -191,9 +191,9 @@ xcode = struct(
     x13wk = xcode_enum("13a1030dwk"),
 )
 
-# Git revision of the compilator_watcher luciexe sub_build binary for chromium
-# orchestrators to use
-compilator_watcher_git_revision = "d5bee0e7798a40c3c6261c3dbc14becf1fbb693f"
+# infra/infra git revision to use for the compilator_watcher luciexe sub_build
+# Used by chromium orchestrators
+compilator_watcher_git_revision = "5fd7f4ae276865742fe632642ec4633dd9f81649"
 
 def builder_url(bucket, builder, project = None):
     """A simple utility for constructing the milo URL for a builder."""
