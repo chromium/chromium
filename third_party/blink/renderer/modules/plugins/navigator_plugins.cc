@@ -31,9 +31,8 @@ bool ShouldReturnFixedPluginData(Navigator& navigator) {
       }
     }
   }
-  // Otherwise, depend on the feature flag, which can be disabled via
-  // Finch killswitch.
-  return RuntimeEnabledFeatures::NavigatorPluginsFixedEnabled();
+  // Otherwise, return fixed plugin data.
+  return true;
 }
 }  // namespace
 

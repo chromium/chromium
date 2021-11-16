@@ -9,5 +9,5 @@
     [HighEntropy, MeasureAs=NavigatorPlugins] readonly attribute PluginArray plugins;
     [HighEntropy, MeasureAs=NavigatorMimeTypes] readonly attribute MimeTypeArray mimeTypes;
     [HighEntropy=Direct, Measure] boolean javaEnabled();
-    [HighEntropy, MeasureAs=NavigatorPdfViewerEnabled, RuntimeEnabled=NavigatorPluginsFixed] readonly attribute boolean pdfViewerEnabled;
+    [HighEntropy, MeasureAs=NavigatorPdfViewerEnabled] readonly attribute boolean pdfViewerEnabled;
 };

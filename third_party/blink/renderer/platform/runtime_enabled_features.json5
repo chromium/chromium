@@ -1527,10 +1527,6 @@
       status: "stable",
     },
     {
-      // Controlled by blink::features::kNavigatorPluginsFixed.
-      name: "NavigatorPluginsFixed",
-    },
-    {
       name: "NetInfoDownlinkMax",
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
       status: {"Android": "stable", "ChromeOS": "stable", "default": "experimental"},
