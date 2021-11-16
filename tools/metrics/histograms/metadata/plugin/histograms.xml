@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PluginVm.SetupTime" units="ms" expires_after="2021-12-26">
+<histogram name="PluginVm.SetupTime" units="ms" expires_after="2022-12-26">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
