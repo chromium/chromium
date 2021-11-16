@@ -9,10 +9,12 @@ static_library("renderer") {
   ]
 
   deps = [
+    "//components/autofill_assistant/content/common:common",
     "//components/autofill_assistant/content/common:mojo_interfaces",
     "//content/public/common:common",
     "//content/public/renderer:renderer",
     "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
   ]
 }

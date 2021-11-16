@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -30,6 +31,11 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
           pending_receiver);
 
   base::WeakPtr<AutofillAssistantAgent> GetWeakPtr();
+
+  // mojom::AutofillAssistantAgent:
+  void GetSemanticNodes(int32_t role,
+                        int32_t objective,
+                        GetSemanticNodesCallback callback) override;
 
  private:
   // content::RenderFrameObserver:

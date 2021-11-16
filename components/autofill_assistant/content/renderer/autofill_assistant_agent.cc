@@ -4,6 +4,11 @@
 
 #include "components/autofill_assistant/content/renderer/autofill_assistant_agent.h"
 
+#include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+
 namespace autofill_assistant {
 
 AutofillAssistantAgent::AutofillAssistantAgent(
@@ -31,6 +36,33 @@ void AutofillAssistantAgent::OnDestruct() {
 
 base::WeakPtr<AutofillAssistantAgent> AutofillAssistantAgent::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void AutofillAssistantAgent::GetSemanticNodes(
+    int32_t role,
+    int32_t objective,
+    GetSemanticNodesCallback callback) {
+  std::vector<NodeData> nodes;
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    std::move(callback).Run(nodes);
+    return;
+  }
+
+  blink::WebVector<blink::AutofillAssistantNodeSignals> node_signals =
+      blink::GetAutofillAssistantNodeSignals(frame->GetDocument());
+
+  // TODO(sandromaggi): Run the model on the collected signals and filter
+  // accordingly.
+
+  for (const auto& node_signal : node_signals) {
+    NodeData node_data;
+    node_data.backend_node_id = node_signal.backend_node_id;
+    nodes.push_back(node_data);
+  }
+
+  std::move(callback).Run(nodes);
 }
 
 }  // namespace autofill_assistant
