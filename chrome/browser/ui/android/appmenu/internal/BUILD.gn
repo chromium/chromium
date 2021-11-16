@@ -60,6 +60,7 @@ android_library("javatests") {
 
   resources_package = "org.chromium.chrome.browser.ui.appmenu.test"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuDelegate.java",
@@ -84,6 +85,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
