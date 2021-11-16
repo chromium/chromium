@@ -24,7 +24,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       callback(response);
     } catch (e) {
       handleUncaughtException(
-          'Error in chrome.pageCapture.saveAsMHTML callback', e, request.stack);
+          'Error in chrome.pageCapture.saveAsMHTML callback', e);
     } finally {
       if (requestId) {
         // If we received a blob, notify the browser. Now that the blob is

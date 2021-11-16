@@ -190,7 +190,7 @@ function handleRequestWithPromiseDoNotUse(
     $Function.apply(customizedFunction, this, args).then(function(result) {
       if (callback) {
         exceptionHandler.safeCallbackApply(
-            fullName, {__proto__: null, stack: stack}, callback, [result]);
+            fullName, callback, [result], stack);
       }
     }).catch(function(error) {
       if (callback) {

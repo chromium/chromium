@@ -82,12 +82,11 @@ function getFileBindingsForApi(apiName) {
                 // the callback will not be called with any entries.
                 if (entries.length == response.entries.length) {
                   if (response.multiple) {
-                    safeCallbackApply(apiName + '.' + functionName, request,
+                    safeCallbackApply(apiName + '.' + functionName,
                                       callback, [entries]);
                   } else {
                     safeCallbackApply(
-                        apiName + '.' + functionName, request, callback,
-                        [entries[0]]);
+                        apiName + '.' + functionName, callback, [entries[0]]);
                   }
                 }
               }
