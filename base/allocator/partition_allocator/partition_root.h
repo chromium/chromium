@@ -1061,7 +1061,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
     if (LIKELY(internal::IsManagedByNormalBuckets(ptr))) {
-      PCScan::MoveToQuarantine(memory::UnmaskPtr(ptr),
+      PCScan::MoveToQuarantine(memory::UnmaskPtr(slot_start),
                                slot_span->GetUsableSize(root),
                                slot_span->bucket->slot_size);
       return;
@@ -1118,8 +1118,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (UNLIKELY(IsQuarantineEnabled())) {
     if (LIKELY(internal::IsManagedByNormalBuckets(ptr))) {
       // Mark the state in the state bitmap as freed.
-      internal::StateBitmapFromPointer(ptr)->Free(
-          reinterpret_cast<uintptr_t>(ptr));
+      internal::StateBitmapFromPointer(slot_start)
+          ->Free(reinterpret_cast<uintptr_t>(slot_start));
     }
   }
 
@@ -1644,7 +1644,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     if (LIKELY(internal::IsManagedByNormalBuckets(ret))) {
       // Mark the corresponding bits in the state bitmap as allocated.
       internal::StateBitmapFromPointer(ret)->Allocate(
-          reinterpret_cast<uintptr_t>(ret));
+          reinterpret_cast<uintptr_t>(slot_start));
     }
   }
 

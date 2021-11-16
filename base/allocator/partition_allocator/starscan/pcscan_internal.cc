@@ -642,11 +642,11 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // Beyond this point, we know that |maybe_ptr| is a pointer within a
   // normal-bucket super page.
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr)));
+
+#if !PA_STARSCAN_USE_CARD_TABLE
   // Pointer from a normal bucket is always in the first superpage.
   auto* root =
       Root::FromPointerInFirstSuperpage(reinterpret_cast<char*>(maybe_ptr));
-
-#if !PA_STARSCAN_USE_CARD_TABLE
   // Without the card table, we must make sure that |maybe_ptr| doesn't point to
   // metadata partition.
   // TODO(bikineev): To speed things up, consider removing the check and
@@ -666,14 +666,12 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   if (!object_start_result.is_found())
     return 0;
 
-  const uintptr_t base =
-      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(
-          reinterpret_cast<char*>(object_start_result.slot_start)));
-  if (LIKELY(!state_map->IsQuarantined(base)))
+  const uintptr_t slot_start = object_start_result.slot_start;
+  if (LIKELY(!state_map->IsQuarantined(slot_start)))
     return 0;
 
   PA_SCAN_DCHECK((maybe_ptr & kSuperPageBaseMask) ==
-                 (base & kSuperPageBaseMask));
+                 (slot_start & kSuperPageBaseMask));
 
   if (UNLIKELY(immediatelly_free_objects_))
     return 0;
@@ -682,7 +680,7 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // the mutator bitmap and clear from the scanner bitmap. Note that since
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
-  if (LIKELY(state_map->MarkQuarantinedAsReachable(base, pcscan_epoch_)))
+  if (LIKELY(state_map->MarkQuarantinedAsReachable(slot_start, pcscan_epoch_)))
     return object_start_result.slot_size;
 
   return 0;
@@ -914,7 +912,7 @@ size_t FreeAndUnmarkInCardTable(PartitionRoot<ThreadSafe>* root,
   // ClearQuarantinedObjectsAndFilterSuperPages() will set them
   // again in the next PCScan cycle.
   QuarantineCardTable::GetFrom(object_as_uintptr)
-      .Unquarantine(object_as_uintptr, slot_span->GetUsableSize(root));
+      .Unquarantine(object_as_uintptr, slot_span->GetUtilizedSlotSize());
 #endif
   return slot_size;
 }
