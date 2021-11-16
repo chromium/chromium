@@ -1663,7 +1663,7 @@ body.files-ng .thumbnail-grid {
 }
 
 body.files-ng grid .grid-title {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   font-family: 'Roboto Medium';
   padding-inline-start: 16px;
   padding-top: 20px;
@@ -1720,28 +1720,16 @@ body.files-ng .thumbnail-item .filename-label {
 
 /* Styles specific for the grid view. */
 
-.thumbnail-grid .thumbnail-item {
-  background-color: rgb(245, 245, 245);
-  height: 180px;
-  margin-inline-start: 4px;
-  margin-top: 4px;
-  overflow: hidden;
-  position: relative;
-  vertical-align: top;  /* Prevent vertical spacing for wrapped inline box. */
-  width: 180px;
-}
-
 body.files-ng .thumbnail-grid .thumbnail-item {
   background-color: inherit;
   border-radius: 4px;
   height: 160px;
   margin-inline-start: 16px;
   margin-top: 16px;
-}
-
-.thumbnail-grid .thumbnail-item.directory {
-  box-shadow: 0 1px rgba(0, 0, 0, 15%);
-  height: 40px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;  /* Prevent vertical spacing for wrapped inline box. */
+  width: 180px;
 }
 
 body.files-ng .thumbnail-item.directory   {
@@ -1750,11 +1738,11 @@ body.files-ng .thumbnail-item.directory   {
 }
 
 body.files-ng #list-container .thumbnail-grid li {
-  border: 1px solid rgba(0, 0, 0, 14%);
+  border: 1px solid var(--cros-separator-color);
 }
 
 body.files-ng grid .thumbnail-bottom .detail-icon {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-secondary);
   height: 40px;
   padding-inline-end: 6px;
   padding-inline-start: 6px;
@@ -1771,50 +1759,6 @@ body.files-ng grid .thumbnail-bottom .detail-icon:active {
   width: 100%;
 }
 
-.thumbnail-grid .thumbnail-item[selected],
-.thumbnail-grid .thumbnail-item.accepts {
-  background-color: rgb(221, 242, 253);
-}
-
-.thumbnail-grid .thumbnail-item[selected] .shield {
- background-color: rgba(51, 103, 214, 50%);
-
-}
-
-.thumbnail-grid .thumbnail-item[lead]:not([selected]) .shield {
-  background-color: rgba(51, 103, 214, 20%);
-}
-
-.thumbnail-grid .checkmark {
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 36px;
-  margin-inline-start: 2px;
-  opacity: 0;
-  position: absolute;
-  top: 2px;
-  transition: opacity 220ms ease;
-  width: 36px;
-}
-
-body.selecting .thumbnail-grid .checkmark.inactive,
-.thumbnail-grid .thumbnail-item:hover .checkmark.inactive {
-  opacity: 0.6;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item .checkmark.inactive {
-  opacity: 1;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item[selected]
-    .checkmark.inactive {
-  opacity: 0;
-}
-
-body.check-select .thumbnail-grid .thumbnail-item[selected] .checkmark.active {
-  opacity: 1;
-}
-
 .thumbnail-grid .img-container {
   background-color: rgb(230, 230, 230);
   height: 100%;
@@ -1822,7 +1766,7 @@ body.check-select .thumbnail-grid .thumbnail-item[selected] .checkmark.active {
 }
 
 body.files-ng .thumbnail-grid .img-container {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   height: 120px;
 }
 
@@ -1837,48 +1781,9 @@ body.files-ng .thumbnail-grid .img-container {
   width: 100%;
 }
 
-.thumbnail-grid .shield {
-  background-color: rgba(160, 160, 160, 50%);
-  bottom: 0;
-  display: none;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.thumbnail-grid:focus .shield {
-  background-color: rgba(51, 103, 214, 50%);
-}
-
-.thumbnail-grid .thumbnail-item[selected] .shield,
-.thumbnail-grid .thumbnail-item[lead] .shield {
-  display: block;
-}
-
-.thumbnail-grid .thumbnail-bottom {
-  background-color: rgba(255, 255, 255, 85%);
-  color: rgb(51, 51, 51);
-  height: 40px;
-}
-
 body.files-ng .thumbnail-grid .thumbnail-bottom {
-  background-color: white;
-  color: var(--google-grey-900);
-}
-
-.thumbnail-grid .thumbnail-item.directory .thumbnail-bottom {
-  background-color: rgb(255, 255, 255);
-}
-
-.thumbnail-grid .thumbnail-item[selected].directory .thumbnail-bottom,
-.thumbnail-grid .thumbnail-item[lead].directory .thumbnail-bottom {
-  background-color: rgb(232, 232, 232);
-}
-
-.thumbnail-grid:focus .thumbnail-item[selected].directory .thumbnail-bottom,
-.thumbnail-grid:focus .thumbnail-item[lead].directory .thumbnail-bottom {
-  background-color: rgb(232, 246, 253);
+  color: var(--cros-text-color-primary);
+  height: 40px;
 }
 
 body.files-ng .thumbnail-grid .thumbnail-item[selected] .thumbnail-bottom,
@@ -1887,7 +1792,7 @@ body.files-ng .thumbnail-grid .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
 }
 
 body.files-ng .thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom,
@@ -1896,7 +1801,7 @@ body.files-ng .thumbnail-grid:focus .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
 }
 
 body.check-select.files-ng .thumbnail-grid:focus .thumbnail-item[selected]
@@ -1907,7 +1812,7 @@ body.check-select.files-ng .thumbnail-grid:focus
     .thumbnail-item[selected].directory .thumbnail-bottom,
 body.check-select.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
     .thumbnail-bottom {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-selection);
 }
 
 body.check-select.files-ng #list-container .thumbnail-grid:focus
@@ -1916,8 +1821,8 @@ body.files-ng #list-container .thumbnail-grid:focus
     .thumbnail-item[lead]:not([selected]) {
   /* 2px border: 1px via box-shadow + 1px via border, to accommodate
      the difference between regular border 1px and selected border 2px.*/
-  border-color: var(--google-blue-600);
-  box-shadow: 0 0 0 1px var(--google-blue-600);
+  border-color: var(--cros-focus-ring-color);
+  box-shadow: 0 0 0 1px var(--cros-focus-ring-color);
 }
 
 body.check-select.files-ng #list-container .thumbnail-grid
@@ -1926,13 +1831,8 @@ body.files-ng #list-container .thumbnail-grid
     .thumbnail-item[lead]:not([selected]) {
   /* 2px border: 1px via box-shadow + 1px via border, to accommodate
      the difference between regular border 1px and selected border 2px.*/
-  border-color: var(--google-grey-700);
-  box-shadow: 0 0 0 1px var(--google-grey-700);
-}
-
-body.files-ng #list-container .thumbnail-grid .thumbnail-item[lead].directory
-    .shield {
-  height: 36px;
+  border-color: var(--cros-icon-color-secondary);
+  box-shadow: 0 0 0 1px var(--cros-icon-color-secondary);
 }
 
 .thumbnail-grid > .spacer.folder-spacer {
