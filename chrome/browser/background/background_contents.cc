@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/background/background_contents_service.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -62,8 +61,6 @@ BackgroundContents::BackgroundContents(
                           extensions::mojom::ViewType::kBackgroundContents);
   web_contents_->SetDelegate(this);
   content::WebContentsObserver::Observe(web_contents_.get());
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
 
   // Add the TaskManager-specific tag for the BackgroundContents.
   task_manager::WebContentsTags::CreateForBackgroundContents(

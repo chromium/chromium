@@ -24,12 +24,10 @@ class BubbleContentsWrapperT<TestWebUIController>
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
-                         bool enable_extension_apis = false,
                          bool webui_resizes_host = true,
                          bool esc_closes_ui = true)
       : BubbleContentsWrapper(browser_context,
                               task_manager_string_id,
-                              enable_extension_apis,
                               webui_resizes_host,
                               esc_closes_ui) {}
   void ReloadWebContents() override {}
@@ -49,7 +47,7 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
     bubble_manager_ =
         std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
             BrowserView::GetBrowserViewForBrowser(browser()),
-            browser()->profile(), GURL("chrome://test"), 1, false);
+            browser()->profile(), GURL("chrome://test"), 1);
   }
   void TearDownOnMainThread() override {
     auto* widget = bubble_manager_->GetBubbleWidget();

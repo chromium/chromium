@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -188,9 +187,6 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
   CreateSessionServiceTabHelper(web_contents);
-  // We need an ExtensionWebContentsObserver, so make sure one exists (this is
-  // a no-op if one already does).
-  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
   // The Unretained() is safe because ForEachFrame() is synchronous.
   web_contents->ForEachFrame(
       base::BindRepeating(&TabHelper::SetTabId, base::Unretained(this)));

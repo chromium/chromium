@@ -50,7 +50,6 @@ class ReadLaterSidePanelWebView : public views::WebView,
             GURL(chrome::kChromeUIReadLaterURL),
             browser->profile(),
             IDS_READ_LATER_TITLE,
-            /*enable_extension_apis=*/true,
             /*webui_resizes_host=*/false,
             /*esc_closes_ui=*/false)) {
     SetVisible(false);

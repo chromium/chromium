@@ -1823,6 +1823,8 @@ static_library("browser") {
     "unexpire_flags.h",
     "unified_consent/unified_consent_service_factory.cc",
     "unified_consent/unified_consent_service_factory.h",
+    "universal_web_contents_observers.cc",
+    "universal_web_contents_observers.h",
     "update_client/chrome_update_query_params_delegate.cc",
     "update_client/chrome_update_query_params_delegate.h",
     "usb/frame_usb_services.cc",

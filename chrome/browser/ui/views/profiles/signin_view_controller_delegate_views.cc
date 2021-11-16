@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/reauth_result.h"
@@ -249,9 +248,6 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
   int dialog_width = opt_width.value_or(kModalDialogWidth);
   views::WebView* web_view = new views::WebView(browser->profile());
   web_view->LoadInitialURL(url);
-  // To record metrics using javascript, extensions are needed.
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view->GetWebContents());
 
   SigninWebDialogUI* web_dialog_ui = static_cast<SigninWebDialogUI*>(
       web_view->GetWebContents()->GetWebUI()->GetController());

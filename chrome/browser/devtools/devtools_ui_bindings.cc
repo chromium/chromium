@@ -34,7 +34,6 @@
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/url_constants.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -672,8 +671,6 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
   file_helper_ =
       std::make_unique<DevToolsFileHelper>(web_contents_, profile_, this);
   file_system_indexer_ = new DevToolsFileSystemIndexer();
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_);
 
   // Register on-load actions.
   embedder_message_dispatcher_ =

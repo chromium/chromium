@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -538,9 +537,6 @@ void ProfilePickerView::Init(Profile* system_profile) {
   system_profile_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(system_profile));
   system_profile_contents_->SetDelegate(this);
-  // To record metrics using javascript, extensions are needed.
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      system_profile_contents_.get());
 
   // The widget is owned by the native widget.
   new ProfilePickerWidget(this);

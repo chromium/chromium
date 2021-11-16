@@ -21,7 +21,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -960,8 +959,6 @@ void WebUITabStripContainerView::PrimaryMainFrameRenderProcessGone(
 void WebUITabStripContainerView::InitializeWebView() {
   DCHECK(web_view_);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUITabStripURL));
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view_->web_contents());
   task_manager::WebContentsTags::CreateForTabContents(
       web_view_->web_contents());
 

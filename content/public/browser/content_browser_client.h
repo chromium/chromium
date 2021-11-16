@@ -2136,6 +2136,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns true if find-in-page should be disabled for a given `origin`.
   virtual bool IsFindInPageDisabledForOrigin(const url::Origin& origin);
+
+  // Called on every WebContents creation.
+  virtual void OnWebContentsCreated(WebContents* web_contents);
 };
 
 }  // namespace content

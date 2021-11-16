@@ -9,7 +9,6 @@
 
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -27,7 +26,6 @@ ChromeExtensionHostDelegate::~ChromeExtensionHostDelegate() {}
 
 void ChromeExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {
-  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
   PrefsTabHelper::CreateForWebContents(web_contents);
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 }

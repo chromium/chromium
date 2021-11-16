@@ -142,6 +142,7 @@
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
+#include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -6260,6 +6261,14 @@ std::unique_ptr<content::SpeculationHostDelegate>
 ChromeContentBrowserClient::CreateSpeculationHostDelegate(
     content::RenderFrameHost& render_frame_host) {
   return std::make_unique<ChromeSpeculationHostDelegate>(render_frame_host);
+}
+
+void ChromeContentBrowserClient::OnWebContentsCreated(
+    content::WebContents* web_contents) {
+  // NOTE: Please don't add additional code to this method - attaching universal
+  // WebContentsObservers goes through the separate function, to ensure that the
+  // (rare) additions of universal helpers are code reviewed by separate OWNERS.
+  AttachUniversalWebContentsObservers(web_contents);
 }
 
 #if !defined(OS_ANDROID)

@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
@@ -270,9 +269,6 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
       !ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
 
   view_observer_.Observe(dialog_view_);
-
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      dialog_view_->web_contents());
 
   captive_portal_delegate_ =
       (new CaptivePortalDialogDelegate(dialog_view_))->GetWeakPtr();

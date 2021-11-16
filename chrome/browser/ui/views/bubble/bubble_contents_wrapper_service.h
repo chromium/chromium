@@ -29,8 +29,7 @@ class BubbleContentsWrapperService : public KeyedService {
 
   template <typename T>
   void InitBubbleContentsWrapper(const GURL& webui_url,
-                                 int task_manager_string_id,
-                                 bool enable_extension_apis) {
+                                 int task_manager_string_id) {
     // If replacing an existing BubbleContentsWrapper make sure it has no
     // associated host.
     auto it = web_contents_map_.find(webui_url.host());
@@ -40,7 +39,7 @@ class BubbleContentsWrapperService : public KeyedService {
     }
 
     auto contents_wrapper = std::make_unique<BubbleContentsWrapperT<T>>(
-        webui_url, profile_, task_manager_string_id, enable_extension_apis);
+        webui_url, profile_, task_manager_string_id);
     contents_wrapper->ReloadWebContents();
     web_contents_map_.insert({webui_url.host(), std::move(contents_wrapper)});
   }

@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
@@ -122,9 +121,6 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
   pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
       web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
 #endif
-
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
 }
 
 bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(

@@ -3002,6 +3002,9 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
     }
   }
 
+  // Let the embedder know about the newly created and initialized WebContents.
+  GetContentClient()->browser()->OnWebContentsCreated(this);
+
   // Ensure that observers are notified of the creation of this WebContents's
   // main RenderFrameHost. It must be done here for main frames, since the
   // NotifySwappedFromRenderManager expects view_ to already be created and that

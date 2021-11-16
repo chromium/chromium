@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -166,8 +165,6 @@ void WebUILoginView::InitializeWebView(views::WebView* web_view,
 
   extensions::SetViewType(web_contents,
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
   blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(
       prefs, ProfileHelper::GetSigninProfile());

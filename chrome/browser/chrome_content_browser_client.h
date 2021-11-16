@@ -750,6 +750,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::SpeculationHostDelegate>
   CreateSpeculationHostDelegate(
       content::RenderFrameHost& render_frame_host) override;
+  void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
 

@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
@@ -33,11 +32,6 @@ gfx::NativeWindow CreateWebDialogWidget(views::Widget::InitParams params,
                                         bool show = true) {
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
-
-  // Observer is needed for ChromeVox extension to send messages between content
-  // and background scripts.
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      view->web_contents());
 
   if (show)
     widget->Show();

@@ -12,7 +12,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -305,11 +304,6 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   content::WebContents* contents = web_ui->GetWebContents();
-  // Required for intercepting extension function calls when the page is loaded
-  // in a bubble (not a full tab, thus tab helpers are not registered
-  // automatically).
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      contents);
   extensions::TabHelper::CreateForWebContents(contents);
   // Ensure that the login UI has a tab ID, which will allow the GAIA auth
   // extension's background script to tell it apart from iframes injected by

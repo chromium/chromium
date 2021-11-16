@@ -1271,4 +1271,6 @@ bool ContentBrowserClient::IsFindInPageDisabledForOrigin(
   return false;
 }
 
+void ContentBrowserClient::OnWebContentsCreated(WebContents* web_contents) {}
+
 }  // namespace content

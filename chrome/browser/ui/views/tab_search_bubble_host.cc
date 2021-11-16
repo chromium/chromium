@@ -50,8 +50,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
       webui_bubble_manager_(button,
                             profile,
                             GURL(chrome::kChromeUITabSearchURL),
-                            IDS_ACCNAME_TAB_SEARCH,
-                            true),
+                            IDS_ACCNAME_TAB_SEARCH),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration3",
                                       time_elapsed);

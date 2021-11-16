@@ -22,7 +22,6 @@
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -178,8 +177,6 @@ void DriveWebContentsManager::StartLoad() {
 
   web_contents_ = content::WebContents::Create(create_params);
   web_contents_->SetDelegate(this);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
 
   content::NavigationController::LoadURLParams load_params(url);
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;

@@ -53,6 +53,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using content::NavigationSimulator;
 using content::RenderFrameHost;
@@ -629,6 +630,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
+  // TODO(https://crbug.com/1266001): Improve unit tests support for tracing.
+  // In particular, the initialization call below is most likely too narrow /
+  // doesn't take care of everything that is needed.  In the future we might
+  // need to 1) initialize tracing from a better place (maybe
+  // RenderViewHostTestEnabler) and 2) initialize more broadly (maybe via
+  // tracing::PerfettoTracedProcess::SetupForTesting method once it is
+  // reintroduced).
+  perfetto::internal::TrackRegistry::InitializeInstance();
+
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   {
