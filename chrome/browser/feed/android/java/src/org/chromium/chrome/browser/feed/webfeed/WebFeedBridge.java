@@ -132,6 +132,14 @@ public class WebFeedBridge {
         WebFeedBridgeJni.get().refreshSubscriptions(callback);
     }
 
+    /**
+     * Refreshes the list of recommended web feeds from the server. See
+     * `WebFeedSubscriptions.RefreshRecommendedFeeds`.
+     */
+    public static void refreshRecommendedFeeds(Callback<Boolean> callback) {
+        WebFeedBridgeJni.get().refreshRecommendedFeeds(callback);
+    }
+
     /** Container for results from a follow request. */
     public static class FollowResults {
         /** Status of follow request. */
@@ -233,6 +241,7 @@ public class WebFeedBridge {
         void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
         void getAllSubscriptions(Callback<Object[]> callback);
         void refreshSubscriptions(Callback<Boolean> callback);
+        void refreshRecommendedFeeds(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
     }
 }

@@ -79,7 +79,8 @@ class WebFeedSubscriptions {
       base::OnceCallback<void(RefreshResult)> callback) = 0;
 
   // Force a refresh of the server-recommended web feeds.
-  virtual void RefreshRecommendedFeeds() = 0;
+  virtual void RefreshRecommendedFeeds(
+      base::OnceCallback<void(RefreshResult)> callback) = 0;
 
   // Whether the user has subscribed to at least one web feed. May require
   // fetching data from the server if cached data is not fresh. If fetching

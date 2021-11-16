@@ -360,6 +360,20 @@ static void JNI_WebFeedBridge_RefreshSubscriptions(
   subscriptions->RefreshSubscriptions(std::move(callback));
 }
 
+static void JNI_WebFeedBridge_RefreshRecommendedFeeds(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  base::OnceCallback<void(WebFeedSubscriptions::RefreshResult)> callback =
+      AdaptCallbackForJava<WebFeedSubscriptions::RefreshResult>(env,
+                                                                j_callback);
+  WebFeedSubscriptions* subscriptions = GetSubscriptions();
+  if (!subscriptions) {
+    std::move(callback).Run({});
+    return;
+  }
+  subscriptions->RefreshRecommendedFeeds(std::move(callback));
+}
+
 static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url,

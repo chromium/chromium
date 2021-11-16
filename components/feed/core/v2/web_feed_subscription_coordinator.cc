@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -624,7 +625,9 @@ SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfoById(
   return model_->GetSubscriptionInfo(web_feed_id);
 }
 
-void WebFeedSubscriptionCoordinator::RefreshRecommendedFeeds() {
+void WebFeedSubscriptionCoordinator::RefreshRecommendedFeeds(
+    base::OnceCallback<void(RefreshResult)> callback) {
+  on_refresh_recommended_feeds_.push_back(std::move(callback));
   WithModel(base::BindOnce(
       &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart,
       base::Unretained(this)));
@@ -638,7 +641,7 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
       base::Time::Now() - index_.GetRecommendedFeedsUpdateTime();
   if (staleness > GetFeedConfig().recommended_feeds_staleness_threshold ||
       staleness < -base::Hours(1)) {
-    RefreshRecommendedFeeds();
+    RefreshRecommendedFeeds(base::DoNothing());
   }
 }
 
@@ -663,6 +666,15 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsComplete(
       result.status, result.recommended_web_feeds.size());
   if (result.status == WebFeedRefreshStatus::kSuccess)
     model_->UpdateRecommendedFeeds(std::move(result.recommended_web_feeds));
+}
+
+void WebFeedSubscriptionCoordinator::
+    CallRefreshRecommendedFeedsCompleteCallbacks(RefreshResult result) {
+  std::vector<base::OnceCallback<void(RefreshResult)>> callbacks;
+  on_refresh_recommended_feeds_.swap(callbacks);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
 }
 
 void WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale(
