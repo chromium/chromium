@@ -706,12 +706,7 @@ std::vector<IconSizes> WebAppRegistrar::GetAppDownloadedShortcutsMenuIconsSizes(
 }
 
 std::vector<AppId> WebAppRegistrar::GetAppIds() const {
-  std::vector<AppId> app_ids;
-
-  for (const WebApp& app : GetApps())
-    app_ids.push_back(app.app_id());
-
-  return app_ids;
+  return GetAppIdsForAppSet(GetApps());
 }
 
 RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
@@ -731,10 +726,9 @@ void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
   if (profile() != profile_to_be_deleted)
     return;
 
-  for (const auto& app : GetAppsIncludingStubs()) {
-    NotifyWebAppProfileWillBeDeleted(app.app_id());
-    os_integration_manager().UninstallAllOsHooks(app.app_id(),
-                                                  base::DoNothing());
+  for (const AppId& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    NotifyWebAppProfileWillBeDeleted(app_id);
+    os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
   }
   // We can't do registry_.clear() here because it makes in-memory registry
   // diverged from the sync server registry and from the on-disk registry
@@ -860,6 +854,16 @@ bool IsRegistryEqual(const Registry& registry, const Registry& registry2) {
   }
 
   return true;
+}
+
+std::vector<AppId> WebAppRegistrar::GetAppIdsForAppSet(
+    const AppSet& app_set) const {
+  std::vector<AppId> app_ids;
+
+  for (const WebApp& app : app_set)
+    app_ids.push_back(app.app_id());
+
+  return app_ids;
 }
 
 }  // namespace web_app

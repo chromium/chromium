@@ -32,6 +32,7 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppIconManager;
 class WebAppRegistrar;
+class WebAppSyncBridge;
 class WebAppUiManager;
 
 // OsHooksErrors contains the result of all Os hook deployments.
@@ -84,7 +85,8 @@ class OsIntegrationManager {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   virtual ~OsIntegrationManager();
 
-  void SetSubsystems(WebAppRegistrar* registrar,
+  void SetSubsystems(WebAppSyncBridge* sync_bridge,
+                     WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      WebAppIconManager* icon_manager);
 

@@ -21,6 +21,7 @@ class Profile;
 namespace web_app {
 
 class WebAppRegistrar;
+class WebAppSyncBridge;
 
 class WebAppFileHandlerManager {
  public:
@@ -29,8 +30,7 @@ class WebAppFileHandlerManager {
   WebAppFileHandlerManager& operator=(const WebAppFileHandlerManager&) = delete;
   virtual ~WebAppFileHandlerManager();
 
-  // |registrar| is used to observe OnWebAppInstalled/Uninstalled events.
-  void SetSubsystems(WebAppRegistrar* registrar);
+  void SetSubsystems(WebAppSyncBridge* sync_bridge);
   void Start();
 
   // Disables OS integrations, such as shortcut creation on Linux or modifying
@@ -80,9 +80,6 @@ class WebAppFileHandlerManager {
   // FileHandlingAPI flag is enabled.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);
 
-  // Indicates whether file handlers have been registered for an app.
-  bool AreFileHandlersEnabled(const AppId& app_id) const;
-
   // Returns true when the system supports file type association icons.
   static bool IconsEnabled();
 
@@ -99,11 +96,24 @@ class WebAppFileHandlerManager {
   // handlers unregistered, for use in tests.
   int CleanupAfterOriginTrials();
 
+  // Sets whether `app_id` should have its File Handling abilities surfaces in
+  // the OS. In theory, this should match the actual OS integration state (e.g.
+  // the contents of the .desktop file on Linux), however, that's only enforced
+  // on a best-effort basis.
+  void SetOsIntegrationState(const AppId& app_id, OsIntegrationState os_state);
+
+  // Indicates whether file handlers should be OS-registered for an app. As with
+  // `SetOsIntegrationState()`, there may be a mismatch with the actual OS
+  // registry.
+  bool ShouldOsIntegrationBeEnabled(const AppId& app_id) const;
+
+  const WebAppRegistrar* GetRegistrar() const;
+
   static bool disable_automatic_file_handler_cleanup_for_testing_;
   bool disable_os_integration_for_testing_ = false;
 
   Profile* const profile_;
-  WebAppRegistrar* registrar_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   base::WeakPtrFactory<WebAppFileHandlerManager> weak_ptr_factory_{this};
 };

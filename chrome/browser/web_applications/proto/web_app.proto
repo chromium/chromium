@@ -255,7 +255,7 @@ message WebAppProto {
   // For apps installed via the SubApp API, ID of the parent app that installed
   // the Sub-app.
   optional string parent_app_id = 43;
-  
+
   // A background color to be used when the app is opened in dark mode.
   optional uint32 dark_mode_background_color = 44;
 
@@ -263,4 +263,14 @@ message WebAppProto {
   // startup, it's assumed there was a crash or other error during
   // uninstallation, and the uninstallation will be tried again.
   optional bool is_uninstalling = 45;
+
+  // Should be kept in sync with `OsIntegrationState` in web_app_constants.h.
+  enum OsIntegrationState {
+    ENABLED = 0;
+    DISABLED = 1;
+  }
+
+  // Whether the file handling abilities of the app should be registered with
+  // the OS.
+  optional OsIntegrationState file_handler_os_integration_state = 46;
 }

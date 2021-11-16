@@ -177,6 +177,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    },
    "downloaded_shortcuts_menu_icons_sizes": [  ],
    "file_handler_approval_state": "kRequiresPrompt",
+   "file_handler_os_integration_state": "kDisabled",
    "file_handler_permission_blocked": false,
    "file_handlers": [  ],
    "manifest_icons": [  ],
@@ -265,6 +266,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "index": 2
    } ],
    "file_handler_approval_state": "kRequiresPrompt",
+   "file_handler_os_integration_state": "kDisabled",
    "file_handler_permission_blocked": false,
    "file_handlers": [ {
       "accept": [ {

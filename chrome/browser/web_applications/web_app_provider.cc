@@ -321,7 +321,8 @@ void WebAppProvider::ConnectSubsystems() {
                                          system_web_app_manager_.get(),
                                          os_integration_manager_.get());
   ui_manager_->SetSubsystems(sync_bridge_.get(), os_integration_manager_.get());
-  os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
+  os_integration_manager_->SetSubsystems(sync_bridge_.get(), registrar_.get(),
+                                         ui_manager_.get(),
                                          icon_manager_.get());
   registrar_->SetSubsystems(os_integration_manager_.get());
 

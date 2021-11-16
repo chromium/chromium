@@ -186,6 +186,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   bool GetWindowControlsOverlayEnabled(const AppId& app_id) const;
 
+  // Gets the IDs for all apps in `GetApps()`.
   std::vector<AppId> GetAppIds() const;
 
   void SetSubsystems(OsIntegrationManager* os_integration_manager);
@@ -369,6 +370,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const AppSet FilterApps(Filter filter) const;
 
   void CountMutation();
+
+  // Gets the IDs for all apps in `app_set`.
+  std::vector<AppId> GetAppIdsForAppSet(const AppSet& app_set) const;
 
   bool registry_profile_being_deleted_ = false;
 

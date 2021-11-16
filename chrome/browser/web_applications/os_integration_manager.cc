@@ -100,12 +100,15 @@ OsIntegrationManager::OsIntegrationManager(
 
 OsIntegrationManager::~OsIntegrationManager() = default;
 
-void OsIntegrationManager::SetSubsystems(WebAppRegistrar* registrar,
+void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
+                                         WebAppRegistrar* registrar,
                                          WebAppUiManager* ui_manager,
                                          WebAppIconManager* icon_manager) {
+  // TODO(estade): fetch the registrar from `sync_bridge` instead of passing
+  // both as arguments.
   registrar_ = registrar;
   ui_manager_ = ui_manager;
-  file_handler_manager_->SetSubsystems(registrar);
+  file_handler_manager_->SetSubsystems(sync_bridge);
   shortcut_manager_->SetSubsystems(icon_manager, registrar);
   if (protocol_handler_manager_)
     protocol_handler_manager_->SetSubsystems(registrar);

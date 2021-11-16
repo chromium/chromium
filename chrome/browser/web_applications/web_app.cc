@@ -42,6 +42,15 @@ std::string ApiApprovalStateToString(ApiApprovalState state) {
   }
 }
 
+std::string OsIntegrationStateToString(OsIntegrationState state) {
+  switch (state) {
+    case OsIntegrationState::kEnabled:
+      return "kEnabled";
+    case OsIntegrationState::kDisabled:
+      return "kDisabled";
+  }
+}
+
 }  // namespace
 
 WebApp::WebApp(const AppId& app_id)
@@ -264,6 +273,10 @@ void WebApp::SetFileHandlerApprovalState(ApiApprovalState approval_state) {
   file_handler_approval_state_ = approval_state;
 }
 
+void WebApp::SetFileHandlerOsIntegrationState(OsIntegrationState state) {
+  file_handler_os_integration_state_ = state;
+}
+
 void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
@@ -459,6 +472,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.client_data_.system_web_app_data,
         app.file_handler_permission_blocked_,
         app.file_handler_approval_state_,
+        app.file_handler_os_integration_state_,
         app.window_controls_overlay_enabled_,
         app.is_storage_isolated_,
         app.launch_handler_,
@@ -566,6 +580,10 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("file_handler_approval_state",
                     ApiApprovalStateToString(file_handler_approval_state_));
+
+  root.SetStringKey(
+      "file_handler_os_integration_state",
+      OsIntegrationStateToString(file_handler_os_integration_state_));
 
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 
