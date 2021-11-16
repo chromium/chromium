@@ -49,7 +49,6 @@ void ProfileListDesktop::RebuildMenu() {
         new AvatarMenu::Item(items_.size(), entry->GetPath(), icon));
     item->name = entry->GetName();
     item->username = entry->GetUserName();
-    item->child_account = entry->IsChild();
     item->signed_in = entry->IsAuthenticated();
     if (entry->GetSigninState() == SigninState::kNotSignedIn) {
       item->username =

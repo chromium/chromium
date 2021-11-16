@@ -58,10 +58,6 @@ void SetLastUsedProfile(const base::FilePath& profile_dir);
 std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the string to use in the fast user switcher menu for the specified
-// menu item. Adds a supervision indicator to the profile name if appropriate.
-std::u16string GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
-
 // Update the name of |profile| to |new_profile_name|. This updates the profile
 // preferences, which triggers an update in the ProfileAttributesStorage. This
 // method should be called when the user is explicitely changing the profile

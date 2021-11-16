@@ -141,12 +141,6 @@ std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-std::u16string GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
-  if (item.child_account)
-    return l10n_util::GetStringFUTF16(IDS_CHILD_AVATAR_LABEL, item.name);
-  return item.name;
-}
-
 void UpdateProfileName(Profile* profile,
                        const std::u16string& new_profile_name) {
   ProfileAttributesEntry* entry =
