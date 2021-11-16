@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
@@ -487,23 +488,28 @@ TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DPartialFailsWithUnalignedRect) {
   EXPECT_FALSE(representation->IsCleared());
 }
 
-TEST_F(RasterDecoderOOPTest, DISABLED_CopyTexSubImage2DValidateColorFormat) {
-  // Recreate |client_texture_mailbox_| as a cleared mailbox.
-  client_texture_mailbox_ =
-      CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
-                    /*height=*/2, /*cleared=*/true);
+TEST_F(RasterDecoderOOPTest, CopyTexSubImage2DValidateColorFormat) {
+  // Run test with RED_8 format only if EXT_texture_rg is supported
+  if (context_state_->feature_info() &&
+      context_state_->feature_info()->feature_flags().ext_texture_rg) {
+    // Recreate |client_texture_mailbox_| as a cleared mailbox.
+    client_texture_mailbox_ =
+        CreateMailbox(viz::ResourceFormat::RGBA_8888, /*width=*/2,
+                      /*height=*/2, /*cleared=*/true);
 
-  // Create dest texture.
-  gpu::Mailbox dest_texture_mailbox =
-      CreateMailbox(viz::ResourceFormat::RED_8,
-                    /*width=*/2, /*height=*/2, /*cleared=*/true);
+    // Create dest texture.
+    gpu::Mailbox dest_texture_mailbox =
+        CreateMailbox(viz::ResourceFormat::RED_8,
+                      /*width=*/2, /*height=*/2, /*cleared=*/true);
 
-  auto& copy_cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
-  GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
-  CopyMailboxes(mailboxes, client_texture_mailbox_, dest_texture_mailbox);
-  copy_cmd.Init(0, 0, 0, 0, 2, 1, false, mailboxes);
-  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(copy_cmd, sizeof(mailboxes)));
-  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+    auto& copy_cmd = *GetImmediateAs<cmds::CopySubTextureINTERNALImmediate>();
+    GLbyte mailboxes[sizeof(gpu::Mailbox) * 2];
+    CopyMailboxes(mailboxes, client_texture_mailbox_, dest_texture_mailbox);
+    copy_cmd.Init(0, 0, 0, 0, 2, 1, false, mailboxes);
+    EXPECT_EQ(error::kNoError,
+              ExecuteImmediateCmd(copy_cmd, sizeof(mailboxes)));
+    EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+  }
 }
 
 TEST_F(RasterDecoderOOPTest, StateRestoreAcrossDecoders) {
