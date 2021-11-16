@@ -152,6 +152,7 @@ void PeerConnectionTrackerHost::AddLegacyStats(int lid, base::Value value) {
 
 void PeerConnectionTrackerHost::GetUserMedia(
     const std::string& origin,
+    int request_id,
     bool audio,
     bool video,
     const std::string& audio_constraints,
@@ -159,8 +160,8 @@ void PeerConnectionTrackerHost::GetUserMedia(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : GetObserverList()) {
-    observer.OnGetUserMedia(frame_id_, peer_pid_, origin, audio, video,
-                            audio_constraints, video_constraints);
+    observer.OnGetUserMedia(frame_id_, peer_pid_, origin, request_id, audio,
+                            video, audio_constraints, video_constraints);
   }
 }
 

@@ -1247,7 +1247,8 @@ void PeerConnectionTracker::TrackGetUserMedia(
   }
 
   peer_connection_tracker_host_->GetUserMedia(
-      security_origin, user_media_request->Audio(), user_media_request->Video(),
+      security_origin, user_media_request->request_id(),
+      user_media_request->Audio(), user_media_request->Video(),
       SerializeMediaConstraints(user_media_request->AudioConstraints()),
       SerializeMediaConstraints(user_media_request->VideoConstraints()));
 }

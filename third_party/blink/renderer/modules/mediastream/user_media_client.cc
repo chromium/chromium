@@ -140,12 +140,6 @@ void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
   // Save histogram data so we can see how much GetUserMedia is used.
   UpdateAPICount(user_media_request->MediaRequestType());
 
-  // TODO(crbug.com/787254): Communicate directly with the
-  // PeerConnectionTrackerHost mojo object once it is available from Blink.
-  if (auto* window = user_media_request->GetWindow()) {
-    PeerConnectionTracker::From(*window).TrackGetUserMedia(user_media_request);
-  }
-
   int request_id = g_next_request_id++;
   blink::WebRtcLogMessage(base::StringPrintf(
       "UMCI::RequestUserMedia({request_id=%d}, {audio constraints=%s}, "
@@ -166,6 +160,13 @@ void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
         LocalFrame::HasTransientUserActivation(window->GetFrame());
   }
   user_media_request->set_request_id(request_id);
+
+  // TODO(crbug.com/787254): Communicate directly with the
+  // PeerConnectionTrackerHost mojo object once it is available from Blink.
+  if (auto* window = user_media_request->GetWindow()) {
+    PeerConnectionTracker::From(*window).TrackGetUserMedia(user_media_request);
+  }
+
   user_media_request->set_has_transient_user_activation(
       has_transient_user_activation);
   pending_request_infos_.push_back(

@@ -550,7 +550,7 @@ function addLegacyStats(data) {
  * Adds a getUserMedia request.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, audio {string}, video {string}.
+ *     origin {string}, request_id {number}, audio {string}, video {string}.
  */
 function addGetUserMedia(data) {
   userMediaRequests.push(data);

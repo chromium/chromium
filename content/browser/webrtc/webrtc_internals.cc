@@ -285,6 +285,7 @@ void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
 void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                                      base::ProcessId pid,
                                      const std::string& origin,
+                                     int request_id,
                                      bool audio,
                                      bool video,
                                      const std::string& audio_constraints,
@@ -300,6 +301,7 @@ void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("rid", frame_id.child_id);
   dict.SetIntKey("pid", static_cast<int>(pid));
+  dict.SetIntKey("request_id", request_id);
   dict.SetStringKey("origin", origin);
   dict.SetDoubleKey("timestamp", base::Time::Now().ToJsTime());
   if (audio)
