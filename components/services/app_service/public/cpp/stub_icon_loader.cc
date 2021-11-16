@@ -15,13 +15,13 @@ StubIconLoader::StubIconLoader() = default;
 
 StubIconLoader::~StubIconLoader() = default;
 
-apps::mojom::IconKeyPtr StubIconLoader::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> StubIconLoader::GetIconKey(const std::string& app_id) {
   uint64_t timeline = 0;
   auto iter = timelines_by_app_id_.find(app_id);
   if (iter != timelines_by_app_id_.end()) {
     timeline = iter->second;
   }
-  return apps::mojom::IconKey::New(timeline, 0, 0);
+  return absl::make_optional<IconKey>(timeline, 0, 0);
 }
 
 std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(

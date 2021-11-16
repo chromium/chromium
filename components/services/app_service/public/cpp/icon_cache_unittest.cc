@@ -29,10 +29,6 @@ class AppsIconCacheTest : public testing::Test {
     void SetReturnPlaceholderIcons(bool b) { return_placeholder_icons_ = b; }
 
    private:
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override {
-      return apps::mojom::IconKey::New(0, 0, 0);
-    }
-
     std::unique_ptr<Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,

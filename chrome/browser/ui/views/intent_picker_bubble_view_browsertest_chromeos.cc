@@ -80,10 +80,6 @@ class FakeIconLoader : public apps::IconLoader {
   FakeIconLoader& operator=(const FakeIconLoader&) = delete;
   ~FakeIconLoader() override = default;
 
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override {
-    return apps::mojom::IconKey::New(0, 0, 0);
-  }
-
   std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,

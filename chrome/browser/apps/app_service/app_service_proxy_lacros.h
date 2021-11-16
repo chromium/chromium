@@ -82,7 +82,7 @@ class AppServiceProxyLacros : public KeyedService,
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 
   // apps::IconLoader overrides.
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
   std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,
@@ -270,7 +270,7 @@ class AppServiceProxyLacros : public KeyedService,
     explicit InnerIconLoader(AppServiceProxyLacros* host);
 
     // apps::IconLoader overrides.
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+    absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
     std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,

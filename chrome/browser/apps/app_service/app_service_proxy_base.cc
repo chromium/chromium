@@ -60,19 +60,16 @@ std::string GetActivityLabel(const apps::mojom::IntentFilterPtr& filter,
 AppServiceProxyBase::InnerIconLoader::InnerIconLoader(AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
-apps::mojom::IconKeyPtr AppServiceProxyBase::InnerIconLoader::GetIconKey(
+absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
     const std::string& app_id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(app_id);
   }
 
-  apps::mojom::IconKeyPtr icon_key;
-  if (host_->app_service_.is_connected()) {
-    host_->app_registry_cache_.ForOneApp(
-        app_id, [&icon_key](const apps::AppUpdate& update) {
-          icon_key = update.IconKey();
-        });
-  }
+  absl::optional<IconKey> icon_key;
+  host_->app_registry_cache_.ForApp(
+      app_id,
+      [&icon_key](const AppUpdate& update) { icon_key = update.GetIconKey(); });
   return icon_key;
 }
 
@@ -193,7 +190,7 @@ void AppServiceProxyBase::RegisterPublisher(AppType app_type,
   publishers_[app_type] = publisher;
 }
 
-apps::mojom::IconKeyPtr AppServiceProxyBase::GetIconKey(
+absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
     const std::string& app_id) {
   return outer_icon_loader_.GetIconKey(app_id);
 }

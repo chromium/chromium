@@ -34,10 +34,9 @@ IconCache::IconCache(IconLoader* wrapped_loader,
 
 IconCache::~IconCache() = default;
 
-apps::mojom::IconKeyPtr IconCache::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> IconCache::GetIconKey(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id)
-                         : apps::mojom::IconKey::New();
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id) : absl::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
