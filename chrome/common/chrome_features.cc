@@ -94,7 +94,7 @@ const base::Feature kAppShimNewCloseBehavior{"AppShimNewCloseBehavior",
 #if defined(OS_CHROMEOS)
 // Controls whether ARC ghost window will be applied on ARC P version.
 const base::Feature kArcPiGhostWindow{"ArcPiGhostWindow",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS)
 
 // Enables the built-in DNS resolver.
