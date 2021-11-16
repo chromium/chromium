@@ -3925,12 +3925,12 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
       WTF::BindRepeating(
           [](const display::ScreenInfos& original_screen_infos,
              bool window_screen_has_changed, WebLocalFrameImpl* local_frame) {
+            auto* screen = local_frame->GetFrame()->DomWindow()->screen();
+            screen->UpdateDisplayId(original_screen_infos.current().display_id);
             CoreInitializer::GetInstance().DidUpdateScreens(
                 *local_frame->GetFrame(), original_screen_infos);
-            if (window_screen_has_changed) {
-              local_frame->GetFrame()->DomWindow()->screen()->DispatchEvent(
-                  *Event::Create(event_type_names::kChange));
-            }
+            if (window_screen_has_changed)
+              screen->DispatchEvent(*Event::Create(event_type_names::kChange));
           },
           original_screen_infos, window_screen_has_changed));
 

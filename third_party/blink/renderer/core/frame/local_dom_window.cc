@@ -974,8 +974,13 @@ int LocalDOMWindow::orientation() const {
 }
 
 Screen* LocalDOMWindow::screen() {
-  if (!screen_)
-    screen_ = MakeGarbageCollected<Screen>(this);
+  if (!screen_) {
+    LocalFrame* frame = GetFrame();
+    int64_t display_id =
+        frame ? frame->GetChromeClient().GetScreenInfo(*frame).display_id
+              : Screen::kInvalidDisplayId;
+    screen_ = MakeGarbageCollected<Screen>(this, display_id);
+  }
   return screen_.Get();
 }
 
