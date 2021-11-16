@@ -642,13 +642,14 @@ void BlobRegistryImpl::GetBlobFromUUID(
 void BlobRegistryImpl::URLStoreForOrigin(
     const url::Origin& origin,
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
-  // TODO(mek): Pass origin on to BlobURLStoreImpl so it can use it to generate
-  // Blob URLs, and verify at this point that the renderer can create URLs for
-  // that origin.
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
+  if (!origin.opaque() && !delegate->CanCommitURL(origin.GetURL())) {
+    mojo::ReportBadMessage(
+        "Non committable origin passed to BlobRegistryImpl::URLStoreForOrigin");
+  }
   auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<BlobURLStoreImpl>(url_registry_, delegate),
+      std::make_unique<BlobURLStoreImpl>(origin, url_registry_),
       std::move(receiver));
   if (g_url_store_creation_hook)
     g_url_store_creation_hook->Run(self_owned_associated_receiver);

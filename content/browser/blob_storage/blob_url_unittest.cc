@@ -187,15 +187,14 @@ class BlobURLTest : public testing::Test {
 
   void TestRequest(const std::string& method,
                    const net::HttpRequestHeaders& extra_headers) {
-    GURL url("blob:blah");
+    auto origin = url::Origin::Create(GURL("https://example.com"));
+    auto url = GURL("blob:" + origin.Serialize() + "/id1");
     network::ResourceRequest request;
     request.url = url;
     request.method = method;
     request.headers = extra_headers;
 
-    storage::MockBlobRegistryDelegate delegate;
-    storage::BlobURLStoreImpl url_store(blob_url_registry_.AsWeakPtr(),
-                                        &delegate);
+    storage::BlobURLStoreImpl url_store(origin, blob_url_registry_.AsWeakPtr());
 
     mojo::PendingRemote<blink::mojom::Blob> blob_remote;
     storage::BlobImpl::Create(
