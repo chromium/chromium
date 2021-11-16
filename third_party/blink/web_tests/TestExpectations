@@ -5688,7 +5688,6 @@ crbug.com/v8/11992 external/wpt/wasm/jsapi/exception/* [ Skip ]
 crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
 
 # Disabled for landing DevTools change
-crbug.com/1011811 http/tests/devtools/network/network-xhr-data-received-async-response-type-blob.js [ Failure Pass ]
 crbug.com/1011811 http/tests/devtools/network/download.js [ Failure Pass ]
 crbug.com/1011811 http/tests/devtools/sxg/sxg-disable-cache.js [ Failure Pass ]
 
