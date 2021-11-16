@@ -229,89 +229,11 @@ void SigninScreenHandler::DeclareLocalizedValues(
                  base::FormatNumber(int64_t{j}));
   }
 
-  builder->Add("passwordHint", IDS_LOGIN_POD_EMPTY_PASSWORD_TEXT);
-  builder->Add("pinKeyboardPlaceholderPin",
-               IDS_PIN_KEYBOARD_HINT_TEXT_PIN);
-  builder->Add("pinKeyboardPlaceholderPinPassword",
-               IDS_PIN_KEYBOARD_HINT_TEXT_PIN_PASSWORD);
-  builder->Add("pinKeyboardDeleteAccessibleName",
-               IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME);
-  builder->Add("fingerprintHint", IDS_FINGERPRINT_HINT_TEXT);
-  builder->Add("fingerprintIconMessage", IDS_FINGERPRINT_ICON_MESSAGE);
-  builder->Add("fingerprintSigningin", IDS_FINGERPRINT_LOGIN_TEXT);
-  builder->Add("fingerprintSigninFailed", IDS_FINGERPRINT_LOGIN_FAILED_TEXT);
-  builder->Add("signingIn", IDS_LOGIN_POD_SIGNING_IN);
-  builder->Add("podMenuButtonAccessibleName",
-               IDS_LOGIN_POD_MENU_BUTTON_ACCESSIBLE_NAME);
-  builder->Add("podMenuRemoveItemAccessibleName",
-               IDS_LOGIN_POD_MENU_REMOVE_ITEM_ACCESSIBLE_NAME);
-  builder->Add("passwordFieldAccessibleName",
-               IDS_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME);
-  builder->Add("submitButtonAccessibleName",
-               IDS_LOGIN_POD_SUBMIT_BUTTON_ACCESSIBLE_NAME);
-  builder->Add("signedIn", IDS_SCREEN_LOCK_ACTIVE_USER);
   builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
-  builder->Add("ownerUserPattern", IDS_LOGIN_POD_OWNER_USER);
-  builder->Add("removeUser", IDS_LOGIN_POD_REMOVE_USER);
-
-  builder->Add("disabledAddUserTooltip",
-               webui::IsEnterpriseManaged()
-                   ? IDS_DISABLED_ADD_USER_TOOLTIP_ENTERPRISE
-                   : IDS_DISABLED_ADD_USER_TOOLTIP);
-
-  builder->Add("supervisedUserExpiredTokenWarning",
-               IDS_SUPERVISED_USER_EXPIRED_TOKEN_WARNING);
-  builder->Add("signinBannerText", IDS_LOGIN_USER_ADDING_BANNER);
-
-  // Multi-profiles related strings.
-  builder->Add("multiProfilesRestrictedPolicyTitle",
-               IDS_MULTI_PROFILES_RESTRICTED_POLICY_TITLE);
-  builder->Add("multiProfilesNotAllowedPolicyMsg",
-               IDS_MULTI_PROFILES_NOT_ALLOWED_POLICY_MSG);
-  builder->Add("multiProfilesPrimaryOnlyPolicyMsg",
-               IDS_MULTI_PROFILES_PRIMARY_ONLY_POLICY_MSG);
-  builder->Add("multiProfilesOwnerPrimaryOnlyMsg",
-               IDS_MULTI_PROFILES_OWNER_PRIMARY_ONLY_MSG);
 
   // Used by SAML password dialog.
   builder->Add("nextButtonText", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
 
-  builder->Add("publicAccountInfoFormat", IDS_LOGIN_PUBLIC_ACCOUNT_INFO_FORMAT);
-  builder->Add("publicAccountReminder",
-               IDS_LOGIN_PUBLIC_ACCOUNT_SIGNOUT_REMINDER);
-  builder->Add("publicSessionLanguageAndInput",
-               IDS_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT);
-  builder->Add("publicAccountEnter", IDS_LOGIN_PUBLIC_ACCOUNT_ENTER);
-  builder->Add("publicAccountEnterAccessibleName",
-               IDS_LOGIN_PUBLIC_ACCOUNT_ENTER_ACCESSIBLE_NAME);
-  builder->Add("publicAccountMonitoringWarning",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
-  builder->Add("publicAccountLearnMore", IDS_LEARN_MORE);
-  builder->Add("publicAccountMonitoringInfo",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO);
-  builder->Add("publicAccountMonitoringInfoItem1",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO_ITEM_1);
-  builder->Add("publicAccountMonitoringInfoItem2",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO_ITEM_2);
-  builder->Add("publicAccountMonitoringInfoItem3",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO_ITEM_3);
-  builder->Add("publicAccountMonitoringInfoItem4",
-               IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO_ITEM_4);
-  builder->Add("publicSessionSelectLanguage", IDS_LANGUAGE_SELECTION_SELECT);
-  builder->Add("publicSessionSelectKeyboard", IDS_KEYBOARD_SELECTION_SELECT);
-  builder->Add("removeUserWarningTextNonSyncNoStats", std::u16string());
-  builder->Add("removeUserWarningTextNonSyncCalculating", std::u16string());
-  builder->Add("removeUserWarningTextHistory", std::u16string());
-  builder->Add("removeUserWarningTextPasswords", std::u16string());
-  builder->Add("removeUserWarningTextBookmarks", std::u16string());
-  builder->Add("removeUserWarningTextAutofill", std::u16string());
-  builder->Add("removeUserWarningTextCalculating", std::u16string());
-  builder->Add("removeUserWarningTextSyncNoStats", std::u16string());
-  builder->Add("removeUserWarningTextSyncCalculating", std::u16string());
-  builder->Add("removeNonOwnerUserWarningText",
-               IDS_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING);
-  builder->Add("removeUserWarningButtonTitle",
-               IDS_LOGIN_POD_USER_REMOVE_WARNING_BUTTON);
   builder->Add("samlNotice", IDS_LOGIN_SAML_NOTICE);
   builder->Add("samlNoticeWithVideo", IDS_LOGIN_SAML_NOTICE_WITH_VIDEO);
   builder->AddF("confirmPasswordTitle", IDS_LOGIN_CONFIRM_PASSWORD_TITLE,
