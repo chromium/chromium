@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.base.MathUtils.interpolate;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -124,11 +125,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
     }
 
-    private static final int TITLE_ANIM_DELAY_MS = 800;
-    private static final int STATE_DOMAIN_ONLY = 0;
-    private static final int STATE_TITLE_ONLY = 1;
-    private static final int STATE_DOMAIN_AND_TITLE = 2;
-
     private ImageView mIncognitoImageView;
     private LinearLayout mCustomActionButtons;
     private ImageButton mCloseButton;
@@ -144,10 +140,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
 
-    private int mState = STATE_DOMAIN_ONLY;
     private GURL mFirstUrl;
 
-    private CustomTabLocationBar mLocationBar = new CustomTabLocationBar();
+    private final CustomTabLocationBar mLocationBar = new CustomTabLocationBar();
     private LocationBarModel mLocationBarModel;
 
     /**
@@ -317,7 +312,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         // TODO(bauerb): Remove this once trusted CDN publisher URLs have rolled out completely.
-        if (mState == STATE_TITLE_ONLY) return parsePublisherNameFromUrl(tab.getUrl());
+        if (mLocationBar.isShowingTitleOnly()) return parsePublisherNameFromUrl(tab.getUrl());
 
         return null;
     }
@@ -326,7 +321,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     protected void onNavigatedToDifferentPage() {
         super.onNavigatedToDifferentPage();
         mLocationBarModel.notifyTitleChanged();
-        if (mState == STATE_TITLE_ONLY) {
+        if (mLocationBar.isShowingTitleOnly()) {
             if (mFirstUrl == null || mFirstUrl.isEmpty()) {
                 mFirstUrl = getToolbarDataProvider().getTab().getUrl();
             } else {
@@ -499,28 +494,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.cancel();
 
         final ColorDrawable background = getBackground();
-        final int initialColor = background.getColor();
-        final int finalColor = getToolbarDataProvider().getPrimaryColor();
+        final int startColor = background.getColor();
+        final int endColor = getToolbarDataProvider().getPrimaryColor();
 
-        if (background.getColor() == finalColor) return;
+        if (background.getColor() == endColor) return;
 
         mBrandColorTransitionAnimation = ValueAnimator.ofFloat(0, 1).setDuration(
                 ToolbarPhone.THEME_COLOR_TRANSITION_DURATION);
         mBrandColorTransitionAnimation.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
-        mBrandColorTransitionAnimation.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float fraction = animation.getAnimatedFraction();
-                int red = (int) (Color.red(initialColor)
-                        + fraction * (Color.red(finalColor) - Color.red(initialColor)));
-                int green = (int) (Color.green(initialColor)
-                        + fraction * (Color.green(finalColor) - Color.green(initialColor)));
-                int blue = (int) (Color.blue(initialColor)
-                        + fraction * (Color.blue(finalColor) - Color.blue(initialColor)));
-                int color = Color.rgb(red, green, blue);
-                background.setColor(color);
-                setHandleViewBackgroundColor(color);
-            }
+        mBrandColorTransitionAnimation.addUpdateListener(animation -> {
+            float fraction = animation.getAnimatedFraction();
+            int red   = (int) interpolate(Color.red(startColor),   Color.red(endColor),   fraction);
+            int blue  = (int) interpolate(Color.blue(startColor),  Color.blue(endColor),  fraction);
+            int green = (int) interpolate(Color.green(startColor), Color.green(endColor), fraction);
+            int color = Color.rgb(red, green, blue);
+            background.setColor(color);
+            setHandleViewBackgroundColor(color);
         });
         mBrandColorTransitionAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -631,6 +620,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private class CustomTabLocationBar implements LocationBar, UrlBar.UrlBarDelegate,
                                                   LocationBarDataProvider.Observer,
                                                   View.OnLongClickListener {
+        private static final int TITLE_ANIM_DELAY_MS = 800;
+
+        private static final int STATE_DOMAIN_ONLY = 0;
+        private static final int STATE_TITLE_ONLY = 1;
+        private static final int STATE_DOMAIN_AND_TITLE = 2;
+        private int mState = STATE_DOMAIN_ONLY;
+
         private LocationBarDataProvider mLocationBarDataProvider;
         private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
@@ -642,7 +638,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private ImageButton mSecurityButton;
 
         private CustomTabToolbarAnimationDelegate mAnimDelegate;
-        private Runnable mTitleAnimationStarter = new Runnable() {
+        private final Runnable mTitleAnimationStarter = new Runnable() {
             @Override
             public void run() {
                 mAnimDelegate.startTitleAnimation(getContext());
@@ -655,6 +651,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         public ImageButton getSecurityButton() {
             return mSecurityButton;
+        }
+
+        public boolean isShowingTitleOnly() {
+            return mState == STATE_TITLE_ONLY;
         }
 
         public void onFinishInflate(View container) {
