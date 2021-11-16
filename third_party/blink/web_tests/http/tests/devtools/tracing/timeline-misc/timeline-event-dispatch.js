@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a DOM Dispatch (mousedown)\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="testTarget" style="width:400px; height:400px;">

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Trivial use of inspector frontend tests\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   /* This test seems silly, but originally it tickled bug 31080 */

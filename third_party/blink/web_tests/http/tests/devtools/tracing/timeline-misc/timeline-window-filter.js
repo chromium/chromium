@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests the Timeline window filter.`);
   TestRunner.addResult(`It applies different ranges to the OverviewGrid and expects that current view reflects the change.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.loadLegacyModule("perf_ui");
   await TestRunner.showPanel('timeline');
 

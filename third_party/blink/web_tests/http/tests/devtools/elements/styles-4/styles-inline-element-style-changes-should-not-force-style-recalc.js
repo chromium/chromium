@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that inspector doesn't force styles recalc on operations with inline element styles that result in no changes.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

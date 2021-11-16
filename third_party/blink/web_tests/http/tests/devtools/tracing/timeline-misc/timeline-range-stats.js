@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that aggregated summary in Timeline is properly computed.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var mainThread = 1;
