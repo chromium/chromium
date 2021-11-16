@@ -137,8 +137,9 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
     const AppId& app_id) {
   if (AreFileHandlersEnabled(app_id) && IsFileHandlingAPIAvailable(app_id) &&
-      !registrar_->IsAppFileHandlerPermissionBlocked(app_id))
+      !registrar_->IsAppFileHandlerPermissionBlocked(app_id)) {
     return GetAllFileHandlers(app_id);
+  }
 
   return nullptr;
 }
@@ -200,17 +201,8 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
 const absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
-  if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty())
-    return absl::nullopt;
-
-  const WebApp* web_app = registrar_->GetAppById(app_id);
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    if (web_app && web_app->file_handler_approval_state() ==
-                       ApiApprovalState::kDisallowed) {
-      return absl::nullopt;
-    }
-  } else if (web_app && web_app->file_handler_permission_blocked()) {
+  if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty() ||
+      registrar_->IsAppFileHandlerPermissionBlocked(app_id)) {
     return absl::nullopt;
   }
 

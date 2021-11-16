@@ -242,31 +242,23 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     bool* found_multiple) {
   const apps::FileHandlers file_handlers =
       GetFileHandlersForAllWebAppsWithOrigin(profile, url);
-  std::vector<std::string> associations;
-#if defined(OS_LINUX)
-  std::set<std::string> mime_types_set =
-      apps::GetMimeTypesFromFileHandlers(file_handlers);
-  associations.reserve(mime_types_set.size());
-  associations.insert(associations.end(), mime_types_set.begin(),
-                      mime_types_set.end());
-#else   // !defined(OS_LINUX)
   std::set<std::string> extensions_set =
       apps::GetFileExtensionsFromFileHandlers(file_handlers);
-  associations.reserve(extensions_set.size());
+  std::vector<std::string> extensions_for_display;
+  extensions_for_display.reserve(extensions_set.size());
 
   // Convert file types from formats like ".txt" to "TXT".
   std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(associations),
+                 std::back_inserter(extensions_for_display),
                  [](const std::string& extension) {
                    return base::ToUpperASCII(extension.substr(1));
                  });
-#endif  // defined(OS_LINUX)
 
   if (found_multiple)
-    *found_multiple = associations.size() > 1;
+    *found_multiple = extensions_for_display.size() > 1;
 
   return base::UTF8ToUTF16(base::JoinString(
-      associations,
+      extensions_for_display,
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
 
@@ -281,33 +273,23 @@ std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
   const apps::FileHandlers* file_handlers =
       provider->registrar().GetAppFileHandlers(app_id);
 
-  std::vector<std::string> associations;
-#if defined(OS_LINUX)
-  // TODO(estade): on Linux both the MIME type and extension must match. Should
-  // we just show the extensions like on other platforms?
-  std::set<std::string> mime_types_set =
-      apps::GetMimeTypesFromFileHandlers(*file_handlers);
-  associations.reserve(mime_types_set.size());
-  associations.insert(associations.end(), mime_types_set.begin(),
-                      mime_types_set.end());
-#else   // !defined(OS_LINUX)
   std::set<std::string> extensions_set =
       apps::GetFileExtensionsFromFileHandlers(*file_handlers);
-  associations.reserve(extensions_set.size());
+  std::vector<std::string> extensions_for_display;
+  extensions_for_display.reserve(extensions_set.size());
 
   // Convert file types from formats like ".txt" to "TXT".
   std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(associations),
+                 std::back_inserter(extensions_for_display),
                  [](const std::string& extension) {
                    return base::ToUpperASCII(extension.substr(1));
                  });
-#endif  // defined(OS_LINUX)
 
   if (found_multiple)
-    *found_multiple = associations.size() > 1;
+    *found_multiple = extensions_for_display.size() > 1;
 
   return base::UTF8ToUTF16(base::JoinString(
-      associations,
+      extensions_for_display,
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
 

@@ -2260,11 +2260,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   std::u16string associations_list =
       GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
                                                         GetAppURL());
-#if defined(OS_LINUX)
-  EXPECT_EQ(u"text/plain", associations_list);
-#else
   EXPECT_EQ(u"TXT", associations_list);
-#endif  // defined(OS_LINUX)
 }
 
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2294,11 +2290,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   std::u16string associations_list =
       GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
                                                         GetAppURL());
-#if defined(OS_LINUX)
-  EXPECT_EQ(u"text/plain", associations_list);
-#else
   EXPECT_EQ(u"MD, TXT", associations_list);
-#endif  // defined(OS_LINUX)
 }
 
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2335,11 +2327,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   std::u16string associations_list =
       GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
                                                         GetAppURL());
-#if defined(OS_LINUX)
-  EXPECT_EQ(u"application/long-type, text/plain", associations_list);
-#else
   EXPECT_EQ(u"LONGTYPE, TXT", associations_list);
-#endif  // defined(OS_LINUX)
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -599,15 +599,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
       GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
                                                         second_app_url);
   EXPECT_EQ(display_string_app1, display_string_app2);
-#if defined(OS_LINUX)
-  const std::u16string kHtmlDisplayString = u"text/html";
-  const std::u16string kJpegDisplayString = u"image/jpeg";
-#else
-  const std::u16string kHtmlDisplayString = u"HTML";
-  const std::u16string kJpegDisplayString = u"JPEG";
-#endif
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(kHtmlDisplayString));
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(kJpegDisplayString));
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(u"HTML"));
+  EXPECT_NE(std::u16string::npos, display_string_app1.find(u"JPEG"));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,

@@ -103,13 +103,10 @@ apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
 // Returns a display-ready string that holds all file type associations handled
 // by all installed apps that are scoped under the origin of `url`. This means
 // that if the provided URL is example.com/app/, the returned value will also
-// include file types for example.com/alternate_app/. On Linux, where files are
-// associated via MIME types, this will return MIME types like "text/plain,
-// image/png". On all other platforms, where files are associated via file
-// extensions, this will return capitalized file extensions with the period
-// truncated, like "TXT, PNG". `found_multiple`, when non-null, will be set to
-// indicate whether the returned string is a list (false indicates it's a single
-// object).
+// include file types for example.com/alternate_app/. This will return
+// capitalized file extensions with the period truncated, like "TXT, PNG".
+// `found_multiple`, when non-null, will be set to indicate whether the returned
+// string is a list (false indicates it's a single object).
 // TODO(estade): remove this when kDesktopPWAsFileHandlingSettingsGated is
 // default.
 std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
@@ -118,12 +115,13 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     bool* found_multiple = nullptr);
 
 // Returns a display-ready string that holds all file type associations handled
-// by the app referenced by `app_id`. On Linux, where files are associated via
-// MIME types, this will return MIME types like "text/plain, image/png". On all
-// other platforms, where files are associated via file extensions, this will
-// return capitalized file extensions with the period truncated, like "TXT,
-// PNG". `found_multiple`, when non-null, will be set to indicate whether the
-// returned string is a list (false indicates it's a single object).
+// by the app referenced by `app_id`. This will return capitalized file
+// extensions with the period truncated, like "TXT, PNG". `found_multiple`, when
+// non-null, will be set to indicate whether the returned string is a list
+// (false indicates it's a single object). Note that on Linux, the files must
+// actually match both the specified MIME types as well as the specified file
+// extensions, so this list of extensions is an incomplete picture (subset) of
+// which file types will be accepted.
 std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
     Profile* profile,
     const AppId& app_id,
