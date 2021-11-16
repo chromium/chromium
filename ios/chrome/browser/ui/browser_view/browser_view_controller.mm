@@ -1007,6 +1007,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.omniboxHandler cancelOmniboxEdit];
 }
 
+- (int)liveNTPCount {
+  NSUInteger count = 0;
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  for (int i = 0; i < webStateList->count(); i++) {
+    web::WebState* webState = webStateList->GetWebStateAt(i);
+    auto found = _ntpCoordinatorsForWebStates.find(webState);
+    if (found != _ntpCoordinatorsForWebStates.end()) {
+      count++;
+    }
+  }
+  return count;
+}
+
 #pragma mark - browser_view_controller+private.h
 
 - (void)setActive:(BOOL)active {
