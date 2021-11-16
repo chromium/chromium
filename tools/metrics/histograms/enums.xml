@@ -43476,6 +43476,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Url or App not allowed"/>
 </enum>
 
+<enum name="IMEAssistiveTextInputState">
+  <int value="0" label="None"/>
+  <int value="1" label="Feature disabled by blocklist"/>
+  <int value="2" label="Feature disabled by user pref"/>
+  <int value="3" label="Unsupported text input client"/>
+  <int value="4" label="Unsupported language"/>
+  <int value="5" label="Feature enabled"/>
+</enum>
+
 <enum name="IMEAutocorrectActions">
   <int value="0" label="WINDOW_SHOWN"/>
   <int value="1" label="UNDERLINED"/>

@@ -215,6 +215,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.InputState"
+    enum="IMEAssistiveTextInputState" expires_after="2022-06-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This records the state of an assistive feature in relation to a particular
+    input field. The feature could be enabled or disabled for a number of
+    reasons and this metric captures that information. The metric is recorded
+    once when a user focuses on a new input field.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
     expires_after="2022-03-19">
   <owner>jiwan@google.com</owner>

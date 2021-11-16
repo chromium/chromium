@@ -56,6 +56,10 @@ class AssistiveSuggester : public SuggestionsSource {
   // Called when a text field loses focus, and suggester stops working.
   void OnBlur();
 
+  // This records any text input state metrics for each relevant assistive
+  // feature. It is called once when a text field gains focus.
+  void RecordTextInputStateMetrics(const std::string& engine_id);
+
   // Checks the text before cursor, emits metric if any assistive prefix is
   // matched.
   void RecordAssistiveMatchMetrics(const std::u16string& text,

@@ -448,6 +448,18 @@ void OnError(base::Time start) {
   }
 }
 
+InputFieldContext CreateInputFieldContext(AssistiveSuggester* suggester) {
+  return InputFieldContext{
+      .lacros_enabled = IsLacrosEnabled(),
+      .multiword_enabled = features::IsAssistiveMultiWordEnabled(),
+      .multiword_allowed =
+          suggester
+              ? suggester->IsAssistiveFeatureAllowed(
+                    AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion)
+              : false,
+  };
+}
+
 }  // namespace
 
 NativeInputMethodEngine::NativeInputMethodEngine() = default;
@@ -637,6 +649,7 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     const IMEEngineHandlerInterface::InputContext& context) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnFocus(context_id);
+    assistive_suggester_->RecordTextInputStateMetrics(engine_id);
   }
   autocorrect_manager_->OnFocus(context_id);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {
@@ -644,15 +657,10 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
   }
   if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
-      InputFieldContext field_context =
-        features::IsAssistiveMultiWordEnabled() ?
-          InputFieldContext{
-              .lacros_enabled = IsLacrosEnabled(),
-              .multiword_enabled = true,
-              .multiword_allowed =
-                  assistive_suggester_->IsAssistiveFeatureAllowed(
-                    AssistiveSuggester::AssistiveFeature::kMultiWordSuggestion),
-          } : InputFieldContext{};
+      InputFieldContext input_field_context =
+          features::IsAssistiveMultiWordEnabled()
+              ? CreateInputFieldContext(assistive_suggester_.get())
+              : InputFieldContext{};
 
       input_method_->OnFocus(
           mojom::InputFieldInfo::New(
@@ -661,8 +669,9 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
               context.should_do_learning
                   ? mojom::PersonalizationMode::kEnabled
                   : mojom::PersonalizationMode::kDisabled),
-          prefs_ ? CreateSettingsFromPrefs(*prefs_, engine_id, field_context)
-                 : nullptr);
+          prefs_
+              ? CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context)
+              : nullptr);
 
       // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
       SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);

@@ -46,6 +46,17 @@ enum class DisabledReason {
   kMaxValue = kUrlOrAppNotAllowed,
 };
 
+// Must match with IMEAssistiveTextInputState in enums.xml
+enum class AssistiveTextInputState {
+  kNone = 0,
+  kFeatureBlockedByDenylist = 1,
+  kFeatureBlockedByPreference = 2,
+  kUnsupportedClient = 3,
+  kUnsupportedLanguage = 4,
+  kFeatureEnabled = 5,
+  kMaxValue = kFeatureEnabled,
+};
+
 }  // namespace input_method
 }  // namespace ash
 
