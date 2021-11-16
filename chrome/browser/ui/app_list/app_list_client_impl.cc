@@ -273,6 +273,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
 void AppListClientImpl::GetContextMenuModel(
     int profile_id,
     const std::string& id,
+    bool add_sort_options,
     GetContextMenuModelCallback callback) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
   if (requested_model_updater != current_model_updater_ ||
@@ -281,12 +282,13 @@ void AppListClientImpl::GetContextMenuModel(
     return;
   }
   requested_model_updater->GetContextMenuModel(
-      id, base::BindOnce(
-              [](GetContextMenuModelCallback callback,
-                 std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-                std::move(callback).Run(std::move(menu_model));
-              },
-              std::move(callback)));
+      id, add_sort_options,
+      base::BindOnce(
+          [](GetContextMenuModelCallback callback,
+             std::unique_ptr<ui::SimpleMenuModel> menu_model) {
+            std::move(callback).Run(std::move(menu_model));
+          },
+          std::move(callback)));
 }
 
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {

@@ -168,6 +168,7 @@ syncer::StringOrdinal FakeAppListModelUpdater::GetPositionBeforeFirstItem()
 
 void FakeAppListModelUpdater::GetContextMenuModel(
     const std::string& id,
+    bool add_sort_options,
     GetMenuModelCallback callback) {
   std::move(callback).Run(nullptr);
 }

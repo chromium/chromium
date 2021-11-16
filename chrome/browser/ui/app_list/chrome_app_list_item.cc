@@ -98,7 +98,8 @@ const char* ChromeAppListItem::GetItemType() const {
   return "";
 }
 
-void ChromeAppListItem::GetContextMenuModel(GetMenuModelCallback callback) {
+void ChromeAppListItem::GetContextMenuModel(bool add_sort_options,
+                                            GetMenuModelCallback callback) {
   std::move(callback).Run(nullptr);
 }
 

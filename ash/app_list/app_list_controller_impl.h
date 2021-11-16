@@ -176,6 +176,7 @@ class ASH_EXPORT AppListControllerImpl
                     int event_flags,
                     AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(const std::string& id,
+                           bool add_sort_options,
                            GetContextMenuModelCallback callback) override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       AppListViewState target_state) override;

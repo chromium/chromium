@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -115,6 +116,8 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::USE_LAUNCH_TYPE_WINDOW:
       // Check items use the default icon.
       return gfx::kNoneIcon;
+    case ash::REORDER_SUBMENU:
+      return ash::kReorderIcon;
     case ash::NOTIFICATION_CONTAINER:
       NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
                       "added to the model by NotificationMenuController.";

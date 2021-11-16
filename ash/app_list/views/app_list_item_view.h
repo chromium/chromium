@@ -216,6 +216,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool IsNotificationIndicatorShownForTest() const;
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
 
+  AppListMenuModelAdapter* context_menu() const { return context_menu_.get(); }
+
+  // Sets the callback which will run after the context menu is shown.
+  void SetContextMenuShownCallbackForTest(base::RepeatingClosure closure);
+
  private:
   friend class test::AppsGridViewTest;
   friend class test::AppListMainViewTest;
@@ -422,6 +427,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Helper to trigger icon load.
   absl::optional<AppIconLoadHelper> icon_load_helper_;
+
+  // Called when the context menu is shown.
+  base::RepeatingClosure context_menu_shown_callback_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };

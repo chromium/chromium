@@ -678,6 +678,11 @@ void AppListItemView::OnContextMenuModelReceived(
       view_delegate_->IsInTabletMode());
   context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      run_types);
+
+  if (!context_menu_shown_callback_.is_null()) {
+    context_menu_shown_callback_.Run();
+  }
+
   grid_delegate_->SetSelectedView(this);
 }
 
@@ -694,8 +699,14 @@ void AppListItemView::ShowContextMenuForViewImpl(
   if (waiting_for_context_menu_options_)
     return;
   waiting_for_context_menu_options_ = true;
+
+  // If this item view is in the AppsGridView with the app sort feature enabled,
+  // request the context menu model to add sort options that can sort the app
+  // list.
+  bool add_sort_options = features::IsLauncherAppSortEnabled() &&
+                          context_ == Context::kAppsGridView;
   view_delegate_->GetContextMenuModel(
-      item_weak_->id(),
+      item_weak_->id(), add_sort_options,
       base::BindOnce(&AppListItemView::OnContextMenuModelReceived,
                      weak_ptr_factory_.GetWeakPtr(), point, source_type));
 }
@@ -996,6 +1007,11 @@ bool AppListItemView::FireTouchDragTimerForTest() {
 
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {
   return notification_indicator_ && notification_indicator_->GetVisible();
+}
+
+void AppListItemView::SetContextMenuShownCallbackForTest(
+    base::RepeatingClosure closure) {
+  context_menu_shown_callback_ = std::move(closure);
 }
 
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {

@@ -151,9 +151,10 @@ const char* AppServiceAppItem::GetItemType() const {
   return AppServiceAppItem::kItemType;
 }
 
-void AppServiceAppItem::GetContextMenuModel(GetMenuModelCallback callback) {
-  context_menu_ = std::make_unique<AppServiceContextMenu>(this, profile(), id(),
-                                                          GetController());
+void AppServiceAppItem::GetContextMenuModel(bool add_sort_options,
+                                            GetMenuModelCallback callback) {
+  context_menu_ = std::make_unique<AppServiceContextMenu>(
+      this, profile(), id(), GetController(), add_sort_options);
 
   context_menu_->GetMenuModel(std::move(callback));
 }

@@ -126,11 +126,13 @@ std::unique_ptr<ui::SimpleMenuModel> GetContextMenuModel(
     ChromeAppListItem* item) {
   base::RunLoop run_loop;
   std::unique_ptr<ui::SimpleMenuModel> menu;
-  item->GetContextMenuModel(base::BindLambdaForTesting(
-      [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
-        menu = std::move(created_menu);
-        run_loop.Quit();
-      }));
+  item->GetContextMenuModel(
+      /*add_sort_options=*/false,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ui::SimpleMenuModel> created_menu) {
+            menu = std::move(created_menu);
+            run_loop.Quit();
+          }));
   run_loop.Run();
   return menu;
 }
@@ -269,8 +271,8 @@ class AppContextMenuTest : public AppListTestBase {
     controller_->SetAppPinnable(app_id, pinnable);
     controller_->SetExtensionLaunchType(profile(), app_id, launch_type);
 
-    AppServiceContextMenu menu(menu_delegate(), profile(), app_id,
-                               controller());
+    AppServiceContextMenu menu(menu_delegate(), profile(), app_id, controller(),
+                               /*add_sort_options=*/false);
     std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
     ASSERT_NE(nullptr, menu_model);
 
@@ -315,7 +317,8 @@ class AppContextMenuTest : public AppListTestBase {
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     AppServiceContextMenu menu(menu_delegate(), profile(),
-                               extension_misc::kChromeAppId, controller());
+                               extension_misc::kChromeAppId, controller(),
+                               /*add_sort_options=*/false);
     std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
     ASSERT_NE(nullptr, menu_model);
 
@@ -368,7 +371,8 @@ TEST_F(AppContextMenuTest, ChromeApp) {
 
 TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
   AppServiceContextMenu menu(menu_delegate(), profile(),
-                             "some_non_existing_extension_app", controller());
+                             "some_non_existing_extension_app", controller(),
+                             /*add_sort_options=*/false);
   std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
   EXPECT_EQ(nullptr, menu_model);
 }
@@ -706,7 +710,8 @@ TEST_F(AppContextMenuLacrosTest, LacrosApp) {
 
   // Create the context menu.
   AppServiceContextMenu menu(menu_delegate(), profile(),
-                             extension_misc::kLacrosAppId, controller());
+                             extension_misc::kLacrosAppId, controller(),
+                             /*add_sort_options=*/false);
   std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
   ASSERT_NE(menu_model, nullptr);
 

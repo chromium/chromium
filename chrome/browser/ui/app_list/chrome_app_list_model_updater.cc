@@ -434,6 +434,7 @@ size_t ChromeAppListModelUpdater::BadgedItemCount() {
 
 void ChromeAppListModelUpdater::GetContextMenuModel(
     const std::string& id,
+    bool add_sort_options,
     GetMenuModelCallback callback) {
   ChromeAppListItem* item = FindItem(id);
   // TODO(stevenjb/jennyz): Implement this for folder items.
@@ -442,7 +443,7 @@ void ChromeAppListModelUpdater::GetContextMenuModel(
     std::move(callback).Run(nullptr);
     return;
   }
-  item->GetContextMenuModel(std::move(callback));
+  item->GetContextMenuModel(add_sort_options, std::move(callback));
 }
 
 syncer::StringOrdinal ChromeAppListModelUpdater::CalculatePositionForNewItem(

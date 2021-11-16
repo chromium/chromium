@@ -85,6 +85,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                     int event_flags,
                     ash::AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(const std::string& id,
+                           bool add_sort_options,
                            GetContextMenuModelCallback callback) override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       ash::AppListViewState target_state) override;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/constants/ash_features.h"
@@ -19,6 +21,23 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
+
+namespace {
+
+// Creates a RunLoop that waits until the context menu of app list item is
+// shown.
+void WaitUntilItemMenuShown(ash::AppListItemView* item_view) {
+  base::RunLoop run_loop;
+
+  // Set the callback that will quit the RunLoop when context menu is shown.
+  item_view->SetContextMenuShownCallbackForTest(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Reset the callback.
+  item_view->SetContextMenuShownCallbackForTest(base::RepeatingClosure());
+}
+
+}  // namespace
 
 class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
  public:
@@ -287,6 +306,189 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
 
   // Sort the apps by name in reverse alphabetical order.
   const gfx::Point reverse_option = reorder_option->GetSubmenu()
+                                        ->GetMenuItemAt(1)
+                                        ->GetBoundsInScreen()
+                                        .CenterPoint();
+  event_generator_->MoveMouseTo(reverse_option);
+  event_generator_->ClickLeftButton();
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+}
+
+// Verifies that the apps in the top level apps grid can be arranged in the
+// (reverse) alphabetical order using the context menu in app list item view.
+// TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
+// mode.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       ContextMenuOnAppListItemSortItemsInTopLevel) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+
+  ash::AppListItemView* item_view =
+      app_list_test_api_.GetTopLevelAppsGridView()->view_model()->view_at(0);
+
+  // Right click on the app item to show the context menu.
+  gfx::Point point_on_app = item_view->GetBoundsInScreen().CenterPoint();
+  event_generator_->MoveMouseTo(point_on_app);
+  event_generator_->ClickRightButton();
+  WaitUntilItemMenuShown(item_view);
+
+  ash::AppListMenuModelAdapter* menu_model_adapter = item_view->context_menu();
+  ASSERT_TRUE(menu_model_adapter->root_for_testing()->SubmenuIsShowing());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_submenu = item_view->context_menu()
+                                             ->root_for_testing()
+                                             ->GetSubmenu()
+                                             ->GetLastItem();
+
+  ASSERT_EQ(reorder_submenu->title(), u"Reorder by name");
+
+  // Get a point on the Reorder by Name option.
+  gfx::Point reorder_submenu_point =
+      reorder_submenu->GetBoundsInScreen().CenterPoint();
+
+  // Open the Reorder by Name submenu.
+  event_generator_->MoveMouseTo(reorder_submenu_point);
+  event_generator_->ClickLeftButton();
+  ASSERT_TRUE(reorder_submenu->SubmenuIsShowing());
+
+  // Sort the apps by name in alphabetical order.
+  const gfx::Point alphabetical_option = reorder_submenu->GetSubmenu()
+                                             ->GetMenuItemAt(0)
+                                             ->GetBoundsInScreen()
+                                             .CenterPoint();
+  event_generator_->MoveMouseTo(alphabetical_option);
+  event_generator_->ClickLeftButton();
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Update `item_view` and sort the apps in reverse alphabetical order this
+  // time.
+  item_view =
+      app_list_test_api_.GetTopLevelAppsGridView()->view_model()->view_at(0);
+  point_on_app = item_view->GetBoundsInScreen().CenterPoint();
+
+  // Right click on the app item to show the context menu.
+  event_generator_->MoveMouseTo(point_on_app);
+  event_generator_->ClickRightButton();
+  WaitUntilItemMenuShown(item_view);
+
+  menu_model_adapter = item_view->context_menu();
+  ASSERT_TRUE(menu_model_adapter->root_for_testing()->SubmenuIsShowing());
+
+  // Update the context menu.
+  reorder_submenu = item_view->context_menu()
+                        ->root_for_testing()
+                        ->GetSubmenu()
+                        ->GetLastItem();
+  ASSERT_EQ(reorder_submenu->title(), u"Reorder by name");
+  reorder_submenu_point = reorder_submenu->GetBoundsInScreen().CenterPoint();
+
+  // Open the Reorder by Name submenu.
+  event_generator_->MoveMouseTo(reorder_submenu_point);
+  event_generator_->ClickLeftButton();
+  ASSERT_TRUE(reorder_submenu->SubmenuIsShowing());
+
+  // Sort the apps by name in reverse alphabetical order.
+  const gfx::Point reverse_option = reorder_submenu->GetSubmenu()
+                                        ->GetMenuItemAt(1)
+                                        ->GetBoundsInScreen()
+                                        .CenterPoint();
+  event_generator_->MoveMouseTo(reverse_option);
+  event_generator_->ClickLeftButton();
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+}
+
+// Verifies that the apps in a folder can be arranged in the (reverse)
+// alphabetical order using the context menu in app list item view.
+// TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
+// mode.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       ContextMenuOnAppListItemSortItemsInFolder) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+
+  // Move apps to one folder.
+  app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
+
+  ash::AppListItemView* item_view =
+      app_list_test_api_.GetTopLevelAppsGridView()->view_model()->view_at(1);
+
+  // Make sure we don't right click on a folder.
+  ASSERT_FALSE(item_view->is_folder());
+
+  // Right click on the app item to show the context menu.
+  gfx::Point point_on_app = item_view->GetBoundsInScreen().CenterPoint();
+  event_generator_->MoveMouseTo(point_on_app);
+  event_generator_->ClickRightButton();
+  WaitUntilItemMenuShown(item_view);
+
+  ash::AppListMenuModelAdapter* menu_model_adapter = item_view->context_menu();
+  ASSERT_TRUE(menu_model_adapter->root_for_testing()->SubmenuIsShowing());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_submenu = item_view->context_menu()
+                                             ->root_for_testing()
+                                             ->GetSubmenu()
+                                             ->GetLastItem();
+
+  ASSERT_EQ(reorder_submenu->title(), u"Reorder by name");
+
+  // Get a point on the Reorder by Name option.
+  gfx::Point reorder_submenu_point =
+      reorder_submenu->GetBoundsInScreen().CenterPoint();
+
+  // Open the Reorder by Name submenu.
+  event_generator_->MoveMouseTo(reorder_submenu_point);
+  event_generator_->ClickLeftButton();
+  ASSERT_TRUE(reorder_submenu->SubmenuIsShowing());
+
+  // Sort the apps by name in alphabetical order.
+  const gfx::Point alphabetical_option = reorder_submenu->GetSubmenu()
+                                             ->GetMenuItemAt(0)
+                                             ->GetBoundsInScreen()
+                                             .CenterPoint();
+  event_generator_->MoveMouseTo(alphabetical_option);
+  event_generator_->ClickLeftButton();
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Update `item_view` and sort the apps in reverse alphabetical order this
+  // time.
+  item_view =
+      app_list_test_api_.GetTopLevelAppsGridView()->view_model()->view_at(1);
+
+  // Make sure we don't right click on a folder.
+  ASSERT_FALSE(item_view->is_folder());
+  point_on_app = item_view->GetBoundsInScreen().CenterPoint();
+
+  // Right click on the app item to show the context menu.
+  event_generator_->MoveMouseTo(point_on_app);
+  event_generator_->ClickRightButton();
+  WaitUntilItemMenuShown(item_view);
+
+  menu_model_adapter = item_view->context_menu();
+  ASSERT_TRUE(menu_model_adapter->root_for_testing()->SubmenuIsShowing());
+
+  // Update the context menu.
+  reorder_submenu = item_view->context_menu()
+                        ->root_for_testing()
+                        ->GetSubmenu()
+                        ->GetLastItem();
+  ASSERT_EQ(reorder_submenu->title(), u"Reorder by name");
+  reorder_submenu_point = reorder_submenu->GetBoundsInScreen().CenterPoint();
+
+  // Open the Reorder by Name submenu.
+  event_generator_->MoveMouseTo(reorder_submenu_point);
+  event_generator_->ClickLeftButton();
+  ASSERT_TRUE(reorder_submenu->SubmenuIsShowing());
+
+  // Sort the apps by name in reverse alphabetical order.
+  const gfx::Point reverse_option = reorder_submenu->GetSubmenu()
                                         ->GetMenuItemAt(1)
                                         ->GetBoundsInScreen()
                                         .CenterPoint();

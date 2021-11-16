@@ -348,6 +348,9 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::USE_LAUNCH_TYPE_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_TABBED_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_COMMAND_END:
+    case CommandId::REORDER_SUBMENU:
+    case CommandId::REORDER_BY_NAME_ALPHABETICAL:
+    case CommandId::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
     case CommandId::SHUTDOWN_GUEST_OS:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_FIRST:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_LAST:

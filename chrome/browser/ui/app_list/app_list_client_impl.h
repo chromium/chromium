@@ -95,6 +95,7 @@ class AppListClientImpl
                     int event_flags) override;
   void GetContextMenuModel(int profile_id,
                            const std::string& id,
+                           bool add_sort_options,
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override;
   void OnAppListVisibilityChanged(bool visible) override;

@@ -123,6 +123,7 @@ class AppListModelUpdater {
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(const std::string& id,
+                                   bool add_sort_options,
                                    GetMenuModelCallback callback) = 0;
   virtual size_t BadgedItemCount() = 0;
   // For SearchModel:

@@ -53,6 +53,7 @@ void TestAppListClient::ActivateItem(int profile_id,
 void TestAppListClient::GetContextMenuModel(
     int profile_id,
     const std::string& id,
+    bool add_sort_options,
     GetContextMenuModelCallback callback) {
   auto model = std::make_unique<ui::SimpleMenuModel>(/*delegate=*/nullptr);
   model->AddItem(/*command_id=*/0, u"Menu item");

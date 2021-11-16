@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/app_list/model",
+  "+ash/resources",
   "+components/services/app_service/public",
 ]
 
@@ -12,6 +13,8 @@ specific_include_rules = {
   ],
 
   "app_list_sort_browsertest\.cc": [
+    "+ash/app_list/views/app_list_item_view.h",
+    "+ash/app_list/views/app_list_menu_model_adapter.h",
     "+ash/app_list/views/apps_grid_context_menu.h",
     "+ash/app_list/views/apps_grid_view.h",
     "+ash/shell.h",
