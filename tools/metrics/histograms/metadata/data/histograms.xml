@@ -520,6 +520,222 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DataUse.AllServicesKB" enum="DataUseServicesHash"
+    expires_after="2022-04-24">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The request and response size of the messages exchanged by all the services.
+    Whenever a URLRequest of a service is completed, the number of exchanged
+    bytes is logged in this histogram. The buckets in this histogram are
+    services recorded by the corresponding network traffic annotation tag
+    hashes, so it makes it possible to compare the use of different services in
+    different conditions. Different conditions are added as suffixes to this
+    histogram. If the OS is not Android all the requests are considered
+    foreground.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.AppTabState" units="bytes" expires_after="2022-04-24">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the data use of Chrome user traffic by the foregound vs. background
+    state of the app and tab.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.BackgroundToDataRecievedPerByte" units="ms"
+    expires_after="2021-12-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The time since Chrome is in background when background data use happens.
+    Recorded for each byte of background data use. The source of traffic whether
+    from user browsing or chrome services is added as suffix to this histogram.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.BackgroundToFirstDownstream" units="ms"
+    expires_after="2021-12-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The time since Chrome is in background when first background data use
+    happens. Recorded when first background downstream data use after Chrome is
+    in background. The source of traffic whether from user browsing or chrome
+    services is added as suffix to this histogram.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.BytesReceived" units="bytes" expires_after="M90">
+  <obsolete>
+    Replaced with DataUse.BytesReceived2 as of 10/2020 to provide more granular
+    buckets above 1 MB
+  </obsolete>
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Count of total bytes received by the Chrome on the network. With network
+    servicification this is recorded when requests complete.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.BytesReceived2" units="bytes"
+    expires_after="2022-04-17">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Count of total bytes received by the Chrome on the network. This is recorded
+    when requests complete.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-04-24">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Count of total bytes sent by the Chrome on the network. With network
+    servicification this is recorded when requests complete.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.ContentType.UserTrafficKB" enum="DataUseContentType"
+    expires_after="2022-04-24">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Data use of user traffic by different content types. Recorded in KB when
+    network bytes are received by Chrome.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.FavIcon.Downstream" units="bytes"
+    expires_after="2021-12-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the downstream network data use of favicon requests. Logged when the
+    request is completed or redirected. Zero bytes are recorded when the request
+    is served from cache.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.FavIcon.Downstream.Non200Response" units="bytes"
+    expires_after="2021-12-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the downstream network data use of favicon requests with non 200
+    response code. Logged when the request is completed or redirected.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.PageTransition.UserTrafficKB"
+    enum="DataUsePageTransition" expires_after="2021-12-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Data use of user traffic by different core page transition types. Recorded
+    in KB when the URL request finishes.
+  </summary>
+</histogram>
+
+<histogram name="DataUse.TrafficSize.User" units="bytes"
+    expires_after="2022-04-24">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The total amount of data use of Chrome for user traffic. This traffic has
+    content::ResourceRequestInfo attached to its request. If the OS is not
+    Android all the requests are considered foreground.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.CanApplyLiteVideo.HintCache.HasHint"
+    enum="BooleanAvailable" expires_after="M96">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Whether the LiteVideo hint cache contains hint for the host of the
+    navigation being considered for the LiteVideo optimization. Recorded for
+    every HTTP/HTTPS navigation.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.CanApplyLiteVideo.UserBlocklist"
+    enum="LiteVideoBlocklistReason" expires_after="M96">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    When determining whether the LiteVideo should be attempted on a navigation,
+    the host could be blocklisted for various reasons. This reports the reason
+    the host of the navigation was blocklisted, or was allowed. Recorded for
+    every HTTP/HTTPS navigation.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.HintAgent.ActiveThrottleSize" units="count"
+    expires_after="M96">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the total count of media responses that were currently being
+    throttled. Recorded whenever a new response gets throttled.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.HintAgent.HasHint" units="boolean"
+    expires_after="2022-02-20">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the LiteVideo hint agent in the renderer process received
+    hints.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.LiteVideoDecider.OptGuideHintCacheSize"
+    units="count" expires_after="M96">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Records the total number of LiteVideoHints, keyed by host, cached locally by
+    the LiteVideoDecider for use when queried by subframes.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.NavigationMetrics.FrameRebufferMapSize"
+    units="count" expires_after="M96">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Records the number of entries in the map that records the number of rebuffer
+    events within each frame. Recorded once per navigation.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.OriginHints.ParseResult" enum="BooleanSuccess"
+    expires_after="M96">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>rajendrant@chromium.org</owner>
+  <summary>
+    Indicates whether the hints for configuring LiteVideo throttling provided
+    via Finch were successfully parsed and loaded for use. Android only,
+    recorded once per browser startup.
+  </summary>
+</histogram>
+
+<histogram name="LiteVideo.URLLoader.ThrottleLatency" units="ms"
+    expires_after="M96">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records how much a media response was throttled by LiteVideo. Recorded once
+    for each throttled response.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
