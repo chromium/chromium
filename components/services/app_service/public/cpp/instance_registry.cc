@@ -56,7 +56,7 @@ void InstanceRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void InstanceRegistry::OnInstances(const Instances& deltas) {
+void InstanceRegistry::OnInstances(Instances deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   for (auto& delta : deltas) {
@@ -118,22 +118,22 @@ std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
 
 InstanceState InstanceRegistry::GetState(
     const Instance::InstanceKey& instance_key) const {
-  auto s_iter = states_.find(instance_key);
-  return (s_iter != states_.end()) ? s_iter->second.get()->State()
-                                   : InstanceState::kUnknown;
+  auto s_iter = instance_key_states_.find(instance_key);
+  return (s_iter != instance_key_states_.end()) ? s_iter->second.get()->State()
+                                                : InstanceState::kUnknown;
 }
 
 ash::ShelfID InstanceRegistry::GetShelfId(
     const Instance::InstanceKey& instance_key) const {
-  auto s_iter = states_.find(instance_key);
-  return (s_iter != states_.end())
+  auto s_iter = instance_key_states_.find(instance_key);
+  return (s_iter != instance_key_states_.end())
              ? ash::ShelfID(s_iter->second.get()->AppId(),
                             s_iter->second.get()->LaunchId())
              : ash::ShelfID();
 }
 
 bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
-  return states_.find(instance_key) != states_.end();
+  return instance_key_states_.find(instance_key) != instance_key_states_.end();
 }
 
 bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
@@ -152,9 +152,9 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
       // instance ID as a key.
       continue;
     }
-    auto s_iter = states_.find(d_iter->GetInstanceKey());
+    auto s_iter = instance_key_states_.find(d_iter->GetInstanceKey());
     Instance* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+        (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
     if (InstanceUpdate::Equals(state, d_iter.get())) {
       continue;
     }
@@ -164,8 +164,8 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
       old_state = state->Clone();
       InstanceUpdate::Merge(state, d_iter.get());
     } else {
-      states_.insert(std::make_pair(d_iter.get()->GetInstanceKey(),
-                                    (d_iter.get()->Clone())));
+      instance_key_states_.insert(std::make_pair(d_iter.get()->GetInstanceKey(),
+                                                 (d_iter.get()->Clone())));
     }
 
     for (auto& obs : observers_) {
@@ -175,7 +175,7 @@ void InstanceRegistry::DoOnInstances(const Instances& deltas) {
     if (static_cast<InstanceState>(d_iter.get()->State() &
                                    InstanceState::kDestroyed) !=
         InstanceState::kUnknown) {
-      states_.erase(d_iter.get()->GetInstanceKey());
+      instance_key_states_.erase(d_iter.get()->GetInstanceKey());
     }
   }
   in_progress_ = false;

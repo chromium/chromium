@@ -89,7 +89,7 @@ class InstanceRegistry {
   // delayed until after the second OnInstances call returns.
   //
   // The caller presumably calls OnInstances(std::move(deltas)).
-  void OnInstances(const Instances& deltas);
+  void OnInstances(Instances deltas);
 
   // Return enclosing app windows for the |app_id|. If the app is in a browser
   // tab, the window returned will be the window of the browser.
@@ -128,7 +128,7 @@ class InstanceRegistry {
   void ForEachInstance(FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    for (const auto& s_iter : states_) {
+    for (const auto& s_iter : instance_key_states_) {
       apps::Instance* state = s_iter.second.get();
       f(apps::InstanceUpdate(state, nullptr));
     }
@@ -148,9 +148,9 @@ class InstanceRegistry {
                       FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    auto s_iter = states_.find(instance_key);
+    auto s_iter = instance_key_states_.find(instance_key);
     apps::Instance* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+        (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
     if (state) {
       f(apps::InstanceUpdate(state, nullptr));
       return true;
@@ -178,7 +178,7 @@ class InstanceRegistry {
 
   // Maps from instance key to the latest state: the "sum" of all previous
   // deltas.
-  std::map<const Instance::InstanceKey, InstancePtr> states_;
+  std::map<const Instance::InstanceKey, InstancePtr> instance_key_states_;
   Instances deltas_pending_;
 
   // Maps from app id to app instance key.

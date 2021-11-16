@@ -3773,7 +3773,7 @@ TEST_F(LegacyDeviceStatusCollectorTest, GenerateAppInfo) {
   instance->UpdateState(apps::InstanceState::kStarted, start_time);
   std::vector<std::unique_ptr<apps::Instance>> deltas;
   deltas.push_back(std::move(instance));
-  app_proxy->InstanceRegistry().OnInstances(deltas);
+  app_proxy->InstanceRegistry().OnInstances(std::move(deltas));
 
   base::Time report_time;
   EXPECT_TRUE(base::Time::FromString("30-MAR-2020 2:30pm", &report_time));

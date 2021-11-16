@@ -203,7 +203,7 @@ class FamilyUserAppMetricsTest
     instances.push_back(std::make_unique<apps::Instance>(
         /*app_id=*/"a",
         apps::Instance::InstanceKey::ForWindowBasedApp(window_.get())));
-    instance_registry.OnInstances(instances);
+    instance_registry.OnInstances(std::move(instances));
   }
 
   SupervisedUserService* supervised_user_service() {

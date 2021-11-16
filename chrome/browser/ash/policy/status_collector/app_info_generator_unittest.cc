@@ -178,7 +178,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
 
     std::vector<std::unique_ptr<apps::Instance>> deltas;
     deltas.push_back(std::move(clone));
-    GetInstanceRegistry().OnInstances(deltas);
+    GetInstanceRegistry().OnInstances(std::move(deltas));
   }
 
   std::unique_ptr<TestingProfile> CreateProfile(const AccountId& account_id,

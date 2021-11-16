@@ -643,7 +643,7 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
 }
 
 TEST_F(InstanceRegistryTest, GetInstanceKeys) {
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
+  std::vector<std::unique_ptr<apps::Instance>> deltas1;
   apps::InstanceRegistry instance_registry;
 
   aura::Window window1(nullptr);
@@ -653,10 +653,10 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
 
-  deltas.push_back(MakeInstanceWithWindow("a", &window1));
-  deltas.push_back(MakeInstanceWithWindow("b", &window2));
-  deltas.push_back(MakeInstanceWithWindow("a", &window3));
-  instance_registry.OnInstances(deltas);
+  deltas1.push_back(MakeInstanceWithWindow("a", &window1));
+  deltas1.push_back(MakeInstanceWithWindow("b", &window2));
+  deltas1.push_back(MakeInstanceWithWindow("a", &window3));
+  instance_registry.OnInstances(std::move(deltas1));
 
   EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
               (std::set<const apps::Instance::InstanceKey>{
@@ -666,12 +666,12 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
               (std::set<const apps::Instance::InstanceKey>{
                   MakeInstanceKeyNonWebApp(&window2)}));
 
-  deltas.clear();
-  deltas.push_back(
+  std::vector<std::unique_ptr<apps::Instance>> deltas2;
+  deltas2.push_back(
       MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed));
-  deltas.push_back(
+  deltas2.push_back(
       MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed));
-  instance_registry.OnInstances(deltas);
+  instance_registry.OnInstances(std::move(deltas2));
 
   EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
               (std::set<const apps::Instance::InstanceKey>{
@@ -681,7 +681,7 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
 }
 
 TEST_F(InstanceRegistryTest, ContainsAppId) {
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
+  std::vector<std::unique_ptr<apps::Instance>> deltas1;
   apps::InstanceRegistry instance_registry;
 
   aura::Window window1(nullptr);
@@ -691,21 +691,21 @@ TEST_F(InstanceRegistryTest, ContainsAppId) {
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
 
-  deltas.push_back(MakeInstanceWithWindow("a", &window1));
-  deltas.push_back(MakeInstanceWithWindow("b", &window2));
-  deltas.push_back(MakeInstanceWithWindow("a", &window3));
-  instance_registry.OnInstances(deltas);
+  deltas1.push_back(MakeInstanceWithWindow("a", &window1));
+  deltas1.push_back(MakeInstanceWithWindow("b", &window2));
+  deltas1.push_back(MakeInstanceWithWindow("a", &window3));
+  instance_registry.OnInstances(std::move(deltas1));
 
   EXPECT_TRUE(instance_registry.ContainsAppId("a"));
   EXPECT_TRUE(instance_registry.ContainsAppId("b"));
   EXPECT_FALSE(instance_registry.ContainsAppId("c"));
 
-  deltas.clear();
-  deltas.push_back(
+  std::vector<std::unique_ptr<apps::Instance>> deltas2;
+  deltas2.push_back(
       MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed));
-  deltas.push_back(
+  deltas2.push_back(
       MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed));
-  instance_registry.OnInstances(deltas);
+  instance_registry.OnInstances(std::move(deltas2));
 
   EXPECT_TRUE(instance_registry.ContainsAppId("a"));
   EXPECT_FALSE(instance_registry.ContainsAppId("b"));
@@ -735,7 +735,7 @@ TEST_F(InstanceRegistryTest, GetEnclosingAppWindows) {
   deltas.push_back(MakeInstance("a", MakeInstanceKeyWebApp(&child1)));
   deltas.push_back(MakeInstance("b", MakeInstanceKeyWebApp(&child2)));
   deltas.push_back(MakeInstance("c", MakeInstanceKeyWebApp(&parent2)));
-  instance_registry.OnInstances(deltas);
+  instance_registry.OnInstances(std::move(deltas));
 
   EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
               (std::set<const apps::Instance::InstanceKey>{

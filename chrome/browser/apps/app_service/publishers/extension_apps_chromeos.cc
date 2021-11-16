@@ -822,7 +822,7 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
   instance->UpdateState(new_state, base::Time::Now());
   instance->SetBrowserContext(app_window->browser_context());
   deltas.push_back(std::move(instance));
-  instance_registry_->OnInstances(deltas);
+  instance_registry_->OnInstances(std::move(deltas));
 }
 
 content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
