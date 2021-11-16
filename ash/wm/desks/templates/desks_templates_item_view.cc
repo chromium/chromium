@@ -135,10 +135,11 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
       CloseButton::Type::kMedium));
 
   hover_container_->SetUseDefaultFillLayout(true);
+  hover_container_->SetVisible(false);
 
   icon_container_view_->PopulateIconContainerFromTemplate(desk_template);
+  icon_container_view_->SetVisible(true);
   card_container->SetFlexForView(spacer, 1);
-  UpdateHoverButtonsVisibility();
 
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
@@ -152,14 +153,18 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
 
-void DesksTemplatesItemView::UpdateHoverButtonsVisibility() {
+void DesksTemplatesItemView::UpdateHoverButtonsVisibility(
+    const gfx::Point& screen_location,
+    bool is_touch) {
+  gfx::Point location_in_view = screen_location;
+  ConvertPointFromScreen(this, &location_in_view);
+
   // For switch access, setting the hover buttons to visible allows users to
   // navigate to it.
-  // TODO(richui): update `force_show_hover_buttons_` based on touch events.
   const bool visible =
-      (IsMouseHovered() || force_show_hover_buttons_ ||
-       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
-
+      (is_touch && HitTestPoint(location_in_view)) ||
+      (!is_touch && IsMouseHovered()) ||
+      Shell::Get()->accessibility_controller()->IsSwitchAccessRunning();
   hover_container_->SetVisible(visible);
   icon_container_view_->SetVisible(!visible);
 }

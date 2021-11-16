@@ -36,8 +36,9 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   ~DesksTemplatesItemView() override;
 
   // Updates the visibility state of the delete and launch buttons depending on
-  // whether this view is mouse hovered, or if switch access is enabled.
-  void UpdateHoverButtonsVisibility();
+  // the current mouse or touch event location, or if switch access is enabled.
+  void UpdateHoverButtonsVisibility(const gfx::Point& screen_location,
+                                    bool is_touch);
 
   // views::View:
   void Layout() override;
@@ -67,10 +68,6 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
-
-  // We force show the hover buttons when `this` is long pressed or tapped
-  // using touch gestures.
-  bool force_show_hover_buttons_ = false;
 
   // The desk template's unique identifier.
   const base::GUID uuid_;

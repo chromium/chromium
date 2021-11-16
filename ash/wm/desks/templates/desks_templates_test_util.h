@@ -17,7 +17,7 @@
 namespace views {
 class Button;
 class Label;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -90,6 +90,10 @@ class DesksTemplatesItemViewTestApi {
 
   const std::vector<DesksTemplatesIconView*>& icon_views() const {
     return item_view_->icon_container_view_->icon_views_;
+  }
+
+  const views::View* hover_container() const {
+    return item_view_->hover_container_;
   }
 
  private:

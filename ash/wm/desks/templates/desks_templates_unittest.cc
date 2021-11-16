@@ -295,6 +295,13 @@ class DesksTemplatesTest : public OverviewTestBase {
     event_generator->ClickLeftButton();
   }
 
+  void LongPressAt(const gfx::Point& point) {
+    ui::TouchEvent long_press(ui::ET_GESTURE_LONG_PRESS, point,
+                              base::TimeTicks::Now(),
+                              ui::PointerDetails(ui::EventPointerType::kTouch));
+    GetEventGenerator()->Dispatch(&long_press);
+  }
+
   const std::vector<std::unique_ptr<OverviewGrid>>& GetOverviewGridList() {
     auto* overview_session = GetOverviewSession();
     DCHECK(overview_session);
@@ -1135,6 +1142,57 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
   EXPECT_TRUE(GetOverviewGridList()[0]->desks_templates_grid_widget());
 
   ASSERT_EQ(1ul, GetAllEntries().size());
+}
+
+// Tests the mouse and touch hover behavior on the template item view.
+TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
+  auto test_window = CreateTestWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesItemView* first_item = GetItemViewFromOverviewGrid(0);
+  DesksTemplatesItemView* second_item = GetItemViewFromOverviewGrid(1);
+  auto* hover_container_view1 =
+      DesksTemplatesItemViewTestApi(first_item).hover_container();
+  auto* hover_container_view2 =
+      DesksTemplatesItemViewTestApi(second_item).hover_container();
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Move the mouse to hover over `first_item`.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+  // Move the mouse to hover over `second_item`.
+  event_generator->MoveMouseTo(second_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(hover_container_view2->GetVisible());
+
+  // Long press on the `first_item`.
+  LongPressAt(first_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+  // Long press on the `second_item`.
+  LongPressAt(second_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(hover_container_view2->GetVisible());
+
+  // Move the mouse to hover over `first_item` again.
+  event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Long press on the `second_item`.
+  LongPressAt(second_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(hover_container_view2->GetVisible());
+
+  // Move the mouse but make it still remain on top of `first_item`.
+  event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
 }
 
 }  // namespace ash

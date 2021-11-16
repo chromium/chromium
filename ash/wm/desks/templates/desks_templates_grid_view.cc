@@ -168,10 +168,16 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_MOUSE_ENTERED:
     case ui::ET_MOUSE_EXITED:
     case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::ET_GESTURE_LONG_TAP: {
+      const gfx::Point screen_location =
+          event->target() ? event->target()->GetScreenLocation(*event)
+                          : event->root_location();
       for (auto* grid_item : grid_items_)
-        grid_item->UpdateHoverButtonsVisibility();
+        grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);
+
+      event->SetHandled();
       return;
+    }
     default:
       return;
   }
