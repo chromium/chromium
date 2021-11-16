@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -61,84 +60,9 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace web_app {
 
 namespace {
-
-ui::WindowShowState DetermineWindowShowState() {
-  if (chrome::IsRunningInForcedAppMode())
-    return ui::SHOW_STATE_FULLSCREEN;
-
-  return ui::SHOW_STATE_DEFAULT;
-}
-
-void SetTabHelperAppId(content::WebContents* web_contents,
-                       const std::string& app_id) {
-  // TODO(https://crbug.com/1032443):
-  // Eventually move this to browser_navigator.cc: CreateTargetContents().
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
-  tab_helper->SetAppId(app_id);
-}
-
-content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
-                                                NavigateParams& nav_params) {
-  Browser* browser = nav_params.browser;
-  const absl::optional<web_app::SystemAppType> capturing_system_app_type =
-      web_app::GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
-  // TODO(crbug.com/1201820): This block creates conditions where Navigate()
-  // returns early and causes a crash. Fail gracefully instead. Further
-  // debugging state will be implemented via Chrometto UMA traces.
-  if (capturing_system_app_type &&
-      (!browser || !web_app::IsBrowserForSystemWebApp(
-                       browser, capturing_system_app_type.value()))) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* user_manager = user_manager::UserManager::Get();
-    bool is_kiosk = user_manager && user_manager->IsLoggedInAsAnyKioskApp();
-    AppBrowserController* app_controller = browser->app_controller();
-    WebAppProvider* web_app_provider =
-        WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
-    TRACE_EVENT_INSTANT(
-        "system_apps", "BadNavigate", [&](perfetto::EventContext ctx) {
-          auto* bad_navigate =
-              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                  ->set_chrome_web_app_bad_navigate();
-          bad_navigate->set_is_kiosk(is_kiosk);
-          bad_navigate->set_has_hosted_app_controller(!!app_controller);
-          bad_navigate->set_app_name(browser->app_name());
-          if (app_controller && app_controller->system_app()) {
-            bad_navigate->set_system_app_type(
-                static_cast<uint32_t>(app_controller->system_app()->GetType()));
-          }
-          bad_navigate->set_web_app_provider_registry_ready(
-              web_app_provider->on_registry_ready().is_signaled());
-          bad_navigate->set_system_web_app_manager_synchronized(
-              web_app_provider->system_web_app_manager()
-                  .on_apps_synchronized()
-                  .is_signaled());
-        });
-    UMA_HISTOGRAM_ENUMERATION("WebApp.SystemApps.BadNavigate.Type",
-                              capturing_system_app_type.value());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    return nullptr;
-  }
-
-  Navigate(&nav_params);
-
-  content::WebContents* const web_contents =
-      nav_params.navigated_or_inserted_contents;
-
-  if (web_contents) {
-    SetTabHelperAppId(web_contents, app_id);
-    web_app::SetAppPrefsForWebContents(web_contents);
-  }
-
-  return web_contents;
-}
 
 // TODO(crbug.com/1019239): Passing a WebAppProvider seems to be a bit of an
 // anti-pattern. We should refactor this and other existing functions in this
@@ -439,7 +363,7 @@ content::WebContents* LaunchProcess::NavigateBrowser(
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
   tab_strip->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
-  SetTabHelperAppId(web_contents, params_.app_id);
+  WebAppTabHelper::FromWebContents(web_contents)->SetAppId(params_.app_id);
   return web_contents;
 }
 
@@ -485,43 +409,6 @@ void LaunchProcess::RecordMetrics(const GURL& launch_url,
 }
 
 }  // namespace
-
-Browser* CreateWebApplicationWindow(Profile* profile,
-                                    const std::string& app_id,
-                                    WindowOpenDisposition disposition,
-                                    int32_t restore_id,
-                                    bool omit_from_session_restore,
-                                    bool can_resize,
-                                    bool can_maximize,
-                                    const gfx::Rect initial_bounds) {
-  std::string app_name = GenerateApplicationNameFromAppId(app_id);
-  Browser::CreateParams browser_params =
-      disposition == WindowOpenDisposition::NEW_POPUP
-          ? Browser::CreateParams::CreateForAppPopup(
-                app_name, /*trusted_source=*/true, initial_bounds, profile,
-                /*user_gesture=*/true)
-          : Browser::CreateParams::CreateForApp(
-                app_name, /*trusted_source=*/true, initial_bounds, profile,
-                /*user_gesture=*/true);
-  browser_params.initial_show_state = DetermineWindowShowState();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  browser_params.restore_id = restore_id;
-#endif
-  browser_params.omit_from_session_restore = omit_from_session_restore;
-  browser_params.can_resize = can_resize;
-  browser_params.can_maximize = can_maximize;
-  return Browser::Create(browser_params);
-}
-
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition) {
-  NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  nav_params.disposition = disposition;
-  return NavigateWebAppUsingParams(app_id, nav_params);
-}
 
 WebAppLaunchManager::WebAppLaunchManager(Profile* profile)
     : profile_(profile),
@@ -624,21 +511,6 @@ void WebAppLaunchManager::LaunchWebApplication(
     browser = apps::CreateBrowserWithNewTabPage(profile_);
   }
   std::move(callback).Run(browser, container);
-}
-
-void RecordAppWindowLaunch(Profile* profile, const std::string& app_id) {
-  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
-    return;
-
-  DisplayMode display =
-      provider->registrar().GetEffectiveDisplayModeFromManifest(app_id);
-  if (display == DisplayMode::kUndefined)
-    return;
-
-  DCHECK_LT(DisplayMode::kUndefined, display);
-  DCHECK_LE(display, DisplayMode::kMaxValue);
-  UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
 }
 
 }  // namespace web_app

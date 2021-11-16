@@ -11,7 +11,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
-enum class WindowOpenDisposition;
 class GURL;
 class Profile;
 
@@ -73,24 +72,6 @@ class WebAppLaunchManager {
 
   base::WeakPtrFactory<WebAppLaunchManager> weak_ptr_factory_{this};
 };
-
-Browser* CreateWebApplicationWindow(
-    Profile* profile,
-    const std::string& app_id,
-    WindowOpenDisposition disposition,
-    int32_t restore_id,
-    bool omit_from_session_restore = false,
-    bool can_resize = true,
-    bool can_maximize = true,
-    const gfx::Rect initial_bounds = gfx::Rect());
-
-content::WebContents* NavigateWebApplicationWindow(
-    Browser* browser,
-    const std::string& app_id,
-    const GURL& url,
-    WindowOpenDisposition disposition);
-
-void RecordAppWindowLaunch(Profile* profile, const std::string& app_id);
 
 }  // namespace web_app
 
