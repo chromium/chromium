@@ -14,6 +14,7 @@
 #include <new>
 
 #include "base/allocator/allocator_shim_internals.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 // std::align_val_t isn't available until C++17, but we want to override aligned
@@ -53,100 +54,113 @@
 #endif
 #endif
 
-SHIM_ALWAYS_EXPORT void* operator new(size_t size) {
+#if !defined(OS_APPLE)
+#define SHIM_CPP_SYMBOLS_EXPORT SHIM_ALWAYS_EXPORT
+#else
+// On Apple OSes, prefer not exporting these symbols (as this reverts to the
+// default behavior, they are still exported in e.g. component builds). This is
+// partly due to intentional limits on exported symbols in the main library, but
+// it is also needless, since no library used on macOS imports these.
+//
+// TODO(lizeb): It may not be necessary anywhere to export these.
+#define SHIM_CPP_SYMBOLS_EXPORT NOINLINE
+#endif
+
+SHIM_CPP_SYMBOLS_EXPORT void* operator new(size_t size) {
   return ShimCppNew(size);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete(void* p) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete(void* p) __THROW {
   ShimCppDelete(p);
 }
 
-SHIM_ALWAYS_EXPORT void* operator new[](size_t size) {
+SHIM_CPP_SYMBOLS_EXPORT void* operator new[](size_t size) {
   return ShimCppNew(size);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete[](void* p) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p) __THROW {
   ShimCppDelete(p);
 }
 
-SHIM_ALWAYS_EXPORT void* operator new(size_t size,
-                                      const std::nothrow_t&) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void* operator new(size_t size,
+                                           const std::nothrow_t&) __THROW {
   return ShimCppNewNoThrow(size);
 }
 
-SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
-                                        const std::nothrow_t&) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void* operator new[](size_t size,
+                                             const std::nothrow_t&) __THROW {
   return ShimCppNewNoThrow(size);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete(void* p, const std::nothrow_t&) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete(void* p,
+                                             const std::nothrow_t&) __THROW {
   ShimCppDelete(p);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete[](void* p,
-                                          const std::nothrow_t&) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p,
+                                               const std::nothrow_t&) __THROW {
   ShimCppDelete(p);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete(void* p, size_t) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete(void* p, size_t) __THROW {
   ShimCppDelete(p);
 }
 
-SHIM_ALWAYS_EXPORT void operator delete[](void* p, size_t) __THROW {
+SHIM_CPP_SYMBOLS_EXPORT void operator delete[](void* p, size_t) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void* ALIGN_NEW(std::size_t size,
-                                                 ALIGN_VAL_T alignment) {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void* ALIGN_NEW(std::size_t size,
+                                                      ALIGN_VAL_T alignment) {
   return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void* ALIGN_NEW_NOTHROW(
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void* ALIGN_NEW_NOTHROW(
     std::size_t size,
     ALIGN_VAL_T alignment,
     const std::nothrow_t&) __THROW {
   return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void ALIGN_DEL(void* p, ALIGN_VAL_T) __THROW {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void ALIGN_DEL(void* p,
+                                                     ALIGN_VAL_T) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void ALIGN_DEL_SIZED(void* p,
-                                                      std::size_t size,
-                                                      ALIGN_VAL_T) __THROW {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void
+ALIGN_DEL_SIZED(void* p, std::size_t size, ALIGN_VAL_T) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void
 ALIGN_DEL_NOTHROW(void* p, ALIGN_VAL_T, const std::nothrow_t&) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void* ALIGN_NEW_ARR(std::size_t size,
-                                                     ALIGN_VAL_T alignment) {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void* ALIGN_NEW_ARR(
+    std::size_t size,
+    ALIGN_VAL_T alignment) {
   return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void* ALIGN_NEW_ARR_NOTHROW(
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void* ALIGN_NEW_ARR_NOTHROW(
     std::size_t size,
     ALIGN_VAL_T alignment,
     const std::nothrow_t&) __THROW {
   return ShimCppAlignedNew(size, static_cast<size_t>(alignment));
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void ALIGN_DEL_ARR(void* p,
-                                                    ALIGN_VAL_T) __THROW {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void ALIGN_DEL_ARR(void* p,
+                                                         ALIGN_VAL_T) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void ALIGN_DEL_ARR_SIZED(void* p,
-                                                          std::size_t size,
-                                                          ALIGN_VAL_T) __THROW {
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void
+ALIGN_DEL_ARR_SIZED(void* p, std::size_t size, ALIGN_VAL_T) __THROW {
   ShimCppDelete(p);
 }
 
-ALIGN_LINKAGE SHIM_ALWAYS_EXPORT void
+ALIGN_LINKAGE SHIM_CPP_SYMBOLS_EXPORT void
 ALIGN_DEL_ARR_NOTHROW(void* p, ALIGN_VAL_T, const std::nothrow_t&) __THROW {
   ShimCppDelete(p);
 }
