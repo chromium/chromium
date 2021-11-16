@@ -818,7 +818,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
   } else {
-    PlaceFlexItems(flex_line_outputs);
+    PlaceFlexItems(&flex_line_outputs);
 
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
@@ -902,7 +902,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 }
 
 void NGFlexLayoutAlgorithm::PlaceFlexItems(
-    Vector<NGFlexLine>& flex_line_outputs) {
+    Vector<NGFlexLine>* flex_line_outputs) {
   ConstructAndAppendFlexItems();
 
   LayoutUnit main_axis_start_offset;
@@ -924,7 +924,7 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
     main_axis_end_offset = BorderScrollbarPadding().inline_end;
   }
 
-  flex_line_outputs.ReserveCapacity(algorithm_.NumItems());
+  flex_line_outputs->ReserveCapacity(algorithm_.NumItems());
 
   FlexLine* line;
   while ((
@@ -940,10 +940,10 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
     if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
 
-    flex_line_outputs.push_back(NGFlexLine(line->line_items_.size()));
+    flex_line_outputs->push_back(NGFlexLine(line->line_items_.size()));
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
-      NGFlexItem& flex_item_output = flex_line_outputs.back().line_items[i];
+      NGFlexItem& flex_item_output = flex_line_outputs->back().line_items[i];
 
       flex_item.offset_ = &flex_item_output.offset;
       flex_item_output.ng_input_node = flex_item.ng_input_node_;
@@ -996,7 +996,7 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
     // in to the next iteration.
     line->ComputeLineItemsPosition(main_axis_start_offset, main_axis_end_offset,
                                    cross_axis_offset);
-    flex_line_outputs.back().line_cross_size = line->cross_axis_extent_;
+    flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
   }
 }
 
@@ -1052,7 +1052,7 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 }
 
 bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
-    Vector<NGFlexLine>& flex_line_outputs) {
+    const Vector<NGFlexLine>& flex_line_outputs) {
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
@@ -1071,7 +1071,7 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
        NGFlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem()) {
     wtf_size_t flex_line_idx = entry.flex_line_idx;
-    NGFlexLine& line_output = flex_line_outputs[flex_line_idx];
+    const NGFlexLine& line_output = flex_line_outputs[flex_line_idx];
     const NGBreakToken* item_break_token = entry.token;
 
     FlexItem* item = nullptr;
@@ -1240,7 +1240,7 @@ bool NGFlexLayoutAlgorithm::PropagateFlexItemInfo(FlexItem* flex_item,
 
 scoped_refptr<const NGLayoutResult>
 NGFlexLayoutAlgorithm::LayoutWithBlockFragmentation(
-    NGFlexItem& flex_item,
+    const NGFlexItem& flex_item,
     LayoutUnit block_offset,
     const NGBlockBreakToken* item_break_token,
     absl::optional<LayoutUnit> line_cross_size_for_stretch) {

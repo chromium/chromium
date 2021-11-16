@@ -33,7 +33,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   scoped_refptr<const NGLayoutResult> RelayoutIgnoringChildScrollbarChanges();
   scoped_refptr<const NGLayoutResult> LayoutInternal();
 
-  void PlaceFlexItems(Vector<NGFlexLine>& flex_line_outputs);
+  void PlaceFlexItems(Vector<NGFlexLine>* flex_line_outputs);
   LayoutUnit CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
@@ -74,7 +74,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       bool min_block_size_should_encompass_intrinsic_size = false) const;
   void ConstructAndAppendFlexItems();
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
-  bool GiveItemsFinalPositionAndSize(Vector<NGFlexLine>& flex_line_outputs);
+  bool GiveItemsFinalPositionAndSize(
+      const Vector<NGFlexLine>& flex_line_outputs);
   bool PropagateFlexItemInfo(FlexItem* flex_item,
                              wtf_size_t flex_line_idx,
                              LayoutPoint location,
@@ -99,7 +100,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   // Re-layout a given flex item, taking fragmentation into account.
   scoped_refptr<const NGLayoutResult> LayoutWithBlockFragmentation(
-      NGFlexItem& flex_item,
+      const NGFlexItem& flex_item,
       LayoutUnit block_offset,
       const NGBlockBreakToken* item_break_token,
       absl::optional<LayoutUnit> line_cross_size_for_stretch);
