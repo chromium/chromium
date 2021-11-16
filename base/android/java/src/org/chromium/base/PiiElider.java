@@ -70,7 +70,11 @@ public class PiiElider {
                     + "(\\b|$)"); // Always end on a word boundary or end of string.
 
     private static final Pattern LIKELY_EXCEPTION_LOG =
-            Pattern.compile("\\sat\\sorg\\.chromium\\.[^ ]+.");
+            Pattern.compile("\\sat\\sorg\\.chromium\\.[^ ]+.|"
+                    + "Caused by: java.lang."
+                    // When a class is not found it can fail to satisfy our isClass
+                    // check but is still worth noting what it was.
+                    + "(ClassNotFoundException|NoClassDefFoundError):");
 
     private static final String IP_ELISION = "1.2.3.4";
     private static final String MAC_ELISION = "01:23:45:67:89:AB";
@@ -81,7 +85,8 @@ public class PiiElider {
 
     private static final Pattern CONSOLE_MSG = Pattern.compile("\\[\\w*:CONSOLE.*\\].*");
 
-    private static final String[] APP_NAMESPACE = new String[] {"org.chromium.", "com.google."};
+    private static final String[] APP_NAMESPACE =
+            new String[] {"org.chromium.", "com.google.", "com.chrome."};
 
     private static final String[] SYSTEM_NAMESPACE = new String[] {"android.accessibilityservice",
             "android.accounts", "android.animation", "android.annotation", "android.app",

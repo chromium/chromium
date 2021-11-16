@@ -89,6 +89,22 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testElideUrl10() {
+        String original = "Caused by: java.lang.ClassNotFoundException: Didn't find class "
+                + "\"org.chromium.components.browser_ui.widget.SurfaceColorOvalView\"";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
+    public void testElideUrl11() {
+        String original = "java.lang.RuntimeException: Unable to start activity "
+                + "ComponentInfo{com.chrome.dev/org.chromium.chrome.browser.ChromeTabbedActivity}: "
+                + "android.view.InflateException: Binary XML file line #20 in "
+                + "com.chrome.dev:layout/0_resource_name_obfuscated:";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testElideNonHttpUrl() {
         String original = "test some-other-scheme://address/01010?param=33&other_param=AAA !!!";
         String expected = "test HTTP://WEBADDRESS.ELIDED !!!";
