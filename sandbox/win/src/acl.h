@@ -8,6 +8,8 @@
 #include "base/memory/free_deleter.h"
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
+#include "sandbox/win/src/security_level.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -62,11 +64,27 @@ bool ReplacePackageSidInDacl(HANDLE object,
                              const base::win::Sid& package_sid,
                              ACCESS_MASK access);
 
-// Sets the integrity label on a object handle.
+// Returns the Sid associated with a given IntegrityLevel value. This returns
+// an empty value if |integrity_level| is set to INTEGRITY_LEVEL_LAST.
+absl::optional<base::win::Sid> GetIntegrityLevelSid(
+    IntegrityLevel integrity_level);
+
+// Sets the integrity label on a object.
+// |handle| should be an open handle with WRITE_OWNER access.
+// |object_type| represents the kernel object type of the handle.
+// |mandatory_policy| is the mandatory policy to use. This can be zero or more
+// of the following bit flags:
+// SYSTEM_MANDATORY_LABEL_NO_WRITE_UP   - Block write access.
+// SYSTEM_MANDATORY_LABEL_NO_READ_UP    - Block read access.
+// SYSTEM_MANDATORY_LABEL_NO_EXECUTE_UP - Block execute access.
+// |integrity_level| is the level to set.
+// If the function succeeds, the return value is ERROR_SUCCESS. If the
+// function fails, the return value is the win32 error code corresponding to
+// the error.
 DWORD SetObjectIntegrityLabel(HANDLE handle,
-                              SecurityObjectType type,
-                              const wchar_t* ace_access,
-                              const wchar_t* integrity_level_sid);
+                              SecurityObjectType object_type,
+                              DWORD mandatory_policy,
+                              IntegrityLevel integrity_level);
 
 }  // namespace sandbox
 

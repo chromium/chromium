@@ -324,6 +324,7 @@ test("sbox_validation_tests") {
 
 test("sbox_unittests") {
   sources = [
+    "src/acl_unittest.cc",
     "src/app_container_unittest.cc",
     "src/interception_unittest.cc",
     "src/ipc_unittest.cc",

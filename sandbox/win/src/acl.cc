@@ -99,6 +99,30 @@ SE_OBJECT_TYPE ConvertObjectType(SecurityObjectType object_type) {
   return SE_UNKNOWN_OBJECT_TYPE;
 }
 
+absl::optional<DWORD> GetIntegrityLevelValue(IntegrityLevel integrity_level) {
+  switch (integrity_level) {
+    case INTEGRITY_LEVEL_SYSTEM:
+      return SECURITY_MANDATORY_SYSTEM_RID;
+    case INTEGRITY_LEVEL_HIGH:
+      return SECURITY_MANDATORY_HIGH_RID;
+    case INTEGRITY_LEVEL_MEDIUM:
+      return SECURITY_MANDATORY_MEDIUM_RID;
+    case INTEGRITY_LEVEL_MEDIUM_LOW:
+      return SECURITY_MANDATORY_MEDIUM_RID - 2048;
+    case INTEGRITY_LEVEL_LOW:
+      return SECURITY_MANDATORY_LOW_RID;
+    case INTEGRITY_LEVEL_BELOW_LOW:
+      return SECURITY_MANDATORY_LOW_RID - 2048;
+    case INTEGRITY_LEVEL_UNTRUSTED:
+      return SECURITY_MANDATORY_UNTRUSTED_RID;
+    case INTEGRITY_LEVEL_LAST:
+      return absl::nullopt;
+  }
+
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 }  // namespace
 
 bool AddSidToDefaultDacl(HANDLE token,
@@ -227,43 +251,42 @@ bool ReplacePackageSidInDacl(HANDLE object,
       SecurityAccessMode::kGrant, access);
 }
 
+absl::optional<base::win::Sid> GetIntegrityLevelSid(
+    IntegrityLevel integrity_level) {
+  absl::optional<DWORD> value = GetIntegrityLevelValue(integrity_level);
+  if (!value)
+    return absl::nullopt;
+  return base::win::Sid::FromIntegrityLevel(*value);
+}
+
 DWORD SetObjectIntegrityLabel(HANDLE handle,
-                              SecurityObjectType type,
-                              const wchar_t* ace_access,
-                              const wchar_t* integrity_level_sid) {
-  // Build the SDDL string for the label.
-  std::wstring sddl = L"S:(";    // SDDL for a SACL.
-  sddl += SDDL_MANDATORY_LABEL;  // Ace Type is "Mandatory Label".
-  sddl += L";;";                 // No Ace Flags.
-  sddl += ace_access;            // Add the ACE access.
-  sddl += L";;;";                // No ObjectType and Inherited Object Type.
-  sddl += integrity_level_sid;   // Trustee Sid.
-  sddl += L")";
+                              SecurityObjectType object_type,
+                              DWORD mandatory_policy,
+                              IntegrityLevel integrity_level) {
+  absl::optional<base::win::Sid> sid = GetIntegrityLevelSid(integrity_level);
+  if (!sid)
+    return ERROR_INVALID_SID;
 
-  DWORD error = ERROR_SUCCESS;
-  PSECURITY_DESCRIPTOR sec_desc = nullptr;
+  // Get total ACL length. SYSTEM_MANDATORY_LABEL_ACE contains the first DWORD
+  // of the SID so remove it from total.
+  DWORD length = sizeof(ACL) + sizeof(SYSTEM_MANDATORY_LABEL_ACE) +
+                 ::GetLengthSid(sid->GetPSID()) - sizeof(DWORD);
+  std::vector<char> sacl_buffer(length);
+  PACL sacl = reinterpret_cast<PACL>(sacl_buffer.data());
 
-  PACL sacl = nullptr;
-  BOOL sacl_present = false;
-  BOOL sacl_defaulted = false;
+  if (!::InitializeAcl(sacl, length, ACL_REVISION))
+    return ::GetLastError();
 
-  if (::ConvertStringSecurityDescriptorToSecurityDescriptorW(
-          sddl.c_str(), SDDL_REVISION, &sec_desc, nullptr)) {
-    if (::GetSecurityDescriptorSacl(sec_desc, &sacl_present, &sacl,
-                                    &sacl_defaulted)) {
-      error = ::SetSecurityInfo(handle, ConvertObjectType(type),
-                                LABEL_SECURITY_INFORMATION, nullptr, nullptr,
-                                nullptr, sacl);
-    } else {
-      error = ::GetLastError();
-    }
-
-    ::LocalFree(sec_desc);
-  } else {
+  if (!::AddMandatoryAce(sacl, ACL_REVISION, 0, mandatory_policy,
+                         sid->GetPSID())) {
     return ::GetLastError();
   }
 
-  return error;
+  DCHECK(::IsValidAcl(sacl));
+
+  return ::SetSecurityInfo(handle, ConvertObjectType(object_type),
+                           LABEL_SECURITY_INFORMATION, nullptr, nullptr,
+                           nullptr, sacl);
 }
 
 }  // namespace sandbox

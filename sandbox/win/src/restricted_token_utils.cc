@@ -55,7 +55,6 @@ void AddSidException(std::vector<base::win::Sid>& sids,
   DCHECK(sid);
   sids.push_back(std::move(*sid));
 }
-
 }  // namespace
 
 DWORD CreateRestrictedToken(
@@ -217,50 +216,21 @@ DWORD CreateRestrictedToken(
   return err_code;
 }
 
-const wchar_t* GetIntegrityLevelString(IntegrityLevel integrity_level) {
-  switch (integrity_level) {
-    case INTEGRITY_LEVEL_SYSTEM:
-      return L"S-1-16-16384";
-    case INTEGRITY_LEVEL_HIGH:
-      return L"S-1-16-12288";
-    case INTEGRITY_LEVEL_MEDIUM:
-      return L"S-1-16-8192";
-    case INTEGRITY_LEVEL_MEDIUM_LOW:
-      return L"S-1-16-6144";
-    case INTEGRITY_LEVEL_LOW:
-      return L"S-1-16-4096";
-    case INTEGRITY_LEVEL_BELOW_LOW:
-      return L"S-1-16-2048";
-    case INTEGRITY_LEVEL_UNTRUSTED:
-      return L"S-1-16-0";
-    case INTEGRITY_LEVEL_LAST:
-      return nullptr;
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
 DWORD SetTokenIntegrityLevel(HANDLE token, IntegrityLevel integrity_level) {
-  const wchar_t* integrity_level_str = GetIntegrityLevelString(integrity_level);
-  if (!integrity_level_str) {
+  absl::optional<base::win::Sid> sid = GetIntegrityLevelSid(integrity_level);
+  if (!sid) {
     // No mandatory level specified, we don't change it.
     return ERROR_SUCCESS;
   }
 
-  PSID integrity_sid = nullptr;
-  if (!::ConvertStringSidToSid(integrity_level_str, &integrity_sid))
-    return ::GetLastError();
-
   TOKEN_MANDATORY_LABEL label = {};
   label.Label.Attributes = SE_GROUP_INTEGRITY;
-  label.Label.Sid = integrity_sid;
+  label.Label.Sid = sid->GetPSID();
 
-  DWORD size = sizeof(TOKEN_MANDATORY_LABEL) + ::GetLengthSid(integrity_sid);
-  bool result = ::SetTokenInformation(token, TokenIntegrityLevel, &label, size);
-  auto last_error = ::GetLastError();
-  ::LocalFree(integrity_sid);
+  if (!::SetTokenInformation(token, TokenIntegrityLevel, &label, sizeof(label)))
+    return ::GetLastError();
 
-  return result ? ERROR_SUCCESS : last_error;
+  return ERROR_SUCCESS;
 }
 
 DWORD SetProcessIntegrityLevel(IntegrityLevel integrity_level) {
