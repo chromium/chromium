@@ -248,7 +248,10 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
+  webui::SetupWebUIDataSource(
+      html_source,
+      base::make_span(kHelloWorldResources, kHelloWorldResourcesSize),
+      IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -345,6 +348,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
 HelloWorldDialog::HelloWorldDialog() = default;
 
 void HelloWorldDialog::Show() {
+  // HelloWorldDialog is self-deleting via OnDialogClosed().
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
                         new HelloWorldDialog());
 }
