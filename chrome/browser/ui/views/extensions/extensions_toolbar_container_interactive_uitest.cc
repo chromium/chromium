@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -87,6 +88,20 @@ class ExtensionsToolbarContainerBrowserTest
   ExtensionsToolbarContainerBrowserTest& operator=(
       const ExtensionsToolbarContainerBrowserTest&) = delete;
   ~ExtensionsToolbarContainerBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionsToolbarBrowserTest::SetUpOnMainThread();
+    // InProcessBrowserTest will create the browser and request the hosting
+    // NativeWidget's window activate. However, the NativeWidget's window can
+    // resolve this activation request asynchronously. Showing the extension
+    // popup is also done asynchronously.
+    // Extension popups will close their bubble Widget if the hosting window
+    // recieves activation. If we do not wait for the activation first this
+    // results in a race condition whereby if the bubble is created first it is
+    // immediately closed when the activation event is propagated. Thus ensure
+    // we first wait for the browser window activation here.
+    ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
+  }
 
   void ClickOnAction(ToolbarActionView* action) {
     ui::MouseEvent click_down_event(ui::ET_MOUSE_PRESSED, gfx::Point(),

@@ -1325,11 +1325,7 @@ bool Widget::IsNativeWidgetInitialized() const {
 }
 
 bool Widget::OnNativeWidgetActivationChanged(bool active) {
-  if (g_disable_activation_change_handling_ ==
-          DisableActivationChangeHandlingType::kIgnore ||
-      (g_disable_activation_change_handling_ ==
-           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly &&
-       !active))
+  if (!ShouldHandleNativeWidgetActivationChanged(active))
     return false;
 
   // On windows we may end up here before we've completed initialization (from
@@ -1358,6 +1354,14 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
     paint_as_active_callbacks_.Notify();
 
   return true;
+}
+
+bool Widget::ShouldHandleNativeWidgetActivationChanged(bool active) {
+  return (g_disable_activation_change_handling_ !=
+          DisableActivationChangeHandlingType::kIgnore) &&
+         (g_disable_activation_change_handling_ !=
+              DisableActivationChangeHandlingType::kIgnoreDeactivationOnly ||
+          active);
 }
 
 void Widget::OnNativeFocus() {

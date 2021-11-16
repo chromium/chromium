@@ -404,8 +404,10 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
-  if (!native_widget_delegate_->OnNativeWidgetActivationChanged(active))
+  if (!native_widget_delegate_->ShouldHandleNativeWidgetActivationChanged(
+          active)) {
     return;
+  }
   wm::ActivationClient* activation_client =
       wm::GetActivationClient(host_->window());
   if (!activation_client)
@@ -472,6 +474,10 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
       GetInputMethod()->OnBlur();
     }
   }
+
+  // At this point the FocusController's state should have been appropriately
+  // updated, propagate the NativeWidget activation notification.
+  native_widget_delegate_->OnNativeWidgetActivationChanged(active);
 }
 
 void DesktopNativeWidgetAura::OnHostWillClose() {
@@ -597,7 +603,6 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     aura::client::SetDragDropClient(host_->window(), drag_drop_client_.get());
 
   wm::SetActivationDelegate(content_window_, this);
-  aura::client::GetFocusClient(content_window_)->FocusWindow(content_window_);
 
   OnHostResized(host());
 

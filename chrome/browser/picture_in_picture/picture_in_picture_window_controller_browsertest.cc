@@ -331,14 +331,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
-#if defined(TOOLKIT_VIEWS)
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
   EXPECT_FALSE(platform_util::IsWindowActive(native_window));
-#else
-  EXPECT_TRUE(platform_util::IsWindowActive(native_window));
-#endif
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
