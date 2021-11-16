@@ -278,7 +278,8 @@ void FrameSizeButton::UpdateSnapPreview(const ui::LocatedEvent& event) {
 
   delegate_->SetHoveredAndPressedButtons(to_hover,
                                          press_size_button ? this : nullptr);
-  delegate_->ShowSnapPreview(snap);
+  delegate_->ShowSnapPreview(snap,
+                             /*allow_haptic_feedback=*/event.IsMouseEvent());
 }
 
 const views::FrameCaptionButton* FrameSizeButton::GetButtonToHover(

@@ -50,6 +50,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
  private:
   friend class WorkspaceWindowResizerTest;
+  FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
   WorkspaceWindowResizer(WindowState* window_state,
                          const std::vector<aura::Window*>& attached_windows);
@@ -169,10 +170,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
 
-  const std::vector<aura::Window*> attached_windows_;
-
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
+
+  const std::vector<aura::Window*> attached_windows_;
 
   bool did_lock_cursor_ = false;
 

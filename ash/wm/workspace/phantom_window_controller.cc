@@ -175,7 +175,7 @@ void PhantomWindowController::TransformPhantomWidgetFromSnapTopToMaximize(
                  gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-gfx::Rect PhantomWindowController::GetTargetWindowBoundsForTesting() const {
+gfx::Rect PhantomWindowController::GetTargetWindowBounds() const {
   gfx::Rect target_window_bounds = target_bounds_in_screen_;
   target_window_bounds.Inset(-kPhantomWindowInsets);
   return target_window_bounds;

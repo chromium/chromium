@@ -123,7 +123,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // WaylandExtension:
   void StartWindowDraggingSessionIfNeeded() override;
   void SetImmersiveFullscreenStatus(bool status) override;
-  void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
+  void ShowSnapPreview(WaylandWindowSnapDirection snap,
+                       bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
   void SetCanGoBack(bool value) override;
   void SetPip() override;

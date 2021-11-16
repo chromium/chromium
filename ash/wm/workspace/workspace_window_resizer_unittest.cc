@@ -2273,17 +2273,15 @@ TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   // Drag to snap left in landscape display should show left phantom window.
   resizer->Drag(CalculateDragPoint(*resizer, 10, 0), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(
-      gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
-      snap_phantom_window_controller()->GetTargetWindowBoundsForTesting());
+  EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
+            snap_phantom_window_controller()->GetTargetWindowBounds());
 
   // Drag to snap right in landscape display should show right phantom window.
   resizer->Drag(CalculateDragPoint(*resizer, 799, 0), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(
-      gfx::Rect(work_area.width() / 2, 0, work_area.width() / 2,
-                work_area.height()),
-      snap_phantom_window_controller()->GetTargetWindowBoundsForTesting());
+  EXPECT_EQ(gfx::Rect(work_area.width() / 2, 0, work_area.width() / 2,
+                      work_area.height()),
+            snap_phantom_window_controller()->GetTargetWindowBounds());
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point(810, 0));
@@ -2296,19 +2294,17 @@ TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   resizer->Drag(CalculateDragPoint(*resizer, 1100, 2), 0);
   resizer->Drag(CalculateDragPoint(*resizer, 1100, 1), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(
-      gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
-      snap_phantom_window_controller()->GetTargetWindowBoundsForTesting());
+  EXPECT_EQ(gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
+            snap_phantom_window_controller()->GetTargetWindowBounds());
 
   // Move the window to the portrait display. Now the snap bottom should show
   // bottom phantom window.
   resizer->Drag(CalculateDragPoint(*resizer, 1100, 780), 0);
   resizer->Drag(CalculateDragPoint(*resizer, 1100, 781), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(
-      gfx::Rect(800, work_area.height() / 2, work_area.width(),
-                work_area.height() / 2),
-      snap_phantom_window_controller()->GetTargetWindowBoundsForTesting());
+  EXPECT_EQ(gfx::Rect(800, work_area.height() / 2, work_area.width(),
+                      work_area.height() / 2),
+            snap_phantom_window_controller()->GetTargetWindowBounds());
 }
 
 // Tests that dragging window to top triggers top snap.
@@ -2334,7 +2330,7 @@ TEST_F(PortraitWorkspaceWindowResizerTest, SnapTop) {
   const gfx::Rect expected_snapped_bounds(work_area.width(),
                                           work_area.height() / 2);
   EXPECT_EQ(expected_snapped_bounds,
-            phantom_controller->GetTargetWindowBoundsForTesting());
+            phantom_controller->GetTargetWindowBounds());
   EXPECT_TRUE(!!snap_phantom_window_controller()->GetMaximizeCueForTesting());
   resizer->CompleteDrag();
   EXPECT_TRUE(WindowState::Get(window_.get())->IsSnapped());
@@ -2402,7 +2398,7 @@ TEST_F(PortraitWorkspaceWindowResizerTest, SnapTopTransitionToMaximize) {
   const gfx::Rect expected_top_snapped_bounds(work_area.width(),
                                               work_area.height() / 2);
   EXPECT_EQ(expected_top_snapped_bounds,
-            phantom_controller->GetTargetWindowBoundsForTesting());
+            phantom_controller->GetTargetWindowBounds());
   auto* maximize_cue_widget = phantom_controller->GetMaximizeCueForTesting();
   EXPECT_TRUE(!!maximize_cue_widget);
   EXPECT_TRUE(maximize_cue_widget->IsVisible());
@@ -2413,7 +2409,7 @@ TEST_F(PortraitWorkspaceWindowResizerTest, SnapTopTransitionToMaximize) {
   // and the top-snap phantom turns into maximize phantom window.
   DwellCountdownTimerFireNow();
   EXPECT_EQ(0.f, maximize_cue_widget->GetLayer()->opacity());
-  EXPECT_EQ(work_area, phantom_controller->GetTargetWindowBoundsForTesting());
+  EXPECT_EQ(work_area, phantom_controller->GetTargetWindowBounds());
   resizer->CompleteDrag();
   EXPECT_TRUE(WindowState::Get(window_.get())->IsMaximized());
   EXPECT_EQ(work_area, window_->bounds());

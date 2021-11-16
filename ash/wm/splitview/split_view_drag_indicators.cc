@@ -17,6 +17,9 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/wm/haptics_util.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_highlight_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -30,6 +33,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display_observer.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -665,6 +669,22 @@ void SplitViewDragIndicators::SetWindowDraggingState(
     WindowDraggingState window_dragging_state) {
   if (window_dragging_state == current_window_dragging_state_)
     return;
+
+  // Fire a haptic event if necessary.
+  if (GetSnapPosition(window_dragging_state) != SplitViewController::NONE) {
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
+    if (overview_controller->InOverviewSession() &&
+        overview_controller->overview_session()->window_drag_controller() &&
+        !overview_controller->overview_session()
+             ->window_drag_controller()
+             ->is_touch_dragging()) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kSnap,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
+  }
+
   current_window_dragging_state_ = window_dragging_state;
   indicators_view_->OnWindowDraggingStateChanged(window_dragging_state);
 }

@@ -322,7 +322,9 @@ int shell_id = 0;
 
 void ShowSnapPreview(aura::Window* window,
                      chromeos::SnapDirection snap_direction) {
-  chromeos::SnapController::Get()->ShowSnapPreview(window, snap_direction);
+  chromeos::SnapController::Get()->ShowSnapPreview(
+      window, snap_direction,
+      /*allow_haptic_feedback=*/false);
 }
 
 void CommitSnap(aura::Window* window, chromeos::SnapDirection snap_direction) {

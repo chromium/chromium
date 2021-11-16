@@ -45,11 +45,11 @@ class ASH_EXPORT PhantomWindowController {
   void TransformPhantomWidgetFromSnapTopToMaximize(
       const gfx::Rect& window_bounds_in_screen);
 
-  aura::Window* window() { return window_; }
-
   // Returns the target snapped or maximized window bounds which is the phantom
   // bounds |target_bounds_in_screen_| with offsets |kPhantomWindowInsets|.
-  gfx::Rect GetTargetWindowBoundsForTesting() const;
+  gfx::Rect GetTargetWindowBounds() const;
+
+  aura::Window* window() { return window_; }
 
   // Returns |maximize_cue_widget_|.
   views::Widget* GetMaximizeCueForTesting() const;

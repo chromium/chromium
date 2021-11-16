@@ -40,7 +40,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
   virtual bool CanSnap(aura::Window* window) = 0;
 
   // Shows a preview (phantom window) for the given snap direction.
-  virtual void ShowSnapPreview(aura::Window* window, SnapDirection snap) = 0;
+  // `allow_haptic_feedback` indicates if it should send haptic feedback.
+  virtual void ShowSnapPreview(aura::Window* window,
+                               SnapDirection snap,
+                               bool allow_haptic_feedback) = 0;
 
   // Snaps the window in the given direction, if not kNone. Destroys the preview
   // window, if any.

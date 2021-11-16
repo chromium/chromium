@@ -539,7 +539,8 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 }
 
 void WaylandToplevelWindow::ShowSnapPreview(
-    WaylandWindowSnapDirection snap_direction) {
+    WaylandWindowSnapDirection snap_direction,
+    bool allow_haptic_feedback) {
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION) {
     uint32_t zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_NONE;

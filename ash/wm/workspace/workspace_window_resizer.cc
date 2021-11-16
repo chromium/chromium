@@ -20,12 +20,14 @@
 #include "ash/wm/default_window_resizer.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
+#include "ash/wm/haptics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -47,6 +49,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -1523,6 +1526,11 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
       break;
   }
 
+  const bool need_haptic_feedback =
+      snap_phantom_window_controller_->GetTargetWindowBounds() !=
+          phantom_bounds &&
+      !Shell::Get()->toplevel_window_event_handler()->in_gesture_drag();
+
   if (is_top_to_maximize) {
     snap_phantom_window_controller_
         ->TransformPhantomWidgetFromSnapTopToMaximize(phantom_bounds);
@@ -1535,6 +1543,13 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
         snap_type_ != last_type) {
       snap_phantom_window_controller_->ShowMaximizeCue();
     }
+  }
+
+  // Fire a haptic event if necessary.
+  if (need_haptic_feedback) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kSnap,
+        ui::HapticTouchpadEffectStrength::kMedium);
   }
 }
 

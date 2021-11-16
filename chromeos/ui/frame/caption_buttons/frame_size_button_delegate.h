@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButtonDelegate {
 
   // Thunks to methods of the same name in FrameCaptionDelegate.
   virtual bool CanSnap() = 0;
-  virtual void ShowSnapPreview(SnapDirection snap) = 0;
+  virtual void ShowSnapPreview(SnapDirection snap,
+                               bool allow_haptic_feedback) = 0;
   virtual void CommitSnap(SnapDirection snap) = 0;
 
  protected:
