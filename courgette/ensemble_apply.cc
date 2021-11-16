@@ -422,14 +422,14 @@ Status ApplyEnsemblePatch(const base::FilePath::CharType* old_file_name,
   Status result = ApplyEnsemblePatch(
       base::File(base::FilePath(old_file_name),
                  base::File::FLAG_OPEN | base::File::FLAG_READ |
-                     base::File::FLAG_SHARE_DELETE),
+                     base::File::FLAG_WIN_SHARE_DELETE),
       base::File(base::FilePath(patch_file_name),
                  base::File::FLAG_OPEN | base::File::FLAG_READ |
-                     base::File::FLAG_SHARE_DELETE),
+                     base::File::FLAG_WIN_SHARE_DELETE),
       base::File(base::FilePath(new_file_name),
                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                     base::File::FLAG_EXCLUSIVE_WRITE |
-                     base::File::FLAG_SHARE_DELETE));
+                     base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                     base::File::FLAG_WIN_SHARE_DELETE));
   if (result != C_OK)
     base::DeleteFile(base::FilePath(new_file_name));
   return result;
