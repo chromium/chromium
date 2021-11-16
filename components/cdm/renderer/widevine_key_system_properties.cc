@@ -69,7 +69,7 @@ WidevineKeySystemProperties::WidevineKeySystemProperties(
 
 WidevineKeySystemProperties::~WidevineKeySystemProperties() = default;
 
-std::string WidevineKeySystemProperties::GetKeySystemName() const {
+std::string WidevineKeySystemProperties::GetBaseKeySystemName() const {
   return kWidevineKeySystem;
 }
 

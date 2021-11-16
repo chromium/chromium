@@ -50,7 +50,7 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
       : key_system_name_(key_system_name),
         supported_codecs_(supported_codecs) {}
 
-  std::string GetKeySystemName() const override { return key_system_name_; }
+  std::string GetBaseKeySystemName() const override { return key_system_name_; }
 
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override {

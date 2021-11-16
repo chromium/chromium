@@ -48,22 +48,40 @@ const char kClearKeyCdmVersion[] = "0.1.0.1";
 const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 
 // Variants of External Clear Key key system to test different scenarios.
+
+// A sub key system that supports decrypt-only mode.
 const char kExternalClearKeyDecryptOnlyKeySystem[] =
     "org.chromium.externalclearkey.decryptonly";
+
+// A sub key system that triggers various types of messages.
 const char kExternalClearKeyMessageTypeTestKeySystem[] =
     "org.chromium.externalclearkey.messagetypetest";
+
+// A sub key system that triggers the FileIO test.
 const char kExternalClearKeyFileIOTestKeySystem[] =
     "org.chromium.externalclearkey.fileiotest";
+
+// A sub key system that triggers the output protection test.
 const char kExternalClearKeyOutputProtectionTestKeySystem[] =
     "org.chromium.externalclearkey.outputprotectiontest";
+
+// A sub key system that triggers the platform verification test.
 const char kExternalClearKeyPlatformVerificationTestKeySystem[] =
     "org.chromium.externalclearkey.platformverificationtest";
+
+// A sub key system that triggers a crash.
 const char kExternalClearKeyCrashKeySystem[] =
     "org.chromium.externalclearkey.crash";
+
+// A sub key system that triggers the verify host files test.
 const char kExternalClearKeyVerifyCdmHostTestKeySystem[] =
     "org.chromium.externalclearkey.verifycdmhosttest";
+
+// A sub key system that fetches the Storage ID.
 const char kExternalClearKeyStorageIdTestKeySystem[] =
     "org.chromium.externalclearkey.storageidtest";
+
+// A sub key system that is registered with a different CDM GUID.
 const char kExternalClearKeyDifferentGuidTestKeySystem[] =
     "org.chromium.externalclearkey.differentguid";
 

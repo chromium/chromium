@@ -57,7 +57,6 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 // To add a new variant, make sure you also update:
 // - media/test/data/eme_player_js/globals.js
 // - media/test/data/eme_player_js/player_utils.js
-// - AddExternalClearKey() in chrome_key_systems.cc
 // - CreateCdmInstance() in clear_key_cdm.cc
 const char kExternalClearKeyMessageTypeTestKeySystem[] =
     "org.chromium.externalclearkey.messagetypetest";

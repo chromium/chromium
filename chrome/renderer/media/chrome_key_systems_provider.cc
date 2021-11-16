@@ -37,7 +37,7 @@ void ChromeKeySystemsProvider::AddSupportedKeySystems(
 // no need to update again.
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   for (const auto& properties : *key_systems) {
-    if (properties->GetKeySystemName() == kWidevineKeySystem) {
+    if (properties->GetBaseKeySystemName() == kWidevineKeySystem) {
       is_update_needed_ = false;
     }
   }

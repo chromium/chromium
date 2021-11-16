@@ -22,7 +22,8 @@ class TestKeySystemProperties : public media::KeySystemProperties {
   explicit TestKeySystemProperties(const std::string& key_system_name)
       : key_system_name_(key_system_name) {}
 
-  std::string GetKeySystemName() const override { return key_system_name_; }
+  std::string GetBaseKeySystemName() const override { return key_system_name_; }
+
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override {
     return false;
@@ -115,7 +116,7 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
 
   // Widevine not initially provided.
   EXPECT_EQ(key_systems.size(), 1U);
-  EXPECT_EQ(key_systems[0]->GetKeySystemName(), "com.example.foobar");
+  EXPECT_EQ(key_systems[0]->GetBaseKeySystemName(), "com.example.foobar");
 
   // This is timing related. The update interval for Widevine is 1000 ms.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
@@ -136,7 +137,7 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
   // Widevine should now be among the list.
   bool found_widevine = false;
   for (const auto& key_system_properties : key_systems) {
-    if (key_system_properties->GetKeySystemName() == kWidevineKeySystem) {
+    if (key_system_properties->GetBaseKeySystemName() == kWidevineKeySystem) {
       found_widevine = true;
       break;
     }

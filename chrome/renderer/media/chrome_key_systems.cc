@@ -64,83 +64,18 @@ namespace {
 
 // External Clear Key (used for testing).
 void AddExternalClearKey(
-    std::vector<std::unique_ptr<KeySystemProperties>>* concrete_key_systems) {
-  // TODO(xhwang): Move these into an array so we can use a for loop to add
-  // supported key systems below.
+    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
   static const char kExternalClearKeyKeySystem[] =
       "org.chromium.externalclearkey";
-  static const char kExternalClearKeyDecryptOnlyKeySystem[] =
-      "org.chromium.externalclearkey.decryptonly";
-  static const char kExternalClearKeyMessageTypeTestKeySystem[] =
-      "org.chromium.externalclearkey.messagetypetest";
-  static const char kExternalClearKeyFileIOTestKeySystem[] =
-      "org.chromium.externalclearkey.fileiotest";
-  static const char kExternalClearKeyOutputProtectionTestKeySystem[] =
-      "org.chromium.externalclearkey.outputprotectiontest";
-  static const char kExternalClearKeyPlatformVerificationTestKeySystem[] =
-      "org.chromium.externalclearkey.platformverificationtest";
-  static const char kExternalClearKeyInitializeFailKeySystem[] =
-      "org.chromium.externalclearkey.initializefail";
-  static const char kExternalClearKeyCrashKeySystem[] =
-      "org.chromium.externalclearkey.crash";
-  static const char kExternalClearKeyVerifyCdmHostTestKeySystem[] =
-      "org.chromium.externalclearkey.verifycdmhosttest";
-  static const char kExternalClearKeyStorageIdTestKeySystem[] =
-      "org.chromium.externalclearkey.storageidtest";
-  static const char kExternalClearKeyDifferentGuidTestKeySystem[] =
-      "org.chromium.externalclearkey.differentguid";
 
-  // TODO(xhwang): Actually use |capability| to determine capabilities.
+  // TODO(xhwang): Actually use `capability` to determine capabilities.
   media::mojom::KeySystemCapabilityPtr capability;
   if (!content::IsKeySystemSupported(kExternalClearKeyKeySystem, &capability)) {
     DVLOG(1) << "External Clear Key not supported";
     return;
   }
 
-  concrete_key_systems->emplace_back(
-      new cdm::ExternalClearKeyProperties(kExternalClearKeyKeySystem));
-
-  // Add support of decrypt-only mode in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyDecryptOnlyKeySystem));
-
-  // A key system that triggers various types of messages in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyMessageTypeTestKeySystem));
-
-  // A key system that triggers the FileIO test in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyFileIOTestKeySystem));
-
-  // A key system that triggers the output protection test in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyOutputProtectionTestKeySystem));
-
-  // A key system that triggers the platform verification test in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyPlatformVerificationTestKeySystem));
-
-  // A key system that Chrome thinks is supported by ClearKeyCdm, but actually
-  // will be refused by ClearKeyCdm. This is to test the CDM initialization
-  // failure case.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyInitializeFailKeySystem));
-
-  // A key system that triggers a crash in ClearKeyCdm.
-  concrete_key_systems->emplace_back(
-      new cdm::ExternalClearKeyProperties(kExternalClearKeyCrashKeySystem));
-
-  // A key system that triggers the verify host files test in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyVerifyCdmHostTestKeySystem));
-
-  // A key system that fetches the Storage ID in ClearKeyCdm.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyStorageIdTestKeySystem));
-
-  // A key system that is registered with a different CDM GUID.
-  concrete_key_systems->emplace_back(new cdm::ExternalClearKeyProperties(
-      kExternalClearKeyDifferentGuidTestKeySystem));
+  key_systems->push_back(std::make_unique<cdm::ExternalClearKeyProperties>());
 }
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
@@ -309,7 +244,7 @@ EmeSessionTypeSupport GetPersistentLicenseSupport(bool supported_by_the_cdm) {
 }
 
 void AddWidevine(
-    std::vector<std::unique_ptr<KeySystemProperties>>* concrete_key_systems) {
+    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
   base::Version glibc_version(gnu_get_libc_version());
   DCHECK(glibc_version.IsValid());
@@ -388,7 +323,7 @@ void AddWidevine(
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
 #endif
 
-  concrete_key_systems->emplace_back(new cdm::WidevineKeySystemProperties(
+  key_systems->emplace_back(new cdm::WidevineKeySystemProperties(
       codecs, encryption_schemes, hw_secure_codecs,
       hw_secure_encryption_schemes, max_audio_robustness, max_video_robustness,
       persistent_license_support, persistent_state_support,
@@ -400,18 +335,18 @@ void AddWidevine(
 }  // namespace
 
 void AddChromeKeySystems(
-    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems_properties) {
+    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
-    AddExternalClearKey(key_systems_properties);
+    AddExternalClearKey(key_systems);
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
-  AddWidevine(key_systems_properties);
+  AddWidevine(key_systems);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_ANDROID)
-  cdm::AddAndroidWidevine(key_systems_properties);
+  cdm::AddAndroidWidevine(key_systems);
 #endif  // defined(OS_ANDROID)
 }

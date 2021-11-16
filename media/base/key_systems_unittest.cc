@@ -88,7 +88,7 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
  public:
   AesKeySystemProperties(const std::string& name) : name_(name) {}
 
-  std::string GetKeySystemName() const override { return name_; }
+  std::string GetBaseKeySystemName() const override { return name_; }
 
   EmeConfigRule GetEncryptionSchemeConfigRule(
       EncryptionScheme encryption_scheme) const override {
@@ -118,7 +118,7 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
 
 class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
  public:
-  std::string GetKeySystemName() const override { return kExternal; }
+  std::string GetBaseKeySystemName() const override { return kExternal; }
 
   // Pretend clear (unencrypted) and 'cenc' content are always supported. But
   // 'cbcs' is not supported by hardware secure codecs.

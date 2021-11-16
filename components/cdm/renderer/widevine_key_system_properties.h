@@ -39,7 +39,7 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
       media::EmeFeatureSupport distinctive_identifier_support);
   ~WidevineKeySystemProperties() override;
 
-  std::string GetKeySystemName() const override;
+  std::string GetBaseKeySystemName() const override;
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override;
   media::EmeConfigRule GetEncryptionSchemeConfigRule(

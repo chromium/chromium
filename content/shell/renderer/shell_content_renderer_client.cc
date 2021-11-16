@@ -193,10 +193,7 @@ void ShellContentRendererClient::AddSupportedKeySystems(
   if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
     return;
 
-  static const char kExternalClearKeyKeySystem[] =
-      "org.chromium.externalclearkey";
-  key_systems->emplace_back(
-      new cdm::ExternalClearKeyProperties(kExternalClearKeyKeySystem));
+  key_systems->push_back(std::make_unique<cdm::ExternalClearKeyProperties>());
 }
 #endif
 

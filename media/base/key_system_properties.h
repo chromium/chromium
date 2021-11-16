@@ -19,8 +19,14 @@ class MEDIA_EXPORT KeySystemProperties {
  public:
   virtual ~KeySystemProperties() {}
 
-  // Gets the name of this key system.
-  virtual std::string GetKeySystemName() const = 0;
+  // Gets the base key system name, e.g. "org.chromium.foo".
+  virtual std::string GetBaseKeySystemName() const = 0;
+
+  // Returns whether the `key_system` is supported. Only the base key system and
+  // some of its sub key systems should be supported, e.g. for base key system
+  // name "org.chromium.foo", "org.chromium.foo" and "org.chromium.foo.bar"
+  // could be supported, but "org.chromium.baz" should NOT be supported.
+  virtual bool IsSupportedKeySystem(const std::string& key_system) const;
 
   // Returns whether |init_data_type| is supported by this key system.
   virtual bool IsSupportedInitDataType(
