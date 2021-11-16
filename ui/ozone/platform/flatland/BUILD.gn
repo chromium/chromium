@@ -73,6 +73,7 @@ source_set("flatland") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
     "//ui/gfx/geometry",
     "//ui/platform_window",
   ]
@@ -88,7 +89,10 @@ source_set("flatland_unittests") {
   sources = [
     "tests/fake_flatland.cc",
     "tests/fake_flatland.h",
+    "tests/fake_view_ref_focused.cc",
+    "tests/fake_view_ref_focused.h",
     "tests/flatland_connection_unittest.cc",
+    "tests/flatland_window_unittest.cc",
   ]
   deps = [
     ":flatland",
@@ -97,5 +101,6 @@ source_set("flatland_unittests") {
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/pkg/async-testing",
     "//ui/ozone:platform",
+    "//ui/ozone:test_support",
   ]
 }

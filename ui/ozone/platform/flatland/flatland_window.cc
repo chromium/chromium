@@ -6,6 +6,7 @@
 
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+#include <lib/ui/scenic/cpp/view_identity.h>
 #include <algorithm>
 #include <cstdint>
 #include <memory>
@@ -36,14 +37,13 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
-      flatland_("Chromium FlatlandWindow",
-                FlatlandConnection::ConnectToFlatland()),
+      flatland_("Chromium FlatlandWindow"),
       bounds_(properties.bounds) {
   fuchsia::ui::views::ViewIdentityOnCreation view_identity = {
       .view_ref = CloneViewRef(),
       .view_ref_control = std::move(properties.view_ref_pair.control_ref)};
-  // TODO(crbug.com/1230150): Add input protocol to |view_bound_protocols|.
   fuchsia::ui::composition::ViewBoundProtocols view_bound_protocols;
+  view_bound_protocols.set_view_ref_focused(view_ref_focused_.NewRequest());
   flatland_.flatland()->CreateView2(
       std::move(properties.view_creation_token), std::move(view_identity),
       std::move(view_bound_protocols), parent_viewport_watcher_.NewRequest());
@@ -51,6 +51,8 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
       fit::bind_member(this, &FlatlandWindow::OnGetLayout));
   parent_viewport_watcher_->GetStatus(
       fit::bind_member(this, &FlatlandWindow::OnGetStatus));
+  view_ref_focused_->Watch(
+      fit::bind_member(this, &FlatlandWindow::OnViewRefFocusedWatchResult));
 
   root_transform_id_ = flatland_.NextTransformId();
   flatland_.flatland()->CreateTransform(root_transform_id_);
@@ -264,6 +266,14 @@ void FlatlandWindow::OnGetStatus(
       fit::bind_member(this, &FlatlandWindow::OnGetStatus));
 }
 
+void FlatlandWindow::OnViewRefFocusedWatchResult(
+    fuchsia::ui::views::FocusState focus_state) {
+  delegate_->OnActivationChanged(focus_state.focused());
+
+  view_ref_focused_->Watch(
+      fit::bind_member(this, &FlatlandWindow::OnViewRefFocusedWatchResult));
+}
+
 void FlatlandWindow::UpdateSize() {
   DCHECK_GT(device_pixel_ratio_, 0.0);
   DCHECK(view_properties_);
@@ -292,13 +302,9 @@ void FlatlandWindow::OnViewAttachedChanged(bool is_view_attached) {
 }
 
 void FlatlandWindow::OnInputEvent(const fuchsia::ui::input::InputEvent& event) {
-  if (event.is_focus()) {
-    delegate_->OnActivationChanged(event.focus().focused);
-  } else {
-    // Flatland doesn't care if the input event was handled, so ignore the
-    // "handled" status.
-    ignore_result(event_dispatcher_.ProcessEvent(event));
-  }
+  // Flatland doesn't care if the input event was handled, so ignore the
+  // "handled" status.
+  ignore_result(event_dispatcher_.ProcessEvent(event));
 }
 
 void FlatlandWindow::DispatchEvent(ui::Event* event) {

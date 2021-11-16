@@ -46,8 +46,7 @@ zx::event DuplicateZxEvent(const zx::event& event) {
 FlatlandSurface::FlatlandSurface(
     FlatlandSurfaceFactory* flatland_surface_factory,
     gfx::AcceleratedWidget window)
-    : flatland_("Chromium FlatlandSurface",
-                FlatlandConnection::ConnectToFlatland()),
+    : flatland_("Chromium FlatlandSurface"),
       flatland_surface_factory_(flatland_surface_factory),
       window_(window) {
   // Create Flatland Allocator connection.

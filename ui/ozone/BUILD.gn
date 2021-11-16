@@ -292,6 +292,7 @@ static_library("test_support") {
   visibility = []
   visibility = [
     ":*",
+    "platform/flatland:flatland_unittests",
     "platform/wayland:wayland_unittests",
     "platform/x11:x11_unittests",
   ]

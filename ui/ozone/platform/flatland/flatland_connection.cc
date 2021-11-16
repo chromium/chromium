@@ -14,10 +14,14 @@
 
 namespace ui {
 
-FlatlandConnection::FlatlandConnection(
-    const std::string& debug_name,
-    fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> flatland)
-    : flatland_(flatland.Bind()) {
+FlatlandConnection::FlatlandConnection(const std::string& debug_name) {
+  zx_status_t status =
+      base::ComponentContextForProcess()
+          ->svc()
+          ->Connect<fuchsia::ui::composition::Flatland>(flatland_.NewRequest());
+  if (status != ZX_OK) {
+    ZX_LOG(FATAL, status) << "Failed to connect to Flatland";
+  }
   flatland_->SetDebugName(debug_name);
   flatland_.events().OnError =
       fit::bind_member(this, &FlatlandConnection::OnError);
@@ -28,21 +32,6 @@ FlatlandConnection::FlatlandConnection(
 }
 
 FlatlandConnection::~FlatlandConnection() = default;
-
-// static
-fidl::InterfaceHandle<fuchsia::ui::composition::Flatland>
-FlatlandConnection::ConnectToFlatland() {
-  fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> flatland;
-  zx_status_t status =
-      base::ComponentContextForProcess()
-          ->svc()
-          ->Connect<fuchsia::ui::composition::Flatland>(flatland.NewRequest());
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "Failed to connect to Flatland";
-    return nullptr;
-  }
-  return flatland;
-}
 
 void FlatlandConnection::Present() {
   fuchsia::ui::composition::PresentArgs present_args;

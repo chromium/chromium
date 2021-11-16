@@ -8,6 +8,7 @@
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <fuchsia/ui/input3/cpp/fidl.h>
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include <memory>
@@ -86,9 +87,12 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   void SizeConstraintsChanged() override;
 
  private:
-  // Callbacks from |parent_viewport_watcher_|.
+  // Hanging gets from |parent_viewport_watcher_|.
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
   void OnGetStatus(fuchsia::ui::composition::ParentViewportStatus status);
+
+  // Hanging gets from |view_ref_focused_|.
+  void OnViewRefFocusedWatchResult(fuchsia::ui::views::FocusState focus_state);
 
   // Called from link callbacks to handle view properties and metrics
   // changes.
@@ -127,6 +131,9 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   fuchsia::ui::composition::ContentId surface_content_id_;
 
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
+
+  // Protocol for watching focus changes.
+  fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
 
   // The scale between logical pixels and physical pixels, set based on the
   // fuchsia::ui::gfx::Metrics event. It's used to calculate dimensions of the
