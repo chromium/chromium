@@ -8182,6 +8182,30 @@
             ]
         }
     ],
+    "UMA-Pseudo-Metrics-Effect-Injection-25-Percent": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BigEffect_01",
+                    "params": {
+                        "multiplicative_factor": "1.05"
+                    },
+                    "enable_features": [
+                        "UMAPseudoMetricsEffect"
+                    ]
+                }
+            ]
+        }
+    ],
     "URLLoaderSyncClient": [
         {
             "platforms": [
