@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
-#include "base/task/sequence_manager/time_domain.h"
+#include "base/task/sequence_manager/wake_up_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread_restrictions.h"

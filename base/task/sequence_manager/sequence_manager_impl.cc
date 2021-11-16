@@ -25,6 +25,7 @@
 #include "base/task/sequence_manager/thread_controller_impl.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
+#include "base/task/sequence_manager/wake_up_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/threading/thread_id_name_manager.h"
