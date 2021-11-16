@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -269,6 +270,9 @@ UIColor* BackgroundColor() {
   }
   UpdateUMACountForKey(app_group::kCredentialExtensionPasswordUseCount);
   id<Credential> credential = [self credentialForIndexPath:indexPath];
+  if (!credential) {
+    return;
+  }
   [self.delegate userSelectedCredential:credential];
 }
 
@@ -334,6 +338,9 @@ UIColor* BackgroundColor() {
                                                          toView:self.tableView];
   NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:hitPoint];
   id<Credential> credential = [self credentialForIndexPath:indexPath];
+  if (!credential) {
+    return;
+  }
   [self.delegate showDetailsForCredential:credential];
 }
 
@@ -367,8 +374,16 @@ UIColor* BackgroundColor() {
 // Returns the credential at the passed index.
 - (id<Credential>)credentialForIndexPath:(NSIndexPath*)indexPath {
   if ([self isSuggestedPasswordSection:indexPath.section]) {
+    if (indexPath.row >=
+        base::checked_cast<NSInteger>(self.suggestedPasswords.count)) {
+      return nil;
+    }
     return self.suggestedPasswords[indexPath.row];
   } else {
+    if (indexPath.row >=
+        base::checked_cast<NSInteger>(self.allPasswords.count)) {
+      return nil;
+    }
     return self.allPasswords[indexPath.row];
   }
 }
