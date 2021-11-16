@@ -281,6 +281,7 @@ def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
                                                object_source_mapper,
                                                address_source_mapper):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
+  assert not object_source_mapper or not address_source_mapper
   if object_source_mapper:
     logging.info('Looking up source paths from ninja files')
     for symbol in raw_symbols:
@@ -297,7 +298,7 @@ def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
     assert object_source_mapper.unmatched_paths_count == 0, (
         'One or more source file paths could not be found. Likely caused by '
         '.ninja files being generated at a different time than the .map file.')
-  if address_source_mapper:
+  elif address_source_mapper:
     logging.info('Looking up source paths from dwarfdump')
     for symbol in raw_symbols:
       if symbol.section_name != models.SECTION_TEXT:
@@ -308,9 +309,9 @@ def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
         symbol.source_path = source_path
     # Majority of unmatched queries are for assembly source files (ex libav1d)
     # and v8 builtins.
-    assert address_source_mapper.unmatched_queries_ratio < 0.03, (
+    assert address_source_mapper.unmatched_queries_ratio < 0.1, (
         'Percentage of failing |address_source_mapper| queries ' +
-        '({}%) >= 3% '.format(
+        '({}%) >= 10% '.format(
             address_source_mapper.unmatched_queries_ratio * 100) +
         'FindSourceForTextAddress() likely has a bug.')
 
@@ -678,13 +679,6 @@ def _FindSplitNamesAndSizes(minimal_apks_path):
   return sorted(ret)
 
 
-def _CollectSplitSizes(minimal_apks_path):
-  sizes_by_split = collections.defaultdict(int)
-  for split_name, file_size in _FindSplitNamesAndSizes(minimal_apks_path):
-    sizes_by_split[split_name] += file_size
-  return sizes_by_split
-
-
 def _ExtendSectionRange(section_range_by_name, section_name, delta_size):
   (prev_address, prev_size) = section_range_by_name.get(section_name, (0, 0))
   section_range_by_name[section_name] = (prev_address, prev_size + delta_size)
@@ -754,22 +748,14 @@ def CreateMetadata(args, linker_name, build_config):
   if args.map_file:
     metadata[models.METADATA_MAP_FILENAME] = shorten_path(args.map_file)
 
-  if args.minimal_apks_file:
-    metadata[models.METADATA_APK_FILENAME] = shorten_path(
-        args.minimal_apks_file)
-    if args.split_name and args.split_name != 'base':
-      metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+  if args.apk_file:
+    metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+    if args.minimal_apks_file:
+      metadata[models.METADATA_APK_FILENAME] = shorten_path(
+          args.minimal_apks_file)
       metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
     else:
-      sizes_by_split = _CollectSplitSizes(args.minimal_apks_file)
-      for name, size in sizes_by_split.items():
-        key = models.METADATA_APK_SIZE
-        if name != 'base':
-          key += '-' + name
-        metadata[key] = size
-  elif args.apk_file:
-    metadata[models.METADATA_APK_FILENAME] = shorten_path(args.apk_file)
-    metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+      metadata[models.METADATA_APK_FILENAME] = shorten_path(args.apk_file)
 
   return metadata
 
@@ -1468,16 +1454,20 @@ def CreateContainerAndSymbols(knobs=None,
   address_source_mapper = None
   section_ranges = {}
   raw_symbols = []
-  if opts.analyze_native and output_directory:
-    if map_path:
+  if opts.analyze_native:
+    ninja_elf_object_paths = None
+    if map_path and output_directory:
       # Finds all objects passed to the linker and creates a map of .o -> .cc.
       object_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
           output_directory, elf_path)
-    else:
-      ninja_elf_object_paths = None
+    elif elf_path:
       logging.info('Parsing source path info via dwarfdump')
       address_source_mapper = dwarfdump.CreateAddressSourceMapper(
           elf_path, tool_prefix)
+      if logging.getLogger().isEnabledFor(logging.DEBUG):
+        logging.debug('Found %d source paths across %s ranges',
+                      address_source_mapper.NumberOfPaths(),
+                      address_source_mapper.num_ranges)
 
     # Start by finding elf_object_paths so that nm can run on them while the
     # linker .map is being parsed.
@@ -1490,7 +1480,7 @@ def CreateContainerAndSymbols(knobs=None,
       elf_object_paths = []
       known_inputs = None
       # When we don't know which elf file is used, just search all paths.
-      if opts.analyze_native and object_source_mapper:
+      if object_source_mapper:
         thin_archives = set(
             p for p in object_source_mapper.IterAllPaths() if p.endswith('.a')
             and ar.IsThinArchive(os.path.join(output_directory, p)))
@@ -1527,7 +1517,7 @@ def CreateContainerAndSymbols(knobs=None,
       section_ranges = readelf.SectionInfoFromElf(f.name, tool_prefix)
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
-  if elf_path:
+  if elf_path or map_path:
     raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
         raw_symbols, section_ranges)
 
@@ -1585,6 +1575,7 @@ def CreateContainerAndSymbols(knobs=None,
         models.SECTION_OTHER, elf_overhead_size, full_name='Overhead: ELF file')
     _ExtendSectionRange(section_ranges, models.SECTION_OTHER, elf_overhead_size)
     other_symbols.append(elf_overhead_symbol)
+  if elf_path or map_path:
     other_symbols.extend(other_elf_symbols)
 
   if pak_symbols_by_id:
@@ -1779,7 +1770,7 @@ def _AddContainerArguments(parser):
       action='store_true',
       help='Perform sanity checks to ensure there is no missing data.')
 
-  # The split_name arg is used for bundles to identify DFMs.
+  # The --split-name arg is used for bundles to identify DFMs.
   parser.set_defaults(split_name=None)
 
 

@@ -225,10 +225,11 @@ class IntegrationTest(unittest.TestCase):
       size_info_prefix = None
       extracted_minimal_apk_path = None
       container_name = ''
-      if use_apk:
+      if use_apk or use_minimal_apks:
         args.apk_file = _TEST_APK_PATH
-      elif use_minimal_apks:
+      if use_minimal_apks:
         args.minimal_apks_file = _TEST_MINIMAL_APKS_PATH
+        args.split_name = 'base'
         extracted_minimal_apk_path = _TEST_APK_PATH
         container_name = 'Bundle.minimal.apks'
       if use_apk or use_minimal_apks:

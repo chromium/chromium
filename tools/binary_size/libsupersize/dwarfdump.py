@@ -47,6 +47,13 @@ class _SourceMapper:
     self._unmatched_queries_count += 1
     return None
 
+  def NumberOfPaths(self):
+    return len(set(info[1] for info in self._range_info_list))
+
+  @property
+  def num_ranges(self):
+    return len(self._range_info_list)
+
   @property
   def unmatched_queries_ratio(self):
     return self._unmatched_queries_count / self._total_queries_count
