@@ -19,6 +19,10 @@
 - (void)unifiedConsentCoordinatorDidTapSettingsLink:
     (UnifiedConsentCoordinator*)coordinator;
 
+// Called when the user taps on the 'Learn More' link.
+- (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
+    (UnifiedConsentCoordinator*)coordinator;
+
 // Called when the user scrolls down to the bottom (or when the view controller
 // is loaded with no scroll needed).
 - (void)unifiedConsentCoordinatorDidReachBottom:

@@ -456,7 +456,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
     [self.delegate unifiedConsentViewControllerDidTapSettingsLink:self];
   } else if (textView == self.managementNoticeTextView) {
     DCHECK([URL isEqual:net::NSURLWithGURL(GURL(kChromeUIManagementURL))]);
-    [self.delegate unifiedConsentViewControllerDidTapManagementLearnMore];
+    [self.delegate unifiedConsentViewControllerDidTapLearnMoreLink:self];
   } else {
     NOTREACHED();
   }

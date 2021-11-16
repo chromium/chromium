@@ -79,6 +79,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+// YES if the user tapped on the managed, learn more link.
+@property(nonatomic, assign) BOOL managedLearnMoreLinkWasTapped;
 
 @end
 
@@ -249,6 +251,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self startSigninFlow];
 }
 
+- (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
+    (UnifiedConsentCoordinator*)coordinator {
+  DCHECK(!self.managedLearnMoreLinkWasTapped);
+  self.managedLearnMoreLinkWasTapped = YES;
+  [self cancelSignin];
+}
+
 - (void)unifiedConsentCoordinatorDidReachBottom:
     (UnifiedConsentCoordinator*)coordinator {
   DCHECK_EQ(self.unifiedConsentCoordinator, coordinator);
@@ -335,7 +344,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
           ? self.unifiedConsentCoordinator.selectedIdentity
           : nil;
   SigninCompletionAction completionAction = SigninCompletionActionNone;
-  if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
+  if (self.managedLearnMoreLinkWasTapped) {
+    completionAction = SigninCompletionActionShowManagedLearnMore;
+  } else if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
     // Sign-in is finished but the advanced settings link was tapped.
     [self displayAdvancedSettings];
     return;
@@ -380,6 +391,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (void)userSigninMediatorSigninFailed {
   [self.unifiedConsentCoordinator resetSettingLinkTapped];
+  DCHECK(!self.managedLearnMoreLinkWasTapped);
   self.unifiedConsentCoordinator.uiDisabled = NO;
   [self.viewController signinDidStop];
   [self.viewController updatePrimaryActionButtonStyle];
@@ -628,6 +640,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
   [self.unifiedConsentCoordinator resetSettingLinkTapped];
+  DCHECK(!self.managedLearnMoreLinkWasTapped);
   self.unifiedConsentCoordinator.uiDisabled = NO;
 }
 

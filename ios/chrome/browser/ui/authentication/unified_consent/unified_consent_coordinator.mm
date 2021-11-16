@@ -5,7 +5,6 @@
 #include "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
 
 #include "base/check_op.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -16,10 +15,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -174,12 +169,9 @@
   [self.delegate unifiedConsentCoordinatorDidTapSettingsLink:self];
 }
 
-- (void)unifiedConsentViewControllerDidTapManagementLearnMore {
-  OpenNewTabCommand* command = [OpenNewTabCommand
-      commandWithURLFromChrome:GURL(kManagementLearnMoreURL)];
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [handler closeSettingsUIAndOpenURL:command];
+- (void)unifiedConsentViewControllerDidTapLearnMoreLink:
+    (UnifiedConsentViewController*)controller {
+  [self.delegate unifiedConsentCoordinatorDidTapLearnMoreLink:self];
 }
 
 - (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
