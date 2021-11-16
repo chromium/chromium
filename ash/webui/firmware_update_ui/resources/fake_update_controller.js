@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress} from './fake_data.js';
 import {InstallationProgress, UpdateControllerInterface, UpdateProgressObserver, UpdateProviderInterface} from './firmware_update_types.js';
@@ -39,6 +41,9 @@ export class FakeUpdateController {
     /** @private {number} */
     this.updateIntervalInMs_ = 1000;
 
+    /** @private {?PromiseResolver} */
+    this.updateCompletedPromise_ = null;
+
     this.registerObservables();
   }
 
@@ -51,6 +56,7 @@ export class FakeUpdateController {
   startUpdate(deviceId, remote) {
     this.deviceId_ = deviceId;
     this.isUpdateInProgress_ = true;
+    this.updateCompletedPromise_ = new PromiseResolver();
     this.startUpdatePromise_ = this.observeWithArg_(
         ON_PROGRESS_CHANGED, deviceId, (installationProgress) => {
           remote.onProgressChanged(installationProgress);
@@ -60,6 +66,7 @@ export class FakeUpdateController {
             this.updateDeviceList_();
             this.observables_.stopTriggerOnIntervalWithArg(
                 ON_PROGRESS_CHANGED, this.deviceId_);
+            this.updateCompletedPromise_.resolve();
           }
         });
     this.startUpdatePromise_.then(() => this.triggerProgressChangedObserver());
@@ -156,5 +163,14 @@ export class FakeUpdateController {
     this.fakeUpdateProvider_.setFakeFirmwareUpdates(
         [updatedFakeFirmwareUpdates]);
     this.fakeUpdateProvider_.triggerDeviceAddedObserver();
+  }
+
+  /**
+   * Returns the pending run routine promise.
+   * @return {!Promise}
+   */
+  getUpdateCompletedPromiseForTesting() {
+    assert(this.updateCompletedPromise_ != null);
+    return this.updateCompletedPromise_.promise;
   }
 }

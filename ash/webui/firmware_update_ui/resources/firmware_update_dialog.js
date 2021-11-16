@@ -6,14 +6,17 @@ import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FirmwareUpdate} from './firmware_update_types.js';
+import {FirmwareUpdate, InstallationProgress, UpdateControllerInterface} from './firmware_update_types.js';
+import {getUpdateController} from './mojo_interface_provider.js';
 
 /** @enum {number} */
 export const DialogState = {
   CLOSED: 0,
   DEVICE_PREP: 1,
   UPDATING: 2,
+  UPDATE_DONE: 3,
 };
 
 /**
@@ -41,12 +44,20 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
         type: Number,
         value: DialogState.CLOSED,
       },
+
+      /** @type {?InstallationProgress} */
+      installationProgress: {
+        type: Object,
+      },
     };
   }
 
   /** @override */
   constructor() {
     super();
+
+    /** @private {!UpdateControllerInterface} */
+    this.updateController_ = getUpdateController();
 
     /**
      * Event callback for 'open-device-prep-dialog'.
@@ -65,7 +76,7 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
      */
     this.openUpdateDialog_ = (e) => {
       this.update = e.detail.update;
-      this.dialogState = DialogState.UPDATING;
+      this.startUpdate_();
     };
   }
 
@@ -81,6 +92,17 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
   }
 
   /**
+   * Implements UpdateProgressObserver.onProgressChanged
+   * @param {!InstallationProgress} installationProgress
+   */
+  onProgressChanged(installationProgress) {
+    this.installationProgress = installationProgress;
+    if (installationProgress.percentage === 100) {
+      this.dialogState = DialogState.UPDATE_DONE;
+    }
+  }
+
+  /**
    * @protected
    * @return {boolean}
    */
@@ -91,12 +113,13 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
   /** @protected */
   closeDialog_() {
     this.dialogState = DialogState.CLOSED;
+    this.installationProgress = null;
   }
 
   /** @protected */
   startUpdate_() {
-    // TODO(michaelcheco): Start update.
     this.dialogState = DialogState.UPDATING;
+    this.updateController_.startUpdate(this.update.deviceId, this);
   }
 
   /**
@@ -104,9 +127,8 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    * @return {boolean}
    */
   shouldShowUpdateDialog_() {
-    // TODO(michaelchheco): Update when 'UPDATE_DONE' is added to the
-    // |DialogState| enum.
-    return this.isUpdateInProgress_();
+    return this.isUpdateInProgress_() ||
+        this.dialogState === DialogState.UPDATE_DONE;
   }
 
   /**
@@ -114,8 +136,9 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    * @return {number}
    */
   computePercentageValue_() {
-    // TODO(michaelcheco): Dynamically update this when 'onProgressChanged'
-    // observer is implemented.
+    if (this.installationProgress && this.installationProgress.percentage) {
+      return this.installationProgress.percentage;
+    }
     return 0;
   }
 
@@ -132,10 +155,9 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    * @return {string}
    */
   computeUpdateDialogTitle_() {
-    if (this.isUpdateInProgress_()) {
-      return `Updating ${this.update.deviceName}`;
-    }
-    return '';
+    return this.isUpdateInProgress_() ?
+        `Updating ${this.update.deviceName}` :
+        `Your ${this.update.deviceName} is up to date`;
   }
 
   /**
@@ -143,9 +165,27 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    * @return {string}
    */
   computeProgressText_() {
-    // TODO(michaelcheco): Dynamically update this when 'onProgressChanged'
-    // observer is implemented.
-    return 'Installing (1%)';
+    if (this.installationProgress && this.installationProgress.percentage) {
+      return `Installing (${this.computePercentageValue_()})%`;
+    }
+    // TODO(michaelcheco): i18n string.
+    return '';
+  }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeUpdateDialogBodyText_() {
+    const {deviceName, version} = this.update;
+    // TODO(michaelcheco): i18n string.
+    return this.dialogState === DialogState.UPDATE_DONE ?
+        `Firmware ${deviceName} has been updated to version ${version}` :
+        `
+    While updating, you can minimize window but do not unplug your
+    device. This may take a few minutes and your device might not work
+    during this update.
+    `;
   }
 }
 
