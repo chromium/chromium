@@ -152,6 +152,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyProcessLauncherSucceeds(updater_scope_);
   }
 
+  void RunUninstallCmdLine() const override {
+    updater::test::RunUninstallCmdLine(updater_scope_);
+  }
+
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}

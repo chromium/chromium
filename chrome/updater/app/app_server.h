@@ -50,9 +50,8 @@ class AppServer : public App {
   virtual void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) = 0;
 
-  // Sets up all non-side-by-side RPC interfaces to point to this candidate
-  // server.
-  virtual bool SwapRPCInterfaces() = 0;
+  // Sets up all non-side-by-side registration to point to the new version.
+  virtual bool SwapInNewVersion() = 0;
 
   // Ingests metadata from incompatible legacy updaters, then replaces those
   // updaters with shims.

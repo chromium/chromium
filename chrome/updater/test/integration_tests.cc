@@ -149,6 +149,7 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyProcessLauncherSucceeds();
   }
 
+  void RunUninstallCmdLine() { test_commands_->RunUninstallCmdLine(); }
 #endif  // OS_WIN
 
   void SetupFakeUpdaterHigherVersion() {
@@ -447,6 +448,23 @@ TEST_F(IntegrationTest, LegacyProcessLauncher) {
   Install();
   ExpectLegacyProcessLauncherSucceeds();
   Uninstall();
+}
+
+TEST_F(IntegrationTest, UninstallCmdLine) {
+  Install();
+  ExpectInstalled();
+
+  // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
+  // unused, instead of requiring server starts.
+  SetServerStarts(24);
+
+  ExpectVersionActive(kUpdaterVersion);
+  ExpectActiveUpdater();
+
+  RunUninstallCmdLine();
+  WaitForServerExit();
+  SleepFor(2);
+  ExpectClean();
 }
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

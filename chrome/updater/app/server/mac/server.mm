@@ -90,7 +90,7 @@ void AppServerMac::UninstallSelf() {
   UninstallCandidate(updater_scope());
 }
 
-bool AppServerMac::SwapRPCInterfaces() {
+bool AppServerMac::SwapInNewVersion() {
   return PromoteCandidate(updater_scope()) == setup_exit_codes::kSuccess;
 }
 

@@ -208,7 +208,15 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_EQ(is_installed, RegKeyExists(root, key));
     }
 
-    if (!is_installed) {
+    if (is_installed) {
+      std::wstring uninstall_cmd_line_string;
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                    .ReadValue(kRegValueUninstallCmdLine,
+                               &uninstall_cmd_line_string));
+      EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
+                      .HasSwitch(kUninstallIfUnusedSwitch));
+    } else {
       for (const wchar_t* key :
            {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
             UPDATER_POLICIES_KEY}) {
@@ -768,6 +776,28 @@ void InvokeTestServiceFunction(
   command.AppendSwitchASCII("--function", function_name);
   command.AppendSwitchASCII("--args", arguments_json_string);
   EXPECT_EQ(RunVPythonCommand(command), 0);
+}
+
+void RunUninstallCmdLine(UpdaterScope scope) {
+  HKEY root =
+      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  std::wstring uninstall_cmd_line_string;
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+          .ReadValue(kRegValueUninstallCmdLine, &uninstall_cmd_line_string));
+  base::CommandLine command_line =
+      base::CommandLine::FromString(uninstall_cmd_line_string);
+
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
+
+  base::Process process = base::LaunchProcess(command_line, {});
+  EXPECT_TRUE(process.IsValid());
+
+  int exit_code = 0;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(45), &exit_code));
+  EXPECT_EQ(0, exit_code);
 }
 
 }  // namespace test

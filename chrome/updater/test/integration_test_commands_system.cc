@@ -163,6 +163,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_process_launcher_succeeds");
   }
 
+  void RunUninstallCmdLine() const override {
+    RunCommand("run_uninstall_cmd_line");
+  }
+
   void SetUpTestService() const override {
     updater::test::RunTestServiceCommand("setup");
   }

@@ -15,6 +15,7 @@ const wchar_t kPrefsAccessMutex[] = L"{D8E4A6FE-EA7A-4D20-A8C8-B4628776A101}";
 
 const wchar_t kRegValuePV[] = L"pv";
 const wchar_t kRegValueName[] = L"name";
+const wchar_t kRegValueUninstallCmdLine[] = L"UninstallCmdLine";
 
 const wchar_t kRegValueInstallerError[] = L"InstallerError";
 const wchar_t kRegValueInstallerExtraCode1[] = L"InstallerExtraCode1";

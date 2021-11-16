@@ -44,6 +44,7 @@ extern const wchar_t kPrefsAccessMutex[];
 
 extern const wchar_t kRegValuePV[];
 extern const wchar_t kRegValueName[];
+extern const wchar_t kRegValueUninstallCmdLine[];
 
 // Installer API registry names.
 extern const wchar_t kRegValueInstallerError[];

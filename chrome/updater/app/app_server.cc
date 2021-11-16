@@ -155,7 +155,7 @@ void AppServer::FirstTaskRun() {
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-  if (!SwapRPCInterfaces())
+  if (!SwapInNewVersion())
     return false;
   if (!ConvertLegacyUpdaters(base::BindRepeating(
           &PersistedData::RegisterApp, base::MakeRefCounted<PersistedData>(

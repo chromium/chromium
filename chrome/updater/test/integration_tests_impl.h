@@ -158,6 +158,8 @@ void RunTestServiceCommand(const std::string& sub_command);
 void InvokeTestServiceFunction(
     const std::string& function_name,
     const base::flat_map<std::string, base::Value>& arguments);
+
+void RunUninstallCmdLine(UpdaterScope scope);
 #endif  // OS_WIN
 
 // Returns the number of files in the directory, not including directories,

@@ -200,6 +200,7 @@ void AppTestHelper::FirstTaskRun() {
                 WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
     {"expect_legacy_process_launcher_succeeds",
      WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+    {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
 #endif  // OS_WIN
     {"expect_version_active",
      WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
