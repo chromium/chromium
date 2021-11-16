@@ -347,9 +347,9 @@ body.enable-scan-barcode .barcode-scan-box {
   stroke: var(--blue-500);
 }
 
-#document-drag-point-desc {
+#document-corner-move-desc {
   position: absolute;
-  visibility: none;
+  visibility: hidden;
 }
 
 #view-crop-document .review-image .dot {
