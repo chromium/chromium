@@ -250,7 +250,6 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->dom_paste_enabled = true;
   prefs->javascript_can_access_clipboard = true;
   prefs->xslt_enabled = true;
-  prefs->application_cache_enabled = true;
   prefs->tabs_to_links = false;
   prefs->hyperlink_auditing_enabled = false;
   prefs->allow_running_insecure_content = false;

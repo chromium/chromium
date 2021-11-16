@@ -80,7 +80,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.data_saver_holdback_web_api_enabled();
   out->local_storage_enabled = data.local_storage_enabled();
   out->databases_enabled = data.databases_enabled();
-  out->application_cache_enabled = data.application_cache_enabled();
   out->tabs_to_links = data.tabs_to_links();
   out->disable_ipc_flooding_protection = data.disable_ipc_flooding_protection();
   out->hyperlink_auditing_enabled = data.hyperlink_auditing_enabled();

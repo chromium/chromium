@@ -116,7 +116,6 @@ public class AwSettings {
     private boolean mAllowFileAccessFromFileURLs;
     private boolean mJavaScriptCanOpenWindowsAutomatically;
     private boolean mSupportMultipleWindows;
-    private boolean mAppCacheEnabled;
     private boolean mDomStorageEnabled;
     private boolean mDatabaseEnabled;
     private boolean mUseWideViewport;
@@ -169,10 +168,6 @@ public class AwSettings {
 
     // Protects access to settings global fields.
     private static final Object sGlobalContentSettingsLock = new Object();
-    // For compatibility with the legacy WebView, we can only enable AppCache when the path is
-    // provided. However, we don't use the path, so we just check if we have received it from the
-    // client.
-    private static boolean sAppCachePathIsSet;
 
     // The native side of this object. It's lifetime is bounded by the WebContent it is attached to.
     private long mNativeAwSettings;
@@ -1441,52 +1436,14 @@ public class AwSettings {
      * See {@link android.webkit.WebSettings#setAppCacheEnabled}.
      */
     public void setAppCacheEnabled(boolean flag) {
-        if (TRACE) Log.i(LOGTAG, "setAppCacheEnabled=" + flag);
-        synchronized (mAwSettingsLock) {
-            if (mAppCacheEnabled != flag) {
-                mAppCacheEnabled = flag;
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
+        // Deprecated no-op.
     }
 
     /**
      * See {@link android.webkit.WebSettings#setAppCachePath}.
      */
     public void setAppCachePath(String path) {
-        if (TRACE) Log.i(LOGTAG, "setAppCachePath=" + path);
-        boolean needToSync = false;
-        synchronized (sGlobalContentSettingsLock) {
-            // AppCachePath can only be set once.
-            if (!sAppCachePathIsSet && path != null && !path.isEmpty()) {
-                sAppCachePathIsSet = true;
-                needToSync = true;
-            }
-        }
-        // The obvious problem here is that other WebViews will not be updated,
-        // until they execute synchronization from Java to the native side.
-        // But this is the same behaviour as it was in the legacy WebView.
-        if (needToSync) {
-            synchronized (mAwSettingsLock) {
-                mEventHandler.updateWebkitPreferencesLocked();
-            }
-        }
-    }
-
-    /**
-     * Gets whether Application Cache is enabled.
-     *
-     * @return true if Application Cache is enabled
-     */
-    @CalledByNative
-    private boolean getAppCacheEnabledLocked() {
-        assert Thread.holdsLock(mAwSettingsLock);
-        if (!mAppCacheEnabled) {
-            return false;
-        }
-        synchronized (sGlobalContentSettingsLock) {
-            return sAppCachePathIsSet;
-        }
+        // Deprecated no-op.
     }
 
     /**

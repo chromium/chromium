@@ -152,10 +152,6 @@
     },
 
     {
-      name: "offlineWebApplicationCacheEnabled",
-      initial: true,
-    },
-    {
       name: "allowScriptsToCloseWindows",
       initial: false,
     },

@@ -122,7 +122,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetMinimumFontSize(int) override;
   void SetMinimumLogicalFontSize(int) override;
   void SetHideScrollbars(bool) override;
-  void SetOfflineWebApplicationCacheEnabled(bool) override;
   void SetPasswordEchoDurationInSeconds(double) override;
   void SetPasswordEchoEnabled(bool) override;
   void SetPictographFontFamily(const WebString&,

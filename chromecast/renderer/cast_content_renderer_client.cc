@@ -154,12 +154,6 @@ void CastContentRendererClient::RenderThreadStarted() {
 #endif
 }
 
-void CastContentRendererClient::WebViewCreated(blink::WebView* webview) {
-  // Disable application cache as Chromecast doesn't support off-line
-  // application running.
-  webview->GetSettings()->SetOfflineWebApplicationCacheEnabled(false);
-}
-
 void CastContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   DCHECK(render_frame);

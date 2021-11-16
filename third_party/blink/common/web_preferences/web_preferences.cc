@@ -61,7 +61,6 @@ WebPreferences::WebPreferences()
       data_saver_holdback_web_api_enabled(false),
       local_storage_enabled(false),
       databases_enabled(false),
-      application_cache_enabled(false),
       tabs_to_links(true),
       disable_ipc_flooding_protection(false),
       hyperlink_auditing_enabled(true),

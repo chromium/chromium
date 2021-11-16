@@ -81,7 +81,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool data_saver_holdback_web_api_enabled;
   bool local_storage_enabled;
   bool databases_enabled;
-  bool application_cache_enabled;
   bool tabs_to_links;
   bool disable_ipc_flooding_protection;
   bool hyperlink_auditing_enabled;

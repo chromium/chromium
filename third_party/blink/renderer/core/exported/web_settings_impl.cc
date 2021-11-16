@@ -432,10 +432,6 @@ void WebSettingsImpl::SetBarrelButtonForDragEnabled(bool enabled) {
   settings_->SetBarrelButtonForDragEnabled(enabled);
 }
 
-void WebSettingsImpl::SetOfflineWebApplicationCacheEnabled(bool enabled) {
-  settings_->SetOfflineWebApplicationCacheEnabled(enabled);
-}
-
 void WebSettingsImpl::SetWebGL1Enabled(bool enabled) {
   settings_->SetWebGL1Enabled(enabled);
 }
