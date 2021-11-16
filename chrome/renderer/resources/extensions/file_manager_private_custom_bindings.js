@@ -29,7 +29,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setCustomCallback('searchDrive',
-      function(name, request, callback, response) {
+      function(name, callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(function(entry) {
         return GetExternalFileEntry(entry);
@@ -45,7 +45,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setCustomCallback('searchDriveMetadata',
-      function(name, request, callback, response) {
+      function(name, callback, response) {
     if (response && !response.error) {
       for (var i = 0; i < response.length; i++) {
         response[i].entry =
@@ -313,7 +313,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setCustomCallback('searchFiles',
-      function(name, request, callback, response) {
+      function(name, callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(function(entry) {
         return GetExternalFileEntry(entry);

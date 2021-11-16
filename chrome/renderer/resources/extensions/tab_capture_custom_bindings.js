@@ -7,7 +7,7 @@
 apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  function proxyToGetUserMedia(name, request, callback, response) {
+  function proxyToGetUserMedia(name, callback, response) {
     if (!callback)
       return;
 

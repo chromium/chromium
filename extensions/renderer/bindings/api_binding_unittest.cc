@@ -1977,7 +1977,7 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
   const char kRegisterHook[] = R"(
       (function(hooks) {
         hooks.setCustomCallback('supportsPromises',
-                                (name, request, callback, response) => {
+                                (name, callback, response) => {
           this.methodName = name;
           this.response = response;
           this.resolveCallback = callback;

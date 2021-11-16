@@ -72,7 +72,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setCustomCallback('requestFileSystem',
-      function(name, request, callback, response) {
+      function(name, callback, response) {
     var fileSystem;
     if (response && response.file_system_id) {
       fileSystem = fileSystemNatives.GetIsolatedFileSystem(
