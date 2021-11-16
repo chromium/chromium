@@ -43,6 +43,14 @@
 namespace viz {
 namespace {
 
+constexpr float kAvgAbsoluteErrorLimit = 8.f;
+constexpr int kMaxAbsoluteErrorLimit = 32;
+
+cc::FuzzyPixelComparator GetDefaultFuzzyPixelComparator() {
+  return cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
+                                  kMaxAbsoluteErrorLimit, 0);
+}
+
 base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
   base::FilePath test_dir;
   base::PathService::Get(Paths::DIR_TEST_DATA, &test_dir);
@@ -541,15 +549,8 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
       GLScalerTestUtil::CopyAndConvertToRGBA(GetExpectedOutputBitmap());
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
-  constexpr float kAvgAbsoluteErrorLimit = 16.f;
-  constexpr int kMaxAbsoluteErrorLimit = 128;
-  if (!cc::MatchesBitmap(
-          actual, expected,
-          cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
-                                   kMaxAbsoluteErrorLimit, 0))) {
-    ADD_FAILURE();
-    return;
-  }
+  EXPECT_TRUE(
+      cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
 #if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
@@ -726,15 +727,8 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   // Now let's convert it to YUV so we can compare with the result:
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
-  constexpr float kAvgAbsoluteErrorLimit = 16.f;
-  constexpr int kMaxAbsoluteErrorLimit = 128;
-  if (!cc::MatchesBitmap(
-          actual, expected,
-          cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
-                                   kMaxAbsoluteErrorLimit, 0))) {
-    ADD_FAILURE();
-    return;
-  }
+  EXPECT_TRUE(
+      cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
 #if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
