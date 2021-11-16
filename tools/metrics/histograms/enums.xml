@@ -48808,6 +48808,7 @@ from previous Chrome versions.
       label="WalletRequiresFirstSyncSetupComplete:disabled"/>
   <int value="-1921593903" label="ImeInputLogicHmm:disabled"/>
   <int value="-1920912991" label="PermissionChip:disabled"/>
+  <int value="-1920349954" label="FontManagerEarlyInit:disabled"/>
   <int value="-1920004248" label="FeedBackToTop:disabled"/>
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
@@ -52399,6 +52400,7 @@ from previous Chrome versions.
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
   <int value="763947368" label="HomepageLocationPolicy:disabled"/>
+  <int value="764508124" label="NavigationNetworkResponseQueue:disabled"/>
   <int value="765266228" label="TabGroupsCollapse:disabled"/>
   <int value="765306424" label="ModuleScriptsDynamicImport:disabled"/>
   <int value="765803208" label="AutofillShowTypePredictions:enabled"/>
@@ -52523,6 +52525,7 @@ from previous Chrome versions.
       label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>
   <int value="859913799" label="EnableDesksTrackpadSwipeImprovements:disabled"/>
   <int value="860336036" label="ChromeModernDesign:enabled"/>
+  <int value="861351290" label="FontManagerEarlyInit:enabled"/>
   <int value="862453793" label="TranslateUI2016Q2:enabled"/>
   <int value="864024033" label="IsolatePrerendersMustProbeOrigin:enabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
@@ -52908,6 +52911,7 @@ from previous Chrome versions.
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>
   <int value="1162420462" label="ShelfLauncherNudge:disabled"/>
+  <int value="1162622865" label="EarlyCodeCache:disabled"/>
   <int value="1162693272" label="MacCoreLocationImplementation:disabled"/>
   <int value="1163255347" label="ash-enable-touch-view-touch-feedback"/>
   <int value="1164377197" label="SwipingFromLeftEdgeToGoBack:enabled"/>
@@ -52980,6 +52984,7 @@ from previous Chrome versions.
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
   <int value="1216286283" label="tint-composited-content"/>
   <int value="1216452475" label="SyncUSSAutofillProfile:disabled"/>
+  <int value="1216488634" label="NavigationNetworkResponseQueue:enabled"/>
   <int value="1217907443" label="spurious-power-button-keyboard-accel"/>
   <int value="1219199527" label="InsertKeyToggleMode:enabled"/>
   <int value="1219317631" label="ContextualSuggestionsAboveArticles:disabled"/>
@@ -53582,6 +53587,7 @@ from previous Chrome versions.
   <int value="1670799163" label="ChromeHomeShowGoogleGWhenUrlCleared:enabled"/>
   <int value="1671021713" label="AutofillImportDynamicForms:disabled"/>
   <int value="1671985641" label="WebViewVulkan:enabled"/>
+  <int value="1673185316" label="EarlyCodeCache:enabled"/>
   <int value="1673427566" label="ChromeHomeExpandButton:disabled"/>
   <int value="1673776797"
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>

@@ -41,11 +41,6 @@ namespace features {
 constexpr base::Feature kBrowserPrioritizeInputQueue{
     "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When NavigationTaskQueue is enabled, the browser will schedule some tasks
-// related to navigation network responses in a kHighest priority queue.
-constexpr base::Feature kNavigationNetworkResponseQueue{
-    "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
 // the kBootstrap task type on the default task queues (based on priority of
 // the task) rather than a dedicated high-priority task queue. Intended to
@@ -189,7 +184,7 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
 
       case BrowserTaskType::kNavigationNetworkResponse:
         if (base::FeatureList::IsEnabled(
-                features::kNavigationNetworkResponseQueue)) {
+                ::features::kNavigationNetworkResponseQueue)) {
           return QueueType::kNavigationNetworkResponse;
         }
         // Defer to traits.priority() below.

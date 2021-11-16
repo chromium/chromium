@@ -340,11 +340,6 @@ static bool IsSingleProcess() {
       switches::kSingleProcess);
 }
 
-// Whether to initialize the font manager when the renderer starts on a
-// background thread.
-const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // A thread for running shared storage worklet operations. It hosts a worklet
 // environment belonging to one Document. The object owns itself, cleaning up
 // when the worklet has shut down.
@@ -756,7 +751,7 @@ void RenderThreadImpl::Init() {
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
   AddObserver(variations_observer_.get());
 
-  if (base::FeatureList::IsEnabled(kFontManagerEarlyInit)) {
+  if (base::FeatureList::IsEnabled(features::kFontManagerEarlyInit)) {
     base::ThreadPool::PostTask(FROM_HERE,
                                base::BindOnce([] { SkFontMgr::RefDefault(); }));
   }

@@ -324,6 +324,11 @@ const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
 const base::Feature kFeaturePolicyForClientHints{
     "FeaturePolicyForClientHints", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether to initialize the font manager when the renderer starts on a
+// background thread.
+const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.
@@ -493,6 +498,12 @@ const base::Feature kMojoVideoCaptureSecondary{
 // When enable, iframe does not implicit capture mouse event.
 const base::Feature kMouseSubframeNoImplicitCapture{
     "MouseSubframeNoImplicitCapture", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When NavigationNetworkResponseQueue is enabled, the browser will schedule
+// some tasks related to navigation network responses in a kHighest priority
+// queue.
+const base::Feature kNavigationNetworkResponseQueue{
+    "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables optimizations for renderer->browser mojo calls to avoid waiting on
 // the UI thread during navigation.

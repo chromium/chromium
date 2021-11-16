@@ -211,5 +211,13 @@ public final class ProductionSupportedFlagList {
                     "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
             Flag.baseFeature(BlinkFeatures.PAINT_HOLDING_CROSS_ORIGIN,
                     "Defers the first commit until FCP or timeout for cross-origin navigations."),
+            Flag.baseFeature(BlinkFeatures.EARLY_CODE_CACHE,
+                    "Enables fetching the code cache earlier in navigation."),
+            Flag.baseFeature(ContentFeatures.NAVIGATION_NETWORK_RESPONSE_QUEUE,
+                    "Schedules tasks related to the navigation network responses on a higher "
+                            + "priority task queue."),
+            Flag.baseFeature(ContentFeatures.FONT_MANAGER_EARLY_INIT,
+                    "Whether to initialize the font manager when the renderer starts on a "
+                            + "background thread."),
     };
 }
