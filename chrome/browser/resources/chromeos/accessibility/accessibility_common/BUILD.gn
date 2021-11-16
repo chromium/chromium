@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import(
+    "//chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/buildflags.gni")
+import(
     "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
@@ -16,7 +18,16 @@ accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
 
 group("build") {
-  deps = [ ":accessibility_common_copied_files" ]
+  deps = [
+    ":accessibility_common_copied_files",
+    ":pumpkin_availability_files",
+  ]
+
+  # Only copy pumpkin files if Dictation will use Pumpkin. This keeps the build
+  # size from being inflated during Pumpkin development.
+  if (enable_pumpkin_for_dictation) {
+    deps += [ ":unzip_pumpkin_files" ]
+  }
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -44,6 +55,36 @@ run_jsbundler("accessibility_common_copied_files") {
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
+}
+
+if (enable_pumpkin_for_dictation) {
+  pumpkin_output_dir = "$accessibility_common_dir/dictation/pumpkin"
+
+  action("unzip_pumpkin_files") {
+    script = "dictation/pumpkin/unzip_pumpkin.py"
+    sources = [ "dictation/pumpkin/pumpkin_files.zip" ]
+    args = [
+      "--output-dir=resources/chromeos/accessibility/accessibility_common/dictation/pumpkin",
+      rebase_path("dictation/pumpkin/pumpkin_files.zip", root_build_dir),
+    ]
+    outputs = [
+      "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
+      "$pumpkin_output_dir/tagger_wasm_main.js",
+      "$pumpkin_output_dir/tagger_wasm_main.wasm",
+      "$pumpkin_output_dir/en_us/action_config.binarypb",
+      "$pumpkin_output_dir/en_us/pumpkin_config.binarypb",
+    ]
+  }
+}
+
+copy("pumpkin_availability_files") {
+  if (enable_pumpkin_for_dictation) {
+    sources = [ "dictation/pumpkin/include_pumpkin.js" ]
+  } else {
+    sources = [ "dictation/pumpkin/exclude_pumpkin.js" ]
+  }
+  outputs =
+      [ "$accessibility_common_dir/dictation/pumpkin/pumpkin_availability.js" ]
 }
 
 source_set("browser_tests") {
@@ -74,8 +115,12 @@ js2gtest("accessibility_common_extjs_tests") {
     "accessibility_common_test.js",
     "autoclick/autoclick_test.js",
     "dictation/dictation_test.js",
+    "dictation/dictation_test_base.js",
     "magnifier/magnifier_test.js",
   ]
+  if (enable_pumpkin_for_dictation) {
+    sources += [ "dictation/dictation_pumpkin_test.js" ]
+  }
   gen_include_files = [
     "../common/rect_util.js",
     "../common/testing/callback_helper.js",
@@ -149,6 +194,7 @@ js_library("dictation") {
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/speech_recognition_private.js",
+    "dictation/pumpkin/pumpkin_tagger_externs.js",
   ]
 }
 
@@ -177,6 +223,11 @@ js_library("dictation_macros") {
 
 js_library("dictation_commands") {
   sources = [ "dictation/speech_parser.js" ]
+  if (enable_pumpkin_for_dictation) {
+    sources += [ "dictation/pumpkin/include_pumpkin.js" ]
+  } else {
+    sources += [ "dictation/pumpkin/exclude_pumpkin.js" ]
+  }
   deps = [
     ":dictation_input_controller",
     ":dictation_macros",

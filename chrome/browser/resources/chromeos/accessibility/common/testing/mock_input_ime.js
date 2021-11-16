@@ -42,6 +42,9 @@ var MockInputIme = {
   /** @private {MockImeCommitParameters} */
   lastCommittedParameters_: null,
 
+  /** @private {Resolve?} */
+  waitForCommitResolve_: null,
+
   // Methods from chrome.input.ime API. //
 
   onFocus: {
@@ -97,6 +100,10 @@ var MockInputIme = {
   /** @param {!MockImeCommitParameters} commitParameters */
   commitText(commitParameters) {
     MockInputIme.lastCommittedParameters_ = commitParameters;
+    if (this.waitForCommitResolve_) {
+      this.waitForCommitResolve_();
+      this.waitForCommitResolve_ = null;
+    }
   },
 
   /** @param {Object} unused */
@@ -149,4 +156,14 @@ var MockInputIme = {
     MockInputIme.lastCommittedParameters_ = null;
     MockInputIme.lastCompositionParameters_ = null;
   },
+
+  /**
+   * Returns a promise which waits for the next committed text to resolve.
+   * @return {!Promise}
+   */
+  async waitForCommit() {
+    return new Promise(resolve => {
+      this.waitForCommitResolve_ = resolve;
+    });
+  }
 };

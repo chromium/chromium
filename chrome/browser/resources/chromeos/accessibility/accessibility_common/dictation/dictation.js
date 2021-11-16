@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import {InputController} from './input_controller.js';
-import {InputTextViewMacro} from './macros/input_text_view_macro.js';
-import {ListCommandsMacro} from './macros/list_commands_macro.js';
 import {Macro} from './macros/macro.js';
+import {MacroName} from './macros/macro_names.js';
 import {SpeechParser} from './speech_parser.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
@@ -213,17 +212,17 @@ export class Dictation {
    * @param {ResultEvent} event
    * @private
    */
-  onSpeechRecognitionResult_(event) {
+  async onSpeechRecognitionResult_(event) {
     if (this.state_ !== Dictation.DictationState.LISTENING) {
       return;
     }
 
     const transcript = event.transcript;
     const isFinal = event.isFinal;
-    this.processSpeechRecognitionResult_(transcript, isFinal);
     this.setStopTimeout_(
         isFinal ? Dictation.Timeouts.NO_SPEECH_MS :
                   Dictation.Timeouts.NO_NEW_SPEECH_MS);
+    await this.processSpeechRecognitionResult_(transcript, isFinal);
   }
 
   /**
@@ -233,7 +232,7 @@ export class Dictation {
    *     interim result.
    * @private
    */
-  processSpeechRecognitionResult_(transcript, isFinal) {
+  async processSpeechRecognitionResult_(transcript, isFinal) {
     if (!isFinal) {
       if (this.commandsFeatureEnabled_) {
         this.setInterimText_(transcript);
@@ -245,8 +244,7 @@ export class Dictation {
       return;
     }
 
-    const macro = this.speechParser_.parse(transcript);
-
+    const macro = await this.speechParser_.parse(transcript);
     // Check if the macro can execute.
     // TODO(crbug.com/1264544): Deal with ambiguous results here.
     const checkContextResult = macro.checkContext();
@@ -261,7 +259,7 @@ export class Dictation {
       this.showMacroExecutionFailed_(transcript);
       return;
     }
-    if (macro instanceof ListCommandsMacro) {
+    if (macro.getMacroName() === MacroName.LIST_COMMANDS) {
       // ListCommandsMacro opens a new tab, thereby changing the cursor focus
       // and ending the Dictation session.
       return;
@@ -401,7 +399,8 @@ export class Dictation {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
-    if (macro instanceof InputTextViewMacro) {
+    if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
+        macro.getMacroName() === MacroName.NEW_LINE) {
       // Return to the '....' UI.
       this.clearInterimText_();
       return;
