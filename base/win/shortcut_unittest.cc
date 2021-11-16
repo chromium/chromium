@@ -225,7 +225,8 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
   EXPECT_STREQ(kFileContents2, read_contents);
 }
 
-TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
+// Flaky test: crbug.com/1270603.
+TEST_F(ShortcutTest, DISABLED_UpdateShortcutMakeDualMode) {
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
