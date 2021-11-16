@@ -676,6 +676,15 @@
       },
     },
   },
+  # TODO(crbug.com/1254953) Remove 10.15 once testers have been migrated to Mac11
+  'mac_10.15_or_11': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-10.15|Mac-11|Mac-10.16',
+      },
+    },
+  },
   'mac_11_arm64': {
     'swarming': {
       'dimensions': {
