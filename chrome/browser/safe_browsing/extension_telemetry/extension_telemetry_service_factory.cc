@@ -12,7 +12,9 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
 namespace safe_browsing {
@@ -44,7 +46,9 @@ KeyedService* ExtensionTelemetryServiceFactory::BuildServiceInstanceFor(
   if (!base::FeatureList::IsEnabled(kExtensionTelemetry))
     return nullptr;
   Profile* profile = Profile::FromBrowserContext(context);
-  return new ExtensionTelemetryService(profile);
+  return new ExtensionTelemetryService(
+      profile, extensions::ExtensionRegistry::Get(context),
+      extensions::ExtensionPrefs::Get(context));
 }
 
 }  // namespace safe_browsing

@@ -25,8 +25,10 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr const char kExtensionId[] = "aaaabbbbccccddddeeeeffffgggghhhh";
-constexpr const char kExtensionName[] = "Test Extension";
+constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
+                                        "eeeeeeeeffffffffgggggggghhhhhhhh"};
+constexpr const char* kExtensionName[] = {"Test Extension 1",
+                                          "Test Extension 2"};
 constexpr const char kExtensionVersion[] = "1";
 constexpr const char kScriptCode[] = "document.write('Hello World')";
 
@@ -35,19 +37,25 @@ constexpr const char kScriptCode[] = "document.write('Hello World')";
 class ExtensionTelemetryServiceTest : public ::testing::Test {
  protected:
   ExtensionTelemetryServiceTest();
-  void RegisterExtensionWithExtensionService(
-      const extensions::ExtensionId& extension_id = kExtensionId,
-      const std::string& extension_name = kExtensionName,
-      const base::Time& install_time = base::Time::Now(),
-      const std::string& version = kExtensionVersion);
-  void PrimeTelemetryServiceWithSignal();
-
   void SetUp() override { ASSERT_NE(telemetry_service_, nullptr); }
+
+  void RegisterExtensionWithExtensionService(
+      const extensions::ExtensionId& extension_id,
+      const std::string& extension_name,
+      const base::Time& install_time,
+      const std::string& version);
+  void UnregisterExtensionWithExtensionService(
+      const extensions::ExtensionId& extension_id);
+  void PrimeTelemetryServiceWithSignal();
 
   bool IsTelemetryServiceEnabled() {
     return telemetry_service_->enabled() &&
            !telemetry_service_->signal_processors_.empty() &&
            telemetry_service_->timer_.IsRunning();
+  }
+
+  bool IsExtensionStoreEmpty() {
+    return telemetry_service_->extension_store_.empty();
   }
 
   using ExtensionInfo = ExtensionTelemetryReportRequest_ExtensionInfo;
@@ -69,13 +77,19 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   std::unique_ptr<ExtensionTelemetryService> telemetry_service_;
   extensions::ExtensionService* extension_service_;
   extensions::ExtensionPrefs* extension_prefs_;
+  extensions::ExtensionRegistry* extension_registry_;
 };
 
 ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  // Create extension prefs and registry instances.
+  extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
+  extension_registry_ = extensions::ExtensionRegistry::Get(&profile_);
+
   // Create telemetry service instance.
   profile_.GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  telemetry_service_ = std::make_unique<ExtensionTelemetryService>(&profile_);
+  telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
+      &profile_, extension_registry_, extension_prefs_);
 
   // Create fake extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -85,11 +99,11 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
       &command_line, base::FilePath() /* install_directory */,
       false /* autoupdate_enabled */);
 
-  // Create extension prefs instance.
-  extension_prefs_ = extensions::ExtensionPrefs::Get(&profile_);
-
-  // Register a test extension with the fake extension service.
-  RegisterExtensionWithExtensionService();
+  // Register test extensions with the extension service.
+  RegisterExtensionWithExtensionService(kExtensionId[0], kExtensionName[0],
+                                        base::Time::Now(), kExtensionVersion);
+  RegisterExtensionWithExtensionService(kExtensionId[1], kExtensionName[1],
+                                        base::Time::Now(), kExtensionVersion);
 }
 
 void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
@@ -116,13 +130,20 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
           base::NumberToString(install_time.ToJavaTime())));
 }
 
+void ExtensionTelemetryServiceTest::UnregisterExtensionWithExtensionService(
+    const extensions::ExtensionId& extension_id) {
+  extension_service_->UnloadExtension(
+      extension_id, extensions::UnloadedExtensionReason::UNINSTALL);
+  extension_prefs_->DeleteExtensionPrefs(extension_id);
+}
+
 void ExtensionTelemetryServiceTest::PrimeTelemetryServiceWithSignal() {
   // Verify that service is enabled.
   EXPECT_TRUE(IsTelemetryServiceEnabled());
 
   // Add a tabs.executeScript API invocation signal to the telemetry service.
   auto signal =
-      std::make_unique<TabsExecuteScriptSignal>(kExtensionId, kScriptCode);
+      std::make_unique<TabsExecuteScriptSignal>(kExtensionId[0], kScriptCode);
   telemetry_service_->AddSignal(std::move(signal));
 }
 
@@ -136,7 +157,8 @@ TEST_F(ExtensionTelemetryServiceTest, IsEnabledOnlyWhenESBIsEnabled) {
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Destruct and restart service and verify that it starts disabled.
-  telemetry_service_ = std::make_unique<ExtensionTelemetryService>(&profile_);
+  telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
+      &profile_, extension_registry_, extension_prefs_);
   EXPECT_FALSE(IsTelemetryServiceEnabled());
 
   // Re-enable ESB, service should become enabled.
@@ -148,32 +170,14 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
   PrimeTelemetryServiceWithSignal();
   // Verify that the registered extension information is saved in the
   // telemetry service's extension store.
-  const ExtensionInfo* info = GetExtensionInfoFromExtensionStore(kExtensionId);
+  const ExtensionInfo* info =
+      GetExtensionInfoFromExtensionStore(kExtensionId[0]);
   ASSERT_NE(info, nullptr);
-  EXPECT_EQ(info->id(), kExtensionId);
-  EXPECT_EQ(info->name(), kExtensionName);
+  EXPECT_EQ(info->id(), kExtensionId[0]);
+  EXPECT_EQ(info->name(), kExtensionName[0]);
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
-            extension_prefs_->GetInstallTime(kExtensionId).ToJavaTime());
-}
-
-TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReport) {
-  PrimeTelemetryServiceWithSignal();
-  // Verify the contents of telemetry report generated.
-  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
-  ASSERT_NE(telemetry_report_pb, nullptr);
-  ASSERT_EQ(telemetry_report_pb->reports_size(), 1);
-  EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId);
-  EXPECT_EQ(telemetry_report_pb->reports(0).extension().name(), kExtensionName);
-  EXPECT_EQ(telemetry_report_pb->reports(0).extension().version(),
-            kExtensionVersion);
-  EXPECT_EQ(
-      telemetry_report_pb->reports(0).extension().install_timestamp_msec(),
-      extension_prefs_->GetInstallTime(kExtensionId).ToJavaTime());
-  // Verify that extension store contents have been cleared after creating a
-  // telemetry report.
-  const ExtensionInfo* info = GetExtensionInfoFromExtensionStore(kExtensionId);
-  EXPECT_EQ(info, nullptr);
+            extension_prefs_->GetInstallTime(kExtensionId[0]).ToJavaTime());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {
@@ -181,7 +185,7 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {
     PrimeTelemetryServiceWithSignal();
     {
       const ExtensionInfo* info =
-          GetExtensionInfoFromExtensionStore(kExtensionId);
+          GetExtensionInfoFromExtensionStore(kExtensionId[0]);
       EXPECT_NE(info, nullptr);
     }
     // Check that extension store still has extension info stored before
@@ -190,17 +194,88 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesReportAtProperIntervals) {
     task_environment_.FastForwardBy(interval - base::Seconds(1));
     {
       const ExtensionInfo* info =
-          GetExtensionInfoFromExtensionStore(kExtensionId);
+          GetExtensionInfoFromExtensionStore(kExtensionId[0]);
       EXPECT_NE(info, nullptr);
     }
     // Check that extension store is cleared after reporting interval elapses.
     task_environment_.FastForwardBy(base::Seconds(1));
     {
       const ExtensionInfo* info =
-          GetExtensionInfoFromExtensionStore(kExtensionId);
+          GetExtensionInfoFromExtensionStore(kExtensionId[0]);
       EXPECT_EQ(info, nullptr);
     }
   }
+}
+
+TEST_F(ExtensionTelemetryServiceTest, DoesNotGenerateEmptyTelemetryReport) {
+  // Check that telemetry service does not generate a telemetry report
+  // when there are no signals and no installed extensions.
+  UnregisterExtensionWithExtensionService(kExtensionId[0]);
+  UnregisterExtensionWithExtensionService(kExtensionId[1]);
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+
+  // Verify that no telemetry report is generated.
+  EXPECT_FALSE(GetTelemetryReport());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
+  // Check that telemetry service generates a telemetry report even when
+  // there are no signals to report. The report consists of only extension
+  // info for the installed extensions.
+  task_environment_.FastForwardBy(
+      telemetry_service_->current_reporting_interval());
+  // Verify the contents of telemetry report generated.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  // Telemetry report should contain reports for both test extensions.
+  ASSERT_EQ(telemetry_report_pb->reports_size(), 2);
+  for (int i = 0; i < 2; i++) {
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().id(),
+              kExtensionId[i]);
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().name(),
+              kExtensionName[i]);
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().version(),
+              kExtensionVersion);
+    EXPECT_EQ(
+        telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
+        extension_prefs_->GetInstallTime(kExtensionId[i]).ToJavaTime());
+    // Verify that there is no signal data associated with the extension.
+    EXPECT_EQ(telemetry_report_pb->reports(i).signals().size(), 0);
+  }
+
+  // Verify that extension store has been cleared after creating a telemetry
+  // report.
+  EXPECT_TRUE(IsExtensionStoreEmpty());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithSignal) {
+  PrimeTelemetryServiceWithSignal();
+  // Verify the contents of telemetry report generated.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  // Telemetry report should contain reports for both test extensions.
+  ASSERT_EQ(telemetry_report_pb->reports_size(), 2);
+  for (int i = 0; i < 2; i++) {
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().id(),
+              kExtensionId[i]);
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().name(),
+              kExtensionName[i]);
+    EXPECT_EQ(telemetry_report_pb->reports(i).extension().version(),
+              kExtensionVersion);
+    EXPECT_EQ(
+        telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
+        extension_prefs_->GetInstallTime(kExtensionId[i]).ToJavaTime());
+  }
+
+  // Verify that first extension's report has signal data.
+  EXPECT_EQ(telemetry_report_pb->reports(0).signals().size(), 1);
+  // Verify that second extension's report has no signal data.
+  EXPECT_EQ(telemetry_report_pb->reports(1).signals().size(), 0);
+
+  // Verify that extension store has been cleared after creating a telemetry
+  // report.
+  EXPECT_TRUE(IsExtensionStoreEmpty());
 }
 
 }  // namespace safe_browsing

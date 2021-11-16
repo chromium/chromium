@@ -19,6 +19,12 @@
 class Profile;
 class PrefService;
 
+namespace extensions {
+class Extension;
+class ExtensionPrefs;
+class ExtensionRegistry;
+}  // namespace extensions
+
 namespace safe_browsing {
 
 enum class ExtensionSignalType;
@@ -42,7 +48,9 @@ class ExtensionTelemetryReportRequest_ExtensionInfo;
 // signals are ignored and no reports are sent to the SB servers.
 class ExtensionTelemetryService : public KeyedService {
  public:
-  explicit ExtensionTelemetryService(Profile* profile);
+  ExtensionTelemetryService(Profile* profile,
+                            extensions::ExtensionRegistry* extension_registry,
+                            extensions::ExtensionPrefs* extension_prefs);
 
   ExtensionTelemetryService(const ExtensionTelemetryService&) = delete;
   ExtensionTelemetryService& operator=(const ExtensionTelemetryService&) =
@@ -71,13 +79,14 @@ class ExtensionTelemetryService : public KeyedService {
   // Creates and uploads telemetry reports.
   void CreateAndUploadReports();
 
-  // Creates telemetry report protobuf from extension store data and
-  // data retrieved from signal processors.
+  // Creates telemetry report protobuf for all extension store extensions
+  // and currently installed extensions along with signal data retrieved from
+  // signal processors.
   std::unique_ptr<ExtensionTelemetryReportRequest> CreateReport();
 
   // Collects extension information for reporting.
   std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
-  GetExtensionInfoForReport(const extensions::ExtensionId& extension_id);
+  GetExtensionInfoForReport(const extensions::Extension& extension);
 
   // Records UMA metric: signal type.
   void RecordSignalType(ExtensionSignalType signal_type);
@@ -90,6 +99,10 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Observes changes to kSafeBrowsingEnhanced.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Unowned objects used for getting extension information.
+  extensions::ExtensionRegistry* const extension_registry_;
+  extensions::ExtensionPrefs* const extension_prefs_;
 
   // Keeps track of the state of the service.
   bool enabled_;

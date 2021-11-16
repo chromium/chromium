@@ -32,30 +32,29 @@ struct ScriptData {
 class TabsExecuteScriptSignalProcessorTest : public ::testing::Test {
  protected:
   TabsExecuteScriptSignalProcessorTest()
-      : processor_(std::make_unique<TabsExecuteScriptSignalProcessor>()),
-        script_data_{{ScriptData("document.write('Hello World')")},
+      : script_data_{{ScriptData("document.write('Hello World')")},
                      {ScriptData("document.write('Goodbye World')")}} {}
 
-  const std::unique_ptr<TabsExecuteScriptSignalProcessor> processor_;
+  TabsExecuteScriptSignalProcessor processor_;
   const ScriptData script_data_[2];
 };
 
 TEST_F(TabsExecuteScriptSignalProcessorTest, NoDataPresentInitially) {
-  EXPECT_FALSE(processor_->HasDataToReportForTest());
+  EXPECT_FALSE(processor_.HasDataToReportForTest());
 }
 
 TEST_F(TabsExecuteScriptSignalProcessorTest, StoresDataAfterProcessingSignal) {
   // Process a signal.
   auto signal = std::make_unique<TabsExecuteScriptSignal>(kExtensionId[0],
                                                           script_data_[0].code);
-  processor_->ProcessSignal(std::move(signal));
+  processor_.ProcessSignal(std::move(signal));
 
   // Verify that processor now has some data to report.
-  EXPECT_TRUE(processor_->HasDataToReportForTest());
+  EXPECT_TRUE(processor_.HasDataToReportForTest());
 
   // Verify that there is signal info only for the correct extension id.
-  EXPECT_TRUE(processor_->GetSignalInfoForReport(kExtensionId[0]));
-  EXPECT_FALSE(processor_->GetSignalInfoForReport(kExtensionId[1]));
+  EXPECT_TRUE(processor_.GetSignalInfoForReport(kExtensionId[0]));
+  EXPECT_FALSE(processor_.GetSignalInfoForReport(kExtensionId[1]));
 }
 
 TEST_F(TabsExecuteScriptSignalProcessorTest, ReportsSignalInfoCorrectly) {
@@ -64,7 +63,7 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, ReportsSignalInfoCorrectly) {
   for (int i = 0; i < 3; i++) {
     auto signal = std::make_unique<TabsExecuteScriptSignal>(
         kExtensionId[0], script_data_[0].code);
-    processor_->ProcessSignal(std::move(signal));
+    processor_.ProcessSignal(std::move(signal));
   }
 
   // Process 3 signals for second extension. Two signal corresponds to the
@@ -72,29 +71,29 @@ TEST_F(TabsExecuteScriptSignalProcessorTest, ReportsSignalInfoCorrectly) {
   for (int i = 0; i < 2; i++) {
     auto signal = std::make_unique<TabsExecuteScriptSignal>(
         kExtensionId[1], script_data_[0].code);
-    processor_->ProcessSignal(std::move(signal));
+    processor_.ProcessSignal(std::move(signal));
   }
   {
     auto signal = std::make_unique<TabsExecuteScriptSignal>(
         kExtensionId[1], script_data_[1].code);
-    processor_->ProcessSignal(std::move(signal));
+    processor_.ProcessSignal(std::move(signal));
   }
 
   // Retrieve signal info for first extension.
   std::unique_ptr<SignalInfo> extension_0_signal_info =
-      processor_->GetSignalInfoForReport(kExtensionId[0]);
+      processor_.GetSignalInfoForReport(kExtensionId[0]);
   ASSERT_NE(extension_0_signal_info, nullptr);
 
   // Verify that processor still has some data to report (for second extension).
-  EXPECT_TRUE(processor_->HasDataToReportForTest());
+  EXPECT_TRUE(processor_.HasDataToReportForTest());
 
   // Retrieve signal info for second extension.
   std::unique_ptr<SignalInfo> extension_1_signal_info =
-      processor_->GetSignalInfoForReport(kExtensionId[1]);
+      processor_.GetSignalInfoForReport(kExtensionId[1]);
   ASSERT_NE(extension_1_signal_info, nullptr);
 
   // Verify that processor no longer has data to report.
-  EXPECT_FALSE(processor_->HasDataToReportForTest());
+  EXPECT_FALSE(processor_.HasDataToReportForTest());
 
   // Verify signal info contents for first extension.
   {

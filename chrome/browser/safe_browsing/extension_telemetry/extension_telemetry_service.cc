@@ -23,8 +23,13 @@ namespace safe_browsing {
 
 ExtensionTelemetryService::~ExtensionTelemetryService() = default;
 
-ExtensionTelemetryService::ExtensionTelemetryService(Profile* profile)
+ExtensionTelemetryService::ExtensionTelemetryService(
+    Profile* profile,
+    extensions::ExtensionRegistry* extension_registry,
+    extensions::ExtensionPrefs* extension_prefs)
     : profile_(profile),
+      extension_registry_(extension_registry),
+      extension_prefs_(extension_prefs),
       enabled_(false),
       current_reporting_interval_(
           base::Seconds(kExtensionTelemetryUploadIntervalSeconds.Get())) {
@@ -90,8 +95,13 @@ void ExtensionTelemetryService::AddSignal(
     // the case where the extension is uninstalled after generating the signal
     // but before a report is generated. The extension information is also
     // cleared after each telemetry report is sent to keep the data fresh.
+    const extensions::Extension* extension =
+        extension_registry_->GetInstalledExtension(signal->extension_id());
+    // The signal is added synchronously and it should never be reported for
+    // a non-existent extension.
+    DCHECK(extension);
     extension_store_.emplace(signal->extension_id(),
-                             GetExtensionInfoForReport(signal->extension_id()));
+                             GetExtensionInfoForReport(*extension));
   }
 
   processor.ProcessSignal(std::move(signal));
@@ -110,19 +120,22 @@ void ExtensionTelemetryService::CreateAndUploadReports() {
 
 std::unique_ptr<ExtensionTelemetryReportRequest>
 ExtensionTelemetryService::CreateReport() {
-  if (extension_store_.empty())
+  // Don't create a telemetry report if there were no signals generated (i.e.,
+  // extension store is empty) AND there are no installed extensions currently.
+  std::unique_ptr<extensions::ExtensionSet> installed_extensions =
+      extension_registry_->GenerateInstalledExtensionsSet();
+  if (extension_store_.empty() && installed_extensions->is_empty())
     return nullptr;
 
-  // Create a telemetry report containing signal data for extension ids
-  // in the extension store (the extensions that triggered signals).
   using google::protobuf::RepeatedPtrField;
   auto telemetry_report_pb =
       std::make_unique<ExtensionTelemetryReportRequest>();
   RepeatedPtrField<ExtensionTelemetryReportRequest_Report>* reports_pb =
       telemetry_report_pb->mutable_reports();
 
+  // Create per-extension reports for all the extensions in the extension store.
+  // These represent extensions that have signal information to report.
   for (auto& extension_store_it : extension_store_) {
-    // Create a per-extension report.
     auto report_entry_pb =
         std::make_unique<ExtensionTelemetryReportRequest_Report>();
 
@@ -144,37 +157,46 @@ ExtensionTelemetryService::CreateReport() {
     reports_pb->AddAllocated(report_entry_pb.release());
   }
 
-  telemetry_report_pb->set_creation_timestamp_msec(
-      base::Time::Now().ToJavaTime());
+  // Create per-extension reports for all the installed extensions. Exclude
+  // extension store extensions since reports have already been created for
+  // them. Note that these installed extension reports will only contain
+  // extension information (and no signal data).
+  for (const auto& entry : extension_store_) {
+    installed_extensions->Remove(entry.first /* extension_id */);
+  }
+
+  for (const scoped_refptr<const extensions::Extension> installed_entry :
+       *installed_extensions) {
+    auto report_entry_pb =
+        std::make_unique<ExtensionTelemetryReportRequest_Report>();
+
+    report_entry_pb->set_allocated_extension(
+        GetExtensionInfoForReport(*installed_entry.get()).release());
+    reports_pb->AddAllocated(report_entry_pb.release());
+  }
+
+  DCHECK(reports_pb->size() > 0);
 
   // Clear out the extension store data to ensure that:
   // - extension info is refreshed for every telemetry report.
   // - no stale extension entry is left over in the extension store.
   extension_store_.clear();
 
+  telemetry_report_pb->set_creation_timestamp_msec(
+      base::Time::Now().ToJavaTime());
   return telemetry_report_pb;
 }
 
 std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
 ExtensionTelemetryService::GetExtensionInfoForReport(
-    const extensions::ExtensionId& extension_id) {
+    const extensions::Extension& extension) {
   auto extension_info =
       std::make_unique<ExtensionTelemetryReportRequest_ExtensionInfo>();
-  extension_info->set_id(extension_id);
-  extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(profile_);
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile_);
-  const extensions::Extension* extension =
-      extension_registry->GetInstalledExtension(extension_id);
-  // The ExtensionStore entry is always created synchronously from a signal
-  // being reported, and signals should never be reported for non-existent
-  // extensions.
-  DCHECK(extension);
-  extension_info->set_name(extension->name());
-  extension_info->set_version(extension->version().GetString());
+  extension_info->set_id(extension.id());
+  extension_info->set_name(extension.name());
+  extension_info->set_version(extension.version().GetString());
   extension_info->set_install_timestamp_msec(
-      extension_prefs->GetInstallTime(extension->id()).ToJavaTime());
+      extension_prefs_->GetInstallTime(extension.id()).ToJavaTime());
 
   return extension_info;
 }
