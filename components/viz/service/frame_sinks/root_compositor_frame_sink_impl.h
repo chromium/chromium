@@ -25,6 +25,7 @@
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "ui/gfx/ca_layer_params.h"
 
 namespace gfx {
 class RenderingPipeline;
@@ -190,6 +191,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::Size last_swap_pixel_size_;
 #endif
+
+  gfx::CALayerParams last_ca_layer_params_;
 
 #if defined(OS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
