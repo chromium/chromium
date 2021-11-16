@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/observer_list.h"
-#include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_base_agent.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "components/ui_devtools/dom.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 
 namespace ui_devtools {

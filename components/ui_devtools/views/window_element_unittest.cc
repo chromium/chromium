@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"

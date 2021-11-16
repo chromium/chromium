@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_PAGE_AGENT_H_
 
-#include "components/ui_devtools/Page.h"
 #include "components/ui_devtools/dom_agent.h"
+#include "components/ui_devtools/page.h"
 
 namespace ui_devtools {
 

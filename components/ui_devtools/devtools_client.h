@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "components/ui_devtools/DOM.h"
-#include "components/ui_devtools/Forward.h"
-#include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/devtools_base_agent.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "components/ui_devtools/dom.h"
+#include "components/ui_devtools/forward.h"
+#include "components/ui_devtools/protocol.h"
 
 namespace ui_devtools {
 
