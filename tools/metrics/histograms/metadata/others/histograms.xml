@@ -12020,7 +12020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaintHolding.InputTiming2" enum="PaintHoldingInputTiming"
-    expires_after="2021-11-21">
+    expires_after="2022-03-27">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
