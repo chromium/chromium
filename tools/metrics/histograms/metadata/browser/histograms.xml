@@ -609,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds2"
-    units="janks" expires_after="2022-03-13">
+    units="janks" expires_after="2022-05-15">
 <!-- JankyIntervalsPerThirtySeconds3 is on probation to replace this -->
 
   <owner>erikchen@chromium.org</owner>

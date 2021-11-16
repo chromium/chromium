@@ -866,7 +866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
-    enum="PasswordCheckResolutionAction" expires_after="2022-03-13">
+    enum="PasswordCheckResolutionAction" expires_after="2022-05-15">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <summary>

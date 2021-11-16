@@ -714,7 +714,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2022-03-13">
+    enum="WebAppUrlLoaderResult" expires_after="2022-05-15">
   <owner>qjw@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>

@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.FramesProvided" units="frames"
-    expires_after="2022-03-13">
+    expires_after="2022-05-15">
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <summary>
@@ -595,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
-    expires_after="2022-03-13">
+    expires_after="2022-05-15">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>

@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -861,7 +861,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingCommit.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -947,7 +947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.Depth" units="count"
-    expires_after="2022-03-13">
+    expires_after="2022-05-15">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ContextMenu.ImageSelection.ElapsedTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
   <owner>benwgold@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1929,7 +1929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -3522,7 +3522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2022-03-13">
+    enum="NQEEffectiveConnectionType" expires_after="2022-05-15">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -3604,7 +3604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
-    units="microseconds" expires_after="2022-03-13">
+    units="microseconds" expires_after="2022-05-15">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
