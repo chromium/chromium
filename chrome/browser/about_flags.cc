@@ -4464,12 +4464,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWADebugMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
-    {"gdi-text-printing", flag_descriptions::kGdiTextPrinting,
-     flag_descriptions::kGdiTextPrintingDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kGdiTextPrinting)},
-#endif  // defined(OS_WIN)
-
 #if defined(OS_MAC)
     {"enable-universal-links", flag_descriptions::kEnableUniversalLinksName,
      flag_descriptions::kEnableUniversalLinksDescription, kOsMac,

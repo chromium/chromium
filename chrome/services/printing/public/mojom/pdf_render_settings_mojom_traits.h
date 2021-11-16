@@ -24,16 +24,12 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
 #if defined(OS_WIN)
       case PrintMode::TEXTONLY:
         return MojomMode::TEXTONLY;
-      case PrintMode::GDI_TEXT:
-        return MojomMode::GDI_TEXT;
       case PrintMode::POSTSCRIPT_LEVEL2:
         return MojomMode::POSTSCRIPT_LEVEL2;
       case PrintMode::POSTSCRIPT_LEVEL3:
         return MojomMode::POSTSCRIPT_LEVEL3;
       case PrintMode::EMF_WITH_REDUCED_RASTERIZATION:
         return MojomMode::EMF_WITH_REDUCED_RASTERIZATION;
-      case PrintMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
-        return MojomMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT;
       case PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
         return MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
 #endif
@@ -54,8 +50,6 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
       case MojomMode::TEXTONLY:
         *output = PrintMode::TEXTONLY;
         return true;
-      case MojomMode::GDI_TEXT:
-        *output = PrintMode::GDI_TEXT;
         return true;
       case MojomMode::POSTSCRIPT_LEVEL2:
         *output = PrintMode::POSTSCRIPT_LEVEL2;
@@ -65,9 +59,6 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
         return true;
       case MojomMode::EMF_WITH_REDUCED_RASTERIZATION:
         *output = PrintMode::EMF_WITH_REDUCED_RASTERIZATION;
-        return true;
-      case MojomMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
-        *output = PrintMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT;
         return true;
       case MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
         *output = PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;

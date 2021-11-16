@@ -373,28 +373,15 @@ void PrintJob::StartPdfToEmfConversion(
   pdf_conversion_state_ =
       std::make_unique<PdfConversionState>(page_size, content_area);
 
-  // TODO(thestig): Figure out why rendering text with GDI results in random
-  // missing characters for some users. https://crbug.com/658606
-  // Update : The missing letters seem to have been caused by the same
-  // problem as https://crbug.com/659604 which was resolved. GDI printing
-  // seems to work with the fix for this bug applied.
   const PrintSettings& settings = document()->settings();
-  bool print_text_with_gdi =
-      settings.print_text_with_gdi() && !settings.printer_language_is_xps() &&
-      base::FeatureList::IsEnabled(::features::kGdiTextPrinting);
 
   PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
   bool print_with_reduced_rasterization = PrintWithReducedRasterization(prefs);
 
   using RenderMode = PdfRenderSettings::Mode;
-  RenderMode mode;
-  if (print_with_reduced_rasterization) {
-    mode = print_text_with_gdi
-               ? RenderMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT
-               : RenderMode::EMF_WITH_REDUCED_RASTERIZATION;
-  } else {
-    mode = print_text_with_gdi ? RenderMode::GDI_TEXT : RenderMode::NORMAL;
-  }
+  RenderMode mode = print_with_reduced_rasterization
+                        ? RenderMode::EMF_WITH_REDUCED_RASTERIZATION
+                        : RenderMode::NORMAL;
 
   PdfRenderSettings render_settings(
       content_area, gfx::Point(0, 0), settings.dpi_size(),

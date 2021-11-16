@@ -67,8 +67,6 @@ struct PrintSettings {
   bool supports_alpha_blend;
 
   [EnableIf=is_win]
-  bool print_text_with_gdi;
-  [EnableIf=is_win]
   PrinterLanguageType printer_language_type;
 
   bool is_modifiable;

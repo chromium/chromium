@@ -191,9 +191,6 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   mojom::DuplexMode duplex_mode() const { return duplex_mode_; }
 
 #if defined(OS_WIN)
-  void set_print_text_with_gdi(bool use_gdi) { print_text_with_gdi_ = use_gdi; }
-  bool print_text_with_gdi() const { return print_text_with_gdi_; }
-
   void set_printer_language_type(mojom::PrinterLanguageType type) {
     printer_language_type_ = type;
   }
@@ -314,9 +311,6 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   bool supports_alpha_blend_;
 
 #if defined(OS_WIN)
-  // True to print text with GDI.
-  bool print_text_with_gdi_;
-
   mojom::PrinterLanguageType printer_language_type_;
 #endif
 

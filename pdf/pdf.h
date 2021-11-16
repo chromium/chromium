@@ -98,8 +98,6 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
 void SetPDFEnsureTypefaceCharactersAccessible(
     PDFEnsureTypefaceCharactersAccessible func);
 
-void SetPDFUseGDIPrinting(bool enable);
-
 void SetPDFUsePrintMode(int mode);
 #endif  // defined(OS_WIN)
 

@@ -261,7 +261,6 @@ PrintSettings::PrintSettings(const PrintSettings& settings) {
   landscape_ = settings.landscape_;
   supports_alpha_blend_ = settings.supports_alpha_blend_;
 #if defined(OS_WIN)
-  print_text_with_gdi_ = settings.print_text_with_gdi_;
   printer_language_type_ = settings.printer_language_type_;
 #endif
   is_modifiable_ = settings.is_modifiable_;
@@ -302,7 +301,6 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   landscape_ = settings.landscape_;
   supports_alpha_blend_ = settings.supports_alpha_blend_;
 #if defined(OS_WIN)
-  print_text_with_gdi_ = settings.print_text_with_gdi_;
   printer_language_type_ = settings.printer_language_type_;
 #endif
   is_modifiable_ = settings.is_modifiable_;
@@ -343,7 +341,6 @@ void PrintSettings::Clear() {
   landscape_ = false;
   supports_alpha_blend_ = true;
 #if defined(OS_WIN)
-  print_text_with_gdi_ = false;
   printer_language_type_ = mojom::PrinterLanguageType::kNone;
 #endif
   is_modifiable_ = true;

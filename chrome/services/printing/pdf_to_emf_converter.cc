@@ -82,12 +82,6 @@ PdfToEmfConverter::PdfToEmfConverter(
 PdfToEmfConverter::~PdfToEmfConverter() = default;
 
 void PdfToEmfConverter::SetPrintMode() {
-  bool use_gdi_printing =
-      pdf_render_settings_.mode == PdfRenderSettings::Mode::GDI_TEXT ||
-      pdf_render_settings_.mode ==
-          PdfRenderSettings::Mode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT;
-  chrome_pdf::SetPDFUseGDIPrinting(use_gdi_printing);
-
   int printing_mode;
   switch (pdf_render_settings_.mode) {
     case PdfRenderSettings::Mode::TEXTONLY:
@@ -103,7 +97,6 @@ void PdfToEmfConverter::SetPrintMode() {
       printing_mode = chrome_pdf::PrintingMode::kPostScript3WithType42Fonts;
       break;
     case PdfRenderSettings::Mode::EMF_WITH_REDUCED_RASTERIZATION:
-    case PdfRenderSettings::Mode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
       printing_mode = chrome_pdf::PrintingMode::kEmfWithReducedRasterization;
       break;
     default:

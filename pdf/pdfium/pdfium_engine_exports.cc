@@ -317,10 +317,6 @@ void PDFiumEngineExports::SetPDFEnsureTypefaceCharactersAccessible(
       reinterpret_cast<PDFiumEnsureTypefaceCharactersAccessible>(func));
 }
 
-void PDFiumEngineExports::SetPDFUseGDIPrinting(bool enable) {
-  FPDF_SetPrintTextWithGDI(enable);
-}
-
 void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
   FPDF_SetPrintMode(mode);
 }

@@ -538,7 +538,6 @@ class PDFEngineExports {
   virtual void SetPDFEnsureTypefaceCharactersAccessible(
       PDFEnsureTypefaceCharactersAccessible func) = 0;
 
-  virtual void SetPDFUseGDIPrinting(bool enable) = 0;
   virtual void SetPDFUsePrintMode(int mode) = 0;
 #endif  // defined(OS_WIN)
 

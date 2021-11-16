@@ -56,9 +56,6 @@ void PrintingContext::set_margin_type(mojom::MarginType type) {
 
 void PrintingContext::set_is_modifiable(bool is_modifiable) {
   settings_->set_is_modifiable(is_modifiable);
-#if defined(OS_WIN)
-  settings_->set_print_text_with_gdi(is_modifiable);
-#endif
 }
 
 const PrintSettings& PrintingContext::settings() const {

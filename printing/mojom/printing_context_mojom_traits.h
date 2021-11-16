@@ -151,9 +151,6 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
   }
 
 #if defined(OS_WIN)
-  static bool print_text_with_gdi(const printing::PrintSettings& s) {
-    return s.print_text_with_gdi();
-  }
   static printing::mojom::PrinterLanguageType printer_language_type(
       const printing::PrintSettings& s) {
     return s.printer_language_type();

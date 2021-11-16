@@ -75,10 +75,6 @@ void SetPDFEnsureTypefaceCharactersAccessible(
   PDFEngineExports::Get()->SetPDFEnsureTypefaceCharactersAccessible(func);
 }
 
-void SetPDFUseGDIPrinting(bool enable) {
-  PDFEngineExports::Get()->SetPDFUseGDIPrinting(enable);
-}
-
 void SetPDFUsePrintMode(int mode) {
   PDFEngineExports::Get()->SetPDFUsePrintMode(mode);
 }

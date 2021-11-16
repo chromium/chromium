@@ -148,7 +148,6 @@ bool StructTraits<
   out->SetOrientation(data.landscape());
   out->set_supports_alpha_blend(data.supports_alpha_blend());
 #if defined(OS_WIN)
-  out->set_print_text_with_gdi(data.print_text_with_gdi());
   out->set_printer_language_type(data.printer_language_type());
 #endif  // defined(OS_WIN)
   out->set_is_modifiable(data.is_modifiable());

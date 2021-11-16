@@ -2226,9 +2226,6 @@ extern const char kUseWinrtMidiApiName[];
 extern const char kUseWinrtMidiApiDescription[];
 
 #if BUILDFLAG(ENABLE_PRINTING)
-extern const char kGdiTextPrinting[];
-extern const char kGdiTextPrintingDescription[];
-
 extern const char kPrintWithPostScriptType42FontsName[];
 extern const char kPrintWithPostScriptType42FontsDescription[];
 

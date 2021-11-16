@@ -303,10 +303,6 @@ extern const base::Feature kFlashDeprecationWarning;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kFocusMode;
 
-#if defined(OS_WIN)
-COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kGdiTextPrinting;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kGeoLanguage;
 
 #if defined(OS_ANDROID)

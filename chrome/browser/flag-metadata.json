@@ -3292,11 +3292,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "gdi-text-printing",
-    "owners": [ "//printing/OWNERS" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "gesture-properties-dbus-service",
     "owners": [ "hcutts", "chromeos-tango@google.com" ],
     // Used by developers for debugging and input device tuning.

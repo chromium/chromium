@@ -33,7 +33,6 @@ class PDFiumEngineExports : public PDFEngineExports {
   void SetPDFEnsureTypefaceCharactersAccessible(
       PDFEnsureTypefaceCharactersAccessible func) override;
 
-  void SetPDFUseGDIPrinting(bool enable) override;
   void SetPDFUsePrintMode(int mode) override;
 #endif  // defined(OS_WIN)
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,

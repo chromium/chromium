@@ -34,6 +34,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.ConversionSize.EmfWithGdiText" units="KB"
     expires_after="2022-09-30">
+  <obsolete>
+    Removed 2021-11.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -54,6 +57,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Printing.ConversionSize.EmfWithReducedRasterizationAndGdiText"
     units="KB" expires_after="2022-09-30">
+  <obsolete>
+    Removed 2021-11.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

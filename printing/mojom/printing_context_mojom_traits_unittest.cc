@@ -141,9 +141,6 @@ constexpr bool kPrintSettingsSupportsAlphaBlend1 = false;
 constexpr bool kPrintSettingsSupportsAlphaBlend2 = true;
 
 #if defined(OS_WIN)
-constexpr bool kPrintSettingsPrintTextWithGdi1 = true;
-constexpr bool kPrintSettingsPrintTextWithGdi2 = false;
-
 constexpr mojom::PrinterLanguageType kPrintSettingsPrinterLanguageType1 =
     mojom::PrinterLanguageType::kTextOnly;
 constexpr mojom::PrinterLanguageType kPrintSettingsPrinterLanguageType2 =
@@ -204,7 +201,6 @@ PrintSettings GenerateSamplePrintSettingsDefaultMargins() {
   settings.set_supports_alpha_blend(kPrintSettingsSupportsAlphaBlend1);
 
 #if defined(OS_WIN)
-  settings.set_print_text_with_gdi(kPrintSettingsPrintTextWithGdi1);
   settings.set_printer_language_type(kPrintSettingsPrinterLanguageType1);
 #endif
 
@@ -237,7 +233,6 @@ PrintSettings GenerateSamplePrintSettingsCustomMargins() {
   settings.SetCustomMargins(kPrintSettingsCustomMarginsInPoints);
 
 #if defined(OS_WIN)
-  settings.set_print_text_with_gdi(kPrintSettingsPrintTextWithGdi2);
   settings.set_printer_language_type(kPrintSettingsPrinterLanguageType2);
 #endif
 
@@ -487,7 +482,6 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend1);
 
 #if defined(OS_WIN)
-  EXPECT_EQ(output.print_text_with_gdi(), kPrintSettingsPrintTextWithGdi1);
   EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType1);
 #endif
 
@@ -547,7 +541,6 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_EQ(output.supports_alpha_blend(), kPrintSettingsSupportsAlphaBlend2);
 
 #if defined(OS_WIN)
-  EXPECT_EQ(output.print_text_with_gdi(), kPrintSettingsPrintTextWithGdi2);
   EXPECT_EQ(output.printer_language_type(), kPrintSettingsPrinterLanguageType2);
 #endif
 

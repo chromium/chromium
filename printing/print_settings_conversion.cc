@@ -215,9 +215,6 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
       job_settings.FindBoolKey(kSettingPreviewModifiable);
   if (is_modifiable.has_value()) {
     settings->set_is_modifiable(is_modifiable.value());
-#if defined(OS_WIN)
-    settings->set_print_text_with_gdi(is_modifiable.value());
-#endif
   }
 
 #if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(USE_CUPS))
