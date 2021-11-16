@@ -163,10 +163,10 @@ console-format.js:21 String {'abc'}
 console-format.js:22 [String]
 globals[33]
 String {'abc'}
-console-format.js:21 Uint16Array(3) [1, 2, 3]
+console-format.js:21 Uint16Array(3) [1, 2, 3, buffer: ArrayBuffer(6), byteLength: 6, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint16Array']
 console-format.js:22 [Uint16Array(3)]
 globals[34]
-Uint16Array(3) [1, 2, 3]
+Uint16Array(3) [1, 2, 3, buffer: ArrayBuffer(6), byteLength: 6, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint16Array']
 console-format.js:21 #text
 console-format.js:22 [text]
 globals[35]
@@ -175,10 +175,10 @@ console-format.js:21 DOMException: Failed to execute 'removeChild' on 'Node': Th
 console-format.js:22 [DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of t…]
 globals[36]
 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
-console-format.js:21 Uint8Array [3]
+console-format.js:21 Uint8Array [3, buffer: ArrayBuffer(1), byteLength: 1, byteOffset: 0, length: 1, Symbol(Symbol.toStringTag): 'Uint8Array']
 console-format.js:22 [Uint8Array(1)]
 globals[37]
-Uint8Array [3]
+Uint8Array [3, buffer: ArrayBuffer(1), byteLength: 1, byteOffset: 0, length: 1, Symbol(Symbol.toStringTag): 'Uint8Array']
 console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
 console-format.js:22 [Uint8Array(400)]
 globals[38]
@@ -586,20 +586,30 @@ String {'abc'}
     length: 3
     [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
-console-format.js:21 Uint16Array(3) [1, 2, 3]
+console-format.js:21 Uint16Array(3) [1, 2, 3, buffer: ArrayBuffer(6), byteLength: 6, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint16Array']
     0: 1
     1: 2
     2: 3
+    buffer: ArrayBuffer(6)  
+    byteLength: 6
+    byteOffset: 0
+    length: 3
+    Symbol(Symbol.toStringTag): "Uint16Array"
     [[Prototype]]: TypedArray
 console-format.js:22 [Uint16Array(3)]
-    0: Uint16Array(3) [1, 2, 3]
+    0: Uint16Array(3) [1, 2, 3, buffer: ArrayBuffer(6), byteLength: 6, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint16Array']
     length: 1
     [[Prototype]]: Array(0)
 globals[34]
-Uint16Array(3) [1, 2, 3]
+Uint16Array(3) [1, 2, 3, buffer: ArrayBuffer(6), byteLength: 6, byteOffset: 0, length: 3, Symbol(Symbol.toStringTag): 'Uint16Array']
     0: 1
     1: 2
     2: 3
+    buffer: ArrayBuffer(6)  
+    byteLength: 6
+    byteOffset: 0
+    length: 3
+    Symbol(Symbol.toStringTag): "Uint16Array"
     [[Prototype]]: TypedArray
 console-format.js:21 #text
 console-format.js:22 [text]
@@ -615,16 +625,26 @@ console-format.js:22 [DOMException: Failed to execute 'removeChild' on 'Node': T
     [[Prototype]]: Array(0)
 globals[36]
 DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
-console-format.js:21 Uint8Array [3]
+console-format.js:21 Uint8Array [3, buffer: ArrayBuffer(1), byteLength: 1, byteOffset: 0, length: 1, Symbol(Symbol.toStringTag): 'Uint8Array']
     0: 3
+    buffer: ArrayBuffer(1)  
+    byteLength: 1
+    byteOffset: 0
+    length: 1
+    Symbol(Symbol.toStringTag): "Uint8Array"
     [[Prototype]]: TypedArray
 console-format.js:22 [Uint8Array(1)]
-    0: Uint8Array [3]
+    0: Uint8Array [3, buffer: ArrayBuffer(1), byteLength: 1, byteOffset: 0, length: 1, Symbol(Symbol.toStringTag): 'Uint8Array']
     length: 1
     [[Prototype]]: Array(0)
 globals[37]
-Uint8Array [3]
+Uint8Array [3, buffer: ArrayBuffer(1), byteLength: 1, byteOffset: 0, length: 1, Symbol(Symbol.toStringTag): 'Uint8Array']
     0: 3
+    buffer: ArrayBuffer(1)  
+    byteLength: 1
+    byteOffset: 0
+    length: 1
+    Symbol(Symbol.toStringTag): "Uint8Array"
     [[Prototype]]: TypedArray
 console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99]
@@ -632,6 +652,12 @@ console-format.js:21 Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     [200 … 299]
     [300 … 399]
     foo: "bar"
+    buffer: ArrayBuffer(400)
+    byteLength: 400
+    byteOffset: 0
+    length: 400
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 console-format.js:22 [Uint8Array(400)]
     0: Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     length: 1
@@ -643,11 +669,24 @@ Uint8Array(400) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     [200 … 299]
     [300 … 399]
     foo: "bar"
+    buffer: ArrayBuffer(400)
+    byteLength: 400
+    byteOffset: 0
+    length: 400
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 console-format.js:21 Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     [0 … 99999999]
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
+    PASS: "Non-element properties should be displayed."
+    buffer: ArrayBuffer(400000000)
+    byteLength: 400000000
+    byteOffset: 0
+    length: 400000000
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 console-format.js:22 [Uint8Array(400000000)]
     0: Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
     length: 1
@@ -658,6 +697,13 @@ Uint8Array(400000000) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
+    PASS: "Non-element properties should be displayed."
+    buffer: ArrayBuffer(400000000)
+    byteLength: 400000000
+    byteOffset: 0
+    length: 400000000
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 console-format.js:21 namespace.longSubNamespace.x.className {}
     [[Prototype]]: Object
 console-format.js:22 [n…e.l…e.x.className]
@@ -671,6 +717,7 @@ console-format.js:21 (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
     [0 … 99]
     [100 … 199]
     length: 200
+    [[Prototype]]: Array(0)
 console-format.js:22 [Array(200)]
     0: (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …]
     length: 1
@@ -680,6 +727,7 @@ globals[41]
     [0 … 99]
     [100 … 199]
     length: 200
+    [[Prototype]]: Array(0)
 console-format.js:21 ['test']
     0: "test"
     length: 1

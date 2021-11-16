@@ -7,8 +7,16 @@ console-dir.js:12 Array(2)
     [[Prototype]]: Array(0)
 console-dir.js:13 NodeList(1)
     0: html
+    length: 1
     [[Prototype]]: NodeList
 console-dir.js:14 XPathResult
+    booleanValue: (...)
+    invalidIteratorState: false
+    numberValue: (...)
+    resultType: 4
+    singleNodeValue: (...)
+    snapshotLength: (...)
+    stringValue: (...)
     [[Prototype]]: XPathResult
 console-dir.js:24 Object
     "": ""
@@ -39,6 +47,8 @@ console-dir.js:35 Object
 console-dir.js:37 ƒ __proto__()
     length: 0
     name: "get __proto__"
+    arguments: (...)
+    caller: (...)
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[0]
 console-dir.js:42 Uint8Array(400000000)
@@ -46,8 +56,27 @@ console-dir.js:42 Uint8Array(400000000)
     [100000000 … 199999999]
     [200000000 … 299999999]
     [300000000 … 399999999]
+    PASS: "Non-element properties should be displayed."
+    buffer: ArrayBuffer(400000000)  
+    byteLength: 400000000
+    byteOffset: 0
+    length: 400000000
+    Symbol(Symbol.toStringTag): "Uint8Array"
+    [[Prototype]]: TypedArray
 console-dir.js:47 Event
     isTrusted: false
     timeStamp: 0
+    bubbles: false
+    cancelBubble: false
+    cancelable: false
+    composed: false
+    currentTarget: null
+    defaultPrevented: false
+    eventPhase: 0
+    path: []
+    returnValue: true
+    srcElement: null
+    target: null
+    type: ""
     [[Prototype]]: Event
 
