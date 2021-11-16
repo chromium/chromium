@@ -1010,7 +1010,10 @@ void AutofillPopupFooterView::CreateContent() {
 void AutofillPopupFooterView::RefreshStyle() {
   AutofillPopupItemView::RefreshStyle();
   SetBorder(views::CreateSolidSidedBorder(
-      /*top=*/views::MenuConfig::instance().separator_thickness,
+      // If the footer is the first item, do not draw a separator line.
+      /*top=*/GetLineNumber() == 0
+          ? 0
+          : views::MenuConfig::instance().separator_thickness,
       /*left=*/0,
       /*bottom=*/0,
       /*right=*/0,
