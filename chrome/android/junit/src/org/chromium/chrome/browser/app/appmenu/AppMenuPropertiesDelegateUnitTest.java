@@ -43,16 +43,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
-import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
@@ -65,7 +61,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -85,6 +80,8 @@ import java.util.List;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.BOOKMARKS_REFRESH,
+        ChromeFeatureList.CHROME_MANAGEMENT_PAGE})
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -136,14 +133,13 @@ public class AppMenuPropertiesDelegateUnitTest {
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
 
-    private final TestValues mTestValues = new TestValues();
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
+
     private MenuUiState mMenuUiState;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        setupFeatureDefaults();
 
         mOverviewModeSupplier.set(mOverviewModeBehavior);
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -167,39 +163,12 @@ public class AppMenuPropertiesDelegateUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         FeatureList.setTestCanUseDefaultsForTesting();
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
 
         mBookmarkBridgeSupplier.set(mBookmarkBridge);
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
                 mOverviewModeSupplier, null, mBookmarkBridgeSupplier));
-    }
-
-    private void setupFeatureDefaults() {
-        setBookmarkItemRowEnabled(false);
-        setReadingListItemRowEnabled(false);
-        setShoppingListItemRowEnabled(false);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CHROME_MANAGEMENT_PAGE, true);
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void setBookmarkItemRowEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", "true");
-    }
-
-    private void setReadingListItemRowEnabled(boolean enabled) {
-        ReadingListUtils.setReadingListSupportedForTesting(true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, enabled);
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", "true");
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void setShoppingListItemRowEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
     }
 
     @After
@@ -544,25 +513,17 @@ public class AppMenuPropertiesDelegateUnitTest {
         verify(bookmarkMenuItemShortcut).setEnabled(false);
     }
 
-    @Test
-    public void updateBookmarkMenuItemRow() {
-        setBookmarkItemRowEnabled(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
-
-        MenuItem bookmarkMenuItemAdd = Mockito.mock(MenuItem.class);
-        MenuItem bookmarkMenuItemEdit = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateBookmarkMenuItemRow(
-                bookmarkMenuItemAdd, bookmarkMenuItemEdit, mTab);
-        verify(bookmarkMenuItemAdd).setVisible(true);
-        verify(bookmarkMenuItemAdd).setEnabled(true);
+    private void enableBookmarkItemRow() {
+        TestValues bookmarkItemRowTestValues = new TestValues();
+        bookmarkItemRowTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, true);
+        bookmarkItemRowTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", "true");
+        FeatureList.setTestValues(bookmarkItemRowTestValues);
     }
 
     @Test
-    public void updateBookmarkMenuItemRow_WithShoppingAndReadingList() {
-        setBookmarkItemRowEnabled(true);
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        setReadingListItemRowEnabled(true);
+    public void updateBookmarkMenuItemRow() {
+        enableBookmarkItemRow();
         doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemAdd = Mockito.mock(MenuItem.class);
@@ -571,27 +532,11 @@ public class AppMenuPropertiesDelegateUnitTest {
                 bookmarkMenuItemAdd, bookmarkMenuItemEdit, mTab);
         verify(bookmarkMenuItemAdd).setVisible(true);
         verify(bookmarkMenuItemAdd).setEnabled(true);
-
-        MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        // TODO(crbug.com/1264685): Add menu visibility asserts here once the code is checked in.
-
-        // Price-tracking takes priority and the reading list option won't be shown.
-        MenuItem readingListMenuItemAdd = Mockito.mock(MenuItem.class);
-        MenuItem readingListMenuItemDelete = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updateReadingListMenuItemRow(
-                readingListMenuItemAdd, readingListMenuItemDelete, mTab);
-        verify(readingListMenuItemAdd).setVisible(false);
-        verify(readingListMenuItemDelete).setVisible(false);
-
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
     }
 
     @Test
     public void updateBookmarkMenuItemRow_NullTab() {
-        setBookmarkItemRowEnabled(true);
+        enableBookmarkItemRow();
 
         MenuItem bookmarkMenuItemAdd = Mockito.mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = Mockito.mock(MenuItem.class);
@@ -603,7 +548,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow_NullBookmarkBridge() {
-        setBookmarkItemRowEnabled(true);
+        enableBookmarkItemRow();
         mBookmarkBridgeSupplier.set(null);
 
         MenuItem bookmarkMenuItemAdd = Mockito.mock(MenuItem.class);
@@ -614,9 +559,18 @@ public class AppMenuPropertiesDelegateUnitTest {
         verify(bookmarkMenuItemEdit).setVisible(false);
     }
 
+    private void enableReadingListItemRow() {
+        ReadingListUtils.setReadingListSupportedForTesting(true);
+        TestValues bookmarkItemRowTestValues = new TestValues();
+        bookmarkItemRowTestValues.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, true);
+        bookmarkItemRowTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", "true");
+        FeatureList.setTestValues(bookmarkItemRowTestValues);
+    }
+
     @Test
     public void updateReadingListMenuItemRow() {
-        setReadingListItemRowEnabled(true);
+        enableReadingListItemRow();
         doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
 
         MenuItem readingListMenuItemAdd = Mockito.mock(MenuItem.class);
@@ -629,7 +583,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateReadingListMenuItemRow_NullTab() {
-        setReadingListItemRowEnabled(true);
+        enableReadingListItemRow();
 
         MenuItem readingListMenuItemAdd = Mockito.mock(MenuItem.class);
         MenuItem readingListMenuItemDelete = Mockito.mock(MenuItem.class);
@@ -641,7 +595,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateReadingListMenuItemRow_NullBookmarkBridge() {
-        setReadingListItemRowEnabled(true);
+        enableReadingListItemRow();
         mBookmarkBridgeSupplier.set(null);
 
         MenuItem readingListMenuItemAdd = Mockito.mock(MenuItem.class);
@@ -650,107 +604,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                 readingListMenuItemAdd, readingListMenuItemDelete, null);
         verify(readingListMenuItemAdd).setVisible(false);
         verify(readingListMenuItemDelete).setVisible(false);
-    }
-
-    @Test
-    public void enablePriceTrackingItemRow() {
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
-
-        doReturn(Mockito.mock(BookmarkId.class))
-                .when(mBookmarkBridge)
-                .getUserBookmarkIdForTab(any());
-        PowerBookmarkMeta meta =
-                PowerBookmarkMeta.newBuilder()
-                        .setType(PowerBookmarkType.SHOPPING)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setIsPriceTracked(false).build())
-                        .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
-
-        MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(true);
-        verify(startPriceTrackingMenuItem).setEnabled(true);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
-    }
-
-    @Test
-    public void enablePriceTrackingItemRow_NullBookmarkId() {
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
-
-        doReturn(null).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
-        PowerBookmarkMeta meta =
-                PowerBookmarkMeta.newBuilder()
-                        .setType(PowerBookmarkType.SHOPPING)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setIsPriceTracked(false).build())
-                        .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
-
-        MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(true);
-        verify(startPriceTrackingMenuItem).setEnabled(true);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
-    }
-
-    @Test
-    public void enablePriceTrackingItemRow_BadType() {
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
-
-        doReturn(Mockito.mock(BookmarkId.class))
-                .when(mBookmarkBridge)
-                .getUserBookmarkIdForTab(any());
-        PowerBookmarkMeta meta =
-                PowerBookmarkMeta.newBuilder()
-                        .setType(PowerBookmarkType.UNSPECIFIED)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setIsPriceTracked(false).build())
-                        .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
-
-        MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(startPriceTrackingMenuItem).setVisible(false);
-        verify(stopPriceTrackingMenuItem).setVisible(false);
-    }
-
-    @Test
-    public void enablePriceTrackingItemRow_PriceTrackingEnabled() {
-        setShoppingListItemRowEnabled(true);
-        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
-
-        doReturn(Mockito.mock(BookmarkId.class))
-                .when(mBookmarkBridge)
-                .getUserBookmarkIdForTab(any());
-        PowerBookmarkMeta meta =
-                PowerBookmarkMeta.newBuilder()
-                        .setType(PowerBookmarkType.SHOPPING)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build())
-                        .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
-
-        MenuItem startPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        MenuItem stopPriceTrackingMenuItem = Mockito.mock(MenuItem.class);
-        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
-                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
-        verify(stopPriceTrackingMenuItem).setVisible(true);
-        verify(stopPriceTrackingMenuItem).setEnabled(true);
-        verify(startPriceTrackingMenuItem).setVisible(false);
     }
 
     @Test
