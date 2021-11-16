@@ -213,26 +213,6 @@ static_library("arc") {
   ]
 }
 
-static_library("compat_mode_test_support") {
-  testonly = true
-  sources = [
-    "compat_mode/test/compat_mode_test_base.cc",
-    "compat_mode/test/compat_mode_test_base.h",
-  ]
-
-  deps = [
-    ":arc",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base",
-    "//ui/aura",
-    "//ui/display:test_support",
-    "//ui/events:test_support",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
-}
-
 static_library("notification_test_support") {
   testonly = true
   sources = [
@@ -322,8 +302,8 @@ static_library("arc_test_support") {
 
   public_deps = [
     ":arc",
-    ":compat_mode_test_support",
     ":notification_test_support",
+    "//ash/components/arc:compat_mode_test_support",
   ]
 
   deps = [

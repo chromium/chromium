@@ -7,11 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/arc/compat_mode/resize_util.h"
-#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/color_palette.h"

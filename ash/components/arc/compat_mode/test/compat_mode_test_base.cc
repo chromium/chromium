@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/compat_mode/test/compat_mode_test_base.h"
+#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"

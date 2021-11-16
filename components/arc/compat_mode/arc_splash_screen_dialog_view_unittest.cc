@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
-#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/controls/button/md_text_button.h"

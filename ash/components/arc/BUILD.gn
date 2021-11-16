@@ -72,3 +72,23 @@ static_library("arc_base") {
     "//dbus",
   ]
 }
+
+static_library("compat_mode_test_support") {
+  testonly = true
+  sources = [
+    "compat_mode/test/compat_mode_test_base.cc",
+    "compat_mode/test/compat_mode_test_base.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//components/arc:arc",
+    "//ui/aura",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

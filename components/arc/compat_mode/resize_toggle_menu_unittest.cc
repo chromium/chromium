@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/metrics.h"
-#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/button.h"
 
