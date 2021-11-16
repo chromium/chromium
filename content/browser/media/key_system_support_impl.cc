@@ -130,7 +130,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     return absl::nullopt;
   }
 #elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+  if (!media::IsHardwareSecureDecryptionEnabled()) {
     DVLOG(1) << "Hardware secure decryption disabled";
     return absl::nullopt;
   }

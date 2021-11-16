@@ -148,6 +148,7 @@ MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsSeamlessTransfer;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsModernUI;
 MEDIA_EXPORT extern const base::Feature kHardwareMediaKeyHandling;
 MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryption;
+MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryptionExperiment;
 MEDIA_EXPORT extern const base::Feature kInternalMediaSession;
 MEDIA_EXPORT extern const base::Feature kKeepRvfcFrameAlive;
 MEDIA_EXPORT extern const base::Feature kKeyPressMonitoring;
@@ -263,9 +264,9 @@ MEDIA_EXPORT extern const base::Feature kDeprecateLowUsageCodecs;
 MEDIA_EXPORT std::string GetEffectiveAutoplayPolicy(
     const base::CommandLine& command_line);
 
-MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
-
+MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsLiveCaptionFeatureEnabled();
+MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
 
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,

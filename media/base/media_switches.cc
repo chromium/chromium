@@ -608,6 +608,11 @@ const base::Feature kFailUrlProvisionFetcherForTesting{
 const base::Feature kHardwareSecureDecryption{
     "HardwareSecureDecryption", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Same as `kHardwareSecureDecryption` above, but only enable experimental
+// sub key systems. Which sub key system is experimental is key system specific.
+const base::Feature kHardwareSecureDecryptionExperiment{
+    "HardwareSecureDecryptionExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kWakeLockOptimisationHiddenMuted{
     "kWakeLockOptimisationHiddenMuted", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -927,20 +932,9 @@ const base::Feature kBresenhamCadence{"BresenhamCadence",
 const base::Feature kPlaybackSpeedButton{"PlaybackSpeedButton",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAcceleratedMjpegDecode)) {
-    return false;
-  }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeMjpegDecodeAccelerator)) {
-    return true;
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#else
-  return false;
-#endif
+bool IsHardwareSecureDecryptionEnabled() {
+  return base::FeatureList::IsEnabled(kHardwareSecureDecryption) ||
+         base::FeatureList::IsEnabled(kHardwareSecureDecryptionExperiment);
 }
 
 bool IsLiveCaptionFeatureEnabled() {
@@ -972,6 +966,22 @@ bool IsLiveCaptionFeatureEnabled() {
 #endif
 
   return true;
+}
+
+bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAcceleratedMjpegDecode)) {
+    return false;
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeMjpegDecodeAccelerator)) {
+    return true;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return false;
+#endif
 }
 
 }  // namespace media

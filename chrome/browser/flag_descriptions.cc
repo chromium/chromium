@@ -3834,6 +3834,12 @@ const char kHardwareSecureDecryptionDescription[] =
     "Enable/Disable the use of hardware secure Content Decryption Module (CDM) "
     "for protected content playback.";
 
+const char kHardwareSecureDecryptionExperimentName[] =
+    "Hardware Secure Decryption Experiment";
+const char kHardwareSecureDecryptionExperimentDescription[] =
+    "Enable/Disable the use of hardware secure Content Decryption Module (CDM) "
+    "for experimental protected content playback.";
+
 const char kMediaFoundationClearName[] = "MediaFoundation for Clear";
 const char kMediaFoundationClearDescription[] =
     "Enable/Disable the use of MediaFoundation for non-protected content "

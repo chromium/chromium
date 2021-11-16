@@ -2201,6 +2201,9 @@ extern const char kEnableMediaFoundationVideoCaptureDescription[];
 extern const char kHardwareSecureDecryptionName[];
 extern const char kHardwareSecureDecryptionDescription[];
 
+extern const char kHardwareSecureDecryptionExperimentName[];
+extern const char kHardwareSecureDecryptionExperimentDescription[];
+
 extern const char kMediaFoundationClearName[];
 extern const char kMediaFoundationClearDescription[];
 

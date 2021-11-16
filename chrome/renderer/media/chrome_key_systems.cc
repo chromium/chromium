@@ -372,7 +372,7 @@ void AddWidevine(
   max_audio_robustness = Robustness::HW_SECURE_ALL;
   max_video_robustness = Robustness::HW_SECURE_ALL;
 #else
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+  if (media::IsHardwareSecureDecryptionEnabled()) {
     max_audio_robustness = Robustness::HW_SECURE_CRYPTO;
     max_video_robustness = Robustness::HW_SECURE_ALL;
   }
