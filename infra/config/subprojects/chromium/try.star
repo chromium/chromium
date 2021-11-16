@@ -1652,7 +1652,9 @@ try_.chromium_mac_orchestrator_pair(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     orchestrator_cores = 2,
-    orchestrator_tryjob = None,
+    orchestrator_tryjob = try_.job(
+        experiment_percentage = 50,
+    ),
     compilator_goma_jobs = goma.jobs.J150,
     compilator_os = os.MAC_11,
     compilator_name = "mac11-arm64-rel-compilator",
