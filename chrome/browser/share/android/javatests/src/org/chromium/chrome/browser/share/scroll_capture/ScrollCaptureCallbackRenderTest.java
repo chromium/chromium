@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -99,6 +100,7 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @FlakyTest(message = "https://crbug.com/1269583")
     public void testCaptureBottom() throws Exception {
         WebContents webContents = mTab.getWebContents();
         RenderCoordinates renderCoordinates = RenderCoordinates.fromWebContents(webContents);
