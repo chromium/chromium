@@ -6,14 +6,7 @@
 
 namespace content {
 
-LoadCommittedDetails::LoadCommittedDetails()
-    : entry(nullptr),
-      type(content::NAVIGATION_TYPE_UNKNOWN),
-      previous_entry_index(-1),
-      did_replace_entry(false),
-      is_same_document(false),
-      is_main_frame(true),
-      http_status_code(0) {}
+LoadCommittedDetails::LoadCommittedDetails() = default;
 
 LoadCommittedDetails::LoadCommittedDetails(const LoadCommittedDetails&) =
     default;
