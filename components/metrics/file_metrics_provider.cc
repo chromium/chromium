@@ -64,14 +64,14 @@ constexpr SourceOptions kSourceOptions[] = {
     // SOURCE_HISTOGRAMS_ATOMIC_FILE
     {
         // Ensure that no other process reads this at the same time.
-        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        STD_OPEN | base::File::FLAG_WIN_EXCLUSIVE_READ,
         base::MemoryMappedFile::READ_ONLY,
         true,
     },
     // SOURCE_HISTOGRAMS_ATOMIC_DIR
     {
         // Ensure that no other process reads this at the same time.
-        STD_OPEN | base::File::FLAG_EXCLUSIVE_READ,
+        STD_OPEN | base::File::FLAG_WIN_EXCLUSIVE_READ,
         base::MemoryMappedFile::READ_ONLY,
         true,
     },
