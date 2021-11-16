@@ -3300,6 +3300,18 @@ ci.fuzz_libfuzzer_builder(
 )
 
 ci.fuzz_libfuzzer_builder(
+    name = "Libfuzzer Upload iOS Catalyst Debug",
+    console_view_entry = consoles.console_view_entry(
+        category = "libfuzz",
+        short_name = "ios",
+    ),
+    cores = 4,
+    execution_timeout = 4 * time.hour,
+    os = os.MAC_11,
+    xcode = xcode.x13main,
+)
+
+ci.fuzz_libfuzzer_builder(
     name = "Libfuzzer Upload Linux ASan",
     console_view_entry = consoles.console_view_entry(
         category = "libfuzz",
