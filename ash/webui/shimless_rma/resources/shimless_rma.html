@@ -38,7 +38,7 @@
       id="back" on-click="onBackButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
-      [[i18n('cancelButtonLabel')]]
+      [[i18n('backButtonLabel')]]
     </cr-button>
   </div>
   <div id="contentContainer"></div>
@@ -47,7 +47,7 @@
       id="cancel" on-click="onCancelButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
-      [[i18n('backButtonLabel')]]
+      [[i18n('cancelButtonLabel')]]
     </cr-button>
     <cr-button
       id="next" on-click="onNextButtonClicked_"
