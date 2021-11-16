@@ -26,6 +26,9 @@
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -42,6 +45,10 @@ namespace quick_pair {
 class MediatorTest : public testing::Test {
  public:
   void SetUp() override {
+    adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+
     std::unique_ptr<FeatureStatusTracker> tracker =
         std::make_unique<FakeFeatureStatusTracker>();
     feature_status_tracker_ =
@@ -78,6 +85,7 @@ class MediatorTest : public testing::Test {
 
  protected:
   scoped_refptr<Device> device_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   FakeFeatureStatusTracker* feature_status_tracker_;
   MockScannerBroker* mock_scanner_broker_;
   FakeRetroactivePairingDetector* fake_retroactive_pairing_detector_;

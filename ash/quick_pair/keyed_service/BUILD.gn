@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 static_library("keyed_service") {
   sources = [
+    "battery_update_message_handler.cc",
+    "battery_update_message_handler.h",
     "fast_pair_bluetooth_config_delegate.cc",
     "fast_pair_bluetooth_config_delegate.h",
     "quick_pair_keyed_service.cc",
@@ -33,6 +35,7 @@ static_library("keyed_service") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",
+    "//device/bluetooth",
   ]
 }
 
@@ -40,6 +43,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "battery_update_message_handler_unittest.cc",
     "quick_pair_mediator_unittest.cc",
     "quick_pair_metrics_logger_unittest.cc",
   ]
@@ -55,8 +59,13 @@ source_set("unit_tests") {
     "//ash/quick_pair/scanning:test_support",
     "//ash/quick_pair/ui:test_support",
     "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
+    "//base",
     "//base/test:test_support",
     "//components/user_manager:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings:bindings",
     "//testing/gtest",
   ]
 }
