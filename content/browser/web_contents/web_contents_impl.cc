@@ -897,7 +897,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
       primary_main_frame_process_error_code_(0),
-      waiting_for_response_(false),
       load_state_(net::LOAD_STATE_IDLE, std::u16string()),
       upload_size_(0),
       upload_position_(0),
@@ -4363,20 +4362,6 @@ void WebContentsImpl::GetNFC(
 }
 #endif
 
-void WebContentsImpl::SetNotWaitingForResponse() {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetNotWaitingForResponse",
-                        "was_waiting_for_response", waiting_for_response_);
-  if (waiting_for_response_ == false)
-    return;
-
-  waiting_for_response_ = false;
-
-  // LoadingStateChanged must be called last in case it triggers deletion of
-  // |this| due to recursive message pumps.
-  if (delegate_)
-    delegate_->LoadingStateChanged(this, should_show_loading_ui_);
-}
-
 void WebContentsImpl::SendScreenRects() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendScreenRects");
   for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
@@ -5011,8 +4996,6 @@ void WebContentsImpl::LoadStateChanged(network::mojom::LoadInfoPtr load_info) {
       static_cast<net::LoadState>(load_info->load_state),
       load_info->state_param);
   load_state_host_ = host16;
-  if (load_state_.state == net::LOAD_STATE_READING_RESPONSE)
-    SetNotWaitingForResponse();
 }
 
 void WebContentsImpl::SetVisibilityAndNotifyObservers(Visibility visibility) {
@@ -5461,8 +5444,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // We don't call DidStartResourceResponse on net errors, since that results on
   // existing cert exceptions being revoked, which leads to weird behavior with
   // committed interstitials or while offline. We only need the error check for
-  // the main frame case because unlike this method, SubresourceResponseStarted
-  // does not get called on network errors.
+  // the main frame case.
   if (navigation_handle->IsInMainFrame() &&
       navigation_handle->GetNetErrorCode() == net::OK) {
     static_cast<NavigationRequest*>(navigation_handle)
@@ -5477,10 +5459,6 @@ void WebContentsImpl::ReadyToCommitNavigation(
                       navigation_handle->GetSSLInfo()->cert_status)
                 : false);
   }
-
-  // SetNotWaitingForResponse must be called last in case it triggers deletion
-  // of |this| due to recursive message pumps.
-  SetNotWaitingForResponse();
 }
 
 void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -5904,10 +5882,6 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
                             initial_rect, kUserGesture, &ignored_was_blocked);
   // Note that the |delegate_| could have deleted |view_source_contents| during
   // AddNewContents method call.
-}
-
-void WebContentsImpl::SubresourceResponseStarted() {
-  SetNotWaitingForResponse();
 }
 
 void WebContentsImpl::ResourceLoadComplete(
@@ -6478,7 +6452,6 @@ void WebContentsImpl::LoadingStateChanged(bool should_show_loading_ui,
     upload_position_ = 0;
   }
 
-  waiting_for_response_ = is_loading;
   should_show_loading_ui_ = should_show_loading_ui;
 
   if (delegate_)

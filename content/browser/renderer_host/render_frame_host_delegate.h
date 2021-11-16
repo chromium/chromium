@@ -445,9 +445,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   GetJavaRenderFrameHostDelegate();
 #endif
 
-  // Notified that the render frame started loading a subresource.
-  virtual void SubresourceResponseStarted() {}
-
   // Notified that the render finished loading a subresource for the frame
   // associated with |render_frame_host|.
   virtual void ResourceLoadComplete(

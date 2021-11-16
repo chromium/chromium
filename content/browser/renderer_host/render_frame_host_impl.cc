@@ -7095,7 +7095,6 @@ void RenderFrameHostImpl::SubresourceResponseStarted(
       "content", "RenderFrameHostImpl::SubresourceResponseStarted", "url", url);
   frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
       url, cert_status);
-  delegate_->SubresourceResponseStarted();
 }
 
 void RenderFrameHostImpl::ResourceLoadComplete(

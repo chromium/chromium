@@ -704,7 +704,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::android::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHostDelegate()
       override;
 #endif
-  void SubresourceResponseStarted() override;
   void ResourceLoadComplete(
       RenderFrameHostImpl* render_frame_host,
       const GlobalRequestID& request_id,
@@ -1592,11 +1591,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnMoveValidationMessage(RenderViewHostImpl* source,
                                const gfx::Rect& anchor_in_root_view);
 
-  // Called by derived classes to indicate that we're no longer waiting for a
-  // response. Will inform |delegate_| of the change in status so that it may,
-  // for example, update the throbber.
-  void SetNotWaitingForResponse();
-
   // Determines if content is allowed to overscroll. This value comes from the
   // WebContentsDelegate, but can also be overridden by the WebContents.
   bool CanOverscrollContent() const;
@@ -1914,11 +1908,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // crash occurred.
   base::TerminationStatus primary_main_frame_process_status_;
   int primary_main_frame_process_error_code_;
-
-  // Whether this WebContents is waiting for a first-response for the
-  // main resource of the page. This controls whether the throbber state is
-  // "waiting" or "loading."
-  bool waiting_for_response_;
 
   // The current load state and the URL associated with it.
   net::LoadStateWithParam load_state_;
