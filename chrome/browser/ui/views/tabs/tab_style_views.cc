@@ -724,10 +724,11 @@ float GM2TabStyle::GetHoverOpacity() const {
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
   const float range_start = static_cast<float>(GetStandardWidth());
-  const float range_end = static_cast<float>(GetMinimumInactiveWidth());
+  constexpr float kWidthForMaxHoverOpacity = 32.0f;
   const float value_in_range = static_cast<float>(tab_->width());
   const float t = base::clamp(
-      (value_in_range - range_start) / (range_end - range_start), 0.0f, 1.0f);
+      (value_in_range - range_start) / (kWidthForMaxHoverOpacity - range_start),
+      0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);
 }
 
