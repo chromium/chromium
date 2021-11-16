@@ -554,7 +554,6 @@ crbug.com/1261905 virtual/backface-visibility-interop/external/wpt/css/css-trans
 # CompositeAfterPaint remaining failures
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
-crbug.com/1266689 compositing/gestures/gesture-tapHighlight-composited-img.html [ Failure Pass ]
 # Need to force the video to be composited in this case, or change pre-CAP
 # to match CAP behavior.
 crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure ]
