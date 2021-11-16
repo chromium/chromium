@@ -459,7 +459,7 @@ def GetTestsFromPickle(pickle_path, test_mtime):
   if os.path.getmtime(pickle_path) <= test_mtime:
     raise TestListPickleException('File is stale: %s' % pickle_path)
 
-  with open(pickle_path, 'r') as f:
+  with open(pickle_path, 'rb') as f:
     pickle_data = pickle.load(f)
   if pickle_data['VERSION'] != _PICKLE_FORMAT_VERSION:
     raise TestListPickleException('PICKLE_FORMAT_VERSION has changed.')
