@@ -659,6 +659,9 @@ const char kUserBluetoothAdapterEnabled[] =
 const char kSystemBluetoothAdapterEnabled[] =
     "ash.system.bluetooth.adapter_enabled";
 
+// Boolean pref to persist the expanded state of the system tray across reboots.
+const char kSystemTrayExpanded[] = "ash.system_tray.expanded";
+
 // A boolean pref which determines whether tap-dragging is enabled.
 const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 

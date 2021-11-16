@@ -129,6 +129,8 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   PaginationModel* pagination_model() { return pagination_model_.get(); }
 
  private:
+  friend class UnifiedSystemTrayControllerTest;
+
   class DBusObserver;
 
   // Keeps track all the sources that can change the size of system tray button.

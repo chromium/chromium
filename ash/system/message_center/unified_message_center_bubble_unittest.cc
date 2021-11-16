@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -15,6 +17,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
+#include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -262,6 +265,11 @@ TEST_F(UnifiedMessageCenterBubbleTest, CollapseState) {
       GetSystemTrayBubble()->unified_view()->GetExpandedSystemTrayHeight() +
       (4 * kMessageCenterCollapseThreshold);
   GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Clear pref to test behavior when expanded pref is not set.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  prefs->ClearPref(prefs::kSystemTrayExpanded);
 
   // Message center should open in expanded state when screen height is
   // limited.

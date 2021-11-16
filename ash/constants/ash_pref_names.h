@@ -302,6 +302,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUserBluetoothAdapterEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSystemBluetoothAdapterEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSystemTrayExpanded[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapDraggingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadEnabled[];

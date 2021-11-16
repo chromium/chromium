@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -16,6 +17,9 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/animation_delegate_views.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace gfx {
 class SlideAnimation;
@@ -36,6 +40,7 @@ class UnifiedSystemTrayView;
 // Controller class of UnifiedSystemTrayView. Handles events of the view.
 class ASH_EXPORT UnifiedSystemTrayController
     : public views::AnimationDelegateViews,
+      public SessionObserver,
       public UnifiedVolumeSliderController::Delegate,
       public UnifiedMediaControlsController::Delegate {
  public:
@@ -48,6 +53,9 @@ class ASH_EXPORT UnifiedSystemTrayController
       delete;
 
   ~UnifiedSystemTrayController() override;
+
+  // Registers pref to preserve tray expanded state between reboots.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Create the view. The created view is unowned.
   UnifiedSystemTrayView* CreateView();
@@ -132,6 +140,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Collapse the tray without animating.
   void CollapseWithoutAnimating();
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
   // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -174,6 +185,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Type of a help page opened by the "Managed" indicator in the bubble. The
   // enum is used to back an UMA histogram and should be treated as append-only.
   enum ManagedType { MANAGED_TYPE_ENTERPRISE = 0, MANAGED_TYPE_COUNT };
+
+  // Loads the `kSystemTrayExpanded` pref to the model.
+  void LoadIsExpandedPref();
 
   // Initialize feature pod controllers and their views.
   // If you want to add a new feature pod item, you have to add here.
@@ -220,6 +234,9 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Unowned.
   UnifiedSystemTrayBubble* bubble_ = nullptr;
+
+  // The pref service of the currently active user. Can be null in tests.
+  PrefService* active_user_prefs_ = nullptr;
 
   // The controller of the current detailed view. If the main view is shown,
   // it's null. Owned.
