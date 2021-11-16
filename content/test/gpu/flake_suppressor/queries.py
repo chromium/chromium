@@ -3,17 +3,22 @@
 # found in the LICENSE file.
 """Module for querying BigQuery."""
 
+import collections
 import json
 import os
 import subprocess
 
+from flake_suppressor import results as results_module
+
+from unexpected_passes_common import queries as upc_queries
+
 MAX_ROWS = (2**31) - 1
 
-# Gets all failures from the past X days that did not already have an associated
-# test suppression when the test ran.
+# Gets all failures from the past |sample_period| days that did not already have
+# an associated test suppression when the test ran.
 # TODO(crbug.com/1192733): Look into updating this to also check try results
 # once crbug.com/1217300 is complete.
-QUERY = """\
+FAILED_TEST_QUERY = """\
 WITH
   failed_tests AS (
     SELECT
@@ -40,6 +45,32 @@ WHERE
   ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass"
 """
 
+# Gets the count of all results in the past |sample_period| days for distinct
+# test/tag combinations.
+RESULT_COUNT_QUERY = """\
+WITH
+  grouped_results AS (
+    SELECT
+      exported.id as id,
+      test_metadata.name as name,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags
+    FROM `chrome-luci-data.chromium.gpu_ci_test_results` tr
+    WHERE
+      exported.realm = "chromium:ci"
+      AND partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                         INTERVAL @sample_period DAY)
+  )
+SELECT
+  COUNT(gr.id) as result_count,
+  ANY_VALUE(gr.name) as test_name,
+  ANY_VALUE(gr.typ_tags) as typ_tags
+FROM grouped_results gr
+GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
+"""
+
 
 def GetFlakyOrFailingTests(sample_period, billing_project):
   """Gets all flaky or failing GPU tests in the given |sample_period|.
@@ -54,16 +85,11 @@ def GetFlakyOrFailingTests(sample_period, billing_project):
     A JSON representation of the BigQuery results containing all found flaky or
     failing test results.
   """
-  cmd = [
-      'bq',
-      'query',
-      '--max_rows=%d' % MAX_ROWS,
-      '--format=json',
-      '--project_id=%s' % billing_project,
-      '--use_legacy_sql=false',
-      '--parameter=sample_period:INT64:%d' % sample_period,
-      QUERY,
-  ]
+  cmd = upc_queries._GenerateBigQueryCommand(
+      billing_project, {'INT64': {
+          'sample_period': sample_period
+      }}, batch=False)
+  cmd.append(FAILED_TEST_QUERY)
 
   with open(os.devnull, 'w') as devnull:
     completed_process = subprocess.run(cmd,
@@ -72,3 +98,46 @@ def GetFlakyOrFailingTests(sample_period, billing_project):
                                        check=True,
                                        text=True)
   return json.loads(completed_process.stdout)
+
+
+def GetResultCounts(sample_period, billing_project):
+  """Gets the result count for each test/config combination in the given period.
+
+  Args:
+    sample_period: An int containing the number of days in the past from the
+        current time to pull results from.
+    billing_project: A string containing the billing project to use for
+        BigQuery queries.
+
+  Returns:
+    A dict in the format:
+    {
+      typ_tags (tuple): {
+        test_name (str): result_count (int)
+      }
+    }
+  """
+  cmd = upc_queries._GenerateBigQueryCommand(
+      billing_project, {'INT64': {
+          'sample_period': sample_period
+      }}, batch=False)
+  cmd.append(RESULT_COUNT_QUERY)
+
+  with open(os.devnull, 'w') as devnull:
+    completed_process = subprocess.run(cmd,
+                                       stdout=subprocess.PIPE,
+                                       stderr=devnull,
+                                       check=True,
+                                       text=True)
+
+  json_results = json.loads(completed_process.stdout)
+
+  result_counts = collections.defaultdict(dict)
+  for r in json_results:
+    typ_tags = tuple(r['typ_tags'])
+    test_name = r['test_name']
+    _, test_name = results_module.GetTestSuiteAndNameFromResultDbName(test_name)
+    count = int(r['result_count'])
+    result_counts[typ_tags][test_name] = count
+
+  return result_counts

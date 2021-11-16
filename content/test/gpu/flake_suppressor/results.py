@@ -53,7 +53,7 @@ def _ConvertJsonResultsToResultObjects(results):
   """
   object_results = []
   for r in results:
-    _, suite, __, test_name = r['name'].split('.', 3)
+    suite, test_name = GetTestSuiteAndNameFromResultDbName(r['name'])
     build_id = r['id'].split('-')[-1]
     typ_tags = r['typ_tags']
     typ_tags.sort()
@@ -98,3 +98,8 @@ def _FilterOutSuppressedResults(results):
       kept_results.append(r)
 
   return kept_results
+
+
+def GetTestSuiteAndNameFromResultDbName(result_db_name):
+  _, suite, __, test_name = result_db_name.split('.', 3)
+  return suite, test_name

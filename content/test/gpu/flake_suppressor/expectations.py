@@ -84,6 +84,43 @@ def IterateThroughResultsForUser(result_map, group_by_tags):
                             group_by_tags)
 
 
+def IterateThroughResultsWithThresholds(result_map, group_by_tags,
+                                        result_counts, ignore_threshold,
+                                        flaky_threshold):
+  """Iterates over |result_map| and generates expectations based off thresholds.
+
+  Args:
+    result_map: Aggregated query results from results.AggregateResults to
+        iterate over.
+    group_by_tags: A boolean denoting whether to attempt to group expectations
+        by tags or not. If True, expectations will be added after an existing
+        expectation whose tags are the largest subset of the produced tags. If
+        False, new expectations will be appended to the end of the file.
+    result_counts: A dict in the format output by queries.GetResultCounts.
+    ignore_threshold: A float containing the fraction of failed tests under
+        which failures will be ignored.
+    flaky_threshold: A float containing the fraction of failed tests under which
+        failures will be suppressed with RetryOnFailure and above which will be
+        suppressed with Failure.
+  """
+  assert isinstance(ignore_threshold, float)
+  assert isinstance(flaky_threshold, float)
+  for suite, test_map in result_map.items():
+    for test, tag_map in test_map.items():
+      for typ_tags, build_url_list in tag_map.items():
+        failure_count = len(build_url_list)
+        total_count = result_counts[typ_tags][test]
+        fraction = failure_count / total_count
+        if fraction < ignore_threshold:
+          continue
+        if fraction < flaky_threshold:
+          expected_result = 'RetryOnFailure'
+        else:
+          expected_result = 'Failure'
+        ModifyFileForResult(suite, test, typ_tags, '', expected_result,
+                            group_by_tags)
+
+
 def FindFailuresInSameTest(result_map, target_suite, target_test,
                            target_typ_tags):
   """Finds all other failures that occurred in the given test.

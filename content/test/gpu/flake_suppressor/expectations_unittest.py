@@ -161,6 +161,89 @@ crbug.com/1 [ win ] bar_test [ Failure ]
 
 
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
+class IterateThroughResultsWithThresholdsUnittest(
+    fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+
+    self.result_map = {
+        'pixel_integration_test': {
+            'foo_test': {
+                tuple(['win']): ['a'],
+                tuple(['mac']): ['b'],
+            },
+            'bar_test': {
+                tuple(['win']): ['c'],
+            },
+        },
+    }
+
+    self.expectation_file = os.path.join(
+        expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+        'pixel_expectations.txt')
+    uu.CreateFile(self, self.expectation_file)
+    expectation_file_contents = validate_tag_consistency.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+  def testGroupByTags(self):
+    """Tests that threshold-based expectations work when grouping by tags."""
+    result_counts = {
+        tuple(['win']): {
+            # We expect this to be ignored since it has a 1% flake rate.
+            'foo_test': 100,
+            # We expect this to be RetryOnFailure since it has a 25% flake rate.
+            'bar_test': 4,
+        },
+        tuple(['mac']): {
+            # We expect this to be Failure since it has a 50% flake rate.
+            'foo_test': 2
+        }
+    }
+    expectations.IterateThroughResultsWithThresholds(self.result_map, True,
+                                                     result_counts, 0.02, 0.5)
+    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ win ] bar_test [ RetryOnFailure ]
+[ mac ] some_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ android ] some_test [ Failure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+  def testNoGroupByTags(self):
+    """Tests that threshold-based expectations work when not grouping by tags"""
+    result_counts = {
+        tuple(['win']): {
+            # We expect this to be ignored since it has a 1% flake rate.
+            'foo_test': 100,
+            # We expect this to be RetryOnFailure since it has a 25% flake rate.
+            'bar_test': 4,
+        },
+        tuple(['mac']): {
+            # We expect this to be Failure since it has a 50% flake rate.
+            'foo_test': 2
+        }
+    }
+    expectations.IterateThroughResultsWithThresholds(self.result_map, False,
+                                                     result_counts, 0.02, 0.5)
+    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ win ] bar_test [ RetryOnFailure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+
+@unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
 class FindFailuresInSameConditionUnittest(unittest.TestCase):
   def setUp(self):
     self.result_map = {

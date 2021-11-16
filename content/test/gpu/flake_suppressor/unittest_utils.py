@@ -11,3 +11,8 @@ def CreateFile(test, *args, **kwargs):
     test.fs.create_file(*args, **kwargs)
   else:
     test.fs.CreateFile(*args, **kwargs)
+
+
+class FakeProcess(object):
+  def __init__(self, stdout):
+    self.stdout = stdout or ''

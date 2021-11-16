@@ -48,7 +48,37 @@ def ParseArgs():
                       help=('Append added expectations to the end of the file '
                             'instead of attempting to automatically group with '
                             'similar expectations.'))
+  parser.add_argument('--no-prompt-for-user-input',
+                      action='store_false',
+                      default=True,
+                      dest='prompt_for_user_input',
+                      help=('Generate expectations automatically based on '
+                            'thresholds instead of prompting the user each '
+                            'time. The user will still need to add associated '
+                            'bugs to generated expectations afterwards.'))
+  parser.add_argument('--ignore-threshold',
+                      type=float,
+                      default=0.01,
+                      help=('The fraction of failed tests under which flakes '
+                            'will be ignored instead of having an expectation '
+                            'added when --no-prompt-for-user-input is used.'))
+  parser.add_argument('--flaky-threshold',
+                      type=float,
+                      default=0.5,
+                      help=('The fraction of failed tests under which flakes '
+                            'will be marked as RetryOnFailure when '
+                            '--no-prompt-for-user-input is used. Above this, '
+                            'failures will be marked as Failure.'))
   args = parser.parse_args()
+
+  if not args.prompt_for_user_input:
+    if args.ignore_threshold < 0:
+      raise ValueError('--ignore-threshold must be positive')
+    if args.flaky_threshold < 0:
+      raise ValueError('--flaky-threshold must be positive')
+    if args.flaky_threshold <= args.ignore_threshold:
+      raise ValueError(
+          '--flaky-threshold must be greater than --ignore-threshold')
 
   return args
 
@@ -62,9 +92,18 @@ def main():
   print('If there are many instances of failed tests, that may be indicative '
         'of an issue that should be handled in some other way, e.g. reverting '
         'a bad CL.')
-  input('\nBeginning of user input section - press any key to continue')
-  expectations.IterateThroughResultsForUser(aggregated_results,
-                                            args.group_by_tags)
+  if args.prompt_for_user_input:
+    input('\nBeginning of user input section - press any key to continue')
+    expectations.IterateThroughResultsForUser(aggregated_results,
+                                              args.group_by_tags)
+  else:
+    result_counts = queries.GetResultCounts(args.sample_period, args.project)
+    expectations.IterateThroughResultsWithThresholds(aggregated_results,
+                                                     args.group_by_tags,
+                                                     result_counts,
+                                                     args.ignore_threshold,
+                                                     args.flaky_threshold)
+    print('\nGenerated expectations will need to have bugs manually added.')
   print('\nGenerated expectations likely contain conflicting tags that need to '
         'be removed.')
 
