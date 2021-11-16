@@ -29,9 +29,6 @@ struct App {
 // Interface for for fetching and setting App notification
 // properties in OSSettings.
 interface AppNotificationsHandler {
-  // Notify the App Notification Page of the quiet mode state.
-  NotifyPageReady();
-
   // Updates QuietMode to enabled or disabled based on toggle state.
   SetQuietMode(bool enabled);
 
@@ -43,6 +40,9 @@ interface AppNotificationsHandler {
 
   // Get the list of installed apps.
   GetApps() => (array<App> apps);
+
+  // Get the Quiet Mode state.
+  GetQuietMode() => (bool enabled);
 };
 
 // Frontend interface.

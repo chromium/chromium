@@ -106,7 +106,9 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   connectedCallback() {
     super.connectedCallback();
     this.startObservingAppNotifications_();
-    this.mojoInterfaceProvider_.notifyPageReady();
+    this.mojoInterfaceProvider_.getQuietMode().then((result) => {
+      this.isDndEnabled_ = result.enabled;
+    });
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appList_ = result.apps;
     });

@@ -191,6 +191,12 @@ Polymer({
       },
     },
 
+    /** @private {boolean} */
+    isDndEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -222,6 +228,9 @@ Polymer({
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
 
+    this.mojoInterfaceProvider_.getQuietMode().then((result) => {
+      this.isDndEnabled_ = result.enabled;
+    });
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appsWithNotifications_ = result.apps;
     });
@@ -322,14 +331,19 @@ Polymer({
   },
 
   /** Override chromeos.settings.appNotification.onQuietModeChanged */
-  onQuietModeChanged(enabled) {},
+  onQuietModeChanged(enabled) {
+    this.isDndEnabled_ = enabled;
+  },
 
   /**
    * @return {string}
    * @protected
    */
   getAppListCountDescription_() {
-    return this.i18n(
-        'appNotificationsCountDescription', this.appsWithNotifications_.length);
+    return this.isDndEnabled_ ?
+        this.i18n('appNotificationsDoNotDisturbDescription') :
+        this.i18n(
+            'appNotificationsCountDescription',
+            this.appsWithNotifications_.length);
   }
 });

@@ -119,8 +119,6 @@ class AppNotificationHandlerTest : public testing::Test {
     handler_->SetQuietMode(quiet_mode_enabled);
   }
 
-  void NotifyPageReady() { handler_->NotifyPageReady(); }
-
   void CreateAndStoreFakeApp(
       std::string fake_id,
       apps::mojom::AppType app_type,
@@ -264,12 +262,6 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   EXPECT_FALSE(observer()
                    ->recently_updated_app()
                    ->notification_permission->value->get_bool_value());
-}
-
-TEST_F(AppNotificationHandlerTest, TestNotifyPageReady) {
-  NotifyPageReady();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer()->quiet_mode_changed(), 1);
 }
 
 }  // namespace settings

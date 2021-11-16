@@ -47,9 +47,9 @@ class FakeAppNotificationHandler {
     this.lastUpdatedAppPermission_ = {};
 
     this.resolverMap_.set('addObserver', new PromiseResolver());
+    this.resolverMap_.set('getQuietMode', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
     this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
-    this.resolverMap_.set('notifyPageReady', new PromiseResolver());
     this.resolverMap_.set('getApps', new PromiseResolver());
   }
 
@@ -130,6 +130,14 @@ class FakeAppNotificationHandler {
   }
 
   /** @return {!Promise<{success: boolean}>} */
+  getQuietMode() {
+    return new Promise(resolve => {
+      this.methodCalled('getQuietMode');
+      resolve({success: this.isQuietModeEnabled_});
+    });
+  }
+
+  /** @return {!Promise<{success: boolean}>} */
   setQuietMode(enabled) {
     this.isQuietModeEnabled_ = enabled;
     return new Promise(resolve => {
@@ -148,14 +156,6 @@ class FakeAppNotificationHandler {
       this.lastUpdatedAppPermission_ = permission;
       this.methodCalled('setNotificationPermission');
       resolve({success: true});
-    });
-  }
-
-  /** @return {!Promise} */
-  notifyPageReady() {
-    return new Promise(resolve => {
-      this.methodCalled('notifyPageReady');
-      resolve();
     });
   }
 
