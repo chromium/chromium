@@ -75,27 +75,15 @@ TEST_F(SmartLockAuthFactorModelUnittest, ClickRequired) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, AvailableStates) {
-  smart_lock_model_->SetSmartLockState(SmartLockState::kPhoneNotFound);
-  EXPECT_TRUE(on_state_changed_called_);
-  on_state_changed_called_ = false;
-  EXPECT_EQ(AuthFactorState::kAvailable, model_->GetAuthFactorState());
-
-  smart_lock_model_->SetSmartLockState(SmartLockState::kConnectingToPhone);
-  EXPECT_TRUE(on_state_changed_called_);
-  on_state_changed_called_ = false;
-  EXPECT_EQ(AuthFactorState::kAvailable, model_->GetAuthFactorState());
-
-  smart_lock_model_->SetSmartLockState(
-      SmartLockState::kPhoneFoundLockedAndDistant);
-  EXPECT_TRUE(on_state_changed_called_);
-  on_state_changed_called_ = false;
-  EXPECT_EQ(AuthFactorState::kAvailable, model_->GetAuthFactorState());
-
-  smart_lock_model_->SetSmartLockState(
-      SmartLockState::kPhoneFoundUnlockedAndDistant);
-  EXPECT_TRUE(on_state_changed_called_);
-  on_state_changed_called_ = false;
-  EXPECT_EQ(AuthFactorState::kAvailable, model_->GetAuthFactorState());
+  for (SmartLockState state :
+       {SmartLockState::kPhoneNotFound, SmartLockState::kConnectingToPhone,
+        SmartLockState::kPhoneFoundLockedAndDistant,
+        SmartLockState::kPhoneFoundUnlockedAndDistant}) {
+    smart_lock_model_->SetSmartLockState(state);
+    EXPECT_TRUE(on_state_changed_called_);
+    on_state_changed_called_ = false;
+    EXPECT_EQ(AuthFactorState::kAvailable, model_->GetAuthFactorState());
+  }
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, ReadyStates) {
@@ -140,6 +128,17 @@ TEST_F(SmartLockAuthFactorModelUnittest, ArrowButtonTapCallback) {
       SmartLockState::kPasswordReentryRequired, false);
   TestArrowButtonAndCheckCallbackCalled(SmartLockState::kPrimaryUserAbsent,
                                         false);
+}
+
+TEST_F(SmartLockAuthFactorModelUnittest, NotifySmartLockAuthResult) {
+  smart_lock_model_->NotifySmartLockAuthResult(/*result=*/true);
+  EXPECT_TRUE(on_state_changed_called_);
+  EXPECT_EQ(AuthFactorState::kAuthenticated, model_->GetAuthFactorState());
+
+  on_state_changed_called_ = false;
+  smart_lock_model_->NotifySmartLockAuthResult(/*result=*/false);
+  EXPECT_TRUE(on_state_changed_called_);
+  EXPECT_EQ(AuthFactorState::kErrorPermanent, model_->GetAuthFactorState());
 }
 
 }  // namespace ash

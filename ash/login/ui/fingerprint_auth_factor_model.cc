@@ -22,9 +22,6 @@ namespace {
 constexpr int kFingerprintIconSizeDp = 32;
 constexpr int kFingerprintFailedAnimationDurationMs = 700;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
-constexpr base::TimeDelta kResetToDefaultMessageDelayMs =
-    base::Milliseconds(3000);
-constexpr int kResetToDefaultIconDelayMs = 1300;
 
 }  // namespace
 
@@ -36,28 +33,13 @@ void FingerprintAuthFactorModel::SetFingerprintState(FingerprintState state) {
   if (state_ == state)
     return;
 
-  reset_state_.Stop();
-  if (auth_result_.has_value() && !auth_result_.value()) {
-    // Clear failed auth attempt to allow retry.
-    auth_result_.reset();
-  }
   state_ = state;
   NotifyOnStateChanged();
 }
 
 void FingerprintAuthFactorModel::NotifyFingerprintAuthResult(bool result) {
-  reset_state_.Stop();
   auth_result_ = result;
   NotifyOnStateChanged();
-
-  if (!result) {
-    // Clear failed auth attempt after a delay to allow retry. base::Unretained
-    // is safe because |reset_state_| is owned by |this|.
-    reset_state_.Start(FROM_HERE,
-                       base::Milliseconds(kResetToDefaultIconDelayMs),
-                       base::BindOnce(&FingerprintAuthFactorModel::OnResetState,
-                                      base::Unretained(this)));
-  }
 }
 
 void FingerprintAuthFactorModel::SetCanUsePin(bool can_use_pin) {
@@ -67,18 +49,29 @@ void FingerprintAuthFactorModel::SetCanUsePin(bool can_use_pin) {
 
 AuthFactorModel::AuthFactorState
 FingerprintAuthFactorModel::GetAuthFactorState() {
-  // TODO(crbug.com/1233614): Calculate the correct AuthFactorState based on the
-  // current FingerprintState.
   if (!available_)
     return AuthFactorState::kUnavailable;
 
   if (auth_result_.has_value()) {
-    return auth_result_.value() ? AuthFactorState::kAuthenticated
-                                : AuthFactorState::kErrorTemporary;
+    if (auth_result_.value()) {
+      return AuthFactorState::kAuthenticated;
+    } else if (state_ != FingerprintState::DISABLED_FROM_ATTEMPTS) {
+      return AuthFactorState::kErrorTemporary;
+    }
   }
 
-  return state_ == FingerprintState::UNAVAILABLE ? AuthFactorState::kUnavailable
-                                                 : AuthFactorState::kReady;
+  switch (state_) {
+    case FingerprintState::UNAVAILABLE:
+      return AuthFactorState::kUnavailable;
+    case FingerprintState::AVAILABLE_DEFAULT:
+      return AuthFactorState::kReady;
+    case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+      return AuthFactorState::kErrorTemporary;
+    case FingerprintState::DISABLED_FROM_ATTEMPTS:
+      FALLTHROUGH;
+    case FingerprintState::DISABLED_FROM_TIMEOUT:
+      return AuthFactorState::kErrorPermanent;
+  }
 }
 
 AuthFactorType FingerprintAuthFactorModel::GetType() {
@@ -87,8 +80,11 @@ AuthFactorType FingerprintAuthFactorModel::GetType() {
 
 int FingerprintAuthFactorModel::GetLabelId() {
   if (auth_result_.has_value()) {
-    return auth_result_.value() ? IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS
-                                : IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_FAILED;
+    if (auth_result_.value()) {
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_SUCCESS;
+    } else if (state_ != FingerprintState::DISABLED_FROM_ATTEMPTS) {
+      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_AUTH_FAILED;
+    }
   }
 
   switch (state_) {
@@ -99,8 +95,12 @@ int FingerprintAuthFactorModel::GetLabelId() {
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_TOUCH_SENSOR;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
+      // TODO(crbug.com/1233614): Update this string: "Too many attempts" ->
+      // "Too many fingerprint attempts".
       return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
+      // TODO(crbug.com/1233614): Merge these "password required" strings with
+      // those used by Smart Lock.
       if (can_use_pin_)
         return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
       return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PASSWORD_REQUIRED;
@@ -166,22 +166,26 @@ void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
 }
 
 void FingerprintAuthFactorModel::OnTapOrClickEvent() {
-  if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
-      state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
-    SetFingerprintState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
-    reset_state_.Start(
-        FROM_HERE, kResetToDefaultMessageDelayMs,
-        base::BindOnce(&FingerprintAuthFactorModel::SetFingerprintState,
-                       base::Unretained(this),
-                       FingerprintState::AVAILABLE_DEFAULT));
+  if (state_ == FingerprintState::AVAILABLE_DEFAULT) {
+    state_ = FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING;
   }
+
+  // TODO(crbug.com/1233614): Move this call into the AuthFactorModel base class
+  // so that the derived classes don't have to call it.
+  NotifyOnStateChanged();
 }
 
-void FingerprintAuthFactorModel::OnResetState() {
+void FingerprintAuthFactorModel::OnErrorTimeout() {
   if (auth_result_.has_value() && !auth_result_.value()) {
     // Clear failed auth attempt to allow retry.
     auth_result_.reset();
   }
+  if (GetAuthFactorState() == AuthFactorState::kErrorTemporary) {
+    state_ = FingerprintState::AVAILABLE_DEFAULT;
+  }
+
+  // TODO(crbug.com/1233614): Move this call into the AuthFactorModel base class
+  // so that the derived classes don't have to call it.
   NotifyOnStateChanged();
 }
 

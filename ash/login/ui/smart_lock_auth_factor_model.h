@@ -42,6 +42,7 @@ class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
   int GetAccessibleNameId() override;
   void UpdateIcon(AuthIconView* icon) override;
   void OnTapOrClickEvent() override;
+  void OnErrorTimeout() override;
 
   base::RepeatingCallback<void()> arrow_button_tap_callback_;
   SmartLockState state_ = SmartLockState::kInactive;

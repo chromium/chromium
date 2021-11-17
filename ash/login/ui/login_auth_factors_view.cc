@@ -7,13 +7,13 @@
 #include "ash/login/ui/login_auth_factors_view.h"
 
 #include "ash/login/ui/arrow_button_view.h"
-#include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,14 +28,13 @@ namespace ash {
 
 namespace {
 
-using AuthFactorState = AuthFactorModel::AuthFactorState;
-
 constexpr int kAuthFactorsViewWidthDp = 204;
 constexpr int kSpacingBetweenIconsAndLabelDp = 15;
 constexpr int kIconTopSpacingDp = 20;
 constexpr int kArrowButtonSizeDp = 32;
 constexpr int kSpacingBetweenIconsDp = 28;
 constexpr int kIconSizeDp = 32;
+constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
 
 // Return the AuthFactorModel whose AuthFactorState has the highest priority.
 // "Priority" here roughly corresponds with how close the given state is to
@@ -208,11 +207,18 @@ void LoginAuthFactorsView::UpdateState() {
   }
   SetVisible(true);
 
+  if (active_auth_factor->GetAuthFactorState() !=
+      AuthFactorState::kErrorTemporary) {
+    error_timer_.Stop();
+  }
+
   int ready_label_id;
   switch (active_auth_factor->GetAuthFactorState()) {
     case AuthFactorState::kAuthenticated:
       // An auth factor has successfully authenticated. Show a green checkmark.
       ShowCheckmark();
+      // TODO(crbug.com/1233614): If we're on the login page, show "Signed in"
+      // instead of "Unlocked"
       SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
                                     IDS_AUTH_FACTOR_LABEL_UNLOCKED);
       return;
@@ -237,8 +243,22 @@ void LoginAuthFactorsView::UpdateState() {
     case AuthFactorState::kErrorTemporary:
       // An auth factor has an error to show temporarily. Show the error for a
       // period of time.
-      // TODO(crbug.com/1233614): Handle error timeout
-      FALLTHROUGH;
+
+      // Do not replace the current error if an error is already showing.
+      if (error_timer_.IsRunning())
+        return;
+
+      error_timer_.Start(FROM_HERE, kErrorTimeout,
+                         base::BindOnce(&LoginAuthFactorsView::OnErrorTimeout,
+                                        base::Unretained(this)));
+
+      ShowSingleAuthFactor(active_auth_factor);
+      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
+                                    active_auth_factor->GetAccessibleNameId());
+      if (active_auth_factor->ShouldAnnounceLabel()) {
+        FireAlert();
+      }
+      return;
     case AuthFactorState::kAvailable:
       // At least one auth factor is available, but none are ready. Show first
       // available auth factor.
@@ -362,6 +382,17 @@ void LoginAuthFactorsView::ArrowButtonPressed(const ui::Event& event) {
   if (on_click_to_enter_callback_) {
     arrow_button_->EnableLoadingAnimation(true);
     on_click_to_enter_callback_.Run();
+  }
+}
+
+void LoginAuthFactorsView::OnErrorTimeout() {
+  for (auto& factor : auth_factors_) {
+    // If additional errors occur during the error timeout, then mark all
+    // errors timed out instead of trying to queue them. The user can still get
+    // the error messages by clicking on the icons.
+    if (factor->GetAuthFactorState() == AuthFactorState::kErrorTemporary) {
+      factor->OnErrorTimeout();
+    }
   }
 }
 

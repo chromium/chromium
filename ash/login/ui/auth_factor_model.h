@@ -111,6 +111,10 @@ class ASH_EXPORT AuthFactorModel {
   // is tapped or clicked.
   virtual void OnArrowButtonTapOrClickEvent();
 
+  // This will be called after the latest error has been shown to the user to
+  // signal that any transient error state should be cleared out.
+  virtual void OnErrorTimeout() = 0;
+
  protected:
   // Should be called whenever the internal state of the auth model changes to
   // invoke the |on_state_changed_callback_| if set. Calls UpdateIcon().

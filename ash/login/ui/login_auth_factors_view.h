@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/auth_factor_model.h"
 #include "base/callback.h"
+#include "base/timer/timer.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -26,6 +28,8 @@ class ArrowButtonView;
 // login screens.
 class ASH_EXPORT LoginAuthFactorsView : public views::View {
  public:
+  using AuthFactorState = AuthFactorModel::AuthFactorState;
+
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:
@@ -59,10 +63,6 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
-  // TODO(crbug.com/1233614): Many more methods will be added here to facilitate
-  // state management, especially after multiple auth factors have been
-  // implemented. See go/cros-smartlock-ui-revamp.
-
  private:
   // Recomputes the state and updates the label and icons. Should be called
   // whenever any auth factor's state changes so that those changes can be
@@ -87,6 +87,10 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
 
   // Should be called when the "click to enter" button is pressed.
   void ArrowButtonPressed(const ui::Event& event);
+
+  // Should be called when the error timer expires. Communicates the timeout to
+  // the auth factor models.
+  void OnErrorTimeout();
 
   /////////////////////////////////////////////////////////////////////////////
   // Child views, owned by the Views hierarchy
@@ -113,6 +117,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;
 
   base::RepeatingClosure on_click_to_enter_callback_;
+  base::OneShotTimer error_timer_;
 };
 
 }  // namespace ash

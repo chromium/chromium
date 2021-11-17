@@ -7,7 +7,6 @@
 
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -39,14 +38,11 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
   bool ShouldAnnounceLabel() override;
   int GetAccessibleNameId() override;
   void OnTapOrClickEvent() override;
+  void OnErrorTimeout() override;
   void UpdateIcon(AuthIconView* icon) override;
-
-  void OnResetState();
 
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
   absl::optional<bool> auth_result_;
-
-  base::OneShotTimer reset_state_;
 
   // Affects DISABLED_FROM_TIMEOUT message.
   bool can_use_pin_ = false;
