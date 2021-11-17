@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -105,6 +106,8 @@ class WebApkIconHasher {
 
   // Fails WebApkIconHasher if the download takes too long.
   base::OneShotTimer download_timeout_timer_;
+
+  base::WeakPtrFactory<WebApkIconHasher> weak_ptr_factory_{this};
 };
 
 }  // namespace webapps
