@@ -475,7 +475,10 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled;
   bool enable_gpu_rasterization =
-      features::IsUiGpuRasterizationEnabled() && !enable_oop_rasterization;
+      features::IsUiGpuRasterizationEnabled() &&
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled &&
+      !enable_oop_rasterization;
 
   if (!worker_context_provider_) {
     worker_context_provider_ = CreateContextProvider(
