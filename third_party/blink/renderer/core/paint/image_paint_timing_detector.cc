@@ -235,9 +235,8 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     const base::TimeTicks& timestamp,
     unsigned last_queued_frame_index) {
   while (!images_queued_for_paint_time_.IsEmpty()) {
-    base::WeakPtr<ImageRecord> record =
+    const base::WeakPtr<ImageRecord>& record =
         images_queued_for_paint_time_.front().first;
-    const RecordId& record_id = images_queued_for_paint_time_.front().second;
     if (!record) {
       images_queued_for_paint_time_.pop_front();
       continue;
@@ -249,20 +248,23 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
       record->first_animated_frame_time = timestamp;
       record->queue_animated_paint = false;
     }
+    auto it =
+        pending_images_.find(images_queued_for_paint_time_.front().second);
+    images_queued_for_paint_time_.pop_front();
     // A record may be in |images_queued_for_paint_time_| twice, for instance if
     // is already loaded by the time of its first paint.
-    if (record->loaded && record->paint_time.is_null()) {
-      record->paint_time = timestamp;
-      auto it = pending_images_.find(record_id);
-      DCHECK_NE(it, pending_images_.end());
-      size_ordered_set_.erase(it->value->AsWeakPtr());
-      if (!largest_painted_image_ ||
-          largest_painted_image_->first_size < record->first_size) {
-        largest_painted_image_ = std::move(it->value);
-      }
-      pending_images_.erase(it);
+    if (!record->loaded || !record->paint_time.is_null()) {
+      continue;
     }
-    images_queued_for_paint_time_.pop_front();
+    CHECK(it != pending_images_.end());
+    CHECK(it->value);
+    record->paint_time = timestamp;
+    size_ordered_set_.erase(it->value->AsWeakPtr());
+    if (!largest_painted_image_ ||
+        largest_painted_image_->first_size < record->first_size) {
+      largest_painted_image_ = std::move(it->value);
+    }
+    pending_images_.erase(it);
   }
 }
 
