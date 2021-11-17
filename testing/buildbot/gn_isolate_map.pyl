@@ -1473,6 +1473,7 @@
     "label": "//chrome/test:performance_webview_test_suite",
     "script": "//third_party/catapult/devil/devil/android/tools/system_app.py",
     "type": "script",
+    "python3": True,
   },
   "performance_weblayer_test_suite": {
     "args": [
@@ -1481,6 +1482,7 @@
     "label": "//chrome/test:performance_weblayer_test_suite",
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
+    "python3": True,
   },
   "polymer_tools_python_unittests": {
     "args": [
