@@ -1436,6 +1436,7 @@ source_set("unit_tests") {
     "paint/compositing/compositing_reason_finder_test.cc",
     "paint/compositing/compositing_test.cc",
     "paint/css_mask_painter_test.cc",
+    "paint/cull_rect_updater_test.cc",
     "paint/first_meaningful_paint_detector_test.cc",
     "paint/fragment_data_test.cc",
     "paint/highlight_painting_utils_test.cc",

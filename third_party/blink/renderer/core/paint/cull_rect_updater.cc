@@ -251,9 +251,31 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
     PaintLayer& layer,
     const FragmentData& fragment,
     const FragmentData& parent_fragment) {
+  auto local_state = fragment.LocalBorderBoxProperties().Unalias();
+  if (layer.GetLayoutObject().IsFixedPositioned()) {
+    const auto& view_fragment = layer.GetLayoutObject().View()->FirstFragment();
+    auto view_state = view_fragment.LocalBorderBoxProperties().Unalias();
+    if (local_state.Transform().Parent() == &view_state.Transform()) {
+      // Use the viewport clip and ignore additional clips (e.g. clip-paths)
+      // because they are applied on this fixed-position layer by non-containers
+      // which may change location relative to this layer on viewport scroll
+      // for which we don't want to change fixed-position cull rects for
+      // performance.
+      local_state.SetClip(view_fragment.ContentsProperties().Clip().Unalias());
+      CullRect cull_rect = view_fragment.GetCullRect();
+      // We don't expand cull rect for fixed-position because it doesn't scroll,
+      // so the ChangedEnough logic doesn't apply and we pass nullopt for the
+      // old cull rect.
+      bool expanded =
+          cull_rect.ApplyPaintProperties(root_state_, view_state, local_state,
+                                         /*old_cull_rect*/ absl::nullopt);
+      DCHECK(!expanded);
+      return cull_rect;
+    }
+  }
+
   CullRect cull_rect = parent_fragment.GetContentsCullRect();
   auto parent_state = parent_fragment.ContentsProperties().Unalias();
-  auto local_state = fragment.LocalBorderBoxProperties().Unalias();
   if (parent_state != local_state) {
     absl::optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
@@ -300,6 +322,40 @@ bool CullRectUpdater::ShouldProactivelyUpdate(const PaintLayer& layer) const {
   // rect resets the sliding window which will minimize the need to update
   // the cull rect again.
   return layer.SelfOrDescendantNeedsRepaint();
+}
+
+void CullRectUpdater::PaintPropertiesChanged(const LayoutObject& object,
+                                             PaintLayer& painting_layer) {
+  if (object.HasLayer()) {
+    To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
+    if (object.IsLayoutView() &&
+        object.GetFrameView()->HasViewportConstrainedObjects()) {
+      // Fixed-position cull rects depend on view clip. See
+      // ComputeFragmentCullRect().
+      if (const auto* clip_node =
+              object.FirstFragment().PaintProperties()->OverflowClip()) {
+        if (clip_node->NodeChanged() != PaintPropertyChangeType::kUnchanged) {
+          for (auto constrained :
+               *object.GetFrameView()->ViewportConstrainedObjects()) {
+            if (constrained->IsFixedPositioned()) {
+              To<LayoutBoxModelObject>(constrained.Get())
+                  ->Layer()
+                  ->SetNeedsCullRectUpdate();
+            }
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  if (object.SlowFirstChild()) {
+    // This ensures cull rect update of the child PaintLayers affected by the
+    // paint property change on a non-PaintLayer. Though this may unnecessarily
+    // force update of unrelated children, the situation is rare and this is
+    // much easier.
+    painting_layer.SetForcesChildrenCullRectUpdate();
+  }
 }
 
 OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
