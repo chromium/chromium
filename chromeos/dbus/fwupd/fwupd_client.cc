@@ -142,8 +142,7 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
-    auto updates = std::make_unique<FwupdUpdateList>();
-
+    FwupdUpdateList updates;
     while (array_reader.HasMoreData()) {
       // Parse update description.
       std::unique_ptr<base::DictionaryValue> dict =
@@ -165,12 +164,12 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      updates->emplace_back(version->GetString(), description->GetString(),
-                            priority->GetInt());
+      updates.emplace_back(version->GetString(), description->GetString(),
+                           priority->GetInt());
     }
 
     for (auto& observer : observers_) {
-      observer.OnUpdateListResponse(device_id, updates.get());
+      observer.OnUpdateListResponse(device_id, &updates);
     }
   }
 
@@ -189,8 +188,7 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
-    auto devices = std::make_unique<FwupdDeviceList>();
-
+    FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {
       // Parse device description.
       std::unique_ptr<base::DictionaryValue> dict =
@@ -210,11 +208,11 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
-      devices->emplace_back(id->GetString(), name->GetString());
+      devices.emplace_back(id->GetString(), name->GetString());
     }
 
     for (auto& observer : observers_)
-      observer.OnDeviceListResponse(devices.get());
+      observer.OnDeviceListResponse(&devices);
   }
 
   void OnSignalConnected(const std::string& interface_name,
