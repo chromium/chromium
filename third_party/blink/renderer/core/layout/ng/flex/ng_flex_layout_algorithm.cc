@@ -365,8 +365,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
                                      : ChildAvailableSize().inline_size;
     available_size.block_size = item_main_axis_final_size;
     space_builder.SetIsFixedBlockSize(true);
-    if (WillChildCrossSizeBeContainerCrossSize(flex_item_node) ||
-        line_cross_size_for_stretch)
+    if (line_cross_size_for_stretch ||
+        WillChildCrossSizeBeContainerCrossSize(flex_item_node))
       space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchExplicit);
     // https://drafts.csswg.org/css-flexbox/#definite-sizes
     // If the flex container has a definite main size, a flex item's
@@ -383,8 +383,8 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
                                     ? *line_cross_size_for_stretch
                                     : ChildAvailableSize().block_size;
     space_builder.SetIsFixedInlineSize(true);
-    if (WillChildCrossSizeBeContainerCrossSize(flex_item_node) ||
-        line_cross_size_for_stretch)
+    if (line_cross_size_for_stretch ||
+        WillChildCrossSizeBeContainerCrossSize(flex_item_node))
       space_builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
   }
   if (!line_cross_size_for_stretch && DoesItemStretch(flex_item_node)) {
