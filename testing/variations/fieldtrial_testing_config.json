@@ -2163,21 +2163,6 @@
             ]
         }
     ],
-    "ChromeOSLanguageSettingsUpdate2": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LanguageSettingsUpdate2"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSNeuralPalm": [
         {
             "platforms": [

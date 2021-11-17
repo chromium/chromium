@@ -759,7 +759,7 @@ const base::Feature kLanguagePacksHandwriting{
 
 // Enables or disables the second language settings update.
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables sorting app icons shown on the launcher.
 const base::Feature kLauncherAppSort{"LauncherAppSort",
