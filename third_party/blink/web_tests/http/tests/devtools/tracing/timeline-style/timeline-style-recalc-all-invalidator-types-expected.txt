@@ -84,6 +84,17 @@ Running: testStyleAttributeChange
 Running: testAttributeChange
 [
     {
+        cause : {reason: PseudoClass, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:68}
+        changedAttribute : undefined
+        changedClass : undefined
+        changedId : undefined
+        changedPseudo : undefined
+        extraData : ""
+        nodeName : "DIV id='testElementFour' class='red'"
+        selectorPart : undefined
+        type : "StyleRecalcInvalidationTracking"
+    }
+    {
         cause : {reason: Attribute, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:68}
         changedAttribute : undefined
         changedClass : undefined
@@ -95,34 +106,23 @@ Running: testAttributeChange
         type : "StyleRecalcInvalidationTracking"
     }
     {
+        cause : {reason: PseudoClass, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:69}
+        changedAttribute : undefined
+        changedClass : undefined
+        changedId : undefined
+        changedPseudo : undefined
+        extraData : ""
+        nodeName : "DIV id='testElementFive' class='red'"
+        selectorPart : undefined
+        type : "StyleRecalcInvalidationTracking"
+    }
+    {
         cause : {reason: Attribute, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:69}
         changedAttribute : undefined
         changedClass : undefined
         changedId : undefined
         changedPseudo : undefined
         extraData : "dir"
-        nodeName : "DIV id='testElementFive' class='red'"
-        selectorPart : undefined
-        type : "StyleRecalcInvalidationTracking"
-    }
-    {
-        cause : {reason: Element has pending invalidation list, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:68}
-        changedAttribute : "dir"
-        changedClass : undefined
-        changedId : undefined
-        changedPseudo : undefined
-        extraData : undefined
-        nodeName : "DIV id='testElementFour' class='red'"
-        selectorPart : undefined
-        type : "StyleRecalcInvalidationTracking"
-    }
-    {
-        cause : {reason: Element has pending invalidation list, stackTrace: test://evaluations/0/timeline-style-recalc-all-invalidator-types.js:69}
-        changedAttribute : "dir"
-        changedClass : undefined
-        changedId : undefined
-        changedPseudo : undefined
-        extraData : undefined
         nodeName : "DIV id='testElementFive' class='red'"
         selectorPart : undefined
         type : "StyleRecalcInvalidationTracking"
