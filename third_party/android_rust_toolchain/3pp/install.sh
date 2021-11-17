@@ -20,3 +20,12 @@ PLATFORM=${PLATFORM,,} # lowercase
 for x in $(ls "$PLATFORM-x86/${_3PP_VERSION}"); do
   mv "$PLATFORM-x86/${_3PP_VERSION}/$x" "$PREFIX/"
 done
+
+# gn has built-in ability to make a rust-project.json which can be consumed
+# by rust-analyzer to add IDE comprehension of our Rust layout. It relies on
+# the precise layout of Rust stdlib source code as used by the Fuchsia team.
+# This is slightly different from that used by the Android team. Adjust the
+# Android layout to match Fuchsia.
+# (See //docs/security/rust-toolchain.md for how to actually use this.)
+mkdir -p "$PREFIX/lib/rustlib/src/library"
+mv "$PREFIX/src/stdlibs" "$PREFIX/lib/rustlib/src/rust"
