@@ -37,7 +37,7 @@ void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
     return;
 
   for (auto& observer : observers_)
-    observer.OnUpdateListResponse(updates.get());
+    observer.OnUpdateListResponse(device_id, updates.get());
 }
 
 }  // namespace chromeos

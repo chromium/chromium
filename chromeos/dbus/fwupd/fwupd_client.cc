@@ -64,7 +64,7 @@ class FwupdClientImpl : public FwupdClient {
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&FwupdClientImpl::RequestUpdatesCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), device_id));
   }
 
   void RequestDevices() override {
@@ -126,7 +126,8 @@ class FwupdClientImpl : public FwupdClient {
     return result;
   }
 
-  void RequestUpdatesCallback(dbus::Response* response,
+  void RequestUpdatesCallback(const std::string& device_id,
+                              dbus::Response* response,
                               dbus::ErrorResponse* error_response) {
     if (!response) {
       LOG(ERROR) << "No Dbus response received from fwupd.";
@@ -169,7 +170,7 @@ class FwupdClientImpl : public FwupdClient {
     }
 
     for (auto& observer : observers_) {
-      observer.OnUpdateListResponse(updates.get());
+      observer.OnUpdateListResponse(device_id, updates.get());
     }
   }
 

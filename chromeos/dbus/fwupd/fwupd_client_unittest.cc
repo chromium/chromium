@@ -48,7 +48,8 @@ class MockObserver : public chromeos::FwupdClient::Observer {
               (override));
   MOCK_METHOD(void,
               OnUpdateListResponse,
-              (chromeos::FwupdUpdateList * updates),
+              (const std::string& device_id,
+               chromeos::FwupdUpdateList* updates),
               (override));
 };
 
@@ -108,7 +109,8 @@ class FwupdClientTest : public testing::Test {
     CHECK_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
   }
 
-  void CheckUpdates(FwupdUpdateList* updates) {
+  void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
+    CHECK_EQ(kFakeDeviceIdForTesting, device_id);
     CHECK_EQ(kFakeUpdateVersionForTesting, (*updates)[0].version);
     CHECK_EQ(kFakeUpdateDescriptionForTesting, (*updates)[0].description);
     // This value is returned by DBus as a uint32_t and is added to a dictionary
@@ -225,7 +227,7 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   // The observer will check that the update description is parsed and passed
   // correctly.
   MockObserver observer;
-  EXPECT_CALL(observer, OnUpdateListResponse(_))
+  EXPECT_CALL(observer, OnUpdateListResponse(_, _))
       .Times(1)
       .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckUpdates));
   fwupd_client_->AddObserver(&observer);

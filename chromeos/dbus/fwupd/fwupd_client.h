@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
@@ -21,7 +22,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
    public:
     ~Observer() override = default;
     virtual void OnDeviceListResponse(FwupdDeviceList* devices) = 0;
-    virtual void OnUpdateListResponse(FwupdUpdateList* updates) = 0;
+    virtual void OnUpdateListResponse(const std::string& device_id,
+                                      FwupdUpdateList* updates) = 0;
   };
 
   void AddObserver(Observer* observer);

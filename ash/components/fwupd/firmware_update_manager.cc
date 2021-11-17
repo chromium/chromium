@@ -52,6 +52,7 @@ void FirmwareUpdateManager::OnDeviceListResponse(
 }
 
 void FirmwareUpdateManager::OnUpdateListResponse(
+    const std::string& device_id,
     chromeos::FwupdUpdateList* updates) {
   DCHECK(updates);
   // TODO(swifton): This is a stub implementation.

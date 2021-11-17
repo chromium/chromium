@@ -5,6 +5,8 @@
 #ifndef ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 #define ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
@@ -30,7 +32,8 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   // When the fwupd DBus client gets a response with updates from fwupd,
   // it calls this function and passes the response.
-  void OnUpdateListResponse(chromeos::FwupdUpdateList* updates) override;
+  void OnUpdateListResponse(const std::string& device_id,
+                            chromeos::FwupdUpdateList* updates) override;
 
   // Query the fwupd DBus client for currently connected devices.
   void RequestDevices();
