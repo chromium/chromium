@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/value_util.h"
@@ -98,6 +99,9 @@ const char kCallerParameterName[] = "CALLER";
 // Parameter name of the SOURCE script parameter. Note that the corresponding
 // values are integers, corresponding to the source proto in the backend.
 const char kSourceParameterName[] = "SOURCE";
+
+// Parameter to specify experiments.
+const char kExperimentsParameterName[] = "EXPERIMENT_IDS";
 
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
@@ -245,6 +249,18 @@ absl::optional<int> ScriptParameters::GetCaller() const {
 
 absl::optional<int> ScriptParameters::GetSource() const {
   return GetTypedParameter<int>(parameters_, kSourceParameterName);
+}
+
+std::vector<std::string> ScriptParameters::GetExperiments() const {
+  absl::optional<std::string> experiments_str =
+      GetParameter(kExperimentsParameterName);
+  if (!experiments_str) {
+    return std::vector<std::string>();
+  }
+
+  return base::SplitString(*experiments_str, ",",
+                           base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 absl::optional<bool> ScriptParameters::GetDetailsShowInitial() const {
