@@ -39,6 +39,11 @@ std::string SelectChallengeOptionRequest::GetRequestContent() {
   base::Value context(base::Value::Type::DICTIONARY);
   context.SetKey("billable_service",
                  base::Value(kUnmaskCardBillableServiceNumber));
+  if (request_details_.billing_customer_number != 0) {
+    context.SetKey("customer_context",
+                   BuildCustomerContextDictionary(
+                       request_details_.billing_customer_number));
+  }
   request_dict.SetKey("context", std::move(context));
 
   base::Value selected_idv_method(base::Value::Type::DICTIONARY);
