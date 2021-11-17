@@ -5,12 +5,12 @@
 #include "components/app_restore/desk_template_read_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -43,7 +43,7 @@ void DeskTemplateReadHandler::SetRestoreData(
 
   restore_data_ = std::move(restore_data);
 
-  if (!features::IsArcAppsForDesksTemplatesEnabled())
+  if (!ash::features::AreDesksTemplatesEnabled())
     return;
 
   arc_read_handler_.reset();

@@ -8,18 +8,6 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
-namespace app_restore {
-namespace features {
-
-// Enables saving and launching ARC++ apps for desks templates.
-COMPONENT_EXPORT(APP_RESTORE)
-extern const base::Feature kArcAppsForDesksTemplates;
-
-COMPONENT_EXPORT(APP_RESTORE) bool IsArcAppsForDesksTemplatesEnabled();
-
-}  // namespace features
-}  // namespace app_restore
-
 namespace full_restore {
 namespace features {
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/arc_window_handler.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/app_restore_arc_info.h"
-#include "components/app_restore/features.h"
 
 namespace ash {
 namespace app_restore {
@@ -41,7 +41,7 @@ AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(Profile* profile) {
     window_handler_ = std::make_unique<full_restore::ArcWindowHandler>();
 #endif
 
-  if (::app_restore::features::IsArcAppsForDesksTemplatesEnabled()) {
+  if (ash::features::AreDesksTemplatesEnabled()) {
     desks_templates_arc_app_launch_handler_ =
         std::make_unique<ArcAppLaunchHandler>();
   }

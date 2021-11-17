@@ -5,6 +5,7 @@
 #include "components/app_restore/app_restore_utils.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"
@@ -21,7 +22,7 @@ namespace {
 // Always use the full restore ARC data if ARC apps for desks templates is not
 // enabled.
 bool ShouldUseFullRestoreArcData() {
-  return features::IsArcAppsForDesksTemplatesEnabled()
+  return ash::features::AreDesksTemplatesEnabled()
              ? full_restore::FullRestoreReadHandler::GetInstance()
                    ->IsFullRestoreRunning()
              : true;

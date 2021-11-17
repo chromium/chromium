@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_restore/desk_template_read_handler.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "extensions/common/extension.h"
@@ -203,7 +203,7 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
 }
 
 void DeskTemplateAppLaunchHandler::MaybeLaunchArcApps() {
-  if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
+  if (!ash::features::AreDesksTemplatesEnabled())
     return;
 
   auto* arc_task_handler =

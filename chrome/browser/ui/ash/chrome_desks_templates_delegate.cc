@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/chrome_desks_templates_delegate.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -194,7 +194,7 @@ bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
     case ash::AppType::LACROS:
       return false;
     case ash::AppType::ARC_APP:
-      if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
+      if (!ash::features::AreDesksTemplatesEnabled())
         return false;
       break;
     case ash::AppType::BROWSER:

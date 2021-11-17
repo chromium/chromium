@@ -4,19 +4,6 @@
 
 #include "components/app_restore/features.h"
 
-namespace app_restore {
-namespace features {
-
-const base::Feature kArcAppsForDesksTemplates{
-    "ArcAppsForDesksTemplates", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsArcAppsForDesksTemplatesEnabled() {
-  return base::FeatureList::IsEnabled(kArcAppsForDesksTemplates);
-}
-
-}  // namespace features
-}  // namespace app_restore
-
 namespace full_restore {
 namespace features {
 
