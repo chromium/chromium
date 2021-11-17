@@ -146,35 +146,24 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(
     CSSParserTokenRange& range,
     ConditionMode mode) {
   // <media-not>
-  if (IsNotKeywordEnabled() && ConsumeIfIdent(range, "not")) {
-    if (auto node = ConsumeInParens(range))
-      return std::make_unique<MediaQueryNotExpNode>(std::move(node));
-    return nullptr;
-  }
+  if (IsNotKeywordEnabled() && ConsumeIfIdent(range, "not"))
+    return MediaQueryExpNode::Not(ConsumeInParens(range));
 
   // Otherwise:
   // <media-in-parens> [ <media-and>* | <media-or>* ]
 
   std::unique_ptr<MediaQueryExpNode> result = ConsumeInParens(range);
-  if (!result)
-    return nullptr;
 
   if (AtIdent(range.Peek(), "and")) {
-    while (ConsumeIfIdent(range, "and")) {
-      std::unique_ptr<MediaQueryExpNode> in_parens = ConsumeInParens(range);
-      if (!in_parens)
-        return nullptr;
-      result = std::make_unique<MediaQueryAndExpNode>(std::move(result),
-                                                      std::move(in_parens));
+    while (result && ConsumeIfIdent(range, "and")) {
+      result =
+          MediaQueryExpNode::And(std::move(result), ConsumeInParens(range));
     }
-  } else if (AtIdent(range.Peek(), "or") && mode == ConditionMode::kNormal &&
+  } else if (result && AtIdent(range.Peek(), "or") &&
+             mode == ConditionMode::kNormal &&
              RuntimeEnabledFeatures::CSSMediaQueries4Enabled()) {
-    while (ConsumeIfIdent(range, "or")) {
-      std::unique_ptr<MediaQueryExpNode> in_parens = ConsumeInParens(range);
-      if (!in_parens)
-        return nullptr;
-      result = std::make_unique<MediaQueryOrExpNode>(std::move(result),
-                                                     std::move(in_parens));
+    while (result && ConsumeIfIdent(range, "or")) {
+      result = MediaQueryExpNode::Or(std::move(result), ConsumeInParens(range));
     }
   }
 
@@ -193,7 +182,7 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeInParens(
     range.ConsumeWhitespace();
     auto node = ConsumeCondition(block);
     if (node && block.AtEnd())
-      return std::make_unique<MediaQueryNestedExpNode>(std::move(node));
+      return MediaQueryExpNode::Nested(std::move(node));
   }
   range = original_range;
 

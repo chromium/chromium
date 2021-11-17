@@ -80,26 +80,24 @@ std::unique_ptr<MediaQueryExpNode> FeatureNode(MediaQueryExp expr) {
 
 std::unique_ptr<MediaQueryExpNode> NestedNode(
     std::unique_ptr<MediaQueryExpNode> child) {
-  return std::make_unique<MediaQueryNestedExpNode>(std::move(child));
+  return MediaQueryExpNode::Nested(std::move(child));
 }
 
 std::unique_ptr<MediaQueryExpNode> NotNode(
     std::unique_ptr<MediaQueryExpNode> operand) {
-  return std::make_unique<MediaQueryNotExpNode>(std::move(operand));
+  return MediaQueryExpNode::Not(std::move(operand));
 }
 
 std::unique_ptr<MediaQueryExpNode> AndNode(
     std::unique_ptr<MediaQueryExpNode> left,
     std::unique_ptr<MediaQueryExpNode> right) {
-  return std::make_unique<MediaQueryAndExpNode>(std::move(left),
-                                                std::move(right));
+  return MediaQueryExpNode::And(std::move(left), std::move(right));
 }
 
 std::unique_ptr<MediaQueryExpNode> OrNode(
     std::unique_ptr<MediaQueryExpNode> left,
     std::unique_ptr<MediaQueryExpNode> right) {
-  return std::make_unique<MediaQueryOrExpNode>(std::move(left),
-                                               std::move(right));
+  return MediaQueryExpNode::Or(std::move(left), std::move(right));
 }
 
 }  // namespace
@@ -362,6 +360,19 @@ TEST(MediaQueryExpTest, UnitFlags) {
   // (10rem < width)
   EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
             LeftExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
+}
+
+TEST(MediaQueryExpTest, UtilsNullptrHandling) {
+  MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
+
+  EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Not(nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(MediaQueryExpNode::And(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(MediaQueryExpNode::Or(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, nullptr));
 }
 
 }  // namespace blink

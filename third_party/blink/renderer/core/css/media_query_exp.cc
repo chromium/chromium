@@ -565,6 +565,38 @@ String MediaQueryExpNode::Serialize() const {
   return builder.ReleaseString();
 }
 
+std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Not(
+    std::unique_ptr<MediaQueryExpNode> operand) {
+  if (!operand)
+    return nullptr;
+  return std::make_unique<MediaQueryNotExpNode>(std::move(operand));
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Nested(
+    std::unique_ptr<MediaQueryExpNode> operand) {
+  if (!operand)
+    return nullptr;
+  return std::make_unique<MediaQueryNestedExpNode>(std::move(operand));
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::And(
+    std::unique_ptr<MediaQueryExpNode> left,
+    std::unique_ptr<MediaQueryExpNode> right) {
+  if (!left || !right)
+    return nullptr;
+  return std::make_unique<MediaQueryAndExpNode>(std::move(left),
+                                                std::move(right));
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryExpNode::Or(
+    std::unique_ptr<MediaQueryExpNode> left,
+    std::unique_ptr<MediaQueryExpNode> right) {
+  if (!left || !right)
+    return nullptr;
+  return std::make_unique<MediaQueryOrExpNode>(std::move(left),
+                                               std::move(right));
+}
+
 PhysicalAxes MediaQueryFeatureExpNode::QueriedAxes() const {
   PhysicalAxes axes(kPhysicalAxisNone);
 

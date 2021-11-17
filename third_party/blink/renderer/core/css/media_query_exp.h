@@ -287,6 +287,18 @@ class CORE_EXPORT MediaQueryExpNode {
   virtual void SerializeTo(StringBuilder&) const = 0;
   virtual void CollectExpressions(Vector<MediaQueryExp>&) const = 0;
   virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
+
+  // These helper functions return nullptr if any argument is nullptr.
+  static std::unique_ptr<MediaQueryExpNode> Not(
+      std::unique_ptr<MediaQueryExpNode>);
+  static std::unique_ptr<MediaQueryExpNode> Nested(
+      std::unique_ptr<MediaQueryExpNode>);
+  static std::unique_ptr<MediaQueryExpNode> And(
+      std::unique_ptr<MediaQueryExpNode>,
+      std::unique_ptr<MediaQueryExpNode>);
+  static std::unique_ptr<MediaQueryExpNode> Or(
+      std::unique_ptr<MediaQueryExpNode>,
+      std::unique_ptr<MediaQueryExpNode>);
 };
 
 class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
