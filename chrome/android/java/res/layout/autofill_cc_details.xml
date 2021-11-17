@@ -21,7 +21,7 @@
 
     <ImageView
         android:id="@+id/message_divider"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:importantForAccessibility="no"
         android:layout_height="match_parent"
         android:layout_width="1dp"

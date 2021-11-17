@@ -63,6 +63,6 @@
         android:id="@+id/web_feed_menu_divider"
         style="@style/HorizontalDivider"
         android:layout_width="match_parent"
-        android:background="@color/divider_line_bg_color" />
+        android:background="@macro/divider_line_bg_color" />
 
 </org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem>

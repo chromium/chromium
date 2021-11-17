@@ -18,7 +18,7 @@
 
     <View
         android:id="@+id/lightweight_reactions_divider"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:layout_above="@id/lightweight_reactions_toolbar"
         android:layout_height="@dimen/toolbar_separator_height"
         android:layout_width="match_parent"/>

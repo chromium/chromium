@@ -52,7 +52,6 @@
 
     <!-- Overlay Panel colors -->
     <color name="overlay_panel_bar_background_color">@color/default_bg_color</color>
-    <color name="overlay_panel_separator_line_color">@color/divider_line_bg_color</color>
 
     <!-- Contextual Search colors -->
     <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>

@@ -14,6 +14,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * A phone specific version of the {@link FindToolbar}.
@@ -45,7 +46,6 @@ public class FindToolbarPhone extends FindToolbar {
     protected void updateVisualsForTabModel(boolean isIncognito) {
         int queryTextColorId;
         int queryHintTextColorId;
-        int dividerColorId;
         if (isIncognito) {
             setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), true));
             ColorStateList white = ChromeColors.getPrimaryIconTint(getContext(), true);
@@ -54,7 +54,7 @@ public class FindToolbarPhone extends FindToolbar {
             ApiCompatibilityUtils.setImageTintList(mCloseFindButton, white);
             queryTextColorId = R.color.find_in_page_query_white_color;
             queryHintTextColorId = R.color.find_in_page_query_incognito_hint_color;
-            dividerColorId = R.color.white_alpha_12;
+            mDivider.setBackgroundResource(R.color.white_alpha_12);
         } else {
             setBackgroundColor(ChromeColors.getDefaultThemeColor(getContext(), false));
             ColorStateList dark = ChromeColors.getPrimaryIconTint(getContext(), false);
@@ -63,13 +63,12 @@ public class FindToolbarPhone extends FindToolbar {
             ApiCompatibilityUtils.setImageTintList(mCloseFindButton, dark);
             queryTextColorId = R.color.default_text_color_list;
             queryHintTextColorId = R.color.find_in_page_query_default_hint_color;
-            dividerColorId = R.color.divider_line_bg_color;
+            mDivider.setBackgroundColor(SemanticColorUtils.getDividerLineBgColor(getContext()));
         }
         mFindQuery.setTextColor(
                 AppCompatResources.getColorStateList(getContext(), queryTextColorId));
         mFindQuery.setHintTextColor(
                 ApiCompatibilityUtils.getColor(getContext().getResources(), queryHintTextColorId));
-        mDivider.setBackgroundResource(dividerColorId);
     }
 
     @Override

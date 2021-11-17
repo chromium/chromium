@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.vr.VrModeObserver;
@@ -241,9 +242,10 @@ class TabbedNavigationBarColorController implements VrModeObserver {
     }
 
     private @ColorInt int getNavigationBarDividerColor(boolean forceDarkNavigationBar) {
-        return ApiCompatibilityUtils.getColor(mResources,
-                forceDarkNavigationBar ? R.color.bottom_system_nav_divider_color_light
-                                       : R.color.bottom_system_nav_divider_color);
+        return forceDarkNavigationBar
+                ? ApiCompatibilityUtils.getColor(
+                        mResources, R.color.bottom_system_nav_divider_color_light)
+                : SemanticColorUtils.getBottomSystemNavDividerColor(mWindow.getContext());
     }
 
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {

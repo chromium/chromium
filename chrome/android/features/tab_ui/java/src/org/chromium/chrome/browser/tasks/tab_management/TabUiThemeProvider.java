@@ -23,6 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Utility class that provides theme related attributes for Tab UI.
@@ -226,9 +227,9 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getDividerColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_grid_card_divider_tint_color_incognito
-                            : R.color.tab_grid_card_divider_tint_color);
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
     /**
@@ -302,9 +303,9 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_grid_card_divider_tint_color_incognito
-                            : R.color.tab_grid_card_divider_tint_color);
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
     /**

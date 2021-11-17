@@ -54,7 +54,6 @@
         <!-- Custom semantic names -->
         <!-- Will support dynamic colors in the future. -->
         <item name="default_bg_color">@color/default_bg_color</item>
-        <item name="divider_line_bg_color">@color/divider_line_bg_color</item>
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
@@ -121,7 +120,6 @@
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <!-- Will support dynamic colors in the future. -->
         <item name="default_bg_color">@color/default_bg_color</item>
-        <item name="divider_line_bg_color">@color/divider_line_bg_color</item>
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>

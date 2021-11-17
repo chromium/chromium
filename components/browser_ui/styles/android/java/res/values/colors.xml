@@ -29,7 +29,7 @@
 
     <!-- Navigation bar colors -->
     <color name="bottom_system_nav_color">@color/toolbar_background_primary</color>
-    <color name="bottom_system_nav_divider_color">@color/divider_line_bg_color</color>
+    <macro name="bottom_system_nav_divider_color">@macro/divider_line_bg_color</macro>
     <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
 
     <!-- This is the color that will appear on the system recents UI. It is a neutral background

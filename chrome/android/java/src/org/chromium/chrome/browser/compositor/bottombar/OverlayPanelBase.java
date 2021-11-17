@@ -459,8 +459,7 @@ abstract class OverlayPanelBase {
 
     /** @return the color to use to draw the separator between the Bar and Content. */
     public int getSeparatorLineColor() {
-        return ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.overlay_panel_separator_line_color);
+        return SemanticColorUtils.getOverlayPanelSeparatorLineColor(mContext);
     }
 
     /**
