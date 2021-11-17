@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -44,6 +45,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/user.h"
@@ -241,6 +243,14 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2},
       {"accountManagerSecondaryAccountsDisabledText",
        IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2},
+      {"removeLacrosAccountDialogTitle",
+       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE},
+      {"removeLacrosAccountDialogBody",
+       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_BODY},
+      {"removeLacrosAccountDialogRemove",
+       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE},
+      {"removeLacrosAccountDialogCancel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -264,6 +274,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountManagerDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
                                  ui::GetChromeOSDeviceName()));
+  html_source->AddBoolean("lacrosEnabled",
+                          crosapi::browser_util::IsLacrosEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,

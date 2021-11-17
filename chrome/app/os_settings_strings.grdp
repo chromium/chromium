@@ -1634,6 +1634,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT" desc="Management status label for unmanaged accounts.">
     Primary account
   </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of that dialog.">
+    Remove this account?
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_BODY" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the main message of that dialog.">
+    Removing this account will also delete any Chrome profiles signed in with this account
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of the button that will remove the account.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of the button that will cancel the dialog.">
+    Cancel
+  </message>
 
   <!-- Used by both Crostini and Plugin VM -->
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">

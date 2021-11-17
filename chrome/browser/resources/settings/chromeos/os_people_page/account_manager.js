@@ -378,22 +378,45 @@ Polymer({
   },
 
   /**
-   * Closes action menu and resets action menu model.
-   * @private
-   */
-  closeActionMenu_() {
-    this.$$('cr-action-menu').close();
-    this.actionMenuAccount_ = null;
-  },
-
-  /**
-   * Removes the account being pointed to by |this.actionMenuAccount_|.
+   * If Lacros is not enabled, removes the account pointed to by
+   * |this.actionMenuAccount_|.
+   * If Lacros is enabled, shows a warning dialog that the user needs to
+   * confirm before removing the account.
    * @private
    */
   onRemoveAccountTap_() {
+    this.$$('cr-action-menu').close();
+    if (loadTimeData.getBoolean('lacrosEnabled')) {
+      this.$.removeConfirmationDialog.showModal();
+    } else {
+      this.browserProxy_.removeAccount(
+          /** @type {?settings.Account} */ (this.actionMenuAccount_));
+      this.actionMenuAccount_ = null;
+      this.$$('#add-account-button').focus();
+    }
+  },
+
+  /**
+   * The user chooses not to remove the account after seeing the warning
+   * dialog, and taps the cancel button.
+   * @private
+   */
+  onRemoveAccountDialogCancelTap_() {
+    this.actionMenuAccount_ = null;
+    this.$.removeConfirmationDialog.cancel();
+    this.$$('#add-account-button').focus();
+  },
+
+  /**
+   * After seeing the warning dialog, the user chooses to removes the account
+   * pointed to by |this.actionMenuAccount_|, and taps the remove button.
+   * @private
+   */
+  onRemoveAccountDialogRemoveTap_() {
     this.browserProxy_.removeAccount(
         /** @type {?settings.Account} */ (this.actionMenuAccount_));
-    this.closeActionMenu_();
+    this.actionMenuAccount_ = null;
+    this.$.removeConfirmationDialog.close();
     this.$$('#add-account-button').focus();
   },
 });

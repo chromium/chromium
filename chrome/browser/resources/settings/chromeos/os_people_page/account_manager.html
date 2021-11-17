@@ -224,6 +224,17 @@
       .settings-box.border-bottom {
         border-bottom: var(--cr-separator-line);
       }
+
+      #removeConfirmationButton {
+        --active-shadow-action-rgb: var(--google-red-refresh-500-rgb);
+        --bg-action: var(--google-red-600);
+        --focus-shadow-color: rgba(var(--google-red-600-rgb), .4);
+        --hover-bg-action: rgba(var(--google-red-600-rgb), .9);
+        --hover-shadow-action-rgb: var(--google-red-refresh-500-rgb);
+        --hover-border-color: var(--google-red-100);
+        --hover-shadow-action-rgb: var(--google-red-refresh-500-rgb);
+      }
+
     </style>
 
     <!-- Account management description -->
@@ -385,6 +396,25 @@
     </div>
 
     <div class="settings-box"></div>
+
+    <cr-dialog id="removeConfirmationDialog">
+      <div slot="title" class="key-text">
+        $i18n{removeLacrosAccountDialogTitle}
+      </div>
+      <div slot="body" class="warning-message">
+        $i18n{removeLacrosAccountDialogBody}
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button"
+            on-click="onRemoveAccountDialogCancelTap_">
+          $i18n{removeLacrosAccountDialogCancel}
+        </cr-button>
+        <cr-button id="removeConfirmationButton" class="action-button"
+            on-click="onRemoveAccountDialogRemoveTap_">
+          $i18n{removeLacrosAccountDialogRemove}
+        </cr-button>
+      </div>
+    </cr-dialog>
 
   </template>
   <script src="account_manager.js"></script>
