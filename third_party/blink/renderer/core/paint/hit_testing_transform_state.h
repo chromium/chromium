@@ -23,8 +23,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TESTING_TRANSFORM_STATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TESTING_TRANSFORM_STATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
@@ -35,12 +35,8 @@
 
 namespace blink {
 
-// FIXME: Now that TransformState lazily creates its TransformationMatrix it
-// takes up less space.
-// So there's really no need for a ref counted version. So This class should be
-// removed and replaced with TransformState. There are some minor differences
-// (like the way translate() works slightly differently than move()) so care has
-// to be taken when this is done.
+class TransformPaintPropertyNode;
+
 class HitTestingTransformState {
   STACK_ALLOCATED();
 
@@ -56,8 +52,8 @@ class HitTestingTransformState {
   HitTestingTransformState& operator=(const HitTestingTransformState&) =
       default;
 
-  void Translate(int x, int y);
-  void ApplyTransform(const TransformationMatrix& transform_from_container);
+  void Translate(const gfx::Vector2dF&);
+  void ApplyTransform(const TransformPaintPropertyNode&);
 
   FloatPoint MappedPoint() const;
   FloatQuad MappedQuad() const;
@@ -77,4 +73,4 @@ class HitTestingTransformState {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TESTING_TRANSFORM_STATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_

@@ -51,7 +51,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/hit_testing_transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_clipper.h"
@@ -1010,7 +1009,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldRespectOverflowClipType = kRespectOverflowClip,
       const PhysicalOffset* offset_from_root = nullptr,
-      const PhysicalOffset& sub_pixel_accumulation = PhysicalOffset()) const;
+      const PhysicalOffset& sub_pixel_accumulation = PhysicalOffset(),
+      const FragmentData* root_fragment = nullptr) const;
 
   bool SelfNeedsRepaint() const { return self_needs_repaint_; }
   bool DescendantNeedsRepaint() const { return descendant_needs_repaint_; }
@@ -1204,17 +1204,18 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                          const HitTestLocation& original_location_arg);
   };
 
-  PaintLayer* HitTestLayer(PaintLayer* root_layer,
-                           PaintLayer* container_layer,
+  PaintLayer* HitTestLayer(const PaintLayer& transform_container,
+                           const FragmentData* container_fragment,
                            HitTestResult&,
                            const HitTestRecursionData& recursion_data,
-                           bool applied_transform,
+                           bool applied_transform = false,
                            HitTestingTransformState* = nullptr,
                            double* z_offset = nullptr,
                            bool check_resizer_only = false);
   PaintLayer* HitTestLayerByApplyingTransform(
-      PaintLayer* root_layer,
-      PaintLayer* container_layer,
+      const PaintLayer& transform_container,
+      const FragmentData* container_fragment,
+      const FragmentData& local_fragment,
       HitTestResult&,
       const HitTestRecursionData& recursion_data,
       HitTestingTransformState*,
@@ -1223,21 +1224,22 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const PhysicalOffset& translation_offset = PhysicalOffset());
   PaintLayer* HitTestChildren(
       PaintLayerIteration,
-      PaintLayer* root_layer,
+      const PaintLayer& transform_container,
+      const FragmentData* container_fragment,
       HitTestResult&,
       const HitTestRecursionData& recursion_data,
-      HitTestingTransformState*,
+      HitTestingTransformState* container_transform_state,
       double* z_offset_for_descendants,
       double* z_offset,
-      HitTestingTransformState* unflattened_transform_state,
+      HitTestingTransformState* local_transform_state,
       bool depth_sort_descendants);
 
   HitTestingTransformState CreateLocalTransformState(
-      PaintLayer* root_layer,
-      PaintLayer* container_layer,
+      const PaintLayer& transform_container,
+      const FragmentData& container_fragment,
+      const FragmentData& local_fragment,
       const HitTestRecursionData& recursion_data,
-      const HitTestingTransformState* container_transform_state,
-      const PhysicalOffset& translation_offset = PhysicalOffset()) const;
+      const HitTestingTransformState* root_transform_state) const;
 
   bool HitTestContents(HitTestResult&,
                        const NGPhysicalBoxFragment*,
@@ -1245,20 +1247,20 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                        const HitTestLocation&,
                        HitTestFilter) const;
   bool HitTestContentsForFragments(const PaintLayerFragments&,
-                                   const PhysicalOffset& offset,
                                    HitTestResult&,
                                    const HitTestLocation&,
                                    HitTestFilter,
                                    bool& inside_clip_rect) const;
-  PaintLayer* HitTestTransformedLayerInFragments(PaintLayer* root_layer,
-                                                 PaintLayer* container_layer,
-                                                 HitTestResult&,
-                                                 const HitTestRecursionData&,
-                                                 HitTestingTransformState*,
-                                                 double* z_offset,
-                                                 bool check_resizer_only,
-                                                 ShouldRespectOverflowClipType);
-  bool HitTestClippedOutByClipPath(PaintLayer* root_layer,
+  PaintLayer* HitTestTransformedLayerInFragments(
+      const PaintLayer& transform_container,
+      const FragmentData* container_fragment,
+      HitTestResult&,
+      const HitTestRecursionData&,
+      HitTestingTransformState*,
+      double* z_offset,
+      bool check_resizer_only,
+      ShouldRespectOverflowClipType);
+  bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
 
   bool ChildBackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const;

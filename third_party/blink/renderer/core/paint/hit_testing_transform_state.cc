@@ -23,19 +23,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/layout/hit_testing_transform_state.h"
+#include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 namespace blink {
 
-void HitTestingTransformState::Translate(int x, int y) {
-  accumulated_transform_.Translate(x, y);
+void HitTestingTransformState::Translate(const gfx::Vector2dF& offset) {
+  accumulated_transform_.Translate(offset.x(), offset.y());
 }
 
 void HitTestingTransformState::ApplyTransform(
-    const TransformationMatrix& transform_from_container) {
-  accumulated_transform_.Multiply(transform_from_container);
+    const TransformPaintPropertyNode& transform) {
+  if (transform.IsIdentityOr2DTranslation()) {
+    Translate(transform.Translation2D());
+  } else {
+    accumulated_transform_.Multiply(transform.MatrixWithOriginApplied());
+  }
 }
 
 void HitTestingTransformState::Flatten() {
