@@ -9,9 +9,11 @@
 #include <utility>
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/mock_media_notification_view.h"
+#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,10 +72,13 @@ class MockSessionController : public CastMediaSessionController {
       mojo::Remote<media_router::mojom::MediaController> remote)
       : CastMediaSessionController(std::move(remote)) {}
 
-  MOCK_METHOD1(Send, void(media_session::mojom::MediaSessionAction));
-  MOCK_METHOD1(OnMediaStatusUpdated, void(media_router::mojom::MediaStatusPtr));
-  MOCK_METHOD1(SetVolume, void(float));
-  MOCK_METHOD1(SetMute, void(bool));
+  MOCK_METHOD(void, Send, (media_session::mojom::MediaSessionAction));
+  MOCK_METHOD(void,
+              OnMediaStatusUpdated,
+              (media_router::mojom::MediaStatusPtr));
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
+  MOCK_METHOD(void, SetVolume, (float));
+  MOCK_METHOD(void, SetMute, (bool));
 };
 
 }  // namespace
@@ -261,6 +266,12 @@ TEST_F(CastMediaNotificationItemTest, SendVolumeStatusToController) {
   item_->SetMute(muted);
 }
 
+TEST_F(CastMediaNotificationItemTest, SendSeekCommandToController) {
+  auto seek_time = base::Seconds(2);
+  EXPECT_CALL(*session_controller_, SeekTo(seek_time));
+  item_->SeekTo(seek_time);
+}
+
 TEST_F(CastMediaNotificationItemTest, DownloadImage) {
   SetView();
   GURL image_url("https://example.com/image.png");
@@ -354,4 +365,16 @@ TEST_F(CastMediaNotificationItemTest, MediaPositionUpdate) {
         });
     item_->OnMediaStatusUpdated(std::move(status));
   }
+}
+
+TEST_F(CastMediaNotificationItemTest, StopCasting) {
+  media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+      &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
+  auto* mock_router = static_cast<media_router::MockMediaRouter*>(
+      media_router::MediaRouterFactory::GetApiForBrowserContext(&profile_));
+
+  EXPECT_CALL(*mock_router, TerminateRoute(item_->route_id()));
+  EXPECT_CALL(item_manager_, FocusDialog());
+  item_->StopCasting(
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
 }
