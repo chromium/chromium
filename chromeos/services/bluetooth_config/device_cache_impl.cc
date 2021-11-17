@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "chromeos/services/bluetooth_config/device_conversion_util.h"
 
 namespace chromeos {
@@ -97,7 +98,8 @@ void DeviceCacheImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
   if (new_paired_status) {
     // Remove from unpaired list and add to paired device list.
     bool unpaired_device_list_updated = RemoveFromUnpairedDeviceList(device);
-    bool paired_device_list_updated = AttemptUpdatePairedDeviceMetadata(device);
+    bool paired_device_list_updated =
+        AttemptSetDeviceInPairedDeviceList(device);
 
     if (unpaired_device_list_updated)
       NotifyUnpairedDevicesListChanged();
@@ -109,7 +111,7 @@ void DeviceCacheImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
   // Remove from paired list and add to unpaired device list.
   bool paired_device_list_updated = RemoveFromPairedDeviceList(device);
   bool unpaired_device_list_updated =
-      AttemptUpdateUnpairedDeviceMetadata(device);
+      AttemptSetDeviceInUnpairedDeviceList(device);
 
   if (paired_device_list_updated)
     NotifyPairedDevicesListChanged();
@@ -190,6 +192,15 @@ bool DeviceCacheImpl::RemoveFromPairedDeviceList(
 
 bool DeviceCacheImpl::AttemptUpdatePairedDeviceMetadata(
     device::BluetoothDevice* device) {
+  bool device_found = base::Contains(
+      paired_devices_, device->GetIdentifier(), [](const auto& paired_device) {
+        return paired_device->device_properties->id;
+      });
+
+  // If device is not found in |paired_devices|, don't update.
+  if (!device_found)
+    return false;
+
   // Remove existing metadata about |device|.
   bool updated = RemoveFromPairedDeviceList(device);
 
@@ -236,6 +247,16 @@ bool DeviceCacheImpl::RemoveFromUnpairedDeviceList(
 
 bool DeviceCacheImpl::AttemptUpdateUnpairedDeviceMetadata(
     device::BluetoothDevice* device) {
+  bool device_found =
+      base::Contains(unpaired_devices_, device->GetIdentifier(),
+                     [](const auto& unpaired_device) {
+                       return unpaired_device->device_properties->id;
+                     });
+
+  // If device is not found in |unpaired_devices|, don't update.
+  if (!device_found)
+    return false;
+
   // Remove existing metadata about |device|.
   bool updated = RemoveFromUnpairedDeviceList(device);
 
