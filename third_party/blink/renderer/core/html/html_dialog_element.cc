@@ -101,15 +101,19 @@ static void InertSubtreesChanged(Document& document,
     return;
 
   // Update IsInert() flags.
-  Element* maybe_root = old_modal_dialog && new_modal_dialog
-                            ? nullptr
-                            : document.documentElement();
-  for (Element* element : {maybe_root, old_modal_dialog, new_modal_dialog}) {
-    if (!element)
-      continue;
-    element->SetNeedsStyleRecalc(
+  auto SetNeedsStyleRecalc = [](Element& element) {
+    element.SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kDialog));
+  };
+  if (old_modal_dialog && new_modal_dialog) {
+    SetNeedsStyleRecalc(*old_modal_dialog);
+    SetNeedsStyleRecalc(*new_modal_dialog);
+  } else {
+    if (Element* root = document.documentElement())
+      SetNeedsStyleRecalc(*root);
+    if (Element* fullscreen = Fullscreen::FullscreenElementFrom(document))
+      SetNeedsStyleRecalc(*fullscreen);
   }
 
   // When a modal dialog opens or closes, nodes all over the accessibility

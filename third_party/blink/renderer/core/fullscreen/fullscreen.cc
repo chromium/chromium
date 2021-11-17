@@ -102,14 +102,16 @@ void FullscreenElementChanged(Document& document,
   }
 
   // Update IsInert() flags.
-  Element* maybe_root =
-      old_element && new_element ? nullptr : document.documentElement();
-  for (Element* element : {maybe_root, old_element, new_element}) {
-    if (!element)
-      continue;
-    element->SetNeedsStyleRecalc(
+  auto SetNeedsStyleRecalc = [](Element& element) {
+    element.SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
+  };
+  if (old_element && new_element) {
+    SetNeedsStyleRecalc(*old_element);
+    SetNeedsStyleRecalc(*new_element);
+  } else if (Element* root = document.documentElement()) {
+    SetNeedsStyleRecalc(*root);
   }
 
   // Any element not contained by the fullscreen element is inert (see

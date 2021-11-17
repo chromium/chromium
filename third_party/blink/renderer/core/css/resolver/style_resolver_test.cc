@@ -1973,4 +1973,88 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   EXPECT_FALSE(IsBackdropInert(dialog));
 }
 
+TEST_F(StyleResolverTest, IsInertWithDialogAndFullscreen) {
+  Document& document = GetDocument();
+  NonThrowableExceptionState exception_state;
+
+  document.body()->setInnerHTML(R"HTML(
+    <div></div>
+    <dialog></dialog>
+  )HTML");
+  Element* html = document.documentElement();
+  Element* body = document.body();
+  Element* div = document.QuerySelector("div");
+  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(html->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(body->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div->GetComputedStyle()->IsInert());
+  EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
+
+  EnterFullscreen(document, *div);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div->GetComputedStyle()->IsInert());
+  EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
+
+  dialog->showModal(exception_state);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
+
+  dialog->close();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div->GetComputedStyle()->IsInert());
+  EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
+
+  ExitFullscreen(document);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(html->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(body->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div->GetComputedStyle()->IsInert());
+  EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
+
+  dialog->showModal(exception_state);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
+
+  EnterFullscreen(document, *div);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
+
+  ExitFullscreen(document);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(html->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(body->GetComputedStyle()->IsInert());
+  EXPECT_TRUE(div->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
+
+  dialog->close();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(html->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(body->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(div->GetComputedStyle()->IsInert());
+  EXPECT_EQ(dialog->GetComputedStyle(), nullptr);
+}
+
 }  // namespace blink
