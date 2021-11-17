@@ -107,18 +107,12 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-#if defined(OS_LINUX)
-#define MAYBE_BubbleNotShowingOnDuplicateTab \
-  DISABLED_BubbleNotShowingOnDuplicateTab
-#else
-#define MAYBE_BubbleNotShowingOnDuplicateTab BubbleNotShowingOnDuplicateTab
-#endif
 // TODO(crbug.com/1270516): Disabled due to flakiness with linux-wayland-rel.
 // Tests that the offer notification bubble will not be shown if bubble has been
 // shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
 // opened another tab on the same website.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       MAYBE_BubbleNotShowingOnDuplicateTab) {
+                       DISABLED_BubbleNotShowingOnDuplicateTab) {
   SetUpCardLinkedOfferDataWithDomains({GURL("https://www.example.com/")});
 
   TestAutofillClock test_clock;
