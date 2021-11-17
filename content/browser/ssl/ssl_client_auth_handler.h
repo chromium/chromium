@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/ssl/client_cert_identity.h"
@@ -32,7 +31,7 @@ class SSLClientAuthHandler {
  public:
   // Delegate interface for SSLClientAuthHandler. Method implementations may
   // delete the handler when called.
-  class CONTENT_EXPORT Delegate {
+  class Delegate {
    public:
     Delegate() {}
 

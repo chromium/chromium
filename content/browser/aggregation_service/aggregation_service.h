@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
-#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -17,7 +16,7 @@ class AggregatableReportRequest;
 class BrowserContext;
 
 // External interface for the aggregation service.
-class CONTENT_EXPORT AggregationService {
+class AggregationService {
  public:
   using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
   using AssemblyCallback = AggregatableReportAssembler::AssemblyCallback;

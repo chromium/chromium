@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "net/base/network_interfaces.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
@@ -18,7 +17,7 @@ namespace content {
 class BrowserPpapiHostImpl;
 
 // The host for PPB_NetworkMonitor. This class lives on the IO thread.
-class CONTENT_EXPORT PepperNetworkMonitorHost
+class PepperNetworkMonitorHost
     : public ppapi::host::ResourceHost,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:

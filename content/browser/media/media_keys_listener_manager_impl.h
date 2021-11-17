@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -30,7 +29,7 @@ class SystemMediaControlsNotifier;
 // particular, it owns one of its delegates (ActiveMediaSessionController), and
 // only propagates to the ActiveMediaSessionController if no other delegates are
 // listening to a particular media key.
-class CONTENT_EXPORT MediaKeysListenerManagerImpl
+class MediaKeysListenerManagerImpl
     : public MediaKeysListenerManager,
       public ui::MediaKeysListener::Delegate,
       public system_media_controls::SystemMediaControlsObserver {

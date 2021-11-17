@@ -14,7 +14,6 @@
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_update_checker.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -49,7 +48,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       RegistrationCallback;
 
   // For registration jobs.
-  CONTENT_EXPORT ServiceWorkerRegisterJob(
+  ServiceWorkerRegisterJob(
       ServiceWorkerContextCore* context,
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
@@ -59,13 +58,12 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       const GlobalRenderFrameHostId& requesting_frame_id);
 
   // For update jobs.
-  CONTENT_EXPORT ServiceWorkerRegisterJob(
-      ServiceWorkerContextCore* context,
-      ServiceWorkerRegistration* registration,
-      bool force_bypass_cache,
-      bool skip_script_comparison,
-      blink::mojom::FetchClientSettingsObjectPtr
-          outside_fetch_client_settings_object);
+  ServiceWorkerRegisterJob(ServiceWorkerContextCore* context,
+                           ServiceWorkerRegistration* registration,
+                           bool force_bypass_cache,
+                           bool skip_script_comparison,
+                           blink::mojom::FetchClientSettingsObjectPtr
+                               outside_fetch_client_settings_object);
 
   ServiceWorkerRegisterJob(const ServiceWorkerRegisterJob&) = delete;
   ServiceWorkerRegisterJob& operator=(const ServiceWorkerRegisterJob&) = delete;

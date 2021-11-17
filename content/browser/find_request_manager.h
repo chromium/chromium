@@ -12,7 +12,6 @@
 
 #include "base/containers/queue.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/stop_find_action.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
@@ -32,7 +31,7 @@ class WebContentsImpl;
 // results from each frame, and facilitates active match traversal. It is
 // instantiated once per top-level WebContents, and is owned by that
 // WebContents.
-class CONTENT_EXPORT FindRequestManager {
+class FindRequestManager {
  public:
   explicit FindRequestManager(WebContentsImpl* web_contents);
 

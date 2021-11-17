@@ -5,12 +5,10 @@
 #ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_SAMPLE_H_
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_SAMPLE_H_
 
-#include "content/common/content_export.h"
-
 namespace content {
 
 // Represents availability of compute resources measured over a period of time.
-struct CONTENT_EXPORT ComputePressureSample {
+struct ComputePressureSample {
   // Average utilization of all CPU cores.
   //
   // Values use a scale from 0.0 (no utilization) to 1.0 (100% utilization).

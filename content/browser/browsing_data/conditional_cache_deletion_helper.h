@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -22,7 +21,7 @@ class Entry;
 namespace content {
 
 // Helper to remove http/code cache data from a StoragePartition.
-class CONTENT_EXPORT ConditionalCacheDeletionHelper {
+class ConditionalCacheDeletionHelper {
  public:
   // Creates a helper to delete |cache| entries that match the |condition|.
   ConditionalCacheDeletionHelper(

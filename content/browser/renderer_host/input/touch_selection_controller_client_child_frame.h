@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/viz/common/quads/selection.h"
-#include "content/common/content_export.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
@@ -23,7 +22,7 @@ class TouchSelectionControllerClientManager;
 // TouchSelectionControllerClient is intended to bind these views to the
 // TouchSelectionController, we need a different implementation for
 // cross-process subframes.
-class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
+class TouchSelectionControllerClientChildFrame
     : public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient {
  public:

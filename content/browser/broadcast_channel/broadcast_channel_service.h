@@ -7,7 +7,6 @@
 
 #include <map>
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -16,7 +15,7 @@
 
 namespace content {
 
-class CONTENT_EXPORT BroadcastChannelService {
+class BroadcastChannelService {
  public:
   BroadcastChannelService();
   // Not copyable or moveable, since this will be a singleton owned by

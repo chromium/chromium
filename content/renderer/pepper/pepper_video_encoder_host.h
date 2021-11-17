@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "content/common/content_export.h"
 #include "content/renderer/pepper/video_encoder_shim.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "ppapi/c/pp_codecs.h"
@@ -36,11 +35,10 @@ namespace content {
 
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperVideoEncoderHost
-    : public ppapi::host::ResourceHost,
-      public VideoEncoderShim::Client,
-      public ppapi::MediaStreamBufferManager::Delegate,
-      public gpu::GpuControlClient {
+class PepperVideoEncoderHost : public ppapi::host::ResourceHost,
+                               public VideoEncoderShim::Client,
+                               public ppapi::MediaStreamBufferManager::Delegate,
+                               public gpu::GpuControlClient {
  public:
   PepperVideoEncoderHost(RendererPpapiHost* host,
                          PP_Instance instance,

@@ -6,14 +6,13 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TYPE_CONVERTERS_H_
 
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_state.mojom.h"
 
 namespace mojo {
 
 template <>
-struct CONTENT_EXPORT TypeConverter<blink::mojom::ServiceWorkerState,
-                                    content::ServiceWorkerVersion::Status> {
+struct TypeConverter<blink::mojom::ServiceWorkerState,
+                     content::ServiceWorkerVersion::Status> {
   static blink::mojom::ServiceWorkerState Convert(
       content::ServiceWorkerVersion::Status status);
 };

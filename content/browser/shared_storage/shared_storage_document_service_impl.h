@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_DOCUMENT_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_DOCUMENT_SERVICE_IMPL_H_
 
-#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -20,7 +19,7 @@ class SharedStorageWorkletHost;
 // Handle renderer-initiated shared storage access and worklet operations. The
 // worklet operations (i.e. addModule and runOperation) will be dispatched to
 // the `SharedStorageWorkletHost` to be handled.
-class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
+class SharedStorageDocumentServiceImpl final
     : public DocumentUserData<SharedStorageDocumentServiceImpl>,
       public blink::mojom::SharedStorageDocumentService {
  public:

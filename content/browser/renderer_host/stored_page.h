@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "content/browser/site_instance_group.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 
@@ -21,7 +20,7 @@ class RenderViewHostImpl;
 // main RenderFrameHost together with RenderViewHosts and main document's
 // proxies. It's used for storing pages in back/forward cache or when preparing
 // prerendered pages for activation.
-struct CONTENT_EXPORT StoredPage {
+struct StoredPage {
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
                          std::unique_ptr<RenderFrameProxyHost>,

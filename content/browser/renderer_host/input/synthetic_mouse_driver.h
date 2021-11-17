@@ -6,11 +6,10 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_MOUSE_DRIVER_H_
 
 #include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
-class CONTENT_EXPORT SyntheticMouseDriver : public SyntheticPointerDriver {
+class SyntheticMouseDriver : public SyntheticPointerDriver {
  public:
   SyntheticMouseDriver();
 

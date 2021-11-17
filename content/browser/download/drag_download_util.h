@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/download/drag_download_file.h"
-#include "content/common/content_export.h"
 #include "ui/base/dragdrop/download_file_interface.h"
 
 class GURL;
@@ -38,7 +37,7 @@ bool ParseDownloadMetadata(const std::u16string& metadata,
 // Create a new file at the specified path. If the file already exists, try to
 // insert the sequential unifier to produce a new file, like foo-01.txt.
 // Return a File if successful.
-CONTENT_EXPORT base::File CreateFileForDrop(base::FilePath* file_path);
+base::File CreateFileForDrop(base::FilePath* file_path);
 
 // Implementation of DownloadFileObserver to finalize the download process.
 class PromiseFileFinalizer : public ui::DownloadFileObserver {

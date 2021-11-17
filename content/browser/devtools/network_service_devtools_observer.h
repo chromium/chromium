@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 
@@ -20,8 +19,7 @@ class DevToolsAgentHostImpl;
 
 // A springboard class to be able to bind to the network service as a
 // DevToolsObserver but not requiring the creation of a DevToolsAgentHostImpl.
-class CONTENT_EXPORT NetworkServiceDevToolsObserver
-    : public network::mojom::DevToolsObserver {
+class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
  public:
   NetworkServiceDevToolsObserver(
       base::PassKey<NetworkServiceDevToolsObserver> pass_key,

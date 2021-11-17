@@ -7,15 +7,14 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "gpu/config/gpu_feature_type.h"
 
 namespace content {
 
-class CONTENT_EXPORT GpuFeatureCheckerImpl : public GpuFeatureChecker,
-                                             public GpuDataManagerObserver {
+class GpuFeatureCheckerImpl : public GpuFeatureChecker,
+                              public GpuDataManagerObserver {
  public:
   GpuFeatureCheckerImpl(gpu::GpuFeatureType feature,
                         FeatureAvailableCallback callback);

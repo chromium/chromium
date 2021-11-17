@@ -22,7 +22,6 @@
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/child_process_host_impl.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/child_process_host.h"
@@ -51,7 +50,7 @@ class BrowserMessageFilter;
 // Plugins/workers and other child processes that live on the IO thread use this
 // class. RenderProcessHostImpl is the main exception that doesn't use this
 /// class because it lives on the UI thread.
-class CONTENT_EXPORT BrowserChildProcessHostImpl
+class BrowserChildProcessHostImpl
     : public BrowserChildProcessHost,
       public ChildProcessHostDelegate,
 #if defined(OS_WIN)

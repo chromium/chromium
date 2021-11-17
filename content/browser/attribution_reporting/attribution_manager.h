@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
-#include "content/common/content_export.h"
 
 namespace base {
 class Time;
@@ -32,7 +31,7 @@ class WebContents;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
-class CONTENT_EXPORT AttributionManager {
+class AttributionManager {
  public:
   // Provides access to a AttributionManager implementation. This layer of
   // abstraction is to allow tests to mock out the AttributionManager without

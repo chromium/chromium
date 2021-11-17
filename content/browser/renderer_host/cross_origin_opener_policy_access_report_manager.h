@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
@@ -18,7 +17,7 @@ class FrameTreeNode;
 // Used to monitor (potential) COOP breakages.
 // A CrossOriginOpenerPolicyAccessReportManager lives in the browser process and
 // has a 1:1 relationship with a RenderFrameHost.
-class CONTENT_EXPORT CrossOriginOpenerPolicyAccessReportManager {
+class CrossOriginOpenerPolicyAccessReportManager {
  public:
   CrossOriginOpenerPolicyAccessReportManager();
   ~CrossOriginOpenerPolicyAccessReportManager();

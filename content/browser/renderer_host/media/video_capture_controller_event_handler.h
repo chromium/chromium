@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -43,7 +42,7 @@ struct ReadyBuffer {
 // Other methods can be forwarded synchronously.
 
 // TODO(mcasas): https://crbug.com/654176 merge back into VideoCaptureController
-class CONTENT_EXPORT VideoCaptureControllerEventHandler {
+class VideoCaptureControllerEventHandler {
  public:
   // An Error has occurred in the VideoCaptureDevice.
   virtual void OnError(const VideoCaptureControllerID& id,

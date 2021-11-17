@@ -8,7 +8,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/cpp/storage_key_quota_client.h"
-#include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -23,8 +22,7 @@ class NativeIOManager;
 // Integrates NativeIO with the quota system.
 //
 // Each NativeIOManager owns exactly one NativeIOQuotaClient.
-class CONTENT_EXPORT NativeIOQuotaClient
-    : public storage::StorageKeyQuotaClient {
+class NativeIOQuotaClient : public storage::StorageKeyQuotaClient {
  public:
   explicit NativeIOQuotaClient(NativeIOManager* manager);
   ~NativeIOQuotaClient() override;

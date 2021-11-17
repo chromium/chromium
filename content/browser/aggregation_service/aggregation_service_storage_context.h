@@ -6,14 +6,13 @@
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_CONTEXT_H_
 
 #include "base/threading/sequence_bound.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
 class AggregationServiceKeyStorage;
 
 // Internal interface that provides access to the storage.
-class CONTENT_EXPORT AggregationServiceStorageContext {
+class AggregationServiceStorageContext {
  public:
   virtual ~AggregationServiceStorageContext() = default;
 

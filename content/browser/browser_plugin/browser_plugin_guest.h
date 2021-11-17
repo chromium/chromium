@@ -22,7 +22,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,8 +49,7 @@ class WebContentsImpl;
 // dropped on the floor since we don't have a BrowserPlugin.
 // TODO(wjmaclean): Get rid of "BrowserPlugin" in the name of this class.
 // Perhaps "InnerWebContentsGuestConnector"?
-class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
-                                          public WebContentsObserver {
+class BrowserPluginGuest : public GuestHost, public WebContentsObserver {
  public:
   BrowserPluginGuest(const BrowserPluginGuest&) = delete;
   BrowserPluginGuest& operator=(const BrowserPluginGuest&) = delete;

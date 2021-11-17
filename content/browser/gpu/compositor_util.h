@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
@@ -19,31 +18,31 @@ namespace content {
 
 // Returns true if zero-copy uploads is on (via flags, or platform default).
 // Only one of one-copy and zero-copy can be enabled at a time.
-CONTENT_EXPORT bool IsZeroCopyUploadEnabled();
+bool IsZeroCopyUploadEnabled();
 
 // Returns true if a partial raster is on (via flags).
-CONTENT_EXPORT bool IsPartialRasterEnabled();
+bool IsPartialRasterEnabled();
 
 // Returns true if all compositor resources should use GPU memory buffers.
-CONTENT_EXPORT bool IsGpuMemoryBufferCompositorResourcesEnabled();
+bool IsGpuMemoryBufferCompositorResourcesEnabled();
 
 // Returns the number of multisample antialiasing samples (via flags) for
 // GPU rasterization.
-CONTENT_EXPORT int GpuRasterizationMSAASampleCount();
+int GpuRasterizationMSAASampleCount();
 
 // Returns the number of raster threads to use for compositing.
-CONTENT_EXPORT int NumberOfRendererRasterThreads();
+int NumberOfRendererRasterThreads();
 
 // Returns true if main thread can be pipelined with activation.
-CONTENT_EXPORT bool IsMainFrameBeforeActivationEnabled();
+bool IsMainFrameBeforeActivationEnabled();
 
-CONTENT_EXPORT base::Value GetFeatureStatus();
-CONTENT_EXPORT base::Value GetProblems();
-CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkarounds();
+base::Value GetFeatureStatus();
+base::Value GetProblems();
+std::vector<std::string> GetDriverBugWorkarounds();
 
-CONTENT_EXPORT base::Value GetFeatureStatusForHardwareGpu();
-CONTENT_EXPORT base::Value GetProblemsForHardwareGpu();
-CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkaroundsForHardwareGpu();
+base::Value GetFeatureStatusForHardwareGpu();
+base::Value GetProblemsForHardwareGpu();
+std::vector<std::string> GetDriverBugWorkaroundsForHardwareGpu();
 
 }  // namespace content
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 
 namespace content {
@@ -18,7 +17,7 @@ namespace content {
 // renderer: |did_serialize_data_callback| will report each chunk of data that's
 // being serialized, while |done_callback| will simply notify when the
 // serialization process is finished.
-class CONTENT_EXPORT SavePackageSerializationHandler
+class SavePackageSerializationHandler
     : public mojom::FrameHTMLSerializerHandler {
  public:
   using DidReceiveDataCallback =

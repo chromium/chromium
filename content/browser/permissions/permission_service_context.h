@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
@@ -38,8 +37,7 @@ class RenderProcessHost;
 // PermissionServiceContext instances associated with a RenderFrameHost must be
 // created via the DocumentUserData static factories, as these
 // instances are deleted when a new document is commited.
-class CONTENT_EXPORT PermissionServiceContext
-    : public RenderProcessHostObserver {
+class PermissionServiceContext : public RenderProcessHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;

@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -28,8 +27,7 @@ namespace content {
 // MediaInterfaceFactory is an implementation of media::mojom::InterfaceFactory
 // that provides thread safety and handles disconnection error automatically.
 // The Create* methods can be called on any thread.
-class CONTENT_EXPORT MediaInterfaceFactory final
-    : public media::mojom::InterfaceFactory {
+class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
  public:
   explicit MediaInterfaceFactory(
       blink::BrowserInterfaceBrokerProxy* interface_broker);

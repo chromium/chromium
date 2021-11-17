@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,9 +40,9 @@ class SignedExchangePrefetchMetricRecorder;
 
 // A URLLoader for loading a prefetch request, including <link rel="prefetch">.
 // It basically just keeps draining the data.
-class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
-                                         public network::mojom::URLLoaderClient,
-                                         public mojo::DataPipeDrainer::Client {
+class PrefetchURLLoader : public network::mojom::URLLoader,
+                          public network::mojom::URLLoaderClient,
+                          public mojo::DataPipeDrainer::Client {
  public:
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>()>;

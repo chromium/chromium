@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/virtual_fido_device.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,8 +26,7 @@ namespace content {
 // This class has very little logic itself, it merely stores a unique ID and the
 // state of the authenticator, whereas performing all cryptographic operations
 // is delegated to the VirtualFidoDevice class.
-class CONTENT_EXPORT VirtualAuthenticator
-    : public blink::test::mojom::VirtualAuthenticator {
+class VirtualAuthenticator : public blink::test::mojom::VirtualAuthenticator {
  public:
   explicit VirtualAuthenticator(
       const blink::test::mojom::VirtualAuthenticatorOptions& options);

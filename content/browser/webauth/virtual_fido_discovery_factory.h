@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/virtual_fido_device.h"
 
@@ -33,7 +32,7 @@ class VirtualFidoDiscoveryFactory;
 // Its lifetime is limited to the duration of a WebAuthn request. Note that this
 // differs from VirtualAuthenticatorManagerImpl which is instantiated and
 // destroyed in response to operations on the Virtual Authenticator API.
-class CONTENT_EXPORT VirtualFidoDiscoveryFactory
+class VirtualFidoDiscoveryFactory
     : public device::FidoDiscoveryFactory,
       public VirtualAuthenticatorManagerImpl::Observer {
  public:

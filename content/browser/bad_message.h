@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BAD_MESSAGE_H_
 
 #include "base/debug/crash_logging.h"
-#include "content/common/content_export.h"
 
 namespace content {
 class BrowserMessageFilter;
@@ -295,8 +294,7 @@ enum BadMessageReason {
 void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason);
 
 // Equivalent to the above, but callable from any thread.
-CONTENT_EXPORT void ReceivedBadMessage(int render_process_id,
-                                       BadMessageReason reason);
+void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 
 // Called when a browser message filter receives a bad IPC message from a
 // renderer or other child process. Logs the event, records a histogram metric

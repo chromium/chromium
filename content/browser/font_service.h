@@ -6,13 +6,12 @@
 #define CONTENT_BROWSER_FONT_SERVICE_H_
 
 #include "components/services/font/public/mojom/font_service.mojom.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
 // Connects |receiver| to the global in-process instance of the Font service.
-CONTENT_EXPORT void ConnectToFontService(
+void ConnectToFontService(
     mojo::PendingReceiver<font_service::mojom::FontService> receiver);
 
 }  // namespace content

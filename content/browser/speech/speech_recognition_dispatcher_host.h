@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
@@ -34,8 +33,7 @@ class SpeechRecognitionManager;
 // SpeechRecognitionDispatcherHost is an implementation of the SpeechRecognizer
 // interface that allows a RenderFrame to start a speech recognition session
 // in the browser process, by communicating with SpeechRecognitionManager.
-class CONTENT_EXPORT SpeechRecognitionDispatcherHost
-    : public blink::mojom::SpeechRecognizer {
+class SpeechRecognitionDispatcherHost : public blink::mojom::SpeechRecognizer {
  public:
   SpeechRecognitionDispatcherHost(int render_process_id, int render_frame_id);
 

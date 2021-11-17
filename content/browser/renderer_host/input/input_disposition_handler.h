@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DISPOSITION_HANDLER_H_
 
 #include "content/browser/renderer_host/event_with_latency_info.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -14,7 +13,7 @@
 namespace content {
 
 // Provided customized disposition response for input events.
-class CONTENT_EXPORT InputDispositionHandler {
+class InputDispositionHandler {
  public:
   virtual ~InputDispositionHandler() {}
 

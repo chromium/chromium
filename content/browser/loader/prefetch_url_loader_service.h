@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,7 +32,7 @@ class URLLoaderFactoryGetter;
 // A URLLoaderFactory that can be passed to a renderer to use for performing
 // prefetches. The renderer uses it for prefetch requests including <link
 // rel="prefetch">.
-class CONTENT_EXPORT PrefetchURLLoaderService final
+class PrefetchURLLoaderService final
     : public base::RefCountedThreadSafe<
           PrefetchURLLoaderService,
           content::BrowserThread::DeleteOnUIThread>,

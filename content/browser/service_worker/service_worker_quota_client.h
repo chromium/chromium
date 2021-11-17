@@ -10,7 +10,6 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/cpp/storage_key_quota_client.h"
-#include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -25,8 +24,7 @@ class ServiceWorkerQuotaClient : public storage::StorageKeyQuotaClient {
  public:
   // `context` must outlive this instance. This is true because `context` owns
   // this instance.
-  CONTENT_EXPORT explicit ServiceWorkerQuotaClient(
-      ServiceWorkerContextCore& context);
+  explicit ServiceWorkerQuotaClient(ServiceWorkerContextCore& context);
 
   ServiceWorkerQuotaClient(const ServiceWorkerQuotaClient&) = delete;
   ServiceWorkerQuotaClient& operator=(const ServiceWorkerQuotaClient&) = delete;

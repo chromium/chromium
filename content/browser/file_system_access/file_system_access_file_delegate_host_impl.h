@@ -7,7 +7,6 @@
 
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/common/content_export.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
@@ -18,7 +17,7 @@ namespace content {
 // interface. Instances of this class are owned by the
 // FileSystemAccessAccessHandleHostImpl instance of the associated URL, which
 // constructs it.
-class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
+class FileSystemAccessFileDelegateHostImpl
     : public blink::mojom::FileSystemAccessFileDelegateHost {
  public:
   FileSystemAccessFileDelegateHostImpl(

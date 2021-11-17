@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "content/common/content_export.h"
-
 namespace base {
 class Time;
 }  // namespace base
@@ -24,7 +22,7 @@ struct PublicKeyset;
 
 // This class provides an interface for persisting helper server public keys
 // and performing queries on it.
-class CONTENT_EXPORT AggregationServiceKeyStorage {
+class AggregationServiceKeyStorage {
  public:
   virtual ~AggregationServiceKeyStorage() = default;
 

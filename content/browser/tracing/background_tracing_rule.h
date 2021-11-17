@@ -9,13 +9,12 @@
 
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace content {
 
-class CONTENT_EXPORT BackgroundTracingRule {
+class BackgroundTracingRule {
  public:
   using MetadataProto =
       perfetto::protos::pbzero::BackgroundTracingMetadata::TriggerRule;

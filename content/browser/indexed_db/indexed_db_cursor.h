@@ -14,14 +14,13 @@
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
 
-class CONTENT_EXPORT IndexedDBCursor {
+class IndexedDBCursor {
  public:
   IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
                   indexed_db::CursorType cursor_type,

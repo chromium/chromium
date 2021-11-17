@@ -9,7 +9,6 @@
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
-#include "content/common/content_export.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 
 namespace blink {
@@ -19,8 +18,7 @@ class StorageKey;
 namespace content {
 
 // All functions should be called on the UI thread.
-class CONTENT_EXPORT IndexedDBControlWrapper
-    : public storage::mojom::IndexedDBControl {
+class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
  public:
   explicit IndexedDBControlWrapper(
       const base::FilePath& data_path,

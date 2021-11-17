@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "content/common/content_export.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-forward.h"
@@ -18,7 +17,7 @@ namespace content {
 class RenderFrameImpl;
 
 // The WebServiceWorkerNetworkProvider implementation used for frames.
-class CONTENT_EXPORT ServiceWorkerNetworkProviderForFrame final
+class ServiceWorkerNetworkProviderForFrame final
     : public blink::WebServiceWorkerNetworkProvider {
  public:
   // Creates a network provider for |frame|.

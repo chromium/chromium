@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_CSP_CONTEXT_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_FRAME_HOST_CSP_CONTEXT_H_
 
-#include "content/common/content_export.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 
 class GURL;
@@ -17,7 +16,7 @@ class RenderFrameHostImpl;
 // RenderFrameHostCSPContext is a network::CSPContext that reports Content
 // Security Policy violations through the mojo connection between a
 // RenderFrameHostImpl and its corresponding LocalFrame.
-class CONTENT_EXPORT RenderFrameHostCSPContext : public network::CSPContext {
+class RenderFrameHostCSPContext : public network::CSPContext {
  public:
   // Construct a new RenderFrameHostCSPContext reporting CSP violations through
   // `render_frame_host`. The parameter `render_frame_host` can be null, in

@@ -19,7 +19,6 @@
 #include "components/variations/child_process_field_trial_syncer.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
-#include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_buildflags.h"  // For BUILDFLAG(IPC_MESSAGE_LOG_ENABLED).
@@ -62,10 +61,9 @@ namespace content {
 class InProcessChildThreadParams;
 
 // The main thread of a child process derives from this class.
-class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
-                                       virtual public ChildThread {
+class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
  public:
-  struct CONTENT_EXPORT Options;
+  struct Options;
 
   // Creates the thread.
   explicit ChildThreadImpl(base::RepeatingClosure quit_closure);

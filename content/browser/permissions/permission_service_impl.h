@@ -9,7 +9,6 @@
 #include "base/containers/id_map.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/origin.h"
@@ -25,8 +24,7 @@ enum class PermissionType;
 // to have some information about the current context. That enables the service
 // to know whether it can show UI and have knowledge of the associated
 // WebContents for example.
-class CONTENT_EXPORT PermissionServiceImpl
-    : public blink::mojom::PermissionService {
+class PermissionServiceImpl : public blink::mojom::PermissionService {
  public:
   PermissionServiceImpl(PermissionServiceContext* context,
                         const url::Origin& origin);

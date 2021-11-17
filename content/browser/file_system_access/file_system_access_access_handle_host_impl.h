@@ -10,7 +10,6 @@
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
@@ -21,7 +20,7 @@ namespace content {
 // FileSystemAccessHandleHost mojom interface. Instances of this class are
 // owned by the FileSystemAccessManagerImpl instance passed in to the
 // constructor.
-class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
+class FileSystemAccessAccessHandleHostImpl
     : public blink::mojom::FileSystemAccessAccessHandleHost {
  public:
   // Crates an AccessHandleHost that acts as an exclusive write lock on the

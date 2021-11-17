@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FEDERATED_LEARNING_FLOC_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_FEDERATED_LEARNING_FLOC_SERVICE_IMPL_H_
 
-#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
@@ -14,7 +13,7 @@ namespace content {
 
 class RenderFrameHost;
 
-class CONTENT_EXPORT FlocServiceImpl final
+class FlocServiceImpl final
     : public DocumentService<blink::mojom::FlocService> {
  public:
   FlocServiceImpl(RenderFrameHost* render_frame_host,

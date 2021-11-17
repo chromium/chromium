@@ -9,14 +9,13 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
 // An implementation of InputInjector.
-class CONTENT_EXPORT InputInjectorImpl : public mojom::InputInjector {
+class InputInjectorImpl : public mojom::InputInjector {
  public:
   explicit InputInjectorImpl(base::WeakPtr<RenderFrameHostImpl> frame_host);
 

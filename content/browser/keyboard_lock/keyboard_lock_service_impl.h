@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
@@ -19,7 +18,7 @@ namespace content {
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
-class CONTENT_EXPORT KeyboardLockServiceImpl final
+class KeyboardLockServiceImpl final
     : public DocumentService<blink::mojom::KeyboardLockService> {
  public:
   KeyboardLockServiceImpl(

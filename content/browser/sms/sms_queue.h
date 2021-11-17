@@ -8,14 +8,13 @@
 #include <map>
 
 #include "base/observer_list.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "url/origin.h"
 
 namespace content {
 
 // SmsQueue manages the queue of pending requests for each origin.
-class CONTENT_EXPORT SmsQueue {
+class SmsQueue {
  public:
   SmsQueue();
 

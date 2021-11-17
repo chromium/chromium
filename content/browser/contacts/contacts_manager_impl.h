@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_CONTACTS_CONTACTS_MANAGER_IMPL_H_
 
 #include "content/browser/contacts/contacts_provider.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
@@ -15,7 +14,7 @@ namespace content {
 
 class RenderFrameHostImpl;
 
-class CONTENT_EXPORT ContactsManagerImpl
+class ContactsManagerImpl
     : public DocumentService<blink::mojom::ContactsManager> {
  public:
   explicit ContactsManagerImpl(

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_instance.h"
@@ -53,9 +52,8 @@ class PepperFileRefBackend {
   virtual int32_t CanReadWrite() const = 0;
 };
 
-class CONTENT_EXPORT PepperFileRefHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileRefHost> {
+class PepperFileRefHost : public ppapi::host::ResourceHost,
+                          public base::SupportsWeakPtr<PepperFileRefHost> {
  public:
   PepperFileRefHost(BrowserPpapiHost* host,
                     PP_Instance instance,

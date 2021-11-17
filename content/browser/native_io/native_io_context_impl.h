@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/thread_annotations.h"
 #include "content/browser/native_io/native_io_host.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/native_io_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,7 +25,7 @@ class NativeIOManager;
 
 // Helper object on the UI thread whose sole responsibility is to maintain a
 // NativeIOManager on the IO thread, where it can be called by the QuotaClient.
-class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
+class NativeIOContextImpl : public NativeIOContext {
  public:
   // Creates an empty NativeIOContextImpl shell.
   //

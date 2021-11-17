@@ -12,13 +12,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
 // An operation to run in the CacheStorageScheduler. It's mostly just a closure
 // to run plus a bunch of metrics data.
-class CONTENT_EXPORT CacheStorageOperation {
+class CacheStorageOperation {
  public:
   CacheStorageOperation(base::OnceClosure closure,
                         CacheStorageSchedulerId id,

@@ -11,7 +11,6 @@
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom-forward.h"
 #include "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom.h"
 #include "content/browser/handwriting/handwriting_recognizer_impl.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom-forward.h"
@@ -25,8 +24,7 @@ namespace content {
 // checks etc. This class will also hold a mojo remote to the mlservice daemon
 // CrOS and mlservice will create a handwriting model instance for each of this
 // class.
-class CONTENT_EXPORT CrOSHandwritingRecognizerImpl final
-    : public HandwritingRecognizerImpl {
+class CrOSHandwritingRecognizerImpl final : public HandwritingRecognizerImpl {
  public:
   // The interface to create an object, called by handwriting service.
   static void Create(

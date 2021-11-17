@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 
-#include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -32,7 +31,7 @@ struct OpenURLParams;
 
 // A delegate API used by Navigator to notify its embedder of navigation
 // related events.
-class CONTENT_EXPORT NavigatorDelegate {
+class NavigatorDelegate {
  public:
   // Called when a navigation started. The same NavigationHandle will be
   // provided for events related to the same navigation.

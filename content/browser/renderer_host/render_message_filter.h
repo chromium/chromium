@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -46,7 +45,7 @@ class RenderWidgetHelper;
 
 // This class filters out incoming IPC messages for the renderer process on the
 // IPC thread.
-class CONTENT_EXPORT RenderMessageFilter
+class RenderMessageFilter
     : public BrowserMessageFilter,
       public BrowserAssociatedInterface<mojom::RenderMessageFilter> {
  public:

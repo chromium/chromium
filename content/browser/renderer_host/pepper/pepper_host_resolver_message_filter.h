@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ppapi/c/pp_instance.h"
@@ -38,7 +37,7 @@ namespace content {
 
 class BrowserPpapiHostImpl;
 
-class CONTENT_EXPORT PepperHostResolverMessageFilter
+class PepperHostResolverMessageFilter
     : public ppapi::host::ResourceMessageFilter,
       public network::ResolveHostClientBase {
  public:

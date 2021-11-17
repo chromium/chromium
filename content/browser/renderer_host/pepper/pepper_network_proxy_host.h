@@ -15,7 +15,6 @@
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,7 +36,7 @@ class BrowserPpapiHostImpl;
 class PepperProxyLookupHelper;
 
 // The host for PPB_NetworkProxy. This class lives on the IO thread.
-class CONTENT_EXPORT PepperNetworkProxyHost : public ppapi::host::ResourceHost {
+class PepperNetworkProxyHost : public ppapi::host::ResourceHost {
  public:
   PepperNetworkProxyHost(BrowserPpapiHostImpl* host,
                          PP_Instance instance,

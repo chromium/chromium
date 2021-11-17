@@ -12,7 +12,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/host_frame_sink_client.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,7 +28,7 @@ namespace content {
 // Both the embedder and embedded frame sink are in the same renderer. Holds a
 // client connection to the renderer that is notified when a new SurfaceId
 // activates for the embedded frame sink.
-class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
+class EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
  public:
   using DestroyCallback = base::OnceCallback<void()>;
 

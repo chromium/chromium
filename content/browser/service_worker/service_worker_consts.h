@@ -8,11 +8,10 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
-struct CONTENT_EXPORT ServiceWorkerConsts {
+struct ServiceWorkerConsts {
   static const char kBadMessageFromNonWindow[];
   static const char kBadMessageGetRegistrationForReadyDuplicated[];
   static const char kBadMessageImproperOrigins[];

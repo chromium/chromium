@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -16,8 +15,7 @@ namespace content {
 
 // RenderMediaEventHandler is an implementation of
 // BatchingMediaLog::EventHandler that forwards events to the browser process.
-class CONTENT_EXPORT RenderMediaEventHandler
-    : public BatchingMediaLog::EventHandler {
+class RenderMediaEventHandler : public BatchingMediaLog::EventHandler {
  public:
   RenderMediaEventHandler();
   ~RenderMediaEventHandler() override;

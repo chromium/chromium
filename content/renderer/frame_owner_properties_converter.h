@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_FRAME_OWNER_PROPERTIES_CONVERTER_H_
 #define CONTENT_RENDERER_FRAME_OWNER_PROPERTIES_CONVERTER_H_
 
-#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 
@@ -19,15 +18,15 @@ namespace mojo {
 // blink::mojom::blink::FrameOwnerProperties can be used directly inside blink.
 
 template <>
-struct CONTENT_EXPORT TypeConverter<blink::WebFrameOwnerProperties,
-                                    blink::mojom::FrameOwnerProperties> {
+struct TypeConverter<blink::WebFrameOwnerProperties,
+                     blink::mojom::FrameOwnerProperties> {
   static blink::WebFrameOwnerProperties Convert(
       const blink::mojom::FrameOwnerProperties& mojo_properties);
 };
 
 template <>
-struct CONTENT_EXPORT TypeConverter<blink::mojom::FrameOwnerPropertiesPtr,
-                                    blink::WebFrameOwnerProperties> {
+struct TypeConverter<blink::mojom::FrameOwnerPropertiesPtr,
+                     blink::WebFrameOwnerProperties> {
   static blink::mojom::FrameOwnerPropertiesPtr Convert(
       const blink::WebFrameOwnerProperties& properties);
 };

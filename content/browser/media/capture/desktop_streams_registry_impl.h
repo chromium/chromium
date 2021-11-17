@@ -8,15 +8,13 @@
 #include <map>
 #include <string>
 
-#include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "url/origin.h"
 
 namespace content {
 
-class CONTENT_EXPORT DesktopStreamsRegistryImpl
-    : public DesktopStreamsRegistry {
+class DesktopStreamsRegistryImpl : public DesktopStreamsRegistry {
  public:
   DesktopStreamsRegistryImpl();
 

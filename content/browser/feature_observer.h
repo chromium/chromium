@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FEATURE_OBSERVER_H_
 
 #include "base/containers/stack_container.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
@@ -18,7 +17,7 @@ class FeatureObserverClient;
 // Observer interface to be notified when frames hold resources.
 // client interfaces will be called on the same sequence GetFeatureObserver is
 // called from.
-class CONTENT_EXPORT FeatureObserver : public blink::mojom::FeatureObserver {
+class FeatureObserver : public blink::mojom::FeatureObserver {
  public:
   // |client_| must outlive FeatureObserver.
   FeatureObserver(FeatureObserverClient* client, GlobalRenderFrameHostId id);

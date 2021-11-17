@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,8 +32,7 @@ class WorkerDevToolsAgentHost;
 // is used for the frame), different DevToolsAgentHostImpl subclasses
 // retrieve a new blink::mojom::DevToolsAgent pointer, and this channel
 // starts using it for all existing and future sessions.
-class CONTENT_EXPORT DevToolsRendererChannel
-    : public blink::mojom::DevToolsAgentHost {
+class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
  public:
   explicit DevToolsRendererChannel(DevToolsAgentHostImpl* owner);
 

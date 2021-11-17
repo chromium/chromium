@@ -10,7 +10,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -28,7 +27,7 @@ namespace content {
 // It is used in cases without a frame context, e.g. WebRTC's
 // RTCVideoDecoderFactory to create hardware video decoders using
 // MojoVideoDecoder, and WebCodecs audio/video decoding in workers.
-class CONTENT_EXPORT FramelessMediaInterfaceProxy final
+class FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
   FramelessMediaInterfaceProxy();

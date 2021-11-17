@@ -18,7 +18,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "content/common/content_export.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
@@ -54,7 +53,7 @@ namespace content {
 // the |task_runner_|, as provided during construction.
 // |context_provider| should not support locking and will be bound to
 // |task_runner_| where all the operations on the context should also happen.
-class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
+class GpuVideoAcceleratorFactoriesImpl
     : public media::GpuVideoAcceleratorFactories,
       public viz::ContextLostObserver {
  public:

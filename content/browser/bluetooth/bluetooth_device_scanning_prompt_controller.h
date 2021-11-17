@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
 namespace content {
@@ -18,7 +17,7 @@ class RenderFrameHost;
 class WebBluetoothServiceImpl;
 
 // Class that interacts with a prompt.
-class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
+class BluetoothDeviceScanningPromptController final {
  public:
   // |web_bluetooth_service_| service that owns this class.
   // |render_frame_host| should be the RenderFrameHost that owns the

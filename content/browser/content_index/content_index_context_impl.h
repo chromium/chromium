@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/browser/content_index/content_index_database.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_index_context.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
@@ -20,7 +19,7 @@ class ServiceWorkerContextWrapper;
 
 // Owned by the Storage Partition. Components that want to query or modify the
 // Content Index database should hold a reference to this.
-class CONTENT_EXPORT ContentIndexContextImpl
+class ContentIndexContextImpl
     : public ContentIndexContext,
       public base::RefCountedThreadSafe<ContentIndexContextImpl> {
  public:

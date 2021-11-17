@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 
 class GURL;
 
@@ -32,7 +31,7 @@ class PlatformNotificationService;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerRegistration;
 
-class CONTENT_EXPORT PlatformNotificationServiceProxy {
+class PlatformNotificationServiceProxy {
  public:
   using DisplayResultCallback =
       base::OnceCallback<void(bool /* success */,

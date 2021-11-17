@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 
 #include "base/task/task_observer.h"
-#include "content/common/content_export.h"
 
 namespace base {
 struct PendingTask;
@@ -18,7 +17,7 @@ namespace responsiveness {
 // This object is not thread safe. It must be constructed and destroyed on the
 // same thread. The callbacks will occur synchronously from WillProcessTask()
 // and DidProcessTask().
-class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
+class MessageLoopObserver : base::TaskObserver {
  public:
   using WillProcessTaskCallback =
       base::RepeatingCallback<void(const base::PendingTask* task,
