@@ -5315,7 +5315,7 @@
   {
     "name": "traffic-counters-settings-ui",
     "owners": ["khegde", "stevenjb"],
-    "expiry_milestone": 95
+    "expiry_milestone": 101
   },
   {
     "name": "translate-assist-content",
