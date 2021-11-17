@@ -561,6 +561,11 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
                "ClientDiscardableSharedMemoryManager::"
                "AllocateLockedDiscardableSharedMemory",
                "size", size, "id", id);
+  static crash_reporter::CrashKeyString<24>
+      discardable_memory_ipc_requested_size(
+          "discardable-memory-ipc-requested-size");
+  static crash_reporter::CrashKeyString<24> discardable_memory_ipc_error_cause(
+      "discardable-memory-ipc-error-cause");
 
   base::UnsafeSharedMemoryRegion region;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -578,14 +583,22 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   // This is likely address space exhaustion in the the browser process. We
   // don't want to crash the browser process for that, which is why the check
   // is here, and not there.
-  if (!region.IsValid())
+  if (!region.IsValid()) {
+    discardable_memory_ipc_error_cause.Set("browser side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
   auto memory =
       std::make_unique<base::DiscardableSharedMemory>(std::move(region));
-  if (!memory->Map(size))
+  if (!memory->Map(size)) {
+    discardable_memory_ipc_error_cause.Set("client side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
+  discardable_memory_ipc_error_cause.Clear();
+  discardable_memory_ipc_requested_size.Clear();
   return memory;
 }
 
