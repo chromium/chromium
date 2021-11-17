@@ -17,58 +17,28 @@ import sys
 
 
 def str_to_c_string(string):
-  """Converts a Python str (ASCII) to a C string literal.
+  """Converts a Python bytes to a C++ string literal.
 
-    >>> str_to_c_string('abc\x8c')
+    >>> str_to_c_string(b'abc\x8c')
     '"abc\\\\x8c"'
     """
-  return repr(string).replace("'", '"')
+  return repr(string).replace("'", '"').removeprefix('b')
 
 
-def ishexdigit(c):
-  """
-    >>> ishexdigit('0')
-    True
-    >>> ishexdigit('9')
-    True
-    >>> ishexdigit('/')
-    False
-    >>> ishexdigit(':')
-    False
-    >>> ishexdigit('a')
-    True
-    >>> ishexdigit('f')
-    True
-    >>> ishexdigit('g')
-    False
-    >>> ishexdigit('A')
-    True
-    >>> ishexdigit('F')
-    True
-    >>> ishexdigit('G')
-    False
+def unicode_to_c_ustring(string):
+  """Converts a Python unicode string to a C++ u16-string literal.
+
+    >>> unicode_to_c_ustring(u'b\u00fccher.de')
+    'u"b\\\\u00fccher.de"'
     """
-  return c.isdigit() or ord('a') <= ord(c.lower()) <= ord('f')
-
-
-def unicode_to_c_wstring(string):
-  """Converts a Python str or unicode to a C wide-string literal.
-
-    >>> unicode_to_c_wstring(u'b\u00fccher.de')
-    'L"b\\\\x00fc" L"cher.de"'
-    """
-  result = ['L"']
+  result = ['u"']
   for c in string:
-    # If the previous character was \x-escaped, and the next character is a
-    # hex digit, we need to end and restart the string literal. Otherwise,
-    # the next character will extend the \x escape sequence.
-    if result[-1].startswith('\\x') and ishexdigit(c):
-      result.append('" L"')
-    escaped = repr(c)[2:-1]
-    # Convert '\u' to '\x', and also force a minimum of 4 digits (this isn't
-    # necessary but is preferred style for these test cases).
-    if escaped[:2] in ('\\x', '\\u'):
-      escaped = '\\x%04x' % ord(c)
+    if (ord(c) > 0xffff):
+      escaped = '\\U%08x' % ord(c)
+    elif (ord(c) > 0x7f):
+      escaped = '\\u%04x' % ord(c)
+    else:
+      escaped = c
     result.append(escaped)
   result.append('"')
   return ''.join(result)
@@ -83,24 +53,24 @@ def make_case(unicode_domain, unicode_allowed=True, case_name=None):
 
     |unicode_domain| is a Unicode string of the domain (NOT IDNA-encoded).
     |unicode_allowed| specifies whether the test case should expect the domain
-    to be displayed in Unicode form (True) or in IDNA/Punycode ASCII encoding
-    (False). |case_name| is just for the comment.
+    to be displayed in Unicode form (kSafe) or in IDNA/Punycode ASCII encoding
+    (kUnsafe). |case_name| is just for the comment.
 
     This function will automatically convert the domain to its IDNA format, and
     prepare the test case in C++ syntax.
 
     >>> make_case(u'\u5317\u4eac\u5927\u5b78.cn', True, 'Hanzi (Chinese)')
         // Hanzi (Chinese)
-        {"xn--1lq90ic7f1rc.cn", L"\\x5317\\x4eac\\x5927\\x5b78.cn", true},
+        {"xn--1lq90ic7f1rc.cn", u"\\u5317\\u4eac\\u5927\\u5b78.cn", kSafe},
     >>> make_case(u'b\u00fccher.de', True)
-        {"xn--bcher-kva.de", L"b\\x00fc" L"cher.de", true},
+        {"xn--bcher-kva.de", u"b\\u00fccher.de", kSafe},
 
     This will also apply normalization to the Unicode domain, as required by the
     IDNA algorithm. This example shows U+210F normalized to U+0127 (this
     generates the exact same test case as u'\u0127ello'):
 
     >>> make_case(u'\u210fello', True)
-        {"xn--ello-4xa", L"\\x0127" L"ello", true},
+        {"xn--ello-4xa", u"\\u0127ello", kSafe},
     """
   idna_input = codecs.encode(unicode_domain, 'idna')
   # Round-trip to ensure normalization.
@@ -108,8 +78,8 @@ def make_case(unicode_domain, unicode_allowed=True, case_name=None):
   if case_name:
     print('    // %s' % case_name)
   print('    {%s, %s, %s},' %
-        (str_to_c_string(idna_input), unicode_to_c_wstring(unicode_output),
-         repr(unicode_allowed).lower()))
+        (str_to_c_string(idna_input), unicode_to_c_ustring(unicode_output),
+         'kSafe' if unicode_allowed else 'kUnsafe'))
 
 
 def main(args=None):
@@ -144,9 +114,12 @@ def main(args=None):
   if not args.domain:
     parser.error('Required argument: DOMAIN')
 
-  # Assume stdin.encoding is the encoding used for command-line arguments.
-  domain = args.domain.decode(sys.stdin.encoding)
-  make_case(domain, unicode_allowed=args.unicode_allowed, case_name=args.name)
+  if '://' in args.domain:
+    parser.error('A URL must not be passed as the domain argument')
+
+  make_case(args.domain,
+            unicode_allowed=args.unicode_allowed,
+            case_name=args.name)
 
 
 if __name__ == '__main__':
