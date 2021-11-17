@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -612,9 +612,7 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
   # Current gn directory cannot be used when we run this script in a gn action
   # rule, because gn doesn't allow recursive invocations due to potential side
   # effects.
-  tmp_dir = None
-  try:
-    tmp_dir = tempfile.mkdtemp(dir=gn_out_dir)
+  with tempfile.TemporaryDirectory(dir=gn_out_dir) as tmp_dir:
     shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
     subprocess.check_output([
         _GnBinary(), "gen", "--root=%s" % _REPOSITORY_ROOT, tmp_dir
@@ -625,9 +623,6 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
     ])
     if isinstance(gn_deps, bytes):
       gn_deps = gn_deps.decode("utf-8")
-  finally:
-    if tmp_dir and os.path.exists(tmp_dir):
-      shutil.rmtree(tmp_dir)
 
   return GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os)
 
