@@ -205,9 +205,6 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 // This list was derived from chrome://about. :)
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
-    // TODO(crbug.com/1114074): DCHECK failure when opening
-    // chrome://appcache-internals.
-    // "chrome://appcache-internals",
     "chrome://autofill-internals",
     "chrome://blob-internals",
     "chrome://bookmarks",

@@ -91116,7 +91116,6 @@ Called by update_scheduler_enums.py.-->
   <int value="-936786926" label="chrome://settings/"/>
   <int value="-907485548" label="chrome://policy-tool/"/>
   <int value="-905972126" label="chrome://signin-email-confirmation/"/>
-  <int value="-902637811" label="chrome://appcache-internals/"/>
   <int value="-892484505" label="chrome://sys-internals/"/>
   <int value="-891260101" label="chrome://inspect/"/>
   <int value="-853789543" label="chrome://bluetooth-pairing/"/>
