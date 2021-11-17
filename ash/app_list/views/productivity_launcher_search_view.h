@@ -57,6 +57,10 @@ class ASH_EXPORT ProductivityLauncherSearchView
     return result_container_views_;
   }
 
+  ResultSelectionController* result_selection_controller_for_test() {
+    return result_selection_controller_.get();
+  }
+
  private:
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.

@@ -248,7 +248,7 @@ void ProductivityLauncherSearchView::MaybeNotifySelectedResultChanged() {
 
 bool ProductivityLauncherSearchView::CanSelectSearchResults() {
   DCHECK(!result_container_views_.empty());
-  return result_container_views_.front()->num_results() > 0;
+  return last_search_result_count_ > 0;
 }
 
 BEGIN_METADATA(ProductivityLauncherSearchView, views::View)

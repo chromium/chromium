@@ -12,6 +12,7 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/constants/ash_features.h"
@@ -92,6 +93,65 @@ TEST_F(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
           ->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
+}
+
+// Tests that result selection controller can change between  within and between
+// result containers.
+TEST_F(ProductivityLauncherSearchViewTest, ResultSelection) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+  EXPECT_FALSE(test_helper->GetProductivityLauncherSearchView()
+                   ->CanSelectSearchResults());
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+
+  // Create categorized results and order categories as {kApps, kWeb}.
+  std::vector<AppListSearchResultCategory>* ordered_categories =
+      test_helper->GetOrderedResultCategories();
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  ordered_categories->push_back(AppListSearchResultCategory::kApps);
+  ordered_categories->push_back(AppListSearchResultCategory::kWeb);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+                     SearchResult::Category::kApps);
+  SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
+                     false, SearchResult::Category::kWeb);
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
+
+  // Press VKEY_DOWN and check if the first result view is selected.
+  EXPECT_TRUE(test_helper->GetProductivityLauncherSearchView()
+                  ->CanSelectSearchResults());
+  ResultSelectionController* controller =
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
+  // Tests that VKEY_DOWN selects the next result in container 1.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 1);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 2);
+  // Tests that VKEY_DOWN while selecting the last result of the current
+  // container causes the selection controller to select the next container.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 1);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 2);
+  // Tests that VKEY_UP while selecting the first result of the current
+  // container causes the selection controller to select the previous container.
+  PressAndReleaseKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 2);
 }
 
 // Verifies that search result categories are sorted properly.
