@@ -275,10 +275,10 @@ export class DelayInterval {
      * @private
      */
     this.delayTimeoutId_ = setTimeout(() => {
-      callback();
       this.intervalId_ = setInterval(() => {
         callback();
       }, intervalMs);
+      callback();
     }, delayMs);
   }
 

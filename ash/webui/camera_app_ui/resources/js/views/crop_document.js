@@ -6,10 +6,112 @@ import {assert, assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
+import {speak} from '../toast.js';
 import {Rotation, ViewName} from '../type.js';
 import * as util from '../util.js';
 
 import {Option, Options, Review} from './review.js';
+
+/**
+ * Delay for movement announcer gathering user pressed key to announce first
+ * feedback in milliseconds.
+ */
+const MOVEMENT_ANNOUNCER_START_DELAY_MS = 500;
+
+/**
+ * Interval for movement announcer to announce next movement.
+ */
+const MOVEMENT_ANNOUNCER_INTERVAL_MS = 2000;
+
+/**
+ * Maps from sign of x, y movement to corresponding i18n labels to be announced.
+ * @type {!Map<number, !Map<number, I18nString>>}
+ */
+const MOVEMENT_ANNOUNCE_LABELS = new Map([
+  [
+    -1,
+    new Map([
+      [-1, I18nString.MOVING_IN_TOP_LEFT_DIRECTION],
+      [0, I18nString.MOVING_IN_LEFT_DIRECTION],
+      [1, I18nString.MOVING_IN_BOTTOM_LEFT_DIRECTION],
+    ]),
+  ],
+  [
+    0,
+    new Map([
+      [-1, I18nString.MOVING_IN_TOP_DIRECTION],
+      [1, I18nString.MOVING_IN_BOTTOM_DIRECTION],
+    ]),
+  ],
+  [
+    1,
+    new Map([
+      [-1, I18nString.MOVING_IN_TOP_RIGHT_DIRECTION],
+      [0, I18nString.MOVING_IN_RIGHT_DIRECTION],
+      [1, I18nString.MOVING_IN_BOTTOM_RIGHT_DIRECTION],
+    ]),
+  ],
+]);
+
+/**
+ * Announces the movement direction of document corner with screen reader.
+ */
+class MovementAnnouncer {
+  /**
+   * @public
+   */
+  constructor() {
+    /**
+     * Interval to throttle the consecutive announcement.
+     * @type {?util.DelayInterval}
+     * @private
+     */
+    this.announceInterval_ = null;
+
+    /**
+     * X component of last not announced movement.
+     * @type {number}
+     * @private
+     */
+    this.lastXMovement_ = 0;
+
+    /**
+     * Y component of last not announced movement.
+     * @type {number}
+     * @private
+     */
+    this.lastYMovement_ = 0;
+  }
+
+  /**
+   * @param {number} dx
+   * @param {number} dy
+   */
+  updateMovement(dx, dy) {
+    this.lastXMovement_ = dx;
+    this.lastYMovement_ = dy;
+    if (this.announceInterval_ === null) {
+      this.announceInterval_ = new util.DelayInterval(() => {
+        this.announce_();
+      }, MOVEMENT_ANNOUNCER_START_DELAY_MS, MOVEMENT_ANNOUNCER_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * @private
+   */
+  announce_() {
+    if (this.lastXMovement_ === 0 && this.lastYMovement_ === 0) {
+      this.announceInterval_.stop();
+      this.announceInterval_ = null;
+      return;
+    }
+    const signX = Math.sign(this.lastXMovement_);
+    const signY = Math.sign(this.lastYMovement_);
+    speak(MOVEMENT_ANNOUNCE_LABELS.get(signX).get(signY));
+    this.lastXMovement_ = this.lastYMovement_ = 0;
+  }
+}
 
 /**
  * The closest distance ratio with respect to corner space size. The dragging
@@ -163,19 +265,16 @@ export class CropDocument extends Review {
         new Vector(0, 1),
         new Vector(1, 0),
       ];
-      /**
-       * Maps from key index in |KEYS| to corresponding movement handler.
-       * @type {!Map<number, function()>}
-       */
-      const keyHandlers = new Map();
+      const pressedKeyIndices = new Set();
       let keyInterval = null;
       const clearKeydown = () => {
         if (keyInterval !== null) {
           keyInterval.stop();
           keyInterval = null;
         }
-        keyHandlers.clear();
+        pressedKeyIndices.clear();
       };
+      const announcer = new MovementAnnouncer();
 
       corn.el.addEventListener('blur', (e) => {
         clearKeydown();
@@ -183,13 +282,25 @@ export class CropDocument extends Review {
 
       corn.el.addEventListener('keydown', (e) => {
         const keyIdx = getKeyIndex(e);
-        if (keyIdx === -1 || keyHandlers.has(keyIdx)) {
+        if (keyIdx === -1 || pressedKeyIndices.has(keyIdx)) {
           return;
         }
-        const movement = KEY_MOVEMENTS[(keyIdx + this.rotation_) % 4];
         const move = () => {
+          let announceMoveX = 0;
+          let announceMoveY = 0;
+          let moveX = 0;
+          let moveY = 0;
+          for (const keyIdx of pressedKeyIndices) {
+            const announceMoveXY = KEY_MOVEMENTS[keyIdx];
+            announceMoveX += announceMoveXY.x;
+            announceMoveY += announceMoveXY.y;
+            const moveXY = KEY_MOVEMENTS[(keyIdx + this.rotation_) % 4];
+            moveX += moveXY.x;
+            moveY += moveXY.y;
+          }
+          announcer.updateMovement(announceMoveX, announceMoveY);
           const {x: curX, y: curY} = corn.pt;
-          const nextPt = new Point(curX + movement.x, curY + movement.y);
+          const nextPt = new Point(curX + moveX, curY + moveY);
           const validPt = this.mapToValidArea_(corn, nextPt);
           if (validPt === null) {
             return;
@@ -197,14 +308,14 @@ export class CropDocument extends Review {
           corn.pt = validPt;
           this.updateCornerEl_();
         };
+        pressedKeyIndices.add(keyIdx);
         move();
-        keyHandlers.set(keyIdx, move);
 
         if (keyInterval === null) {
           const PRESS_TIMEOUT = 500;
           const HOLD_INTERVAL = 100;
           keyInterval = new util.DelayInterval(() => {
-            keyHandlers.forEach((handler) => handler());
+            move();
           }, PRESS_TIMEOUT, HOLD_INTERVAL);
         }
       });
@@ -214,8 +325,8 @@ export class CropDocument extends Review {
         if (keyIdx === -1) {
           return;
         }
-        keyHandlers.delete(keyIdx);
-        if (keyHandlers.size === 0) {
+        pressedKeyIndices.delete(keyIdx);
+        if (pressedKeyIndices.size === 0) {
           clearKeydown();
         }
       });
