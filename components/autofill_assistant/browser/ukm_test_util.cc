@@ -93,6 +93,11 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
   return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
                                  {kShippingModified});
 }
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectUserDataResult,
+                                 {kResult});
+}
 
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&

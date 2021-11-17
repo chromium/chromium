@@ -33,6 +33,8 @@ const char kAutofillAssistantCollectCreditCard[] =
     "AutofillAssistant.CollectPayment";
 const char kAutofillAssistantCollectShippingAddress[] =
     "AutofillAssistant.CollectShippingAddress";
+const char kAutofillAssistantCollectUserDataResult[] =
+    "AutofillAssistant.CollectUserDataResult";
 
 // The identifiers for all UKM metrics that we currently record/test.
 const char kTriggerUiType[] = "TriggerUIType";
@@ -52,6 +54,7 @@ const char kCompleteShippingProfilesCount[] = "CompleteShippingProfilesCount";
 const char kIncompleteShippingProfilesCount[] =
     "IncompleteShippingProfilesCount";
 const char kShippingModified[] = "ShippingModified";
+const char kResult[] = "Result";
 
 // Convenience accessors for UKM metrics.
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -85,6 +88,8 @@ GetUkmIncompleteShippingProfilesCount(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
 // Variant containing all UKM enums that we currently record/test.
 // NOTE: When adding entries, remember to also modify kUkmEnumMetricNames!

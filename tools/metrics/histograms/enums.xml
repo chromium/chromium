@@ -5514,6 +5514,12 @@ others/histograms.xml -->
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAssistantCollectUserDataResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="AutofillAssistantDependenciesInvalidated">
   <int value="0" label="Invalidated outside of flow"/>
   <int value="1" label="Invalidated during startup"/>

@@ -3465,5 +3465,64 @@ TEST_F(CollectUserDataActionTest, LogsUkmmMoreThanFiveProfilesCount) {
           static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
 }
 
+TEST_F(CollectUserDataActionTest, LogUkmSuccesss) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(true);
+  collect_user_data_proto->set_accept_terms_and_conditions_text(
+      "terms and conditions");
+  collect_user_data_proto->set_show_terms_as_checkbox(false);
+  collect_user_data_proto->set_terms_require_review_text("terms review");
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        user_data_.terms_and_conditions_ = ACCEPTED;
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmCollectUserDataResult(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kResult,
+          static_cast<int64_t>(Metrics::CollectUserDataResult::SUCCESS))}));
+}
+
+TEST_F(CollectUserDataActionTest, LogUkmFailure) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(true);
+  collect_user_data_proto->set_accept_terms_and_conditions_text(
+      "terms and conditions");
+  collect_user_data_proto->set_show_terms_as_checkbox(false);
+  collect_user_data_proto->set_terms_require_review_text("terms review");
+
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    ON_CALL(mock_action_delegate_, CollectUserData(_))
+        .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+          // The continue button is never pressed.
+        });
+    action.ProcessAction(callback_.Get());
+
+    // The CollectUserDataAction destructor is called, this simulates the user
+    // closing the bottom sheet or the tab.
+  }
+  EXPECT_THAT(
+      GetUkmCollectUserDataResult(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kResult,
+          static_cast<int64_t>(Metrics::CollectUserDataResult::FAILURE))}));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

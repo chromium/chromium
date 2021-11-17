@@ -456,6 +456,9 @@ void CollectUserDataAction::MaybeLogMetrics() {
   Metrics::RecordPaymentRequestAutofillChanged(
       metrics_data_.personal_data_changed, metrics_data_.action_successful);
 
+  Metrics::RecordCollectUserDataSuccess(delegate_->GetUkmRecorder(),
+                                        metrics_data_.source_id,
+                                        metrics_data_.action_successful);
   if (RequiresContact(*collect_user_data_options_)) {
     Metrics::RecordContactMetrics(
         delegate_->GetUkmRecorder(), metrics_data_.source_id,
@@ -1572,7 +1575,6 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
             user_data::MakeUniqueFromProfile(*billing_address);
       }
     }
-
     user_data->available_payment_instruments_.emplace_back(
         std::move(payment_instrument));
   }

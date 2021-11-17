@@ -2167,6 +2167,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.CollectUserDataResult">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    The result of the CollectUserData action.
+  </summary>
+  <metric name="Result" enum="AutofillAssistantCollectUserDataResult">
+    <summary>
+      The result of the CollectUserData action.
+    </summary>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.InChromeTriggering">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>

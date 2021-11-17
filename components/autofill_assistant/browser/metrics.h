@@ -465,6 +465,21 @@ class Metrics {
     kMaxValue = FIVE_OR_MORE
   };
 
+  // Whether the CollectUserData action was successfully completed.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantCollectUserDataResult enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class CollectUserDataResult {
+    UNKNOWN,
+    SUCCESS,
+    FAILURE,
+
+    kMaxValue = FAILURE
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -521,6 +536,9 @@ class Metrics {
                                     int complete_count,
                                     int incomplete_count,
                                     UserDataSelectionState selection_state);
+  static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
+                                           ukm::SourceId source_id,
+                                           bool success);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.

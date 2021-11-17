@@ -303,4 +303,14 @@ void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
       .Record(ukm_recorder);
 }
 
+void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
+                                           ukm::SourceId source_id,
+                                           bool success) {
+  ukm::builders::AutofillAssistant_CollectUserDataResult(source_id)
+      .SetResult(static_cast<int64_t>(
+          success ? Metrics::CollectUserDataResult::SUCCESS
+                  : Metrics::CollectUserDataResult::FAILURE))
+      .Record(ukm_recorder);
+}
+
 }  // namespace autofill_assistant
