@@ -1632,19 +1632,23 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // The code below initializes the app's position when the app list sort
   // feature is enabled.
 
+  // The target position of `new_item`.
   syncer::StringOrdinal position;
-  bool order_ignored = false;
+
+  ash::AppListSortOrder order = static_cast<ash::AppListSortOrder>(
+      profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
 
   // TODO(https://crbug.com/1260877): ideally we would not have to create a
   // one-off vector of items using `GetItems()`.
-  reorder_delegate_->CalculateNewItemPosition(
-      static_cast<ash::AppListSortOrder>(
-          profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder)),
-      *new_item, model_updater_->GetItems(), &position, &order_ignored);
+  bool is_successful = reorder_delegate_->CalculateNewItemPosition(
+      order, *new_item, model_updater_->GetItems(), &sync_items_, &position);
 
-  // Reset the sorting order if the order is ignored when calculating
-  // `new_item`'s target position.
-  if (order_ignored) {
+  // If `new_item` cannot be placed following the specified order, `new_item`
+  // should be placed at front. Also reset the sorting order.
+  if (!is_successful) {
+    DCHECK(!position.IsValid());
+    position = reorder_delegate_->CalculateFrontPosition(sync_items_);
+
     profile()->GetPrefs()->SetInteger(
         prefs::kAppListPreferredOrder,
         static_cast<int>(ash::AppListSortOrder::kCustom));

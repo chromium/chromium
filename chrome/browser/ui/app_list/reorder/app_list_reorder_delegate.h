@@ -14,7 +14,6 @@
 #include "components/sync/model/string_ordinal.h"
 
 class ChromeAppListItem;
-class PrefService;
 
 namespace app_list {
 namespace reorder {
@@ -60,42 +59,39 @@ class AppListReorderDelegate {
   // `ChromeAppListItem` pointers as the parameter.
   std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
       ash::AppListSortOrder order,
-      const std::vector<const ChromeAppListItem*>& app_list_items);
+      const std::vector<const ChromeAppListItem*>& app_list_items) const;
 
   // Calculates the position for an incoming item based on the specified sorting
-  // order and pass results through parameters. `local_items` indicates the
-  // elements in the active app list model before adding the new item. Note that
-  // different devices may have different sets of app list items. It is why the
-  // parameter is named `local_items`. `order_ignored` is true if it is not
-  // appropriate to place `new_item` following `order`. It is because the
-  // arrangement of `local_items` does not follow `order`. In this case, the new
-  // item should be placed at the front.
-  void CalculateNewItemPosition(
+  // order and pass the target position through the parameter. Returns whether
+  // `target_position` is set. The return value is false if it is not propriate
+  // to place `new_item` following `order`. In this case, `target_position` is
+  // not set.
+  // `local_items` indicates the elements in the active app list model before
+  // adding the new item. Note that different devices may have different sets of
+  // app list items. It is why the parameter is named `local_items`.
+  // `global_items` is the sync data of the items across synced devices. If
+  // `global_items` is null, position is calculated only based on `local_items`.
+  bool CalculateNewItemPosition(
       ash::AppListSortOrder order,
       const ChromeAppListItem& new_item,
       const std::vector<const ChromeAppListItem*>& local_items,
-      syncer::StringOrdinal* target_position,
-      bool* order_ignored) const;
+      const AppListSyncableService::SyncItemMap* global_items,
+      syncer::StringOrdinal* target_position) const;
+
+  // Returns the foremost item position across syncable devices.
+  syncer::StringOrdinal CalculateFrontPosition(
+      const AppListSyncableService::SyncItemMap& sync_item_map) const;
 
  private:
-  // Returns the foremost item position across syncable devices.
-  syncer::StringOrdinal CalculateFrontPosition() const;
-
-  // Calculates the position for an incoming item based on the namer order that
-  // is either kNameAlphabetical or kNameReverseAlphabetical. Pass results
-  // through parameters. Read the comment of `CalculateNewItemPosition()` for
-  // the remaining parameters' meaning.
-  // TODO(https://crbug.com/1261899): the function name is misleading. Actually
-  // this function is not const because the sort order saved in prefs could be
-  // reset. Replace with a better name.
-  void CalculatePositionInNameOrder(
+  // Similar to `CalculateNewItemPosition()` but `order` is either
+  // kNameAlphabetical or kNameReverseAlphabetical. Read the comment of
+  // `CalculateNewItemPosition()` for parameters' meanings.
+  bool CalculatePositionInNameOrder(
       ash::AppListSortOrder order,
       const ChromeAppListItem& new_item,
       const std::vector<const ChromeAppListItem*>& local_items,
-      syncer::StringOrdinal* target_position,
-      bool* order_ignored) const;
-
-  PrefService* GetPrefService();
+      const AppListSyncableService::SyncItemMap* global_items,
+      syncer::StringOrdinal* target_position) const;
 
   AppListSyncableService* const app_list_syncable_service_;
 };

@@ -296,8 +296,11 @@ void CalculateNeighbors(
     ash::AppListSortOrder order,
     const T& new_item_key_attribute,
     const std::vector<reorder::SyncItemWrapper<T>>& sorted_subsequence,
-    absl::optional<syncer::StringOrdinal>* prev,
-    absl::optional<syncer::StringOrdinal>* next) {
+    syncer::StringOrdinal* prev,
+    syncer::StringOrdinal* next) {
+  DCHECK(prev && !prev->IsValid());
+  DCHECK(next && !next->IsValid());
+
   // Find the first local item that is not a folder. Recall that
   // `sorted_subsequence` guarantees:
   // (1) Folder items are always placed in front of non-folder items.
@@ -351,30 +354,32 @@ void CalculateNeighbors(
   *next = lower_bound->item_ordinal;
 }
 
-// Returns the position for an incoming new app so that after insertion launcher
-// sort order is maintained on all sync devices.
+// Adjusts `prev` and `prev` in global scope so that the sorting order is kept
+// on all sync devices after placing `new_item` between adjusted neighbors.
 template <typename T>
-syncer::StringOrdinal CalculateNewAppPositionInGlobalScope(
+void AdjustNeighborsInGlobalScope(
     ash::AppListSortOrder order,
     const reorder::SyncItemWrapper<T>& new_item,
     const std::vector<reorder::SyncItemWrapper<T>>& global_items,
-    const absl::optional<syncer::StringOrdinal>& local_prev,
-    const absl::optional<syncer::StringOrdinal>& local_next) {
-  // `local_prev` and `local_next` are the new item's local neighbor positions
-  // (see CalculateNeighbors() for more details). Recall that different sync
-  // devices may have different sets of apps. This method checks the existing
-  // sync items whose positions are between `local_prev` and `local_next` so as
+    syncer::StringOrdinal* prev,
+    syncer::StringOrdinal* next) {
+  // Before adjustment, `prev` and `next` are the new item's local neighbor
+  // positions (see CalculateNeighbors() for more details). Recall that
+  // different sync devices may have different sets of apps. This method checks
+  // the existing sync items whose positions are between `prev` and `next` so as
   // to get the correct position in global scope.
+  DCHECK(prev);
+  DCHECK(next);
 
   // The left neighbor in the global scope.
   syncer::StringOrdinal global_prev;
-  if (local_prev)
-    global_prev = *local_prev;
+  if (prev->IsValid())
+    global_prev = *prev;
 
   // The right neighbor in the global scope.
   syncer::StringOrdinal global_next;
-  if (local_next)
-    global_next = *local_next;
+  if (next->IsValid())
+    global_next = *next;
 
   const bool is_increasing = IsIncreasingOrder(order);
   for (const auto& item : global_items) {
@@ -409,27 +414,35 @@ syncer::StringOrdinal CalculateNewAppPositionInGlobalScope(
     }
   }
 
-  // Calculate the result based on `global_prev` and `global_next`.
+  // Store results.
+  if (global_prev.IsValid())
+    *prev = global_prev;
 
-  if (!global_prev.IsValid() && !global_next.IsValid()) {
-    // The edge case that `global_items` is empty is covered here. Not sure
-    // whether this case really exists. Handle it for satefy.
+  if (global_next.IsValid())
+    *next = global_next;
+}
+
+syncer::StringOrdinal CalculatePositionBetweenNeighbors(
+    const syncer::StringOrdinal& prev,
+    const syncer::StringOrdinal& next) {
+  if (!prev.IsValid() && !next.IsValid()) {
+    // Not sure whether this case really exists. Handle it for satefy.
     return syncer::StringOrdinal().CreateInitialOrdinal();
   }
 
-  if (global_prev.IsValid() && global_next.IsValid()) {
-    // Both left neighbor and right neighbor are valid. Insert the new app
-    // between `global_prev` and `global_next`.
-    return global_prev.CreateBetween(global_next);
+  if (prev.IsValid() && next.IsValid()) {
+    // Both left neighbor and right neighbor are valid. Return a position that
+    // is between `prev` and `next`.
+    return prev.CreateBetween(next);
   }
 
-  if (global_prev.IsValid()) {
-    // Only `global_prev` is valid. Insert the new app after `global_prev`.
-    return global_prev.CreateAfter();
+  if (prev.IsValid()) {
+    // Only `prev` is valid. Return a position that is after `prev`.
+    return prev.CreateAfter();
   }
 
-  // Only `global_next` is valid. Insert the new app before `global_next`.
-  return global_next.CreateBefore();
+  // Only `next` is valid. Return a position that is before `next`.
+  return next.CreateBefore();
 }
 
 }  // namespace
@@ -491,7 +504,7 @@ AppListReorderDelegate::GenerateReorderParamsForSyncItems(
 std::vector<reorder::ReorderParam>
 AppListReorderDelegate::GenerateReorderParamsForAppListItems(
     ash::AppListSortOrder order,
-    const std::vector<const ChromeAppListItem*>& app_list_items) {
+    const std::vector<const ChromeAppListItem*>& app_list_items) const {
   DCHECK_GT(app_list_items.size(), 1);
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
@@ -506,12 +519,12 @@ AppListReorderDelegate::GenerateReorderParamsForAppListItems(
   }
 }
 
-void AppListReorderDelegate::CalculateNewItemPosition(
+bool AppListReorderDelegate::CalculateNewItemPosition(
     ash::AppListSortOrder order,
     const ChromeAppListItem& new_item,
     const std::vector<const ChromeAppListItem*>& local_items,
-    syncer::StringOrdinal* target_position,
-    bool* order_ignored) const {
+    const AppListSyncableService::SyncItemMap* global_items,
+    syncer::StringOrdinal* target_position) const {
   // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
   // folder.
   DCHECK(!new_item.is_folder());
@@ -519,20 +532,18 @@ void AppListReorderDelegate::CalculateNewItemPosition(
   switch (order) {
     case ash::AppListSortOrder::kCustom:
       // Insert `item` at the front when the sort order is kCustom.
-      *target_position = CalculateFrontPosition();
-      *order_ignored = false;
-      break;
+      DCHECK(global_items);
+      *target_position = CalculateFrontPosition(*global_items);
+      return true;
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:
-      CalculatePositionInNameOrder(order, new_item, local_items,
-                                   target_position, order_ignored);
-      break;
+      return CalculatePositionInNameOrder(order, new_item, local_items,
+                                          global_items, target_position);
   }
 }
 
-syncer::StringOrdinal AppListReorderDelegate::CalculateFrontPosition() const {
-  const AppListSyncableService::SyncItemMap& sync_item_map =
-      app_list_syncable_service_->sync_items();
+syncer::StringOrdinal AppListReorderDelegate::CalculateFrontPosition(
+    const AppListSyncableService::SyncItemMap& sync_item_map) const {
   syncer::StringOrdinal minimum_valid_ordinal;
   for (auto iter = sync_item_map.cbegin(); iter != sync_item_map.cend();
        ++iter) {
@@ -554,28 +565,21 @@ syncer::StringOrdinal AppListReorderDelegate::CalculateFrontPosition() const {
   return syncer::StringOrdinal::CreateInitialOrdinal();
 }
 
-void AppListReorderDelegate::CalculatePositionInNameOrder(
+bool AppListReorderDelegate::CalculatePositionInNameOrder(
     ash::AppListSortOrder order,
     const ChromeAppListItem& new_item,
     const std::vector<const ChromeAppListItem*>& local_items,
-    syncer::StringOrdinal* target_position,
-    bool* order_ignored) const {
+    const AppListSyncableService::SyncItemMap* global_items,
+    syncer::StringOrdinal* target_position) const {
   DCHECK(order == ash::AppListSortOrder::kNameAlphabetical ||
          order == ash::AppListSortOrder::kNameReverseAlphabetical);
-
-  // Set the default value to be false.
-  *order_ignored = false;
 
   std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
       reorder::GenerateStringWrappersFromAppListItems(local_items);
 
   if (local_item_wrappers.empty()) {
-    *target_position = CalculateNewAppPositionInGlobalScope(
-        order, reorder::ConvertAppListItemToStringWrapper(new_item),
-        reorder::GenerateStringWrappersFromSyncItems(
-            app_list_syncable_service_->sync_items()),
-        /*local_prev=*/absl::nullopt, /*local_next=*/absl::nullopt);
-    return;
+    *target_position = syncer::StringOrdinal::CreateInitialOrdinal();
+    return true;
   }
 
   std::vector<reorder::SyncItemWrapper<std::string>> sorted_subsequence;
@@ -584,26 +588,25 @@ void AppListReorderDelegate::CalculatePositionInNameOrder(
                                           &sorted_subsequence);
 
   if (entropy > reorder::kOrderResetThreshold) {
-    // Ignore `order` and place `new_item` at front if entropy is too high.
-    *target_position = CalculateFrontPosition();
-    *order_ignored = true;
-    return;
+    // Do not set `target_position` if entropy is too high.
+    return false;
   }
 
-  absl::optional<syncer::StringOrdinal> prev_neighbor;
-  absl::optional<syncer::StringOrdinal> next_neighbor;
+  syncer::StringOrdinal prev_neighbor;
+  syncer::StringOrdinal next_neighbor;
   CalculateNeighbors(order, new_item.name(), sorted_subsequence, &prev_neighbor,
                      &next_neighbor);
 
-  *target_position = CalculateNewAppPositionInGlobalScope(
-      order, reorder::ConvertAppListItemToStringWrapper(new_item),
-      reorder::GenerateStringWrappersFromSyncItems(
-          app_list_syncable_service_->sync_items()),
-      prev_neighbor, next_neighbor);
-}
+  if (global_items) {
+    AdjustNeighborsInGlobalScope(
+        order, reorder::ConvertAppListItemToStringWrapper(new_item),
+        reorder::GenerateStringWrappersFromSyncItems(*global_items),
+        &prev_neighbor, &next_neighbor);
+  }
 
-PrefService* AppListReorderDelegate::GetPrefService() {
-  return app_list_syncable_service_->profile()->GetPrefs();
+  *target_position =
+      CalculatePositionBetweenNeighbors(prev_neighbor, next_neighbor);
+  return true;
 }
 
 }  // namespace app_list
