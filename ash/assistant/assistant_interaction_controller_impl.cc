@@ -164,20 +164,6 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
   using assistant::util::DeepLinkParam;
   using assistant::util::DeepLinkType;
 
-  if (type == DeepLinkType::kWhatsOnMyScreen) {
-    DCHECK(AssistantState::Get()->IsScreenContextAllowed());
-
-    // Explicitly call ShowUi() to set the correct Assistant entry point.
-    // ShowUi() will no-op if UI is already shown.
-    AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kDeepLink);
-
-    // The "What's on my screen" chip initiates a screen context interaction.
-    StartScreenContextInteraction(
-        /*include_assistant_structure=*/true,
-        /*region=*/gfx::Rect(), AssistantQuerySource::kWhatsOnMyScreen);
-    return;
-  }
-
   if (type == DeepLinkType::kReminders) {
     using ReminderAction = assistant::util::ReminderAction;
     const absl::optional<ReminderAction>& action =

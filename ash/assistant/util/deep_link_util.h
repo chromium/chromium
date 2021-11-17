@@ -39,7 +39,6 @@ enum class DeepLinkType {
   kScreenshot,
   kSettings,
   kTaskManager,
-  kWhatsOnMyScreen,
 };
 
 // Enumeration of deep link parameters.
@@ -104,9 +103,6 @@ GURL CreateAssistantQueryDeepLink(const std::string& query);
 
 // Returns a deep link to top level Assistant Settings.
 COMPONENT_EXPORT(ASSISTANT_UTIL) GURL CreateAssistantSettingsDeepLink();
-
-// Returns a deep link to initiate a screen context interaction.
-COMPONENT_EXPORT(ASSISTANT_UTIL) GURL CreateWhatsOnMyScreenDeepLink();
 
 // Returns the parsed parameters for the specified |deep_link|. If the supplied
 // argument is not a supported deep link or if no parameters are found, an empty

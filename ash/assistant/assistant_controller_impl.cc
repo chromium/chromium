@@ -233,7 +233,6 @@ void AssistantControllerImpl::OnDeepLinkReceived(
     case DeepLinkType::kQuery:
     case DeepLinkType::kReminders:
     case DeepLinkType::kSettings:
-    case DeepLinkType::kWhatsOnMyScreen:
       // No action needed.
       break;
   }

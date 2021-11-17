@@ -3399,6 +3399,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_ASSISTANT_CHIP_SET_A_REMINDER" desc="Message shown on suggestion chip in Assistant UI to initiate a query to set a reminder.">
         Set a reminder
       </message>
+      <message name="IDS_ASH_ASSISTANT_CHIP_TELL_ME_A_JOKE" desc="Message shown on suggestion chip in Assistant UI to initiate a query to tell a joke.">
+        Tell me a joke
+      </message>
       <message name="IDS_ASH_ASSISTANT_CHIP_WHAT_CAN_YOU_DO" desc="Message shown on suggestion chip in Assistant UI to initiate a query for Assistant capabilities.">
         What can you do?
       </message>
