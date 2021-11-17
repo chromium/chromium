@@ -132,6 +132,7 @@ public class LightweightReactionsMediator {
      * with the URI to the temporary GIF file for sharing.
      *
      * @param host The {@link GifGeneratorHost} to use for generating the GIF frames.
+     * @param fileName The shared GIF's file name.
      * @param sceneCoordinator The {@link SceneCoordinator} to restart the animations when
      *         cancelling and to get the dimensions.
      * @param progressDialog The {@link LightweightReactionsProgressDialog} to update the progress
@@ -139,8 +140,9 @@ public class LightweightReactionsMediator {
      * @param doneCallback The callback to invoke when the final GIF is ready. The callback is
      *                     passed the Uri to the temporary GIF file that was generated.
      */
-    public void generateGif(GifGeneratorHost host, SceneCoordinator sceneCoordinator,
-            LightweightReactionsProgressDialog progressDialog, Callback<Uri> doneCallback) {
+    public void generateGif(GifGeneratorHost host, String fileName,
+            SceneCoordinator sceneCoordinator, LightweightReactionsProgressDialog progressDialog,
+            Callback<Uri> doneCallback) {
         mGifGenerationCancelled = false;
         progressDialog.setCancelProgressListener(view -> mGifGenerationCancelled = true);
         FileOutputStreamWriter gifWriter = (fos, frameCallback) -> {
@@ -202,16 +204,7 @@ public class LightweightReactionsMediator {
         };
 
         ShareImageFileUtils.generateTemporaryUriFromStream(
-                getFileName(), gifWriter, GIF_FILE_EXT, doneCallback);
-    }
-
-    /**
-     * Returns the localized temporary filename. Random numbers will be appended to it when the file
-     * creation happens.
-     */
-    private String getFileName() {
-        // TODO(crbug.com/1213923): get final string from UX, and localize it here.
-        return "reaction";
+                fileName, gifWriter, GIF_FILE_EXT, doneCallback);
     }
 
     /**

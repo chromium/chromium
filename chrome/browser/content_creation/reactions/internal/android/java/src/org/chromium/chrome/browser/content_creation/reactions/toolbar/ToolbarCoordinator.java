@@ -26,8 +26,6 @@ public class ToolbarCoordinator {
     private final ToolbarReactionsDelegate mReactionsDelegate;
     private final RelativeLayout mRootLayout;
 
-    private List<ReactionMetadata> mAvailableReactions;
-
     public ToolbarCoordinator(View parentView, ToolbarControlsDelegate controlsDelegate,
             ToolbarReactionsDelegate reactionsDelegate) {
         mControlsDelegate = controlsDelegate;
@@ -46,11 +44,11 @@ public class ToolbarCoordinator {
      */
     public void initReactions(List<ReactionMetadata> availableReactions, Bitmap[] thumbnails) {
         assert availableReactions.size() == thumbnails.length;
-        mAvailableReactions = availableReactions;
 
         LinearLayout lr =
                 mRootLayout.findViewById(R.id.lightweight_reactions_toolbar_reaction_picker);
         for (int i = 0; i < thumbnails.length; ++i) {
+            ReactionMetadata reactionMetadata = availableReactions.get(i);
             ImageView iv = new ImageView(mRootLayout.getContext());
             iv.setImageBitmap(thumbnails[i]);
             int thumbnailSizePx = ViewUtils.dpToPx(mRootLayout.getContext(), THUMBNAIL_SIZE_DP);
@@ -61,8 +59,9 @@ public class ToolbarCoordinator {
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             iv.setClickable(true);
-            iv.setTag(availableReactions.get(i));
+            iv.setTag(reactionMetadata);
             iv.setOnClickListener(this::onReactionTapped);
+            iv.setContentDescription(reactionMetadata.localizedName);
 
             lr.addView(iv);
         }
