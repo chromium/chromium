@@ -131,9 +131,12 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     bool wants_result = has_callback();
     std::vector<mojom::JSSourcePtr> sources;
     sources.push_back(mojom::JSSource::New(code_string, script_url_));
+    // tabs.executeScript does not support waiting for promises (only
+    // scripting.executeScript does).
+    constexpr bool kWaitForPromises = false;
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
         std::move(sources), mojom::ExecutionWorld::kIsolated, wants_result,
-        user_gesture()));
+        user_gesture(), kWaitForPromises));
   }
 
   executor->ExecuteScript(

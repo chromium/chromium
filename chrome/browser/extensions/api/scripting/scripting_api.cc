@@ -551,7 +551,8 @@ bool ScriptingExecuteScriptFunction::Execute(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
       mojom::CodeInjection::NewJs(
           mojom::JSInjection::New(std::move(sources), execution_world,
-                                  /*wants_result=*/true, user_gesture())),
+                                  /*wants_result=*/true, user_gesture(),
+                                  /*wait_for_promise=*/true)),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
