@@ -86,7 +86,9 @@ void AddStrings(content::WebUIDataSource* source) {
         {"googlePhotosAlbumsTabLabel",
          IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
         {"googlePhotosPhotosTabLabel",
-         IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB}};
+         IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB},
+        {"googlePhotosZeroStateMessage",
+         IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE}};
     source->AddLocalizedStrings(kGooglePhotosLocalizedStrings);
   }
 

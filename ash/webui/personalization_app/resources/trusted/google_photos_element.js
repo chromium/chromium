@@ -311,6 +311,19 @@ export class GooglePhotos extends WithPersonalizationStore {
   }
 
   /**
+   * Creates the html for the Google Photos link in zero state.
+   * @return {string}
+   * @private
+   */
+  getZeroStateMessage_() {
+    return this.i18nAdvanced('googlePhotosZeroStateMessage', {
+      substitutions: [
+        '<a target="_blank" href="https://photos.google.com">photos.google.com</a>'
+      ]
+    });
+  }
+
+  /**
    * Invalidates the grid for the currently selected tab to force relayout.
    * @private
    */
@@ -318,11 +331,11 @@ export class GooglePhotos extends WithPersonalizationStore {
     switch (this.tab_) {
       case Tab.Albums:
         // Firing 'iron-resize' event forces relayout of 'iron-list'.
-        this.shadowRoot.querySelector('#albumsGrid').fire('iron-resize');
+        this.shadowRoot.querySelector('#albumsGrid')?.fire('iron-resize');
         return;
       case Tab.Photos:
         // Firing 'iron-resize' event forces relayout of 'iron-list'.
-        this.shadowRoot.querySelector('#photosGrid').fire('iron-resize');
+        this.shadowRoot.querySelector('#photosGrid')?.fire('iron-resize');
         return;
       default:
         assertNotReached();
@@ -346,6 +359,15 @@ export class GooglePhotos extends WithPersonalizationStore {
    */
   isAlbumsTabSelected_() {
     return this.tab_ === Tab.Albums;
+  }
+
+  /**
+   * Whether the list of photos is empty.
+   * @return {boolean}
+   * @private
+   */
+  isPhotosEmpty_() {
+    return !isNonEmptyArray(this.photos_);
   }
 
   /**

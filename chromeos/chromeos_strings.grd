@@ -1892,6 +1892,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB" desc="Label for the Photos tab in the Google Photos page in the wallpaper app.">
         Photos
       </message>
+      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE" desc="Message shown in the Google Photos page in the wallpaper app when the user has no photos.">
+        No image available. To add photos, go to <ph name="LINK">$1<ex>photos.google.com</ex></ph>
+      </message>
       <message name="IDS_PERSONALIZATION_APP_MY_IMAGES" desc="Label for the local images page in wallpaper app.">
         My Images
       </message>

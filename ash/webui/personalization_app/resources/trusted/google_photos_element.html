@@ -64,6 +64,32 @@
     display: flex;
     justify-content: center;
   }
+
+  #zeroState {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  #zeroStateImage {
+    margin-bottom: 16px;
+    width: 180px;
+  }
+
+  #zeroStateText {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-1-font);
+    max-width: 236px;
+    text-align: center;
+  }
+
+  a {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
@@ -78,23 +104,25 @@
       </cr-button>
     </div>
   </template>
-  <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
-    <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
-      <template>
-        <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
-          on-focus="onPhotosGridRowFocused_"
-          on-keydown="onPhotosGridRowKeyDown_">
-          <template is="dom-repeat" items="[[row]]" as="photo">
-            <personalization-grid-item>
-              <div class="photo" colindex$="[[index]]" tabindex="-1">
-                [[photo]]
-              </div>
-            </personalization-grid-item>
-          </template>
-        </div>
-      </template>
-    </iron-list>
-  </div>
+  <template is="dom-if" if="[[!isPhotosEmpty_(photos_)]]">
+    <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
+      <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
+        <template>
+          <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
+            on-focus="onPhotosGridRowFocused_"
+            on-keydown="onPhotosGridRowKeyDown_">
+            <template is="dom-repeat" items="[[row]]" as="photo">
+              <personalization-grid-item>
+                <div class="photo" colindex$="[[index]]" tabindex="-1">
+                  [[photo]]
+                </div>
+              </personalization-grid-item>
+            </template>
+          </div>
+        </template>
+      </iron-list>
+    </div>
+  </template>
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
     <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
       <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
@@ -109,6 +137,12 @@
             </personalization-grid-item>
         </template>
       </iron-list>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isPhotosEmpty_(photos_)]]">
+    <div id="zeroState">
+      <img id="zeroStateImage" src="//personalization/common/no_images.svg" aria-hidden="true">
+      <div id="zeroStateText" inner-h-t-m-l="[[getZeroStateMessage_()]]"></div>
     </div>
   </template>
 </main>
