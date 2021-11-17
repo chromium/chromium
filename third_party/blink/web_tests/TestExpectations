@@ -2864,7 +2864,6 @@ crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection
 
 # WebRTC: there's an open bug with some capture scenarios not working.
 crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Failure Pass Skip Timeout ]
-crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-capture-video.https.html [ Failure Pass Skip Timeout ]
 
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
