@@ -1,14 +1,52 @@
 <style>
   :host {
-    display: none;
-    opacity: 0;
     position: absolute;
     z-index: 1;
   }
 
-  :host([open]) {
-    display: block;
-    opacity: 1;
+  .arrow {
+    background-color: var(--iph-bubble-background);
+    height: 16px;
+    position: absolute;
+    transform: rotate(-45deg);
+    width: 16px;
+    z-index: -1;
+  }
+
+  /* Turns the arrow direction downwards, when the bubble is placed above
+   * the anchor element */
+  :host([position=above]) .arrow {
+    border-bottom-left-radius: 2px;
+    bottom: -8px;
+    left: calc(50% - 8px);
+  }
+
+  /* Turns the arrow direction upwards, when the bubble is placed below
+   * the anchor element */
+  :host([position=below]) .arrow {
+    border-top-right-radius: 2px;
+    left: calc(50% - 8px);
+    top: -8px;
+  }
+
+  /* Turns the arrow direction to the right, when the bubble is placed to the
+   * left of the anchor element */
+  :host([position=left]) .arrow {
+    border-bottom-right-radius: 2px;
+    right: -8px;
+    top: calc(50% - 8px);
+  }
+
+  /* Turns the arrow direction to the left, when the bubble is placed to the
+   * right of the anchor element */
+  :host([position=right]) .arrow {
+    border-top-left-radius: 2px;
+    left: -8px;
+    top: calc(50% - 8px);
+  }
+
+  .body {
+    font-size: 14px;
   }
 
   .iph-bubble {
@@ -21,11 +59,21 @@
     width: 362px;
   }
 
-  .body {
-    font-size: 14px;
+  .iph-bubble-container {
+    display: none;
+    opacity: 0;
+  }
+
+  :host([open]) .iph-bubble-container
+  {
+    display: block;
+    opacity: 1;
   }
 </style>
 
-<div class="iph-bubble">
-  <div class="body">[[body]]</div>
+<div class="iph-bubble-container">
+  <div class="iph-bubble">
+    <div class="body">[[body]]</div>
+    <div class="arrow"></div>
+  </div>
 </div>

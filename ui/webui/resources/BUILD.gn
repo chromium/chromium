@@ -201,6 +201,7 @@ ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
   composite = true
+  tsconfig_base = "tsconfig_base.json"
 
   in_files = [
     "cr_components/iph_bubble/iph_bubble.ts",
