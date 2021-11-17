@@ -29,6 +29,9 @@ MODULES_EXPORT bool ValidateBlinkInterestGroup(
     String& error_field_value,
     String& error);
 
+MODULES_EXPORT size_t
+EstimateBlinkInterestGroupSize(const mojom::blink::InterestGroup& group);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_VALIDATE_BLINK_INTEREST_GROUP_H_

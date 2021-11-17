@@ -53,7 +53,7 @@ InterestGroup::Ad::~Ad() = default;
 
 size_t InterestGroup::Ad::EstimateSize() const {
   size_t size = 0u;
-  size += render_url.EstimateMemoryUsage();
+  size += render_url.spec().length();
   if (metadata)
     size += metadata->size();
   return size;
@@ -134,11 +134,11 @@ size_t InterestGroup::EstimateSize() const {
   size += owner.Serialize().size();
   size += name.size();
   if (bidding_url)
-    size += bidding_url->EstimateMemoryUsage();
+    size += bidding_url->spec().length();
   if (update_url)
-    size += update_url->EstimateMemoryUsage();
+    size += update_url->spec().length();
   if (trusted_bidding_signals_url)
-    size += trusted_bidding_signals_url->EstimateMemoryUsage();
+    size += trusted_bidding_signals_url->spec().length();
   if (trusted_bidding_signals_keys) {
     for (const std::string& key : *trusted_bidding_signals_keys)
       size += key.size();

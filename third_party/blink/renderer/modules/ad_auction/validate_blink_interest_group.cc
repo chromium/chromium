@@ -38,15 +38,52 @@ bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
 
 }  // namespace
 
+// The logic in this method must be kept in sync with
+// InterestGroup::EstimateSize() in blink/common/interest_group/.
+size_t EstimateBlinkInterestGroupSize(
+    const mojom::blink::InterestGroup& group) {
+  size_t size = 0u;
+  size += group.owner->ToString().length();
+  size += group.name.length();
+
+  if (group.bidding_url)
+    size += group.bidding_url->GetString().length();
+
+  if (group.update_url)
+    size += group.update_url->GetString().length();
+
+  if (group.trusted_bidding_signals_url)
+    size += group.trusted_bidding_signals_url->GetString().length();
+
+  if (group.trusted_bidding_signals_keys) {
+    for (const String& key : *group.trusted_bidding_signals_keys)
+      size += key.length();
+  }
+  size += group.user_bidding_signals.length();
+
+  if (group.ads) {
+    for (const auto& ad : group.ads.value()) {
+      size += ad->render_url.GetString().length();
+      size += ad->metadata.length();
+    }
+  }
+
+  if (group.ad_components) {
+    for (const auto& ad : group.ad_components.value()) {
+      size += ad->render_url.GetString().length();
+      size += ad->metadata.length();
+    }
+  }
+
+  return size;
+}
+
 // The logic in this method must be kept in sync with InterestGroup::IsValid()
 // in blink/common/interest_group/.
 bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
                                 String& error_field_name,
                                 String& error_field_value,
                                 String& error) {
-  size_t size = 0u;
-  size += group.owner->ToString().length();
-  size += group.name.length();
   if (group.owner->Protocol() != url::kHttpsScheme) {
     error_field_name = "owner";
     error_field_value = group.owner->ToString();
@@ -63,7 +100,6 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           "and have no fragment identifier or embedded credentials.";
       return false;
     }
-    size += group.bidding_url->GetString().length();
   }
 
   if (group.update_url) {
@@ -75,7 +111,6 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           "and have no fragment identifier or embedded credentials.";
       return false;
     }
-    size += group.update_url->GetString().length();
   }
 
   if (group.trusted_bidding_signals_url) {
@@ -92,15 +127,7 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           "or embedded credentials.";
       return false;
     }
-    size += group.trusted_bidding_signals_url->GetString().length();
   }
-
-  if (group.trusted_bidding_signals_keys) {
-    for (const String& key : *group.trusted_bidding_signals_keys)
-      size += key.length();
-  }
-
-  size += group.user_bidding_signals.length();
 
   if (group.ads) {
     for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
@@ -111,8 +138,6 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
-      size += render_url.GetString().length();
-      size += group.ads.value()[i]->metadata.length();
     }
   }
 
@@ -125,11 +150,10 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
-      size += render_url.GetString().length();
-      size += group.ad_components.value()[i]->metadata.length();
     }
   }
 
+  size_t size = EstimateBlinkInterestGroupSize(group);
   if (size >= mojom::blink::kMaxInterestGroupSize) {
     error_field_name = "size";
     error_field_value = String::Number(size);

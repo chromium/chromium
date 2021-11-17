@@ -7,5 +7,6 @@ specific_include_rules = {
         "+base",
         "+url/gurl.h",
         "+url/origin.h",
+        "+mojo/public/cpp/test_support/test_utils.h",
     ],
 }

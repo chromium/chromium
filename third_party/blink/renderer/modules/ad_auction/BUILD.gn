@@ -19,6 +19,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest:gtest",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/common:headers",

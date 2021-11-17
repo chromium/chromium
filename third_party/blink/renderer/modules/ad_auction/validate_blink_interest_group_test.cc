@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
@@ -44,7 +45,12 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_TRUE(error_field_value.IsNull());
     EXPECT_TRUE(error.IsNull());
 
-    EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
+    blink::InterestGroup interest_group;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
+    EXPECT_EQ(EstimateBlinkInterestGroupSize(*blink_interest_group),
+              interest_group.EstimateSize());
   }
 
   // Check that `blink_interest_group` is valid, if added from `blink_origin`,
@@ -63,26 +69,10 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     EXPECT_EQ(String::FromUTF8(expected_error_field_value), error_field_value);
     EXPECT_EQ(String::FromUTF8(expected_error), error);
 
-    EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
-  }
-
-  // Tries to Converts a mojom::blink::InterestGroupPtr to a
-  // blink::InterestGroup by using Mojo to serialize and deserialize it. Returns
-  // true on success, false on failure. Failure indicates the traits conversion
-  // logic refused to serialize the InterestGroup, since it was invalid. Based
-  // off of mojo::test::SerializeAndDeserialize(), which can't convert between
-  // blink and non-blink types.
-  bool CanSerializeAndDeserialize(
-      const mojom::blink::InterestGroupPtr& blink_interest_group) {
-    mojo::Message message =
-        mojom::blink::InterestGroup::SerializeAsMessage(&blink_interest_group);
-    mojo::ScopedMessageHandle handle = message.TakeMojoMessage();
-    message = mojo::Message::CreateFromMessageHandle(&handle);
-    DCHECK(!message.IsNull());
-
-    auto interest_group = std::make_unique<blink::InterestGroup>();
-    return mojom::InterestGroup::DeserializeFromMessage(std::move(message),
-                                                        interest_group.get());
+    blink::InterestGroup interest_group;
+    EXPECT_FALSE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
   }
 
   // Creates and returns a minimally populated mojom::blink::InterestGroup.
@@ -489,14 +479,37 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
       "51219" /* expected_error_field_value */,
       "interest groups must be less than 51200 bytes" /* expected_error */);
 
-  EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
-
-  // Almost too big enough should still work.
+  // Almost too big should still work.
   long_string = std::string(51200 - 20, 'n');
   blink_interest_group->name = String(long_string);
 
   ExpectInterestGroupIsValid(blink_interest_group);
-  EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "padding to 51200...............";
+  blink_interest_group->ad_components.emplace();
+  for (int i = 0; i < 682; ++i) {
+    // Each ad component is 75 bytes.
+    auto mojo_ad_component1 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component1->render_url =
+        KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
+    mojo_ad_component1->metadata =
+        String::FromUTF8("\"This field isn't actually validated\"");
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component1));
+  }
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, "size" /* expected_error_field_name */,
+      "51200" /* expected_error_field_value */,
+      "interest groups must be less than 51200 bytes" /* expected_error */);
+
+  // Almost too big should still work.
+  blink_interest_group->ad_components->resize(681);
+
+  ExpectInterestGroupIsValid(blink_interest_group);
 }
 
 }  // namespace blink
