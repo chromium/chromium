@@ -73,6 +73,9 @@
 // Trigger a caught NSException, this will not crash
 - (void)catchNSException;
 
+// Trigger an NSException with sinkholes in CoreAutoLayout.
+- (void)crashCoreAutoLayoutSinkhole;
+
 // Trigger a crash with an infinite recursion.
 - (void)crashRecursion;
 
@@ -84,6 +87,7 @@
 
 // Trigger a crash after writing various annotations.
 - (void)crashWithAnnotations;
+
 @end
 
 #endif  // CRASHPAD_TEST_IOS_HOST_SHARED_OBJECT_H_

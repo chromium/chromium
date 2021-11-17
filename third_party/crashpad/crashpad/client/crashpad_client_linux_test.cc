@@ -147,6 +147,26 @@ void ValidateAttachment(const CrashReportDatabase::UploadReport* report) {
             0);
 }
 
+void ValidateExtraMemory(const ProcessSnapshotMinidump& minidump) {
+  // Verify that if we have an exception, then the code around the instruction
+  // pointer is included in the extra memory.
+  const ExceptionSnapshot* exception = minidump.Exception();
+  if (exception == nullptr)
+    return;
+  uint64_t pc = exception->Context()->InstructionPointer();
+  std::vector<const MemorySnapshot*> snippets = minidump.ExtraMemory();
+  bool pc_found = false;
+  for (const MemorySnapshot* snippet : snippets) {
+    uint64_t start = snippet->Address();
+    uint64_t end = start + snippet->Size();
+    if (pc >= start && pc < end) {
+      pc_found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(pc_found);
+}
+
 void ValidateDump(const CrashReportDatabase::UploadReport* report) {
   ProcessSnapshotMinidump minidump_snapshot;
   ASSERT_TRUE(minidump_snapshot.Initialize(report->Reader()));
@@ -163,6 +183,8 @@ void ValidateDump(const CrashReportDatabase::UploadReport* report) {
   }
 #endif
   ValidateAttachment(report);
+
+  ValidateExtraMemory(minidump_snapshot);
 
   for (const ModuleSnapshot* module : minidump_snapshot.Modules()) {
     for (const AnnotationSnapshot& annotation : module->AnnotationObjects()) {

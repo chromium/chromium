@@ -289,6 +289,18 @@ OperationStatus GetPendingReports(std::vector<Report>* pending_reports) {
   }
 }
 
+- (void)crashCoreAutoLayoutSinkhole {
+  // EDO has its own sinkhole, so dispatch this away.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIView* unattachedView = [[UIView alloc] init];
+    UIWindow* window = [UIApplication sharedApplication].windows[0];
+    [NSLayoutConstraint activateConstraints:@[
+      [window.rootViewController.view.bottomAnchor
+          constraintEqualToAnchor:unattachedView.bottomAnchor],
+    ]];
+  });
+}
+
 - (void)crashRecursion {
   recurse(0);
 }

@@ -180,7 +180,11 @@ class InProcessHandler {
   }
 
   void SaveSnapshot(ProcessSnapshotIOSIntermediateDump& process_snapshot);
+
+  // Process a maximum of 20 pending intermediate dumps. Dumps named with our
+  // bundle id get first priority to prevent spamming.
   std::vector<base::FilePath> PendingFiles();
+
   bool OpenNewFile();
   void PostReportCleanup();
 

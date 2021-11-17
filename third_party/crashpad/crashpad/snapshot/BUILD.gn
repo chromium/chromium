@@ -128,6 +128,8 @@ crashpad_static_library("snapshot") {
 
   if (crashpad_is_linux || crashpad_is_android) {
     sources += [
+      "linux/capture_memory_delegate_linux.cc",
+      "linux/capture_memory_delegate_linux.h",
       "linux/cpu_context_linux.cc",
       "linux/cpu_context_linux.h",
       "linux/debug_rendezvous.cc",

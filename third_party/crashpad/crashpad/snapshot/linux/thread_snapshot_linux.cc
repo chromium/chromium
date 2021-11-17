@@ -17,6 +17,7 @@
 #include <sched.h>
 
 #include "base/logging.h"
+#include "snapshot/linux/capture_memory_delegate_linux.h"
 #include "snapshot/linux/cpu_context_linux.h"
 #include "util/misc/reinterpret_bytes.h"
 
@@ -138,8 +139,10 @@ ThreadSnapshotLinux::ThreadSnapshotLinux()
 
 ThreadSnapshotLinux::~ThreadSnapshotLinux() {}
 
-bool ThreadSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
-                                     const ProcessReaderLinux::Thread& thread) {
+bool ThreadSnapshotLinux::Initialize(
+    ProcessReaderLinux* process_reader,
+    const ProcessReaderLinux::Thread& thread,
+    uint32_t* gather_indirectly_referenced_memory_bytes_remaining) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -205,6 +208,13 @@ bool ThreadSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
                 thread.static_priority, thread.sched_policy, thread.nice_value)
           : -1;
 
+  CaptureMemoryDelegateLinux capture_memory_delegate(
+      process_reader,
+      &thread,
+      &pointed_to_memory_,
+      gather_indirectly_referenced_memory_bytes_remaining);
+  CaptureMemory::PointedToByContext(context_, &capture_memory_delegate);
+
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
 }
@@ -240,7 +250,13 @@ uint64_t ThreadSnapshotLinux::ThreadSpecificDataAddress() const {
 }
 
 std::vector<const MemorySnapshot*> ThreadSnapshotLinux::ExtraMemory() const {
-  return std::vector<const MemorySnapshot*>();
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  std::vector<const MemorySnapshot*> result;
+  result.reserve(pointed_to_memory_.size());
+  for (const auto& pointed_to_memory : pointed_to_memory_) {
+    result.push_back(pointed_to_memory.get());
+  }
+  return result;
 }
 
 }  // namespace internal

@@ -227,6 +227,12 @@ class FullReverseIterator : public MemoryMap::Iterator {
   std::vector<MemoryMap::Mapping>::const_reverse_iterator rend_;
 };
 
+// Faster than a CheckedRange, for temporary values.
+struct FastRange {
+  VMAddress base;
+  VMSize size;
+};
+
 }  // namespace
 
 MemoryMap::Mapping::Mapping()
@@ -319,6 +325,57 @@ const MemoryMap::Mapping* MemoryMap::FindMappingWithName(
     }
   }
   return nullptr;
+}
+
+std::vector<CheckedRange<VMAddress>> MemoryMap::GetReadableRanges(
+    const CheckedRange<VMAddress, VMSize>& range) const {
+  using Range = CheckedRange<VMAddress, VMSize>;
+
+  VMAddress range_base = range.base();
+  VMAddress range_end = range.end();
+  std::vector<FastRange> overlapping;
+
+  // Find all readable ranges overlapping the target range, maintaining order.
+  for (const auto& mapping : mappings_) {
+    if (!mapping.readable)
+      continue;
+    if (mapping.range.End() < range_base)
+      continue;
+    if (mapping.range.Base() >= range_end)
+      continue;
+    // Special case: the "[vvar]" region is marked readable, but we can't
+    // access it.
+    if (mapping.inode == 0 && mapping.name == "[vvar]")
+      continue;
+    overlapping.push_back({mapping.range.Base(), mapping.range.Size()});
+  }
+  if (overlapping.empty())
+    return std::vector<Range>();
+
+  // For the first and last, trim to the boundary of the incoming range.
+  FastRange& front = overlapping.front();
+  VMAddress original_front_base = front.base;
+  front.base = std::max(front.base, range_base);
+  front.size = (original_front_base + front.size) - front.base;
+  FastRange& back = overlapping.back();
+  VMAddress back_end = back.base + back.size;
+  back.size = std::min(range_end, back_end) - back.base;
+
+  // Coalesce, and convert to return type.
+  std::vector<Range> result;
+  result.push_back({overlapping[0].base, overlapping[0].size});
+  DCHECK(result.back().IsValid());
+  for (size_t i = 1; i < overlapping.size(); ++i) {
+    if (result.back().end() == overlapping[i].base) {
+      result.back().SetRange(result.back().base(),
+                             result.back().size() + overlapping[i].size);
+    } else {
+      result.push_back({overlapping[i].base, overlapping[i].size});
+    }
+    DCHECK(result.back().IsValid());
+  }
+
+  return result;
 }
 
 std::unique_ptr<MemoryMap::Iterator> MemoryMap::FindFilePossibleMmapStarts(

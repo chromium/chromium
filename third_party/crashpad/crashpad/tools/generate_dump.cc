@@ -49,6 +49,7 @@
 #include "util/win/xp_compat.h"
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "snapshot/linux/process_snapshot_linux.h"
+#include "util/linux/direct_ptrace_connection.h"
 #endif  // OS_APPLE
 
 namespace crashpad {
@@ -198,8 +199,12 @@ int GenerateDumpMain(int argc, char* argv[]) {
     }
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     // TODO(jperaza): https://crashpad.chromium.org/bug/30.
+    DirectPtraceConnection task;
+    if (!task.Initialize(options.pid)) {
+      return EXIT_FAILURE;
+    }
     ProcessSnapshotLinux process_snapshot;
-    if (!process_snapshot.Initialize(nullptr)) {
+    if (!process_snapshot.Initialize(&task)) {
       return EXIT_FAILURE;
     }
 #endif  // OS_APPLE

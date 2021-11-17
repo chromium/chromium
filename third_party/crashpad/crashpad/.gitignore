@@ -19,6 +19,7 @@
 *.xcodeproj
 *~
 .*.sw?
+.cache
 .DS_Store
 .gdb_history
 .gdbinit

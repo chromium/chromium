@@ -14,9 +14,28 @@
 
 #include "client/crash_report_database.h"
 
+#include <sys/stat.h>
+
+#include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "util/file/directory_reader.h"
+#include "util/file/filesystem.h"
 
 namespace crashpad {
+
+namespace {
+constexpr base::FilePath::CharType kAttachmentsDirectory[] =
+    FILE_PATH_LITERAL("attachments");
+
+bool AttachmentNameIsOK(const std::string& name) {
+  for (const char c : name) {
+    if (c != '_' && c != '-' && c != '.' && !isalnum(c))
+      return false;
+  }
+  return true;
+}
+}  // namespace
 
 CrashReportDatabase::Report::Report()
     : uuid(),
@@ -73,6 +92,60 @@ FileReaderInterface* CrashReportDatabase::NewReport::Reader() {
   return reader_.get();
 }
 
+FileWriter* CrashReportDatabase::NewReport::AddAttachment(
+    const std::string& name) {
+  if (!AttachmentNameIsOK(name)) {
+    LOG(ERROR) << "invalid name for attachment " << name;
+    return nullptr;
+  }
+  base::FilePath report_attachments_dir = database_->AttachmentsPath(uuid_);
+  if (!LoggingCreateDirectory(
+          report_attachments_dir, FilePermissions::kOwnerOnly, true)) {
+    return nullptr;
+  }
+#if defined(OS_WIN)
+  const std::wstring name_string = base::UTF8ToWide(name);
+#else
+  const std::string name_string = name;
+#endif
+  base::FilePath attachment_path = report_attachments_dir.Append(name_string);
+  auto writer = std::make_unique<FileWriter>();
+  if (!writer->Open(attachment_path,
+                    FileWriteMode::kCreateOrFail,
+                    FilePermissions::kOwnerOnly)) {
+    return nullptr;
+  }
+  attachment_writers_.emplace_back(std::move(writer));
+  attachment_removers_.emplace_back(ScopedRemoveFile(attachment_path));
+  return attachment_writers_.back().get();
+}
+
+void CrashReportDatabase::UploadReport::InitializeAttachments() {
+  base::FilePath report_attachments_dir = database_->AttachmentsPath(uuid);
+  DirectoryReader dir_reader;
+  if (!dir_reader.Open(report_attachments_dir)) {
+    return;
+  }
+
+  base::FilePath filename;
+  DirectoryReader::Result dir_result;
+  while ((dir_result = dir_reader.NextFile(&filename)) ==
+         DirectoryReader::Result::kSuccess) {
+    const base::FilePath filepath(report_attachments_dir.Append(filename));
+    std::unique_ptr<FileReader> file_reader(std::make_unique<FileReader>());
+    if (!file_reader->Open(filepath)) {
+      continue;
+    }
+    attachment_readers_.emplace_back(std::move(file_reader));
+#if defined(OS_WIN)
+    const std::string name_string = base::WideToUTF8(filename.value());
+#else
+    const std::string name_string = filename.value();
+#endif
+    attachment_map_[name_string] = attachment_readers_.back().get();
+  }
+}
+
 CrashReportDatabase::UploadReport::UploadReport()
     : Report(),
       reader_(std::make_unique<FileReader>()),
@@ -101,6 +174,42 @@ CrashReportDatabase::OperationStatus CrashReportDatabase::RecordUploadComplete(
 
   report->database_ = nullptr;
   return RecordUploadAttempt(report, true, id);
+}
+
+base::FilePath CrashReportDatabase::AttachmentsPath(const UUID& uuid) {
+#if defined(OS_WIN)
+  const std::wstring uuid_string = uuid.ToWString();
+#else
+  const std::string uuid_string = uuid.ToString();
+#endif
+
+  return DatabasePath().Append(kAttachmentsDirectory).Append(uuid_string);
+}
+
+base::FilePath CrashReportDatabase::AttachmentsRootPath() {
+  return DatabasePath().Append(kAttachmentsDirectory);
+}
+
+void CrashReportDatabase::RemoveAttachmentsByUUID(const UUID& uuid) {
+  base::FilePath report_attachment_dir = AttachmentsPath(uuid);
+  if (!IsDirectory(report_attachment_dir, /*allow_symlinks=*/false)) {
+    return;
+  }
+  DirectoryReader reader;
+  if (!reader.Open(report_attachment_dir)) {
+    return;
+  }
+
+  base::FilePath filename;
+  DirectoryReader::Result result;
+  while ((result = reader.NextFile(&filename)) ==
+         DirectoryReader::Result::kSuccess) {
+    const base::FilePath attachment_path(
+        report_attachment_dir.Append(filename));
+    LoggingRemoveFile(attachment_path);
+  }
+
+  LoggingRemoveDirectory(report_attachment_dir);
 }
 
 }  // namespace crashpad

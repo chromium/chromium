@@ -19,6 +19,7 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "util/file/directory_reader.h"
 #include "util/misc/time.h"
 
 namespace crashpad {
@@ -157,6 +158,42 @@ bool LoggingRemoveDirectory(const base::FilePath& path) {
     return false;
   }
   return LoggingRemoveDirectoryImpl(path);
+}
+
+uint64_t GetFileSize(const base::FilePath& filepath) {
+  struct _stati64 statbuf;
+  if (!IsRegularFile(filepath)) {
+    return 0;
+  }
+  int ret_value = _wstat64(filepath.value().c_str(), &statbuf);
+  if (ret_value == 0) {
+    return statbuf.st_size;
+  }
+  PLOG(ERROR) << "stat " << filepath.value().c_str();
+  return 0;
+}
+
+uint64_t GetDirectorySize(const base::FilePath& dirpath) {
+  if (!IsDirectory(dirpath, /*allow_symlinks=*/false)) {
+    return 0;
+  }
+  DirectoryReader reader;
+  if (!reader.Open(dirpath)) {
+    return 0;
+  }
+  base::FilePath filename;
+  DirectoryReader::Result result;
+  uint64_t size = 0;
+  while ((result = reader.NextFile(&filename)) ==
+         DirectoryReader::Result::kSuccess) {
+    const base::FilePath filepath(dirpath.Append(filename));
+    if (IsDirectory(filepath, /*allow_symlinks=*/false)) {
+      size += GetDirectorySize(filepath);
+    } else {
+      size += GetFileSize(filepath);
+    }
+  }
+  return size;
 }
 
 }  // namespace crashpad

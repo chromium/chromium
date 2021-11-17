@@ -179,6 +179,16 @@
   XCTAssertEqual([rootObject_ pendingReportCount], 0);
 }
 
+- (void)testCrashCoreAutoLayoutSinkhole {
+  [rootObject_ crashCoreAutoLayoutSinkhole];
+  [self verifyCrashReportException:crashpad::kMachExceptionFromNSException];
+  NSDictionary* dict = [rootObject_ getAnnotations];
+  XCTAssertTrue([[dict[@"objects"][0] valueForKeyPath:@"exceptionReason"]
+      containsString:@"Unable to activate constraint with anchors"]);
+  XCTAssertTrue([[dict[@"objects"][1] valueForKeyPath:@"exceptionName"]
+      isEqualToString:@"NSGenericException"]);
+}
+
 - (void)testRecursion {
   [rootObject_ crashRecursion];
   [self verifyCrashReportException:SIGHUP];

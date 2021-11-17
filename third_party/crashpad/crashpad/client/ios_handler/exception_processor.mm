@@ -377,6 +377,24 @@ id ObjcExceptionPreprocessor(id exception) {
           return HANDLE_UNCAUGHT_NSEXCEPTION(exception, sinkhole);
         }
       }
+
+      // Another set of iOS redacted sinkholes appear in CoreAutoLayout.
+      // However, this is often called by client code, so it's unsafe to simply
+      // handle an uncaught nsexception here. Instead, skip the frame and
+      // continue searching for either a handler that belongs to us, or another
+      // sinkhole. See:
+      //    -[NSISEngine
+      //    performModifications:withUnsatisfiableConstraintsHandler:]:
+      //    -[NSISEngine withBehaviors:performModifications:]
+      //    +[NSLayoutConstraintParser
+      //    constraintsWithVisualFormat:options:metrics:views:]:
+      static constexpr const char* kCoreAutoLayoutSinkhole =
+          "/System/Library/PrivateFrameworks/CoreAutoLayout.framework/"
+          "CoreAutoLayout";
+      if (ModulePathMatchesSinkhole(dl_info.dli_fname,
+                                    kCoreAutoLayoutSinkhole)) {
+        continue;
+      }
     }
 
     // Some <redacted> sinkholes are harder to find. _UIGestureEnvironmentUpdate

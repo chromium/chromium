@@ -35,7 +35,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "client/settings.h"
+#include "util/file/directory_reader.h"
 #include "util/file/file_io.h"
+#include "util/file/filesystem.h"
 #include "util/mac/xattr.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/misc/metrics.h"
@@ -153,6 +155,8 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
                                    Metrics::CrashSkippedReason reason) override;
   OperationStatus DeleteReport(const UUID& uuid) override;
   OperationStatus RequestUpload(const UUID& uuid) override;
+  int CleanDatabase(time_t lockfile_ttl) override;
+  base::FilePath DatabasePath() override;
 
  private:
   // CrashReportDatabase:
@@ -244,21 +248,15 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
       const base::FilePath& report_path,
       base::FilePath* out_path);
 
+  // Cleans any attachments that have no associated report in any state.
+  void CleanOrphanedAttachments();
+
   base::FilePath base_dir_;
   Settings settings_;
   bool xattr_new_names_;
   InitializationStateDcheck initialized_;
 };
 
-FileWriter* CrashReportDatabase::NewReport::AddAttachment(
-    const std::string& name) {
-  // Attachments aren't implemented in the Mac database yet.
-  return nullptr;
-}
-
-void CrashReportDatabase::UploadReport::InitializeAttachments() {
-  // Attachments aren't implemented in the Mac database yet.
-}
 
 CrashReportDatabaseMac::CrashReportDatabaseMac(const base::FilePath& path)
     : CrashReportDatabase(),
@@ -288,6 +286,10 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
       return false;
   }
 
+  if (!CreateOrEnsureDirectoryExists(AttachmentsRootPath())) {
+    return false;
+  }
+
   if (!settings_.Initialize(base_dir_.Append(kSettings)))
     return false;
 
@@ -313,6 +315,10 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
+}
+
+base::FilePath CrashReportDatabaseMac::DatabasePath() {
+  return base_dir_;
 }
 
 Settings* CrashReportDatabaseMac::GetSettings() {
@@ -381,6 +387,14 @@ CrashReportDatabaseMac::FinishedWritingCrashReport(
   }
   ignore_result(report->file_remover_.release());
 
+  // Close all the attachments and disarm their removers too.
+  for (auto& writer : report->attachment_writers_) {
+    writer->Close();
+  }
+  for (auto& remover : report->attachment_removers_) {
+    ignore_result(remover.release());
+  }
+
   Metrics::CrashReportPending(Metrics::PendingReportReason::kNewlyCreated);
   Metrics::CrashReportSize(size);
 
@@ -444,7 +458,7 @@ CrashReportDatabaseMac::GetReportForUploading(
   if (!ReadReportMetadataLocked(upload_report->file_path, upload_report.get()))
     return kDatabaseError;
 
-  if (!upload_report->reader_->Open(upload_report->file_path)) {
+  if (!upload_report->Initialize(upload_report->file_path, this)) {
     return kFileSystemError;
   }
 
@@ -544,6 +558,8 @@ CrashReportDatabase::OperationStatus CrashReportDatabaseMac::DeleteReport(
     return kFileSystemError;
   }
 
+  RemoveAttachmentsByUUID(uuid);
+
   return kNoError;
 }
 
@@ -628,6 +644,34 @@ CrashReportDatabase::OperationStatus CrashReportDatabaseMac::RequestUpload(
   return kNoError;
 }
 
+int CrashReportDatabaseMac::CleanDatabase(time_t lockfile_ttl) {
+  int removed = 0;
+  time_t now = time(nullptr);
+
+  DirectoryReader reader;
+  const base::FilePath new_dir(base_dir_.Append(kWriteDirectory));
+  if (reader.Open(new_dir)) {
+    base::FilePath filename;
+    DirectoryReader::Result result;
+    while ((result = reader.NextFile(&filename)) ==
+           DirectoryReader::Result::kSuccess) {
+      const base::FilePath filepath(new_dir.Append(filename));
+      timespec filetime;
+      if (!FileModificationTime(filepath, &filetime)) {
+        continue;
+      }
+      if (filetime.tv_sec <= now - lockfile_ttl) {
+        if (LoggingRemoveFile(filepath)) {
+          ++removed;
+        }
+      }
+    }
+  }
+
+  CleanOrphanedAttachments();
+  return removed;
+}
+
 // static
 base::ScopedFD CrashReportDatabaseMac::ObtainReportLock(
     const base::FilePath& path) {
@@ -685,13 +729,11 @@ bool CrashReportDatabaseMac::ReadReportMetadataLocked(
     return false;
   }
 
-  // There are no attachments on Mac so the total size is the main report size.
-  struct stat statbuf;
-  if (stat(path.value().c_str(), &statbuf) != 0) {
-    PLOG(ERROR) << "stat " << path.value();
-    return false;
-  }
-  report->total_size = statbuf.st_size;
+  // Seed the total size with the main report size and then add the sizes of any
+  // potential attachments.
+  uint64_t total_size = GetFileSize(path);
+  total_size += GetDirectorySize(AttachmentsPath(report->uuid));
+  report->total_size = total_size;
 
   return true;
 }
@@ -756,6 +798,47 @@ CrashReportDatabaseMac::MarkReportCompletedLocked(
   if (out_path)
     *out_path = new_path;
   return kNoError;
+}
+
+void CrashReportDatabaseMac::CleanOrphanedAttachments() {
+  base::FilePath root_attachments_dir(AttachmentsRootPath());
+  DirectoryReader reader;
+  if (!reader.Open(root_attachments_dir)) {
+    return;
+  }
+
+  base::FilePath filename;
+  DirectoryReader::Result result;
+  while ((result = reader.NextFile(&filename)) ==
+         DirectoryReader::Result::kSuccess) {
+    const base::FilePath report_attachment_dir(
+        root_attachments_dir.Append(filename));
+    if (IsDirectory(report_attachment_dir, false)) {
+      UUID uuid;
+      if (!uuid.InitializeFromString(filename.value())) {
+        LOG(ERROR) << "unexpected attachment dir name " << filename.value();
+        continue;
+      }
+
+      // Check to see if the report is being created in "new".
+      base::FilePath new_dir_path =
+          base_dir_.Append(kWriteDirectory)
+              .Append(uuid.ToString() + "." + kCrashReportFileExtension);
+      if (IsRegularFile(new_dir_path)) {
+        continue;
+      }
+
+      // Check to see if the report is in "pending" or "completed".
+      base::FilePath local_path =
+          LocateCrashReport(uuid, kReportStatePending | kReportStateCompleted);
+      if (!local_path.empty()) {
+        continue;
+      }
+
+      // Couldn't find a report, assume these attachments are orphaned.
+      RemoveAttachmentsByUUID(uuid);
+    }
+  }
 }
 
 std::unique_ptr<CrashReportDatabase> InitializeInternal(

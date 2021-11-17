@@ -117,8 +117,9 @@ bool ProcessSnapshotMinidump::Initialize(FileReaderInterface* file_reader) {
 
   if (!InitializeCrashpadInfo() || !InitializeMiscInfo() ||
       !InitializeModules() || !InitializeSystemSnapshot() ||
-      !InitializeMemoryInfo() || !InitializeThreads() ||
-      !InitializeCustomMinidumpStreams() || !InitializeExceptionSnapshot()) {
+      !InitializeMemoryInfo() || !InitializeExtraMemory() ||
+      !InitializeThreads() || !InitializeCustomMinidumpStreams() ||
+      !InitializeExceptionSnapshot()) {
     return false;
   }
 
@@ -234,8 +235,11 @@ std::vector<HandleSnapshot> ProcessSnapshotMinidump::Handles() const {
 std::vector<const MemorySnapshot*> ProcessSnapshotMinidump::ExtraMemory()
     const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  NOTREACHED();  // https://crashpad.chromium.org/bug/10
-  return std::vector<const MemorySnapshot*>();
+  std::vector<const MemorySnapshot*> chunks;
+  for (const auto& chunk : extra_memory_) {
+    chunks.push_back(chunk.get());
+  }
+  return chunks;
 }
 
 const ProcessMemory* ProcessSnapshotMinidump::Memory() const {
@@ -497,6 +501,50 @@ bool ProcessSnapshotMinidump::InitializeMemoryInfo() {
     mem_regions_.emplace_back(
         std::make_unique<internal::MemoryMapRegionSnapshotMinidump>(info));
     mem_regions_exposed_.emplace_back(mem_regions_.back().get());
+  }
+
+  return true;
+}
+
+bool ProcessSnapshotMinidump::InitializeExtraMemory() {
+  const auto& stream_it = stream_map_.find(kMinidumpStreamTypeMemoryList);
+  if (stream_it == stream_map_.end()) {
+    return true;
+  }
+
+  if (stream_it->second->DataSize < sizeof(MINIDUMP_MEMORY_LIST)) {
+    LOG(ERROR) << "memory_list size mismatch";
+    return false;
+  }
+
+  if (!file_reader_->SeekSet(stream_it->second->Rva)) {
+    return false;
+  }
+
+  // MSVC won't let us stack-allocate a MINIDUMP_MEMORY_LIST because of its
+  // trailing zero-element array. Luckily we're only interested in its other
+  // field anyway: a uint32_t indicating the number of memory descriptors that
+  // follow.
+  static_assert(
+      sizeof(MINIDUMP_MEMORY_LIST) == 4,
+      "MINIDUMP_MEMORY_LIST's only actual field should be an uint32_t");
+  uint32_t num_ranges;
+  if (!file_reader_->ReadExactly(&num_ranges, sizeof(num_ranges))) {
+    return false;
+  }
+
+  // We have to manually keep track of the locations of the entries in the
+  // contiguous list of MINIDUMP_MEMORY_DESCRIPTORs, because the Initialize()
+  // function jumps around the file to find the contents of each snapshot.
+  FileOffset location = file_reader_->SeekGet();
+  for (uint32_t i = 0; i < num_ranges; i++) {
+    extra_memory_.emplace_back(
+        std::make_unique<internal::MemorySnapshotMinidump>());
+    if (!extra_memory_.back()->Initialize(file_reader_,
+                                          static_cast<RVA>(location))) {
+      return false;
+    }
+    location += sizeof(MINIDUMP_MEMORY_DESCRIPTOR);
   }
 
   return true;

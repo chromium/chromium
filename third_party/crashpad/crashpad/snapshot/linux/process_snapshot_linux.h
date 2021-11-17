@@ -139,6 +139,9 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
   void InitializeModules();
   void InitializeAnnotations();
 
+  // Initializes options_ on behalf of Initialize().
+  void GetCrashpadOptionsInternal(CrashpadInfoClientOptions* options);
+
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;
   UUID report_id_;
@@ -149,6 +152,7 @@ class ProcessSnapshotLinux final : public ProcessSnapshot {
   internal::SystemSnapshotLinux system_;
   ProcessReaderLinux process_reader_;
   ProcessMemoryRange memory_range_;
+  CrashpadInfoClientOptions options_;
   InitializationStateDcheck initialized_;
 };
 

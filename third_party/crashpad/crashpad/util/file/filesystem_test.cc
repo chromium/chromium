@@ -21,11 +21,14 @@
 #include "test/errors.h"
 #include "test/filesystem.h"
 #include "test/scoped_temp_dir.h"
+#include "util/file/file_writer.h"
 #include "util/misc/time.h"
 
 namespace crashpad {
 namespace test {
 namespace {
+
+constexpr char kTestFileContent[] = "file_content";
 
 bool CurrentTime(timespec* now) {
 #if defined(OS_APPLE)
@@ -470,6 +473,62 @@ TEST(Filesystem, RemoveDirectory_SymbolicLinks) {
 }
 
 #endif  // !OS_FUCHSIA
+
+TEST(Filesystem, GetFileSize) {
+  ScopedTempDir temp_dir;
+  base::FilePath filepath(temp_dir.path().Append(FILE_PATH_LITERAL("file")));
+  FileWriter writer;
+  bool is_created = writer.Open(
+      filepath, FileWriteMode::kCreateOrFail, FilePermissions::kOwnerOnly);
+  ASSERT_TRUE(is_created);
+  writer.Write(kTestFileContent, sizeof(kTestFileContent));
+  writer.Close();
+  uint64_t filesize = GetFileSize(filepath);
+  EXPECT_EQ(filesize, sizeof(kTestFileContent));
+
+#if !defined(OS_FUCHSIA)
+  // Create a link to a file.
+  base::FilePath link(temp_dir.path().Append(FILE_PATH_LITERAL("link")));
+  ASSERT_TRUE(CreateSymbolicLink(filepath, link));
+  uint64_t filesize_link = GetFileSize(link);
+  EXPECT_EQ(filesize_link, 0u);
+#endif  // !OS_FUCHSIA
+}
+
+TEST(Filesystem, GetDirectorySize) {
+  ScopedTempDir temp_dir;
+  base::FilePath dir(temp_dir.path().Append(FILE_PATH_LITERAL("dir")));
+  ASSERT_TRUE(
+      LoggingCreateDirectory(dir, FilePermissions::kWorldReadable, false));
+  base::FilePath filepath1(temp_dir.path().Append(FILE_PATH_LITERAL("file")));
+  FileWriter writer1;
+  bool is_created1 = writer1.Open(
+      filepath1, FileWriteMode::kCreateOrFail, FilePermissions::kOwnerOnly);
+  ASSERT_TRUE(is_created1);
+  writer1.Write(kTestFileContent, sizeof(kTestFileContent));
+  writer1.Close();
+
+  base::FilePath filepath2(dir.Append(FILE_PATH_LITERAL("file")));
+  FileWriter writer2;
+  bool is_created2 = writer2.Open(
+      filepath2, FileWriteMode::kCreateOrFail, FilePermissions::kOwnerOnly);
+  ASSERT_TRUE(is_created2);
+  writer2.Write(kTestFileContent, sizeof(kTestFileContent));
+  writer2.Close();
+
+#if !defined(OS_FUCHSIA)
+  // Create a link to a file.
+  base::FilePath link(dir.Append(FILE_PATH_LITERAL("link")));
+  ASSERT_TRUE(CreateSymbolicLink(filepath2, link));
+
+  // Create a link to a dir.
+  base::FilePath linkdir(temp_dir.path().Append(FILE_PATH_LITERAL("link")));
+  ASSERT_TRUE(CreateSymbolicLink(dir, linkdir));
+#endif  // !OS_FUCHSIA
+
+  uint64_t filesize = GetDirectorySize(temp_dir.path());
+  EXPECT_EQ(filesize, 2 * sizeof(kTestFileContent));
+}
 
 }  // namespace
 }  // namespace test

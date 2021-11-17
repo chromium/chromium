@@ -17,6 +17,7 @@
 #include <signal.h>
 
 #include "base/logging.h"
+#include "snapshot/linux/capture_memory_delegate_linux.h"
 #include "snapshot/linux/cpu_context_linux.h"
 #include "snapshot/linux/process_reader_linux.h"
 #include "snapshot/linux/signal_context.h"
@@ -332,6 +333,18 @@ bool ExceptionSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   thread_id_ = thread_id;
+  const ProcessReaderLinux::Thread* thread = nullptr;
+  for (const auto& loop_thread : process_reader->Threads()) {
+    if (thread_id == loop_thread.tid) {
+      thread = &loop_thread;
+      break;
+    }
+  }
+  if (!thread) {
+    // This is allowed until {ProcessReaderLinux::InitializeThreads()} is
+    // improved to support target threads in the same thread group.
+    LOG(WARNING) << "thread ID " << thread_id << " not found in process";
+  }
 
   if (process_reader->Is64Bit()) {
     if (!ReadContext<ContextTraits64>(process_reader, context_address) ||
@@ -344,6 +357,10 @@ bool ExceptionSnapshotLinux::Initialize(ProcessReaderLinux* process_reader,
       return false;
     }
   }
+
+  CaptureMemoryDelegateLinux capture_memory_delegate(
+      process_reader, thread, &extra_memory_, nullptr);
+  CaptureMemory::PointedToByContext(context_, &capture_memory_delegate);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
@@ -462,7 +479,12 @@ const std::vector<uint64_t>& ExceptionSnapshotLinux::Codes() const {
 
 std::vector<const MemorySnapshot*> ExceptionSnapshotLinux::ExtraMemory() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return std::vector<const MemorySnapshot*>();
+  std::vector<const MemorySnapshot*> result;
+  result.reserve(extra_memory_.size());
+  for (const auto& em : extra_memory_) {
+    result.push_back(em.get());
+  }
+  return result;
 }
 
 }  // namespace internal

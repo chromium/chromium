@@ -54,7 +54,10 @@ namespace internal {
 InProcessHandler::InProcessHandler() = default;
 
 InProcessHandler::~InProcessHandler() {
-  upload_thread_->Stop();
+  if (upload_thread_started_ && upload_thread_) {
+    upload_thread_->Stop();
+  }
+  prune_thread_->Stop();
 }
 
 bool InProcessHandler::Initialize(
@@ -225,13 +228,23 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
   }
   base::FilePath file;
   DirectoryReader::Result result;
+
+  // Because the intermediate dump directory is expected to be shared,
+  // mitigate any spamming by limiting this to |kMaxPendingFiles|.
+  constexpr size_t kMaxPendingFiles = 20;
+
+  // Track other application bundles separately, so they don't spam our
+  // intermediate dumps into never getting processed.
+  std::vector<base::FilePath> other_files;
+
   while ((result = reader.NextFile(&file)) ==
          DirectoryReader::Result::kSuccess) {
     // Don't try to process files marked as 'locked' from a different bundle id.
-    if (file.value().compare(0,
+    bool bundle_match =
+        file.value().compare(0,
                              bundle_identifier_and_seperator_.size(),
-                             bundle_identifier_and_seperator_) != 0 &&
-        file.FinalExtension() == kLockedExtension) {
+                             bundle_identifier_and_seperator_) == 0;
+    if (!bundle_match && file.FinalExtension() == kLockedExtension) {
       continue;
     }
 
@@ -242,8 +255,19 @@ std::vector<base::FilePath> InProcessHandler::PendingFiles() {
 
     // Otherwise, include any other unlocked, or locked files matching
     // |bundle_identifier_and_seperator_|.
-    files.push_back(file);
+    if (bundle_match) {
+      files.push_back(file);
+      if (files.size() >= kMaxPendingFiles)
+        return files;
+    } else {
+      other_files.push_back(file);
+    }
   }
+
+  auto end_iterator =
+      other_files.begin() +
+      std::min(kMaxPendingFiles - files.size(), other_files.size());
+  files.insert(files.end(), other_files.begin(), end_iterator);
   return files;
 }
 
