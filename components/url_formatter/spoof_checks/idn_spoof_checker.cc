@@ -4,6 +4,7 @@
 
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -26,15 +27,6 @@ namespace url_formatter {
 
 namespace {
 
-uint8_t BitLength(uint32_t input) {
-  uint8_t number_of_bits = 0;
-  while (input != 0) {
-    number_of_bits++;
-    input >>= 1;
-  }
-  return number_of_bits;
-}
-
 class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
  public:
   using net::extras::PreloadDecoder::PreloadDecoder;
@@ -46,8 +38,9 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
                  bool* out_found) override {
     // Make sure the assigned bit length is enough to encode all SkeletonType
     // values.
-    DCHECK_EQ(kSkeletonTypeBitLength,
-              BitLength(url_formatter::SkeletonType::kMaxValue));
+    DCHECK_EQ(
+        kSkeletonTypeBitLength,
+        base::bits::Log2Floor(url_formatter::SkeletonType::kMaxValue) + 1);
 
     bool is_same_skeleton;
 

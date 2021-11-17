@@ -70,9 +70,6 @@ class TrieBitBuffer {
     uint32_t position;
   };
 
-  // Returns the minimum number of bits needed to represent |input|.
-  uint8_t BitLength(uint32_t input) const;
-
   // Append a new element to |elements_|.
   void AppendBitsElement(uint8_t bits, uint8_t number_of_bits);
   void AppendPositionElement(uint32_t position);

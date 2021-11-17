@@ -3,20 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/url_formatter/spoof_checks/top_domains/trie_entry.h"
+#include "base/bits.h"
 #include "base/strings/string_util.h"
 #include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 #include "net/tools/huffman_trie/trie/trie_writer.h"
 
 namespace url_formatter {
-
-uint8_t BitLength(uint32_t input) {
-  uint8_t number_of_bits = 0;
-  while (input != 0) {
-    number_of_bits++;
-    input >>= 1;
-  }
-  return number_of_bits;
-}
 
 namespace top_domains {
 
@@ -39,7 +31,7 @@ bool TopDomainTrieEntry::WriteEntry(
   // Make sure the assigned bit length is enough to encode all SkeletonType
   // values.
   DCHECK_EQ(kSkeletonTypeBitLength,
-            BitLength(url_formatter::SkeletonType::kMaxValue));
+            base::bits::Log2Floor(url_formatter::SkeletonType::kMaxValue) + 1);
 
   if (entry_->skeleton == entry_->top_domain) {
     writer->WriteBit(1);
