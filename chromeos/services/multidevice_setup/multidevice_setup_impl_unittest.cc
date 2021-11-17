@@ -268,10 +268,7 @@ class FakeGlobalStateFeatureManagerFactory
       const FakeGlobalStateFeatureManagerFactory&) = delete;
   FakeGlobalStateFeatureManagerFactory& operator=(
       const FakeGlobalStateFeatureManagerFactory&) = delete;
-
   ~FakeGlobalStateFeatureManagerFactory() override = default;
-
-  FakeGlobalStateFeatureManager* instance() { return instance_; }
 
  private:
   // GlobalStateFeatureManagerImpl::Factory:
@@ -281,22 +278,17 @@ class FakeGlobalStateFeatureManagerFactory
       PrefService* pref_service,
       device_sync::DeviceSyncClient* device_sync_client,
       std::unique_ptr<base::OneShotTimer> timer) override {
-    EXPECT_FALSE(instance_);
     EXPECT_EQ(fake_host_status_provider_factory_->instance(),
               host_status_provider);
     EXPECT_EQ(expected_testing_pref_service_, pref_service);
     EXPECT_EQ(expected_device_sync_client_, device_sync_client);
 
-    auto instance = std::make_unique<FakeGlobalStateFeatureManager>();
-    instance_ = instance.get();
-    return instance;
+    return std::make_unique<FakeGlobalStateFeatureManager>();
   }
 
   FakeHostStatusProviderFactory* fake_host_status_provider_factory_;
   sync_preferences::TestingPrefServiceSyncable* expected_testing_pref_service_;
   device_sync::FakeDeviceSyncClient* expected_device_sync_client_;
-
-  FakeGlobalStateFeatureManager* instance_ = nullptr;
 };
 
 class FakeWifiSyncNotificationControllerFactory
