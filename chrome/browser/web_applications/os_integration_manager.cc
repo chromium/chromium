@@ -120,6 +120,8 @@ void OsIntegrationManager::Start() {
   DCHECK(registrar_);
   DCHECK(file_handler_manager_);
 
+  registrar_observation_.Observe(registrar_);
+
 #if defined(OS_MAC)
   // Ensure that all installed apps are included in the AppShimRegistry when the
   // profile is loaded. This is redundant, because apps are registered when they
@@ -709,6 +711,10 @@ void OsIntegrationManager::OnShortcutsUpdatedForProtocolHandlers(
       std::move(update_finished_callback));
 
   UnregisterProtocolHandlers(app_id, std::move(unregister_callback));
+}
+
+void OsIntegrationManager::OnWebAppProfileWillBeDeleted(const AppId& app_id) {
+  UninstallAllOsHooks(app_id, base::DoNothing());
 }
 
 std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(

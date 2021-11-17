@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -53,11 +52,6 @@ WebAppRegistrar::WebAppRegistrar(Profile* profile) : profile_(profile) {}
 WebAppRegistrar::~WebAppRegistrar() {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnAppRegistrarDestroyed();
-}
-
-void WebAppRegistrar::SetSubsystems(
-    OsIntegrationManager* os_integration_manager) {
-  os_integration_manager_ = os_integration_manager;
 }
 
 bool WebAppRegistrar::IsLocallyInstalled(const GURL& start_url) const {
@@ -728,7 +722,6 @@ void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
 
   for (const AppId& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
     NotifyWebAppProfileWillBeDeleted(app_id);
-    os_integration_manager().UninstallAllOsHooks(app_id, base::DoNothing());
   }
   // We can't do registry_.clear() here because it makes in-memory registry
   // diverged from the sync server registry and from the on-disk registry

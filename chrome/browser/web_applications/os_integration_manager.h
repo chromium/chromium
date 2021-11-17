@@ -12,7 +12,9 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
@@ -75,7 +77,7 @@ using BarrierCallback =
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
 // care of inter-dependencies among them.
-class OsIntegrationManager {
+class OsIntegrationManager : public AppRegistrarObserver {
  public:
   explicit OsIntegrationManager(
       Profile* profile,
@@ -83,7 +85,7 @@ class OsIntegrationManager {
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
-  virtual ~OsIntegrationManager();
+  ~OsIntegrationManager() override;
 
   void SetSubsystems(WebAppSyncBridge* sync_bridge,
                      WebAppRegistrar* registrar,
@@ -185,6 +187,9 @@ class OsIntegrationManager {
   virtual void UpdateProtocolHandlers(const AppId& app_id,
                                       bool force_shortcut_updates_if_needed,
                                       base::OnceClosure callback);
+
+  // AppRegistrarObserver:
+  void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
 
  protected:
   WebAppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
@@ -297,6 +302,9 @@ class OsIntegrationManager {
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
   std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
+
+  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
+      registrar_observation_{this};
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
