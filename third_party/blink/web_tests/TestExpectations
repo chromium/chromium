@@ -6096,7 +6096,6 @@ crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
-crbug.com/1222114 http/tests/devtools/console/console-dir-es6.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/console/console-format.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/console/console-functions.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
