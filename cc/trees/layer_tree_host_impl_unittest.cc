@@ -18231,16 +18231,16 @@ TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
 }
 
 TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
-  const auto kFirstId = RegionCaptureCropId::CreateRandom();
-  const auto kSecondId = RegionCaptureCropId::CreateRandom();
-  const auto kThirdId = RegionCaptureCropId::CreateRandom();
-  const auto kFourthId = RegionCaptureCropId::CreateRandom();
+  const auto kFirstId = viz::RegionCaptureCropId::CreateRandom();
+  const auto kSecondId = viz::RegionCaptureCropId::CreateRandom();
+  const auto kThirdId = viz::RegionCaptureCropId::CreateRandom();
+  const auto kFourthId = viz::RegionCaptureCropId::CreateRandom();
 
-  const RegionCaptureBounds kRootBounds{
+  const viz::RegionCaptureBounds kRootBounds{
       {{kFirstId, gfx::Rect{0, 0, 250, 250}}, {kSecondId, gfx::Rect{}}}};
-  const RegionCaptureBounds kChildBounds{
+  const viz::RegionCaptureBounds kChildBounds{
       {{kThirdId, gfx::Rect{5, 6, 300, 400}}}};
-  const RegionCaptureBounds kSecondChildBounds{
+  const viz::RegionCaptureBounds kSecondChildBounds{
       {{kFourthId, gfx::Rect{20, 10, 400, 500}}}};
 
   // Set up the root layer.

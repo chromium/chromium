@@ -53,7 +53,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer> {
     SkColor background_color;
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
-    RegionCaptureBounds capture_bounds;
+    viz::RegionCaptureBounds capture_bounds;
     Region wheel_event_region;
     ElementId element_id;
   } inputs;
@@ -1119,7 +1119,7 @@ void Layer::SetTouchActionRegion(TouchActionRegion touch_action_region) {
   SetNeedsCommit();
 }
 
-void Layer::SetCaptureBounds(RegionCaptureBounds bounds) {
+void Layer::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   DCHECK(IsPropertyChangeAllowed());
   if (inputs_.capture_bounds == bounds) {
     return;

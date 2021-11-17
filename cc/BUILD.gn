@@ -122,8 +122,6 @@ cc_component("cc") {
     "layers/picture_layer_impl.h",
     "layers/recording_source.cc",
     "layers/recording_source.h",
-    "layers/region_capture_bounds.cc",
-    "layers/region_capture_bounds.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
     "layers/scrollbar_layer_base.cc",

@@ -25,13 +25,13 @@
 #include "cc/layers/draw_properties.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/performance_properties.h"
-#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/target_property.h"
 #include "components/viz/common/quads/shared_quad_state.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -272,8 +272,10 @@ class CC_EXPORT LayerImpl {
     return !touch_action_region_.IsEmpty();
   }
 
-  void SetCaptureBounds(RegionCaptureBounds bounds);
-  const RegionCaptureBounds& capture_bounds() const { return capture_bounds_; }
+  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
+  const viz::RegionCaptureBounds& capture_bounds() const {
+    return capture_bounds_;
+  }
 
   // Set or get the region that contains wheel event handler.
   // The |wheel_event_handler_region| specify the area where wheel event handler
@@ -508,7 +510,7 @@ class CC_EXPORT LayerImpl {
 
   // The bounds of elements marked for potential region capture, stored in
   // the coordinate space of this layer.
-  RegionCaptureBounds capture_bounds_;
+  viz::RegionCaptureBounds capture_bounds_;
   Region wheel_event_handler_region_;
   SkColor background_color_;
   SkColor safe_opaque_background_color_;

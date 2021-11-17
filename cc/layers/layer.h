@@ -22,7 +22,6 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/layer_collections.h"
-#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
@@ -30,6 +29,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/target_property.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -457,8 +457,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   }
 
   // Set or get the region that should be used for capture.
-  void SetCaptureBounds(RegionCaptureBounds bounds);
-  const RegionCaptureBounds& capture_bounds() const {
+  void SetCaptureBounds(viz::RegionCaptureBounds bounds);
+  const viz::RegionCaptureBounds& capture_bounds() const {
     return inputs_.capture_bounds;
   }
 
@@ -882,7 +882,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     // moved to a separate sub-struct.
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
-    RegionCaptureBounds capture_bounds;
+    viz::RegionCaptureBounds capture_bounds;
     Region wheel_event_region;
 
     ElementId element_id;

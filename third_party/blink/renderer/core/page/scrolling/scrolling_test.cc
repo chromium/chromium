@@ -1436,9 +1436,9 @@ TEST_P(ScrollingTest, ElementRegionCaptureData) {
   ASSERT_TRUE(container_layer);
   ASSERT_TRUE(contents_layer);
 
-  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& container_bounds =
+  const base::flat_map<viz::RegionCaptureCropId, gfx::Rect>& container_bounds =
       container_layer->capture_bounds().bounds();
-  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& contents_bounds =
+  const base::flat_map<viz::RegionCaptureCropId, gfx::Rect>& contents_bounds =
       contents_layer->capture_bounds().bounds();
 
   EXPECT_EQ(1u, container_bounds.size());

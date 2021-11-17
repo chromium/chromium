@@ -352,7 +352,7 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
-void LayerImpl::SetCaptureBounds(RegionCaptureBounds bounds) {
+void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
   if (capture_bounds_ == bounds)
     return;
   capture_bounds_ = std::move(bounds);
