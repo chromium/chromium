@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_view.h"
 
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -109,8 +110,8 @@ class CalendarViewTest : public AshTestBase {
     return calendar_view_->reset_to_today_button_;
   }
   views::Button* settings_button() { return calendar_view_->settings_button_; }
-  TopShortcutButton* up_button() { return calendar_view_->up_button_; }
-  TopShortcutButton* down_button() { return calendar_view_->down_button_; }
+  IconButton* up_button() { return calendar_view_->up_button_; }
+  IconButton* down_button() { return calendar_view_->down_button_; }
 
   void ScrollUpOneMonth() { calendar_view_->ScrollUpOneMonthAndAutoScroll(); }
   void ScrollDownOneMonth() {

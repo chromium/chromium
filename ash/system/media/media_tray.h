@@ -7,9 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -39,7 +39,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   // Pin button showed in media tray bubble's title view and media controls
   // detailed view's title view.
-  class PinButton : public TopShortcutButton {
+  class PinButton : public IconButton {
    public:
     PinButton();
     ~PinButton() override = default;

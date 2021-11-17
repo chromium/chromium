@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/model/system_tray_model.h"
@@ -20,7 +21,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,10 +151,10 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   hover_highlight_view->SetID(static_cast<int>(
       BluetoothDetailedViewChildId::kPairNewDeviceClickableView));
 
-  std::unique_ptr<ash::TopShortcutButton> button =
-      std::make_unique<ash::TopShortcutButton>(
-          views::Button::PressedCallback(), kSystemMenuBluetoothPlusIcon,
-          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
+  std::unique_ptr<ash::IconButton> button = std::make_unique<ash::IconButton>(
+      views::Button::PressedCallback(), IconButton::Type::kSmall,
+      kSystemMenuBluetoothPlusIcon,
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
   button->SetCanProcessEventsWithinSubtree(/*can_process=*/false);
   button->SetFocusBehavior(
       /*focus_behavior=*/views::View::FocusBehavior::NEVER);

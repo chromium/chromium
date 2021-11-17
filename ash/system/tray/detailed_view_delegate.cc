@@ -7,10 +7,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,12 +63,13 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
                        gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
 }
 
-class BackButton : public TopShortcutButton {
+class BackButton : public IconButton {
  public:
   BackButton(views::Button::PressedCallback callback)
-      : TopShortcutButton(std::move(callback),
-                          kUnifiedMenuExpandIcon,
-                          IDS_ASH_STATUS_TRAY_PREVIOUS_MENU) {}
+      : IconButton(std::move(callback),
+                   IconButton::Type::kSmallFloating,
+                   kUnifiedMenuExpandIcon,
+                   IDS_ASH_STATUS_TRAY_PREVIOUS_MENU) {}
   BackButton(const BackButton&) = delete;
   BackButton& operator=(const BackButton&) = delete;
   ~BackButton() override = default;
@@ -182,16 +183,16 @@ views::Button* DetailedViewDelegate::CreateBackButton(
 views::Button* DetailedViewDelegate::CreateInfoButton(
     views::Button::PressedCallback callback,
     int info_accessible_name_id) {
-  return new TopShortcutButton(std::move(callback), kUnifiedMenuInfoIcon,
-                               info_accessible_name_id);
+  return new IconButton(std::move(callback), IconButton::Type::kSmall,
+                        kUnifiedMenuInfoIcon, info_accessible_name_id);
 }
 
 views::Button* DetailedViewDelegate::CreateSettingsButton(
     views::Button::PressedCallback callback,
     int setting_accessible_name_id) {
   auto* button =
-      new TopShortcutButton(std::move(callback), kUnifiedMenuSettingsIcon,
-                            setting_accessible_name_id);
+      new IconButton(std::move(callback), IconButton::Type::kSmall,
+                     kUnifiedMenuSettingsIcon, setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;
@@ -200,8 +201,8 @@ views::Button* DetailedViewDelegate::CreateSettingsButton(
 views::Button* DetailedViewDelegate::CreateHelpButton(
     views::Button::PressedCallback callback) {
   auto* button =
-      new TopShortcutButton(std::move(callback), vector_icons::kHelpOutlineIcon,
-                            IDS_ASH_STATUS_TRAY_HELP);
+      new IconButton(std::move(callback), IconButton::Type::kSmall,
+                     vector_icons::kHelpOutlineIcon, IDS_ASH_STATUS_TRAY_HELP);
   // Help opens a web page, so treat it like Web UI settings.
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);

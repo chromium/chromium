@@ -45,6 +45,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1263234
   "quicksettings.ManagedDeviceInfo",
 
+  # crbug.com/1268959
+  "quicksettings.OpenSettings",
+
   # b/201197372
   "crostini.AppEmacs",
 

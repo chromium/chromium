@@ -15,12 +15,12 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/top_shortcuts_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "base/bind.h"
@@ -126,9 +126,9 @@ views::View* CreateUserAvatarView(int user_index) {
 
   if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
     // In guest mode, the user avatar is just a disabled button pod.
-    auto* image_view = new TopShortcutButton(views::Button::PressedCallback(),
-                                             kSystemMenuGuestIcon,
-                                             IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+    auto* image_view = new IconButton(
+        views::Button::PressedCallback(), IconButton::Type::kSmall,
+        kSystemMenuGuestIcon, IDS_ASH_STATUS_TRAY_GUEST_LABEL);
     image_view->SetEnabled(false);
     return image_view;
   }
@@ -235,11 +235,11 @@ UserItemButton::UserItemButton(PressedCallback callback,
   AddChildView(capture_icon_);
 
   if (has_close_button) {
-    AddChildView(std::make_unique<TopShortcutButton>(
+    AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             &UserChooserDetailedViewController::TransitionToMainView,
             base::Unretained(controller)),
-        views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
+        IconButton::Type::kSmall, views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
   }
 
   SetTooltipText(GetUserItemAccessibleString(user_index));

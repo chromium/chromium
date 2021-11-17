@@ -9,7 +9,6 @@
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -19,6 +18,7 @@
 
 namespace ash {
 
+class IconButton;
 class TrayNetworkStateModel;
 
 namespace tray {
@@ -132,7 +132,7 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
   // setup dialog open. This is null when the device is not eSIM-capable.
-  TopShortcutButton* add_esim_button_ = nullptr;
+  IconButton* add_esim_button_ = nullptr;
 
   // Indicates whether add_esim_button_ should be enabled when the device is
   // not inhibited.
@@ -164,7 +164,7 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
   void JoinButtonPressed();
 
   // A button to invoke "Join Wi-Fi network" dialog.
-  views::Button* join_button_ = nullptr;
+  IconButton* join_button_ = nullptr;
 };
 
 }  // namespace tray
