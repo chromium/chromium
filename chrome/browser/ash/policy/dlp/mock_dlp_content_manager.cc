@@ -15,6 +15,14 @@ MockDlpContentManager::~MockDlpContentManager() = default;
 
 void MockDlpContentManager::Init() {
   SetReportingManagerForTesting(new DlpReportingManager());
+
+  ON_CALL(*this, CheckScreenShareRestriction)
+      .WillByDefault([](const content::DesktopMediaID& media_id,
+                        const std::u16string& application_title,
+                        OnDlpRestrictionCheckedCallback callback) {
+        // Allow by default.
+        std::move(callback).Run(true);
+      });
 }
 
 }  // namespace policy

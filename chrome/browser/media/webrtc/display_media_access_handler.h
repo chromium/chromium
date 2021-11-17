@@ -15,6 +15,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/web_contents.h"
 
 namespace extensions {
 class Extension;
@@ -63,11 +64,30 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
       base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
   using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
 
+  // Processes one pending request. Requests are queued so that we display one
+  // picker UI at a time for each content::WebContents.
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
 
+  // Processes the first queued access request for |web_contents|
+  // according to |request_result|. Calls ProcessQueuedAccessRequest if there
+  // are more requests left in the queue.
+  void FinalizeResult(content::WebContents* web_contents,
+                      const content::DesktopMediaID& media_id,
+                      blink::mojom::MediaStreamRequestResult request_result);
+
+  // Called back after the user chooses one of the possible desktop media
+  // sources for the request that's currently being processed. If no |media_id|
+  // is given, the request was rejected, either by the browser or by the user.
   void OnPickerDialogResults(content::WebContents* web_contents,
-                             content::DesktopMediaID source);
+                             content::DesktopMediaID media_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called back after checking Data Leak Prevention (DLP) restrictions.
+  void OnDlpRestrictionChecked(content::WebContents* web_contents,
+                               const content::DesktopMediaID& media_id,
+                               bool is_dlp_allowed);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void DeletePendingAccessRequest(int render_process_id,
                                   int render_frame_id,

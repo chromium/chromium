@@ -171,9 +171,13 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
   policy::MockDlpContentManager mock_dlp_content_manager;
   policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
-  EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(media_id))
-      .Times(1)
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
+      .WillOnce([](const content::DesktopMediaID& media_id,
+                   const std::u16string& application_title,
+                   base::OnceCallback<void(bool)> callback) {
+        // Disallow
+        std::move(callback).Run(false);
+      });
 
   blink::mojom::MediaStreamRequestResult result;
   blink::MediaStreamDevices devices;

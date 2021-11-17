@@ -28,6 +28,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,6 +44,17 @@
 #if defined(OS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
+
+namespace {
+
+// Helper function to get the title of the calling application.
+std::u16string GetApplicationTitle(content::WebContents* web_contents) {
+  return url_formatter::FormatOriginForSecurityDisplay(
+      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+}
+
+}  // namespace
 
 // Holds pending request information so that we display one picker UI at a time
 // for each content::WebContents.
@@ -285,9 +297,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
-  picker_params.app_name = url_formatter::FormatOriginForSecurityDisplay(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin(),
-      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  picker_params.app_name = GetApplicationTitle(web_contents);
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio =
       pending_request.request.audio_type ==
@@ -298,9 +308,10 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
                                std::move(done_callback));
 }
 
-void DisplayMediaAccessHandler::OnPickerDialogResults(
+void DisplayMediaAccessHandler::FinalizeResult(
     content::WebContents* web_contents,
-    content::DesktopMediaID media_id) {
+    const content::DesktopMediaID& media_id,
+    blink::mojom::MediaStreamRequestResult request_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
@@ -313,62 +324,24 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
     // need to do anything.
     return;
   }
-
   PendingAccessRequest& pending_request = *queue.front();
   blink::MediaStreamDevices devices;
-  blink::mojom::MediaStreamRequestResult request_result =
-      blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
   std::unique_ptr<content::MediaStreamUI> ui;
-  if (media_id.is_null()) {
-    request_result = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-  } else {
-    request_result = blink::mojom::MediaStreamRequestResult::OK;
-#if defined(OS_MAC)
-    // Check screen capture permissions on Mac if necessary.
-    if ((media_id.type == content::DesktopMediaID::TYPE_SCREEN ||
-         media_id.type == content::DesktopMediaID::TYPE_WINDOW) &&
-        system_media_permissions::CheckSystemScreenCapturePermission() !=
-            system_media_permissions::SystemPermission::kAllowed) {
-      request_result =
-          blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED;
-    }
-#endif
-    if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
-        !content::WebContents::FromRenderFrameHost(
-            content::RenderFrameHost::FromID(
-                media_id.web_contents_id.render_process_id,
-                media_id.web_contents_id.main_render_frame_id))) {
-      request_result =
-          blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE;
-    }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
-      if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(
-              media_id)) {
-        request_result =
-            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-      }
-    }
-#endif
-    if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
-      const auto& visible_url = url_formatter::FormatOriginForSecurityDisplay(
-          web_contents->GetMainFrame()->GetLastCommittedOrigin(),
-          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-      const bool disable_local_echo =
-          (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
-          media_id.web_contents_id.disable_local_echo;
-      ui = GetDevicesForDesktopCapture(
-          web_contents,
-          url::Origin::Create(pending_request.request.security_origin),
-          &devices, media_id, pending_request.request.video_type,
-          blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-          media_id.audio_share, disable_local_echo, display_notification_,
-          visible_url, visible_url);
-    }
-  }
 
-  if (request_result == blink::mojom::MediaStreamRequestResult::OK)
+  if (request_result == blink::mojom::MediaStreamRequestResult::OK) {
+    const std::u16string application_title = GetApplicationTitle(web_contents);
+    const bool disable_local_echo =
+        (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
+        media_id.web_contents_id.disable_local_echo;
+    ui = GetDevicesForDesktopCapture(
+        web_contents,
+        url::Origin::Create(pending_request.request.security_origin), &devices,
+        media_id, pending_request.request.video_type,
+        blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+        media_id.audio_share, disable_local_echo, display_notification_,
+        application_title, application_title);
     UpdateTarget(pending_request.request, media_id);
+  }
 
   std::move(pending_request.callback)
       .Run(devices, request_result, std::move(ui));
@@ -378,12 +351,73 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
+void DisplayMediaAccessHandler::OnPickerDialogResults(
+    content::WebContents* web_contents,
+    content::DesktopMediaID media_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+
+  if (media_id.is_null()) {
+    FinalizeResult(web_contents, media_id,
+                   blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+    return;
+  }
+
+  // If the media id is tied to a tab, check that it hasn't been destroyed.
+  if (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS &&
+      !content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(
+              media_id.web_contents_id.render_process_id,
+              media_id.web_contents_id.main_render_frame_id))) {
+    FinalizeResult(web_contents, media_id,
+                   blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
+    return;
+  }
+
+#if defined(OS_MAC)
+  // Check screen capture permissions on Mac if necessary.
+  if ((media_id.type == content::DesktopMediaID::TYPE_SCREEN ||
+       media_id.type == content::DesktopMediaID::TYPE_WINDOW) &&
+      system_media_permissions::CheckSystemScreenCapturePermission() !=
+          system_media_permissions::SystemPermission::kAllowed) {
+    FinalizeResult(
+        web_contents, media_id,
+        blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
+    return;
+  }
+#endif  // defined(OS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Check Data Leak Prevention restrictions on Chrome.
+  policy::DlpContentManager::Get()->CheckScreenShareRestriction(
+      media_id, GetApplicationTitle(web_contents),
+      base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
+                     base::Unretained(this), web_contents, media_id));
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  FinalizeResult(web_contents, media_id,
+                 blink::mojom::MediaStreamRequestResult::OK);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 void DisplayMediaAccessHandler::WebContentsDestroyed(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   pending_requests_.erase(web_contents);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
+    content::WebContents* web_contents,
+    const content::DesktopMediaID& media_id,
+    bool is_dlp_allowed) {
+  blink::mojom::MediaStreamRequestResult result =
+      is_dlp_allowed
+          ? blink::mojom::MediaStreamRequestResult::OK
+          : blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
+  FinalizeResult(web_contents, media_id, result);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void DisplayMediaAccessHandler::DeletePendingAccessRequest(
     int render_process_id,

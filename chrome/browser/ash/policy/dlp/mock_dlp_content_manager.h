@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -16,15 +17,29 @@ class MockDlpContentManager : public DlpContentManager {
   MockDlpContentManager();
   ~MockDlpContentManager() override;
 
-  MOCK_METHOD2(OnConfidentialityChanged,
-               void(content::WebContents*, const DlpContentRestrictionSet&));
-  MOCK_METHOD1(OnWebContentsDestroyed, void(content::WebContents*));
-  MOCK_CONST_METHOD1(GetRestrictionSetForURL,
-                     DlpContentRestrictionSet(const GURL&));
-  MOCK_METHOD1(OnVisibilityChanged, void(content::WebContents*));
-  MOCK_METHOD1(IsScreenshotApiRestricted, bool(const ScreenshotArea& area));
-  MOCK_METHOD1(IsScreenCaptureRestricted,
-               bool(const content::DesktopMediaID& media_id));
+  MOCK_METHOD(void,
+              OnConfidentialityChanged,
+              (content::WebContents*, const DlpContentRestrictionSet&));
+  MOCK_METHOD(void, OnWebContentsDestroyed, (content::WebContents*));
+  MOCK_METHOD(DlpContentRestrictionSet,
+              GetRestrictionSetForURL,
+              (const GURL&),
+              (const));
+  MOCK_METHOD(void, OnVisibilityChanged, (content::WebContents*));
+  MOCK_METHOD(bool,
+              IsScreenshotApiRestricted,
+              (const ScreenshotArea& area),
+              (override));
+  MOCK_METHOD(bool,
+              IsScreenCaptureRestricted,
+              (const content::DesktopMediaID& media_id),
+              (override));
+  MOCK_METHOD(void,
+              CheckScreenShareRestriction,
+              (const content::DesktopMediaID& media_id,
+               const std::u16string& application_title,
+               OnDlpRestrictionCheckedCallback callback),
+              (override));
 
  protected:
   void Init() override;
