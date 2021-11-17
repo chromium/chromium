@@ -306,7 +306,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     let stepCount = 0;
     let activeIndex = 0;
     for (const step of Object.values(PrivacyReviewStep)) {
-      if (step === PrivacyReviewStep.WELCOME) {
+      if (step === PrivacyReviewStep.WELCOME ||
+          step === PrivacyReviewStep.COMPLETION) {
         // This card has no step in the step indicator.
         continue;
       }

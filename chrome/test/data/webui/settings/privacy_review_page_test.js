@@ -15,8 +15,10 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
-/* Maximum number of steps in the privacy review, excluding the welcome step. */
-const PRIVACY_REVIEW_STEPS = 5;
+/* Maximum number of steps in the privacy review, excluding the welcome and
+ * completion steps.
+ */
+const PRIVACY_REVIEW_STEPS = 4;
 
 suite('PrivacyReviewPage', function() {
   /** @type {!SettingsPrivacyReviewPageElement} */
