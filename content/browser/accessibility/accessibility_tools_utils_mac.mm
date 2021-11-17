@@ -56,7 +56,8 @@ bool IsValidAttribute(const std::string& attribute) {
        NSAccessibilityMathUnderAttribute,
        NSAccessibilityMathOverAttribute,
        NSAccessibilityMathPostscriptsAttribute,
-       NSAccessibilityMathPrescriptsAttribute},
+       NSAccessibilityMathPrescriptsAttribute,
+       NSAccessibilityRoleDescriptionAttribute},
       NSStringComparator());
 
   return kValidAttributes.contains(base::SysUTF8ToNSString(attribute));

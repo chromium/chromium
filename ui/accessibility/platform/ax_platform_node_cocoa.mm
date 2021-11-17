@@ -415,6 +415,10 @@ bool IsAXSetter(SEL selector) {
 // Returns AXValue, or nil if AXValue isn't an NSString.
 - (NSString*)getAXValueAsString;
 
+// Returns this node's internal role, i.e. the one that is stored in
+// the internal accessibility tree as opposed to the platform tree.
+- (ax::mojom::Role)internalRole;
+
 // Returns the native wrapper for the given node id.
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id;
 @end
@@ -480,6 +484,12 @@ bool IsAXSetter(SEL selector) {
 - (NSString*)getAXValueAsString {
   id value = [self AXValue];
   return [value isKindOfClass:[NSString class]] ? value : nil;
+}
+
+- (ax::mojom::Role)internalRole {
+  if ([self instanceActive])
+    return _node->GetRole();
+  return ax::mojom::Role::kUnknown;
 }
 
 - (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
@@ -962,22 +972,7 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXRoleDescription {
-  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
-    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
-  }
-  switch (_node->GetRole()) {
-    case ax::mojom::Role::kTab:
-      // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
-      // instead). Do the same as NSTabView and put "tab" in the description.
-      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_TAB) lowercaseString];
-    case ax::mojom::Role::kDisclosureTriangle:
-      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_DISCLOSURE_TRIANGLE)
-          lowercaseString];
-    default:
-      break;
-  }
-  return NSAccessibilityRoleDescription([self AXRole], [self AXSubrole]);
+  return [self accessibilityRoleDescription];
 }
 
 - (NSString*)AXSubrole {
@@ -1281,10 +1276,6 @@ bool IsAXSetter(SEL selector) {
   return [self AXSubrole];
 }
 
-- (NSString*)accessibilityRoleDescription {
-  return [self AXRoleDescription];
-}
-
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
   TRACE_EVENT1(
       "accessibility", "AXPlatformNodeCocoa::isAccessibilitySelectorAllowed",
@@ -1477,7 +1468,135 @@ bool IsAXSetter(SEL selector) {
 }
 
 //
-// NSAccessibility protocol: configuring table and outline views
+// NSAccessibility protocol: assigning roles.
+//
+
+- (NSString*)accessibilityRoleDescription {
+  TRACE_EVENT1("accessibility", "accessibilityRoleDescription",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive])
+    return nil;
+
+  // Image annotations.
+  if (_node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation ||
+      _node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation) {
+    return base::SysUTF16ToNSString(
+        _node->GetDelegate()->GetLocalizedRoleDescriptionForUnlabeledImage());
+  }
+
+  // ARIA role description.
+  std::string roleDescription;
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                                &roleDescription)) {
+    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
+  }
+
+  NSString* role = [self accessibilityRole];
+
+  // The following descriptions are specific to webkit.
+  if ([role isEqualToString:@"AXWebArea"]) {
+    return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
+  }
+
+  if ([role isEqualToString:NSAccessibilityLinkRole]) {
+    return l10n_util::GetNSString(IDS_AX_ROLE_LINK);
+  }
+
+  if ([role isEqualToString:@"AXHeading"]) {
+    return l10n_util::GetNSString(IDS_AX_ROLE_HEADING);
+  }
+
+  if (([role isEqualToString:NSAccessibilityGroupRole] ||
+       [role isEqualToString:NSAccessibilityRadioButtonRole]) &&
+      !_node->GetDelegate()->IsWebAreaForPresentationalIframe()) {
+    std::string role_attribute;
+    if (_node->GetHtmlAttribute("role", &role_attribute)) {
+      ax::mojom::Role internalRole = _node->GetRole();
+      if ((internalRole != ax::mojom::Role::kBlockquote &&
+           internalRole != ax::mojom::Role::kCaption &&
+           internalRole != ax::mojom::Role::kGroup &&
+           internalRole != ax::mojom::Role::kListItem &&
+           internalRole != ax::mojom::Role::kMark &&
+           internalRole != ax::mojom::Role::kParagraph) ||
+          internalRole == ax::mojom::Role::kTab) {
+        // TODO(dtseng): This is not localized; see crbug/84814.
+        return base::SysUTF8ToNSString(role_attribute);
+      }
+    }
+  }
+
+  switch (_node->GetRole()) {
+    case ax::mojom::Role::kArticle:
+      return l10n_util::GetNSString(IDS_AX_ROLE_ARTICLE);
+    case ax::mojom::Role::kBanner:
+      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
+    case ax::mojom::Role::kCheckBox:
+      return l10n_util::GetNSString(IDS_AX_ROLE_CHECK_BOX);
+    case ax::mojom::Role::kComment:
+      return l10n_util::GetNSString(IDS_AX_ROLE_COMMENT);
+    case ax::mojom::Role::kComplementary:
+      return l10n_util::GetNSString(IDS_AX_ROLE_COMPLEMENTARY);
+    case ax::mojom::Role::kContentInfo:
+      return l10n_util::GetNSString(IDS_AX_ROLE_CONTENT_INFO);
+    case ax::mojom::Role::kDescriptionList:
+      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_LIST);
+    case ax::mojom::Role::kDescriptionListDetail:
+      return l10n_util::GetNSString(IDS_AX_ROLE_DEFINITION);
+    case ax::mojom::Role::kDescriptionListTerm:
+      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_TERM);
+    case ax::mojom::Role::kDisclosureTriangle:
+      return l10n_util::GetNSString(IDS_AX_ROLE_DISCLOSURE_TRIANGLE);
+    case ax::mojom::Role::kFigure:
+      return l10n_util::GetNSString(IDS_AX_ROLE_FIGURE);
+    case ax::mojom::Role::kFooter:
+      return l10n_util::GetNSString(IDS_AX_ROLE_FOOTER);
+    case ax::mojom::Role::kForm:
+      return l10n_util::GetNSString(IDS_AX_ROLE_FORM);
+    case ax::mojom::Role::kHeader:
+      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
+    case ax::mojom::Role::kMain:
+      return l10n_util::GetNSString(IDS_AX_ROLE_MAIN_CONTENT);
+    case ax::mojom::Role::kMark:
+      return l10n_util::GetNSString(IDS_AX_ROLE_MARK);
+    case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
+      return l10n_util::GetNSString(IDS_AX_ROLE_MATH);
+    case ax::mojom::Role::kNavigation:
+      return l10n_util::GetNSString(IDS_AX_ROLE_NAVIGATIONAL_LINK);
+    case ax::mojom::Role::kRegion:
+      return l10n_util::GetNSString(IDS_AX_ROLE_REGION);
+    case ax::mojom::Role::kSpinButton:
+      // This control is similar to what VoiceOver calls a "stepper".
+      return l10n_util::GetNSString(IDS_AX_ROLE_STEPPER);
+    case ax::mojom::Role::kStatus:
+      return l10n_util::GetNSString(IDS_AX_ROLE_STATUS);
+    case ax::mojom::Role::kSearchBox:
+      return l10n_util::GetNSString(IDS_AX_ROLE_SEARCH_BOX);
+    case ax::mojom::Role::kSuggestion:
+      return l10n_util::GetNSString(IDS_AX_ROLE_SUGGESTION);
+    case ax::mojom::Role::kSwitch:
+      return l10n_util::GetNSString(IDS_AX_ROLE_SWITCH);
+    case ax::mojom::Role::kTab:
+      // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
+      // instead). Do the same as NSTabView and put "tab" in the description.
+      return l10n_util::GetNSString(IDS_AX_ROLE_TAB);
+    case ax::mojom::Role::kTerm:
+      return l10n_util::GetNSString(IDS_AX_ROLE_DESCRIPTION_TERM);
+    case ax::mojom::Role::kToggleButton:
+      return l10n_util::GetNSString(IDS_AX_ROLE_TOGGLE_BUTTON);
+    default:
+      break;
+  }
+
+  return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
+}
+
+//
+// NSAccessibility protocol: configuring table and outline views.
+//
 
 - (NSArray*)accessibilityColumnHeaderUIElements {
   if (![self instanceActive])
@@ -1680,7 +1799,7 @@ static NSDictionary* createMathSubSupScriptsPair(
   bool foundBaseElement = false;
   AXPlatformNodeCocoa* subscript = nullptr;
   for (AXPlatformNodeCocoa* child in [self AXChildren]) {
-    if ([child node]->GetRole() == ax::mojom::Role::kMathMLPrescriptDelimiter)
+    if ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter)
       break;
     if (!foundBaseElement) {
       foundBaseElement = true;
@@ -1706,8 +1825,8 @@ static NSDictionary* createMathSubSupScriptsPair(
   AXPlatformNodeCocoa* subscript = nullptr;
   for (AXPlatformNodeCocoa* child in [self AXChildren]) {
     if (!foundPrescriptDelimiter) {
-      foundPrescriptDelimiter = ([child node]->GetRole() ==
-                                 ax::mojom::Role::kMathMLPrescriptDelimiter);
+      foundPrescriptDelimiter =
+          ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter);
       continue;
     }
     if (!subscript) {

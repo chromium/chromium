@@ -268,43 +268,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
-                       TestUnlabeledImageRoleDescription) {
-  ui::AXTreeUpdate tree;
-  tree.root_id = 1;
-  tree.nodes.resize(3);
-  tree.nodes[0].id = 1;
-  tree.nodes[0].child_ids = {2, 3};
-
-  tree.nodes[1].id = 2;
-  tree.nodes[1].role = ax::mojom::Role::kImage;
-  tree.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                   "foo");
-  tree.nodes[1].SetImageAnnotationStatus(
-      ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation);
-
-  tree.nodes[2].id = 3;
-  tree.nodes[2].role = ax::mojom::Role::kImage;
-  tree.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                   "bar");
-  tree.nodes[2].SetImageAnnotationStatus(
-      ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
-
-  std::unique_ptr<BrowserAccessibilityManagerMac> manager(
-      new BrowserAccessibilityManagerMac(tree, nullptr));
-
-  for (int child_index = 0;
-       child_index < static_cast<int>(tree.nodes[0].child_ids.size());
-       ++child_index) {
-    BrowserAccessibility* child =
-        manager->GetRoot()->PlatformGetChild(child_index);
-    base::scoped_nsobject<BrowserAccessibilityCocoa> child_obj(
-        [ToBrowserAccessibilityCocoa(child) retain]);
-
-    EXPECT_NSEQ(@"Unlabeled image", [child_obj roleDescription]);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        TestAnnotatedImageDescription) {
   std::vector<const char*> expected_descriptions;
 

@@ -176,7 +176,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // A string indicating the role of this object as far as accessibility
 // is concerned.
 @property(nonatomic, readonly) NSString* role;
-@property(nonatomic, readonly) NSString* roleDescription;
 @property(nonatomic, readonly) NSArray* rowHeaders;
 @property(nonatomic, readonly) NSValue* rowIndexRange;
 @property(nonatomic, readonly) NSArray* rows;
