@@ -2946,6 +2946,7 @@ if (!is_android && !is_fuchsia) {
         sources += [
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
+        deps += [ "//chromeos/services/multidevice_setup/public/cpp:prefs" ]
       }
       if (!is_chromeos) {
         sources += [
