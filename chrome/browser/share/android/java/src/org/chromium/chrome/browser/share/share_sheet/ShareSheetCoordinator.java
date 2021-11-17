@@ -578,7 +578,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
     @Override
     public void onActivityPaused() {
-        if (mBottomSheet != null) {
+        boolean persistOnPause =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.PERSIST_SHARE_HUB_ON_APP_SWITCH);
+        if (mBottomSheet != null && !persistOnPause) {
             mBottomSheetController.hideContent(mBottomSheet, true);
         }
     }

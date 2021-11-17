@@ -4412,6 +4412,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "persist-share-hub-on-app-switch",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "persistent-quota-is-temporary-quota",
     "owners": [ "mek", "cfredric" ],
     "expiry_milestone": 100

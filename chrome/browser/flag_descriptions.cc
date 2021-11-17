@@ -3300,6 +3300,10 @@ extern const char kPasswordProtectionForSignedInUsersDescription[] =
     "users and allows users to change their signed-in password through "
     "password reuse warnings on phishing or low reputation sites.";
 
+const char kPersistShareHubOnAppSwitchName[] = "Persist sharing hub";
+const char kPersistShareHubOnAppSwitchDescription[] =
+    "Persist the sharing hub across app pauses/resumes.";
+
 const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
 const char kPhotoPickerVideoSupportDescription[] =
     "Enables video files to be shown in the Photo Picker dialog";

@@ -50260,6 +50260,7 @@ from previous Chrome versions.
   <int value="-875217114"
       label="OmniboxEnableClipboardProviderTextSuggestions:enabled"/>
   <int value="-874602599" label="HorizontalTabSwitcherAndroid:enabled"/>
+  <int value="-873334439" label="PersistShareHubOnAppSwitch:disabled"/>
   <int value="-872764392" label="ContextualSuggestionsBottomSheet:disabled"/>
   <int value="-871784177" label="DeprecateMenagerieAPI:enabled"/>
   <int value="-871520682"
@@ -51048,6 +51049,7 @@ from previous Chrome versions.
   <int value="-265697837" label="PhoneHub:disabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>
   <int value="-263150202" label="BundledConnectionHelp:disabled"/>
+  <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>

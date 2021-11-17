@@ -1902,6 +1902,9 @@ extern const char kPageInfoStoreInfoDescription[];
 extern const char kPasswordProtectionForSignedInUsersName[];
 extern const char kPasswordProtectionForSignedInUsersDescription[];
 
+extern const char kPersistShareHubOnAppSwitchName[];
+extern const char kPersistShareHubOnAppSwitchDescription[];
+
 extern const char kPhotoPickerVideoSupportName[];
 extern const char kPhotoPickerVideoSupportDescription[];
 

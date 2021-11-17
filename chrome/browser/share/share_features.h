@@ -9,6 +9,7 @@
 
 namespace share {
 
+extern const base::Feature kPersistShareHubOnAppSwitch;
 extern const base::Feature kSharingDesktopScreenshotsEdit;
 extern const base::Feature kSwapAndroidShareHubRows;
 extern const base::Feature kUpcomingSharingFeatures;
