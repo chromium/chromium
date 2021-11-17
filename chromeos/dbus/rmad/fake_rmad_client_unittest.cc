@@ -193,6 +193,32 @@ rmad::GetStateReply CreateDeviceDestinationStateReply(
   return reply;
 }
 
+TEST_F(FakeRmadClientTest, CheckInRma_Default_False) {
+  base::RunLoop run_loop;
+  client_->CheckInRma(
+      base::BindLambdaForTesting([&](absl::optional<bool> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_FALSE(*response);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(FakeRmadClientTest, CheckInRma_WithState_True) {
+  std::vector<rmad::GetStateReply> fake_states;
+  fake_states.push_back(CreateWelcomeStateReply(rmad::RMAD_ERROR_OK));
+  fake_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+  client_->CheckInRma(
+      base::BindLambdaForTesting([&](absl::optional<bool> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_TRUE(*response);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
 TEST_F(FakeRmadClientTest, GetCurrentState_Default_RmaNotRequired) {
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(

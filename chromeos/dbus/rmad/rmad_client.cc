@@ -22,6 +22,8 @@ class RmadClientImpl : public RmadClient {
  public:
   void Init(dbus::Bus* bus);
 
+  void CheckInRma(DBusMethodCallback<bool> callback) override;
+
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(
@@ -44,6 +46,9 @@ class RmadClientImpl : public RmadClient {
   ~RmadClientImpl() override = default;
 
  private:
+  void OnCheckInRma(DBusMethodCallback<bool> callback,
+                    dbus::Response* response);
+
   template <class T>
   void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
 
@@ -101,6 +106,35 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
         base::BindRepeating(p.second, weak_ptr_factory_.GetWeakPtr()),
         on_connected_callback);
   }
+}
+
+void RmadClientImpl::CheckInRma(DBusMethodCallback<bool> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kIsRmaRequiredMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnCheckInRma,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::OnCheckInRma(DBusMethodCallback<bool> callback,
+                                  dbus::Response* response) {
+  if (!response) {
+    LOG(ERROR) << "Error calling rmad function for OnCheckInRma";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  dbus::MessageReader reader(response);
+  bool is_rma_required = false;
+  if (!reader.PopBool(&is_rma_required)) {
+    LOG(ERROR) << "Unable to decode response for " << response->GetMember();
+    std::move(callback).Run(false);
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  std::move(callback).Run(is_rma_required);
 }
 
 // Called when a dbus signal is initially connected.

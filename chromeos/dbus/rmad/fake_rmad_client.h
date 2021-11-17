@@ -24,6 +24,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   FakeRmadClient& operator=(const FakeRmadClient&) = delete;
   ~FakeRmadClient() override;
 
+  void CheckInRma(DBusMethodCallback<bool> callback) override;
+
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(

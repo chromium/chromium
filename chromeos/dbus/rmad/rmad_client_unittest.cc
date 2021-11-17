@@ -345,6 +345,46 @@ class TestObserver : public RmadClient::Observer {
   rmad::FinalizeStatus last_finalization_progress_;
 };  // namespace chromeos
 
+TEST_F(RmadClientTest, CheckInRma_NotInRma) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  dbus::MessageWriter(response.get()).AppendBool(false);
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kIsRmaRequiredMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->CheckInRma(
+      base::BindLambdaForTesting([&](absl::optional<bool> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_FALSE(*response);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, CheckInRma_InRma) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  dbus::MessageWriter(response.get()).AppendBool(true);
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kIsRmaRequiredMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->CheckInRma(
+      base::BindLambdaForTesting([&](absl::optional<bool> response) {
+        EXPECT_TRUE(response.has_value());
+        EXPECT_TRUE(*response);
+        run_loop.Quit();
+      }));
+  run_loop.RunUntilIdle();
+}
+
 TEST_F(RmadClientTest, GetCurrentState) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   rmad::GetStateReply expected_proto;

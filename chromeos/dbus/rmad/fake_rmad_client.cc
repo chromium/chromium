@@ -9,6 +9,13 @@
 
 namespace chromeos {
 namespace {
+
+// Fake state is only used in local builds when the rmad d-bus service is
+// unavailable.
+// Enabling fake state will cause Chrome OS to always display the RMA wizard and
+// the device will be unusable for anything but testing Shimless RMA.
+constexpr bool use_fake_state = false;
+
 constexpr char rsu_challenge_code[] =
     "HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6"
     "P3DNV4";
@@ -100,60 +107,72 @@ rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
 /* static */
 void FakeRmadClient::CreateWithState() {
   FakeRmadClient* fake = new FakeRmadClient();
-  // Set up fake component repair state.
-  rmad::GetStateReply components_repair_state =
-      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
-  rmad::ComponentsRepairState::ComponentRepairStatus* component =
-      components_repair_state.mutable_state()
-          ->mutable_components_repair()
-          ->add_components();
-  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
-  component->set_repair_status(
-      rmad::ComponentsRepairState::ComponentRepairStatus::
-          RMAD_REPAIR_STATUS_UNKNOWN);
-  // Set up fake disable RSU state.
-  rmad::GetStateReply wp_disable_rsu_state =
-      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
-  wp_disable_rsu_state.mutable_state()
-      ->mutable_wp_disable_rsu()
-      ->set_allocated_challenge_code(new std::string(rsu_challenge_code));
-  wp_disable_rsu_state.mutable_state()
-      ->mutable_wp_disable_rsu()
-      ->set_allocated_hwid(new std::string(rsu_hwid));
-  wp_disable_rsu_state.mutable_state()
-      ->mutable_wp_disable_rsu()
-      ->set_allocated_challenge_url(new std::string(rsu_challenge_url));
+  if (use_fake_state) {
+    // Set up fake component repair state.
+    rmad::GetStateReply components_repair_state = CreateStateReply(
+        rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+    rmad::ComponentsRepairState::ComponentRepairStatus* component =
+        components_repair_state.mutable_state()
+            ->mutable_components_repair()
+            ->add_components();
+    component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
+    component->set_repair_status(
+        rmad::ComponentsRepairState::ComponentRepairStatus::
+            RMAD_REPAIR_STATUS_UNKNOWN);
+    // Set up fake disable RSU state.
+    rmad::GetStateReply wp_disable_rsu_state =
+        CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
+    wp_disable_rsu_state.mutable_state()
+        ->mutable_wp_disable_rsu()
+        ->set_allocated_challenge_code(new std::string(rsu_challenge_code));
+    wp_disable_rsu_state.mutable_state()
+        ->mutable_wp_disable_rsu()
+        ->set_allocated_hwid(new std::string(rsu_hwid));
+    wp_disable_rsu_state.mutable_state()
+        ->mutable_wp_disable_rsu()
+        ->set_allocated_challenge_url(new std::string(rsu_challenge_url));
 
-  std::vector<rmad::GetStateReply> fake_states = {
-      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
-      components_repair_state,
-      CreateStateReply(rmad::RmadState::kDeviceDestination,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
-      wp_disable_rsu_state,
-      CreateStateReply(rmad::RmadState::kWpDisablePhysical,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisableComplete,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK),
-      // TODO(gavindodd): Add calibration states when implemented.
-      // rmad::RmadState::kCheckCalibration
-      // rmad::RmadState::kSetupCalibration
-      // rmad::RmadState::kRunCalibration
-      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
-  };
-  fake->SetFakeStateReplies(fake_states);
+    std::vector<rmad::GetStateReply> fake_states = {
+        CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+        components_repair_state,
+        CreateStateReply(rmad::RmadState::kDeviceDestination,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kWpDisableMethod,
+                         rmad::RMAD_ERROR_OK),
+        wp_disable_rsu_state,
+        CreateStateReply(rmad::RmadState::kWpDisablePhysical,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kWpDisableComplete,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kUpdateRoFirmware,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kUpdateDeviceInfo,
+                         rmad::RMAD_ERROR_OK),
+        // TODO(gavindodd): Add calibration states when implemented.
+        // rmad::RmadState::kCheckCalibration
+        // rmad::RmadState::kSetupCalibration
+        // rmad::RmadState::kRunCalibration
+        CreateStateReply(rmad::RmadState::kProvisionDevice,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kWpEnablePhysical,
+                         rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+        CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
+    };
+    fake->SetFakeStateReplies(fake_states);
+  }
 }
 
 FakeRmadClient::FakeRmadClient() {
   abort_rma_reply_.set_error(rmad::RMAD_ERROR_OK);
 }
 FakeRmadClient::~FakeRmadClient() = default;
+
+void FakeRmadClient::CheckInRma(DBusMethodCallback<bool> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), NumStates() > 0));
+}
 
 void FakeRmadClient::GetCurrentState(
     DBusMethodCallback<rmad::GetStateReply> callback) {
