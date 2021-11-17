@@ -809,8 +809,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
 
-  const std::vector<std::vector<uint8_t>> kNewVaultKeys = {kInitialVaultKey,
-                                                           {1, 3, 2}};
+  const std::vector<uint8_t> kNewVaultKey = {1, 3, 2};
   const int kNewLastKeyVersion = 2;
 
   std::unique_ptr<SecureBoxKeyPair> device_key_pair;
@@ -840,10 +839,11 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
               Eq(private_device_key_material));
 
   // Mimic successful key downloading, it should make fetch keys attempt
-  // completed.
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/Eq(kNewVaultKeys)));
+  // completed. Note that the client should keep old key as well.
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(kInitialVaultKey, kNewVaultKey)));
   std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kSuccess, kNewVaultKeys,
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
            kNewLastKeyVersion);
 }
 

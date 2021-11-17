@@ -62,6 +62,7 @@ class FakeSecurityDomainsServer {
       const std::vector<uint8_t>& public_key);
 
   int GetMemberCount() const;
+  std::vector<std::vector<uint8_t>> GetAllTrustedVaultKeys() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
   int GetCurrentEpoch() const;
   bool IsRecoverabilityDegraded() const;
@@ -104,6 +105,9 @@ class FakeSecurityDomainsServer {
     // |constant_key_allowed_| set to true.
     int current_epoch = 0;
     bool constant_key_allowed = true;
+
+    // All trusted vault keys ordered by increasing epoch.
+    std::vector<std::vector<uint8_t>> trusted_vault_keys;
 
     std::string required_public_key_to_avoid_recoverability_degraded;
   };
