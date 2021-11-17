@@ -88572,9 +88572,9 @@ others/histograms.xml -->
 <enum name="VPNRemoteAuthenticationType">
   <int value="0" label="OpenVPN Default"/>
   <int value="1" label="OpenVPN Certificate"/>
-  <int value="2" label="L2TP/IPSec Default"/>
-  <int value="3" label="L2TP/IPSec Certificate"/>
-  <int value="4" label="L2TP/IPSec PSK"/>
+  <int value="2" label="L2TP/IPsec Default"/>
+  <int value="3" label="L2TP/IPsec Certificate"/>
+  <int value="4" label="L2TP/IPsec PSK"/>
 </enum>
 
 <enum name="VPNUserAuthenticationType">
@@ -88582,9 +88582,10 @@ others/histograms.xml -->
   <int value="1" label="OpenVPN Certificate"/>
   <int value="2" label="OpenVPN Username/Password"/>
   <int value="3" label="OpenVPN Username/Password/OTP"/>
-  <int value="4" label="L2TP/IPSec None"/>
-  <int value="5" label="L2TP/IPSec Certificate"/>
-  <int value="6" label="L2TP/IPSec Username/Password"/>
+  <int value="4" label="L2TP/IPsec None"/>
+  <int value="5" label="L2TP/IPsec Certificate"/>
+  <int value="6" label="L2TP/IPsec Username/Password"/>
+  <int value="7" label="OpenVPN Username/Token"/>
 </enum>
 
 <enum name="VPNWireGuardAllowedIPsType">
