@@ -635,9 +635,6 @@ void DevToolsUIBindings::FrontendWebContentsObserver::
 
 void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->HasCommitted())
     devtools_bindings_->DidNavigateMainFrame();
@@ -1648,9 +1645,6 @@ void DevToolsUIBindings::CallClientMethod(
 
 void DevToolsUIBindings::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame()) {
     if (frontend_loaded_ && agent_host_.get()) {
       agent_host_->DetachClient(this);
@@ -1662,11 +1656,8 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
       frontend_host_.reset();
       return;
     }
-    if (navigation_handle->GetRenderFrameHost() ==
-            web_contents_->GetMainFrame() &&
-        frontend_host_) {
+    if (frontend_host_)
       return;
-    }
     if (content::RenderFrameHost* opener = web_contents_->GetOpener()) {
       content::WebContents* opener_wc =
           content::WebContents::FromRenderFrameHost(opener);
