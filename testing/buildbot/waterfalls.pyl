@@ -898,6 +898,7 @@
         },
         'os_type': 'android',
       },
+      # To be kept in sync with android-marshmallow-arm64-rel-rts
       'android-marshmallow-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -979,6 +980,7 @@
           'gtest_tests': 'android_pie_gtests',
         }
       },
+      # To be kept in sync with android-pie-arm64-rel-rts
       'android-pie-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -6441,6 +6443,28 @@
     'name': 'tryserver.chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      # To be kept in sync with android-marshmallow-arm64-rel
+      'android-marshmallow-arm64-rel-rts': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'bullhead',
+          'isolate_profile_data',
+          'marshmallow',
+        ],
+        'additional_compile_targets': [
+          'cronet_test_instrumentation_apk',
+          'chrome_nocompile_tests',
+          'monochrome_static_initializers',
+          'weblayer_shell',
+        ],
+        'test_suites': {
+          'gtest_tests': 'android_marshmallow_device_gtests',
+          'junit_tests': 'chromium_junit_tests',
+          'isolated_scripts': 'marshmallow_pie_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
+        'os_type': 'android',
+      },
       'android-opus-arm-rel': {
         'mixins': [
           'marshmallow',
@@ -6449,6 +6473,27 @@
         'test_suites': {
           'gtest_tests': 'opus_tests',
         },
+        'os_type': 'android',
+      },
+      # To be kept in sync with android-pie-arm64-rel
+      'android-pie-arm64-rel-rts': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'pie_fleet',
+          'walleye',
+        ],
+        'additional_compile_targets': [
+          'monochrome_static_initializers',
+          'weblayer_shell',
+        ],
+        'test_suites': {
+          'gtest_tests': 'android_pie_rel_gtests',
+          # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
+          # has been deployed.
+          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          'scripts': 'chromium_android_scripts',
+        },
+        'use_swarming': True,
         'os_type': 'android',
       },
       'android_blink_rel': {

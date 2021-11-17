@@ -30,6 +30,11 @@
           'shards': 2,
         },
       },
+      'android-marshmallow-arm64-rel-rts': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-marshmallow-x86-rel': {
         'swarming': {
           'shards': 2,
@@ -64,6 +69,7 @@
    'remove_from': [
       # Remove from CQ bots due to capacity.
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
    ],
   },
   'android_webview_unittests': {
@@ -1083,6 +1089,7 @@
     'remove_from': [
       # https://crbug.com/1147531 - covered on marshmallow emulator.
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
@@ -1147,6 +1154,7 @@
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
       'android-marshmallow-arm64-rel', # http://crbug.com/1060245#c30: due to low utility and capacity.
+      'android-marshmallow-arm64-rel-rts',
     ],
     'modifications': {
       'Cast Audio Linux': {
@@ -2359,6 +2367,7 @@
       'android-code-coverage',
       'android-code-coverage-native',
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
       'android-marshmallow-x86-rel-non-cq',
       'android-pie-arm64-coverage-experimental-rel', # Does not generate profraw data.
       'android-pie-arm64-rel',
@@ -2783,6 +2792,7 @@
     'remove_from': [
       # Monochrome isn't supported on M.
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
       'android-marshmallow-x86-rel-non-cq',
     ],
   },
@@ -2863,6 +2873,7 @@
       # marshmallow on the CQ. https://crbug.com/1026487.
       # TODO(crbug/1260494): Test suite isn't running on android.
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
       'android-pie-arm64-rel',
       # crbug.com/936540
       'Mac10.11 Tests',
@@ -3249,6 +3260,7 @@
       'Win 7 Tests x64 (1)',
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
       'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
@@ -3421,6 +3433,7 @@
       # from android-marshmallow-arm64-rel-swarming).
       # https://crbug.com/1147531 - covered on pie
       'android-marshmallow-arm64-rel',
+      'android-marshmallow-arm64-rel-rts',
     ],
     'modifications': {
       # chromium.android.fyi
