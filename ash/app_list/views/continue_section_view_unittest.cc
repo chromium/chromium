@@ -55,8 +55,6 @@ class ContinueSectionViewTest : public AshTestBase {
   void SetUp() override { AshTestBase::SetUp(); }
 
   ContinueSectionView* GetContinueSectionView() {
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
-      return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
   }
 
@@ -351,51 +349,6 @@ TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   // Results should be cleared if app list models get reset.
   Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(std::vector<std::string>{}, GetResultIds());
-}
-
-TEST_F(ContinueSectionViewTest, TabletModeLayoutWithThreeSuggestions) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  VerifyResultViewsUpdated();
-
-  ASSERT_TRUE(GetContinueSectionView()->GetVisible());
-  ASSERT_EQ(3u, GetContinueSectionView()->GetTasksSuggestionsCount());
-
-  const int width = GetResultViewAt(0)->width();
-  const int vertical_position = GetResultViewAt(0)->y();
-
-  for (int i = 1; i < 3; i++) {
-    EXPECT_EQ(width, GetResultViewAt(i)->width());
-    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
-    EXPECT_GT(GetResultViewAt(i)->x(),
-              GetResultViewAt(i - 1)->bounds().right());
-  }
-}
-
-TEST_F(ContinueSectionViewTest, TabletModeLayoutWithFourSuggestions) {
-  AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id4", AppListSearchResultType::kFileChip);
-
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  VerifyResultViewsUpdated();
-
-  ASSERT_TRUE(GetContinueSectionView()->GetVisible());
-  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
-
-  const int width = GetResultViewAt(0)->width();
-  const int vertical_position = GetResultViewAt(0)->y();
-
-  for (int i = 1; i < 4; i++) {
-    EXPECT_EQ(width, GetResultViewAt(i)->width());
-    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
-    EXPECT_GT(GetResultViewAt(i)->x(),
-              GetResultViewAt(i - 1)->bounds().right());
-  }
 }
 
 }  // namespace

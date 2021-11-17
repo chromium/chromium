@@ -48,8 +48,6 @@ constexpr gfx::Insets kInteriorMarginTablet(13, 16, 13, 20);
 
 constexpr int kViewCornerRadiusClamshell = 8;
 constexpr int kViewCornerRadiusTablet = 20;
-constexpr int kTaskMinWidth = 204;
-constexpr int kTaskMaxWidth = 264;
 
 gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
   // The icon with circular background should only be styled when dark light
@@ -122,15 +120,11 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
       std::make_unique<views::Label>(std::u16string()));
   title_->SetAccessibleName(std::u16string());
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  title_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
   subtitle_ = label_container->AddChildView(
       std::make_unique<views::Label>(std::u16string()));
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  subtitle_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
-
-  layout_manager->SetFlexForView(label_container, 1);
-
   UpdateResult();
+
   set_context_menu_controller(this);
 }
 ContinueTaskView::~ContinueTaskView() {}
@@ -139,24 +133,6 @@ void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
   bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
   bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
-}
-
-gfx::Size ContinueTaskView::GetMaximumSize() const {
-  return gfx::Size(kTaskMaxWidth,
-                   GetLayoutManager()->GetPreferredSize(this).height());
-}
-
-gfx::Size ContinueTaskView::GetMinimumSize() const {
-  return gfx::Size(kTaskMinWidth,
-                   GetLayoutManager()->GetPreferredSize(this).height());
-}
-
-gfx::Size ContinueTaskView::CalculatePreferredSize() const {
-  gfx::Size preferred_size = GetLayoutManager()->GetPreferredSize(this);
-
-  return gfx::Size(
-      base::clamp(preferred_size.width(), kTaskMinWidth, kTaskMaxWidth),
-      preferred_size.height());
 }
 
 void ContinueTaskView::OnButtonPressed(const ui::Event& event) {

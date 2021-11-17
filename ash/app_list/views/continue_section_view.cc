@@ -40,7 +40,7 @@ constexpr int kHeaderHorizontalPadding = 12;
 
 // Suggested tasks layout constants. Should this change, we should update the
 // Layout to leave out empty rows.
-constexpr size_t kMinFilesForContinueSection = 3;
+constexpr int kMinFilesForContinueSection = 3;
 
 std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
@@ -61,9 +61,7 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets(kSectionVerticalPadding, kSectionHorizontalPadding),
       kHeaderVerticalSpacing));
-  layout->set_main_axis_alignment(
-      tablet_mode ? views::BoxLayout::MainAxisAlignment::kCenter
-                  : views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
@@ -96,7 +94,7 @@ void ContinueSectionView::OnActiveAppListModelsChanged(
 }
 
 size_t ContinueSectionView::GetTasksSuggestionsCount() const {
-  return suggestions_container_->num_results();
+  return static_cast<size_t>(suggestions_container_->num_results());
 }
 
 void ContinueSectionView::DisableFocusForShowingActiveFolder(bool disabled) {
