@@ -56,7 +56,7 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
     return scoped_overlay_read_access_->GetNativePixmap();
   }
 
-  // Should be called after BeginPresent() to get fences for frame.
+  // Must be called after BeginPresent() to get fences for frame.
   void TakePresentationFences(
       std::vector<gfx::GpuFenceHandle>& read_begin_fences,
       std::vector<gfx::GpuFenceHandle>& read_end_fences);
@@ -104,12 +104,13 @@ bool PresenterImageFuchsia::Initialize(
 }
 
 void PresenterImageFuchsia::BeginPresent() {
+  DCHECK(read_end_fence_.is_null());
+
   ++present_count_;
 
   if (present_count_ == 1) {
     DCHECK(!scoped_overlay_read_access_);
     DCHECK(read_begin_fences_.empty());
-    DCHECK(read_end_fence_.is_null());
 
     scoped_overlay_read_access_ =
         overlay_representation_->BeginScopedReadAccess(
@@ -134,6 +135,8 @@ void PresenterImageFuchsia::BeginPresent() {
       exernal_semaphore_pool_->GetOrCreateSemaphore().GetVkSemaphore());
   DCHECK(handle.is_valid());
   read_end_fence_.owned_event = zx::event(handle.TakeHandle());
+
+  scoped_overlay_read_access_->SetReleaseFence(read_end_fence_.Clone());
 }
 
 void PresenterImageFuchsia::EndPresent(gfx::GpuFenceHandle release_fence) {
@@ -142,9 +145,6 @@ void PresenterImageFuchsia::EndPresent(gfx::GpuFenceHandle release_fence) {
   --present_count_;
   if (!present_count_) {
     DCHECK(scoped_overlay_read_access_);
-    DCHECK(!read_end_fence_.is_null());
-
-    scoped_overlay_read_access_->SetReleaseFence(std::move(read_end_fence_));
     scoped_overlay_read_access_.reset();
   }
 }
@@ -166,7 +166,7 @@ void PresenterImageFuchsia::TakePresentationFences(
 
   DCHECK(read_end_fences.empty());
   DCHECK(!read_end_fence_.is_null());
-  read_end_fences.push_back(read_end_fence_.Clone());
+  read_end_fences.push_back(std::move(read_end_fence_));
 }
 
 }  // namespace
