@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromeos/crosapi/cpp/gurl_os_handler_utils.h",
   "+components/bookmarks/browser",
   "+components/bookmarks/test",
   "+components/browser_ui/widget/android/java",

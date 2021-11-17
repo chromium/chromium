@@ -255,11 +255,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
-#include "url/url_util.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
@@ -1355,93 +1350,3 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 
   return nullptr;
 }
-
-#if defined(OS_CHROMEOS)
-std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
-  // TODO(crbug/1234594): Need to refactor this entire class to generate the
-  // list automatically - which will be a giant CL touching lots of files.
-  // This will be done as a follow up to keep the CL small.
-  // If links are added in the interims: Please sort according to the order in
-  // go/lacros-url-redirect-links (alphabetically sorted according to link).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::vector<GURL>{
-      GURL(chrome::kChromeUIUntrustedCroshURL),
-      GURL(chrome::kChromeUIOsCroshAppURL), GURL(chrome::kOsUICroshURL),
-      GURL(ash::file_manager::kChromeUIFileManagerUntrustedURL),
-      GURL(chrome::kChromeUIUntrustedTerminalURL),
-      GURL(chrome::kOsUITerminalURL),
-      GURL(chrome::kChromeUIAccountManagerErrorURL),
-      GURL(chrome::kOsUIAccountManagerErrorURL),
-      GURL(chrome::kChromeUIAccountManagerWelcomeURL),
-      GURL(chrome::kOsUIAccountManagerWelcomeURL),
-      GURL(chrome::kChromeUIAccountMigrationWelcomeURL),
-      GURL(chrome::kOsUIAccountMigrationWelcomeURL),
-      GURL(chrome::kChromeUIAddSupervisionURL),
-      GURL(chrome::kOsUIAddSupervisionURL),
-      GURL(chrome::kChromeUIAppDisabledURL), GURL(chrome::kOsUIAppDisabledURL),
-      GURL(chrome::kOsUIArcGraphicsTracingURL),
-      GURL(chrome::kOsUIArcOverviewTracingURL),
-      GURL(chrome::kOsUIArcPowerControlURL),
-      GURL(chrome::kOsUIAssistantOptInURL),
-      GURL(chrome::kOsUIBluetoothPairingURL), GURL(chrome::kOsUIComponentsUrl),
-      GURL(chrome::kChromeUICrashesUrl), GURL(chrome::kOsUICrashesUrl),
-      GURL(chrome::kOsUICreditsURL), GURL(chrome::kOsUICrostiniCreditsURL),
-      GURL(chrome::kOsUICrostiniInstallerUrl),
-      GURL(chrome::kOsUICrostiniUpgraderUrl), GURL(chrome::kOsUICryptohomeURL),
-      GURL(chrome::kOsUIDeviceLogUrl), GURL(chrome::kOsUIDiagnosticsAppURL),
-      GURL(chrome::kChromeUIDriveInternalsUrl),
-      GURL(chrome::kOsUIDriveInternalsUrl),
-      GURL(chrome::kChromeUIEmojiPickerURL), GURL(chrome::kOsUIEmojiPickerURL),
-      GURL(ash::file_manager::kChromeUIFileManagerURL),
-      GURL(chrome::kOsUIFileManagerURL), GURL(chrome::kChromeUIFlagsURL),
-      GURL(chrome::kOsUIFlagsURL), GURL(chrome::kOsUIGpuURL),
-      GURL(chrome::kOsUIHistogramsURL),
-      GURL(chrome::kOsUIIntenetConfigDialogURL),
-      GURL(chrome::kOsUIIntenetDetailDialogURL),
-      GURL(chrome::kOsUIInvalidationsUrl),
-      GURL(chrome::kChromeUILockScreenNetworkURL),
-      GURL(chrome::kOsUILockScreenStartReauthURL),
-      GURL(chrome::kChromeUILockScreenNetworkURL),
-      GURL(chrome::kOsUILockScreenStartReauthURL),
-      GURL(chrome::kOsUIMobileSetupURL), GURL(chrome::kOsUIMultiDeviceSetupUrl),
-      GURL(chrome::kChromeUINetworkUrl), GURL(chrome::kOsUINetworkUrl),
-      GURL(chrome::kOsUIOSCreditsURL), GURL(chrome::kOsUIOSSettingsURL),
-      GURL(chrome::kOsUIPowerUrl), GURL(chrome::kOsUIPrintManagementUrl),
-      GURL(chrome::kOsUIRestartURL), GURL(chrome::kChromeUIScanningAppURL),
-      GURL(chrome::kOsUIScanningAppURL), GURL(chrome::kOsUISetTimeURL),
-      GURL(chrome::kChromeUISettingsURL), GURL(chrome::kOsUISettingsURL),
-      GURL(chrome::kOsUISignInInternalsUrl), GURL(chrome::kOsUISlowURL),
-      GURL(chrome::kOsUISmbCredentialsURL), GURL(chrome::kOsUISmbShareURL),
-      GURL(chrome::kOsUISyncInternalsUrl), GURL(chrome::kOsUISysInternalsUrl),
-      GURL(chrome::kOsUIUserImageURL), GURL(chrome::kOsUIVersionURL),
-      GURL(chrome::kOsUIVmUrl),
-      // The CL to land this didn't land yet. Once landed they need to be moved
-      // to Lacros. However  - as the refactor might precede this, there is no
-      // TODO for it.
-      GURL(chrome::kChromeUICertificateManagerDialogURL)};
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::vector<GURL>{GURL(chrome::kChromeUIAboutURL),
-                           GURL(chrome::kChromeUIComponentsUrl),
-                           GURL(chrome::kChromeUICreditsURL),
-                           GURL(chrome::kChromeUIDeviceLogUrl),
-                           GURL(chrome::kChromeUIFlagsURL),
-                           GURL(chrome::kChromeUIGpuURL),
-                           GURL(chrome::kChromeUIHistogramsURL),
-                           GURL(chrome::kChromeUIInvalidationsUrl),
-                           GURL(chrome::kChromeUIManagementURL),
-                           GURL(chrome::kChromeUIOSSettingsURL),
-                           GURL(chrome::kChromeUIPolicyURL),
-                           GURL(chrome::kChromeUIRestartURL),
-                           GURL(chrome::kChromeUISettingsURL),
-                           GURL(chrome::kChromeUISignInInternalsUrl),
-                           GURL(chrome::kChromeUISyncInternalsUrl),
-                           GURL(chrome::kChromeUIVersionURL)};
-#endif
-}
-
-bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-  return crosapi::gurl_os_handler_utils::IsUrlInList(url,
-                                                     GetListOfAcceptableURLs());
-}
-
-#endif

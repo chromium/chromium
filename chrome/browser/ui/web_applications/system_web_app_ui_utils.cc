@@ -193,15 +193,11 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   if (!provider)
     return nullptr;
 
-  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
-
-#if defined(OS_CHROMEOS)
   DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
                                                .GetAppLaunchUrl(params.app_id)
-                                               .DeprecatedGetOriginAsURL() ||
-         system_app && system_app->IsUrlInSystemAppScope(url));
-#endif
+                                               .DeprecatedGetOriginAsURL());
 
+  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
   if (!system_app) {
     LOG(ERROR) << "Can't find delegate for system app url: " << url
                << " Not launching.";

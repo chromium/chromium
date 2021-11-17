@@ -152,14 +152,7 @@ content::WebContents* LaunchProcess::Run() {
   // is in a web app's extended scope at the moment.
   // Because URL Handlers is not implemented for Chrome OS we can perform this
   // DCHECK on the basic scope.
-  DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id) ||
-         GetSystemWebAppTypeForAppId(&profile_, params_.app_id) &&
-             provider_.system_web_app_manager().GetSystemApp(
-                 *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
-             provider_.system_web_app_manager()
-                 .GetSystemApp(
-                     *GetSystemWebAppTypeForAppId(&profile_, params_.app_id))
-                 ->IsUrlInSystemAppScope(launch_url));
+  DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id));
 #endif
 
   // System Web Apps have their own launch code path.
