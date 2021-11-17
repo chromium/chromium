@@ -1237,7 +1237,7 @@ CSSContainerRule* InspectorStyleSheet::SetContainerRuleText(
 
   CSSContainerRule* container_rule =
       InspectorCSSAgent::AsCSSContainerRule(rule);
-  container_rule->container()->setMediaText(
+  container_rule->SetConditionText(
       page_style_sheet_->OwnerDocument()->GetExecutionContext(), text);
 
   ReplaceText(source_data->rule_header_range, text, new_range, old_text);

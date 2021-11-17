@@ -1518,8 +1518,7 @@ Response InspectorCSSAgent::setContainerQueryText(
   if (success) {
     CSSContainerRule* rule =
         InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
-    *result = BuildContainerQueryObject(rule->container(),
-                                        rule->parentStyleSheet(), rule->Name());
+    *result = BuildContainerQueryObject(rule);
   }
   return InspectorDOMAgent::ToResponse(exception_state);
 }
@@ -1863,33 +1862,26 @@ InspectorCSSAgent::BuildMediaListChain(CSSRule* rule) {
 }
 
 std::unique_ptr<protocol::CSS::CSSContainerQuery>
-InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
-                                             CSSStyleSheet* parent_style_sheet,
-                                             const AtomicString& name) {
-  // The |mediaText()| getter does not require an ExecutionContext as it is
-  // only used for setting/parsing new media queries and features.
+InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
       protocol::CSS::CSSContainerQuery::create()
-          .setText(media->mediaText(/*execution_context=*/nullptr))
+          .setText(rule->conditionText())
           .build();
 
-  auto it = css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
   if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
     InspectorStyleSheet* inspector_style_sheet = it->value;
     container_query_object->setStyleSheetId(inspector_style_sheet->Id());
   }
 
-  CSSRule* parent_rule = media->ParentRule();
-  if (!parent_rule)
-    return container_query_object;
-
   InspectorStyleSheet* inspector_style_sheet =
-      BindStyleSheet(parent_rule->parentStyleSheet());
+      BindStyleSheet(rule->parentStyleSheet());
   container_query_object->setRange(
-      inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
+      inspector_style_sheet->RuleHeaderSourceRange(rule));
 
-  if (!name.IsEmpty())
-    container_query_object->setName(name);
+  if (!rule->Name().IsEmpty())
+    container_query_object->setName(rule->Name());
 
   return container_query_object;
 }
@@ -1898,13 +1890,10 @@ void InspectorCSSAgent::CollectContainerQueriesFromRule(
     CSSRule* rule,
     protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries) {
   if (auto* container_rule = DynamicTo<CSSContainerRule>(rule)) {
-    MediaList* media_list = container_rule->container();
-    if (!media_list || !media_list->length())
+    if (container_rule->IsEmpty())
       return;
 
-    container_queries->emplace_back(BuildContainerQueryObject(
-        media_list, container_rule->parentStyleSheet(),
-        container_rule->Name()));
+    container_queries->emplace_back(BuildContainerQueryObject(container_rule));
   }
 }
 

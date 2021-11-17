@@ -36,6 +36,7 @@ namespace blink {
 class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
+class ExecutionContext;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -397,6 +398,8 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   StyleRuleContainer* Copy() const {
     return MakeGarbageCollected<StyleRuleContainer>(*this);
   }
+
+  void SetConditionText(const ExecutionContext*, String);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

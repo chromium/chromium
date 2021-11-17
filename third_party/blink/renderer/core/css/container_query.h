@@ -28,6 +28,7 @@ class CORE_EXPORT ContainerQuery final
   friend class ContainerQueryTest;
   friend class ContainerQueryEvaluator;
   friend class CSSContainerRule;
+  friend class StyleRuleContainer;
 
   scoped_refptr<MediaQuerySet> MediaQueries() const { return media_queries_; }
 

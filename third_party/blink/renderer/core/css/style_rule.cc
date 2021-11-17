@@ -575,7 +575,7 @@ StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
 StyleRuleContainer::StyleRuleContainer(
     ContainerQuery& container_query,
     HeapVector<Member<StyleRuleBase>>& adopt_rules)
-    : StyleRuleCondition(kContainer, adopt_rules),
+    : StyleRuleCondition(kContainer, container_query.ToString(), adopt_rules),
       container_query_(&container_query) {}
 
 StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)
@@ -583,6 +583,14 @@ StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)
   DCHECK(container_rule.container_query_);
   container_query_ =
       MakeGarbageCollected<ContainerQuery>(*container_rule.container_query_);
+}
+
+void StyleRuleContainer::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  if (container_query_->MediaQueries())
+    container_query_->MediaQueries()->Set(value, execution_context);
+  condition_text_ = container_query_->ToString();
 }
 
 void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -32,34 +33,26 @@ String CSSContainerRule::cssText() const {
   return result.ReleaseString();
 }
 
+const AtomicString& CSSContainerRule::Name() const {
+  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery().Name();
+}
+
+bool CSSContainerRule::IsEmpty() const {
+  return ContainerQueries()->QueryVector().IsEmpty();
+}
+
+void CSSContainerRule::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  To<StyleRuleContainer>(group_rule_.Get())
+      ->SetConditionText(execution_context, value);
+}
+
 scoped_refptr<MediaQuerySet> CSSContainerRule::ContainerQueries() const {
   return To<StyleRuleContainer>(group_rule_.Get())
       ->GetContainerQuery()
       .MediaQueries();
 }
 
-MediaList* CSSContainerRule::container() const {
-  if (!ContainerQueries())
-    return nullptr;
-  if (!media_cssom_wrapper_) {
-    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        ContainerQueries(), const_cast<CSSContainerRule*>(this));
-  }
-  return media_cssom_wrapper_.Get();
-}
-
-const AtomicString& CSSContainerRule::Name() const {
-  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery().Name();
-}
-
-void CSSContainerRule::Reattach(StyleRuleBase* rule) {
-  CSSConditionRule::Reattach(rule);
-  if (media_cssom_wrapper_ && ContainerQueries())
-    media_cssom_wrapper_->Reattach(ContainerQueries());
-}
-
-void CSSContainerRule::Trace(Visitor* visitor) const {
-  visitor->Trace(media_cssom_wrapper_);
-  CSSConditionRule::Trace(visitor);
-}
 }  // namespace blink
