@@ -171,7 +171,7 @@ bool WebAppPolicyManager::IsWebAppInDisabledList(const AppId& app_id) const {
 }
 
 bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)  // Sometimes it's not available in tests.
     return false;
@@ -180,7 +180,7 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
       local_state->GetString(policy::policy_prefs::kSystemFeaturesDisableMode);
   if (disabled_mode == policy::kHiddenDisableMode)
     return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
   return false;
 }
 
@@ -521,9 +521,9 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
 }
 
 void WebAppPolicyManager::OnDisableModePolicyChanged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   sync_bridge_->UpdateAppsDisableMode();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 }
 
 void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
