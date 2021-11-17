@@ -161,7 +161,6 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
   // element, but PaintLayer::HitTestLayer assumes it has not been.
   HitTestLocation local_without_offset(*local_location, -PhysicalLocation());
   HitTestResult layer_result(result.GetHitTestRequest(), local_without_offset);
-  layer_result.SetInertNode(result.InertNode());
   bool retval = Layer()->HitTest(local_without_offset, layer_result,
                                  PhysicalRect(PhysicalRect::InfiniteIntRect()));
 

@@ -423,9 +423,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (context_menu_client_receiver_.is_bound())
     context_menu_client_receiver_.reset();
 
-  HitTestRequest::HitTestRequestType type = HitTestRequest::kReadOnly |
-                                            HitTestRequest::kActive |
-                                            HitTestRequest::kRetargetForInert;
+  HitTestRequest::HitTestRequestType type =
+      HitTestRequest::kReadOnly | HitTestRequest::kActive;
   if (base::FeatureList::IsEnabled(
           features::kEnablePenetratingImageSelection)) {
     type |= HitTestRequest::kPenetratingList | HitTestRequest::kListBased;

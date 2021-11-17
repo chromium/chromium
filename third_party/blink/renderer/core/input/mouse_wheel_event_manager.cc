@@ -157,8 +157,7 @@ Node* MouseWheelEventManager::FindTargetNode(const WebMouseWheelEvent& event,
   PhysicalOffset v_point(
       view->ConvertFromRootFrame(FlooredIntPoint(event.PositionInRootFrame())));
 
-  HitTestRequest request(HitTestRequest::kReadOnly |
-                         HitTestRequest::kRetargetForInert);
+  HitTestRequest request(HitTestRequest::kReadOnly);
   HitTestLocation location(v_point);
   HitTestResult result(request, location);
   doc->GetLayoutView()->HitTest(location, result);

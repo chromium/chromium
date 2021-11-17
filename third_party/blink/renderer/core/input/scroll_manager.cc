@@ -1051,8 +1051,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
     LocalFrameView* view = frame_->View();
     PhysicalOffset view_point(view->ConvertFromRootFrame(
         FlooredIntPoint(gesture_event.PositionInRootFrame())));
-    HitTestRequest request(HitTestRequest::kReadOnly |
-                           HitTestRequest::kRetargetForInert);
+    HitTestRequest request(HitTestRequest::kReadOnly);
     HitTestLocation location(view_point);
     HitTestResult result(request, location);
     document->GetLayoutView()->HitTest(location, result);

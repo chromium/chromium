@@ -85,8 +85,7 @@ void GestureManager::Trace(Visitor* visitor) const {
 
 HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
     WebInputEvent::Type type) {
-  HitTestRequest::HitTestRequestType hit_type =
-      HitTestRequest::kTouchEvent | HitTestRequest::kRetargetForInert;
+  HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent;
   switch (type) {
     case WebInputEvent::Type::kGestureShowPress:
     case WebInputEvent::Type::kGestureTapUnconfirmed:

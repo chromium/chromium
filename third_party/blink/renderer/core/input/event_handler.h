@@ -100,9 +100,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   HitTestResult HitTestResultAtLocation(
       const HitTestLocation&,
-      HitTestRequest::HitTestRequestType hit_type =
-          HitTestRequest::kReadOnly | HitTestRequest::kActive |
-          HitTestRequest::kRetargetForInert,
+      HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kReadOnly |
+                                                    HitTestRequest::kActive,
       const LayoutObject* stop_node = nullptr,
       bool no_lifecycle_update = false);
 

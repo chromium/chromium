@@ -1173,8 +1173,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   PaintLayer* layer = To<LayoutBox>(layout_object_.Get())->Layer();
   DCHECK(layer);
 
-  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kRetargetForInert);
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(point);
   HitTestResult hit_test_result = HitTestResult(request, location);
   layer->HitTest(location, hit_test_result,

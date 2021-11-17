@@ -441,8 +441,7 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
     LocalFrame* frame) {
   HitTestRequest request = HitTestRequest::kMove | HitTestRequest::kReadOnly |
                            HitTestRequest::kActive |
-                           HitTestRequest::kIgnoreClipping |
-                           HitTestRequest::kRetargetForInert;
+                           HitTestRequest::kIgnoreClipping;
   HitTestLocation location(contents_point);
   HitTestResult result(request, location);
   frame->GetDocument()->GetLayoutView()->HitTest(location, result);

@@ -894,8 +894,7 @@ bool MouseEventManager::HandleDrag(const MouseEventWithHitTestResults& event,
     return false;
 
   if (mouse_down_may_start_drag_) {
-    HitTestRequest request(HitTestRequest::kReadOnly |
-                           HitTestRequest::kRetargetForInert);
+    HitTestRequest request(HitTestRequest::kReadOnly);
     HitTestLocation location(mouse_down_pos_);
     HitTestResult result(request, location);
     frame_->ContentLayoutObject()->HitTest(location, result);

@@ -2355,7 +2355,6 @@ PaintLayer* PaintLayer::HitTestLayer(
       // to 'result' if we know we're frontmost.
       STACK_UNINITIALIZED HitTestResult temp_result(
           result.GetHitTestRequest(), recursion_data.original_location);
-      temp_result.SetInertNode(result.InertNode());
       bool inside_fragment_foreground_rect = false;
 
       if (HitTestContentsForFragments(
@@ -2377,9 +2376,6 @@ PaintLayer* PaintLayer::HitTestLayer(
                  result.GetHitTestRequest().ListBased() &&
                  IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
         result.Append(temp_result);
-      } else if (result.GetHitTestRequest().RetargetForInert() &&
-                 IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
-        result.SetInertNode(temp_result.InertNode());
       }
     }
   }
@@ -2403,7 +2399,6 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (recursion_data.intersects_location && IsSelfPaintingLayer()) {
     STACK_UNINITIALIZED HitTestResult temp_result(
         result.GetHitTestRequest(), recursion_data.original_location);
-    temp_result.SetInertNode(result.InertNode());
     bool inside_fragment_background_rect = false;
     if (HitTestContentsForFragments(layer_fragments, temp_result,
                                     recursion_data.location, kHitTestSelf,
@@ -2416,9 +2411,6 @@ PaintLayer* PaintLayer::HitTestLayer(
       else
         result = temp_result;
       return this;
-    } else if (result.GetHitTestRequest().RetargetForInert() &&
-               IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
-      result.SetInertNode(temp_result.InertNode());
     }
     if (inside_fragment_background_rect &&
         result.GetHitTestRequest().ListBased() &&
@@ -2672,7 +2664,6 @@ PaintLayer* PaintLayer::HitTestChildren(
     PaintLayer* hit_layer = nullptr;
     STACK_UNINITIALIZED HitTestResult temp_result(
         result.GetHitTestRequest(), recursion_data.original_location);
-    temp_result.SetInertNode(result.InertNode());
     hit_layer = child_layer->HitTestLayer(
         transform_container, container_fragment, temp_result, recursion_data,
         /*applied_transform*/ false, container_transform_state,
@@ -2690,8 +2681,6 @@ PaintLayer* PaintLayer::HitTestChildren(
         result = temp_result;
       if (!depth_sort_descendants)
         break;
-    } else if (result.GetHitTestRequest().RetargetForInert()) {
-      result.SetInertNode(temp_result.InertNode());
     }
   }
 

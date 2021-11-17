@@ -364,8 +364,7 @@ void PointerEventManager::AdjustTouchPointerEvent(
 
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kTouchEvent | HitTestRequest::kReadOnly |
-      HitTestRequest::kActive | HitTestRequest::kListBased |
-      HitTestRequest::kRetargetForInert;
+      HitTestRequest::kActive | HitTestRequest::kListBased;
   LocalFrame& root_frame = frame_->LocalFrameRoot();
   // TODO(szager): Shouldn't this be PositionInScreen() ?
   PhysicalOffset hit_test_point = PhysicalOffset::FromFloatPointRound(
@@ -422,9 +421,9 @@ PointerEventManager::ComputePointerEventTarget(
   // before firing the event.
   if (web_pointer_event.GetType() == WebInputEvent::Type::kPointerDown ||
       !pending_pointer_capture_target_.Contains(pointer_id)) {
-    HitTestRequest::HitTestRequestType hit_type =
-        HitTestRequest::kTouchEvent | HitTestRequest::kReadOnly |
-        HitTestRequest::kActive | HitTestRequest::kRetargetForInert;
+    HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
+                                                  HitTestRequest::kReadOnly |
+                                                  HitTestRequest::kActive;
     HitTestLocation location(frame_->View()->ConvertFromRootFrame(
         PhysicalOffset::FromFloatPointRound(
             FloatPoint(web_pointer_event.PositionInWidget()))));
@@ -861,8 +860,7 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
       // test to find the new target.
       if (pointer_capture_target_.find(pointer_event->pointerId()) !=
           pointer_capture_target_.end()) {
-        HitTestRequest::HitTestRequestType hit_type =
-            HitTestRequest::kRelease | HitTestRequest::kRetargetForInert;
+        HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
         HitTestRequest request(hit_type);
         MouseEventWithHitTestResults mev =
             event_handling_util::PerformMouseEventHitTest(frame_, request,

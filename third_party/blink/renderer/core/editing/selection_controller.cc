@@ -1031,8 +1031,7 @@ void SelectionController::HandleMouseDraggedEvent(
   if (!Selection().IsAvailable())
     return;
   if (selection_state_ != SelectionState::kExtendedSelection) {
-    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                           HitTestRequest::kRetargetForInert);
+    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
     HitTestLocation location(mouse_down_pos);
     HitTestResult result(request, location);
     frame_->GetDocument()->GetLayoutView()->HitTest(location, result);
@@ -1055,8 +1054,7 @@ void SelectionController::UpdateSelectionForMouseDrag(
     return;
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kMove |
-                         HitTestRequest::kRetargetForInert);
+                         HitTestRequest::kMove);
   HitTestLocation location(last_known_mouse_position_in_root_frame);
   HitTestResult result(request, location);
   layout_view->HitTest(location, result);

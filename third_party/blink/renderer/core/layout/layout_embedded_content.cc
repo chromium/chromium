@@ -185,7 +185,6 @@ bool LayoutEmbeddedContent::NodeAtPoint(
           result.GetHitTestRequest().GetStopNode());
       HitTestResult child_frame_result(new_hit_test_request,
                                        new_hit_test_location);
-      child_frame_result.SetInertNode(result.InertNode());
 
       // The frame's layout and style must be up to date if we reach here.
       bool is_inside_child_frame = child_layout_view->HitTestNoLifecycleUpdate(

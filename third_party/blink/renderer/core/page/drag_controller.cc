@@ -372,8 +372,7 @@ static HTMLInputElement* AsFileInput(Node* node) {
 // This can return null if an empty document is loaded.
 static Element* ElementUnderMouse(Document* document_under_mouse,
                                   const PhysicalOffset& point) {
-  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kRetargetForInert);
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(point);
   HitTestResult result(request, location);
   document_under_mouse->GetLayoutView()->HitTest(location, result);
