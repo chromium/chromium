@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/trial_group/trial_group_checker.h"
+#include "ash/components/trial_group/trial_group_checker.h"
 
 #include "base/test/task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -16,7 +16,7 @@ constexpr char kTestURL[] = "/test";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace trial_group {
 
 class TrialGroupCheckerTest : public testing::Test {
@@ -93,4 +93,4 @@ TEST_F(TrialGroupCheckerTest, UnknownMemberTest) {
 }
 
 }  // namespace trial_group
-}  // namespace chromeos
+}  // namespace ash

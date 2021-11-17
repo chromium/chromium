@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
-#define CHROMEOS_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#ifndef ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#define ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
 
 #include <string>
 
@@ -17,7 +17,7 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace trial_group {
 
 // TrialGroupChecker determines whether the user is in a particular dogfood
@@ -72,6 +72,6 @@ class COMPONENT_EXPORT(TRIAL_GROUP_CHECKER) TrialGroupChecker {
 };
 
 }  // namespace trial_group
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#endif  // ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_

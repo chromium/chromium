@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/trial_group/trial_group_checker.h"
+#include "ash/components/trial_group/trial_group_checker.h"
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
@@ -22,7 +22,7 @@ constexpr char kServerUrl[] =
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace trial_group {
 
 TrialGroupChecker::TrialGroupChecker(GroupId group_id)
@@ -125,4 +125,4 @@ TrialGroupChecker::Status TrialGroupChecker::LookUpMembership(
 }
 
 }  // namespace trial_group
-}  // namespace chromeos
+}  // namespace ash
