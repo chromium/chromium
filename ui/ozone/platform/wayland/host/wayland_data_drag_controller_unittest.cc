@@ -85,6 +85,7 @@ class MockDragHandlerDelegate : public WmDragHandler::Delegate {
   MOCK_METHOD1(OnDragLocationChanged, void(const gfx::Point& location));
   MOCK_METHOD1(OnDragOperationChanged, void(DragOperation operation));
   MOCK_METHOD1(OnDragFinished, void(DragOperation operation));
+  MOCK_METHOD0(GetDragWidget, absl::optional<gfx::AcceleratedWidget>());
 };
 
 class MockDropHandler : public WmDropHandler {

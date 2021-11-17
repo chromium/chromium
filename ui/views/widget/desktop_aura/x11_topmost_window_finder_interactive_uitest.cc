@@ -149,16 +149,27 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
 
   // Returns the topmost X window at the passed in screen position.
   x11::Window FindTopmostXWindowAt(int screen_x, int screen_y) {
-    ui::X11TopmostWindowFinder finder;
+    ui::X11TopmostWindowFinder finder({});
+    return finder.FindWindowAt(gfx::Point(screen_x, screen_y));
+  }
+
+  // Returns the topmost X window at the passed in screen position ignoring
+  // |ignore_window|.
+  x11::Window FindTopmostXWindowWithIgnore(int screen_x,
+                                           int screen_y,
+                                           aura::Window* ignore_window) {
+    std::set<gfx::AcceleratedWidget> ignore;
+    ignore.insert(ignore_window->GetHost()->GetAcceleratedWidget());
+    ui::X11TopmostWindowFinder finder(ignore);
     return finder.FindWindowAt(gfx::Point(screen_x, screen_y));
   }
 
   // Returns the topmost aura::Window at the passed in screen position. Returns
   // NULL if the topmost window does not have an associated aura::Window.
   aura::Window* FindTopmostLocalProcessWindowAt(int screen_x, int screen_y) {
-    ui::X11TopmostWindowFinder finder;
+    ui::X11TopmostWindowFinder finder({});
     auto widget = static_cast<gfx::AcceleratedWidget>(
-        finder.FindLocalProcessWindowAt(gfx::Point(screen_x, screen_y), {}));
+        finder.FindLocalProcessWindowAt(gfx::Point(screen_x, screen_y)));
     return widget != gfx::kNullAcceleratedWidget
                ? DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
                      widget)
@@ -174,10 +185,9 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
       aura::Window* ignore_window) {
     std::set<gfx::AcceleratedWidget> ignore;
     ignore.insert(ignore_window->GetHost()->GetAcceleratedWidget());
-    ui::X11TopmostWindowFinder finder;
-    auto widget =
-        static_cast<gfx::AcceleratedWidget>(finder.FindLocalProcessWindowAt(
-            gfx::Point(screen_x, screen_y), ignore));
+    ui::X11TopmostWindowFinder finder(ignore);
+    auto widget = static_cast<gfx::AcceleratedWidget>(
+        finder.FindLocalProcessWindowAt(gfx::Point(screen_x, screen_y)));
     return widget != gfx::kNullAcceleratedWidget
                ? DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
                      widget)
@@ -225,10 +235,14 @@ TEST_F(X11TopmostWindowFinderTest, Basic) {
   EXPECT_NE(x11_window3, FindTopmostXWindowAt(1000, 1000));
   EXPECT_FALSE(FindTopmostLocalProcessWindowAt(1000, 1000));
 
+  EXPECT_EQ(x11_window1, FindTopmostXWindowWithIgnore(150, 150, window3));
   EXPECT_EQ(window1,
             FindTopmostLocalProcessWindowWithIgnore(150, 150, window3));
+  EXPECT_EQ(x11_window2, FindTopmostXWindowWithIgnore(250, 250, window3));
   EXPECT_FALSE(FindTopmostLocalProcessWindowWithIgnore(250, 250, window3));
+  EXPECT_EQ(x11::Window::None, FindTopmostXWindowWithIgnore(150, 250, window3));
   EXPECT_FALSE(FindTopmostLocalProcessWindowWithIgnore(150, 250, window3));
+  EXPECT_EQ(x11_window1, FindTopmostXWindowWithIgnore(150, 195, window3));
   EXPECT_EQ(window1,
             FindTopmostLocalProcessWindowWithIgnore(150, 195, window3));
 

@@ -1468,7 +1468,12 @@ void X11Window::CancelDrag() {
 }
 
 std::unique_ptr<XTopmostWindowFinder> X11Window::CreateWindowFinder() {
-  return std::make_unique<X11TopmostWindowFinder>();
+  DCHECK(drag_handler_delegate_);
+  std::set<gfx::AcceleratedWidget> ignore;
+  auto drag_widget = drag_handler_delegate_->GetDragWidget();
+  if (drag_widget)
+    ignore.insert(*drag_widget);
+  return std::make_unique<X11TopmostWindowFinder>(ignore);
 }
 
 int X11Window::UpdateDrag(const gfx::Point& screen_point) {

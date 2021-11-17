@@ -328,6 +328,16 @@ void DesktopDragDropClientOzone::OnDragFinished(DragOperation operation) {
   drag_operation_ = operation;
 }
 
+absl::optional<gfx::AcceleratedWidget>
+DesktopDragDropClientOzone::GetDragWidget() {
+  DCHECK(drag_context_);
+  if (drag_context_->widget)
+    return drag_context_->widget->GetNativeWindow()
+        ->GetHost()
+        ->GetAcceleratedWidget();
+  return absl::nullopt;
+}
+
 std::unique_ptr<ui::DropTargetEvent>
 DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent(
     const gfx::PointF& location,

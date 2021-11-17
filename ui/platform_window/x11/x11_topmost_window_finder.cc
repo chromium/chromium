@@ -76,15 +76,15 @@ void EnumerateTopLevelWindows(
 
 }  // namespace
 
-X11TopmostWindowFinder::X11TopmostWindowFinder() = default;
+X11TopmostWindowFinder::X11TopmostWindowFinder(
+    const std::set<gfx::AcceleratedWidget>& ignore)
+    : ignore_(ignore) {}
 
 X11TopmostWindowFinder::~X11TopmostWindowFinder() = default;
 
 x11::Window X11TopmostWindowFinder::FindLocalProcessWindowAt(
-    const gfx::Point& screen_loc_in_pixels,
-    const std::set<gfx::AcceleratedWidget>& ignore) {
+    const gfx::Point& screen_loc_in_pixels) {
   screen_loc_in_pixels_ = screen_loc_in_pixels;
-  ignore_ = ignore;
 
   std::vector<X11Window*> local_process_windows =
       X11WindowManager::GetInstance()->GetAllOpenWindows();
