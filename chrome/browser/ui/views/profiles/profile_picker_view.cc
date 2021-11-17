@@ -194,6 +194,11 @@ void ProfilePicker::CancelSignedInFlow() {
 }
 
 // static
+base::FilePath ProfilePicker::GetPickerProfilePath() {
+  return ProfileManager::GetSystemProfilePath();
+}
+
+// static
 void ProfilePicker::ShowDialog(content::BrowserContext* browser_context,
                                const GURL& url,
                                const base::FilePath& profile_path) {
@@ -505,7 +510,7 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
     BuildLayout();
 
     g_browser_process->profile_manager()->CreateProfileAsync(
-        ProfileManager::GetSystemProfilePath(),
+        ProfilePicker::GetPickerProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
                             weak_ptr_factory_.GetWeakPtr()));
     return;

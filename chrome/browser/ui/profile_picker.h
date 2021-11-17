@@ -95,6 +95,9 @@ class ProfilePicker {
   // for the signed-in flow.
   static void CancelSignedInFlow();
 
+  // Returns the path of the default profile used for rendering the picker.
+  static base::FilePath GetPickerProfilePath();
+
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
   // dialog and creates a new one.

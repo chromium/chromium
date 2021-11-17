@@ -50,6 +50,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -57,7 +58,10 @@
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
+#include "components/account_manager_core/account.h"
 #endif
 
 namespace {
@@ -207,6 +211,34 @@ base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return profile_entry;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+base::FilePath GetCurrentProfilePath(content::WebUI* web_ui) {
+  DCHECK(web_ui);
+  return web_ui->GetWebContents()->GetBrowserContext()->GetPath();
+}
+
+bool IsSelectingSecondaryAccount(content::WebUI* web_ui) {
+  // If this WebUI page is rendered in a user profile (and not the default
+  // picker profile), this means the page should show accounts that are
+  // available as secondary for this specific profile.
+  return GetCurrentProfilePath(web_ui) != ProfilePicker::GetPickerProfilePath();
+}
+
+SkBitmap GetAvailableAccountBitmap(const gfx::Image& gaia_image,
+                                   bool dark_mode) {
+  if (!gaia_image.IsEmpty())
+    return gaia_image.AsBitmap();
+
+  // Return a default avatar.
+  const int kAccountPictureSize = 128;
+  ProfileThemeColors colors = GetDefaultProfileThemeColors(dark_mode);
+  gfx::Image default_image = profiles::GetPlaceholderAvatarIconWithColors(
+      colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+      kAccountPictureSize);
+  return default_image.AsBitmap();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -711,6 +743,26 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+    if (IsSelectingSecondaryAccount(web_ui())) {
+      AccountProfileMapper* mapper =
+          g_browser_process->profile_manager()->GetAccountProfileMapper();
+      const std::string& gaia_id = args->GetList()[1].GetString();
+      if (gaia_id.empty()) {
+        mapper->ShowAddAccountDialog(
+            GetCurrentProfilePath(web_ui()),
+            account_manager::AccountManagerFacade::AccountAdditionSource::
+                kOgbAddAccount,
+            AccountProfileMapper::AddAccountCallback());
+      } else {
+        mapper->AddAccount(GetCurrentProfilePath(web_ui()),
+                           account_manager::AccountKey(
+                               gaia_id, account_manager::AccountType::kGaia),
+                           AccountProfileMapper::AddAccountCallback());
+      }
+      ProfilePicker::Hide();
+      return;
+    }
+
     DCHECK(!lacros_sign_in_provider_);
     lacros_sign_in_provider_ =
         std::make_unique<ProfilePickerLacrosSignInProvider>();
@@ -970,9 +1022,59 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
 void ProfilePickerHandler::HandleGetUnassignedAccounts(
     const base::ListValue* args) {
   AllowJavascript();
+  AccountProfileMapper* mapper =
+      g_browser_process->profile_manager()->GetAccountProfileMapper();
+
+  if (IsSelectingSecondaryAccount(web_ui())) {
+    GetAccountsAvailableAsSecondary(
+        mapper, GetCurrentProfilePath(web_ui()),
+        base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  GetAccountsAvailableAsPrimary(
+      mapper,
+      &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
+      base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ProfilePickerHandler::GetAvailableAccountsInfo(
+    const std::vector<account_manager::Account>& accounts) {
+  // If there's a request in flight, it deletes the current helper and starts a
+  // new request.
+  lacros_account_info_helper_ = std::make_unique<GetAccountInformationHelper>();
+
+  std::vector<std::string> gaia_ids;
+  for (const account_manager::Account& account : accounts)
+    gaia_ids.push_back(account.key.id());
+  lacros_account_info_helper_->Start(
+      gaia_ids, base::BindOnce(&ProfilePickerHandler::SendAvailableAccounts,
+                               weak_factory_.GetWeakPtr()));
+}
+
+void ProfilePickerHandler::SendAvailableAccounts(
+    std::vector<GetAccountInformationHelper::GetAccountInformationResult>
+        accounts) {
   base::Value accounts_list(base::Value::Type::LIST);
-  // TODO(https://crbug/1226050): Add actual account info to the list, and
-  // listen for account changes.
+  for (const GetAccountInformationHelper::GetAccountInformationResult& account :
+       accounts) {
+    // TODO(https://crbug/1226050): Filter out items with no email as items
+    // without an email are impossible to use. The email should be always
+    // available, unless the mojo connection fails. This requires more robust
+    // unit-tests.
+    base::Value account_dict(base::Value::Type::DICTIONARY);
+    account_dict.SetStringKey("gaiaId", account.gaia);
+    account_dict.SetStringKey("email", account.email);
+    account_dict.SetStringKey("name", account.full_name);
+    SkBitmap account_bitmap = GetAvailableAccountBitmap(
+        account.account_image, webui::GetNativeTheme(web_ui()->GetWebContents())
+                                   ->ShouldUseDarkColors());
+    account_dict.SetStringKey("accountImageUrl",
+                              webui::GetBitmapDataUrl(account_bitmap));
+    accounts_list.Append(std::move(account_dict));
+  }
+  // TODO(https://crbug/1226050): Listen for account changes.
   FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
 }
 

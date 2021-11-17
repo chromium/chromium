@@ -22,7 +22,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
+
 class ProfilePickerLacrosSignInProvider;
+
+namespace account_manager {
+struct Account;
+}
 #endif
 
 // The handler for Javascript messages related to the profile picker main view.
@@ -127,9 +133,18 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // List of usnassigned accounts used by the profile choice and the account
+  // List of unassigned accounts used by the profile choice and the account
   // selection screens.
+  // TODO(crbug.com/1226050): Rename this concept in code to available accounts.
   void HandleGetUnassignedAccounts(const base::ListValue* args);
+
+  // Loads extended info for accounts from Ash.
+  void GetAvailableAccountsInfo(
+      const std::vector<account_manager::Account>& accounts);
+  // Sends extended info for accounts to the WebUI page.
+  void SendAvailableAccounts(
+      std::vector<GetAccountInformationHelper::GetAccountInformationResult>
+          accounts);
 
   // Called when a new Lacros signed-in profile is created. The profile is
   // omitted, ephemeral, and has a primary kSignin account.
@@ -149,6 +164,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Takes care of getting a signed-in profile.
   std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+
+  // Retrieves extended info for available accounts from Ash.
+  std::unique_ptr<GetAccountInformationHelper> lacros_account_info_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The order of the profiles when the picker was first shown. This is used
