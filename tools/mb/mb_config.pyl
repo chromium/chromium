@@ -245,7 +245,7 @@
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot',
-      'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_lld_no_remoting',
+      'Libfuzzer Upload iOS Catalyst Debug': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting',
       'Libfuzzer Upload Linux32 ASan': 'libfuzzer_asan_release_bot_x86',
       'Libfuzzer Upload Linux32 ASan Debug': 'libfuzzer_asan_debug_bot_x86',
       'Libfuzzer Upload Linux32 V8-ARM ASan': 'libfuzzer_asan_release_bot_x86_v8_arm',
@@ -327,7 +327,7 @@
       'ios15-sdk-device': 'ios_device_release_static_bot_xctest',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest',
-      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_lld_no_remoting',
+      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting',
       'ios-reclient': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
@@ -1100,7 +1100,7 @@
       'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot',
       'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot',
       'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
-      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_lld_no_remoting',
+      'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting',
       'ios-device': 'ios_device_release_compile_only',
       'ios14-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios14-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
@@ -2457,8 +2457,8 @@
       'headless_shell', 'release', 'static', 'goma',
     ],
 
-    'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_lld_no_remoting': [
-        'compile_only', 'debug_static_bot', 'ios', 'ios_build_chromium', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'libfuzzer', 'no_lld', 'no_remoting',
+    'ios_catalyst_debug_static_bot_compile_only_libfuzzer_no_dsyms_no_lld_no_remoting': [
+        'compile_only', 'debug_static_bot', 'ios', 'ios_build_chromium', 'ios_catalyst', 'ios_cpu_x64', 'ios_disable_xcode_project_generation', 'libfuzzer', 'no_dsyms', 'no_lld', 'no_remoting',
     ],
 
     'ios_clang_tot_xctest': [
@@ -3677,6 +3677,10 @@
 
     'no_com_init_hooks': {
       'gn_args': 'com_init_check_hook_disabled=true',
+    },
+
+    'no_dsyms': {
+      'gn_args': 'enable_dsyms=false',
     },
 
     'no_goma': {
