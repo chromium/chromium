@@ -10,7 +10,7 @@ import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-la
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -30,7 +30,13 @@ suite('SidePanelBookmarkFolderTest', () => {
       {
         id: '1',
         title: 'Shopping list',
-        children: [],
+        children: [
+          {
+            id: '4',
+            title: 'New shoes',
+            url: 'http://shoes/',
+          },
+        ],
       },
       {
         id: '2',
@@ -294,5 +300,37 @@ suite('SidePanelBookmarkFolderTest', () => {
     assertTrue(
         modifiedClick.altKey && modifiedClick.ctrlKey &&
         modifiedClick.metaKey && modifiedClick.shiftKey);
+  });
+
+  test('GetsFocusableElements', async () => {
+    let focusableElement = bookmarkFolder.getFocusableElement([folder]);
+    assertEquals('folder', focusableElement.id);
+
+    const childBookmark = folder.children[1];
+    focusableElement = bookmarkFolder.getFocusableElement([childBookmark]);
+    assertTrue(focusableElement.classList.contains('bookmark'));
+    assertEquals(childBookmark, focusableElement.dataBookmark);
+
+    const childFolder = folder.children[0];
+    focusableElement = bookmarkFolder.getFocusableElement([childFolder]);
+    assertEquals('folder', focusableElement.id);
+    assertEquals(childFolder.id, focusableElement.dataBookmark.id);
+
+    // Grandchild bookmark is in a closed folder, so the focusable element
+    // should still be the child folder.
+    const grandchildBookmark = childFolder.children[0];
+    focusableElement =
+        bookmarkFolder.getFocusableElement([childFolder, grandchildBookmark]);
+    assertEquals('folder', focusableElement.id);
+    assertEquals(childFolder.id, focusableElement.dataBookmark.id);
+
+    // Once the child folder is opened, the grandchild bookmark element should
+    // be focusable.
+    bookmarkFolder.openFolders = ['0', '1'];
+    await waitAfterNextRender();
+    focusableElement =
+        bookmarkFolder.getFocusableElement([childFolder, grandchildBookmark]);
+    assertTrue(focusableElement.classList.contains('bookmark'));
+    assertEquals(grandchildBookmark, focusableElement.dataBookmark);
   });
 });

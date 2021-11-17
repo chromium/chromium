@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
@@ -203,6 +203,9 @@ export class BookmarksListElement extends PolymerElement {
       parent.children = [];
     }
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
+    afterNextRender(this, () => {
+      this.focusBookmark_(node.id);
+    });
   }
 
   private changeFolderOpenStatus_(id: string, open: boolean) {
@@ -308,6 +311,27 @@ export class BookmarksListElement extends PolymerElement {
     this.splice(
         `${oldParentPathString}.children`,
         oldParent.children!.indexOf(removedNode), 1);
+  }
+
+  private focusBookmark_(id: string) {
+    const path = this.findPathToId_(id);
+    if (path.length === 0) {
+      // Could not find bookmark.
+      return;
+    }
+
+    const rootBookmark = path.shift();
+    const rootBookmarkElement =
+        this.shadowRoot!.querySelector(`#bookmark-${rootBookmark!.id}`) as
+        BookmarkFolderElement;
+    if (!rootBookmarkElement) {
+      return;
+    }
+
+    const bookmarkElement = rootBookmarkElement.getFocusableElement(path);
+    if (bookmarkElement) {
+      bookmarkElement.focus();
+    }
   }
 }
 

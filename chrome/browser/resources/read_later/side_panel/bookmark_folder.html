@@ -179,14 +179,17 @@
     <div id="children" role="group">
       <template is="dom-repeat" items="[[folder.children]]" initial-count="20">
         <template is="dom-if" if="[[!item.url]]" restamp>
-          <bookmark-folder folder="[[item]]"
+          <bookmark-folder
+              id="bookmark-[[item.id]]"
+              folder="[[item]]"
               depth="[[childDepth_]]"
               open-folders="[[openFolders]]">
           </bookmark-folder>
         </template>
 
         <template is="dom-if" if="[[item.url]]" restamp>
-          <button role="treeitem" class="bookmark row"
+          <button
+              id="bookmark-[[item.id]]" role="treeitem" class="bookmark row"
               draggable="true" data-bookmark="[[item]]"
               on-click="onBookmarkClick_"
               on-auxclick="onBookmarkAuxClick_"

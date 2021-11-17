@@ -185,6 +185,35 @@ export class BookmarkFolderElement extends PolymerElement {
         this.shadowRoot!.querySelectorAll('.row, bookmark-folder'));
   }
 
+  getFocusableElement(path: chrome.bookmarks.BookmarkTreeNode[]): (HTMLElement|
+                                                                   null) {
+    const currentNode = path.shift();
+    if (currentNode) {
+      const currentNodeId = currentNode.id;
+      const currentNodeElement =
+          this.shadowRoot!.querySelector(`#bookmark-${currentNodeId}`) as (
+              HTMLElement | null);
+      if (currentNodeElement &&
+          currentNodeElement.classList.contains('bookmark')) {
+        // Found a bookmark item.
+        return currentNodeElement;
+      }
+
+      if (currentNodeElement &&
+          currentNodeElement instanceof BookmarkFolderElement) {
+        // Bookmark item may be a grandchild or be deeper. Iterate through
+        // child BookmarkFolderElements until the bookmark item is found.
+        const nestedElement = currentNodeElement.getFocusableElement(path);
+        if (nestedElement) {
+          return nestedElement;
+        }
+      }
+    }
+
+    // If all else fails, return the focusable folder row.
+    return this.shadowRoot!.querySelector('#folder');
+  }
+
   moveFocus(delta: -1|1): boolean {
     const currentFocus = this.shadowRoot!.activeElement;
     if (currentFocus instanceof BookmarkFolderElement &&

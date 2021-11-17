@@ -1,4 +1,5 @@
 <template is="dom-repeat" items="[[folders_]]">
-  <bookmark-folder folder="[[item]]" open-folders="[[openFolders_]]">
+  <bookmark-folder id="bookmark-[[item.id]]" folder="[[item]]"
+      open-folders="[[openFolders_]]">
   </bookmark-folder>
 </template>
