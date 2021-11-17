@@ -2935,7 +2935,6 @@ static_library("ui") {
       "//chromeos/components/proximity_auth",
       "//chromeos/components/string_matching",
       "//chromeos/components/tether",
-      "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/cryptohome",
       "//chromeos/dbus",

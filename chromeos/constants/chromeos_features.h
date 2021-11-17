@@ -8,21 +8,12 @@
 #include "base/feature_list.h"
 
 // This file is only for the feature flags that are shared between ash-chrome
-// and lacros-chrome that are not common. For ash features, please add them
+// and lacros-chrome which is not common. For ash features, please add them
 // in //ash/constants/ash_features.h.
 namespace chromeos {
 
 extern const base::Feature kLacrosTtsSupport;
 
-namespace features {
-
-extern const base::Feature kBluetoothAdvertisementMonitoring;
-
-extern const base::Feature kBluetoothPhoneFilter;
-
-bool IsBluetoothAdvertisementMonitoringEnabled();
-
-}  // namespace features
 }  // namespace chromeos
 
 #endif  // CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_

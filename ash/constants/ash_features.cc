@@ -174,10 +174,20 @@ const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the ability to use advertisement monitoring.
+// Advertisement monitoring allows applications to register low energy scanners
+// that filter low energy advertisements in a power-efficient manner.
+const base::Feature kBluetoothAdvertisementMonitoring{
+    "BluetoothAdvertisementMonitoring", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 const base::Feature kBluetoothFixA2dpPacketSize{
     "BluetoothFixA2dpPacketSize", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables more filtering out of phones from the Bluetooth UI.
+const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the Chrome OS Bluetooth Revamp, which updates Bluetooth
 // system UI and related infrastructure. See https://crbug.com/1010321.
@@ -1366,6 +1376,10 @@ bool IsBackgroundBlurEnabled() {
 
 bool IsBentoBarEnabled() {
   return base::FeatureList::IsEnabled(kBentoBar);
+}
+
+bool IsBluetoothAdvertisementMonitoringEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
 }
 
 bool IsBluetoothRevampEnabled() {

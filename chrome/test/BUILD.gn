@@ -6617,7 +6617,6 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/decoder:unit_tests",
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chromeos/assistant:buildflags",
-      "//chromeos/constants",
       "//chromeos/dbus/image_loader",
       "//chromeos/dbus/u2f",
       "//chromeos/services/nearby/public/cpp:test_support",

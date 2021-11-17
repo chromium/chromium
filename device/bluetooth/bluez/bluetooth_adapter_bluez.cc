@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -25,7 +26,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"

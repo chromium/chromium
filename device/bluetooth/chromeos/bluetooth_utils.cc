@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/base/features.h"

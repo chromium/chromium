@@ -5725,7 +5725,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"bluetooth-advertisement-monitoring",
      flag_descriptions::kBluetoothAdvertisementMonitoringName,
      flag_descriptions::kBluetoothAdvertisementMonitoringDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothAdvertisementMonitoring)},
+     FEATURE_VALUE_TYPE(ash::features::kBluetoothAdvertisementMonitoring)},
 
     {"enable-neural-stylus-palm-rejection",
      flag_descriptions::kEnableNeuralStylusPalmRejectionName,
