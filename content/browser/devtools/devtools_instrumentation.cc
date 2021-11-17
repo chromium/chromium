@@ -890,6 +890,17 @@ void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
   UpdatePortals(render_frame_host_impl);
 }
 
+void FencedFrameCreated(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    FencedFrame* fenced_frame) {
+  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+      RenderFrameDevToolsAgentHost::GetFor(
+          owner_render_frame_host->frame_tree_node()));
+  if (!agent_host)
+    return;
+  agent_host->DidCreateFencedFrame(fenced_frame);
+}
+
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,

@@ -12,6 +12,7 @@
 namespace content {
 
 class DevToolsRendererChannel;
+class FrameTree;
 class NavigationRequest;
 class RenderFrameHostImpl;
 class ServiceWorkerDevToolsAgentHost;
@@ -26,6 +27,7 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   void SetRenderFrameHost(RenderFrameHostImpl* render_frame_host);
   void DidFinishNavigation(NavigationRequest* navigation_request);
   void UpdatePages();
+  void AutoAttachToPage(FrameTree* frame_tree, bool wait_for_debugger_on_start);
 
  protected:
   // Base overrides.

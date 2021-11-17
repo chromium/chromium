@@ -194,6 +194,15 @@ void FrameAutoAttacher::UpdatePages() {
   DispatchSetAttachedTargetsOfType(new_hosts, DevToolsAgentHost::kTypePage);
 }
 
+void FrameAutoAttacher::AutoAttachToPage(FrameTree* frame_tree,
+                                         bool wait_for_debugger_on_start) {
+  if (!auto_attach())
+    return;
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      RenderFrameDevToolsAgentHost::GetOrCreateFor(frame_tree->root());
+  DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start);
+}
+
 void FrameAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
   if (auto_attach()) {
     UpdateFrames();

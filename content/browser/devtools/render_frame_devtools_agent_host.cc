@@ -45,6 +45,7 @@
 #include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -651,6 +652,12 @@ void RenderFrameDevToolsAgentHost::OnNavigationRequestWillBeSent(
 
 void RenderFrameDevToolsAgentHost::UpdatePortals() {
   auto_attacher_->UpdatePages();
+}
+
+void RenderFrameDevToolsAgentHost::DidCreateFencedFrame(
+    FencedFrame* fenced_frame) {
+  auto_attacher_->AutoAttachToPage(fenced_frame->GetInnerRoot()->frame_tree(),
+                                   true);
 }
 
 void RenderFrameDevToolsAgentHost::DisconnectWebContents() {

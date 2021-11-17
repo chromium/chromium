@@ -51,10 +51,8 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
       frame_tree_node->IsMainFrame() &&
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
           ->IsPortal();
-  bool is_fenced_frame_main_frame =
-      frame_tree_node->IsMainFrame() && frame_tree_node->IsFencedFrameRoot();
-  bool needs_host_attached = new_host->is_local_root_subframe() ||
-                             is_portal_main_frame || is_fenced_frame_main_frame;
+  bool needs_host_attached =
+      new_host->is_local_root_subframe() || is_portal_main_frame;
 
   if (needs_host_attached) {
     if (!agent_host) {

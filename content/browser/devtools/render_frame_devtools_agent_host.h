@@ -33,6 +33,7 @@ namespace content {
 
 class BrowserContext;
 class DevToolsFrameTraceRecorder;
+class FencedFrame;
 class FrameTreeNode;
 class FrameAutoAttacher;
 class NavigationRequest;
@@ -87,6 +88,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void OnNavigationRequestWillBeSent(
       const NavigationRequest& navigation_request);
   void UpdatePortals();
+  void DidCreateFencedFrame(FencedFrame* fenced_frame);
 
   // DevToolsAgentHost overrides.
   void DisconnectWebContents() override;

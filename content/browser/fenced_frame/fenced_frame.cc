@@ -5,6 +5,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 
 #include "base/notreached.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -49,6 +50,8 @@ FencedFrame::FencedFrame(
       frame_tree_->root()->render_manager()->current_frame_host());
 
   CreateProxyAndAttachToOuterFrameTree();
+
+  devtools_instrumentation::FencedFrameCreated(owner_render_frame_host_, this);
 }
 
 FencedFrame::~FencedFrame() {

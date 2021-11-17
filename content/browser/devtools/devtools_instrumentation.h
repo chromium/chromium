@@ -53,6 +53,7 @@ namespace content {
 class BackForwardCacheCanStoreDocumentResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
+class FencedFrame;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
@@ -232,6 +233,10 @@ bool HandleCertificateError(WebContents* web_contents,
 void PortalAttached(RenderFrameHostImpl* render_frame_host_impl);
 void PortalDetached(RenderFrameHostImpl* render_frame_host_impl);
 void PortalActivated(RenderFrameHostImpl* render_frame_host_impl);
+
+void FencedFrameCreated(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    FencedFrame* fenced_frame);
 
 void ReportSameSiteCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,

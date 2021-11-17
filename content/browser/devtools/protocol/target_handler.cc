@@ -648,7 +648,9 @@ std::unique_ptr<NavigationThrottle> TargetHandler::CreateThrottleForNavigation(
       NavigationRequest::From(navigation_handle)->frame_tree_node();
   DCHECK(access_mode_ != AccessMode::kBrowser ||
          !auto_attach_related_targets_.empty() || !frame_tree_node->parent());
-  if (access_mode_ == AccessMode::kBrowser && !frame_tree_node->parent()) {
+  if (frame_tree_node->IsMainFrame() &&
+      (access_mode_ == AccessMode::kBrowser ||
+       frame_tree_node->IsFencedFrameRoot())) {
     DCHECK(auto_attacher == auto_attacher_);
     DevToolsAgentHost* host =
         RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
