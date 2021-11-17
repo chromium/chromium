@@ -203,6 +203,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 // static
 AtomicString FontCache::GetGenericFamilyNameForScript(
     const AtomicString& family_name,
+    const AtomicString& generic_family_name_fallback,
     const FontDescription& font_description) {
   // If this is a locale-specifc family name, |FontCache| can handle different
   // typefaces per locale. Let it handle.
@@ -221,7 +222,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   // to only when the content locale is available. crbug.com/652146
   const LayoutLocale* content_locale = font_description.Locale();
   if (!content_locale)
-    return family_name;
+    return generic_family_name_fallback;
 
   // This is a hack to use the preferred font for CJK scripts.
   // TODO(kojii): This logic disregards either generic family name
@@ -239,7 +240,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       break;
     default:
       // For other scripts, use the default generic family mapping logic.
-      return family_name;
+      return generic_family_name_fallback;
   }
 
   sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
@@ -53,19 +54,20 @@ AtomicString FontSelector::FamilyNameFromSettings(
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1228189): Android does not have pre-installed math font.
   // https://github.com/googlefonts/noto-fonts/issues/330
-  if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
+  if (font_description.GenericFamily() == FontDescription::kStandardFamily ||
+      generic_family_name == font_family_names::kWebkitStandard) {
     return FontCache::GetGenericFamilyNameForScript(
-        font_family_names::kWebkitStandard, font_description);
+        font_family_names::kWebkitStandard,
+        GetFallbackFontFamily(font_description), font_description);
   }
 
   if (generic_family_name == font_family_names::kSerif ||
       generic_family_name == font_family_names::kSansSerif ||
       generic_family_name == font_family_names::kCursive ||
       generic_family_name == font_family_names::kFantasy ||
-      generic_family_name == font_family_names::kMonospace ||
-      generic_family_name == font_family_names::kWebkitStandard) {
-    return FontCache::GetGenericFamilyNameForScript(generic_family_name,
-                                                    font_description);
+      generic_family_name == font_family_names::kMonospace) {
+    return FontCache::GetGenericFamilyNameForScript(
+        generic_family_name, generic_family_name, font_description);
   }
 #else   // !defined(OS_ANDROID)
   UScriptCode script = font_description.GetScript();

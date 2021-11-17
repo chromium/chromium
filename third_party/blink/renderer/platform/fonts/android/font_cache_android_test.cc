@@ -97,24 +97,26 @@ TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   FontDescription chinese;
   chinese.SetLocale(LayoutLocale::Get("zh"));
 
+  AtomicString fallback = "MyGenericFamilyNameFallback";
+
   font_family_names::Init();
   // For non-CJK, getGenericFamilyNameForScript should return the given
-  // familyName.
-  EXPECT_EQ(font_family_names::kWebkitStandard,
+  // generic_family_name_fallback except monospace.
+  EXPECT_EQ(fallback,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, english));
+                font_family_names::kWebkitStandard, fallback, english));
   EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kMonospace, english));
+                font_family_names::kMonospace, fallback, english));
 
   // For CJK, getGenericFamilyNameForScript should return CJK fonts except
   // monospace.
-  EXPECT_NE(font_family_names::kWebkitStandard,
+  EXPECT_NE(fallback,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, chinese));
+                font_family_names::kWebkitStandard, fallback, chinese));
   EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kMonospace, chinese));
+                font_family_names::kMonospace, fallback, chinese));
 }
 
 }  // namespace blink
