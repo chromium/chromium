@@ -870,8 +870,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BasicDocumentInitiated) {
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
   RenderFrameHostImpl* rfh_b = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -983,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
 
   // 2) Navigate to B. The previous document can't enter the BackForwardCache,
   // because of the popup.
-  ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace("location = $1;", url_b.spec())));
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a.get(), url_b));
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   RenderFrameHostImplWrapper rfh_b(current_frame_host());
   EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
@@ -1003,9 +1002,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
 
   // 5) Navigate to B again. As the scripting relationship with the popup is
   // now severed, the current page (|rfh_a_new|) can enter back-forward cache.
-  ASSERT_TRUE(
-      ExecJs(rfh_a_new.get(), JsReplace("location = $1;", url_b.spec())));
-  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a_new.get(), url_b));
   EXPECT_FALSE(rfh_a_new.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_a_new->IsInBackForwardCache());
 
@@ -2734,8 +2731,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   StartRecordingEvents(rfh_a);
 
   // 2) Navigate to B.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
   RenderFrameHostImpl* rfh_b = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 

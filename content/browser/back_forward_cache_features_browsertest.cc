@@ -1050,8 +1050,7 @@ IN_PROC_BROWSER_TEST_F(
   rfh_a->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
   // 3) Navigate cross-site, renderer-inititated.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
   // The previous page won't get into the back-forward cache because of the
   // blocklisted features. Because we used sticky blocklisted features, we will
   // not do a proactive BrowsingInstance swap.
@@ -1216,8 +1215,7 @@ IN_PROC_BROWSER_TEST_F(
   // 3) Navigate cross-site, renderer-inititated.
   // The previous page won't get into the back-forward cache because of the
   // blocklisted feature.
-  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
   // Because we only used non-sticky blocklisted features, we will still do a
   // proactive BrowsingInstance swap.
   EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(
