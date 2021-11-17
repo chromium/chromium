@@ -20,7 +20,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
@@ -339,41 +338,6 @@ bool ScreenLayoutObserver::GetDisplayMessageForNotification(
         return true;
       }
     }
-    // Don't show rotation change notification if
-    // a) no rotation change
-    if (iter.second.GetActiveRotation() == old_iter->second.GetActiveRotation())
-      continue;
-    // b) the source is accelerometer.
-    if (iter.second.active_rotation_source() ==
-        display::Display::RotationSource::ACCELEROMETER) {
-      continue;
-    }
-    // c) if the device is in tablet mode, and source is not user.
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-        iter.second.active_rotation_source() !=
-            display::Display::RotationSource::USER) {
-      continue;
-    }
-
-    int rotation_text_id = 0;
-    switch (iter.second.GetActiveRotation()) {
-      case display::Display::ROTATE_0:
-        rotation_text_id = IDS_ASH_STATUS_TRAY_DISPLAY_STANDARD_ORIENTATION;
-        break;
-      case display::Display::ROTATE_90:
-        rotation_text_id = IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_90;
-        break;
-      case display::Display::ROTATE_180:
-        rotation_text_id = IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_180;
-        break;
-      case display::Display::ROTATE_270:
-        rotation_text_id = IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_270;
-        break;
-    }
-    *out_additional_message = l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetDisplayName(iter.first),
-        l10n_util::GetStringUTF16(rotation_text_id));
-    return true;
   }
 
   // Found nothing special
@@ -391,8 +355,6 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
   if (message.empty() && additional_message.empty())
     return;
 
-  // Don't display notifications for accelerometer triggered screen rotations.
-  // See http://crbug.com/364949
   if (Shell::Get()
           ->screen_orientation_controller()
           ->ignore_display_configuration_updates()) {

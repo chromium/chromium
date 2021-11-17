@@ -160,24 +160,6 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
-  // rotation.
-  UpdateDisplay("500x400/r");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_90)),
-            GetDisplayNotificationAdditionalText());
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-
-  CloseNotification();
-  UpdateDisplay("500x400");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_STANDARD_ORIENTATION)),
-            GetDisplayNotificationAdditionalText());
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-
   // No-update
   CloseNotification();
   UpdateDisplay("500x400");
@@ -277,15 +259,6 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
             GetDisplayNotificationText());
   EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
 
-  // Rotate the second.
-  UpdateDisplay("500x400@1.5,300x200/r");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetSecondDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_90)),
-            GetDisplayNotificationAdditionalText());
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-
   // Enters closed lid mode.
   UpdateDisplay("500x400@1.5,300x200");
   display::Display::SetInternalDisplayId(
@@ -304,10 +277,6 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   UpdateDisplay("500x400");
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
-
-  // Rotation.
-  UpdateDisplay("500x400/r");
-  EXPECT_FALSE(IsNotificationShown());
 
   // Adding a display.
   UpdateDisplay("500x400,300x200");
@@ -428,20 +397,6 @@ TEST_F(ScreenLayoutObserverTest, DisplayConfigurationChangedTwice) {
       GetDisplayNotificationText(),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED, u""),
       base::CompareCase::SENSITIVE));
-}
-
-// Verify the notification message content when one of the 2 displays that
-// connected to the device is rotated.
-TEST_F(ScreenLayoutObserverTest, UpdateAfterSuppressDisplayNotification) {
-  UpdateDisplay("500x400,300x200");
-
-  // Rotate the second.
-  UpdateDisplay("500x400,300x200/r");
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetSecondDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_90)),
-            GetDisplayNotificationAdditionalText());
 }
 
 // Verify that no notification is shown when overscan of a screen is changed.
@@ -594,65 +549,6 @@ TEST_F(ScreenLayoutObserverTest, DockedModeWithExternalPrimaryDisplayMessage) {
   EXPECT_FALSE(IsNotificationShown());
 }
 
-// Tests that rotation notifications are only shown when the rotation source is
-// a user action. The accelerometer source nevber produces any notifications.
-TEST_F(ScreenLayoutObserverTest, RotationNotification) {
-  UpdateDisplay("500x400");
-  const int64_t primary_id =
-      display_manager()->GetPrimaryDisplayCandidate().id();
-
-  // The accelerometer source.
-  display_manager()->SetDisplayRotation(
-      primary_id, display::Display::ROTATE_90,
-      display::Display::RotationSource::ACCELEROMETER);
-  EXPECT_FALSE(IsNotificationShown());
-
-  // The user source.
-  display_manager()->SetDisplayRotation(primary_id,
-                                        display::Display::ROTATE_180,
-                                        display::Display::RotationSource::USER);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_180)),
-            GetDisplayNotificationAdditionalText());
-
-  // The active source.
-  display_manager()->SetDisplayRotation(
-      primary_id, display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_270)),
-            GetDisplayNotificationAdditionalText());
-
-  // Switch to Tablet
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  // The accelerometer source.
-  display_manager()->SetDisplayRotation(
-      primary_id, display::Display::ROTATE_90,
-      display::Display::RotationSource::ACCELEROMETER);
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-
-  // The user source.
-  display_manager()->SetDisplayRotation(primary_id,
-                                        display::Display::ROTATE_180,
-                                        display::Display::RotationSource::USER);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_180)),
-            GetDisplayNotificationAdditionalText());
-
-  // The active source.
-  display_manager()->SetDisplayRotation(
-      primary_id, display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
-  EXPECT_TRUE(GetDisplayNotificationText().empty());
-}
-
 TEST_F(ScreenLayoutObserverTest, MirrorModeAddOrRemoveDisplayMessage) {
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -721,12 +617,12 @@ TEST_F(ScreenLayoutObserverTest, MirrorModeAddOrRemoveDisplayMessage) {
 
 TEST_F(ScreenLayoutObserverTest, ClickNotification) {
   // Create notification.
-  UpdateDisplay("500x400/r");
-  EXPECT_FALSE(GetDisplayNotificationAdditionalText().empty());
+  UpdateDisplay("500x400,300x200");
+  EXPECT_FALSE(GetDisplayNotificationText().empty());
 
   // Click notification.
   ClickNotification();
-  EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
 }
 
 }  // namespace ash

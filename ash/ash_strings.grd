@@ -2233,26 +2233,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TO_UNSUPPORTED" desc="The label used in the tray to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution.">
         <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>2560x1600</ex></ph>. The resolution was changed to <ph name="FALLBACK_RESOLUTION">$3<ex>1920x1200</ex></ph>.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED" desc="The label used in the tray to notify that the display rotation settings has changed.">
-        <ph name="DISPLAY_NAME">$1</ph> was rotated to <ph name="ROTATION">$2</ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ANNOTATED_NAME" desc="Label used to show a display name with annotation (like screen resolution or overscan info).">
         <ph name="DISPLAY_NAME">$1</ph> (<ph name="ANNOTATION">$2</ph>)
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ANNOTATION_OVERSCAN" desc="Label used to describe that the system notice that this display device may have overscan area.">
         overscan
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_STANDARD_ORIENTATION" desc="The default value of display orientation option item.">
-        0&#x00B0;
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_90" desc="The value of display orientation option item: 90-degree rotated">
-        90&#x00B0;
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_180" desc="The value of display orientation option item: 180-degree rotated">
-        180&#x00B0;
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DISPLAY_ORIENTATION_270" desc="The value of display orientation option item: 270-degree rotated">
-        270&#x00B0;
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_UNIFIED" desc="The title of the notification indicating that the system is in unified desktop mode.">
         Unified desktop mode
