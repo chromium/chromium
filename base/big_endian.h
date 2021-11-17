@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -19,17 +20,16 @@ namespace base {
 // NOTE(szym): glibc dns-canon.c use ntohs(*(uint16_t*)ptr) which is
 // potentially unaligned.
 // This would cause SIGBUS on ARMv5 or earlier and ARMv6-M.
-template<typename T>
-inline void ReadBigEndian(const char buf[], T* out) {
+template <typename T>
+inline void ReadBigEndian(const uint8_t buf[], T* out) {
   static_assert(std::is_integral<T>::value, "T has to be an integral type.");
   // Make an unsigned version of the output type to make shift possible
   // without UB.
-  typename std::make_unsigned<T>::type unsigned_result =
-      static_cast<uint8_t>(buf[0]);
+  typename std::make_unsigned<T>::type unsigned_result = buf[0];
   for (size_t i = 1; i < sizeof(T); ++i) {
     unsigned_result <<= 8;
     // Must cast to uint8_t to avoid clobbering by sign extension.
-    unsigned_result |= static_cast<uint8_t>(buf[i]);
+    unsigned_result |= buf[i];
   }
   *out = unsigned_result;
 }
@@ -48,7 +48,7 @@ inline void WriteBigEndian(char buf[], T val) {
 
 // Specializations to make clang happy about the (dead code) shifts above.
 template <>
-inline void ReadBigEndian<uint8_t>(const char buf[], uint8_t* out) {
+inline void ReadBigEndian<uint8_t>(const uint8_t buf[], uint8_t* out) {
   *out = buf[0];
 }
 
@@ -58,7 +58,7 @@ inline void WriteBigEndian<uint8_t>(char buf[], uint8_t val) {
 }
 
 template <>
-inline void ReadBigEndian<int8_t>(const char buf[], int8_t* out) {
+inline void ReadBigEndian<int8_t>(const uint8_t buf[], int8_t* out) {
   *out = buf[0];
 }
 
@@ -71,15 +71,20 @@ inline void WriteBigEndian<int8_t>(char buf[], int8_t val) {
 // an underlying buffer. All the reading functions advance the internal pointer.
 class BASE_EXPORT BigEndianReader {
  public:
-  BigEndianReader(const char* buf, size_t len);
+  static BigEndianReader FromStringPiece(base::StringPiece string_piece);
 
-  const char* ptr() const { return ptr_; }
+  BigEndianReader(const uint8_t* buf, size_t len);
+  explicit BigEndianReader(base::span<const uint8_t> buf);
+
+  const uint8_t* ptr() const { return ptr_; }
   size_t remaining() const { return end_ - ptr_; }
 
   bool Skip(size_t len);
   bool ReadBytes(void* out, size_t len);
   // Creates a StringPiece in |out| that points to the underlying buffer.
   bool ReadPiece(base::StringPiece* out, size_t len);
+  bool ReadSpan(base::span<const uint8_t>* out, size_t len);
+
   bool ReadU8(uint8_t* value);
   bool ReadU16(uint16_t* value);
   bool ReadU32(uint32_t* value);
@@ -106,8 +111,8 @@ class BASE_EXPORT BigEndianReader {
   template <typename T>
   bool ReadLengthPrefixed(base::StringPiece* out);
 
-  const char* ptr_;
-  const char* end_;
+  const uint8_t* ptr_;
+  const uint8_t* end_;
 };
 
 // Allows writing integers in network order (big endian) while iterating over

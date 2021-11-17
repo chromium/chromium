@@ -81,8 +81,9 @@ gfx::Size GetEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 
 template <typename T>
 bool ReadBigEndianFromFile(base::File& file, T* out) {
-  char buffer[sizeof(T)];
-  if (file.ReadAtCurrentPos(buffer, sizeof(T)) != sizeof(T))
+  uint8_t buffer[sizeof(T)];
+  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), sizeof(T)) !=
+      sizeof(T))
     return false;
   base::ReadBigEndian(buffer, out);
   return true;

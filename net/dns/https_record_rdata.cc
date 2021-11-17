@@ -55,7 +55,7 @@ bool ParseMandatoryKeys(base::StringPiece param_value,
                         std::set<uint16_t>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::set<uint16_t> mandatory_keys;
   // Do/while to require at least one key.
@@ -82,7 +82,7 @@ bool ParseAlpnIds(base::StringPiece param_value,
                   std::vector<std::string>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<std::string> alpn_ids;
   // Do/while to require at least one ID.
@@ -106,7 +106,7 @@ bool ParseIpAddresses(base::StringPiece param_value,
                       std::vector<IPAddress>* out_addresses) {
   DCHECK(out_addresses);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<IPAddress> addresses;
   uint8_t addr_bytes[ADDRESS_SIZE];
@@ -129,7 +129,7 @@ std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
   if (!HasValidSize(data, kType))
     return std::make_unique<MalformedHttpsRecordRdata>();
 
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   uint16_t priority;
   CHECK(reader.ReadU16(&priority));
 
@@ -207,7 +207,7 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -315,7 +315,7 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -388,7 +388,8 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     if (param_value.size() != 2)
       return nullptr;
     uint16_t port_val;
-    base::ReadBigEndian(param_value.data(), &port_val);
+    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(param_value.data()),
+                        &port_val);
     port = port_val;
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {

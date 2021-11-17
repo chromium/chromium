@@ -1125,7 +1125,8 @@ static bool AddHuffmanTable(const void* input_ptr,
   DCHECK(output_ptr);
   DCHECK_LE((input_size + sizeof(kDefaultDhtSeg)), output_size);
 
-  base::BigEndianReader reader(static_cast<const char*>(input_ptr), input_size);
+  base::BigEndianReader reader(static_cast<const uint8_t*>(input_ptr),
+                               input_size);
   bool has_marker_dht = false;
   bool has_marker_sos = false;
   uint8_t marker1, marker2;
@@ -1141,7 +1142,7 @@ static bool AddHuffmanTable(const void* input_ptr,
   size_t current_offset = 2;
 
   while (!has_marker_sos && !has_marker_dht) {
-    const char* start_addr = reader.ptr();
+    const uint8_t* start_addr = reader.ptr();
     READ_U8_OR_RETURN_FALSE(reader, &marker1);
     if (marker1 != JPEG_MARKER_PREFIX) {
       DVLOGF(1) << "marker1 != 0xFF";

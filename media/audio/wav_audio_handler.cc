@@ -127,7 +127,7 @@ bool ParseWavData(const base::StringPiece wav_data,
   DCHECK(params_out);
 
   // The header should look like: |R|I|F|F|1|2|3|4|W|A|V|E|
-  base::BigEndianReader reader(wav_data.data(), wav_data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(wav_data);
 
   // Read the chunk ID and compare to "RIFF".
   base::StringPiece chunk_id;

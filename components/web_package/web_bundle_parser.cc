@@ -197,7 +197,7 @@ class InputReader {
     auto bytes = ReadBytes(sizeof(T));
     if (!bytes)
       return false;
-    base::ReadBigEndian(reinterpret_cast<const char*>(bytes->data()), out);
+    base::ReadBigEndian(bytes->data(), out);
     return true;
   }
 

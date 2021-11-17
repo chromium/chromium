@@ -83,12 +83,11 @@ void AddCustomChunk(const base::StringPiece& custom_chunk,
                          bitmap_data->begin() + base::size(kPngMagic),
                          kPngMagic));
   auto ihdr_start = bitmap_data->begin() + base::size(kPngMagic);
-  char ihdr_length_data[sizeof(uint32_t)];
+  uint8_t ihdr_length_data[sizeof(uint32_t)];
   for (size_t i = 0; i < sizeof(uint32_t); ++i)
     ihdr_length_data[i] = *(ihdr_start + i);
   uint32_t ihdr_chunk_length = 0;
-  base::ReadBigEndian(reinterpret_cast<char*>(ihdr_length_data),
-                      &ihdr_chunk_length);
+  base::ReadBigEndian(ihdr_length_data, &ihdr_chunk_length);
   EXPECT_TRUE(
       std::equal(ihdr_start + sizeof(uint32_t),
                  ihdr_start + sizeof(uint32_t) + sizeof(kPngIHDRChunkType),

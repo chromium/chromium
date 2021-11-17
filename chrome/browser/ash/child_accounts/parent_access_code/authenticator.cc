@@ -152,7 +152,7 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   int32_t result;
   std::vector<uint8_t> slice(digest.begin() + offset,
                              digest.begin() + offset + sizeof(result));
-  base::ReadBigEndian(reinterpret_cast<char*>(slice.data()), &result);
+  base::ReadBigEndian(slice.data(), &result);
   // Clear sign bit.
   result &= 0x7fffffff;
 

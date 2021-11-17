@@ -175,7 +175,7 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
           return 0;
         }
         uint16_t offset;
-        base::ReadBigEndian<uint16_t>(p, &offset);
+        base::ReadBigEndian(reinterpret_cast<const uint8_t*>(p), &offset);
         offset &= dns_protocol::kOffsetMask;
         p = packet_ + offset;
         if (p >= end) {
@@ -233,15 +233,16 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
   size_t consumed = ReadName(cur_, &out->name);
   if (!consumed)
     return false;
-  base::BigEndianReader reader(cur_ + consumed,
-                               packet_ + length_ - (cur_ + consumed));
+  base::BigEndianReader reader(
+      reinterpret_cast<const uint8_t*>(cur_ + consumed),
+      packet_ + length_ - (cur_ + consumed));
   uint16_t rdlen;
   if (reader.ReadU16(&out->type) &&
       reader.ReadU16(&out->klass) &&
       reader.ReadU32(&out->ttl) &&
       reader.ReadU16(&rdlen) &&
       reader.ReadPiece(&out->rdata, rdlen)) {
-    cur_ = reader.ptr();
+    cur_ = reinterpret_cast<const char*>(reader.ptr());
     ++num_records_parsed_;
     return true;
   }
@@ -258,7 +259,8 @@ bool DnsRecordParser::ReadQuestion(std::string& out_dotted_qname,
   if (next > packet_ + length_)
     return false;
 
-  base::ReadBigEndian<uint16_t>(cur_ + consumed, &out_qtype);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(cur_ + consumed),
+                      &out_qtype);
 
   cur_ = next;
 

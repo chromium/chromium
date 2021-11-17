@@ -1153,7 +1153,7 @@ bool ResourceBundle::PNGContainsFallbackMarker(const unsigned char* buf,
     if (size - pos < kPngChunkMetadataSize)
       break;
     uint32_t length = 0;
-    base::ReadBigEndian(reinterpret_cast<const char*>(buf + pos), &length);
+    base::ReadBigEndian(buf + pos, &length);
     if (size - pos - kPngChunkMetadataSize < length)
       break;
     if (length == 0 && memcmp(buf + pos + sizeof(uint32_t), kPngScaleChunkType,

@@ -53,7 +53,7 @@ bool SignalKeyInternalFromBinary(const std::string& input,
     ClearKey(output);
     return false;
   }
-  base::BigEndianReader reader(input.data(), input.size());
+  auto reader = base::BigEndianReader::FromStringPiece(input);
   reader.ReadBytes(&output->prefix.kind, sizeof(output->prefix.kind));
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64(&output->prefix.name_hash);
@@ -89,7 +89,7 @@ bool SignalKeyInternalPrefixFromBinary(const std::string& input,
     ClearKeyPrefix(output);
     return false;
   }
-  base::BigEndianReader reader(input.data(), input.size());
+  auto reader = base::BigEndianReader::FromStringPiece(input);
   reader.ReadBytes(&output->kind, sizeof(output->kind));
   reader.Skip(sizeof(SignalKeyInternal::Prefix::padding));
   reader.ReadU64(&output->name_hash);

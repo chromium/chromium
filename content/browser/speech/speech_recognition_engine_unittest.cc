@@ -696,9 +696,9 @@ bool SpeechRecognitionEngineTest::ResultsAreEqual(
 void SpeechRecognitionEngineTest::ExpectFramedChunk(
     const std::string& chunk, uint32_t type) {
   uint32_t value;
-  base::ReadBigEndian(&chunk[0], &value);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[0]), &value);
   EXPECT_EQ(chunk.size() - 8, value);
-  base::ReadBigEndian(&chunk[4], &value);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[4]), &value);
   EXPECT_EQ(type, value);
 }
 

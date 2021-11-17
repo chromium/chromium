@@ -122,7 +122,8 @@ std::unique_ptr<WireMessage> DeserializeV3OrV4Message(
   // of the header. Because this value is received over the network, we must
   // convert from big endian to host byte order.
   base::BigEndianReader reader(
-      serialized_message.data() + kNumBytesInHeaderProtocolVersion,
+      reinterpret_cast<const uint8_t*>(serialized_message.data()) +
+          kNumBytesInHeaderProtocolVersion,
       serialized_message.size() - kNumBytesInHeaderProtocolVersion);
 
   size_t expected_message_length;

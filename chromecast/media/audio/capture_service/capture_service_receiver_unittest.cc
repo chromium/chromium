@@ -5,6 +5,7 @@
 #include "chromecast/media/audio/capture_service/capture_service_receiver.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 
 #include "base/big_endian.h"
@@ -128,7 +129,7 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
         EXPECT_EQ(buf_len, static_cast<int>(sizeof(HandshakePacket)));
         const char* data = buf->data();
         uint16_t size;
-        base::ReadBigEndian(data, &size);
+        base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &size);
         EXPECT_EQ(size, sizeof(HandshakePacket) - sizeof(size));
         HandshakePacket packet;
         std::memcpy(&packet, data, sizeof(HandshakePacket));

@@ -146,7 +146,9 @@ OriginTrialTokenStatus TrialToken::Extract(
 
   // Extract the length of the signed data (Big-endian).
   uint32_t payload_length;
-  base::ReadBigEndian(&(token_contents[kPayloadLengthOffset]), &payload_length);
+  base::ReadBigEndian(
+      reinterpret_cast<const uint8_t*>(&(token_contents[kPayloadLengthOffset])),
+      &payload_length);
 
   // Validate that the stated length matches the actual payload length.
   if (payload_length != token_contents.length() - kPayloadOffset) {

@@ -46,7 +46,8 @@ std::string GetStorageKeyFromSpecifics(const UserEventSpecifics& specifics) {
 
 int64_t GetEventTimeFromStorageKey(const std::string& storage_key) {
   int64_t event_time;
-  base::ReadBigEndian(&storage_key[0], &event_time);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&storage_key[0]),
+                      &event_time);
   return event_time;
 }
 

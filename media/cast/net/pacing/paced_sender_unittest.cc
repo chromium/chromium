@@ -54,8 +54,7 @@ class TestPacketSender : public PacketTransport {
 
     // Parse for the packet ID and confirm it is the next one we expect.
     EXPECT_LE(kSize1, packet->data.size());
-    base::BigEndianReader reader(reinterpret_cast<char*>(&packet->data[0]),
-                                 packet->data.size());
+    base::BigEndianReader reader(packet->data);
     bool success = reader.Skip(14);
     uint16_t packet_id = 0xffff;
     success &= reader.ReadU16(&packet_id);

@@ -130,7 +130,7 @@ void CopyNalsToAnnexB(char* avcc_buffer,
   while (bytes_left > 0) {
     DCHECK_GT(bytes_left, sizeof(NalSizeType));
     NalSizeType nal_size;
-    base::ReadBigEndian(avcc_buffer, &nal_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(avcc_buffer), &nal_size);
     bytes_left -= sizeof(NalSizeType);
     avcc_buffer += sizeof(NalSizeType);
 

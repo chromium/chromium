@@ -802,7 +802,9 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    base::ReadBigEndian<uint16_t>(length_buffer_->data(), &response_length_);
+    base::ReadBigEndian(
+        reinterpret_cast<const uint8_t*>(length_buffer_->data()),
+        &response_length_);
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;

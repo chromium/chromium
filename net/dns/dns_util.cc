@@ -149,7 +149,7 @@ bool IsValidHostLabelCharacter(char c, bool is_first_char) {
 
 absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,
                                               bool require_complete) {
-  base::BigEndianReader reader(dns_name.data(), dns_name.length());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   return DnsDomainToString(reader, require_complete);
 }
 

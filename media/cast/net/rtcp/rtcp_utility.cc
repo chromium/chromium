@@ -59,10 +59,10 @@ bool RtcpParser::Parse(base::BigEndianReader* reader) {
     if (!ParseCommonHeader(reader, &header))
       return false;
 
-    base::StringPiece tmp;
-    if (!reader->ReadPiece(&tmp, header.length_in_octets - 4))
+    base::span<const uint8_t> tmp;
+    if (!reader->ReadSpan(&tmp, header.length_in_octets - 4))
       return false;
-    base::BigEndianReader chunk(tmp.data(), tmp.size());
+    base::BigEndianReader chunk(tmp);
 
     switch (header.PT) {
       case kPacketTypeSenderReport:
@@ -557,8 +557,7 @@ uint32_t GetSsrcOfSender(const uint8_t* rtcp_buffer, size_t length) {
   if (length < kMinLengthOfRtcp)
     return 0;
   uint32_t ssrc_of_sender;
-  base::BigEndianReader big_endian_reader(
-      reinterpret_cast<const char*>(rtcp_buffer), length);
+  base::BigEndianReader big_endian_reader(rtcp_buffer, length);
   big_endian_reader.Skip(4);  // Skip header.
   big_endian_reader.ReadU32(&ssrc_of_sender);
   return ssrc_of_sender;
