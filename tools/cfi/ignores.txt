@@ -175,6 +175,7 @@ src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 src:*third_party/angle/third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
+src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
 src:*components/os_crypt/*
 
