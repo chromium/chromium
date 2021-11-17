@@ -37,7 +37,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/strings/grit/ui_strings.h"
 
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 

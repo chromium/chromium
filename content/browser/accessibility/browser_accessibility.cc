@@ -27,7 +27,6 @@
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace content {
 

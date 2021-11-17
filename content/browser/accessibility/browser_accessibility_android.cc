@@ -23,7 +23,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace {
 
