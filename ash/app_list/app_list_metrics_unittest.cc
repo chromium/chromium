@@ -504,6 +504,77 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
       1 /* Number of times launched from search box */);
 }
 
+class AppListProductivityAppLaunchedMetricTest
+    : public AppListAppLaunchedMetricTest {
+ public:
+  AppListProductivityAppLaunchedMetricTest() {
+    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
+                                          {});
+  }
+  ~AppListProductivityAppLaunchedMetricTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the bubble launcher all apps is showing.
+TEST_F(AppListProductivityAppLaunchedMetricTest,
+       BubbleAllAppsLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetBubbleRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.BubbleAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the homecher all apps is showing.
+TEST_F(AppListProductivityAppLaunchedMetricTest, HomecherLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetFullscreenRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.HomecherAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
 class AppListShowSourceMetricTest : public AshTestBase {
  public:
   AppListShowSourceMetricTest() = default;

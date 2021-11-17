@@ -56,6 +56,7 @@ void AppListTestViewDelegate::OpenSearchResult(
     switch (launched_from) {
       case ash::AppListLaunchedFrom::kLaunchedFromSearchBox:
       case ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+      case ash::AppListLaunchedFrom::kLaunchedFromRecentApps:
         RecordAppLaunched(launched_from);
         return;
       case ash::AppListLaunchedFrom::kLaunchedFromGrid:

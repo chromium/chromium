@@ -1208,6 +1208,7 @@ void AppListControllerImpl::OpenSearchResult(
     switch (launched_from) {
       case AppListLaunchedFrom::kLaunchedFromSearchBox:
       case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+      case AppListLaunchedFrom::kLaunchedFromRecentApps:
         RecordAppLaunched(launched_from);
         break;
       case AppListLaunchedFrom::kLaunchedFromGrid:

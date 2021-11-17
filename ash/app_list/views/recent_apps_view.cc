@@ -134,14 +134,13 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   void EndDrag(bool cancel) override {}
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override {
-    // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
     // NOTE: Avoid using |item->id()| as the parameter. In some rare situations,
     // activating the item may destruct it. Using the reference to an object
     // which may be destroyed during the procedure as the function parameter
     // may bring the crash like https://crbug.com/990282.
     const std::string id = pressed_item_view->item()->id();
-    view_delegate_->ActivateItem(
-        id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
+    view_delegate_->ActivateItem(id, event.flags(),
+                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
     // `this` may be deleted.
   }
 

@@ -82,7 +82,8 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
       break;
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::kLaunchedFromGrid:
-      // Search results don't live in the shelf or the app grid.
+    case AppListLaunchedFrom::kLaunchedFromRecentApps:
+      // Search results don't live in the shelf, the app grid or recent apps.
       NOTREACHED();
       break;
   }

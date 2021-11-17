@@ -163,7 +163,8 @@ enum class AppListLaunchedFrom {
   kLaunchedFromSuggestionChip = 2,
   kLaunchedFromShelf = 3,
   kLaunchedFromSearchBox = 4,
-  kMaxValue = kLaunchedFromSearchBox,
+  kLaunchedFromRecentApps = 5,
+  kMaxValue = kLaunchedFromRecentApps,
 };
 
 // The UI representation of the search result. Currently all search results
