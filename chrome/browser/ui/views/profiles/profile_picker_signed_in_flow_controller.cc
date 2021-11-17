@@ -186,7 +186,7 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
   Cancel();
 
   switch_profile_path_ = profile_path;
-  host_->ShowScreenInSystemContents(
+  host_->ShowScreenInPickerContents(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
@@ -393,7 +393,7 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
 void ProfilePickerSignedInFlowController::FinishAndOpenBrowserForSAML() {
   DCHECK(IsInitialized());
   // First, free up `contents()` to be moved to a new browser window.
-  host_->ShowScreenInSystemContents(
+  host_->ShowScreenInPickerContents(
       GURL(url::kAboutBlankURL),
       /*navigation_finished_closure=*/
       base::BindOnce(

@@ -74,7 +74,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
                   const GURL& url,
                   base::OnceClosure navigation_finished_closure =
                       base::OnceClosure()) override;
-  void ShowScreenInSystemContents(
+  void ShowScreenInPickerContents(
       const GURL& url,
       base::OnceClosure navigation_finished_closure =
           base::OnceClosure()) override;
@@ -99,7 +99,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   friend class ProfilePicker;
 
   // To display the Profile picker, use ProfilePicker::Show().
-  ProfilePickerView();
+  explicit ProfilePickerView(const base::FilePath& custom_profile_path);
   ~ProfilePickerView() override;
 
   enum State { kNotStarted = 0, kInitializing = 1, kReady = 2, kClosing = 3 };
@@ -123,15 +123,21 @@ class ProfilePickerView : public views::WidgetDelegateView,
     base::OnceClosure closure_;
   };
 
+  // If the picker needs to be re-opened, this function schedules the reopening,
+  // closes the picker and return true. Otherwise, it returns false.
+  bool ShouldReopen(ProfilePicker::EntryPoint entry_point,
+                    const GURL& on_select_profile_target_url,
+                    const base::FilePath& custom_profile_path);
+
   // Displays the profile picker.
   void Display(ProfilePicker::EntryPoint entry_point);
 
-  // On system profile creation success, it initializes the view.
-  void OnSystemProfileCreated(Profile* system_profile,
+  // On picker profile creation success, it initializes the view.
+  void OnPickerProfileCreated(Profile* picker_profile,
                               Profile::CreateStatus status);
 
   // Creates and shows the dialog.
-  void Init(Profile* system_profile);
+  void Init(Profile* picker_profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile).
@@ -219,8 +225,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePicker::EntryPoint entry_point_ =
       ProfilePicker::EntryPoint::kOnStartup;
   State state_ = State::kNotStarted;
-  absl::optional<ProfilePicker::EntryPoint>
-      restart_with_entry_point_on_window_closing_;
+
+  // Callback that gets called (if set) when the current window has closed -
+  // used to reshow the picker (with different params).
+  base::OnceClosure restart_on_window_closing_;
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
@@ -231,9 +239,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Owned by the view hierarchy.
   views::WebView* web_view_ = nullptr;
 
-  // The web contents backed by the system profile. This is used for displaying
-  // the WebUI pages.
-  std::unique_ptr<content::WebContents> system_profile_contents_;
+  // The web contents backed by the picker profile (mostly the system profile).
+  // This is used for displaying the WebUI pages.
+  std::unique_ptr<content::WebContents> contents_;
 
   // Observer used for implementing screen switching. Non-null only shorty
   // after switching a screen. Must be below all WebContents instances so that
@@ -264,6 +272,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // A target page url that opens on profile selection instead of the new tab
   // page.
   GURL on_select_profile_target_url_;
+
+  // The custom path for the profile to be used for the picker (the default path
+  // is used when empty).
+  base::FilePath custom_profile_path_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

@@ -49,7 +49,10 @@ class ProfilePicker {
     kProfileLocked = 5,
     kUnableToCreateBrowser = 6,
     kBackgroundModeManager = 7,
-    kMaxValue = kBackgroundModeManager,
+    // May only be used on lacros, opens an account picker, listing all accounts
+    // that are not used in the provided profile, yet.
+    kLacrosSelectAvailableAccount = 8,
+    kMaxValue = kLacrosSelectAvailableAccount,
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -66,10 +69,18 @@ class ProfilePicker {
   ProfilePicker& operator=(const ProfilePicker&) = delete;
 
   // Shows the Profile picker for the given `entry_point` or re-activates an
-  // existing one. In the latter case, the displayed page and the target url
-  // on profile selection is not updated.
-  static void Show(EntryPoint entry_point,
-                   const GURL& on_select_profile_target_url = GURL());
+  // existing one (if `custom_profile_path` matches the current one) or hides
+  // the current window and shows a new one (if `custom_profile_path` does not
+  // match the current one). When reactivated, the displayed page is not
+  // updated. `custom_profile_path` specifies the profile that should be used to
+  // render the profile picker and may be non-empty only for the
+  // `kLacrosSelectAvailableAccount` entry point.
+  // TODO(crbug.com/1226076): Clean the API up, make the optional params part of
+  // a struct together with EntryPoint.
+  static void Show(
+      EntryPoint entry_point,
+      const GURL& on_select_profile_target_url = GURL(),
+      const base::FilePath& custom_profile_path = base::FilePath());
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Starts the Dice sign-in flow. The layout of the window gets updated for the

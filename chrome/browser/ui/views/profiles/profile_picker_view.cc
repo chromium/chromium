@@ -108,6 +108,8 @@ GURL CreateURLForEntryPoint(ProfilePicker::EntryPoint entry_point) {
       return base_url;
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
       return base_url.Resolve("new-profile");
+    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
+      return base_url.Resolve("account-selection-lacros");
   }
 }
 
@@ -138,11 +140,28 @@ class ProfilePickerWidget : public views::Widget {
 
 // static
 void ProfilePicker::Show(EntryPoint entry_point,
-                         const GURL& on_select_profile_target_url) {
-  if (!g_profile_picker_view)
-    g_profile_picker_view = new ProfilePickerView();
+                         const GURL& on_select_profile_target_url,
+                         const base::FilePath& custom_profile_path) {
+  // Re-open with new params if necessary.
+  if (g_profile_picker_view &&
+      g_profile_picker_view->ShouldReopen(
+          entry_point, on_select_profile_target_url, custom_profile_path)) {
+    return;
+  }
+
+  if (!g_profile_picker_view) {
+    // TODO(crbug.com/1226076): Enforce this on the level of API (putting
+    // `custom_profile_path` inside a struct that checks this).
+    DCHECK(custom_profile_path.empty() ||
+           entry_point == EntryPoint::kLacrosSelectAvailableAccount);
+    g_profile_picker_view = new ProfilePickerView(custom_profile_path);
+  }
+
   g_profile_picker_view->set_on_select_profile_target_url(
       on_select_profile_target_url);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK_NE(entry_point, EntryPoint::kLacrosSelectAvailableAccount);
+#endif
   g_profile_picker_view->Display(entry_point);
 }
 
@@ -413,11 +432,10 @@ void ProfilePickerView::ShowScreen(
       contents);
 }
 
-void ProfilePickerView::ShowScreenInSystemContents(
+void ProfilePickerView::ShowScreenInPickerContents(
     const GURL& url,
     base::OnceClosure navigation_finished_closure) {
-  ShowScreen(system_profile_contents_.get(), url,
-             std::move(navigation_finished_closure));
+  ShowScreen(contents_.get(), url, std::move(navigation_finished_closure));
 }
 
 void ProfilePickerView::Clear() {
@@ -473,24 +491,44 @@ void ProfilePickerView::AddObserver(
 void ProfilePickerView::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
-ProfilePickerView::ProfilePickerView()
+ProfilePickerView::ProfilePickerView(const base::FilePath& custom_profile_path)
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED),
-      extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
+      extended_account_info_timeout_(kExtendedAccountInfoTimeout),
+      custom_profile_path_(custom_profile_path) {
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PRODUCT_NAME);
 
   ConfigureAccelerators();
+
   // TODO(crbug.com/1063856): Add |RecordDialogCreation|.
 }
 
 ProfilePickerView::~ProfilePickerView() {
-  if (system_profile_contents_)
-    system_profile_contents_->SetDelegate(nullptr);
+  if (contents_)
+    contents_->SetDelegate(nullptr);
+}
+
+bool ProfilePickerView::ShouldReopen(
+    ProfilePicker::EntryPoint entry_point,
+    const GURL& on_select_profile_target_url,
+    const base::FilePath& custom_profile_path) {
+  // Need to reopen if already closing or if `custom_profile_path` differs
+  // from the current one (as we can't switch the profile during run-time).
+  if (state_ != kClosing && custom_profile_path_ == custom_profile_path)
+    return false;
+
+  restart_on_window_closing_ =
+      base::BindOnce(&ProfilePicker::Show, entry_point,
+                     on_select_profile_target_url, custom_profile_path);
+  // No-op if already closing.
+  ProfilePicker::Hide();
+  return true;
 }
 
 void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
+  DCHECK_NE(state_, kClosing);
   // Record creation metrics.
   base::UmaHistogramEnumeration("ProfilePicker.Shown", entry_point);
   if (entry_point == ProfilePicker::EntryPoint::kOnStartup) {
@@ -505,13 +543,14 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
   if (state_ == kNotStarted) {
     state_ = kInitializing;
     entry_point_ = entry_point;
-    // Build the layout synchronously before creating the system profile to
+    // Build the layout synchronously before creating the picker profile to
     // simplify tests.
     BuildLayout();
 
     g_browser_process->profile_manager()->CreateProfileAsync(
-        ProfilePicker::GetPickerProfilePath(),
-        base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
+        custom_profile_path_.empty() ? ProfilePicker::GetPickerProfilePath()
+                                     : custom_profile_path_,
+        base::BindRepeating(&ProfilePickerView::OnPickerProfileCreated,
                             weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -519,29 +558,23 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
   if (state_ == kInitializing)
     return;
 
-  if (state_ == kClosing) {
-    if (!restart_with_entry_point_on_window_closing_.has_value())
-      restart_with_entry_point_on_window_closing_ = entry_point;
-    return;
-  }
-
   GetWidget()->Activate();
 }
 
-void ProfilePickerView::OnSystemProfileCreated(Profile* system_profile,
+void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile,
                                                Profile::CreateStatus status) {
   DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
 
-  Init(system_profile);
+  Init(picker_profile);
 }
 
-void ProfilePickerView::Init(Profile* system_profile) {
+void ProfilePickerView::Init(Profile* picker_profile) {
   DCHECK_EQ(state_, kInitializing);
-  system_profile_contents_ = content::WebContents::Create(
-      content::WebContents::CreateParams(system_profile));
-  system_profile_contents_->SetDelegate(this);
+  contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(picker_profile));
+  contents_->SetDelegate(this);
 
   // The widget is owned by the native widget.
   new ProfilePickerWidget(this);
@@ -550,11 +583,11 @@ void ProfilePickerView::Init(Profile* system_profile) {
   // Set the app id for the user manager to the app id of its parent.
   ui::win::SetAppIdForWindow(
       shell_integration::win::GetAppUserModelIdForBrowser(
-          system_profile->GetPath()),
+          picker_profile->GetPath()),
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  ShowScreenInSystemContents(CreateURLForEntryPoint(entry_point_));
+  ShowScreenInPickerContents(CreateURLForEntryPoint(entry_point_));
   GetWidget()->Show();
   state_ = kReady;
 
@@ -664,8 +697,8 @@ void ProfilePickerView::CancelSignedInFlow() {
     case ProfilePicker::EntryPoint::kBackgroundModeManager: {
       // Navigate to the very beginning which is guaranteed to be the profile
       // picker.
-      system_profile_contents_->GetController().GoToIndex(0);
-      ShowScreenInSystemContents(GURL());
+      contents_->GetController().GoToIndex(0);
+      ShowScreenInPickerContents(GURL());
       // Reset the sign-in flow.
       signed_in_flow_.reset();
       return;
@@ -675,6 +708,8 @@ void ProfilePickerView::CancelSignedInFlow() {
       Clear();
       return;
     }
+    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
+      NOTREACHED() << "Signed in flow is not reachable from this entry point";
   }
 }
 
@@ -687,9 +722,8 @@ void ProfilePickerView::WindowClosing() {
 
   // Show a new profile window if it has been requested while the current window
   // was closing.
-  if (state_ == kClosing && restart_with_entry_point_on_window_closing_) {
-    ProfilePicker::Show(*restart_with_entry_point_on_window_closing_);
-  }
+  if (state_ == kClosing && restart_on_window_closing_)
+    std::move(restart_on_window_closing_).Run();
 }
 
 views::ClientView* ProfilePickerView::CreateClientView(views::Widget* widget) {
@@ -821,9 +855,8 @@ void ProfilePickerView::NavigateBack() {
   if (signed_in_flow_)
     return;
 
-  // Go back in the system WebContents if it's currently displayed.
-  if (system_profile_contents_ &&
-      web_view_->GetWebContents() == system_profile_contents_.get() &&
+  // Go back in the picker WebContents if it's currently displayed.
+  if (contents_ && web_view_->GetWebContents() == contents_.get() &&
       web_view_->GetWebContents()->GetController().CanGoBack()) {
     web_view_->GetWebContents()->GetController().GoBack();
     return;

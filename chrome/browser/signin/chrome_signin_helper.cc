@@ -34,6 +34,7 @@
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -70,8 +71,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
@@ -162,6 +164,26 @@ bool ShouldBlockReconcilorForRequest(ChromeRequestAdapter* request) {
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void OnLacrosAccountsAvailableAsSecondaryFetched(
+    AccountProfileMapper* mapper,
+    const base::FilePath& profile_path,
+    const std::vector<account_manager::Account>& accounts) {
+  if (!accounts.empty()) {
+    // Pass in the current profile to signal that the user wants to select a
+    // _secondary_ account for this particular profile.
+    ProfilePicker::Show(
+        ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount, GURL(),
+        profile_path);
+    return;
+  }
+  mapper->ShowAddAccountDialog(profile_path,
+                               account_manager::AccountManagerFacade::
+                                   AccountAdditionSource::kOgbAddAccount,
+                               AccountProfileMapper::AddAccountCallback());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class RequestDestructionObserverUserData : public base::SupportsUserData::Data {
  public:
@@ -319,12 +341,14 @@ void ProcessMirrorHeader(
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-      g_browser_process->profile_manager()
-          ->GetAccountProfileMapper()
-          ->ShowAddAccountDialog(profile->GetPath(),
-                                 account_manager::AccountManagerFacade::
-                                     AccountAdditionSource::kOgbAddAccount,
-                                 AccountProfileMapper::AddAccountCallback());
+      AccountProfileMapper* mapper =
+          g_browser_process->profile_manager()->GetAccountProfileMapper();
+      GetAccountsAvailableAsSecondary(
+          mapper, profile->GetPath(),
+          // It's safe to bind raw `mapper`, the callback gets called iff
+          // `mapper` is still valid.
+          base::BindOnce(&OnLacrosAccountsAvailableAsSecondaryFetched, mapper,
+                         profile->GetPath()));
       return;
     }
 #endif

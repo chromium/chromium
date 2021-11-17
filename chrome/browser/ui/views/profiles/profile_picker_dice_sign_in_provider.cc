@@ -120,8 +120,8 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
 
   // Move from sign-in back to the previous screen of profile creation.
   // Do not load any url because the desired screen is still loaded in the
-  // system contents.
-  host_->ShowScreenInSystemContents(GURL());
+  // picker contents.
+  host_->ShowScreenInPickerContents(GURL());
   toolbar_->SetVisible(false);
 }
 
