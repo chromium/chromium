@@ -11,13 +11,31 @@ var gRetryPromise = null;
  * Launches the PaymentRequest UI
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethod([{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Launches the PaymentRequest UI
+ */
+function buyWithUrlMethod() { // eslint-disable-line no-unused-vars
+  buyWithMethod([
+    {supportedMethods: 'https://bobpay.com'},
+    {supportedMethods: 'https://kylepay.com/webpay'},
+  ]);
+}
+
+/**
+ * Launches the PaymentRequest UI
+ * @param {string} method The payment method to request
+ */
+function buyWithMethod(method) { // eslint-disable-line no-unused-vars
   var options = {
     requestPayerEmail: true,
     requestPayerName: true,
     requestPayerPhone: true,
     requestShipping: true,
   };
-  getPaymentResponse(options)
+  getPaymentResponseWithMethod(options, method)
       .then(function(response) {
         gPaymentResponse = response;
         var eventPromise = new Promise(function(resolve) {

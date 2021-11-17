@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -73,7 +74,8 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testDoNotAllowPaymentAppChange() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=" + PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD})
+    public void testDoNotAllowPaymentAppChange_WithBasicCardEnabled() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
@@ -86,6 +88,30 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
         mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
                 ModalDialogProperties.ButtonType.POSITIVE,
                 mPaymentRequestTestRule.getPaymentResponseReady());
+
+        // Confirm that only one payment app is available for retry().
+        mPaymentRequestTestRule.retryPaymentRequest("{}", mPaymentRequestTestRule.getReadyToPay());
+        Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfPaymentApps());
+    }
+
+    /** Tests that only the initially selected payment app is available during retry(). */
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    @CommandLineFlags.Add({"disable-features=" + PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD})
+    public void testDoNotAllowPaymentAppChange() throws TimeoutException {
+        // Note that the bobpay app has been added in onMainActivityStarted(), so we will have two
+        // payment apps in total.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buyWithUrlMethod", mPaymentRequestTestRule.getReadyToPay());
+        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
+        mPaymentRequestTestRule.clickInPaymentMethodAndWait(
+                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.clickAndWait(
+                R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
         // Confirm that only one payment app is available for retry().
         mPaymentRequestTestRule.retryPaymentRequest("{}", mPaymentRequestTestRule.getReadyToPay());
