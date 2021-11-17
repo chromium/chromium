@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +21,11 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
+
+namespace {
+const char kToastId[] = "copy_to_clipboard_share_action";
+const int kToastDurationMs = 2500;
+}  // namespace
 
 namespace ash {
 namespace sharesheet {
@@ -75,7 +82,14 @@ void CopyToClipboardShareAction::LaunchAction(
     clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
   }
 
-  // TODO(crbug.com/1244143) Add image copying logic.
+  ToastData toast(kToastId,
+                  l10n_util::GetStringUTF16(
+                      IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL),
+                  kToastDurationMs,
+                  /*dismiss_text=*/absl::nullopt,
+                  /*visible_on_lock_screen=*/false);
+  ToastManager::Get()->Show(toast);
+
   if (controller_) {
     controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
   }

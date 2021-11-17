@@ -4442,6 +4442,7 @@ source_set("unit_tests") {
     "../ash/settings/shutdown_policy_handler_unittest.cc",
     "../ash/settings/stats_reporting_controller_unittest.cc",
     "../ash/settings/stub_cros_settings_provider_unittest.cc",
+    "../ash/sharesheet/copy_to_clipboard_share_action_unittest.cc",
     "../ash/smb_client/discovery/fake_netbios_client.cc",
     "../ash/smb_client/discovery/fake_netbios_client.h",
     "../ash/smb_client/discovery/in_memory_host_locator_unittest.cc",

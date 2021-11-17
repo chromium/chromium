@@ -1,0 +1,123 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
+
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sharesheet/share_action/share_action_cache.h"
+#include "chrome/browser/sharesheet/sharesheet_test_util.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "url/gurl.h"
+
+namespace ash {
+namespace sharesheet {
+
+class CopyToClipboardShareActionTest : public ChromeAshTestBase {
+ public:
+  CopyToClipboardShareActionTest() = default;
+
+  // ChromeAshTestBase:
+  void SetUp() override {
+    ChromeAshTestBase::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSharesheetCopyToClipboard);
+    profile_ = std::make_unique<TestingProfile>();
+    share_action_cache_ =
+        std::make_unique<::sharesheet::ShareActionCache>(profile_.get());
+  }
+
+  Profile* profile() { return profile_.get(); }
+  ::sharesheet::ShareActionCache* share_action_cache() {
+    return share_action_cache_.get();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<::sharesheet::ShareActionCache> share_action_cache_;
+};
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardText) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            ::sharesheet::CreateValidTextIntent());
+  // Check text copied correctly.
+  std::u16string clipboard_text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      &clipboard_text);
+  EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardUrl) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  copy_action->LaunchAction(/*controller=*/nullptr, /*root_view=*/nullptr,
+                            ::sharesheet::CreateValidUrlIntent());
+  // Check url copied correctly.
+  std::u16string clipboard_url;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      &clipboard_url);
+  EXPECT_EQ(::sharesheet::kTestUrl, base::UTF16ToUTF8(clipboard_url));
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardOneFile) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  storage::FileSystemURL url = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  copy_action->LaunchAction(
+      /*controller=*/nullptr, /*root_view=*/nullptr,
+      apps_util::CreateShareIntentFromFiles({url.ToGURL()},
+                                            {::sharesheet::kMimeTypeText}));
+
+  // Check filenames copied correctly.
+  std::vector<ui::FileInfo> filenames;
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  EXPECT_EQ(filenames.size(), 1u);
+  EXPECT_EQ(url.path(), filenames[0].path);
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyToClipboardMultipleFiles) {
+  auto* copy_action =
+      share_action_cache()->GetActionFromName(l10n_util::GetStringUTF16(
+          IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  storage::FileSystemURL url2 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  copy_action->LaunchAction(
+      /*controller=*/nullptr, /*root_view=*/nullptr,
+      apps_util::CreateShareIntentFromFiles(
+          {url1.ToGURL(), url2.ToGURL()},
+          {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
+
+  // Check filenames copied correctly.
+  std::vector<ui::FileInfo> filenames;
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &filenames);
+  EXPECT_EQ(filenames.size(), 2u);
+  EXPECT_EQ(url1.path(), filenames[0].path);
+  EXPECT_EQ(url2.path(), filenames[1].path);
+}
+
+}  // namespace sharesheet
+}  // namespace ash
