@@ -3121,7 +3121,9 @@ public class AwContents implements SmartClipProvider {
     public void onConfigurationChanged(Configuration newConfig) {
         if (TRACE) Log.i(TAG, "%s onConfigurationChanged", this);
         mAwViewMethods.onConfigurationChanged(newConfig);
-        AwContentsJni.get().onConfigurationChanged(mNativeAwContents);
+        if (!isDestroyed(NO_WARN)) {
+            AwContentsJni.get().onConfigurationChanged(mNativeAwContents);
+        }
     }
 
     /**
