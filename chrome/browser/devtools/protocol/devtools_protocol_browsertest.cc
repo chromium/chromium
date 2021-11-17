@@ -44,7 +44,10 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
+using testing::AllOf;
 using testing::Eq;
+using testing::HasSubstr;
+using testing::Not;
 
 namespace {
 
@@ -176,7 +179,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       content::EvalJs(other_web_contents, "logs.join(' ')");
   EXPECT_EQ("mouseover mousedown mousemove mouseup click dragenter keydown",
             main_target_events.ExtractString());
-  EXPECT_EQ("", other_target_events.ExtractString());
+  // mouse events might happen in the other_target if the real mouse pointer
+  // happens to be over the browser window
+  EXPECT_THAT(other_target_events.ExtractString(),
+              AllOf(Not(HasSubstr("click")), Not(HasSubstr("dragenter")),
+                    Not(HasSubstr("keydown"))));
 }
 
 class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
