@@ -7274,11 +7274,13 @@ crbug.com/1267734 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/resource-ti
 crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
 
 # Sheriff 2021-11-09
-crbug.com/1268265 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure ]
 crbug.com/1268518 [ Linux ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1268518 [ Mac10.12 ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
 crbug.com/1268519 [ Win10.20h2 ] virtual/scroll-unification/http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass ]
 crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
+
+# This test is flaky on all platforms
+crbug.com/1191846 virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
 crbug.com/1268963 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
