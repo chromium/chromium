@@ -23,6 +23,8 @@
     width: 100%;
   }
 
+<if expr="not lacros">
+  /* The settings button is right next to the action button on Lacros. */
   .action-container #settingsButton {
     left: var(--action-container-padding);
     position: absolute;
@@ -32,6 +34,7 @@
     left: auto;
     right: var(--action-container-padding);
   }
+</if>
 
   /* Old design */
   #illustration-container {
