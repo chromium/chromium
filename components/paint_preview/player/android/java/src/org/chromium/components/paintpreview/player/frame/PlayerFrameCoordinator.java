@@ -109,6 +109,8 @@ public class PlayerFrameCoordinator {
     }
 
     public PlayerFrameViewport getViewportForAccessibility() {
+        if (mMediator == null) return null;
+
         return mMediator.getViewport();
     }
 
