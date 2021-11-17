@@ -29,6 +29,7 @@ import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/profiling/profiling.gni")
+import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
@@ -1454,6 +1455,19 @@ component("base") {
         sources += [ "allocator/allocator_shim_default_dispatch_to_winheap.cc" ]
       }
     }
+  }
+
+  if (enable_rust && toolchain_has_rust) {
+    # TODO(adetaylor): we include conversions between base and cxx's Rust types.
+    # We assume that any //base client who has flipped 'enable_rust' likely wants
+    # these, but it's conceivable that some clients might want to enable Rust
+    # without adding these cxx conversions. If so we would want to add an
+    # additional gn conditional e.g. enable_rust_binding_in_base
+    sources += [
+      "containers/span_rust.h",
+      "strings/string_piece_rust.h",
+    ]
+    deps += [ "//build/rust:cxx_cppdeps" ]
   }
 
   if (use_clang_profiling) {
@@ -3736,6 +3750,14 @@ test("base_unittests") {
       "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
       "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
     ]
+  }
+
+  if (enable_rust && toolchain_has_rust) {
+    sources += [
+      "containers/span_rust_unittest.cc",
+      "strings/string_piece_rust_unittest.cc",
+    ]
+    deps += [ "//build/rust:cxx_cppdeps" ]
   }
 
   configs += [ ":memory_tagging" ]
