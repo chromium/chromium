@@ -15,25 +15,23 @@ namespace chrome_pdf {
 
 namespace {
 
-void AdjustForBackwardsRange(int* index, int* count) {
-  int& char_index = *index;
-  int& char_count = *count;
-  if (char_count < 0) {
-    char_count *= -1;
-    char_index -= char_count - 1;
+void AdjustForBackwardsRange(int& index, int& count) {
+  if (count < 0) {
+    count *= -1;
+    index -= count - 1;
   }
 }
 
 }  // namespace
 
 bool IsIgnorableCharacter(char16_t c) {
-  return (c == kZeroWidthSpace) || (c == kPDFSoftHyphenMarker);
+  return c == kZeroWidthSpace || c == kPDFSoftHyphenMarker;
 }
 
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
     : page_(page), char_index_(char_index), char_count_(char_count) {
 #if DCHECK_IS_ON()
-  AdjustForBackwardsRange(&char_index, &char_count);
+  AdjustForBackwardsRange(char_index, char_count);
   DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
 #endif
 }
@@ -46,7 +44,7 @@ void PDFiumRange::SetCharCount(int char_count) {
   char_count_ = char_count;
 #if DCHECK_IS_ON()
   int dummy_index = 0;
-  AdjustForBackwardsRange(&dummy_index, &char_count);
+  AdjustForBackwardsRange(dummy_index, char_count);
   DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));
 #endif
 
@@ -72,7 +70,7 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   if (char_count == 0)
     return cached_screen_rects_;
 
-  AdjustForBackwardsRange(&char_index, &char_count);
+  AdjustForBackwardsRange(char_index, char_count);
   DCHECK_GE(char_index, 0) << " start: " << char_index_
                            << " count: " << char_count_;
   DCHECK_LT(char_index, FPDFText_CountChars(page_->GetTextPage()))
@@ -102,7 +100,7 @@ std::u16string PDFiumRange::GetText() const {
   if (count == 0)
     return rv;
 
-  AdjustForBackwardsRange(&index, &count);
+  AdjustForBackwardsRange(index, count);
   if (count > 0) {
     PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(&rv, count,
                                                                     false);
@@ -110,9 +108,8 @@ std::u16string PDFiumRange::GetText() const {
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
     int written = FPDFText_GetText(page_->GetTextPage(), index, count, data);
     api_string_adapter.Close(written);
+    base::EraseIf(rv, IsIgnorableCharacter);
   }
-
-  base::EraseIf(rv, [](char16_t c) { return IsIgnorableCharacter(c); });
 
   return rv;
 }
