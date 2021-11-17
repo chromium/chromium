@@ -22,7 +22,6 @@ LACROS_STATUS = "Lacros"
 LACROS_CHROMEOS_FEATURE_STATUS_PARITY_IGNORE_LIST = [
     'BarcodeDetector',  # crbug.com/1235855
     'DigitalGoods',  # crbug.com/1235859
-    'ForceTallerSelectPopup',  # crbug.com/1235860
     'NetInfoDownlinkMax',  # crbug.com/1235864
     'WebBluetooth',  # crbug.com/1235867
     'WebBluetoothManufacturerDataFilter',  # crbug.com/1235869

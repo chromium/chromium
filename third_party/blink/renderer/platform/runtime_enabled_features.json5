@@ -1121,7 +1121,7 @@
     },
     {
       name: "ForceTallerSelectPopup",
-      status: {"ChromeOS": "stable"},
+      status: {"ChromeOS": "stable", "Lacros": "stable"},
     },
     {
       name: "FractionalLineHeight",
