@@ -8,8 +8,6 @@ namespace safe_browsing {
 
 const char kChromeUISafeBrowsingURL[] = "chrome://safe-browsing/";
 const char kChromeUISafeBrowsingHost[] = "safe-browsing";
-const char kSbUnderConstruction[] =
-    "The safe browsing page is under construction.";
 const char kChromeUISafeBrowsingMatchBillingUrl[] =
     "chrome://safe-browsing/match?type=billing";
 const char kChromeUISafeBrowsingMatchMalwareUrl[] =
