@@ -128,8 +128,11 @@ def _confirm_new_seed_downloaded(user_data_dir,
   return False
 
 
-def _run_tests():
+def _run_tests(*args):
   """Runs the smoke tests.
+
+  Args:
+    args: Arguments to be passed to the chrome binary.
 
   Returns:
     0 if tests passed, otherwise 1.
@@ -144,6 +147,8 @@ def _run_tests():
   chrome_options.binary_location = path_chrome
   chrome_options.add_argument('user-data-dir=' + user_data_dir)
   chrome_options.add_argument('log-file=' + log_file)
+  for arg in args:
+    chrome_options.add_argument(arg)
 
   # By default, ChromeDriver passes in --disable-backgroud-networking, however,
   # fetching variations seeds requires network connection, so override it.
@@ -232,8 +237,8 @@ def main_run(args):
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
-  args, _ = parser.parse_known_args()
-  rc = _run_tests()
+  args, rest = parser.parse_known_args()
+  rc = _run_tests(rest)
   if args.isolated_script_test_output:
     with open(args.isolated_script_test_output, 'w') as f:
       common.record_local_script_results('run_variations_smoke_tests', f, [],
