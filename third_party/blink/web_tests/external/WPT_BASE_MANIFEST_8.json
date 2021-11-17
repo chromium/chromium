@@ -124824,6 +124824,19 @@
         {}
        ]
       ],
+      "clip-path-fixed-scroll.html": [
+       "2b6e09b0e8391bd1f73b1be0b33dcb36cab3d895",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/clip-path-fixed-scroll-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-inline-001.html": [
        "76018614baab3fc3123f9c3d41053effcb64c224",
        [
@@ -204393,6 +204406,19 @@
          {}
         ]
        ],
+       "table-cell-nowrap-with-fixed-width.html": [
+        "65962ac2734c5573f172b7303d95a20d33534905",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/tables/table-cell-nowrap-with-fixed-width-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "table-cell-width-s.html": [
         "0fe0e2c25ae6ec60133df3142bb9cf4d0d91ba33",
         [
@@ -248614,6 +248640,10 @@
        "b860304f04fe22498eb5b43d9de00d7e261353bb",
        []
       ],
+      "clip-path-fixed-scroll-ref.html": [
+       "86aad95935b2da0de4fc8c18149200f8fdf2aa15",
+       []
+      ],
       "clip-path-inset-round-percent-ref.html": [
        "597481d7dbe99afb764ad5f1e5603c5dd0240bee",
        []
@@ -273741,6 +273771,10 @@
     "idlharness.window-expected.txt": [
      "906d5c6d455cdcb9e3e0b8cc72a6194d7182aad1",
      []
+    ],
+    "not-fully-active.https-expected.txt": [
+     "e7e61a12814e7644f2fecf486f254fcfce3bfd94",
+     []
     ]
    },
    "generic-sensor": {
@@ -283051,6 +283085,10 @@
        ],
        "table-border-presentational-hints-ascii-case-insensitive-ref.html": [
         "c8d6a20726fd84900f192b34206954eeec57f61d",
+        []
+       ],
+       "table-cell-nowrap-with-fixed-width-ref.html": [
+        "5b2ea91fe5fa635c221adc8801605f3b14fb66c7",
         []
        ],
        "table-cell-width-ref.html": [
@@ -296374,6 +296412,10 @@
       []
      ]
     },
+    "table-cell-nowrap-minimum-width-calculation-expected.txt": [
+     "057781ccfd41fa9d3e0c650cc13156b120d78a00",
+     []
+    ],
     "text-decoration-doesnt-propagate-into-tables": {
      "quirks-ref.html": [
       "a72475f40cec7a84702fdb03aad81198e0e7cdca",
@@ -359830,7 +359872,7 @@
        ]
       ],
       "table-quirks.html": [
-       "83794d17ae11a31ef169b1765b0f4b22ed060849",
+       "af2a516c0e8a39d21496bd4698e14e86891ccae3",
        [
         null,
         {}
@@ -403989,6 +404031,13 @@
        ],
        "timeout": "long"
       }
+     ]
+    ],
+    "not-fully-active.https.html": [
+     "500afef3d2deb29c087de0bb708904ace81798c5",
+     [
+      null,
+      {}
      ]
     ]
    },

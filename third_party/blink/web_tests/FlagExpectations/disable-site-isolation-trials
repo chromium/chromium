@@ -41,3 +41,6 @@ crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Fa
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 wpt_internal/webid/get-argument-validation.https.html [ Timeout ]
