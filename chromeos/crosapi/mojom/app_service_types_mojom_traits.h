@@ -144,6 +144,11 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->allow_uninstall;
   }
 
+  static const apps::mojom::OptionalBool& handles_intents(
+      const apps::mojom::AppPtr& r) {
+    return r->handles_intents;
+  }
+
   static bool Read(crosapi::mojom::AppDataView data, apps::mojom::AppPtr* out);
 };
 
