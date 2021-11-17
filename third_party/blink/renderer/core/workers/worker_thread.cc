@@ -120,7 +120,8 @@ class WorkerThread::RefCountedWaitableEvent
 // otherwise this could have been done with WTF::Bind and ref counted objects.
 class WorkerThread::InterruptData {
  public:
-  InterruptData(WorkerThread* worker_thread, mojom::FrameLifecycleState state)
+  InterruptData(WorkerThread* worker_thread,
+                mojom::blink::FrameLifecycleState state)
       : worker_thread_(worker_thread), state_(state) {}
   InterruptData(const InterruptData&) = delete;
   InterruptData& operator=(const InterruptData&) = delete;
@@ -129,12 +130,12 @@ class WorkerThread::InterruptData {
   void MarkPostTaskCalled() { seen_post_task_ = true; }
   void MarkInterruptCalled() { seen_interrupt_ = true; }
 
-  mojom::FrameLifecycleState state() { return state_; }
+  mojom::blink::FrameLifecycleState state() { return state_; }
   WorkerThread* worker_thread() { return worker_thread_; }
 
  private:
   WorkerThread* worker_thread_;
-  mojom::FrameLifecycleState state_;
+  mojom::blink::FrameLifecycleState state_;
   bool seen_interrupt_ = false;
   bool seen_post_task_ = false;
 };
@@ -238,11 +239,11 @@ void WorkerThread::FetchAndRunModuleScript(
 }
 
 void WorkerThread::Pause() {
-  PauseOrFreeze(mojom::FrameLifecycleState::kPaused);
+  PauseOrFreeze(mojom::blink::FrameLifecycleState::kPaused);
 }
 
 void WorkerThread::Freeze() {
-  PauseOrFreeze(mojom::FrameLifecycleState::kFrozen);
+  PauseOrFreeze(mojom::blink::FrameLifecycleState::kFrozen);
 }
 
 void WorkerThread::Resume() {
@@ -815,7 +816,7 @@ bool WorkerThread::CheckRequestedToTerminate() {
   return requested_to_terminate_;
 }
 
-void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
+void WorkerThread::PauseOrFreeze(mojom::blink::FrameLifecycleState state) {
   if (IsCurrentThread()) {
     PauseOrFreezeOnWorkerThread(state);
   } else {
@@ -841,10 +842,10 @@ void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
 }
 
 void WorkerThread::PauseOrFreezeOnWorkerThread(
-    mojom::FrameLifecycleState state) {
+    mojom::blink::FrameLifecycleState state) {
   DCHECK(IsCurrentThread());
-  DCHECK(state == mojom::FrameLifecycleState::kFrozen ||
-         state == mojom::FrameLifecycleState::kPaused);
+  DCHECK(state == mojom::blink::FrameLifecycleState::kFrozen ||
+         state == mojom::blink::FrameLifecycleState::kPaused);
   pause_or_freeze_count_++;
   GlobalScope()->SetLifecycleState(state);
   GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kStrict);
@@ -867,7 +868,7 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
     nested_runner->Run();
   }
   GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kNone);
-  GlobalScope()->SetLifecycleState(mojom::FrameLifecycleState::kRunning);
+  GlobalScope()->SetLifecycleState(mojom::blink::FrameLifecycleState::kRunning);
 }
 
 void WorkerThread::ResumeOnWorkerThread() {
@@ -884,7 +885,7 @@ void WorkerThread::PauseOrFreezeWithInterruptDataOnWorkerThread(
     InterruptData* interrupt_data) {
   DCHECK(IsCurrentThread());
   bool should_execute = false;
-  mojom::FrameLifecycleState state;
+  mojom::blink::FrameLifecycleState state;
   {
     MutexLocker lock(mutex_);
     state = interrupt_data->state();

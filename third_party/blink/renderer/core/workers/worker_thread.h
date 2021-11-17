@@ -37,6 +37,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
@@ -389,8 +390,8 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   bool CheckRequestedToTerminate() LOCKS_EXCLUDED(mutex_);
 
   class InterruptData;
-  void PauseOrFreeze(mojom::FrameLifecycleState state);
-  void PauseOrFreezeOnWorkerThread(mojom::FrameLifecycleState state);
+  void PauseOrFreeze(mojom::blink::FrameLifecycleState state);
+  void PauseOrFreezeOnWorkerThread(mojom::blink::FrameLifecycleState state);
   void ResumeOnWorkerThread();
   void PauseOrFreezeWithInterruptDataOnWorkerThread(InterruptData*);
   static void PauseOrFreezeInsideV8InterruptOnWorkerThread(v8::Isolate*,
