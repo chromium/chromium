@@ -924,10 +924,10 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   *out_nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
-  AddChildren(*ax_object, false, *out_nodes, cache);
+  AddChildren(*ax_object, /* follow_ignored */ true, *out_nodes, cache);
 
-  for (AXObject* child : ax_object->ChildrenIncludingIgnored())
-    nodes_requested_.insert(child->AXObjectID());
+  for (const auto& child : **out_nodes)
+    nodes_requested_.insert(child->getNodeId().ToInt());
 
   return Response::Success();
 }
@@ -1082,6 +1082,9 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
       nodes_requested_.clear();
       nodes_requested_.insert(ax_object->AXObjectID());
       GetFrontend()->loadComplete(BuildProtocolAXNodeForAXObject(*ax_object));
+      break;
+    case ax::mojom::blink::Event::kLocationChanged:
+      // Since we do not serialize location data we can ignore changes to this.
       break;
     default:
       AXObjectModified(ax_object, false);
