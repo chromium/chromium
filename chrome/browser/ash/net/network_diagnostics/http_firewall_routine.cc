@@ -15,7 +15,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 namespace {
 
@@ -163,4 +163,4 @@ void HttpFirewallRoutine::OnProbeComplete(
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

@@ -31,7 +31,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Tests whether the HTTPS latency is within established tolerance levels for
@@ -108,6 +108,6 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -22,6 +21,7 @@
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -33,7 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -363,4 +363,4 @@ TEST_F(NetworkDiagnosticsTest, RunDnsResolverPresentReachability) {
 // TEST_F(NetworkDiagnosticsTest, DnsResolutionReachability) {}
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

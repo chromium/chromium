@@ -12,14 +12,7 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-namespace chromeos {
-namespace cros_healthd {
-
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/network_config/ is moved to ash/.
-namespace network_health = ::ash::network_health;
 
 // Will destroy `handle` if it's not a valid platform handle.
 mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
@@ -35,6 +28,9 @@ mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
 }
 
 }  // namespace
+
+namespace chromeos {
+namespace cros_healthd {
 
 FakeCrosHealthdService::RoutineUpdateParams::RoutineUpdateParams(
     int32_t id,
@@ -61,13 +57,14 @@ void FakeCrosHealthdService::GetEventService(
 }
 
 void FakeCrosHealthdService::SendNetworkHealthService(
-    mojo::PendingRemote<network_health::mojom::NetworkHealthService> remote) {
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
+        remote) {
   network_health_remote_.Bind(std::move(remote));
 }
 
 void FakeCrosHealthdService::SendNetworkDiagnosticsRoutines(
     mojo::PendingRemote<
-        ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
         network_diagnostics_routines) {
   network_diagnostics_routines_.Bind(std::move(network_diagnostics_routines));
 }
@@ -368,7 +365,7 @@ void FakeCrosHealthdService::AddPowerObserver(
 }
 
 void FakeCrosHealthdService::AddNetworkObserver(
-    mojo::PendingRemote<network_health::mojom::NetworkEventsObserver>
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
         observer) {
   network_observers_.Add(std::move(observer));
 }
@@ -501,7 +498,7 @@ void FakeCrosHealthdService::EmitThunderboltAddEventForTesting() {
 
 void FakeCrosHealthdService::EmitConnectionStateChangedEventForTesting(
     const std::string& network_guid,
-    network_health::mojom::NetworkState state) {
+    chromeos::network_health::mojom::NetworkState state) {
   for (auto& observer : network_observers_) {
     observer->OnConnectionStateChanged(network_guid, state);
   }
@@ -509,22 +506,22 @@ void FakeCrosHealthdService::EmitConnectionStateChangedEventForTesting(
 
 void FakeCrosHealthdService::EmitSignalStrengthChangedEventForTesting(
     const std::string& network_guid,
-    network_health::mojom::UInt32ValuePtr signal_strength) {
+    chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
   for (auto& observer : network_observers_) {
     observer->OnSignalStrengthChanged(
-        network_guid,
-        network_health::mojom::UInt32Value::New(signal_strength->value));
+        network_guid, chromeos::network_health::mojom::UInt32Value::New(
+                          signal_strength->value));
   }
 }
 
 void FakeCrosHealthdService::RequestNetworkHealthForTesting(
-    network_health::mojom::NetworkHealthService::GetHealthSnapshotCallback
-        callback) {
+    chromeos::network_health::mojom::NetworkHealthService::
+        GetHealthSnapshotCallback callback) {
   network_health_remote_->GetHealthSnapshot(std::move(callback));
 }
 
 void FakeCrosHealthdService::RunLanConnectivityRoutineForTesting(
-    ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+    chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
         RunLanConnectivityCallback callback) {
   network_diagnostics_routines_->RunLanConnectivity(std::move(callback));
 }

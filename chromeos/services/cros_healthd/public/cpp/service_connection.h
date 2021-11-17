@@ -10,12 +10,12 @@
 #include <cstdint>
 #include <string>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,11 +29,12 @@ class ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
 
-  using BindNetworkHealthServiceCallback = base::RepeatingCallback<
-      mojo::PendingRemote<ash::network_health::mojom::NetworkHealthService>()>;
+  using BindNetworkHealthServiceCallback =
+      base::RepeatingCallback<mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkHealthService>()>;
   using BindNetworkDiagnosticsRoutinesCallback =
       base::RepeatingCallback<mojo::PendingRemote<
-          ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
   // Retrieve a list of available diagnostic routines. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
@@ -304,7 +305,8 @@ class ServiceConnection {
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void AddNetworkObserver(
-      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) = 0;
 
   // Subscribes to cros_healthd's audio-related events. See

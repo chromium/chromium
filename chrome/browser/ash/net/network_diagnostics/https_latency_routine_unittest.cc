@@ -19,7 +19,7 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 namespace {
 
@@ -383,4 +383,4 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

@@ -13,7 +13,7 @@
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Performs DNS queries from within ARC to resolve a hardcoded set of hostnames
@@ -59,6 +59,6 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION_ROUTINE_H_

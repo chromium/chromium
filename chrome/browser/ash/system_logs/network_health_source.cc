@@ -22,7 +22,8 @@ constexpr char kNetworkHealthSnapshotEntry[] = "network-health-snapshot";
 constexpr char kNetworkDiagnosticsEntry[] = "network-diagnostics";
 
 std::string FormatNetworkHealth(
-    const ash::network_health::mojom::NetworkHealthStatePtr& network_health,
+    const chromeos::network_health::mojom::NetworkHealthStatePtr&
+        network_health,
     bool scrub) {
   std::ostringstream output;
 
@@ -92,8 +93,8 @@ std::string ProblemsToStr(T problems) {
 }
 
 std::string GetProblemsString(
-    const ash::network_diagnostics::mojom::RoutineProblemsPtr& problems) {
-  using ::ash::network_diagnostics::mojom::RoutineProblems;
+    const chromeos::network_diagnostics::mojom::RoutineProblemsPtr& problems) {
+  using chromeos::network_diagnostics::mojom::RoutineProblems;
   std::string problemsStr;
   switch (problems->which()) {
     case RoutineProblems::Tag::LAN_CONNECTIVITY_PROBLEMS:
@@ -151,9 +152,9 @@ std::string GetProblemsString(
 }  // namespace
 
 std::string FormatNetworkDiagnosticResults(
-    const base::flat_map<ash::network_diagnostics::mojom::RoutineType,
-                         ash::network_diagnostics::mojom::RoutineResultPtr>&
-        results,
+    const base::flat_map<
+        chromeos::network_diagnostics::mojom::RoutineType,
+        chromeos::network_diagnostics::mojom::RoutineResultPtr>& results,
     bool scrub) {
   std::ostringstream output;
 
@@ -173,9 +174,10 @@ std::string FormatNetworkDiagnosticResults(
 
 NetworkHealthSource::NetworkHealthSource(bool scrub)
     : SystemLogsSource("NetworkHealth"), scrub_(scrub) {
-  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
-      network_health_service_.BindNewPipeAndPassReceiver());
-  ash::network_health::NetworkHealthService::GetInstance()
+  chromeos::network_health::NetworkHealthService::GetInstance()
+      ->BindHealthReceiver(
+          network_health_service_.BindNewPipeAndPassReceiver());
+  chromeos::network_health::NetworkHealthService::GetInstance()
       ->BindDiagnosticsReceiver(
           network_diagnostics_service_.BindNewPipeAndPassReceiver());
 }
@@ -195,14 +197,15 @@ void NetworkHealthSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void NetworkHealthSource::OnNetworkHealthReceived(
-    ash::network_health::mojom::NetworkHealthStatePtr network_health) {
+    chromeos::network_health::mojom::NetworkHealthStatePtr network_health) {
   network_health_response_ = FormatNetworkHealth(network_health, scrub_);
   CheckIfDone();
 }
 
 void NetworkHealthSource::OnNetworkDiagnosticResultsReceived(
-    base::flat_map<ash::network_diagnostics::mojom::RoutineType,
-                   ash::network_diagnostics::mojom::RoutineResultPtr> results) {
+    base::flat_map<chromeos::network_diagnostics::mojom::RoutineType,
+                   chromeos::network_diagnostics::mojom::RoutineResultPtr>
+        results) {
   network_diagnostics_response_ =
       FormatNetworkDiagnosticResults(results, scrub_);
   CheckIfDone();

@@ -10,6 +10,12 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/network_pref_state_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/network_throttling_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/network_change_manager_client.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -62,7 +68,6 @@ class LockToSingleUserManager;
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class ArcKioskAppManager;
-class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CrosUsbDetector;
 class DebugdNotificationHandler;
@@ -74,8 +79,6 @@ class IdleActionWarningObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
-class NetworkPrefStateObserver;
-class NetworkThrottlingObserver;
 class PowerMetricsReporter;
 class QuickAnswersController;
 class RendererFreezer;

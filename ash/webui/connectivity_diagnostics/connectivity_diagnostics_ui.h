@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -19,10 +19,11 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
  public:
   using BindNetworkDiagnosticsServiceCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines>)>;
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>)>;
 
   using BindNetworkHealthServiceCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network_health::mojom::NetworkHealthService>)>;
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService>)>;
 
   using SendFeedbackReportCallback =
       base::RepeatingCallback<void(const std::string& extra_diagnostics)>;
@@ -42,13 +43,14 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be bound.
   void BindInterface(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
 
   // Instantiates implementation of the mojom::NetworkHealthService mojo
   // interface passing the pending receiver that will be bound.
   void BindInterface(
-      mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
-          receiver);
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService> receiver);
 
  private:
   const BindNetworkDiagnosticsServiceCallback

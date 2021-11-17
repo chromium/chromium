@@ -16,7 +16,7 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Used in unit tests, the FakeHostResolver class simulates the behavior of a
@@ -73,6 +73,6 @@ class FakeHostResolver : public network::mojom::HostResolver {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_HOST_RESOLVER_H_

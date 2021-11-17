@@ -25,7 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 class CaptivePortalRoutineTest : public ::testing::Test {
@@ -217,4 +217,4 @@ TEST_F(CaptivePortalRoutineTest, TestNoInternet) {
 // TODO(khegde): Add a test for unknown captive portal state.
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

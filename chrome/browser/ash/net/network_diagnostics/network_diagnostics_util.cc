@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace util {
@@ -214,4 +214,4 @@ std::vector<GURL> GetDefaultMediaUrls() {
 }  // namespace util
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

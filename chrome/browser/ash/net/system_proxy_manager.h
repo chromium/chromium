@@ -21,6 +21,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace ash {
+class RequestSystemProxyCredentialsView;
+class SystemProxyNotification;
+}  // namespace ash
+
+namespace chromeos {
+class NetworkState;
+}  // namespace chromeos
+
 namespace content {
 class LoginDelegate;
 }  // namespace content
@@ -39,9 +48,7 @@ class PrefService;
 class PrefChangeRegistrar;
 class Profile;
 
-namespace ash {
-class RequestSystemProxyCredentialsView;
-class SystemProxyNotification;
+namespace chromeos {
 
 // Starts and stops the system-proxy service and handles the authentication
 // requests coming from system-proxy. Authentication requests are resolved by
@@ -96,7 +103,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   //     PROXY localhost:3128
   // otherwise it returns an empty string.
   std::string SystemServicesProxyPacString(
-      chromeos::SystemProxyOverride system_proxy_override) const;
+      SystemProxyOverride system_proxy_override) const;
 
   void StartObservingPrimaryProfilePrefs(Profile* profile);
   void StopObservingPrimaryProfilePrefs();
@@ -119,7 +126,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   void SetSystemProxyEnabledForTest(bool enabled);
   void SetSystemServicesProxyUrlForTest(const std::string& local_proxy_url);
   void SetSendAuthDetailsClosureForTest(base::RepeatingClosure closure);
-  RequestSystemProxyCredentialsView* GetActiveAuthDialogForTest();
+  ash::RequestSystemProxyCredentialsView* GetActiveAuthDialogForTest();
   void CloseAuthDialogForTest();
 
   // Registers prefs stored in user profiles.
@@ -260,10 +267,10 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
 
   // Notification which informs the user that System-proxy requires credentials
   // for authentication to the remote proxy.
-  std::unique_ptr<SystemProxyNotification> notification_handler_;
+  std::unique_ptr<ash::SystemProxyNotification> notification_handler_;
 
   // Owned by |auth_widget_|.
-  RequestSystemProxyCredentialsView* active_auth_dialog_ = nullptr;
+  ash::RequestSystemProxyCredentialsView* active_auth_dialog_ = nullptr;
   // Owned by the UI code (NativeWidget).
   views::Widget* auth_widget_ = nullptr;
 
@@ -280,11 +287,11 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   base::WeakPtrFactory<SystemProxyManager> weak_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::SystemProxyManager;
-}
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SystemProxyManager;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_SYSTEM_PROXY_MANAGER_H_

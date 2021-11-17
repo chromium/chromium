@@ -41,9 +41,7 @@ js_library("network_health_summary.m") {
 
 js_library("network_health_mojo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_mojo.m.js" ]
-  deps = [
-    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
-  ]
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -69,9 +67,7 @@ js_library("network_diagnostics.m") {
 
 js_library("network_diagnostics_mojo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js" ]
-  deps = [
-    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
-  ]
+  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
   extra_deps = [ ":modulize" ]
 }
 

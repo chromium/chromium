@@ -8,11 +8,11 @@
 
 #include "ash/grit/connectivity_diagnostics_resources.h"
 #include "ash/grit/connectivity_diagnostics_resources_map.h"
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -143,12 +143,13 @@ ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
 
 void ConnectivityDiagnosticsUI::BindInterface(
     mojo::PendingReceiver<
-        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        receiver) {
   bind_network_diagnostics_service_callback_.Run(std::move(receiver));
 }
 
 void ConnectivityDiagnosticsUI::BindInterface(
-    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
+    mojo::PendingReceiver<chromeos::network_health::mojom::NetworkHealthService>
         receiver) {
   bind_network_health_service_callback_.Run(std::move(receiver));
 }

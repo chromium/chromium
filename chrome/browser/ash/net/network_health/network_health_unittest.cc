@@ -6,26 +6,21 @@
 
 #include <utility>
 
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
-namespace network_health {
+using chromeos::network_config::mojom::NetworkType;
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/network_config/ is moved to ash/.
-namespace network_config = ::chromeos::network_config;
 
 // Constant values for fake devices and services.
 constexpr char kEthServicePath[] = "/service/eth/0";
@@ -43,21 +38,21 @@ constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kWifiName[] = "wifi_device1";
 
 class FakeNetworkEventsObserver
-    : public network_health::mojom::NetworkEventsObserver {
+    : public chromeos::network_health::mojom::NetworkEventsObserver {
  public:
-  // network_health::mojom::NetworkEventsObserver:
+  // chromeos::network_health::mojom::NetworkEventsObserver:
   void OnConnectionStateChanged(
       const std::string& guid,
-      network_health::mojom::NetworkState state) override {
+      chromeos::network_health::mojom::NetworkState state) override {
     connection_state_changed_event_received_ = true;
   }
-  void OnSignalStrengthChanged(
-      const std::string& guid,
-      network_health::mojom::UInt32ValuePtr signal_strength) override {
+  void OnSignalStrengthChanged(const std::string& guid,
+                               chromeos::network_health::mojom::UInt32ValuePtr
+                                   signal_strength) override {
     signal_strength_changed_event_received_ = true;
   }
 
-  mojo::PendingRemote<network_health::mojom::NetworkEventsObserver>
+  mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
   pending_remote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
@@ -79,12 +74,16 @@ class FakeNetworkEventsObserver
   }
 
  private:
-  mojo::Receiver<network_health::mojom::NetworkEventsObserver> receiver_{this};
+  mojo::Receiver<chromeos::network_health::mojom::NetworkEventsObserver>
+      receiver_{this};
   bool connection_state_changed_event_received_ = false;
   bool signal_strength_changed_event_received_ = false;
 };
 
 }  // namespace
+
+namespace chromeos {
+namespace network_health {
 
 class NetworkHealthTestImpl : public NetworkHealth {
  public:
@@ -562,4 +561,4 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
 }
 
 }  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos

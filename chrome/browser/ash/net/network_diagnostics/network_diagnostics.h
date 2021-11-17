@@ -7,17 +7,17 @@
 
 #include <string>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
+class DebugDaemonClient;
+
 namespace network_diagnostics {
 
 class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
@@ -70,6 +70,6 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_H_

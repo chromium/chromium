@@ -199,7 +199,7 @@ void TZRequest::StartRequestOnNetworkAvailable() {
 }
 
 void TZRequest::Start() {
-  // Call to `ash::DelayNetworkCall`.
+  // call to chromeos::DelayNetworkCall
   resolver_->delay_network_call().Run(
       base::BindOnce(&TZRequest::StartRequestOnNetworkAvailable, AsWeakPtr()));
 }

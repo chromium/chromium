@@ -10,6 +10,8 @@
 
 module chromeos.cros_healthd.mojom;
 
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
+
 // Implemented by clients who desire Bluetooth notifications.
 //
 // NextMinVersion: 1, NextIndex: 6

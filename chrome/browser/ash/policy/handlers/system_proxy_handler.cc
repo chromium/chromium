@@ -86,15 +86,15 @@ void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
 }
 
 void SystemProxyHandler::SetSystemProxyManagerForTesting(
-    ash::SystemProxyManager* system_proxy_manager) {
+    chromeos::SystemProxyManager* system_proxy_manager) {
   system_proxy_manager_for_testing_ = system_proxy_manager;
 }
 
-ash::SystemProxyManager* SystemProxyHandler::GetSystemProxyManager() {
+chromeos::SystemProxyManager* SystemProxyHandler::GetSystemProxyManager() {
   if (system_proxy_manager_for_testing_) {
     return system_proxy_manager_for_testing_;
   }
-  return ash::SystemProxyManager::Get();
+  return chromeos::SystemProxyManager::Get();
 }
 
 }  // namespace policy

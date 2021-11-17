@@ -22,7 +22,7 @@ namespace base {
 class TickClock;
 }
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Tests whether the DNS latency is below an acceptable threshold.
@@ -83,6 +83,6 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_LATENCY_ROUTINE_H_

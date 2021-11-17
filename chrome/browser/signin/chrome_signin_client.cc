@@ -249,8 +249,9 @@ void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
     std::move(callback).Run();
     return;
   }
-  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
-                        std::move(callback));
+  chromeos::DelayNetworkCall(
+      base::Milliseconds(chromeos::kDefaultNetworkRetryDelayMS),
+      std::move(callback));
   return;
 #else
   // Don't bother if we don't have any kind of network connection.

@@ -11,15 +11,16 @@
 namespace reporting {
 namespace {
 
-using RoutineResultPtr = ::ash::network_diagnostics::mojom::RoutineResultPtr;
+using RoutineResultPtr = chromeos::network_diagnostics::mojom::RoutineResultPtr;
 
 void ConvertMojomRoutineResultToTelemetry(
     const RoutineResultPtr& routine_result,
     HttpsLatencyRoutineData* https_latency_data) {
-  using ::ash::network_diagnostics::mojom::RoutineProblems;
+  using chromeos::network_diagnostics::mojom::RoutineProblems;
   using HttpsLatencyProblemMojom =
-      ::ash::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom = ::ash::network_diagnostics::mojom::RoutineVerdict;
+      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+  using RoutineVerdictMojom =
+      chromeos::network_diagnostics::mojom::RoutineVerdict;
 
   switch (routine_result->verdict) {
     case RoutineVerdictMojom::kNoProblem:
@@ -64,7 +65,8 @@ void ConvertMojomRoutineResultToTelemetry(
 HttpsLatencySampler::HttpsLatencySampler() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   https_latency_routine_getter_ = base::BindRepeating([]() {
-    return std::make_unique<ash::network_diagnostics::HttpsLatencyRoutine>();
+    return std::make_unique<
+        chromeos::network_diagnostics::HttpsLatencyRoutine>();
   });
 }
 
@@ -82,7 +84,7 @@ void HttpsLatencySampler::Collect(MetricCallback callback) {
   }
 
   https_latency_routine_ = https_latency_routine_getter_.Run();
-  ash::network_diagnostics::RoutineResultCallback routine_callback =
+  chromeos::network_diagnostics::RoutineResultCallback routine_callback =
       base::BindOnce(&HttpsLatencySampler::OnHttpsLatencyRoutineCompleted,
                      weak_ptr_factory_.GetWeakPtr());
   https_latency_routine_->RunRoutine(base::BindPostTask(

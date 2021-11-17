@@ -17,7 +17,7 @@
 
 class Profile;
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Makes an HTTP request and determines the results. Used as a utility in
@@ -57,6 +57,6 @@ class HttpRequestManager {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTP_REQUEST_MANAGER_H_
