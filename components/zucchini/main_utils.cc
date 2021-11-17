@@ -22,7 +22,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/zucchini/io_utils.h"
-#include "components/zucchini/patch_utils.h"
+#include "components/zucchini/version_info.h"
 #include "components/zucchini/zucchini_commands.h"
 
 #if defined(OS_WIN)

@@ -97,6 +97,7 @@ static_library("zucchini_lib") {
     "type_elf.h",
     "type_win_pe.h",
     "typed_value.h",
+    "version_info.h",
     "zucchini.h",
     "zucchini_apply.cc",
     "zucchini_apply.h",

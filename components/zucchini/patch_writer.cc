@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/crc32.h"
 #include "components/zucchini/element_detection.h"
+#include "components/zucchini/version_info.h"
 
 namespace zucchini {
 

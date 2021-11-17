@@ -9,7 +9,7 @@
 #include "components/zucchini/buildflags.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/disassembler_no_op.h"
-#include "components/zucchini/patch_utils.h"
+#include "components/zucchini/version_info.h"
 
 #if BUILDFLAG(ENABLE_DEX)
 #include "components/zucchini/disassembler_dex.h"

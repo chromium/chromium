@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "components/zucchini/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {
