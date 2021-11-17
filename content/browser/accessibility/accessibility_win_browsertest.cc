@@ -5263,7 +5263,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
   EXPECT_EQ(nullptr, text_element.Get());
 
   // Web content accessibility support should now be enabled.
-  expected_mode |= ui::AXMode::kWebContents;
+  expected_mode |= ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
+                   ui::AXMode::kScreenReader | ui::AXMode::kHTML;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
   waiter.WaitForNotification();

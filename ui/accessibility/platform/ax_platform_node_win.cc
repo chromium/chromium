@@ -8417,24 +8417,54 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     case UIA_ProviderDescriptionPropertyId:
     case UIA_RuntimeIdPropertyId:
       break;
-    // These properties are indicative of a screenreader, we should enable full
-    // accessibility support.
-    case UIA_AriaRolePropertyId:
+    // These properties require the screenreader mode to get correct results
     case UIA_LabeledByPropertyId:
     case UIA_LiveSettingPropertyId:
     case UIA_LevelPropertyId:
     case UIA_DescribedByPropertyId:
-      probable_screen_reader_detected = true;
-      probable_advanced_client_detected = true;
-      break;
+    // This property currently requires the html mode to get correct results.
+    // see crbug.com/703277
     case UIA_AutomationIdPropertyId:
+    // These properties are indicative of a screenreader.
+    case UIA_AriaRolePropertyId:
+    case UIA_ControlTypePropertyId:
+    case UIA_LocalizedControlTypePropertyId:
+    case UIA_NamePropertyId:
+    case UIA_AcceleratorKeyPropertyId:
+    case UIA_AccessKeyPropertyId:
+    case UIA_IsKeyboardFocusablePropertyId:
+    case UIA_ClassNamePropertyId:
+    case UIA_HelpTextPropertyId:
+    case UIA_ClickablePointPropertyId:
+    case UIA_CulturePropertyId:
+    case UIA_IsControlElementPropertyId:
+    case UIA_IsContentElementPropertyId:
+    case UIA_IsPasswordPropertyId:
+    case UIA_IsOffscreenPropertyId:
+    case UIA_OrientationPropertyId:
+    case UIA_IsRequiredForFormPropertyId:
+    case UIA_ItemStatusPropertyId:
+    case UIA_ExpandCollapseExpandCollapseStatePropertyId:
+    case UIA_SelectionItemIsSelectedPropertyId:
+    case UIA_ToggleToggleStatePropertyId:
+    case UIA_AriaPropertiesPropertyId:
+    case UIA_IsDataValidForFormPropertyId:
+    case UIA_ControllerForPropertyId:
+    case UIA_FlowsToPropertyId:
+    case UIA_OptimizeForVisualContentPropertyId:
+    case UIA_FlowsFromPropertyId:
+    case UIA_IsPeripheralPropertyId:
+    case UIA_PositionInSetPropertyId:
+    case UIA_SizeOfSetPropertyId:
+    case UIA_AnnotationObjectsPropertyId:
+    case UIA_LandmarkTypePropertyId:
+    case UIA_LocalizedLandmarkTypePropertyId:
+    case UIA_FullDescriptionPropertyId:
+    case UIA_IsDialogPropertyId:
       uiautomation_id_requested = true;
       probable_screen_reader_detected = true;
       probable_advanced_client_detected = true;
       break;
-    default:
-      // All other properties should cause us to enable.
-      probable_advanced_client_detected = true;
   }
 
   for (WinAccessibilityAPIUsageObserver& observer :

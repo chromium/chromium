@@ -93,7 +93,8 @@ class WindowsAccessibilityEnabler
 
   void OnProbableUIAutomationScreenReaderDetected() override {
     // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
-    AddAXModeForUIA(ui::kAXModeCompleteNoHTML);
+    AddAXModeForUIA(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
+                    ui::AXMode::kScreenReader);
   }
 
   void OnTextPatternRequested() override {
