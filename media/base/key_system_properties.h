@@ -58,6 +58,7 @@ class MEDIA_EXPORT KeySystemProperties {
   // TODO(crbug.com/1204284): Refactor this and remove the
   // `hw_secure_requirement` argument.
   virtual EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const = 0;

@@ -66,7 +66,8 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
   }
 
   media::EmeConfigRule GetRobustnessConfigRule(
-      media::EmeMediaType media_type,
+      const std::string& /*key_system*/,
+      media::EmeMediaType /*media_type*/,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     // Only empty robustness string is currently supported.

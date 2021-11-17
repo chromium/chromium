@@ -45,6 +45,16 @@ Robustness ConvertRobustness(const std::string& robustness) {
   return Robustness::INVALID;
 }
 
+#if defined(OS_WIN)
+bool IsHardwareSecurityEnabledForKeySystem(const std::string& key_system) {
+  return (key_system == kWidevineKeySystem &&
+          base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) ||
+         (key_system == kWidevineExperimentKeySystem &&
+          base::FeatureList::IsEnabled(
+              media::kHardwareSecureDecryptionExperiment));
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 WidevineKeySystemProperties::WidevineKeySystemProperties(
@@ -71,6 +81,24 @@ WidevineKeySystemProperties::~WidevineKeySystemProperties() = default;
 
 std::string WidevineKeySystemProperties::GetBaseKeySystemName() const {
   return kWidevineKeySystem;
+}
+
+bool WidevineKeySystemProperties::IsSupportedKeySystem(
+    const std::string& key_system) const {
+#if defined(OS_WIN)
+  if (key_system == kWidevineExperimentKeySystem &&
+      base::FeatureList::IsEnabled(
+          media::kHardwareSecureDecryptionExperiment)) {
+    return true;
+  }
+#endif  // defined(OS_WIN)
+
+  return key_system == kWidevineKeySystem;
+}
+
+bool WidevineKeySystemProperties::ShouldUseBaseKeySystemName() const {
+  // Internally Widevine CDM only supports kWidevineKeySystem.
+  return true;
 }
 
 bool WidevineKeySystemProperties::IsSupportedInitDataType(
@@ -112,6 +140,7 @@ SupportedCodecs WidevineKeySystemProperties::GetSupportedHwSecureCodecs()
 }
 
 EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
+    const std::string& key_system,
     EmeMediaType media_type,
     const std::string& requested_robustness,
     const bool* hw_secure_requirement) const {
@@ -142,6 +171,7 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
 
   bool hw_secure_codecs_required =
       hw_secure_requirement && *hw_secure_requirement;
+
 #if defined(OS_CHROMEOS)
   // Hardware security requires HWDRM or remote attestation, both of these
   // require an identifier.
@@ -175,8 +205,12 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
 #elif defined(OS_WIN)
   // On Windows, hardware security uses MediaFoundation-based CDM which requires
   // identifier and persistent state.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required)
-    return EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED;
+  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required) {
+    return IsHardwareSecurityEnabledForKeySystem(key_system)
+               ? EmeConfigRule::
+                     IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED
+               : EmeConfigRule::NOT_SUPPORTED;
+  }
 #else
   // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
   // above.

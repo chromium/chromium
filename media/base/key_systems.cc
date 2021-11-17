@@ -163,6 +163,7 @@ class ClearKeyProperties : public KeySystemProperties {
   }
 
   EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const final {
@@ -745,8 +746,8 @@ EmeConfigRule KeySystemsImpl::GetRobustnessConfigRule(
     return EmeConfigRule::NOT_SUPPORTED;
   }
 
-  return properties->GetRobustnessConfigRule(media_type, requested_robustness,
-                                             hw_secure_requirement);
+  return properties->GetRobustnessConfigRule(
+      key_system, media_type, requested_robustness, hw_secure_requirement);
 }
 
 EmeSessionTypeSupport KeySystemsImpl::GetPersistentLicenseSessionSupport(

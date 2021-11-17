@@ -76,6 +76,7 @@ class TestKeySystemPropertiesBase : public KeySystemProperties {
   }
 
   EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
@@ -141,6 +142,7 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
   }
 
   EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {

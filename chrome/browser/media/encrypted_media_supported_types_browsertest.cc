@@ -50,6 +50,7 @@ namespace {
 const char kClearKey[] = "org.w3.clearkey";
 const char kExternalClearKey[] = "org.chromium.externalclearkey";
 const char kWidevine[] = "com.widevine.alpha";
+const char kWidevineExperiment[] = "com.widevine.alpha.experiment";
 
 const char kAudioWebMMimeType[] = "audio/webm";
 const char kVideoWebMMimeType[] = "video/webm";
@@ -504,6 +505,23 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureTest() {
     enabled_features_.push_back(media::kHardwareSecureDecryption);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesWidevineTest::SetUpCommandLine(command_line);
+    // Pretend that we support hardware secure decryption for vp8 and vp9, but
+    // not for avc1. This will also pretend that there is support for vorbis
+    // audio.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9,vorbis");
+  }
+};
+
+class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
+    : public EncryptedMediaSupportedTypesWidevineTest {
+ protected:
+  EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest() {
+    enabled_features_.push_back(media::kHardwareSecureDecryptionExperiment);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1412,6 +1430,57 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs", "HW_SECURE_ALL"));
   EXPECT_UNSUPPORTED(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9", "HW_SECURE_ALL"));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
+                       WidevineExperiment) {
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kWidevineExperiment, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(
+      IsVideoRobustnessSupported(kWidevineExperiment, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest,
+    Robustness) {
+  // Widevine software security should always be supported.
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+
+  // Widevine experiment key system is only supported on Windows.
+#if defined(OS_WIN)
+  // Widevine key system doesn't support hardware security.
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+
+  // Widevine experiment key system supports both software/hardware security.
+  EXPECT_WV(
+      IsVideoRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(
+      IsVideoRobustnessSupported(kWidevineExperiment, "SW_SECURE_DECODE"));
+  EXPECT_WV(
+      IsVideoRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevineExperiment, "HW_SECURE_ALL"));
+  EXPECT_WV(
+      IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(
+      IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
+#else
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(
+      IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_ALL"));
 #endif
 }
 

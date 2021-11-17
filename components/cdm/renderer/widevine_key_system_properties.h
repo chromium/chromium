@@ -40,6 +40,8 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
   ~WidevineKeySystemProperties() override;
 
   std::string GetBaseKeySystemName() const override;
+  bool IsSupportedKeySystem(const std::string& key_system) const override;
+  bool ShouldUseBaseKeySystemName() const override;
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override;
   media::EmeConfigRule GetEncryptionSchemeConfigRule(
@@ -47,6 +49,7 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
   media::SupportedCodecs GetSupportedCodecs() const override;
   media::SupportedCodecs GetSupportedHwSecureCodecs() const override;
   media::EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       media::EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override;
