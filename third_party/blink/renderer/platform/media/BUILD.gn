@@ -58,25 +58,27 @@ component("media") {
 
   configs +=
       [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
-  deps = [
+  public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//cc",
-    "//components/viz/common",
     "//media",
-    "//media:media_buildflags",
-    "//media:shared_memory_support",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
-    "//net",
     "//services/device/public/mojom",
-    "//services/network/public/cpp",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/common",
-    "//third_party/blink/public/mojom:mojom_platform",
     "//third_party/blink/renderer/platform:platform_export",
     "//ui/gfx/geometry",
     "//url",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//cc",
+    "//components/viz/common",
+    "//media:media_buildflags",
+    "//media:shared_memory_support",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:mojom_platform",
   ]
 
   if (media_use_ffmpeg || !is_android) {
@@ -98,6 +100,8 @@ component("media") {
 source_set("unit_tests") {
   visibility = [ "//third_party/blink/renderer/platform:*" ]
   testonly = true
+
+  data = [ "//media/test/data/" ]
 
   # TODO(https://crbug.com/1198341): enable this config once the code is ported
   # to Blink code conventions.
@@ -165,13 +169,12 @@ source_set("test_support") {
     "testing/test_response_generator.cc",
     "testing/test_response_generator.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
-    "//net",
     "//testing/gmock",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/platform/media",
     "//url",
   ]
-  data = [ "//media/test/data/" ]
+  deps = [ "//net" ]
 }
