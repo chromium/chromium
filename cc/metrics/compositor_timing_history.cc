@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 
 namespace cc {
@@ -69,6 +70,42 @@ const double kCommitToReadyToActivateEstimationPercentile = 90.0;
 const double kPrepareTilesEstimationPercentile = 90.0;
 const double kActivateEstimationPercentile = 90.0;
 const double kDrawEstimationPercentile = 90.0;
+
+double BeginMainFrameStartToReadyToCommitCriticalPercentile() {
+  if (base::FeatureList::IsEnabled(
+          features::kDurationEstimatesInCompositorTimingHistory)) {
+    double result = base::GetFieldTrialParamByFeatureAsDouble(
+        features::kDurationEstimatesInCompositorTimingHistory,
+        "BMFStartCritialPercentile", -1.0);
+    if (result > 0)
+      return result;
+  }
+  return 90.0;
+}
+
+double BeginMainFrameStartToReadyToCommitNonCriticalPercentile() {
+  if (base::FeatureList::IsEnabled(
+          features::kDurationEstimatesInCompositorTimingHistory)) {
+    double result = base::GetFieldTrialParamByFeatureAsDouble(
+        features::kDurationEstimatesInCompositorTimingHistory,
+        "BMFStartNonCritialPercentile", -1.0);
+    if (result > 0)
+      return result;
+  }
+  return 90.0;
+}
+
+double BeginMainFrameQueueToActivateCriticalPercentile() {
+  if (base::FeatureList::IsEnabled(
+          features::kDurationEstimatesInCompositorTimingHistory)) {
+    double result = base::GetFieldTrialParamByFeatureAsDouble(
+        features::kDurationEstimatesInCompositorTimingHistory,
+        "BMFQueueCritialPercentile", -1.0);
+    if (result > 0)
+      return result;
+  }
+  return 90.0;
+}
 
 // This macro is deprecated since its bucket count uses too much bandwidth.
 // It also has sub-optimal range and bucket distribution.
@@ -416,6 +453,17 @@ CompositorTimingHistory::CompositorTimingHistory(
       prepare_tiles_duration_history_(kDurationHistorySize),
       activate_duration_history_(kDurationHistorySize),
       draw_duration_history_(kDurationHistorySize),
+      duration_estimates_enabled_(base::FeatureList::IsEnabled(
+          features::kDurationEstimatesInCompositorTimingHistory)),
+      bmf_start_to_ready_to_commit_critical_history_(kDurationHistorySize),
+      bmf_start_to_ready_to_commit_critical_percentile_(
+          BeginMainFrameStartToReadyToCommitCriticalPercentile()),
+      bmf_start_to_ready_to_commit_not_critical_history_(kDurationHistorySize),
+      bmf_start_to_ready_to_commit_not_critical_percentile_(
+          BeginMainFrameStartToReadyToCommitNonCriticalPercentile()),
+      bmf_queue_to_activate_critical_history_(kDurationHistorySize),
+      bmf_queue_to_activate_critical_percentile_(
+          BeginMainFrameQueueToActivateCriticalPercentile()),
       begin_main_frame_on_critical_path_(false),
       uma_reporter_(CreateUMAReporter(uma_category)),
       rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
@@ -509,6 +557,10 @@ base::TimeDelta CompositorTimingHistory::DrawDurationEstimate() const {
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
     const {
+  if (duration_estimates_enabled_) {
+    return bmf_start_to_ready_to_commit_critical_history_.Percentile(
+        bmf_start_to_ready_to_commit_critical_percentile_);
+  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          BeginMainFrameQueueDurationCriticalEstimate();
 }
@@ -516,12 +568,20 @@ CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameStartToReadyToCommitNotCriticalEstimate()
     const {
+  if (duration_estimates_enabled_) {
+    return bmf_start_to_ready_to_commit_not_critical_history_.Percentile(
+        bmf_start_to_ready_to_commit_not_critical_percentile_);
+  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          BeginMainFrameQueueDurationNotCriticalEstimate();
 }
 
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameQueueToActivateCriticalEstimate() const {
+  if (duration_estimates_enabled_) {
+    return bmf_queue_to_activate_critical_history_.Percentile(
+        bmf_queue_to_activate_critical_percentile_);
+  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
          ActivateDurationEstimate() +
@@ -575,6 +635,18 @@ void CompositorTimingHistory::NotifyReadyToCommit() {
   DCHECK_NE(begin_main_frame_start_time_, base::TimeTicks());
   begin_main_frame_start_to_ready_to_commit_duration_history_.InsertSample(
       Now() - begin_main_frame_start_time_);
+  if (duration_estimates_enabled_) {
+    bmf_start_to_activate_duration_ = Now() - begin_main_frame_start_time_;
+    if (begin_main_frame_on_critical_path_) {
+      bmf_start_to_ready_to_commit_critical_history_.InsertSample(
+          (Now() - begin_main_frame_start_time_) +
+          begin_main_frame_queue_duration_);
+    } else {
+      bmf_start_to_ready_to_commit_not_critical_history_.InsertSample(
+          (Now() - begin_main_frame_start_time_) +
+          begin_main_frame_queue_duration_);
+    }
+  }
 }
 
 void CompositorTimingHistory::WillCommit() {
@@ -591,6 +663,10 @@ void CompositorTimingHistory::DidCommit() {
   commit_duration_history_.InsertSample(begin_main_frame_end_time -
                                         commit_start_time_);
 
+  if (enabled_ && duration_estimates_enabled_) {
+    bmf_start_to_activate_duration_ +=
+        begin_main_frame_end_time - commit_start_time_;
+  }
   pending_tree_is_impl_side_ = false;
   pending_tree_creation_time_ = begin_main_frame_end_time;
 }
@@ -624,6 +700,10 @@ void CompositorTimingHistory::DidBeginMainFrame(
     } else {
       begin_main_frame_queue_duration_not_critical_history_.InsertSample(
           begin_main_frame_queue_duration);
+    }
+
+    if (duration_estimates_enabled_) {
+      begin_main_frame_queue_duration_ = begin_main_frame_queue_duration;
     }
   }
 
@@ -682,6 +762,8 @@ void CompositorTimingHistory::ReadyToActivate() {
     if (enabled_) {
       commit_to_ready_to_activate_duration_history_.InsertSample(
           time_since_commit);
+      if (duration_estimates_enabled_)
+        bmf_start_to_activate_duration_ += time_since_commit;
     }
   }
 }
@@ -700,8 +782,17 @@ void CompositorTimingHistory::DidActivate() {
   DCHECK_NE(base::TimeTicks(), activate_start_time_);
   base::TimeDelta activate_duration = Now() - activate_start_time_;
 
-  if (enabled_)
+  if (enabled_) {
     activate_duration_history_.InsertSample(activate_duration);
+
+    if (duration_estimates_enabled_) {
+      if (begin_main_frame_on_critical_path_) {
+        bmf_queue_to_activate_critical_history_.InsertSample(
+            bmf_start_to_activate_duration_ + activate_duration +
+            begin_main_frame_queue_duration_);
+      }
+    }
+  }
 
   activate_start_time_ = base::TimeTicks();
 }
@@ -781,5 +872,8 @@ void CompositorTimingHistory::ClearHistory() {
   prepare_tiles_duration_history_.Clear();
   activate_duration_history_.Clear();
   draw_duration_history_.Clear();
+  bmf_start_to_ready_to_commit_critical_history_.Clear();
+  bmf_start_to_ready_to_commit_not_critical_history_.Clear();
+  bmf_queue_to_activate_critical_history_.Clear();
 }
 }  // namespace cc

@@ -47,6 +47,12 @@ CC_BASE_EXPORT extern const base::Feature kJankInjectionAblationFeature;
 CC_BASE_EXPORT extern const base::Feature
     kPreferNewContentForCheckerboardedScrolls;
 
+// When enabled, CompositorTimingHistory will directly record the timing history
+// that is used to calculate main thread timing estimates, and use the
+// percentile of sum of different stages instead of the sum of percentiles.
+CC_BASE_EXPORT extern const base::Feature
+    kDurationEstimatesInCompositorTimingHistory;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
