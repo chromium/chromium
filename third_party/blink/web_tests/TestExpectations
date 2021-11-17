@@ -5723,9 +5723,6 @@ crbug.com/1011811 http/tests/devtools/persistence/automapping-sourcemap.js [ Fai
 # Sheriff 2020-06-06
 crbug.com/1091843 fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
 
-# Flaky test
-crbug.com/1093198 external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing [ Failure Pass ]
-
 # Sheriff 2020-06-09
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Failure Pass ]
 
