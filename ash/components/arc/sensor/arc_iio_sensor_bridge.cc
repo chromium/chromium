@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/sensor/arc_iio_sensor_bridge.h"
+#include "ash/components/arc/sensor/arc_iio_sensor_bridge.h"
 
 #include <utility>
 

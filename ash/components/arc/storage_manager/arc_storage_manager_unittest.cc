@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/storage_manager/arc_storage_manager.h"
+#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_storage_manager_instance.h"

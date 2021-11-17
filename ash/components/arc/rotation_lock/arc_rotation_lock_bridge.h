@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
-#define COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -62,4 +62,4 @@ class ArcRotationLockBridge
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
-#define COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
 
 #include "components/arc/mojom/sensor.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,4 +40,4 @@ class ArcSensorBridge : public KeyedService, public mojom::SensorHost {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_SENSOR_ARC_SENSOR_BRIDGE_H_
