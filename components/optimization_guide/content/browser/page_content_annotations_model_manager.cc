@@ -237,6 +237,16 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
           absl::nullopt);
 }
 
+void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  page_visibility_model_executor_ =
+      std::make_unique<PageVisibilityModelExecutor>(
+          optimization_guide_model_provider,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          absl::nullopt);
+}
+
 void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
     const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
@@ -507,6 +517,19 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
       return;
     }
     on_demand_page_topics_model_executor_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
+    return;
+  }
+
+  if (job->type() == AnnotationType::kContentVisibility) {
+    if (!page_visibility_model_executor_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
+    }
+    page_visibility_model_executor_->ExecuteJob(
         std::move(on_job_complete_callback), std::move(job));
     return;
   }

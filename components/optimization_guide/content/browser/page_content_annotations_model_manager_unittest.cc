@@ -142,6 +142,28 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
+  void SendPageVisibilityModelToExecutor(
+      const absl::optional<proto::Any>& model_metadata) {
+    model_manager()->SetUpPageVisibilityModel(model_observer_tracker());
+
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::FilePath model_file_path =
+        source_root_dir.AppendASCII("components")
+            .AppendASCII("test")
+            .AppendASCII("data")
+            .AppendASCII("optimization_guide")
+            .AppendASCII("bert_page_topics_model.tflite");
+    std::unique_ptr<ModelInfo> model_info =
+        TestModelInfoBuilder()
+            .SetModelFilePath(model_file_path)
+            .SetModelMetadata(model_metadata)
+            .Build();
+    model_manager()->page_visibility_model_executor_->OnModelUpdated(
+        proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, *model_info);
+    RunUntilIdle();
+  }
+
   void SetPageEntitiesModelExecutor(
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entries,
@@ -503,8 +525,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageTopics) {
                             AnnotationType::kPageTopics);
   run_loop.Run();
 
-  // TODO(crbug/1249632): Check the corresponding output once the model is being
-  // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].type(), AnnotationType::kPageTopics);
@@ -531,8 +551,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                             AnnotationType::kPageTopics);
   run_loop.Run();
 
-  // TODO(crbug/1249632): Check the corresponding output once the model is being
-  // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].type(), AnnotationType::kPageTopics);
@@ -568,6 +586,45 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
 
 TEST_F(PageContentAnnotationsModelManagerTest,
        BatchAnnotate_ContentVisibility) {
+  proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  proto::PageTopicsModelMetadata page_topics_model_metadata;
+  page_topics_model_metadata.set_version(123);
+  page_topics_model_metadata.mutable_output_postprocessing_params()
+      ->mutable_visibility_params()
+      ->set_category_name("DO NOT EVALUATE");
+  page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
+  SendPageVisibilityModelToExecutor(any_metadata);
+
+  base::RunLoop run_loop;
+  std::vector<BatchAnnotationResult> result;
+  BatchAnnotationCallback callback = base::BindOnce(
+      [](base::RunLoop* run_loop,
+         std::vector<BatchAnnotationResult>* out_result,
+         const std::vector<BatchAnnotationResult>& in_result) {
+        *out_result = in_result;
+        run_loop->Quit();
+      },
+      &run_loop, &result);
+
+  // Running the actual model can take a while.
+  base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE, base::Seconds(60));
+
+  model_manager()->Annotate(std::move(callback), {"input"},
+                            AnnotationType::kContentVisibility);
+  run_loop.Run();
+
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].input(), "input");
+  EXPECT_EQ(result[0].topics(), absl::nullopt);
+  EXPECT_EQ(result[0].entities(), absl::nullopt);
+  EXPECT_EQ(result[0].visibility_score(), absl::make_optional(-1.0));
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       BatchAnnotate_ContentVisibilityNotAvailable) {
+  // Note that |SendPageVisibilityModelToExecutor| is not called.
   base::RunLoop run_loop;
   std::vector<BatchAnnotationResult> result;
   BatchAnnotationCallback callback = base::BindOnce(
@@ -583,8 +640,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                             AnnotationType::kContentVisibility);
   run_loop.Run();
 
-  // TODO(crbug/1249632): Check the corresponding output once the model is being
-  // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].topics(), absl::nullopt);

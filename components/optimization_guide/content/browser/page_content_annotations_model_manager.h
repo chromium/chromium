@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/core/page_topics_model_executor.h"
+#include "components/optimization_guide/core/page_visibility_model_executor.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -152,6 +153,12 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void SetUpPageTopicsV2Model(
       OptimizationGuideModelProvider* optimization_guide_model_provider);
 
+  // Set up the machinery for execution of the page visibility model. This
+  // should only be run at construction.
+  // TODO(crbug/1266504): Actually call this based on a separate feature flag.
+  void SetUpPageVisibilityModel(
+      OptimizationGuideModelProvider* optimization_guide_model_provider);
+
   // Requests to execute the page topics model with |text|, populate
   // |current_annotations| with detected topics on success, and proceed to
   // execute any subsequent models.
@@ -212,6 +219,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // this.
   std::unique_ptr<PageTopicsModelExecutor>
       on_demand_page_topics_model_executor_;
+
+  // The model executor responsible for executing the page visibility model.
+  std::unique_ptr<PageVisibilityModelExecutor> page_visibility_model_executor_;
 
   // The model executor responsible for executing the page entities model.
   //
