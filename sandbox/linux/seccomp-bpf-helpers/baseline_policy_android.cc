@@ -160,13 +160,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     return RestrictPtrace();
   }
 
-  // https://crbug.com/644759
-  if (sysno == __NR_rt_tgsigqueueinfo) {
-    const Arg<pid_t> tgid(0);
-    return If(tgid == policy_pid(), Allow())
-           .Else(Error(EPERM));
-  }
-
   // https://crbug.com/766245
   if (sysno == __NR_process_vm_readv) {
     const Arg<pid_t> pid(0);

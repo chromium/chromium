@@ -358,6 +358,14 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   }
 #endif
 
+  // https://crbug.com/644759
+  // https://chromium-review.googlesource.com/c/crashpad/crashpad/+/3278691
+  if (sysno == __NR_rt_tgsigqueueinfo) {
+    const Arg<pid_t> tgid(0);
+    return If(tgid == current_pid, Allow())
+           .Else(Error(EPERM));
+  }
+
   if (IsBaselinePolicyWatched(sysno)) {
     // Previously unseen syscalls. TODO(jln): some of these should
     // be denied gracefully right away.
