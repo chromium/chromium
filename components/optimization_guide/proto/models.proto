@@ -290,6 +290,8 @@ enum ModelType {
   MODEL_TYPE_TFLITE_2_4 = 4;
   // TensorflowLite version 2.7.*. This is where regular ~HEAD rolls started.
   MODEL_TYPE_TFLITE_2_7 = 5;
+  // A model using only operations that are supported by TensorflowLite 2.8.0.
+  MODEL_TYPE_TFLITE_2_8 = 6;
 }
 
 // A set of model features and the host that it applies to.
