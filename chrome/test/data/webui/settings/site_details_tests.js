@@ -191,21 +191,22 @@ suite('SiteDetails', function() {
   function createSiteDetails(origin) {
     const siteDetailsElement = document.createElement('site-details');
     document.body.appendChild(siteDetailsElement);
-    siteDetailsElement.origin = origin;
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS,
         new URLSearchParams('site=' + origin));
     return siteDetailsElement;
   }
 
-  test('usage heading shows properly', function() {
+  test('usage heading shows properly', async function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
-    flush();
+    await websiteUsageProxy.whenCalled('fetchUsageTotal');
     assertTrue(!!testElement.shadowRoot.querySelector('#usage'));
 
     // When there's no usage, there should be a string that says so.
-    assertEquals('', testElement.storedData_);
+    assertEquals(
+        '',
+        testElement.shadowRoot.querySelector('#storedData').textContent.trim());
     assertFalse(testElement.shadowRoot.querySelector('#noStorage').hidden);
     assertTrue(testElement.shadowRoot.querySelector('#storage').hidden);
     assertTrue(
@@ -213,12 +214,15 @@ suite('SiteDetails', function() {
             'No usage data') !== -1);
 
     // If there is, check the correct amount of usage is specified.
-    testElement.storedData_ = '1 KB';
+    const usage = '1 KB';
+    webUIListenerCallback(
+        'usage-total-changed', 'foo.com', usage, '10 cookies');
+    flush();
     assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
     assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
     assertTrue(
         testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
-            '1 KB') !== -1);
+            usage) !== -1);
   });
 
   test('storage gets trashed properly', function() {
@@ -240,7 +244,10 @@ suite('SiteDetails', function() {
           assertEquals('foo.com', hostRequested);
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
-          assertEquals('1 KB', testElement.storedData_);
+          assertEquals(
+              '1 KB',
+              testElement.shadowRoot.querySelector('#storedData')
+                  .textContent.trim());
           assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
           assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
@@ -273,7 +280,10 @@ suite('SiteDetails', function() {
           assertEquals('foo.com', hostRequested);
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
-          assertEquals('10 cookies', testElement.numCookies_);
+          assertEquals(
+              '10 cookies',
+              testElement.shadowRoot.querySelector('#numCookies')
+                  .textContent.trim());
           assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
           assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
@@ -375,7 +385,8 @@ suite('SiteDetails', function() {
 
   test('show confirmation dialog on reset settings', function() {
     browserProxy.setPrefs(prefs);
-    testElement = createSiteDetails('https://foo.com:443');
+    const origin = 'https://foo.com:443';
+    testElement = createSiteDetails(origin);
     flush();
 
     // Check both cancelling and accepting the dialog closes it.
@@ -391,7 +402,7 @@ suite('SiteDetails', function() {
 
     // Accepting the dialog will make a call to setOriginPermissions.
     return browserProxy.whenCalled('setOriginPermissions').then((args) => {
-      assertEquals(testElement.origin, args[0]);
+      assertEquals(origin, args[0]);
       assertDeepEquals(null, args[1]);
       assertEquals(ContentSetting.DEFAULT, args[2]);
     });
@@ -409,7 +420,6 @@ suite('SiteDetails', function() {
       const actionButtonList =
           testElement.$.confirmClearStorage.getElementsByClassName(buttonType);
       assertEquals(1, actionButtonList.length);
-      testElement.storedData_ = '';
       actionButtonList[0].click();
       assertFalse(testElement.$.confirmClearStorage.open);
     });
@@ -417,7 +427,8 @@ suite('SiteDetails', function() {
 
   test('permissions update dynamically', function() {
     browserProxy.setPrefs(prefs);
-    testElement = createSiteDetails('https://foo.com:443');
+    const origin = 'https://foo.com:443';
+    testElement = createSiteDetails(origin);
 
     const elems = testElement.root.querySelectorAll('site-details-permission');
     const notificationPermission = Array.from(elems).find(
@@ -438,8 +449,8 @@ suite('SiteDetails', function() {
 
           // Set new prefs and make sure only that permission is updated.
           const newException = {
-            embeddingOrigin: testElement.origin,
-            origin: testElement.origin,
+            embeddingOrigin: origin,
+            origin: origin,
             setting: ContentSetting.BLOCK,
             source: SiteSettingSource.DEFAULT,
           };

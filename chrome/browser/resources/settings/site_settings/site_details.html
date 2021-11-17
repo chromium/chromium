@@ -77,11 +77,15 @@
         <div class="list-item" id="storage"
             hidden$="[[!hasUsage_(storedData_, numCookies_)]]">
           <div class="start" id="storageText">
-            <div hidden$="[[!storedData_]]">[[storedData_]]</div>
+            <div id="storedData" hidden$="[[!storedData_]]">
+              [[storedData_]]
+            </div>
             <div hidden$="[[!hasDataAndCookies_(storedData_, numCookies_)]]">
               &nbsp;&middot;&nbsp;
             </div>
-            <div hidden$="[[!numCookies_]]">[[numCookies_]]</div>
+            <div id="numCookies" hidden$="[[!numCookies_]]">
+              [[numCookies_]]
+            </div>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"
