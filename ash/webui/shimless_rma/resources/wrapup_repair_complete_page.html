@@ -46,7 +46,6 @@
 </style>
 
 <base-page orientation="column">
-  <!-- TODO(joonbug): Update text for i18n -->
   <div slot="header">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
     <div>[[i18n('repairCompletedDescriptionText')]]</div>
@@ -101,30 +100,41 @@
   </div>
 </base-page>
 
-<!-- TODO(joonbug): Update for i18n -->
 <cr-dialog id="logsDialog" close-text="close">
   <div slot="title">
-    RMA Logs
+    [[i18n('rmaLogsTitleText')]]
   </div>
   <div slot="body">
     <div class="log">[[log_]]</div>
   </div>
   <div slot="footer">
-    <cr-button id="closeLogDialogButton" on-click="onCancelClick_">Cancel</cr-button>
-    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">Save to ...</cr-button>
+    <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
+      [[i18n('rmaLogsCancelButtonText')]]
+    </cr-button>
+    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">
+      [[i18n('rmaLogsSaveToUsbButtonText')]]
+    </cr-button>
   </div>
 </cr-dialog>
 
-<!-- TODO(joonbug): Update for i18n -->
+<!-- TODO(gavindodd): Confirm we need this. The cutoff button is guarded by
+     a check for power cable state so it could immediately shut down. -->
 <cr-dialog id="batteryCutDialog" close-text="close">
   <div slot="title">
-    Unplug your cord to cut off battery
+    [[i18n('batteryShutoffTitleText')]]
   </div>
   <div slot="body">
-    Shut down your device to complete battery cut off
+    <div>
+      [[batteryCutInstructions_(pluggedIn_)]]
+    </div>
   </div>
   <div slot="footer">
-    <cr-button id="closeBatteryDialogButton" on-click="onCancelClick_">Cancel</cr-button>
-    <cr-button id="shutdownButton" on-click="onShutdownClick_">Shut down</cr-button>
+    <cr-button id="closeBatteryDialogButton" on-click="onCancelClick_">
+      [[i18n('batteryShutoffCancelButtonText')]]
+    </cr-button>
+    <cr-button id="shutdownButton" on-click="onShutdownClick_"
+      disabled$="[[pluggedIn_]]">
+      [[i18n('batteryShutoffShutdownButtonText')]]
+    </cr-button>
   </div>
 </cr-dialog>

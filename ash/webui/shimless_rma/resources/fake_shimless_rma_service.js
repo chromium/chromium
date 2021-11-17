@@ -886,8 +886,9 @@ export class FakeShimlessRmaService {
           remote.onPowerCableStateChanged(/** @type {boolean} */ (pluggedIn));
         });
     if (this.automaticallyTriggerPowerCableStateObservation_) {
-      this.triggerPowerCableObserver(true, 1000);
-      this.triggerPowerCableObserver(false, 5000);
+      this.triggerPowerCableObserver(false, 1000);
+      this.triggerPowerCableObserver(true, 10000);
+      this.triggerPowerCableObserver(false, 15000);
     }
   }
 

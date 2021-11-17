@@ -2287,6 +2287,30 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" translateable="false" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
         Remove power cable to enable this option.
       </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_TITLE" translateable="false" desc="Title for the logs dialog displayed on repair complete page">
+        RMA Logs
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON" translateable="false" desc="Label for the logs dialog cancel button">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON" translateable="false" desc="Label for the logs dialog save to USB button. This triggers saving to the root of a USB drive with no option to select location or title of the logs. It is automatic as the file browser is not available to the shimless RMA app.">
+        Save to USB
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_CUTOFF_TITLE" translateable="false" desc="Title for the battery cutoff dialog for confirming or cancelling the cutoff action">
+        Battery Cutoff
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_UNPLUG_MESSAGE" translateable="false" desc="Message informing user they need to disconnect the power cable to perform battery shutoff">
+        Unplug your cord to cut off battery
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_SHUTDOWN_MESSAGE" translateable="false" desc="Message informing user the device is ready to be shut down and perform battery shutoff">
+        Shut down your device to complete battery cut off
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_CANCEL_BUTTON" translateable="false" desc="Label for the battery shutoff dialog cancel button">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_SHUTDOWN_BUTTON" translateable="false" desc="Label for the battery shutoff dialog shut down button.">
+        Shut down
+      </message>
       <!-- Run calibration page -->
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
         Calibrating device components

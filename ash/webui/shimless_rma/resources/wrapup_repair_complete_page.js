@@ -95,6 +95,12 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
+  batteryCutInstructions_() {
+    return this.pluggedIn_ ? this.i18n('batteryShutoffUnplugMessageText') :
+                             this.i18n('batteryShutoffShutdownMessageText');
+  }
+
+  /** @protected */
   onCancelClick_() {
     const dialogs = /** @type {!NodeList<!CrDialogElement>} */ (
         this.shadowRoot.querySelectorAll('cr-dialog'));
