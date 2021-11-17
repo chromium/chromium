@@ -19,10 +19,12 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/test/button_test_api.h"
@@ -226,19 +228,22 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceButtonsCreated) {
   EXPECT_EQ(EntryLabelText(container_children.at(3)), kSinkFriendlyName);
 }
 
-TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOrLabelCreated) {
+TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonAndLabelCreated) {
   NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
-  EXPECT_TRUE(view_->expand_button_);
-  EXPECT_FALSE(view_->expand_label_);
+  EXPECT_EQ(view_->GetExpandDeviceSelectorLabelForTesting()->GetText(),
+            l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL));
+  EXPECT_TRUE(view_->GetDropdownButtonForTesting());
 
   view_ = CreateDeviceSelectorView(
       &delegate, std::make_unique<NiceMock<MockCastDialogController>>(), "1",
       true,
       global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
-  EXPECT_TRUE(view_->expand_label_);
-  EXPECT_FALSE(view_->expand_button_);
+  EXPECT_EQ(view_->GetExpandDeviceSelectorLabelForTesting()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL_WITH_COLON));
+  EXPECT_FALSE(view_->GetDropdownButtonForTesting());
 }
 
 TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
@@ -246,10 +251,10 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
-  ASSERT_TRUE(view_->expand_button_);
-  EXPECT_FALSE(view_->device_entry_views_container_->GetVisible());
-  SimulateButtonClick(view_->GetExpandButtonForTesting());
-  EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
+  ASSERT_TRUE(view_->GetDropdownButtonForTesting());
+  EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
+  SimulateButtonClick(view_->GetDropdownButtonForTesting());
+  EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
 }
 
 TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceEntryContainerVisibility) {
@@ -259,7 +264,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceEntryContainerVisibility) {
   // The device entry container should be collapsed if the media dialog is
   // opened from the toolbar or Chrome OS system tray.
   view_ = CreateDeviceSelectorView(&delegate);
-  EXPECT_FALSE(view_->device_entry_views_container_->GetVisible());
+  EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
 
   // The device entry container should be expanded if the media dialog is opened
   // for a presentation request.
@@ -267,7 +272,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceEntryContainerVisibility) {
       &delegate, std::make_unique<NiceMock<MockCastDialogController>>(), "1",
       /* has_audio_output */ true,
       global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
-  EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
+  EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
 }
 
 TEST_F(MediaItemUIDeviceSelectorViewTest,

@@ -21,6 +21,7 @@
 namespace {
 class ExpandDeviceSelectorLabel;
 class ExpandDeviceSelectorButton;
+
 const char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
 const char kCastDeviceCountHistogramName[] =
@@ -38,6 +39,7 @@ class MediaItemUIView;
 namespace media_router {
 class CastDialogSinkButton;
 }
+
 class MediaItemUIDeviceSelectorDelegate;
 class MediaItemUIDeviceSelectorObserver;
 
@@ -86,21 +88,17 @@ class MediaItemUIDeviceSelectorView
 
   void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
 
-  views::Button* GetExpandButtonForTesting();
+  views::Label* GetExpandDeviceSelectorLabelForTesting();
+  views::Button* GetDropdownButtonForTesting();
   std::string GetEntryLabelForTesting(views::View* entry_view);
   bool GetEntryIsHighlightedForTesting(views::View* entry_view);
+  bool GetDeviceEntryViewVisibilityForTesting();
   std::vector<media_router::CastDialogSinkButton*>
   GetCastSinkButtonsForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceButtonsCreated);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           ExpandButtonOrLabelCreated);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           ExpandButtonOpensEntryContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           DeviceEntryContainerVisibility);
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDeviceButtonClickNotifiesContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
@@ -120,6 +118,7 @@ class MediaItemUIDeviceSelectorView
 
   void UpdateVisibility();
   bool ShouldBeVisible() const;
+  void CreateExpandButtonStrip(bool show_expand_button);
   void ExpandButtonPressed();
   void ShowDevices();
   void HideDevices();
@@ -153,7 +152,7 @@ class MediaItemUIDeviceSelectorView
   AudioDeviceEntryView* current_audio_device_entry_view_ = nullptr;
   views::View* expand_button_strip_ = nullptr;
   ExpandDeviceSelectorLabel* expand_label_ = nullptr;
-  ExpandDeviceSelectorButton* expand_button_ = nullptr;
+  ExpandDeviceSelectorButton* dropdown_button_ = nullptr;
   views::View* device_entry_views_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
