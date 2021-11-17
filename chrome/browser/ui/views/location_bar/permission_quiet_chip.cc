@@ -87,14 +87,12 @@ views::View* PermissionQuietChip::CreateBubble() {
     bubble_widget->AddObserver(this);
     bubble_widget->Show();
 
+    quiet_request_bubble->set_close_on_deactivate(false);
+
     return quiet_request_bubble;
   }
 
   return nullptr;
-}
-
-bool PermissionQuietChip::ShouldCloseBubbleOnLostFocus() const {
-  return true;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {
