@@ -2635,6 +2635,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
               1),
           base::Bucket(
               static_cast<int>(
+                  blink::EventPageShowPersisted::kBrowserYesInRenderer),
+              1),
+          base::Bucket(
+              static_cast<int>(
+                  blink::EventPageShowPersisted::kBrowserYesInRendererWithPage),
+              1),
+          base::Bucket(
+              static_cast<int>(
                   blink::EventPageShowPersisted::
                       kYesInBrowser_BackForwardCache_WillCommitNavigationToCachedEntry),
               1),

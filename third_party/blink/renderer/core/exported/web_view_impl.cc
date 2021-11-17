@@ -45,6 +45,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/event_page_show_persisted.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
@@ -2315,6 +2316,8 @@ void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
 void WebViewImpl::SetPageLifecycleStateFromNewPageCommit(
     mojom::blink::PageVisibilityState visibility,
     mojom::blink::PagehideDispatch pagehide_dispatch) {
+  TRACE_EVENT0("navigation",
+               "WebViewImpl::SetPageLifecycleStateFromNewPageCommit");
   mojom::blink::PageLifecycleStatePtr state =
       GetPage()->GetPageLifecycleState().Clone();
   state->visibility = visibility;
@@ -2327,6 +2330,12 @@ void WebViewImpl::SetPageLifecycleState(
     mojom::blink::PageLifecycleStatePtr state,
     mojom::blink::PageRestoreParamsPtr page_restore_params,
     SetPageLifecycleStateCallback callback) {
+  TRACE_EVENT0("navigation", "WebViewImpl::SetPageLifecycleState");
+  // TODO(https://crbug.com/1234634): Remove this.
+  if (state->should_dispatch_pageshow_for_debugging) {
+    blink::RecordUMAEventPageShowPersisted(
+        blink::EventPageShowPersisted::kBrowserYesInRenderer);
+  }
   SetPageLifecycleStateInternal(std::move(state),
                                 std::move(page_restore_params));
   // Tell the browser that the lifecycle update was successful.
@@ -2340,6 +2349,12 @@ void WebViewImpl::SetPageLifecycleStateInternal(
   if (!page)
     return;
   auto& old_state = page->GetPageLifecycleState();
+  TRACE_EVENT2("navigation", "WebViewImpl::SetPageLifecycleStateInternal",
+               "old_state", old_state, "new_state", new_state);
+  if (new_state->should_dispatch_pageshow_for_debugging) {
+    blink::RecordUMAEventPageShowPersisted(
+        blink::EventPageShowPersisted::kBrowserYesInRendererWithPage);
+  }
 
   bool storing_in_bfcache = new_state->is_in_back_forward_cache &&
                             !old_state->is_in_back_forward_cache;
