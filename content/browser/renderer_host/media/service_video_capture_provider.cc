@@ -311,6 +311,7 @@ void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
     GetDeviceInfosCallback result_callback,
     int retry_count) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 #if defined(OS_MAC)
   std::string model = base::mac::GetModelIdentifier();
   if (base::FeatureList::IsEnabled(
