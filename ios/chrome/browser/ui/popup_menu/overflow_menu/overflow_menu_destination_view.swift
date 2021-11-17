@@ -5,20 +5,8 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
-/// A view displaying a single destination.
-struct OverflowMenuDestinationView: View {
-
-  /// Parameters providing any necessary data to layout the view.
-  enum LayoutParameters {
-    /// The destination has an icon on top and text below.
-    /// There is `iconSpacing` to either side of the icon, and `iconPadding`
-    /// around the icon and inside the background.
-    case vertical(iconSpacing: CGFloat, iconPadding: CGFloat)
-    /// The destination has an icon on the left and text on the right. Here
-    /// the view will have a fixed overall `itemWidth`.
-    case horizontal(itemWidth: CGFloat)
-  }
-
+/// Style based on state for an OverflowMenuDestinationView.
+struct OverflowMenuDestinationButton: ButtonStyle {
   enum Dimensions {
     static let cornerRadius: CGFloat = 13
 
@@ -42,19 +30,19 @@ struct OverflowMenuDestinationView: View {
   var destination: OverflowMenuDestination
 
   /// The layout parameters for this view.
-  var layoutParameters: LayoutParameters
+  var layoutParameters: OverflowMenuDestinationView.LayoutParameters
 
-  var body: some View {
+  func makeBody(configuration: Configuration) -> some View {
     Group {
       switch layoutParameters {
       case .vertical:
         VStack {
-          icon
+          icon(configuration: configuration)
           text
         }
       case .horizontal(let itemWidth):
         HStack {
-          icon
+          icon(configuration: configuration)
           Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
           text
         }
@@ -65,17 +53,16 @@ struct OverflowMenuDestinationView: View {
       }
     }
     .contentShape(Rectangle())
-    .onTapGesture(perform: destination.handler)
   }
 
   /// View representing the background of the icon.
-  var iconBackground: some View {
+  func iconBackground(configuration: Configuration) -> some View {
     RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
-      .foregroundColor(.cr_groupedSecondaryBackground)
+      .foregroundColor(configuration.isPressed ? .cr_grey300 : .cr_groupedSecondaryBackground)
   }
 
   /// Icon for the destination.
-  var icon: some View {
+  func icon(configuration: Configuration) -> some View {
     let interiorPadding: CGFloat
     let spacing: CGFloat
     switch layoutParameters {
@@ -88,7 +75,7 @@ struct OverflowMenuDestinationView: View {
     }
     return destination.image
       .padding(interiorPadding)
-      .background(iconBackground)
+      .background(iconBackground(configuration: configuration))
       .padding([.leading, .trailing], spacing)
   }
 
@@ -105,5 +92,37 @@ struct OverflowMenuDestinationView: View {
     return Text(destination.name)
       .font(.caption2)
       .padding([.leading, .trailing], textSpacing)
+  }
+}
+
+/// A view displaying a single destination.
+struct OverflowMenuDestinationView: View {
+
+  /// Parameters providing any necessary data to layout the view.
+  enum LayoutParameters {
+    /// The destination has an icon on top and text below.
+    /// There is `iconSpacing` to either side of the icon, and `iconPadding`
+    /// around the icon and inside the background.
+    case vertical(iconSpacing: CGFloat, iconPadding: CGFloat)
+    /// The destination has an icon on the left and text on the right. Here
+    /// the view will have a fixed overall `itemWidth`.
+    case horizontal(itemWidth: CGFloat)
+  }
+
+  /// The destination for this view.
+  var destination: OverflowMenuDestination
+
+  /// The layout parameters for this view.
+  var layoutParameters: LayoutParameters
+
+  var body: some View {
+    Button(
+      action: destination.handler,
+      label: {
+        EmptyView()
+      }
+    )
+    .buttonStyle(
+      OverflowMenuDestinationButton(destination: destination, layoutParameters: layoutParameters))
   }
 }
