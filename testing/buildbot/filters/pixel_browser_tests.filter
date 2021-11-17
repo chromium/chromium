@@ -7,16 +7,22 @@ AskGoogleForSuggestionsDialogTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 ChromeLabsUiTest.*
+ConfirmBubbleTest.*
+ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
 CookieControlsBubbleViewTest.*
+CryptoModulePasswordDialogTest.*
+DeepScanningFailureModalDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
 FeaturePromoDialogTest.*
 FileSystemAccessUsageBubbleViewTest.*
+FirstRunDialogTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
+InlineLoginHelperBrowserTest.InvokeUi_*
 NewTabPageTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
@@ -26,14 +32,20 @@ PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*
 All/PermissionPromptBubbleViewBrowserTest.*
 ProfileSigninConfirmationDialogTest.*
+PromptForScanningModalDialogTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
+SafetyTipPageInfoBubbleViewDialogTest.*
 ScreenCaptureNotificationUiBrowserTest.*
+SecurePaymentConfirmationDialogViewTest.InvokeUi_*
+All/SendTabToSelfBubbleTest.*
 SessionCrashedBubbleViewTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
 TabHoverCardBubbleViewBrowserTest.*
 UpdateRecommendedDialogTest.*
+WebAppConfirmViewBrowserTest.*
+WorkProfileSigninConfirmationDialogTest.*
 ZoomBubbleDialogTest.*
 
 # This test uses random network port and shows it on ui.

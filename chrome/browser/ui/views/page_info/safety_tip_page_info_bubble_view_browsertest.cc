@@ -18,10 +18,12 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
+#include "chrome/browser/reputation/safety_tip_ui.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -338,8 +340,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
   void CheckNoButtons() {
     auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
         PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
-    EXPECT_FALSE(bubble->info_button_);
-    EXPECT_FALSE(bubble->ignore_button_);
+    EXPECT_FALSE(bubble->info_link_);
     EXPECT_FALSE(bubble->leave_button_);
   }
 
@@ -1743,4 +1744,36 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   // prerendered page.
   EXPECT_TRUE(IsUIShowing());
   histograms.ExpectTotalCount(kHistogramName, 1);
+}
+
+class SafetyTipPageInfoBubbleViewDialogTest : public DialogBrowserTest {
+ public:
+  SafetyTipPageInfoBubbleViewDialogTest() = default;
+  SafetyTipPageInfoBubbleViewDialogTest(
+      const SafetyTipPageInfoBubbleViewDialogTest&) = delete;
+  SafetyTipPageInfoBubbleViewDialogTest& operator=(
+      const SafetyTipPageInfoBubbleViewDialogTest&) = delete;
+  ~SafetyTipPageInfoBubbleViewDialogTest() override = default;
+
+  void ShowUi(const std::string& name) override {
+    auto status = security_state::SafetyTipStatus::kUnknown;
+    if (name == "BadReputation")
+      status = security_state::SafetyTipStatus::kBadReputation;
+    else if (name == "Lookalike")
+      status = security_state::SafetyTipStatus::kLookalike;
+
+    ShowSafetyTipDialog(browser()->tab_strip_model()->GetActiveWebContents(),
+                        status, GURL("https://www.google.tld"),
+                        base::DoNothing());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
+                       InvokeUi_BadReputation) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
+                       InvokeUi_Lookalike) {
+  ShowAndVerifyUi();
 }
