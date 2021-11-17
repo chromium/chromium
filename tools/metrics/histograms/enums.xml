@@ -49180,6 +49180,8 @@ from previous Chrome versions.
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
+  <int value="-1641656402"
+      label="RTCDisallowPlanBOutsideDeprecationTrial:disabled"/>
   <int value="-1641384018" label="SideSearchClearCacheWhenClosed:enabled"/>
   <int value="-1640944841" label="HardwareSecureDecryption:disabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
@@ -49369,6 +49371,8 @@ from previous Chrome versions.
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
   <int value="-1510844027" label="ScanAppStickySettings:enabled"/>
   <int value="-1510839574" label="disable-sync-synced-notifications"/>
+  <int value="-1510524610"
+      label="RTCDisallowPlanBOutsideDeprecationTrial:enabled"/>
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
   <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
   <int value="-1506880454"

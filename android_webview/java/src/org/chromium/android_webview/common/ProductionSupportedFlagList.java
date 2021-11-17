@@ -217,5 +217,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.FONT_MANAGER_EARLY_INIT,
                     "Whether to initialize the font manager when the renderer starts on a "
                             + "background thread."),
+            Flag.baseFeature(BlinkFeatures.RTC_DISALLOW_PLAN_B_OUTSIDE_DEPRECATION_TRIAL,
+                    "Makes constructing an RTCPeerConnection with {sdpSemantics:'plan-b'} throw "
+                            + "an exception."),
     };
 }
