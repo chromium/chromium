@@ -42,10 +42,13 @@
 <if expr="_google_chrome">
     <settings-toggle-button
         id="enable-logging"
-        pref="{{prefs.cros.metrics.reportingEnabled}}"
+        pref="[[metricsConsentPref_]]"
         label="$i18n{enableLogging}"
         sub-label="$i18n{enableLoggingDesc}"
-        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]">
+        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+        disabled$="[[!isMetricsConsentConfigurable_]]"
+        on-settings-boolean-control-change="onMetricsConsentChange_"
+        no-set-pref>
     </settings-toggle-button>
     <div class="hr"></div>
 </if>

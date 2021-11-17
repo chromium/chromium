@@ -12,6 +12,8 @@
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -225,6 +227,10 @@ PrivacySection::~PrivacySection() = default;
 void PrivacySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::PeripheralDataAccessHandler>());
+
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::MetricsConsentHandler>(
+          profile(), user_manager::UserManager::Get()));
 
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());

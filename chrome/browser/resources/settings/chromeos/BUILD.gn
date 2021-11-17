@@ -285,6 +285,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/personalization_page/wallpaper_browser_proxy.js",
     "chromeos/prefs_behavior.js",
     "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.js",
+    "chromeos/os_privacy_page/metrics_consent_browser_proxy.js",
     "chromeos/os_people_page/account_manager_browser_proxy.js",
     "chromeos/route_observer_behavior.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
