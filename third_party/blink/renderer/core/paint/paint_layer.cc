@@ -1425,7 +1425,14 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
   // Need to force requirements update, due to change of stacking order.
   SetNeedsCompositingRequirementsUpdate();
 
+  // TODO(wangxianzhu): Change this to the same pattern as cull rect update
+  // when removing pre-CAP code.
   child->SetNeedsRepaint();
+
+  if (child->NeedsCullRectUpdate())
+    MarkCompositingContainerChainForNeedsCullRectUpdate();
+  else
+    child->SetNeedsCullRectUpdate();
 }
 
 void PaintLayer::RemoveChild(PaintLayer* old_child) {
