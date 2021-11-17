@@ -57,6 +57,7 @@ class ScriptParameters {
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
   absl::optional<bool> GetEnableTts() const;
+  absl::optional<int> GetCaller() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;
