@@ -6098,7 +6098,6 @@ crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/console/console-format.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/console/console-functions.js [ Failure Pass ]
-crbug.com/1222114 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
 
 crbug.com/1247844 external/wpt/css/css-contain/content-visibility/content-visibility-input-image.html [ Timeout ]
 

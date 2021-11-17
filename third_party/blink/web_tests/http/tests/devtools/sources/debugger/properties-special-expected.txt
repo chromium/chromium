@@ -14,6 +14,8 @@ properties-special.js:12 ƒ anonymous(a,b)
 properties-special.js:13 ƒ bound ()
     length: 1
     name: "bound "
+    arguments: (...)
+    caller: (...)
     [[Prototype]]: ƒ ()
     [[TargetFunction]]: ƒ (a,b)
     [[BoundThis]]: Object
@@ -22,6 +24,8 @@ properties-special.js:14 ƒ* anonymous()
     length: 0
     name: ""
     prototype: Generator {}
+    arguments: (...)
+    caller: (...)
     [[FunctionLocation]]: properties-special.js:14
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
