@@ -2504,7 +2504,8 @@ String AXNodeObject::FontFamilyForSerialization() const {
   return primary_font->PlatformData().FontFamilyName();
 }
 
-// Font size is in pixels.
+// Blink font size is provided in pixels.
+// Platform APIs may convert to another unit (IA2 converts to points).
 float AXNodeObject::FontSize() const {
   if (!GetLayoutObject())
     return AXObject::FontSize();
@@ -2513,7 +2514,12 @@ float AXNodeObject::FontSize() const {
   if (!style)
     return AXObject::FontSize();
 
-  return style->ComputedFontSize();
+  // Font size should not be affected by scale transform or page zoom, because
+  // users of authoring tools may want to check that their text is formatted
+  // with the font size they expected.
+  // E.g. use SpecifiedFontSize() instead of ComputedFontSize(), and do not
+  // multiply by style->Scale()->Transform()->Y();
+  return style->SpecifiedFontSize();
 }
 
 float AXNodeObject::FontWeight() const {

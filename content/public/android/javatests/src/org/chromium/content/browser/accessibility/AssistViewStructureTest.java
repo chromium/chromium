@@ -21,14 +21,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -73,22 +70,6 @@ public class AssistViewStructureTest {
     private TestViewStructureInterface getViewStructureFromHtml(String htmlContent)
             throws TimeoutException {
         return getViewStructureFromHtml(htmlContent, null);
-    }
-
-    private double cssToPixel(double css) {
-        boolean use_zoom_for_dsf = UseZoomForDSFPolicy.isUseZoomForDSFEnabled();
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Coordinates coord = Coordinates.createFor(mActivityTestRule.getWebContents());
-                double result = css;
-                if (use_zoom_for_dsf) result *= coord.getDeviceScaleFactor();
-                result = coord.fromLocalCssToPix((float) result);
-                return result;
-            });
-        } catch (ExecutionException ex) {
-            Assert.fail("Unexpected ExecutionException");
-            return 0.0;
-        }
     }
 
     private String getSelectionScript(String node1, int start, String node2, int end) {
@@ -345,9 +326,8 @@ public class AssistViewStructureTest {
         TestViewStructureInterface paraText = para.getChild(0);
         Assert.assertEquals("foo", paraText.getText());
 
-        // The font size should take the scale into account.
-        double expected = cssToPixel(32.0);
-        Assert.assertEquals(expected, para.getTextSize(), 1.0);
+        // The font size should not be affected by page zoom or CSS transform.
+        Assert.assertEquals(16, para.getTextSize(), 0.01);
     }
 
     /**

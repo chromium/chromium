@@ -50,12 +50,11 @@ public class ViewStructureBuilder {
 
         // if size is smaller than 0, then style information does not exist.
         if (size >= 0.0) {
-            float scaledTextSize = mRenderCoordinates.fromLocalCssToPix(size);
             int style = (bold ? ViewNode.TEXT_STYLE_BOLD : 0)
                     | (italic ? ViewNode.TEXT_STYLE_ITALIC : 0)
                     | (underline ? ViewNode.TEXT_STYLE_UNDERLINE : 0)
                     | (lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
-            node.setTextStyle(scaledTextSize, color, bgcolor, style);
+            node.setTextStyle(size, color, bgcolor, style);
         }
     }
 

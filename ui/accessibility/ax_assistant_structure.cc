@@ -251,12 +251,8 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   result->underline = 0;
 
   if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
-    gfx::RectF text_size_rect(
-        0, 0, 1, node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize));
-    gfx::Rect scaled_text_size_rect =
-        gfx::ToEnclosingRect(tree->RelativeToTreeBounds(node, text_size_rect));
-    result->text_size = scaled_text_size_rect.height();
-
+    result->text_size =
+        node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
     result->color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
     result->bgcolor =
         node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
