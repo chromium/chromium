@@ -12,10 +12,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/console.h"
@@ -49,17 +52,15 @@ class DebugCommandQueue;
 // Currently, multiple AuctionV8Helpers can be in use at once, each will have
 // its own V8 isolate.  All AuctionV8Helpers are assumed to be created on the
 // same thread (V8 startup is done only once per process, and not behind a
-// lock).  After creation, all operations on the helper must be done on the
-// thread represented by the `v8_runner` argument to Create(); it's the caller's
-// responsibility to ensure the methods are invoked there.
+// lock).  After creation, all public operations on the helper must be done on
+// the thread represented by the `v8_runner` argument to Create(). It's the
+// caller's responsibility to ensure that all other methods are used from the v8
+// runner.
 class AuctionV8Helper
     : public base::RefCountedDeleteOnSequence<AuctionV8Helper> {
  public:
   // Timeout for script execution.
   static const base::TimeDelta kScriptTimeout;
-
-  // Debugger context group ID asking for no debugging.
-  static const int kNoDebugContextGroupId = 0;
 
   // Helper class to set up v8 scopes to use Isolate. All methods expect a
   // FullIsolateScope to be have been created on the current thread, and a
@@ -75,6 +76,34 @@ class AuctionV8Helper
     const v8::Locker locker_;
     const v8::Isolate::Scope isolate_scope_;
     const v8::HandleScope handle_scope_;
+  };
+
+  // A wrapper for identifiers used to associate V8 context's with debugging
+  // primitives.  Passed to methods like Compile and RunScript.
+  //
+  // This class is thread-safe, except SetResumeCallback must be used from V8
+  // thread.
+  class DebugId : public base::RefCountedThreadSafe<DebugId> {
+   public:
+    explicit DebugId(AuctionV8Helper* v8_helper);
+
+    // Returns V8 context group ID associated with this debug id.
+    int context_group_id() const { return context_group_id_; }
+
+    // Sets the callback to use to resume a worklet that's paused on startup.
+    // Must be called from the V8 thread.
+    //
+    // `resume_callback` will be invoked on the V8 thread; and should probably
+    // be bound to a a WeakPtr, since the invocation is ultimately via debugger
+    // mojo pipes, making its timing hard to relate to worklet lifetime.
+    void SetResumeCallback(base::OnceClosure resume_callback);
+
+   private:
+    friend class base::RefCountedThreadSafe<DebugId>;
+    ~DebugId();
+
+    const scoped_refptr<AuctionV8Helper> v8_helper_;
+    const int context_group_id_;
   };
 
   explicit AuctionV8Helper(const AuctionV8Helper&) = delete;
@@ -154,7 +183,7 @@ class AuctionV8Helper
   v8::MaybeLocal<v8::UnboundScript> Compile(
       const std::string& src,
       const GURL& src_url,
-      int context_group_id,
+      const DebugId* debug_id,
       absl::optional<std::string>& error_out);
 
   // Binds a script and runs it in the passed in context, returning the result.
@@ -162,8 +191,8 @@ class AuctionV8Helper
   // functions contained within the context, so is likely not safe to use in
   // other contexts without sanitization.
   //
-  // If `context_group_id` is not kNoDebugContextGroupId (0), and a debugger
-  // connection has been instantiated, will notify debugger of `context`.
+  // If `debug_id` is not nullptr, and a debugger connection has been
+  // instantiated, will notify debugger of `context`.
   //
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
@@ -174,17 +203,17 @@ class AuctionV8Helper
   // In case of an error or console output sets `error_out`.
   v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
                                       v8::Local<v8::UnboundScript> script,
-                                      int context_group_id,
+                                      const DebugId* debug_id,
                                       base::StringPiece function_name,
                                       base::span<v8::Local<v8::Value>> args,
                                       std::vector<std::string>& error_out);
 
-  // If any debugging session targeting `context_group_id` has set an active
+  // If any debugging session targeting `debug_id` has set an active
   // DOM instrumentation breakpoint `name`, asks for v8 to do a debugger pause
   // on the next statement.
   //
   // Expected to be run before a corresponding RunScript.
-  void MaybeTriggerInstrumentationBreakpoint(int context_group_id,
+  void MaybeTriggerInstrumentationBreakpoint(const DebugId& debug_id,
                                              const std::string& name);
 
   void set_script_timeout_for_testing(base::TimeDelta script_timeout);
@@ -205,37 +234,19 @@ class AuctionV8Helper
     return console_script_name_;
   }
 
-  // V8 Debug functionality identifies what to operate on via numeric
-  // "context group IDs".
-
-  // Grabs an ID for a particular consumer, and sets the callback to use to
-  // resume its execution if it was paused on start.  Since Resume() can be
-  // called over Mojo pipes that are unordered with respect to main worklet Mojo
-  // pipes, the callback should probably be bound to a WeakPtr.
-  //
-  // Returned ID will be a positive integer.
-  int AllocContextGroupIdAndSetResumeCallback(
-      base::OnceClosure resume_callback);
-
-  // Frees up an ID that'll no longer be in use.
-  void FreeContextGroupId(int context_group_id);
-
   // Invokes the registered resume callback for given ID. Does nothing if it
   // was already invoked.
   void Resume(int context_group_id);
 
   // Overrides what ID will be remembered as last returned to help check the
   // allocation algorithm.
-  void SetLastContextGroupIdForTesting(int new_last_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    last_context_group_id_ = new_last_id;
-  }
+  void SetLastContextGroupIdForTesting(int new_last_id);
 
   // Calls Resume on all registered context group IDs.
   void ResumeAllForTesting();
 
   // Establishes a debugger connection, initializing debugging objects if
-  // needed, and associating the connection with the given `context_group_id`.
+  // needed, and associating the connection with the given `debug_id`.
   //
   // The debugger Mojo objects will primarily live on the v8 thread, but
   // `mojo_sequence` will be used for a secondary communication channel in case
@@ -245,7 +256,7 @@ class AuctionV8Helper
   void ConnectDevToolsAgent(
       mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent,
       scoped_refptr<base::SequencedTaskRunner> mojo_sequence,
-      int context_group_id);
+      const DebugId& debug_id);
 
   // Returns the v8 inspector if one has been set. null if ConnectDevToolsAgent
   // (or SetV8InspectorForTesting) hasn't been called.
@@ -293,6 +304,13 @@ class AuctionV8Helper
 
   void CreateIsolate();
 
+  // These methods are used by DebugId, and except SetResumeCallback can be
+  // called from any thread.
+  int AllocContextGroupId();
+  void SetResumeCallback(int context_group_id,
+                         base::OnceClosure resume_callback);
+  void FreeContextGroupId(int context_group_id);
+
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
                                             v8::Local<v8::Message> message);
   static std::string FormatValue(v8::Isolate* isolate,
@@ -318,11 +336,12 @@ class AuctionV8Helper
   ScriptTimeoutHelper* timeout_helper_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
 
-  int last_context_group_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::Lock context_groups_lock_;
+  int last_context_group_id_ GUARDED_BY(context_groups_lock_) = 0;
 
   // This is keyed by group IDs, and is used to keep track of what's valid.
   std::map<int, base::OnceClosure> resume_callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      GUARDED_BY(context_groups_lock_);
 
   std::unique_ptr<DebugCommandQueue> debug_command_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);

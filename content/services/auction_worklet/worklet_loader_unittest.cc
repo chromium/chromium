@@ -71,7 +71,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
               kValidScript, kAllowFledgeHeader, net::HTTP_NOT_FOUND);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -84,7 +84,7 @@ TEST_F(WorkletLoaderTest, CompileError) {
   AddJavascriptResponse(&url_loader_factory_, url_, kInvalidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -95,8 +95,9 @@ TEST_F(WorkletLoaderTest, CompileError) {
 
 TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
   ScopedInspectorSupport inspector_support(v8_helper_.get());
-  int id = AllocContextGroupIdAndWait(v8_helper_);
-  TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
+  auto id = base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper_.get());
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSession(id->context_group_id());
   channel->RunCommandAndWaitForResult(
       1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
   channel->RunCommandAndWaitForResult(
@@ -111,14 +112,13 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
   run_loop_.Run();
   EXPECT_FALSE(load_succeeded_);
   channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  FreeContextGroupIdAndWait(v8_helper_, id);
 }
 
 TEST_F(WorkletLoaderTest, Success) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   WorkletLoader worklet_loader(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -135,7 +135,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
-          AuctionV8Helper::kNoDebugContextGroupId,
+          scoped_refptr<AuctionV8Helper::DebugId>(),
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -159,7 +159,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
   std::unique_ptr<WorkletLoader> worklet_loader =
       std::make_unique<WorkletLoader>(
           &url_loader_factory_, url_, v8_helper.get(),
-          AuctionV8Helper::kNoDebugContextGroupId,
+          scoped_refptr<AuctionV8Helper::DebugId>(),
           base::BindLambdaForTesting(
               [&](WorkletLoader::Result worklet_script,
                   absl::optional<std::string> error_msg) {
@@ -184,7 +184,7 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
   AddJavascriptResponse(&url_loader_factory_, url_, kValidScript);
   auto worklet_loader = std::make_unique<WorkletLoader>(
       &url_loader_factory_, url_, v8_helper_,
-      AuctionV8Helper::kNoDebugContextGroupId,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
       base::BindOnce([](WorkletLoader::Result worklet_script,
                         absl::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";

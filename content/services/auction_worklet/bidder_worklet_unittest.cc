@@ -248,13 +248,6 @@ class BidderWorkletTest : public testing::Test {
     return bidding_interest_group;
   }
 
-  int LookUpContextGroupId(BidderWorklet* worklet_impl) {
-    task_environment_.RunUntilIdle();
-    int id = worklet_impl->context_group_id_for_testing();
-    CHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, id);
-    return id;
-  }
-
   // Create a BidderWorklet, returning the remote. If `out_bidder_worklet_impl`
   // is non-null, will also stash the actual implementation pointer there.
   // if `url` is empty, uses `interest_group_bidding_url_`.
@@ -1937,7 +1930,7 @@ TEST_F(BidderWorkletTest, PauseOnStart) {
                     /* pause_for_debugger_on_start=*/true, &worklet_impl);
   GenerateBid(worklet.get());
   // Grab the context group ID to be able to resume.
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
 
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
@@ -1980,7 +1973,7 @@ TEST_F(BidderWorkletTest, PauseOnStartDelete) {
   task_environment_.RunUntilIdle();
 
   // Grab the context group ID.
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
 
   // Delete the worklet. No callback should be invoked.
   worklet.reset();
@@ -2024,8 +2017,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
       GURL(kUrl2), /*pause_for_debugger_on_start=*/true, &worklet_impl2);
   GenerateBid(worklet2.get());
 
-  int id1 = LookUpContextGroupId(worklet_impl1);
-  int id2 = LookUpContextGroupId(worklet_impl2);
+  int id1 = worklet_impl1->context_group_id_for_testing();
+  int id2 = worklet_impl2->context_group_id_for_testing();
 
   TestChannel* channel1 = inspector_support.ConnectDebuggerSession(id1);
   TestChannel* channel2 = inspector_support.ConnectDebuggerSession(id2);
@@ -2109,7 +2102,7 @@ TEST_F(BidderWorkletTest, ParseErrorV8Debug) {
       CreateWorklet(interest_group_bidding_url_,
                     /*pause_for_debugger_on_start=*/true, &worklet_impl);
   GenerateBid(worklet.get());
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
   TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
 
   channel->RunCommandAndWaitForResult(

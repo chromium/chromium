@@ -75,7 +75,7 @@ class WorkletLoader {
   WorkletLoader(network::mojom::URLLoaderFactory* url_loader_factory,
                 const GURL& script_source_url,
                 scoped_refptr<AuctionV8Helper> v8_helper,
-                int debug_context_group_id,
+                scoped_refptr<AuctionV8Helper::DebugId> debug_id,
                 LoadWorkletCallback load_worklet_callback);
   explicit WorkletLoader(const WorkletLoader&) = delete;
   WorkletLoader& operator=(const WorkletLoader&) = delete;
@@ -88,7 +88,7 @@ class WorkletLoader {
   static void HandleDownloadResultOnV8Thread(
       GURL script_source_url,
       scoped_refptr<AuctionV8Helper> v8_helper,
-      int debug_context_group_id,
+      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
       std::unique_ptr<std::string> body,
       absl::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
@@ -99,7 +99,7 @@ class WorkletLoader {
 
   const GURL script_source_url_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
-  int debug_context_group_id_;
+  const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;

@@ -13,7 +13,9 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_bidding_signals.h"
@@ -33,8 +35,6 @@ class UnboundScript;
 }  // namespace v8
 
 namespace auction_worklet {
-
-class AuctionV8Helper;
 
 // Represents a bidder worklet for FLEDGE
 // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md). Loads and runs the
@@ -69,9 +69,7 @@ class BidderWorklet : public mojom::BidderWorklet {
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
 
-  // Warning: The caller may need to spin the event loop for this to get
-  // initialized to a value different from kNoDebugContextGroupId.
-  int context_group_id_for_testing() const { return context_group_id_; }
+  int context_group_id_for_testing() const;
 
   // mojom::BidderWorklet implementation:
   void GenerateBid(const absl::optional<std::string>& auction_signals_json,
@@ -137,6 +135,7 @@ class BidderWorklet : public mojom::BidderWorklet {
   class V8State {
    public:
     V8State(scoped_refptr<AuctionV8Helper> v8_helper,
+            scoped_refptr<AuctionV8Helper::DebugId> debug_id,
             const GURL& script_source_url,
             base::WeakPtr<BidderWorklet> parent,
             mojom::BiddingInterestGroupPtr bidding_interest_group);
@@ -192,6 +191,7 @@ class BidderWorklet : public mojom::BidderWorklet {
         scoped_refptr<base::SequencedTaskRunner> user_thread);
 
     const scoped_refptr<AuctionV8Helper> v8_helper_;
+    const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
     const base::WeakPtr<BidderWorklet> parent_;
     const scoped_refptr<base::SequencedTaskRunner> user_thread_;
 
@@ -203,13 +203,11 @@ class BidderWorklet : public mojom::BidderWorklet {
 
     const GURL script_source_url_;
 
-    int context_group_id_;
-
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
 
   void ResumeIfPaused();
-  void StartIfReady();
+  void Start();
 
   void OnScriptDownloaded(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
@@ -227,8 +225,6 @@ class BidderWorklet : public mojom::BidderWorklet {
   void GenerateBidIfReady(GenerateBidTaskList::iterator task);
 
   void RunReportWin(ReportWinTaskList::iterator task);
-
-  void DeliverContextGroupIdOnUserThread(int context_group_id);
 
   // Fails all pending GenerateBid() and ReportWin() tasks, removing all tasks
   // from both lists.
@@ -248,14 +244,11 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
 
-  scoped_refptr<AuctionV8Helper> v8_helper_;
+  const scoped_refptr<AuctionV8Helper> v8_helper_;
+  const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   bool paused_;
-
-  // `context_group_id_` starts at kNoDebugContextGroupId, but then gets
-  // initialized after some thread hops.
-  int context_group_id_;
 
   const GURL script_source_url_;
 

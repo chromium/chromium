@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -29,8 +30,6 @@ class UnboundScript;
 }  // namespace v8
 
 namespace auction_worklet {
-
-class AuctionV8Helper;
 
 // Represents a seller worklet for FLEDGE
 // (https://github.com/WICG/turtledove/blob/main/FLEDGE.md). Loads and runs the
@@ -52,9 +51,7 @@ class SellerWorklet : public mojom::SellerWorklet {
 
   ~SellerWorklet() override;
 
-  // Warning: The caller may need to spin the event loop for this to get
-  // initialized to a value different from kNoDebugContextGroupId.
-  int context_group_id_for_testing() const { return context_group_id_; }
+  int context_group_id_for_testing() const;
 
   // mojom::SellerWorklet implementation:
   void ScoreAd(const std::string& ad_metadata_json,
@@ -82,6 +79,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   class V8State {
    public:
     V8State(scoped_refptr<AuctionV8Helper> v8_helper,
+            scoped_refptr<AuctionV8Helper::DebugId> debug_id,
             GURL script_source_url,
             base::WeakPtr<SellerWorklet> parent);
 
@@ -129,6 +127,7 @@ class SellerWorklet : public mojom::SellerWorklet {
         scoped_refptr<base::SequencedTaskRunner> user_thread);
 
     const scoped_refptr<AuctionV8Helper> v8_helper_;
+    const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
     const base::WeakPtr<SellerWorklet> parent_;
     const scoped_refptr<base::SequencedTaskRunner> user_thread_;
 
@@ -138,18 +137,15 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     const GURL script_source_url_;
 
-    int context_group_id_;
-
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
 
   void ResumeIfPaused();
-  void StartIfReady();
+  void Start();
 
   void OnDownloadComplete(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
 
-  void DeliverContextGroupIdOnUserThread(int context_group_id);
   void DeliverScoreAdCallbackOnUserThread(ScoreAdCallback callback,
                                           double score,
                                           std::vector<std::string> errors);
@@ -161,17 +157,15 @@ class SellerWorklet : public mojom::SellerWorklet {
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
 
-  // Kept around until Start().
   scoped_refptr<AuctionV8Helper> v8_helper_;
+  scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
+
+  // Kept around until Start().
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_url_loader_factory_;
 
   const GURL script_source_url_;
   bool paused_;
-
-  // `context_group_id_` starts at kNoDebugContextGroupId, but then gets
-  // initialized after some thread hops.
-  int context_group_id_;
 
   std::unique_ptr<WorkletLoader> worklet_loader_;
 

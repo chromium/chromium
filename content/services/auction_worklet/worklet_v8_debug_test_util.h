@@ -124,15 +124,6 @@ class TestChannel : public v8_inspector::V8Inspector::Channel {
   std::list<Event> events_ GUARDED_BY(lock_);
 };
 
-// Thread-hop wrapper around
-// AuctionV8Helper::AllocContextGroupIdAndSetResumeCallback. Sets a null
-// callback.
-int AllocContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper);
-
-// Thread-hop wrapper around AuctionV8Helper::FreeContextGroupId().
-void FreeContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper,
-                               int context_group_id);
-
 // Class that helps set a V8Inspector w/a TestInspectorClient on an
 // AuctionV8Helper, and clean it up properly. Assumes v8 thread is separate from
 // main thread it runs on. Also helps with connecting debugger sessions.

@@ -151,7 +151,8 @@ BidderWorklet::BidderWorklet(
     mojom::BiddingInterestGroupPtr bidding_interest_group)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(v8_helper),
-      context_group_id_(AuctionV8Helper::kNoDebugContextGroupId),
+      debug_id_(
+          base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper.get())),
       // TODO(mmenke): Remove up the value_or() for script_source_url_; auction
       // worklets shouldn't be created when there's no bidding URL.
       script_source_url_(
@@ -166,12 +167,14 @@ BidderWorklet::BidderWorklet(
   url_loader_factory_.Bind(std::move(pending_url_loader_factory));
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper, script_source_url_, weak_ptr_factory_.GetWeakPtr(),
+      new V8State(v8_helper, debug_id_, script_source_url_,
+                  weak_ptr_factory_.GetWeakPtr(),
                   std::move(bidding_interest_group)),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
-  // DeliverContextGroupIdOnUserThread will call StartIfReady().
+  if (!paused_)
+    Start();
 }
 
 BidderWorklet::~BidderWorklet() {
@@ -182,6 +185,10 @@ BidderWorklet::~BidderWorklet() {
   // destroyed before the BidderWorklet itself is, but makes the class safer
   // against refactors of the Mojo API.
   FailAllPendingTasks();
+}
+
+int BidderWorklet::context_group_id_for_testing() const {
+  return debug_id_->context_group_id();
 }
 
 void BidderWorklet::GenerateBid(
@@ -276,10 +283,12 @@ BidderWorklet::ReportWinTask::~ReportWinTask() = default;
 
 BidderWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
+    scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     const GURL& script_source_url,
     base::WeakPtr<BidderWorklet> parent,
     mojom::BiddingInterestGroupPtr bidding_interest_group)
     : v8_helper_(std::move(v8_helper)),
+      debug_id_(std::move(debug_id)),
       parent_(std::move(parent)),
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
       bidding_interest_group_(std::move(bidding_interest_group)),
@@ -352,9 +361,9 @@ void BidderWorklet::V8State::ReportWin(
   // value indicates no exception.
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
-      context_group_id_, "beforeBidderWorkletReportingStart");
+      *debug_id_, "beforeBidderWorkletReportingStart");
   if (v8_helper_
-          ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+          ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
                       "reportWin", args, errors_out)
           .IsEmpty()) {
     PostReportWinCallbackToUserThread(std::move(callback),
@@ -481,9 +490,9 @@ void BidderWorklet::V8State::GenerateBid(
   v8::Local<v8::Value> generate_bid_result;
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
-      context_group_id_, "beforeBidderWorkletBiddingStart");
+      *debug_id_, "beforeBidderWorkletBiddingStart");
   if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
                        "generateBid", args, errors_out)
            .ToLocal(&generate_bid_result)) {
     PostErrorBidCallbackToUserThread(std::move(callback),
@@ -605,24 +614,17 @@ void BidderWorklet::V8State::GenerateBid(
 void BidderWorklet::V8State::ConnectDevToolsAgent(
     mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_,
-                                   context_group_id_);
+  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_, *debug_id_);
 }
 
 BidderWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  v8_helper_->FreeContextGroupId(context_group_id_);
 }
 
 void BidderWorklet::V8State::FinishInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  context_group_id_ = v8_helper_->AllocContextGroupIdAndSetResumeCallback(
-      base::BindOnce(&BidderWorklet::V8State::PostResumeToUserThread, parent_,
-                     user_thread_));
-  user_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BidderWorklet::DeliverContextGroupIdOnUserThread, parent_,
-                     context_group_id_));
+  debug_id_->SetResumeCallback(base::BindOnce(
+      &BidderWorklet::V8State::PostResumeToUserThread, parent_, user_thread_));
 }
 
 // static
@@ -661,18 +663,15 @@ void BidderWorklet::ResumeIfPaused() {
     return;
 
   paused_ = false;
-  StartIfReady();
+  Start();
 }
 
-void BidderWorklet::StartIfReady() {
+void BidderWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (paused_ || context_group_id_ == AuctionV8Helper::kNoDebugContextGroupId) {
-    return;
-  }
+  DCHECK(!paused_);
 
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory_.get(), script_source_url_, v8_helper_,
-      context_group_id_,
+      url_loader_factory_.get(), script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 }
@@ -757,13 +756,6 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
           task->browser_signal_render_url, task->browser_signal_bid,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
-}
-
-void BidderWorklet::DeliverContextGroupIdOnUserThread(int context_group_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  context_group_id_ = context_group_id;
-  DCHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, context_group_id_);
-  StartIfReady();
 }
 
 void BidderWorklet::FailAllPendingTasks() {

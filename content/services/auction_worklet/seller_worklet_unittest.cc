@@ -290,13 +290,6 @@ class SellerWorkletTest : public testing::Test {
     load_script_run_loop_->Quit();
   }
 
-  int LookUpContextGroupId(SellerWorklet* worklet_impl) {
-    task_environment_.RunUntilIdle();
-    int id = worklet_impl->context_group_id_for_testing();
-    CHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, id);
-    return id;
-  }
-
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -849,7 +842,7 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
   auto worklet = CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/true,
                                    &worklet_impl);
   // Grab the context ID to be able to resume.
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
 
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
@@ -880,7 +873,7 @@ TEST_F(SellerWorkletTest, PauseOnStartDelete) {
   task_environment_.RunUntilIdle();
 
   // Grab the context ID.
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
 
   // Delete the worklet. is should issue an error callback, so in turn it
   // needs the event loop the callback in the fixture uses.
@@ -927,8 +920,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   auto worklet2 = CreateWorkletImpl(
       GURL(kUrl2), /*pause_for_debugger_on_start=*/true, &worklet_impl2);
 
-  int id1 = LookUpContextGroupId(worklet_impl1);
-  int id2 = LookUpContextGroupId(worklet_impl2);
+  int id1 = worklet_impl1->context_group_id_for_testing();
+  int id2 = worklet_impl2->context_group_id_for_testing();
 
   TestChannel* channel1 = inspector_support.ConnectDebuggerSession(id1);
   TestChannel* channel2 = inspector_support.ConnectDebuggerSession(id2);
@@ -1009,7 +1002,7 @@ TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
   SellerWorklet* worklet_impl = nullptr;
   auto worklet = CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/true,
                                    &worklet_impl);
-  int id = LookUpContextGroupId(worklet_impl);
+  int id = worklet_impl->context_group_id_for_testing();
   TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
 
   channel->RunCommandAndWaitForResult(

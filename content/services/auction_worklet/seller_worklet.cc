@@ -125,20 +125,23 @@ SellerWorklet::SellerWorklet(
         load_worklet_callback)
     : v8_runner_(v8_helper->v8_runner()),
       v8_helper_(v8_helper),
+      debug_id_(
+          base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper.get())),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(script_source_url),
-      context_group_id_(AuctionV8Helper::kNoDebugContextGroupId),
       v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
       load_worklet_callback_(std::move(load_worklet_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(load_worklet_callback_);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper, script_source_url, weak_ptr_factory_.GetWeakPtr()),
+      new V8State(v8_helper_, debug_id_, script_source_url,
+                  weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
-  // DeliverContextGroupIdOnUserThread will call StartIfReady().
+  if (!paused_)
+    Start();
 }
 
 SellerWorklet::~SellerWorklet() {
@@ -147,6 +150,10 @@ SellerWorklet::~SellerWorklet() {
     std::move(load_worklet_callback_)
         .Run(false /* success */, std::vector<std::string>() /* errors */);
   }
+}
+
+int SellerWorklet::context_group_id_for_testing() const {
+  return debug_id_->context_group_id();
 }
 
 void SellerWorklet::ScoreAd(
@@ -198,10 +205,13 @@ void SellerWorklet::ConnectDevToolsAgent(
                      base::Unretained(v8_state_.get()), std::move(agent)));
 }
 
-SellerWorklet::V8State::V8State(scoped_refptr<AuctionV8Helper> v8_helper,
-                                GURL script_source_url,
-                                base::WeakPtr<SellerWorklet> parent)
+SellerWorklet::V8State::V8State(
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    GURL script_source_url,
+    base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
+      debug_id_(debug_id),
       parent_(std::move(parent)),
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
       script_source_url_(std::move(script_source_url)) {
@@ -285,9 +295,9 @@ void SellerWorklet::V8State::ScoreAd(
   double score;
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
-      context_group_id_, "beforeSellerWorkletScoringStart");
+      *debug_id_, "beforeSellerWorkletScoringStart");
   if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
                        "scoreAd", args, errors_out)
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
@@ -368,9 +378,9 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Value> signals_for_winner_value;
   std::vector<std::string> errors_out;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
-      context_group_id_, "beforeSellerWorkletReportingStart");
+      *debug_id_, "beforeSellerWorkletReportingStart");
   if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+           ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
                        "reportResult", args, errors_out)
            .ToLocal(&signals_for_winner_value)) {
     PostReportResultCallbackToUserThread(
@@ -395,24 +405,17 @@ void SellerWorklet::V8State::ReportResult(
 void SellerWorklet::V8State::ConnectDevToolsAgent(
     mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_,
-                                   context_group_id_);
+  v8_helper_->ConnectDevToolsAgent(std::move(agent), user_thread_, *debug_id_);
 }
 
 SellerWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  v8_helper_->FreeContextGroupId(context_group_id_);
 }
 
 void SellerWorklet::V8State::FinishInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  context_group_id_ = v8_helper_->AllocContextGroupIdAndSetResumeCallback(
-      base::BindOnce(&SellerWorklet::V8State::PostResumeToUserThread, parent_,
-                     user_thread_));
-  user_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SellerWorklet::DeliverContextGroupIdOnUserThread, parent_,
-                     context_group_id_));
+  debug_id_->SetResumeCallback(base::BindOnce(
+      &SellerWorklet::V8State::PostResumeToUserThread, parent_, user_thread_));
 }
 
 // static
@@ -461,14 +464,12 @@ void SellerWorklet::ResumeIfPaused() {
     return;
 
   paused_ = false;
-  StartIfReady();
+  Start();
 }
 
-void SellerWorklet::StartIfReady() {
+void SellerWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  if (paused_ || context_group_id_ == AuctionV8Helper::kNoDebugContextGroupId) {
-    return;
-  }
+  DCHECK(!paused_);
 
   // Bind URLLoaderFactory. Remote is not needed after this method completes,
   // since requests will continue after the URLLoaderFactory pipe has been
@@ -477,8 +478,7 @@ void SellerWorklet::StartIfReady() {
       std::move(pending_url_loader_factory_));
 
   worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory.get(), script_source_url_, std::move(v8_helper_),
-      context_group_id_,
+      url_loader_factory.get(), script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
 }
@@ -501,13 +501,6 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   if (error_msg)
     errors.emplace_back(std::move(error_msg).value());
   std::move(load_worklet_callback_).Run(success, errors);
-}
-
-void SellerWorklet::DeliverContextGroupIdOnUserThread(int context_group_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  context_group_id_ = context_group_id;
-  DCHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, context_group_id_);
-  StartIfReady();
 }
 
 void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
