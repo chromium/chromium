@@ -42,9 +42,9 @@ MATCHER_P(EqualsProto,
   return true;
 }
 
-// Helper function composes JSON represented as base::Value from Sequencing
+// Helper function composes JSON represented as base::Value from Sequence
 // information in request.
-base::Value ValueFromSucceededSequencingInfo(
+base::Value ValueFromSucceededSequenceInfo(
     const absl::optional<base::Value> request,
     bool force_confirm_flag) {
   EXPECT_TRUE(request.has_value());
@@ -57,11 +57,7 @@ base::Value ValueFromSucceededSequencingInfo(
   EXPECT_NE(encrypted_record_list, nullptr);
   EXPECT_FALSE(encrypted_record_list->GetList().empty());
 
-  // Retrieve and process sequencing information
-  const base::Value* unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  EXPECT_NE(unsigned_seq_info, nullptr);
+  // Retrieve and process sequence information
   const base::Value* seq_info =
       encrypted_record_list->GetList().rbegin()->FindDictKey(
           "sequenceInformation");
@@ -185,8 +181,8 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
           Invoke([](base::Value request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
-                .Run(ValueFromSucceededSequencingInfo(std::move(request),
-                                                      false));
+                .Run(ValueFromSucceededSequenceInfo(
+                    std::move(request), /*force_confirm_flag=*/false));
           })));
 
   auto records = std::make_unique<std::vector<EncryptedRecord>>();

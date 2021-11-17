@@ -65,7 +65,7 @@ class MissiveStorageModule : public StorageModuleInterface {
   void Flush(Priority priority,
              base::OnceCallback<void(Status)> callback) override;
 
-  // Once a record has been successfully uploaded, the sequencing information
+  // Once a record has been successfully uploaded, the sequence information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequence_information|
   // only affects Storage if no higher sequencing was confirmed before;

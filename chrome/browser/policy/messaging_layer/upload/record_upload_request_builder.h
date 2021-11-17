@@ -23,11 +23,6 @@ namespace reporting {
 //         "encryptionKey": "EncryptedMessage",
 //         "publicKeyId": 1
 //       },
-//       "sequencingInformation": {
-//         "sequencingId": 1,
-//         "generationId": 123456789,
-//         "priority": 1
-//       }
 //       "sequenceInformation": {
 //         "sequencingId": 1,
 //         "generationId": 123456789,
@@ -40,11 +35,6 @@ namespace reporting {
 //         "encryptionKey": "EncryptedMessage",
 //         "publicKeyId": 2
 //       },
-//       "sequencingInformation": {
-//         "sequencingId": 2,
-//         "generationId": 123456789,
-//         "priority": 1
-//       }
 //       "sequenceInformation": {
 //         "sequencingId": 2,
 //         "generationId": 123456789,
@@ -55,12 +45,6 @@ namespace reporting {
 //   "attachEncryptionSettings": true  // optional field
 // }
 // TODO(b/159361496): Periodically add memory and disk space usage.
-//
-// Note that there are two identical sub-records - sequencingInformation and
-// sequenceInformation (sequencingId and generationId in the former are
-// Unsigned, in the later - Signed). This is done temporarily for backwards
-// compatibility with the server.
-// TODO(b/177677467): Remove this duplication once server is fully transitioned.
 //
 // This payload is added to the common payload of all reporting jobs, which
 // includes "device" and "browser" sub-fields:
@@ -102,7 +86,6 @@ class EncryptedRecordDictionaryBuilder {
   absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedWrappedRecordPath();
-  static base::StringPiece GetUnsignedSequenceInformationKeyPath();
   static base::StringPiece GetSequenceInformationKeyPath();
   static base::StringPiece GetEncryptionInfoPath();
   static base::StringPiece GetCompressionInformationPath();

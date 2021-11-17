@@ -131,19 +131,18 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Reject encrypted_wrapped_record without sequencing information.
+  // Reject encrypted_wrapped_record without sequence information.
   record.set_encrypted_wrapped_record("Enterprise");
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Reject incorrectly set sequencing information by only setting sequencing
-  // id.
+  // Reject incorrectly set sequence information by only setting sequencing id.
   auto* sequence_information = record.mutable_sequence_information();
   sequence_information->set_sequencing_id(1701);
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Finish correctly setting sequencing information but incorrectly set
+  // Finish correctly setting sequence information but incorrectly set
   // encryption info.
   sequence_information->set_generation_id(12345678);
   sequence_information->set_priority(IMMEDIATE);

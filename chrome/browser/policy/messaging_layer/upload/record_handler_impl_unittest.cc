@@ -68,10 +68,10 @@ using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 // Helper function for retrieving and processing the SequenceInformation from
 // a request.
 void RetrieveFinalSequenceInformation(const base::Value& request,
-                                      base::Value& sequencing_info) {
+                                      base::Value& sequence_info) {
   ASSERT_TRUE(request.is_dict());
 
-  // Retrieve and process sequencing information
+  // Retrieve and process sequence information
   const base::Value* const encrypted_record_list =
       request.FindListKey("encryptedRecord");
   ASSERT_TRUE(encrypted_record_list != nullptr);
@@ -83,26 +83,18 @@ void RetrieveFinalSequenceInformation(const base::Value& request,
   ASSERT_TRUE(!seq_info->FindStringKey("sequencingId")->empty());
   ASSERT_TRUE(!seq_info->FindStringKey("generationId")->empty());
   ASSERT_TRUE(seq_info->FindIntKey("priority"));
-  // For backwards compatibility, we must also have unsigned sequencing info.
-  const auto* const unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  ASSERT_TRUE(unsigned_seq_info != nullptr);
-  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("sequencingId")->empty());
-  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("generationId")->empty());
-  ASSERT_TRUE(unsigned_seq_info->FindIntKey("priority"));
+  sequence_info.MergeDictionary(seq_info);
 
-  sequencing_info.MergeDictionary(seq_info);
-  // Set half of sequencing information to return a string instead of an int for
+  // Set half of sequence information to return a string instead of an int for
   // priority.
   int64_t sequencing_id;
-  ASSERT_TRUE(base::StringToInt64(
-      *sequencing_info.FindStringKey("sequencingId"), &sequencing_id));
+  ASSERT_TRUE(base::StringToInt64(*sequence_info.FindStringKey("sequencingId"),
+                                  &sequencing_id));
   if (sequencing_id % 2) {
-    const auto int_result = sequencing_info.FindIntKey("priority");
+    const auto int_result = sequence_info.FindIntKey("priority");
     ASSERT_TRUE(int_result.has_value());
-    sequencing_info.RemoveKey("priority");
-    sequencing_info.SetStringKey("priority", Priority_Name(int_result.value()));
+    sequence_info.RemoveKey("priority");
+    sequence_info.SetStringKey("priority", Priority_Name(int_result.value()));
   }
 }
 
@@ -133,8 +125,8 @@ absl::optional<base::Value> BuildEncryptionSettingsFromRequest(
 void SucceedResponseFromRequestHelper(const base::Value& request,
                                       bool force_confirm_by_server,
                                       base::Value& response,
-                                      base::Value& sequencing_info) {
-  RetrieveFinalSequenceInformation(request, sequencing_info);
+                                      base::Value& sequence_info) {
+  RetrieveFinalSequenceInformation(request, sequence_info);
 
   // If force_confirm is true, process that.
   if (force_confirm_by_server) {
@@ -152,33 +144,33 @@ void SucceedResponseFromRequestHelper(const base::Value& request,
 void SucceedResponseFromRequest(const base::Value& request,
                                 bool force_confirm_by_server,
                                 base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+  base::Value sequence_info{base::Value::Type::DICTIONARY};
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+                                   sequence_info);
+  response.SetPath("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
 void SucceedResponseFromRequestMissingPriority(const base::Value& request,
                                                bool force_confirm_by_server,
                                                base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+  base::Value sequence_info{base::Value::Type::DICTIONARY};
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
+                                   sequence_info);
   // Remove priority field.
-  sequencing_info.RemoveKey("priority");
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  sequence_info.RemoveKey("priority");
+  response.SetPath("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
 void SucceedResponseFromRequestInvalidPriority(const base::Value& request,
                                                bool force_confirm_by_server,
                                                base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+  base::Value sequence_info{base::Value::Type::DICTIONARY};
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
-  sequencing_info.RemoveKey("priority");
+                                   sequence_info);
+  sequence_info.RemoveKey("priority");
   // Set priority field to an invalid value.
-  sequencing_info.SetStringKey("priority", "abc");
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  sequence_info.SetStringKey("priority", "abc");
+  response.SetPath("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
 // Immitates the server response for failed record upload. Since additional
@@ -191,8 +183,8 @@ void FailedResponseFromRequest(const base::Value& request,
 
   response.SetPath("lastSucceedUploadedRecord", seq_info.Clone());
   // The lastSucceedUploadedRecord should be the record before the one indicated
-  // in seq_info. |seq_info| has been built by
-  // RetrieveFinalSequencingInforamation and is guaranteed to have this key.
+  // in seq_info. |seq_info| has been built by RetrieveFinalSequenceInforamation
+  // and is guaranteed to have this key.
   int64_t sequencing_id;
   ASSERT_TRUE(base::StringToInt64(*seq_info.FindStringKey("sequencingId"),
                                   &sequencing_id));

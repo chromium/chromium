@@ -46,7 +46,6 @@ constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 
 // EncrypedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
-constexpr char kUnsignedSequenceInformationKey[] = "sequencingInformation";
 constexpr char kSequenceInformationKey[] = "sequenceInformation";
 constexpr char kEncryptionInfoKey[] = "encryptionInfo";
 constexpr char kCompressionInformationKey[] = "compressionInformation";
@@ -125,7 +124,7 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
     EncryptedRecord record) {
   base::Value record_dictionary{base::Value::Type::DICTIONARY};
 
-  // A record without sequencing information cannot be uploaded - deny it.
+  // A record without sequence information cannot be uploaded - deny it.
   if (!record.has_sequence_information()) {
     return;
   }
@@ -139,19 +138,6 @@ EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
   }
   record_dictionary.SetKey(GetSequenceInformationKeyPath(),
                            std::move(sequence_information_result.value()));
-  // For backwards compatibility, store unsigned sequencing information too.
-  // The values are non-negative anyway, so the same builder can be used.
-  auto unsigned_sequence_information_result =
-      SequenceInformationDictionaryBuilder(record.sequence_information())
-          .Build();
-  if (!unsigned_sequence_information_result.has_value()) {
-    // Sequencing information was improperly configured. Record cannot be
-    // uploaded. Deny it.
-    return;
-  }
-  record_dictionary.SetKey(
-      GetUnsignedSequenceInformationKeyPath(),
-      std::move(unsigned_sequence_information_result.value()));
 
   // Encryption information can be missing until we set up encryption as
   // mandatory.
@@ -207,12 +193,6 @@ EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath() {
 
 // static
 base::StringPiece
-EncryptedRecordDictionaryBuilder::GetUnsignedSequenceInformationKeyPath() {
-  return kUnsignedSequenceInformationKey;
-}
-
-// static
-base::StringPiece
 EncryptedRecordDictionaryBuilder::GetSequenceInformationKeyPath() {
   return kSequenceInformationKey;
 }
@@ -237,16 +217,16 @@ SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
     return;
   }
 
-  base::Value sequencing_dictionary{base::Value::Type::DICTIONARY};
-  sequencing_dictionary.SetStringKey(
+  base::Value sequence_dictionary{base::Value::Type::DICTIONARY};
+  sequence_dictionary.SetStringKey(
       GetSequencingIdPath(),
       base::NumberToString(sequence_information.sequencing_id()));
-  sequencing_dictionary.SetStringKey(
+  sequence_dictionary.SetStringKey(
       GetGenerationIdPath(),
       base::NumberToString(sequence_information.generation_id()));
-  sequencing_dictionary.SetIntKey(GetPriorityPath(),
-                                  sequence_information.priority());
-  result_ = std::move(sequencing_dictionary);
+  sequence_dictionary.SetIntKey(GetPriorityPath(),
+                                sequence_information.priority());
+  result_ = std::move(sequence_dictionary);
 }
 
 SequenceInformationDictionaryBuilder::~SequenceInformationDictionaryBuilder() =

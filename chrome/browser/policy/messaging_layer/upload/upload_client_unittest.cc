@@ -59,9 +59,9 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Helper function composes JSON represented as base::Value from Sequencing
+// Helper function composes JSON represented as base::Value from Sequence
 // information in request.
-base::Value ValueFromSucceededSequencingInfo(
+base::Value ValueFromSucceededSequenceInfo(
     const absl::optional<base::Value> request,
     bool force_confirm_flag) {
   EXPECT_TRUE(request.has_value());
@@ -74,11 +74,7 @@ base::Value ValueFromSucceededSequencingInfo(
   EXPECT_TRUE(encrypted_record_list != nullptr);
   EXPECT_FALSE(encrypted_record_list->GetList().empty());
 
-  // Retrieve and process sequencing information
-  const base::Value* unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  EXPECT_TRUE(unsigned_seq_info != nullptr);
+  // Retrieve and process sequence information
   const base::Value* seq_info =
       encrypted_record_list->GetList().rbegin()->FindDictKey(
           "sequenceInformation");
@@ -210,8 +206,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                      base::Value request,
                      policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
-                .Run(ValueFromSucceededSequencingInfo(std::move(request),
-                                                      force_confirm_flag));
+                .Run(ValueFromSucceededSequenceInfo(std::move(request),
+                                                    force_confirm_flag));
           })));
 
   test::TestMultiEvent<SequenceInformation, bool> upload_success;

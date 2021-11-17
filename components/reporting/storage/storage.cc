@@ -160,10 +160,10 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
 
   void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
-    // Update sequencing information: add Priority.
-    SequenceInformation* const sequencing_info =
+    // Update sequence information: add Priority.
+    SequenceInformation* const sequence_info =
         encrypted_record.mutable_sequence_information();
-    sequencing_info->set_priority(priority_);
+    sequence_info->set_priority(priority_);
     storage_interface_->ProcessRecord(std::move(encrypted_record),
                                       std::move(processed_cb));
   }
@@ -171,7 +171,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   void ProcessGap(SequenceInformation start,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
-    // Update sequencing information: add Priority.
+    // Update sequence information: add Priority.
     start.set_priority(priority_);
     storage_interface_->ProcessGap(std::move(start), count,
                                    std::move(processed_cb));

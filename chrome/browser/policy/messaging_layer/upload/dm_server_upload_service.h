@@ -28,7 +28,7 @@
 namespace reporting {
 
 // DmServerUploadService uploads events to the DMServer. It does not manage
-// sequencing information, instead reporting the highest sequencing id for each
+// sequence information, instead reporting the highest sequencing id for each
 // generation id and priority.
 //
 // DmServerUploadService relies on DmServerUploader for uploading. A
@@ -39,7 +39,7 @@ namespace reporting {
 class DmServerUploadService {
  public:
   // ReportSuccessfulUploadCallback is used to pass server responses back to
-  // the owner of |this| (the respone consists of sequencing information and
+  // the owner of |this| (the respone consists of sequence information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
       base::RepeatingCallback<void(SequenceInformation,
@@ -50,7 +50,7 @@ class DmServerUploadService {
   using EncryptionKeyAttachedCallback =
       base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
-  // Successful response consists of Sequencing information that may be
+  // Successful response consists of Sequence information that may be
   // accompanied with force_confirm flag.
   struct SuccessfulUploadResponse {
     SequenceInformation sequence_information;
