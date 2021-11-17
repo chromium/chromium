@@ -291,6 +291,16 @@ export class ShimlessRma extends ShimlessRmaBase {
       // Allow polymer to observe the changed state.
       this.notifyPath('currentPage_.buttonNext');
     };
+
+    /**
+     * The setNextButtonLabelCallback callback is used by page elements to set
+     * the text label for the 'Next' button.
+     * @private {?Function}
+     */
+    this.setNextButtonLabelCallback_ = (e) => {
+      this.currentPage_.buttonNextLabelKey = e.detail;
+      this.notifyPath('currentPage_.buttonNextLabelKey');
+    };
   }
 
   /** @override */
@@ -299,6 +309,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.addEventListener('transition-state', this.transitionState_);
     window.addEventListener(
         'disable-next-button', this.disableNextButtonCallback_);
+    window.addEventListener(
+        'set-next-button-label', this.setNextButtonLabelCallback_);
   }
 
   /** @override */
@@ -307,6 +319,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.removeEventListener('transition-state', this.transitionState_);
     window.removeEventListener(
         'disable-next-button', this.disableNextButtonCallback_);
+    window.removeEventListener(
+        'set-next-button-label', this.setNextButtonLabelCallback_);
   }
 
   /** @override */

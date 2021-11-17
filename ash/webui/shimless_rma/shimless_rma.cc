@@ -71,6 +71,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"cancelButtonLabel", IDS_SHIMLESS_RMA_CANCEL_BUTTON},
       {"backButtonLabel", IDS_SHIMLESS_RMA_BACK_BUTTON},
       {"nextButtonLabel", IDS_SHIMLESS_RMA_NEXT_BUTTON},
+      {"skipButtonLabel", IDS_SHIMLESS_RMA_SKIP_BUTTON},
       // Landing page
       {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},

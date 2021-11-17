@@ -187,4 +187,35 @@ export function onboardingUpdatePageTest() {
     assertTrue(progressComponent.textContent.trim().startsWith(
         'OS update progress received '));
   });
+
+  test('UpdatePageSetSkipButton', async () => {
+    const version = '90.1.2.3';
+    const update = false;
+
+    service.setGetCurrentOsVersionResult(version);
+    service.setCheckForOsUpdatesResult(update, 'fake version');
+    service.setUpdateOsResult(update);
+
+    component = /** @type {!OnboardingUpdatePageElement} */ (
+        document.createElement('onboarding-update-page'));
+    let buttonLabelKey;
+    component.addEventListener('set-next-button-label', (e) => {
+      buttonLabelKey = e.detail;
+    });
+
+    document.body.appendChild(component);
+    await flushTasks();
+    assertEquals('nextButtonLabel', buttonLabelKey);
+
+    service.setCheckForOsUpdatesResult(true, 'fake version');
+    component = /** @type {!OnboardingUpdatePageElement} */ (
+        document.createElement('onboarding-update-page'));
+    component.addEventListener('set-next-button-label', (e) => {
+      buttonLabelKey = e.detail;
+    });
+
+    document.body.appendChild(component);
+    await flushTasks();
+    assertEquals('skipButtonLabel', buttonLabelKey);
+  });
 }

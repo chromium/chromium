@@ -2091,6 +2091,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_NEXT_BUTTON" desc="Default text for the button used to progress to the next step of RMA finalization.">
         Next
       </message>
+      <message name="IDS_SHIMLESS_RMA_SKIP_BUTTON" desc="Default text for the button used to skip to the next step of RMA finalization.">
+        Skip
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair

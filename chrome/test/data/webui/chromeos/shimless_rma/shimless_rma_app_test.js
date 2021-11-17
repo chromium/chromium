@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeChromeVersion, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
@@ -192,5 +193,29 @@ export function shimlessRMAAppTest() {
     await flushTasks();
 
     assertFalse(backButton.hidden);
+  });
+
+  test('UpdateNextButtonLabel', async () => {
+    await initializeShimlessRMAApp(
+        [{
+          state: RmaState.kSelectComponents,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
+
+    const nextButton = component.shadowRoot.querySelector('#next');
+    assertEquals(
+        loadTimeData.getString('nextButtonLabel'),
+        nextButton.textContent.trim());
+
+    component.dispatchEvent(new CustomEvent(
+        'set-next-button-label',
+        {bubbles: true, composed: true, detail: 'skipButtonLabel'},
+        ));
+    assertEquals(
+        loadTimeData.getString('skipButtonLabel'),
+        nextButton.textContent.trim());
   });
 }

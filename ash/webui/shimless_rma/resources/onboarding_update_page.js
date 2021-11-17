@@ -168,6 +168,7 @@ export class OnboardingUpdatePageElement extends
                                   'currentVersionUpToDateText',
           this.currentVersion_);
       this.setUpdateNoticeMessage_();
+      this.setNextButtonLabel_();
     });
   }
 
@@ -262,6 +263,18 @@ export class OnboardingUpdatePageElement extends
   onHardwareVerificationResult(isCompliant, errorMessage) {
     this.isCompliant_ = isCompliant;
     this.setUpdateNoticeMessage_();
+  }
+
+  /** @protected */
+  setNextButtonLabel_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-next-button-label',
+        {
+          bubbles: true,
+          composed: true,
+          detail: this.updateAvailable_ ? 'skipButtonLabel' : 'nextButtonLabel'
+        },
+        ));
   }
 }
 
