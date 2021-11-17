@@ -115,8 +115,7 @@ std::string UnwrapUpdateAssistantSettingsResponse(
 
   if (response_details.status() ==
       ::assistant::api::ResponseDetails_Status_SUCCESS) {
-    DCHECK(!response_details.has_error_message() &&
-           response.has_update_settings_ui_response() &&
+    DCHECK(response.has_update_settings_ui_response() &&
            response.update_settings_ui_response().has_update_result());
 
     // Upon success, returns a serialized proto |SettingsUiUpdateResult|.

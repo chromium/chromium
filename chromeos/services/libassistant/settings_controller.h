@@ -42,8 +42,8 @@ class SettingsController : public AssistantClientObserver,
                       UpdateSettingsCallback callback) override;
 
   // AssistantClientObserver:
-  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
   void OnAssistantClientStarted(AssistantClient* assistant_client) override;
+  void OnAssistantClientRunning(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
  private:

@@ -321,18 +321,18 @@ void SettingsController::UpdateDeviceSettings(
   }
 }
 
-void SettingsController::OnAssistantClientCreated(
+void SettingsController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
   assistant_client_ = assistant_client;
 
   // Note we do not enable the device settings updater here, as it requires
-  // Libassistant to be started.
+  // Libassistant to be fully ready.
   UpdateAuthenticationTokens(authentication_tokens_);
   UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateListeningEnabled(listening_enabled_);
 }
 
-void SettingsController::OnAssistantClientStarted(
+void SettingsController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   device_settings_updater_ =
       std::make_unique<DeviceSettingsUpdater>(this, assistant_client);

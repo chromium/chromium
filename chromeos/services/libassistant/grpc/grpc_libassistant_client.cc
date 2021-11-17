@@ -89,6 +89,22 @@ GetLibassistGrpcMethodName<::assistant::api::SetInternalOptionsRequest>() {
 
 template <>
 std::string
+GetLibassistGrpcMethodName<::assistant::api::UpdateAssistantSettingsRequest>() {
+  // Updates assistant settings on the server.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "ConfigSettingsService", "UpdateAssistantSettings");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::GetAssistantSettingsRequest>() {
+  // Returns assistant settings from the server.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "ConfigSettingsService", "GetAssistantSettings");
+}
+
+template <>
+std::string
 GetLibassistGrpcMethodName<::assistant::api::AddTimeToTimerRequest>() {
   return chromeos::assistant::GetLibassistGrpcMethodName("AlarmTimerService",
                                                          "AddTimeToTimer");

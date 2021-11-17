@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -48,6 +49,15 @@ const chromeos::libassistant::StateConfig kInteractionDefaultStateConfig =
     chromeos::libassistant::StateConfig{kMaxRpcRetries,
                                         kAssistantInteractionDefaultTimeoutMs};
 
+#define LOG_GRPC_STATUS(level, status, func_name)                \
+  if (status.ok()) {                                             \
+    DVLOG(level) << func_name << " succeed with ok status.";     \
+  } else {                                                       \
+    LOG(ERROR) << func_name << " failed with a non-ok status.";  \
+    LOG(ERROR) << "Error code: " << status.error_code()          \
+               << ", error message: " << status.error_message(); \
+  }
+
 // Creates a callback for logging the request status. The callback will
 // ignore the returned response as it either doesn't contain any information
 // we need or is empty.
@@ -56,15 +66,7 @@ base::OnceCallback<void(const grpc::Status& status, const Response&)>
 GetLoggingCallback(const std::string& request_name) {
   return base::BindOnce(
       [](const std::string& request_name, const grpc::Status& status,
-         const Response& ignored) {
-        if (status.ok()) {
-          DVLOG(2) << request_name << " succeed with ok status.";
-        } else {
-          LOG(ERROR) << request_name << " failed with a non-ok status.";
-          LOG(ERROR) << "Error code: " << status.error_code()
-                     << ", error message: " << status.error_message();
-        }
-      },
+         const Response& ignored) { LOG_GRPC_STATUS(2, status, request_name); },
       request_name);
 }
 
@@ -184,6 +186,59 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
       GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
       custom_config);
+}
+
+void AssistantClientImpl::UpdateAssistantSettings(
+    const ::assistant::ui::SettingsUiUpdate& update,
+    const std::string& user_id,
+    base::OnceCallback<void(
+        const ::assistant::api::UpdateAssistantSettingsResponse&)> on_done) {
+  using ::assistant::api::UpdateAssistantSettingsRequest;
+  using ::assistant::api::UpdateAssistantSettingsResponse;
+
+  UpdateAssistantSettingsRequest request;
+  // Sets obfuscated gaia id.
+  request.set_user_id(user_id);
+  // Sets the update to be applied to the settings.
+  *request.mutable_update_settings_ui_request()->mutable_settings_update() =
+      update;
+
+  auto cb = base::BindOnce(
+      [](base::OnceCallback<void(const UpdateAssistantSettingsResponse&)>
+             on_done,
+         const grpc::Status& status,
+         const UpdateAssistantSettingsResponse& response) {
+        LOG_GRPC_STATUS(/*level=*/2, status, "UpdateAssistantSettings")
+        std::move(on_done).Run(response);
+      },
+      std::move(on_done));
+  libassistant_client_.CallServiceMethod(request, std::move(cb),
+                                         kDefaultStateConfig);
+}
+
+void AssistantClientImpl::GetAssistantSettings(
+    const ::assistant::ui::SettingsUiSelector& selector,
+    const std::string& user_id,
+    base::OnceCallback<
+        void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done) {
+  using ::assistant::api::GetAssistantSettingsRequest;
+  using ::assistant::api::GetAssistantSettingsResponse;
+
+  GetAssistantSettingsRequest request;
+  *request.mutable_get_settings_ui_request()->mutable_selector() = selector;
+  request.set_user_id(user_id);
+
+  auto cb = base::BindOnce(
+      [](base::OnceCallback<void(const GetAssistantSettingsResponse&)> on_done,
+         const grpc::Status& status,
+         const GetAssistantSettingsResponse& response) {
+        LOG_GRPC_STATUS(/*level=*/2, status, "GetAssistantSettings")
+        std::move(on_done).Run(response);
+      },
+      std::move(on_done));
+
+  libassistant_client_.CallServiceMethod(request, std::move(cb),
+                                         kDefaultStateConfig);
 }
 
 void AssistantClientImpl::AddTimeToTimer(const std::string& id,

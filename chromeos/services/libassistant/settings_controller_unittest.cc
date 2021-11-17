@@ -77,12 +77,12 @@ class AssistantSettingsControllerTest : public testing::Test {
 
   SettingsController& controller() { return controller_; }
 
-  void CreateLibassistant() {
-    controller().OnAssistantClientCreated(assistant_client_.get());
-  }
-
   void StartLibassistant() {
     controller().OnAssistantClientStarted(assistant_client_.get());
+  }
+
+  void RunningLibassistant() {
+    controller().OnAssistantClientRunning(assistant_client_.get());
   }
 
   void DestroyLibassistant() {
@@ -91,9 +91,9 @@ class AssistantSettingsControllerTest : public testing::Test {
     Init();
   }
 
-  void CreateAndStartLibassistant() {
-    CreateLibassistant();
+  void StartAndRunningLibassistant() {
     StartLibassistant();
+    RunningLibassistant();
   }
 
   void Init() {
@@ -131,7 +131,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotCrashAfterDestroyingLibassistant) {
-  CreateAndStartLibassistant();
+  StartLibassistant();
   DestroyLibassistant();
 
   controller().SetAuthenticationTokens({});
@@ -158,11 +158,11 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
   EXPECT_NO_CALLS(assistant_client_mock(), SetAuthenticationInfo);
-  CreateAndStartLibassistant();
+  StartLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest, ShouldSetLocale) {
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetLocaleOverride("locale"));
 
@@ -172,7 +172,7 @@ TEST_F(AssistantSettingsControllerTest, ShouldSetLocale) {
 TEST_F(AssistantSettingsControllerTest,
        ShouldUseDefaultLocaleIfSettingToEmptyString) {
   const std::string default_locale = icu::Locale::getDefault().getName();
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetLocaleOverride(default_locale));
 
@@ -181,7 +181,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenLocaleIsNotSet) {
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
@@ -193,7 +193,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenSpokenFeedbackEnabledIsNotSet) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
@@ -205,7 +205,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetInternalOptionsWhenDarkModeEnabledIsNotSet) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), SetInternalOptions);
   EXPECT_NO_CALLS(assistant_client_mock(), SetDeviceAttributes);
@@ -219,7 +219,7 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
@@ -231,7 +231,7 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
   controller().SetDarkModeEnabled(false);
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
@@ -243,7 +243,7 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
   EXPECT_CALL(assistant_client_mock(), SetDeviceAttributes);
@@ -252,7 +252,7 @@ TEST_F(AssistantSettingsControllerTest,
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetInternalOptionsAndLocaleWhenLibassistantIsCreated) {
+       ShouldSetInternalOptionsAndLocaleWhenLibassistantIsStarted) {
   controller().SetLocale("locale");
   controller().SetSpokenFeedbackEnabled(true);
   controller().SetDarkModeEnabled(false);
@@ -260,13 +260,13 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_CALL(assistant_client_mock(), SetLocaleOverride);
   EXPECT_CALL(assistant_client_mock(), SetInternalOptions);
 
-  CreateLibassistant();
+  StartLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetDeviceOptionsWhenLocaleIsNotSet) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
 
@@ -276,7 +276,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        ShouldNotSetDeviceOptionsWhenHotwordEnabledIsNotSet) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
 
@@ -286,7 +286,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetDeviceOptionsWhenLocaleIsUpdated) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateAndStartLibassistant();
+  StartAndRunningLibassistant();
   controller().SetHotwordEnabled(true);
 
   EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
@@ -297,7 +297,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        ShouldSetDeviceOptionsWhenHotwordEnabledIsUpdated) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateAndStartLibassistant();
+  StartAndRunningLibassistant();
   controller().SetLocale("locale");
 
   EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
@@ -306,22 +306,21 @@ TEST_F(AssistantSettingsControllerTest,
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetDeviceOptionsWhenLibassistantIsStarted) {
+       ShouldSetDeviceOptionsWhenLibassistantIsRunning) {
   IGNORE_CALLS(assistant_client_mock(), SetLocaleOverride);
-  CreateLibassistant();
-
+  StartLibassistant();
   controller().SetLocale("locale");
   controller().SetHotwordEnabled(true);
 
   EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
 
-  StartLibassistant();
+  RunningLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest, ShouldSetAuthenticationTokens) {
   const AuthTokens expected = {{"user", "token"}};
 
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
 
@@ -330,7 +329,7 @@ TEST_F(AssistantSettingsControllerTest, ShouldSetAuthenticationTokens) {
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetAuthenticationTokensWhenLibassistantIsCreated) {
+       ShouldSetAuthenticationTokensWhenLibassistantIsStarted) {
   const AuthTokens expected = {{"user", "token"}};
 
   controller().SetAuthenticationTokens(
@@ -338,12 +337,12 @@ TEST_F(AssistantSettingsControllerTest,
 
   EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
 
-  CreateLibassistant();
+  StartLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldSupportEmptyAuthenticationTokenList) {
-  CreateLibassistant();
+  StartLibassistant();
 
   const AuthTokens expected = {};
   EXPECT_CALL(assistant_client_mock(), SetAuthenticationInfo(expected));
@@ -352,7 +351,7 @@ TEST_F(AssistantSettingsControllerTest,
 }
 
 TEST_F(AssistantSettingsControllerTest, ShouldSetListeningEnabled) {
-  CreateLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), EnableListening(true));
 
@@ -360,12 +359,12 @@ TEST_F(AssistantSettingsControllerTest, ShouldSetListeningEnabled) {
 }
 
 TEST_F(AssistantSettingsControllerTest,
-       ShouldSetListeningEnabledWhenLibassistantIsCreated) {
+       ShouldSetListeningEnabledWhenLibassistantIsStarted) {
   controller().SetListeningEnabled(false);
 
   EXPECT_CALL(assistant_client_mock(), EnableListening(false));
 
-  CreateLibassistant();
+  StartLibassistant();
 }
 
 TEST_F(AssistantSettingsControllerTest,
@@ -379,7 +378,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        GetSettingsShouldCallCallbackIfLibassistantIsStopped) {
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   base::MockCallback<SettingsController::GetSettingsCallback> callback;
   controller().GetSettings("selector", /*include_header=*/false, callback.Get());
@@ -400,7 +399,7 @@ TEST_F(AssistantSettingsControllerTest,
 TEST_F(AssistantSettingsControllerTest,
        UpdateSettingsShouldCallCallbackIfLibassistantIsStopped) {
   IGNORE_CALLS(assistant_client_mock(), UpdateAssistantSettings);
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   base::MockCallback<SettingsController::UpdateSettingsCallback> callback;
   controller().UpdateSettings("selector", callback.Get());
@@ -411,7 +410,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldInvokeGetAssistantSettingsWhenGetSettingsCalled) {
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), GetAssistantSettings);
 
@@ -423,7 +422,7 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        ShouldInvokeUpdateAssistantSettingsWhenUpdateSettingsCalled) {
-  CreateAndStartLibassistant();
+  StartLibassistant();
 
   EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
 

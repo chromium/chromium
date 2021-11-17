@@ -52,6 +52,18 @@ class AssistantClientImpl : public AssistantClientV1 {
   void SetAuthenticationInfo(const AuthTokens& tokens) override;
   void SetInternalOptions(const std::string& locale,
                           bool spoken_feedback_enabled) override;
+  void UpdateAssistantSettings(
+      const ::assistant::ui::SettingsUiUpdate& update,
+      const std::string& user_id,
+      base::OnceCallback<void(
+          const ::assistant::api::UpdateAssistantSettingsResponse&)> on_done)
+      override;
+  void GetAssistantSettings(
+      const ::assistant::ui::SettingsUiSelector& selector,
+      const std::string& use_id,
+      base::OnceCallback<
+          void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
+      override;
 
   // Timer related:
   void AddTimeToTimer(const std::string& id,
