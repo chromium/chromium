@@ -3606,50 +3606,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(NoAppCache)) {
-  SetDataSaverEnabled(true);
-  GURL starting_page = GetOriginServerURL("/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
-  WaitForUpdatedCustomProxyConfig();
-
-  PrefetchProxyTabHelper* tab_helper =
-      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
-
-  GURL eligible_link =
-      GetOriginServerURL("/prefetch/prefetch_proxy/app_cache.html");
-
-  TestTabHelperObserver tab_helper_observer(tab_helper);
-  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
-
-  base::RunLoop prefetch_run_loop;
-  base::RunLoop nsp_run_loop;
-  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
-      prefetch_run_loop.QuitClosure());
-
-  tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
-
-  GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {eligible_link});
-
-  // This run loop will quit when all the prefetch responses have been
-  // successfully done and processed.
-  prefetch_run_loop.Run();
-
-  std::vector<net::test_server::HttpRequest> origin_requests_before_prerender =
-      origin_server_requests();
-
-  // This run loop will quit when a NSP finishes.
-  nsp_run_loop.Run();
-
-  std::vector<net::test_server::HttpRequest> origin_requests_after_prerender =
-      origin_server_requests();
-
-  // There should not have been any additional requests.
-  EXPECT_EQ(origin_requests_before_prerender.size(),
-            origin_requests_after_prerender.size());
-}
-
-IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(NoLinkRelSearch)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
