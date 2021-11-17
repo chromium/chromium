@@ -558,14 +558,13 @@ bool TaskQueueImpl::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
   StackVector<Task, 8> tasks_to_delete;
 
   while (!main_thread_only().delayed_incoming_queue.empty()) {
-    Task* task =
-        const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
-    CHECK(task->task);
-    if (!task->task.IsCancelled())
+    const Task& task = main_thread_only().delayed_incoming_queue.top();
+    CHECK(task.task);
+    if (!task.task.IsCancelled())
       break;
 
-    tasks_to_delete->push_back(std::move(*task));
-    main_thread_only().delayed_incoming_queue.pop();
+    tasks_to_delete->push_back(
+        main_thread_only().delayed_incoming_queue.take_top());
   }
 
   if (!tasks_to_delete->empty()) {
@@ -588,28 +587,32 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   StackVector<Task, 8> tasks_to_delete;
 
   while (!main_thread_only().delayed_incoming_queue.empty()) {
-    Task& task =
-        const_cast<Task&>(main_thread_only().delayed_incoming_queue.top());
+    const Task& task = main_thread_only().delayed_incoming_queue.top();
     CHECK(task.task);
-    if (task.task.IsCancelled()) {
-      tasks_to_delete->push_back(std::move(task));
-      main_thread_only().delayed_incoming_queue.pop();
-      continue;
-    }
-    if (task.delayed_run_time > lazy_now->Now())
+
+    // Leave the top task alone if it hasn't been canceled and it is not ready.
+    const bool is_cancelled = task.task.IsCancelled();
+    if (!is_cancelled && task.delayed_run_time > lazy_now->Now())
       break;
 
+    Task ready_task = main_thread_only().delayed_incoming_queue.take_top();
+    if (is_cancelled) {
+      tasks_to_delete->push_back(std::move(ready_task));
+      continue;
+    }
+
+    // The top task is ready to run. Move it to the delayed work queue.
 #if DCHECK_IS_ON()
     if (sequence_manager_->settings().log_task_delay_expiry)
-      VLOG(0) << name_ << " Delay expired for " << task.posted_from.ToString();
+      VLOG(0) << name_ << " Delay expired for "
+              << ready_task.posted_from.ToString();
 #endif  // DCHECK_IS_ON()
-    DCHECK(!task.delayed_run_time.is_null());
-    ActivateDelayedFenceIfNeeded(task.delayed_run_time);
-    DCHECK(!task.enqueue_order_set());
-    task.set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
+    DCHECK(!ready_task.delayed_run_time.is_null());
+    ActivateDelayedFenceIfNeeded(ready_task.delayed_run_time);
+    DCHECK(!ready_task.enqueue_order_set());
+    ready_task.set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
 
-    delayed_work_queue_task_pusher.Push(std::move(task));
-    main_thread_only().delayed_incoming_queue.pop();
+    delayed_work_queue_task_pusher.Push(std::move(ready_task));
   }
 
   // Explicitly delete tasks last.
@@ -1342,16 +1345,16 @@ void TaskQueueImpl::DelayedIncomingQueue::push(Task task) {
   CHECK(task.task);
   if (task.is_high_res)
     pending_high_res_tasks_++;
-  queue_.push(std::move(task));
+  queue_.insert(std::move(task));
 }
 
-void TaskQueueImpl::DelayedIncomingQueue::pop() {
+Task TaskQueueImpl::DelayedIncomingQueue::take_top() {
   DCHECK(!empty());
   if (top().is_high_res) {
     pending_high_res_tasks_--;
     DCHECK_GE(pending_high_res_tasks_, 0);
   }
-  queue_.pop();
+  return queue_.take_top();
 }
 
 void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
@@ -1361,49 +1364,23 @@ void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
 
 void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
     SequenceManagerImpl* sequence_manager) {
-  pending_high_res_tasks_ -= queue_.SweepCancelledTasks(sequence_manager);
-}
-
-size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
-    SequenceManagerImpl* sequence_manager) {
-  // Under the hood a std::priority_queue is a heap implemented top of a
-  // std::vector. We poke at that vector directly here to filter out canceled
-  // tasks in place.
-  size_t num_high_res_tasks_swept = 0u;
-  auto keep_task = [&num_high_res_tasks_swept](const Task& task) {
-    if (!task.task.IsCancelled())
+  // Note: IntrusiveHeap::EraseIf() is safe against re-entrancy caused by
+  // deleted tasks posting new tasks.
+  queue_.EraseIf([this](const Task& task) {
+    if (task.task.IsCancelled()) {
+      if (task.is_high_res) {
+        --pending_high_res_tasks_;
+        DCHECK_GE(pending_high_res_tasks_, 0);
+      }
       return true;
-    if (task.is_high_res)
-      num_high_res_tasks_swept++;
+    }
     return false;
-  };
-
-  // Because task destructors could have a side-effect of posting new tasks, we
-  // move all the cancelled tasks into a temporary container before deleting
-  // them. This is to avoid |c| from changing while c.erase() is running.
-  auto delete_start = std::stable_partition(c.begin(), c.end(), keep_task);
-  StackVector<Task, 8> tasks_to_delete;
-  std::move(delete_start, c.end(),
-            std::back_inserter(tasks_to_delete.container()));
-  c.erase(delete_start, c.end());
-
-  // stable_partition ensures order was not changed if there was nothing to
-  // delete.
-  if (!tasks_to_delete->empty()) {
-    ranges::make_heap(c, comp);
-    tasks_to_delete->clear();
-  }
-  return num_high_res_tasks_swept;
+  });
 }
 
 Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
-  return queue_.AsValue(now);
-}
-
-Value TaskQueueImpl::DelayedIncomingQueue::PQueue::AsValue(
-    TimeTicks now) const {
   Value state(Value::Type::LIST);
-  for (const Task& task : c)
+  for (const Task& task : queue_)
     state.Append(TaskAsValue(task, now));
   return state;
 }

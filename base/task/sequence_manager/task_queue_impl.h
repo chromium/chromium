@@ -335,7 +335,7 @@ class BASE_EXPORT TaskQueueImpl {
     ~DelayedIncomingQueue();
 
     void push(Task task);
-    void pop();
+    Task take_top();
     bool empty() const { return queue_.empty(); }
     size_t size() const { return queue_.size(); }
     const Task& top() const { return queue_.top(); }
@@ -351,19 +351,20 @@ class BASE_EXPORT TaskQueueImpl {
     Value AsValue(TimeTicks now) const;
 
    private:
-    struct PQueue
-        : public std::priority_queue<Task, std::vector<Task>, std::greater<>> {
-      // Removes all cancelled tasks from the queue. Returns the number of
-      // removed high resolution tasks (which could be lower than the total
-      // number of removed tasks).
-      //
-      // TODO(crbug.com/1155905): we pass SequenceManager to be able to record
-      // crash keys. Remove this parameter after chasing down this crash.
-      size_t SweepCancelledTasks(SequenceManagerImpl* sequence_manager);
-      Value AsValue(TimeTicks now) const;
+    // An implementation of HeapHandleAccessor that doesn't keep the heap
+    // handles up-to-date. Useful if elements are never accessed using their
+    // handles.
+    // TODO(pmonette): Use a full implementation of HeapHandleAccessor once
+    //                 TaskQueueImpl supports removing tasks from the
+    //                 DelayedIncomingQueue using heap handles.
+    struct NullHeapHandleAccessor {
+      void SetHeapHandle(Task* element, HeapHandle handle) const {}
+      void ClearHeapHandle(Task* element) const {}
+      HeapHandle GetHeapHandle(const Task* element) const {
+        return HeapHandle::Invalid();
+      }
     };
-
-    PQueue queue_;
+    IntrusiveHeap<Task, std::greater<>, NullHeapHandleAccessor> queue_;
 
     // Number of pending tasks in the queue that need high resolution timing.
     int pending_high_res_tasks_ = 0;
