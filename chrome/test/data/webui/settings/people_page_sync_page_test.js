@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
@@ -576,9 +576,9 @@ suite('SyncSettingsTests', function() {
     assertTrue(dashboardLink.hidden);
   });
 
-  // ##################################
-  // TESTS THAT ARE SKIPPED ON CHROMEOS
-  // ##################################
+  // ######################################
+  // TESTS THAT ARE SKIPPED ON CHROMEOS ASH
+  // ######################################
 
   if (!isChromeOS) {
     test('SyncSetupCancel', async function() {
@@ -592,7 +592,16 @@ suite('SyncSettingsTests', function() {
 
       const cancelButton =
           syncPage.shadowRoot.querySelector('settings-sync-account-control')
-              .shadowRoot.querySelector('#setup-buttons cr-button');
+              .shadowRoot.querySelector(
+                  '#setup-buttons cr-button:not(.action-button)');
+
+      if (isLacros) {
+        // On Lacros, turning off sync is not supported yet.
+        // TODO(https://crbug.com/1217645): Add the cancel button.
+        assertFalse(!!cancelButton);
+        return;
+      }
+
       assertTrue(!!cancelButton);
 
       // Clicking the setup cancel button aborts sync.
@@ -623,47 +632,53 @@ suite('SyncSettingsTests', function() {
       assertFalse(abort);
     });
 
-    test('SyncSetupLeavePage', async function() {
-      syncPage.syncStatus = {
-        syncSystemEnabled: true,
-        firstSetupInProgress: true,
-        signedIn: true
-      };
-      flush();
+    // On Lacros, turning off sync is not supported yet.
+    // TODO(https://crbug.com/1217645): Enable this test after adding support.
+    if (!isLacros) {
+      test('SyncSetupLeavePage', async function() {
+        syncPage.syncStatus = {
+          syncSystemEnabled: true,
+          firstSetupInProgress: true,
+          signedIn: true
+        };
+        flush();
 
-      // Navigating away while setup is in progress opens the 'Cancel sync?'
-      // dialog.
-      const router = Router.getInstance();
-      router.navigateTo(routes.BASIC);
-      await eventToPromise('cr-dialog-open', syncPage);
-      assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
-      assertTrue(syncPage.shadowRoot.querySelector('#setupCancelDialog').open);
+        // Navigating away while setup is in progress opens the 'Cancel sync?'
+        // dialog.
+        const router = Router.getInstance();
+        router.navigateTo(routes.BASIC);
+        await eventToPromise('cr-dialog-open', syncPage);
+        assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
+        assertTrue(
+            syncPage.shadowRoot.querySelector('#setupCancelDialog').open);
 
-      // Clicking the cancel button on the 'Cancel sync?' dialog closes
-      // the dialog and removes it from the DOM.
-      syncPage.shadowRoot.querySelector('#setupCancelDialog')
-          .querySelector('.cancel-button')
-          .click();
-      await eventToPromise(
-          'close', syncPage.shadowRoot.querySelector('#setupCancelDialog'));
-      flush();
-      assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
-      assertFalse(!!syncPage.shadowRoot.querySelector('#setupCancelDialog'));
+        // Clicking the cancel button on the 'Cancel sync?' dialog closes
+        // the dialog and removes it from the DOM.
+        syncPage.shadowRoot.querySelector('#setupCancelDialog')
+            .querySelector('.cancel-button')
+            .click();
+        await eventToPromise(
+            'close', syncPage.shadowRoot.querySelector('#setupCancelDialog'));
+        flush();
+        assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
+        assertFalse(!!syncPage.shadowRoot.querySelector('#setupCancelDialog'));
 
-      // Navigating away while setup is in progress opens the
-      // dialog again.
-      router.navigateTo(routes.BASIC);
-      await eventToPromise('cr-dialog-open', syncPage);
-      assertTrue(syncPage.shadowRoot.querySelector('#setupCancelDialog').open);
+        // Navigating away while setup is in progress opens the
+        // dialog again.
+        router.navigateTo(routes.BASIC);
+        await eventToPromise('cr-dialog-open', syncPage);
+        assertTrue(
+            syncPage.shadowRoot.querySelector('#setupCancelDialog').open);
 
-      // Clicking the confirm button on the dialog aborts sync.
-      syncPage.shadowRoot.querySelector('#setupCancelDialog')
-          .querySelector('.action-button')
-          .click();
-      const abort =
-          await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
-      assertTrue(abort);
-    });
+        // Clicking the confirm button on the dialog aborts sync.
+        syncPage.shadowRoot.querySelector('#setupCancelDialog')
+            .querySelector('.action-button')
+            .click();
+        const abort =
+            await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+        assertTrue(abort);
+      });
+    }
 
     test('SyncSetupSearchSettings', async function() {
       syncPage.syncStatus = {

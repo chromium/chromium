@@ -728,7 +728,9 @@ void PeopleHandler::CloseSyncSetup() {
         if (sync_service) {
           DVLOG(1) << "Sync setup aborted by user action";
           sync_service->StopAndClear();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// ChromeOS platforms don't support signing out.
+// TODO(https://crbug.com/1217645): Add signout support to Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
           // Sign out the user on desktop Chrome if they click cancel during
           // initial setup.
           if (!sync_service->GetUserSettings()->IsFirstSetupComplete()) {

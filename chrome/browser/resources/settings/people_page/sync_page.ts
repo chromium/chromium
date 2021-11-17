@@ -166,10 +166,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
+      // <if expr="not lacros">
       showSetupCancelDialog_: {
         type: Boolean,
         value: false,
       },
+      // </if>
 
       enterPassphraseLabel_: {
         type: String,
@@ -202,7 +204,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
+  // <if expr="not lacros">
   private showSetupCancelDialog_: boolean;
+  // </if>
   private enterPassphraseLabel_: string;
   private existingPassphraseLabel_: string;
 
@@ -351,6 +355,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     });
   }
 
+  // <if expr="not lacros">
   private onSetupCancelDialogBack_() {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#setupCancelDialog')!.cancel();
@@ -371,6 +376,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+  // </if>
 
   currentRouteChanged() {
     const router = Router.getInstance();
@@ -392,6 +398,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       return;
     }
 
+    // On Lacros, turning off sync is not supported yet.
+    // TODO(https://crbug.com/1217645): Enable the cancel dialog.
+    // <if expr="not lacros">
     const userActionCancelsSetup = this.syncStatus &&
         this.syncStatus.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
@@ -412,6 +421,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       });
       return;
     }
+    // </if>
 
     // Reset variable.
     this.setupCancelConfirmed_ = false;
