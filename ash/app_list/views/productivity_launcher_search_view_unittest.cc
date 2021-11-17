@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -66,6 +67,13 @@ class ProductivityLauncherSearchViewTest : public AshTestBase {
       SearchResultContainerView* result_container_view) {
     return static_cast<SearchResultListView*>(result_container_view)
         ->list_type_for_test();
+  }
+
+  std::u16string GetListLabel(
+      SearchResultContainerView* result_container_view) {
+    return static_cast<SearchResultListView*>(result_container_view)
+        ->title_label_for_test()
+        ->GetText();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -120,12 +128,14 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   EXPECT_TRUE(result_containers[2]->GetVisible());
   EXPECT_FALSE(result_containers[3]->GetVisible());
 
+  // Verify title labels are correctly updated.
+  EXPECT_EQ(GetListLabel(result_containers[1]), u"Apps");
+  EXPECT_EQ(GetListLabel(result_containers[2]), u"Websites");
+
   // Verify result container ordering.
-  auto list_views = test_helper->GetProductivityLauncherSearchView()
-                        ->result_container_views_for_test();
-  EXPECT_EQ(GetListType(list_views[1]),
+  EXPECT_EQ(GetListType(result_containers[1]),
             SearchResultListView::SearchResultListType::kApps);
-  EXPECT_EQ(GetListType(list_views[2]),
+  EXPECT_EQ(GetListType(result_containers[2]),
             SearchResultListView::SearchResultListType::kWeb);
 
   // Create categorized results and order categories as {kWeb, kApps}.
@@ -145,13 +155,18 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   EXPECT_TRUE(result_containers[2]->GetVisible());
   EXPECT_FALSE(result_containers[3]->GetVisible());
 
-  // Verify result container ordering.
-  list_views = test_helper->GetProductivityLauncherSearchView()
-                   ->result_container_views_for_test();
+  // Verify title labels are correctly updated.
 
-  EXPECT_EQ(GetListType(list_views[1]),
+  EXPECT_EQ(GetListLabel(result_containers[1]), u"Websites");
+  EXPECT_EQ(GetListLabel(result_containers[2]), u"Apps");
+
+  // Verify result container ordering.
+  result_containers = test_helper->GetProductivityLauncherSearchView()
+                          ->result_container_views_for_test();
+
+  EXPECT_EQ(GetListType(result_containers[1]),
             SearchResultListView::SearchResultListType::kWeb);
-  EXPECT_EQ(GetListType(list_views[2]),
+  EXPECT_EQ(GetListType(result_containers[2]),
             SearchResultListView::SearchResultListType::kApps);
 }
 

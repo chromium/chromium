@@ -107,6 +107,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // reset.
   SearchResultListType list_type_for_test() { return list_type_.value(); }
 
+  views::Label* title_label_for_test() { return title_label_; }
+
  protected:
   // Overridden from views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
