@@ -13,6 +13,7 @@
 #import "components/unified_consent/unified_consent_service.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -28,6 +29,8 @@
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
+// Manager for chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // Auditor for user consent.
 @property(nonatomic, assign) consent_auditor::ConsentAuditor* consentAuditor;
 // Chrome interface to the iOS shared authentication library.
@@ -49,6 +52,8 @@
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
@@ -57,14 +62,25 @@
                       syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
-    _identityManager = identityManager;
-    _consentAuditor = consentAuditor;
     _authenticationService = authenticationService;
+    _identityManager = identityManager;
+    _accountManagerService = accountManagerService;
+    _consentAuditor = consentAuditor;
     _unifiedConsentService = unifiedConsentService;
     _syncSetupService = syncSetupService;
     _syncService = syncService;
   }
   return self;
+}
+
+- (void)dealloc {
+  DCHECK(!self.authenticationFlow);
+  DCHECK(!self.identityManager);
+  DCHECK(!self.accountManagerService);
+  DCHECK(!self.consentAuditor);
+  DCHECK(!self.authenticationService);
+  DCHECK(!self.syncService);
+  DCHECK(!self.delegate);
 }
 
 - (void)authenticateWithIdentity:(ChromeIdentity*)identity
@@ -109,37 +125,64 @@
   // retains the initial authentication state. This way, the mediator does not
   // call sign-in finished if sign-in was in progress.
   BOOL shouldNotCallSigninFinishedOnDelegate = self.isAuthenticationInProgress;
-  [self cancelAndDismissAuthenticationFlowAnimated:NO];
-  if (!shouldNotCallSigninFinishedOnDelegate) {
-    [self.delegate userSigninMediatorSigninFinishedWithResult:
-                       SigninCoordinatorResultCanceledByUser];
-  }
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^() {
+    if (!shouldNotCallSigninFinishedOnDelegate) {
+      [weakSelf.delegate userSigninMediatorSigninFinishedWithResult:
+                             SigninCoordinatorResultCanceledByUser];
+    }
+  };
+  [self cancelAndDismissAuthenticationFlowAnimated:NO completion:completion];
 }
 
-- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated {
+- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
+                                        completion:(ProceduralBlock)completion {
   [self.authenticationFlow cancelAndDismissAnimated:animated];
-  [self revertToSigninStateOnStart];
-}
 
-#pragma mark - Private
-
-// For users that cancel the sign-in flow, revert to the sign-in
-// state prior to starting sign-in coordinators.
-- (void)revertToSigninStateOnStart {
   self.syncService->GetUserSettings()->SetSyncRequested(false);
+  DCHECK(self.delegate);
   switch (self.delegate.signinStateOnStart) {
     case IdentitySigninStateSignedOut: {
       self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
                                           /*force_clear_browsing_data=*/false,
-                                          nil);
+                                          completion);
       break;
     }
     case IdentitySigninStateSignedInWithSyncDisabled: {
       DCHECK(!self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSync));
-      // Call StopAndClear() to clear the encryption passphrase, in case the
-      // user entered it before canceling the sync opt-in flow.
-      _syncService->StopAndClear();
+      DCHECK(self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin));
+      if ([self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSignin)
+              isEqual:self.delegate.signinIdentityOnStart]) {
+        // Call StopAndClear() to clear the encryption passphrase, in case the
+        // user entered it before canceling the sync opt-in flow.
+        _syncService->StopAndClear();
+        if (completion)
+          completion();
+      } else {
+        __weak __typeof(self) weakSelf = self;
+        self.authenticationService->SignOut(
+            signin_metrics::ABORT_SIGNIN,
+            /*force_clear_browsing_data=*/false, ^() {
+              AuthenticationService* authenticationService =
+                  weakSelf.authenticationService;
+              ChromeIdentity* identity =
+                  weakSelf.delegate.signinIdentityOnStart;
+              ChromeAccountManagerService* accountManagerService =
+                  weakSelf.accountManagerService;
+              if (authenticationService && identity &&
+                  accountManagerService->IsValidIdentity(identity)) {
+                // Make sure the mediator is still alive, and the identity is
+                // stil valid (for example the identity can be removed by
+                // another app.
+                authenticationService->SignIn(identity);
+              }
+              if (completion)
+                completion();
+            });
+      }
       break;
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
@@ -149,6 +192,18 @@
     }
   }
 }
+
+- (void)disconnect {
+  self.authenticationFlow = nil;
+  self.identityManager = nil;
+  self.accountManagerService = nil;
+  self.consentAuditor = nil;
+  self.authenticationService = nil;
+  self.syncService = nil;
+  self.delegate = nil;
+}
+
+#pragma mark - Private
 
 - (BOOL)isAuthenticationInProgress {
   return self.authenticationFlow != nil;
