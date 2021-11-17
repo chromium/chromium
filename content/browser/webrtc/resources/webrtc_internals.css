@@ -136,3 +136,28 @@ details[open] details summary {
 .peerconnection-deprecations {
   font-weight: bold;
 }
+
+.candidategrid tr {
+    text-align: center;
+    word-break: break-word;
+}
+
+.candidategrid-active {
+  font-weight: bold;
+}
+
+.candidategrid-candidatepair {
+    background-color: #ccc;
+}
+
+.candidategrid-candidatepair td:first-of-type {
+    text-align: left;
+}
+
+.candidategrid-candidate {
+    background-color: #ddd;
+}
+
+.candidategrid-candidate td:first-of-type {
+    text-align: right;
+}

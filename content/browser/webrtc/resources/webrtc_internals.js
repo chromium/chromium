@@ -13,6 +13,7 @@ import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
+import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 
 const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
@@ -295,7 +296,6 @@ function removePeerConnection(data) {
   }
 }
 
-
 /**
  * Adds a peer connection.
  *
@@ -395,6 +395,7 @@ function addPeerConnection(data) {
   candidatePair.appendChild(document.createElement('span'));
   peerConnectionElement.appendChild(candidatePair);
 
+  createIceCandidateGrid(peerConnectionElement);
   return peerConnectionElement;
 }
 
@@ -518,6 +519,8 @@ function addStandardStats(data) {
   } else {
     candidateElement.innerText = '(not connected)';
   }
+
+  updateIceCandidateGrid(peerConnectionElement, r.statsById);
 }
 
 /**
