@@ -126,7 +126,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   ResolvedFrameData* GetResolvedFrame(Surface* surface,
                                       bool inside_aggregation);
 
-  void HandleSurfaceQuad(const SurfaceDrawQuad* surface_quad,
+  // |source_pass| is the render pass that contains |surface_quad|.
+  void HandleSurfaceQuad(const CompositorRenderPass& source_pass,
+                         const SurfaceDrawQuad* surface_quad,
                          float parent_device_scale_factor,
                          const gfx::Transform& target_transform,
                          const absl::optional<gfx::Rect>& clip_rect,
@@ -136,8 +138,10 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                          bool* damage_rect_in_quad_space_valid,
                          const MaskFilterInfoExt& mask_filter_info_pair);
 
+  // |source_pass| is the render pass that contains |surface_quad|.
   void EmitSurfaceContent(const ResolvedFrameData& resolved_frame,
                           float parent_device_scale_factor,
+                          const CompositorRenderPass& source_pass,
                           const SurfaceDrawQuad* surface_quad,
                           const gfx::Transform& target_transform,
                           const absl::optional<gfx::Rect>& clip_rect,

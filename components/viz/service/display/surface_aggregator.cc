@@ -557,6 +557,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
 }
 
 void SurfaceAggregator::HandleSurfaceQuad(
+    const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
@@ -624,15 +625,16 @@ void SurfaceAggregator::HandleSurfaceQuad(
                                dest_pass, mask_filter_info);
   }
 
-  EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,
-                     target_transform, clip_rect, dest_pass, ignore_undamaged,
-                     damage_rect_in_quad_space, damage_rect_in_quad_space_valid,
-                     mask_filter_info);
+  EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, source_pass,
+                     surface_quad, target_transform, clip_rect, dest_pass,
+                     ignore_undamaged, damage_rect_in_quad_space,
+                     damage_rect_in_quad_space_valid, mask_filter_info);
 }
 
 void SurfaceAggregator::EmitSurfaceContent(
     const ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
+    const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& clip_rect,
@@ -737,6 +739,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     if (surface_quad_sqs->clip_rect) {
       surface_quad_clip_rect.Intersect(*surface_quad_sqs->clip_rect);
     }
+
+    surface_quad_clip_rect.Intersect(source_pass.output_rect);
 
     quads_clip =
         CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
@@ -1172,10 +1176,11 @@ void SurfaceAggregator::CopyQuadsToPass(
             quad->shared_quad_state->is_fast_rounded_corner, target_transform);
       }
 
-      HandleSurfaceQuad(
-          surface_quad, parent_device_scale_factor, target_transform, clip_rect,
-          dest_pass, ignore_undamaged, &damage_rect_in_quad_space,
-          &damage_rect_in_quad_space_valid, new_mask_filter_info_ext);
+      HandleSurfaceQuad(source_pass, surface_quad, parent_device_scale_factor,
+                        target_transform, clip_rect, dest_pass,
+                        ignore_undamaged, &damage_rect_in_quad_space,
+                        &damage_rect_in_quad_space_valid,
+                        new_mask_filter_info_ext);
     } else {
       if (quad->shared_quad_state != last_copied_source_shared_quad_state) {
         if (parent_mask_filter_info_ext.mask_filter_info.IsEmpty()) {
