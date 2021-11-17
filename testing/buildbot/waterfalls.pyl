@@ -3398,7 +3398,7 @@
       },
       'mac10.14-blink-rel-dummy': {
         'mixins': [
-          'mac_mini_10.14',
+          'mac_10.14',
         ],
         'swarming': {
           'hard_timeout': 900,
@@ -4996,7 +4996,7 @@
       },
       'Mac10.12 Tests': {
         'mixins': [
-            'mac_mini_10.12',
+            'mac_10.12',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
@@ -5974,7 +5974,7 @@
       },
       'WebRTC Chromium FYI Mac Tester': {
         'mixins': [
-          'mac_mini_10.12',
+          'mac_10.12',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',

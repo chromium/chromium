@@ -652,6 +652,14 @@
       },
     },
   },
+  'mac_10.12': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-10.12.6',
+      },
+    },
+  },
   'mac_10.13': {
     'swarming': {
       'dimensions': {
@@ -724,24 +732,6 @@
         'os': 'Mac-11',
         'pool': 'chromium.tests',
         'display_attached': '1',
-      },
-    },
-  },
-  'mac_mini_10.12': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.12.6',
-      },
-    },
-  },
-  'mac_mini_10.14': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.14.6',
       },
     },
   },
