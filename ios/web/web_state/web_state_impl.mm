@@ -288,25 +288,17 @@ void WebStateImpl::OnFaviconUrlUpdated(
     observer.FaviconUrlUpdated(this, candidates);
 }
 
-const NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() const {
-  return *navigation_manager_;
-}
-
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
   return *navigation_manager_;
-}
-
-const WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() const {
-  return web_frames_manager_;
 }
 
 WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() {
   return web_frames_manager_;
 }
 
-const SessionCertificatePolicyCacheImpl*
-WebStateImpl::GetSessionCertificatePolicyCacheImpl() const {
-  return certificate_policy_cache_.get();
+SessionCertificatePolicyCacheImpl&
+WebStateImpl::GetSessionCertificatePolicyCacheImpl() {
+  return *certificate_policy_cache_;
 }
 
 void WebStateImpl::SetSessionCertificatePolicyCacheImpl(
@@ -649,11 +641,11 @@ void WebStateImpl::Stop() {
 }
 
 const NavigationManager* WebStateImpl::GetNavigationManager() const {
-  return &GetNavigationManagerImpl();
+  return navigation_manager_.get();
 }
 
 NavigationManager* WebStateImpl::GetNavigationManager() {
-  return &GetNavigationManagerImpl();
+  return navigation_manager_.get();
 }
 
 const WebFramesManager* WebStateImpl::GetWebFramesManager() const {
@@ -686,8 +678,8 @@ CRWSessionStorage* WebStateImpl::BuildSessionStorage() {
         setSerializableUserData:std::move(serializable_user_data)];
     return restored_session_storage_;
   }
-  SessionStorageBuilder session_storage_builder;
-  return session_storage_builder.BuildStorage(this);
+  return SessionStorageBuilder::BuildStorage(*this, *navigation_manager_,
+                                             *certificate_policy_cache_);
 }
 
 void WebStateImpl::LoadData(NSData* data,
@@ -932,8 +924,8 @@ void WebStateImpl::RestoreSessionStorage(CRWSessionStorage* session_storage) {
   // current tab triggers the serialization of all tabs and when user clicks on
   // tab switcher without switching to a tab.
   restored_session_storage_ = session_storage;
-  SessionStorageBuilder session_storage_builder;
-  session_storage_builder.ExtractSessionState(this, session_storage);
+  SessionStorageBuilder::ExtractSessionState(*this, *navigation_manager_,
+                                             session_storage);
 }
 
 bool WebStateImpl::SetSessionStateData(NSData* data) {

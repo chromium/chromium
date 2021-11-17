@@ -18,13 +18,17 @@ class SessionCertificatePolicyCacheImpl;
 class SessionCertificatePolicyCacheStorageBuilder {
  public:
   // Creates a CRWSessionCertificatePolicyCacheStorage from |cache|.
-  CRWSessionCertificatePolicyCacheStorage* BuildStorage(
-      const SessionCertificatePolicyCacheImpl* cache) const;
+  static CRWSessionCertificatePolicyCacheStorage* BuildStorage(
+      const SessionCertificatePolicyCacheImpl& cache);
+
   // Creates a SessionCertificatePolicyCache from |cache_storage|.
-  std::unique_ptr<SessionCertificatePolicyCacheImpl>
+  static std::unique_ptr<SessionCertificatePolicyCacheImpl>
   BuildSessionCertificatePolicyCache(
       CRWSessionCertificatePolicyCacheStorage* cache_storage,
-      BrowserState* browser_state) const;
+      BrowserState* browser_state);
+
+  SessionCertificatePolicyCacheStorageBuilder() = delete;
+  ~SessionCertificatePolicyCacheStorageBuilder() = delete;
 };
 
 }  // namespace web

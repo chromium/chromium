@@ -34,9 +34,8 @@ TEST_F(SessionCertificatePolicyCacheStorageBuilderTest, BuildStorage) {
   net::CertStatus status = net::CERT_STATUS_REVOKED;
   cache.RegisterAllowedCertificate(cert, host, status);
   // Build the cert policy cache storage and verify that the data was copied.
-  web::SessionCertificatePolicyCacheStorageBuilder builder;
   CRWSessionCertificatePolicyCacheStorage* cache_storage =
-      builder.BuildStorage(&cache);
+      web::SessionCertificatePolicyCacheStorageBuilder::BuildStorage(cache);
   EXPECT_EQ(1U, cache_storage.certificateStorages.count);
   CRWSessionCertificateStorage* cert_storage =
       [cache_storage.certificateStorages anyObject];
@@ -62,9 +61,9 @@ TEST_F(SessionCertificatePolicyCacheStorageBuilderTest,
       [[CRWSessionCertificatePolicyCacheStorage alloc] init];
   [cache_storage setCertificateStorages:[NSSet setWithObject:cert_storage]];
   // Build the cert policy cache and verify its contents.
-  web::SessionCertificatePolicyCacheStorageBuilder builder;
   web::FakeBrowserState browser_state;
   std::unique_ptr<web::SessionCertificatePolicyCacheImpl> cache =
-      builder.BuildSessionCertificatePolicyCache(cache_storage, &browser_state);
+      web::SessionCertificatePolicyCacheStorageBuilder::
+          BuildSessionCertificatePolicyCache(cache_storage, &browser_state);
   EXPECT_NSEQ([cache_storage certificateStorages], cache -> GetAllowedCerts());
 }

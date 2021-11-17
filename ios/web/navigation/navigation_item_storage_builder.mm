@@ -15,46 +15,32 @@
 
 namespace web {
 
-int NavigationItemStorageBuilder::ItemStoredSize(
-    const NavigationItemImpl* navigation_item) const {
-  DCHECK(navigation_item);
-  int size = 0;
-  size += navigation_item->virtual_url_.spec().size();
-  size += navigation_item->url_.spec().size();
-  size += navigation_item->referrer_.url.spec().size();
-  size += navigation_item->title_.size();
-  for (NSString* key in navigation_item->http_request_headers_) {
-    NSString* value = navigation_item->http_request_headers_[key];
-    size += key.length + value.length;
-  }
-  return size;
-}
-
+// static
 CRWNavigationItemStorage* NavigationItemStorageBuilder::BuildStorage(
-    const NavigationItemImpl* navigation_item) const {
-  DCHECK(navigation_item);
+    const NavigationItemImpl& navigation_item) {
   CRWNavigationItemStorage* storage = [[CRWNavigationItemStorage alloc] init];
-  storage.virtualURL = navigation_item->GetVirtualURL();
-  storage.URL = navigation_item->GetURL();
+  storage.virtualURL = navigation_item.GetVirtualURL();
+  storage.URL = navigation_item.GetURL();
   // Use default referrer if URL is longer than allowed. Navigation items with
   // these long URLs will not be serialized, so there is no point in keeping
   // referrer URL.
-  if (navigation_item->GetReferrer().url.spec().size() <= url::kMaxURLChars) {
-    storage.referrer = navigation_item->GetReferrer();
+  if (navigation_item.GetReferrer().url.spec().size() <= url::kMaxURLChars) {
+    storage.referrer = navigation_item.GetReferrer();
   }
-  storage.timestamp = navigation_item->GetTimestamp();
-  storage.title = navigation_item->GetTitle();
-  storage.displayState = navigation_item->GetPageDisplayState();
+  storage.timestamp = navigation_item.GetTimestamp();
+  storage.title = navigation_item.GetTitle();
+  storage.displayState = navigation_item.GetPageDisplayState();
   storage.shouldSkipRepostFormConfirmation =
-      navigation_item->ShouldSkipRepostFormConfirmation();
-  storage.userAgentType = navigation_item->GetUserAgentType();
-  storage.HTTPRequestHeaders = navigation_item->GetHttpRequestHeaders();
+      navigation_item.ShouldSkipRepostFormConfirmation();
+  storage.userAgentType = navigation_item.GetUserAgentType();
+  storage.HTTPRequestHeaders = navigation_item.GetHttpRequestHeaders();
   return storage;
 }
 
+// static
 std::unique_ptr<NavigationItemImpl>
 NavigationItemStorageBuilder::BuildNavigationItemImpl(
-    CRWNavigationItemStorage* navigation_item_storage) const {
+    CRWNavigationItemStorage* navigation_item_storage) {
   std::unique_ptr<NavigationItemImpl> item(new web::NavigationItemImpl());
   // While the virtual URL is persisted, we still need the original request URL
   // and the non-virtual URL to be set upon NavigationItem creation.  Since

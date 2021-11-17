@@ -9,17 +9,29 @@
 
 namespace web {
 
+class NavigationManagerImpl;
+class SessionCertificatePolicyCacheImpl;
 class WebStateImpl;
 
 // Class that can serialize and deserialize session information.
 class SessionStorageBuilder {
  public:
-  // Creates a serializable session storage from |web_state|.
-  CRWSessionStorage* BuildStorage(const WebStateImpl* web_state) const;
-  // Populates |web_state| with |storage|'s session information.
-  // The provided |web_state| must already have a |NavigationManager|.
-  void ExtractSessionState(WebStateImpl* web_state,
-                           CRWSessionStorage* storage) const;
+  // Creates a serializable session storage from |web_state|,
+  // |navigation_manager| and |session_certificate_policy_cache|.
+  static CRWSessionStorage* BuildStorage(
+      const WebStateImpl& web_state,
+      const NavigationManagerImpl& navigation_manager,
+      const SessionCertificatePolicyCacheImpl&
+          session_certificate_policy_cache);
+
+  // Populates |web_state| and it's |navigation_manager| with |storage|'s
+  // session information.
+  static void ExtractSessionState(WebStateImpl& web_state,
+                                  NavigationManagerImpl& navigation_manager,
+                                  CRWSessionStorage* storage);
+
+  SessionStorageBuilder() = delete;
+  ~SessionStorageBuilder() = delete;
 };
 
 }  // namespace web

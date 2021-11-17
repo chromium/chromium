@@ -110,16 +110,13 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
 
   // Returns the NavigationManager for this WebState.
-  const NavigationManagerImpl& GetNavigationManagerImpl() const;
   NavigationManagerImpl& GetNavigationManagerImpl();
 
   // Returns the associated WebFramesManagerImpl.
-  const WebFramesManagerImpl& GetWebFramesManagerImpl() const;
   WebFramesManagerImpl& GetWebFramesManagerImpl();
 
   // Returns/Sets the SessionCertificatePolicyCacheImpl for this WebStateImpl.
-  const SessionCertificatePolicyCacheImpl*
-  GetSessionCertificatePolicyCacheImpl() const;
+  SessionCertificatePolicyCacheImpl& GetSessionCertificatePolicyCacheImpl();
   void SetSessionCertificatePolicyCacheImpl(
       std::unique_ptr<SessionCertificatePolicyCacheImpl>
           certificate_policy_cache);
@@ -315,10 +312,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
 
  private:
-  // The SessionStorageBuilder functions require access to private variables of
-  // WebStateImpl.
-  friend SessionStorageBuilder;
-
   // Called when a dialog presented by the JavaScriptDialogPresenter is
   // dismissed.  |callback| is the callback provided to RunJavaScriptDialog(),
   // and is executed with |success| and |user_input|.

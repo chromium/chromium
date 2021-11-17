@@ -116,8 +116,9 @@ TEST_F(SessionStorageBuilderTest, BuildStorageForExtraLongSession) {
   ASSERT_EQ(kMaxSessionSize + 1, original_item_count);
 
   // Verify that storage item count does not exceed kMaxSessionSize.
-  SessionStorageBuilder builder;
-  CRWSessionStorage* storage = builder.BuildStorage(&web_state);
+  CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
+      web_state, web_state.GetNavigationManagerImpl(),
+      web_state.GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   int stored_item_count = storage.itemStorages.count;
   ASSERT_EQ(kMaxSessionSize, stored_item_count);
@@ -160,8 +161,9 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
       ->SetShouldSkipSerialization(true);
 
   // Verify that storage item count does not exceed kMaxSessionSize.
-  SessionStorageBuilder builder;
-  CRWSessionStorage* storage = builder.BuildStorage(&web_state);
+  CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
+      web_state, web_state.GetNavigationManagerImpl(),
+      web_state.GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   int stored_item_count = storage.itemStorages.count;
   ASSERT_EQ(kMaxSessionSize, stored_item_count);
@@ -209,8 +211,9 @@ TEST_F(SessionStorageBuilderTest, SkipLongUrls) {
                                   web::ReferrerPolicy::ReferrerPolicyDefault));
 
   // Verify that storage has single item and that item does not have a referrer.
-  SessionStorageBuilder builder;
-  CRWSessionStorage* storage = builder.BuildStorage(&web_state);
+  CRWSessionStorage* storage = SessionStorageBuilder::BuildStorage(
+      web_state, web_state.GetNavigationManagerImpl(),
+      web_state.GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
   ASSERT_EQ(1U, storage.itemStorages.count);
 
