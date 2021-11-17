@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/download/download_session_cookie_storage.h"
+#import "ios/web/download/download_session_task_impl.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller_delegate.h"
 #import "ios/web/public/web_client.h"
@@ -59,7 +60,7 @@ void DownloadControllerImpl::CreateDownloadTask(
   if (!delegate_)
     return;
 
-  auto task = std::make_unique<DownloadTaskImpl>(
+  auto task = std::make_unique<DownloadSessionTaskImpl>(
       web_state, original_url, http_method, content_disposition, total_bytes,
       mime_type, identifier, this);
   alive_tasks_.insert(task.get());

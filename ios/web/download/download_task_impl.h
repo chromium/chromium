@@ -8,17 +8,13 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
 @class NSURLSession;
-
-namespace net {
-class URLFetcherResponseWriter;
-class URLRequestContextGetter;
-}
 
 namespace web {
 
@@ -56,15 +52,13 @@ class DownloadTaskImpl : public DownloadTask {
                    Delegate* delegate);
 
   // Stops the download operation and clears the delegate.
-  void ShutDown();
+  virtual void ShutDown();
 
   // DownloadTask overrides:
   WebState* GetWebState() override;
   DownloadTask::State GetState() const override;
   void Start(const base::FilePath& path, Destination destination_hint) override;
   void Cancel() override;
-  NSData* GetResponseData() const override;
-  const base::FilePath& GetResponsePath() const override;
   NSString* GetIndentifier() const override;
   const GURL& GetOriginalUrl() const override;
   NSString* GetHttpMethod() const override;
@@ -87,52 +81,18 @@ class DownloadTaskImpl : public DownloadTask {
 
   ~DownloadTaskImpl() override;
 
- private:
-  // Called once the net::URLFetcherResponseWriter created in
-  // Start() has been initialised. The download can be started
-  // unless the initialisation has failed (as reported by the
-  // |writer_initialization_status| result).
-  void OnWriterInitialized(
-      std::unique_ptr<net::URLFetcherResponseWriter> writer,
-      int writer_initialization_status);
-
-  // Creates background NSURLSession with given |identifier| and |cookies|.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies);
-
-  // Asynchronously returns cookies for WebState associated with this task.
-  // Must be called on UI thread. The callback will be invoked on the UI thread.
-  void GetCookies(base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
-
-  // Asynchronously returns cookies for |context_getter|. Must
-  // be called on IO thread. The callback will be invoked on the UI thread.
-  static void GetCookiesFromContextGetter(
-      scoped_refptr<net::URLRequestContextGetter> context_getter,
-      base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
-
-  // Starts the download with given cookies.
-  void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
-
-  // Starts parsing data:// url. Separate code path is used because
-  // NSURLSession does not support data URLs.
-  void StartDataUrlParsing();
+ protected:
+  // Called when download was completed and the data writing was finished.
+  virtual void OnDownloadFinished(int error_code);
 
   // Called when download task was updated.
   void OnDownloadUpdated();
-
-  // Called when download was completed and the data writing was finished.
-  void OnDownloadFinished(int error_code);
-
-  // Called when data:// url parsing has completed and the data has been
-  // written.
-  void OnDataUrlWritten(int bytes_written);
 
   // A list of observers. Weak references.
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
 
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;
-  std::unique_ptr<net::URLFetcherResponseWriter> writer_;
   GURL original_url_;
   NSString* http_method_ = nil;
   int error_code_ = 0;
@@ -145,11 +105,8 @@ class DownloadTaskImpl : public DownloadTask {
   std::string mime_type_;
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
-
   WebState* web_state_ = nullptr;
   Delegate* delegate_ = nullptr;
-  NSURLSession* session_ = nil;
-  NSURLSessionTask* session_task_ = nil;
 
   // Observes UIApplicationWillResignActiveNotification notifications.
   id<NSObject> observer_ = nil;

@@ -19,6 +19,8 @@ source_set("download") {
   sources = [
     "download_controller_impl.h",
     "download_controller_impl.mm",
+    "download_session_task_impl.h",
+    "download_session_task_impl.mm",
     "download_task_impl.h",
     "download_task_impl.mm",
   ]
@@ -69,6 +71,7 @@ source_set("download_unittests") {
   sources = [
     "download_controller_impl_unittest.mm",
     "download_session_cookie_storage_unittest.mm",
+    "download_session_task_impl_unittest.mm",
     "download_task_impl_unittest.mm",
   ]
 }
