@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -217,10 +218,8 @@ const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
 
 const url::Origin& GetFilesAppOrigin() {
-  static const base::NoDestructor<url::Origin> origin([] {
-    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-        file_manager::kFileManagerAppId));
-  }());
+  static const base::NoDestructor<url::Origin> origin(
+      [] { return url::Origin::Create(GetFileManagerURL()); }());
   return *origin;
 }
 
@@ -568,10 +567,7 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      blink::StorageKey(
-          url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-              file_manager::kFileManagerAppId))),
-      mount_name, path);
+      blink::StorageKey(GetFilesAppOrigin()), mount_name, path);
   return file_system_url->is_valid();
 }
 
