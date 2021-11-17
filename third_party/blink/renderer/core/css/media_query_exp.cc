@@ -336,10 +336,21 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
                                     CSSParserTokenRange& range,
                                     const CSSParserContext& context,
                                     const ExecutionContext* execution_context) {
-  DCHECK(!media_feature.IsNull());
-
   String lower_media_feature =
       AttemptStaticStringCreation(media_feature.LowerASCII());
+  if (auto value = MediaQueryExpValue::Consume(lower_media_feature, range,
+                                               context, execution_context)) {
+    return MediaQueryExp(lower_media_feature, *value);
+  }
+  return Invalid();
+}
+
+absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
+    const String& lower_media_feature,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const ExecutionContext* execution_context) {
+  DCHECK_EQ(lower_media_feature, lower_media_feature.LowerASCII());
 
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
@@ -361,66 +372,58 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
     if (CSSIdentifierValue* ident = css_parsing_utils::ConsumeIdent(range)) {
       CSSValueID ident_id = ident->GetValueID();
       if (!FeatureWithValidIdent(lower_media_feature, ident_id))
-        return Invalid();
-      return MediaQueryExp(lower_media_feature, MediaQueryExpValue(ident_id));
+        return absl::nullopt;
+      return MediaQueryExpValue(ident_id);
     }
     if (FeatureWithoutValue(lower_media_feature, execution_context)) {
       // Valid, creates a MediaQueryExp with an 'invalid' MediaQueryExpValue
-      return MediaQueryExp(lower_media_feature, MediaQueryExpValue());
+      return MediaQueryExpValue();
     }
-    return Invalid();
+    return absl::nullopt;
   }
 
   // Now we have |value| as a number, length or resolution
   // Create value for media query expression that must have 1 or more values.
   if (FeatureWithAspectRatio(lower_media_feature)) {
     if (!value->IsInteger() || value->GetDoubleValue() == 0)
-      return Invalid();
+      return absl::nullopt;
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range))
-      return Invalid();
+      return absl::nullopt;
     CSSPrimitiveValue* denominator =
         css_parsing_utils::ConsumePositiveInteger(range, context);
     if (!denominator)
-      return Invalid();
+      return absl::nullopt;
 
-    return MediaQueryExp(
-        lower_media_feature,
-        MediaQueryExpValue(ClampTo<unsigned>(value->GetDoubleValue()),
-                           ClampTo<unsigned>(denominator->GetDoubleValue())));
+    return MediaQueryExpValue(ClampTo<unsigned>(value->GetDoubleValue()),
+                              ClampTo<unsigned>(denominator->GetDoubleValue()));
   }
 
   if (FeatureWithValidDensity(lower_media_feature, value)) {
     // TODO(crbug.com/983613): Support resolution in math functions.
     DCHECK(value->IsNumericLiteralValue());
     const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-    return MediaQueryExp(lower_media_feature,
-                         MediaQueryExpValue(numeric_literal->DoubleValue(),
-                                            numeric_literal->GetType()));
+    return MediaQueryExpValue(numeric_literal->DoubleValue(),
+                              numeric_literal->GetType());
   }
 
   if (FeatureWithPositiveInteger(lower_media_feature, value) ||
       FeatureWithPositiveNumber(lower_media_feature, value) ||
       FeatureWithZeroOrOne(lower_media_feature, value)) {
-    return MediaQueryExp(
-        lower_media_feature,
-        MediaQueryExpValue(value->GetDoubleValue(),
-                           CSSPrimitiveValue::UnitType::kNumber));
+    return MediaQueryExpValue(value->GetDoubleValue(),
+                              CSSPrimitiveValue::UnitType::kNumber);
   }
 
   if (FeatureWithValidPositiveLength(lower_media_feature, value)) {
     if (value->IsNumber()) {
-      return MediaQueryExp(
-          lower_media_feature,
-          MediaQueryExpValue(value->GetDoubleValue(),
-                             CSSPrimitiveValue::UnitType::kNumber));
+      return MediaQueryExpValue(value->GetDoubleValue(),
+                                CSSPrimitiveValue::UnitType::kNumber);
     }
 
     DCHECK(value->IsLength());
     if (const auto* numeric_literal =
             DynamicTo<CSSNumericLiteralValue>(value)) {
-      return MediaQueryExp(lower_media_feature,
-                           MediaQueryExpValue(numeric_literal->GetDoubleValue(),
-                                              numeric_literal->GetType()));
+      return MediaQueryExpValue(numeric_literal->GetDoubleValue(),
+                                numeric_literal->GetType());
     }
 
     const auto* math_value = To<CSSMathFunctionValue>(value);
@@ -429,14 +432,12 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
     if (expression_unit == CSSPrimitiveValue::UnitType::kUnknown) {
       // TODO(crbug.com/982542): Support math expressions involving type
       // conversions properly. For example, calc(10px + 1em).
-      return Invalid();
+      return absl::nullopt;
     }
-    return MediaQueryExp(
-        lower_media_feature,
-        MediaQueryExpValue(math_value->DoubleValue(), expression_unit));
+    return MediaQueryExpValue(math_value->DoubleValue(), expression_unit);
   }
 
-  return Invalid();
+  return absl::nullopt;
 }
 
 namespace {

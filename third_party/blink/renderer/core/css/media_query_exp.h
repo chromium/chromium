@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EXP_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -115,6 +116,16 @@ class CORE_EXPORT MediaQueryExpValue {
   bool operator!=(const MediaQueryExpValue& other) const {
     return !(*this == other);
   }
+
+  // Consume a MediaQueryExpValue for the provided feature, which must already
+  // be lower-cased.
+  //
+  // absl::nullopt is returned on errors.
+  static absl::optional<MediaQueryExpValue> Consume(
+      const String& lower_media_feature,
+      CSSParserTokenRange&,
+      const CSSParserContext&,
+      const ExecutionContext*);
 
  private:
   enum class Type { kInvalid, kId, kNumeric, kRatio };
