@@ -168,43 +168,59 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   const char* suffix =
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
 
-  // Record result histogram.
   if (is_tab_switch_metric2_feature_enabled_) {
+    // Record result histogram.
     base::UmaHistogramEnumeration(
         base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
         tab_switch_result);
-  } else {
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Browser.Tabs.TabSwitchResult.", suffix}),
-        tab_switch_result);
-  }
 
-  // Record latency histogram.
-  switch (tab_switch_result) {
-    case TabSwitchResult::kSuccess: {
-      if (is_tab_switch_metric2_feature_enabled_) {
+    // Record latency histogram.
+    switch (tab_switch_result) {
+      case TabSwitchResult::kSuccess: {
         base::UmaHistogramTimes(
             base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
             tab_switch_duration);
-      } else {
-        base::UmaHistogramTimes(
-            base::StrCat({"Browser.Tabs.TotalSwitchDuration.", suffix}),
-            tab_switch_duration);
+        break;
       }
-      break;
-    }
-    case TabSwitchResult::kIncomplete: {
-      if (is_tab_switch_metric2_feature_enabled_) {
+      case TabSwitchResult::kIncomplete: {
         base::UmaHistogramTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
             tab_switch_duration);
-      } else {
-        base::UmaHistogramTimes(
-            base::StrCat(
-                {"Browser.Tabs.TotalIncompleteSwitchDuration.", suffix}),
-            tab_switch_duration);
+        break;
       }
+      case TabSwitchResult::kPresentationFailure: {
+        break;
+      }
+    }
+  }
+
+  // TODO(crbug.com/1164477): Remove these once the TabSwitchMetric2 feature
+  // is enabled by default. During the validation experiment, the experiment
+  // group will log TabSwitchResult2 and TabSwitchResult with the same values,
+  // so that it's easy to compare the same TabSwitchResult metrics for the
+  // control group and experiment group. If TabSwitchResult in the experiment
+  // group is ok, so is TabSwitchResult2, and we can then deprecate
+  // TabSwitchResult since the historical data outside the experiment group is
+  // unreliable.
+
+  // Record result histogram.
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Browser.Tabs.TabSwitchResult.", suffix}),
+      tab_switch_result);
+
+  // Record latency histogram.
+  switch (tab_switch_result) {
+    case TabSwitchResult::kSuccess: {
+      base::UmaHistogramTimes(
+          base::StrCat({"Browser.Tabs.TotalSwitchDuration.", suffix}),
+          tab_switch_duration);
+      break;
+    }
+    case TabSwitchResult::kIncomplete: {
+      base::UmaHistogramTimes(
+          base::StrCat({"Browser.Tabs.TotalIncompleteSwitchDuration.", suffix}),
+          tab_switch_duration);
       break;
     }
     case TabSwitchResult::kPresentationFailure: {
