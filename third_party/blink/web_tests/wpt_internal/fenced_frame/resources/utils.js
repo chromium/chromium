@@ -57,6 +57,9 @@ const KEYS = {
   "keyboard.getLayoutMap"                       : "00000000-0000-0000-0000-00000000001A",
 
   "permission.notification"                     : "00000000-0000-0000-0000-00000000001B",
+
+  "serviceWorker.frameType"                     : "00000000-0000-0000-0000-00000000001C",
+  "serviceWorker.frameType ACK"                 : "00000000-0000-0000-0000-00000000001D",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
