@@ -29,6 +29,8 @@ load("//project.star", "settings")
 # to ensure that the modified properties get written out to the property files
 load("./builder_config.star", _ = "builder_config")  # @unused
 
+PROPERTIES_OPTIONAL = "PROPERTIES_OPTIONAL"
+
 _NON_BOOTSTRAPPED_PROPERTIES = [
     # The led_recipes_tester recipe examines the recipe property in the input
     # properties of the build definition retrieved using led to determine which
@@ -55,11 +57,16 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     "sheriff_rotations",
 ]
 
-def _bootstrappable_recipe_key(name):
-    return graph.key("@chromium", "", "bootstrappable_recipe", name)
+def _recipe_bootstrappability_key(name):
+    return graph.key("@chromium", "", "recipe_bootstrappability", name)
 
-def register_bootstrappable_recipe(name):
-    graph.add_node(_bootstrappable_recipe_key(name))
+def register_recipe_bootstrappability(name, bootstrappability):
+    if bootstrappability not in (False, True, PROPERTIES_OPTIONAL):
+        fail("bootstrap must be one of False, True or PROPERTIES_OPTIONAL")
+    if bootstrappability:
+        graph.add_node(_recipe_bootstrappability_key(name), props = {
+            "bootstrappability": bootstrappability,
+        })
 
 def _bootstrap_key(bucket_name, builder_name):
     return graph.key("@chromium", "", "bootstrap", "{}/{}".format(bucket_name, builder_name))
@@ -120,15 +127,26 @@ def _bootstrap_properties(ctx):
             if not bootstrap_node:
                 continue
             executable = bootstrap_node.props.executable
-            bootstrappable_recipe_node = graph.node(_bootstrappable_recipe_key(executable))
-            if not bootstrappable_recipe_node:
+            recipe_bootstrappability_node = graph.node(_recipe_bootstrappability_key(executable))
+            if not recipe_bootstrappability_node:
                 continue
 
-            bootstrap = bootstrap_node.props.bootstrap
+            builder_properties = json.decode(builder.properties)
+            bootstrapper_args = []
 
-            properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            non_bootstrapped_properties = {
-                "$bootstrap/properties": {
+            if recipe_bootstrappability_node.props.bootstrappability == PROPERTIES_OPTIONAL:
+                non_bootstrapped_properties = builder_properties
+                bootstrapper_args = ["-properties-optional"]
+
+            else:
+                non_bootstrapped_properties = {}
+
+                for p in _NON_BOOTSTRAPPED_PROPERTIES:
+                    if p in builder_properties:
+                        non_bootstrapped_properties[p] = builder_properties[p]
+
+                properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
+                non_bootstrapped_properties["$bootstrap/properties"] = {
                     "top_level_project": {
                         "repo": {
                             "host": "chromium.googlesource.com",
@@ -137,23 +155,21 @@ def _bootstrap_properties(ctx):
                         "ref": settings.ref,
                     },
                     "properties_file": "infra/config/generated/{}".format(properties_file),
-                },
-                "$bootstrap/exe": {
-                    "exe": builder.exe,
-                },
-                "led_builder_is_bootstrapped": True,
-            }
-            builder_properties = json.decode(builder.properties)
-            for p in _NON_BOOTSTRAPPED_PROPERTIES:
-                if p in builder_properties:
-                    non_bootstrapped_properties[p] = builder_properties[p]
-            ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
+                }
+                ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
-            if bootstrap:
+            if bootstrap_node.props.bootstrap:
+                non_bootstrapped_properties.update({
+                    "$bootstrap/exe": {
+                        "exe": builder.exe,
+                    },
+                    "led_builder_is_bootstrapped": True,
+                })
+
                 builder.properties = json.encode(non_bootstrapped_properties)
 
                 builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
                 builder.exe.cipd_version = "latest"
-                builder.exe.cmd = ["bootstrapper"]
+                builder.exe.cmd = ["bootstrapper"] + bootstrapper_args
 
 lucicfg.generator(_bootstrap_properties)

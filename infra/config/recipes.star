@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/bootstrap.star", "register_bootstrappable_recipe")
+load("//lib/bootstrap.star", "PROPERTIES_OPTIONAL", "register_recipe_bootstrappability")
 load("//lib/recipe_experiments.star", "register_recipe_experiments")
 
 _RECIPE_NAME_PREFIX = "recipe:"
@@ -41,6 +41,11 @@ def _recipe_for_package(cipd_package):
                 skips analysis and performs a full build if
                 chromium_bootstrap.skip_analysis_reasons is non-empty. This will
                 be true if calling chromium_tests.determine_compilation_targets.
+              In addition to a True or False value, PROPERTIES_OPTIONAL can be
+              specified. This value will cause the builder's executable to be
+              changed to the bootstrapper in properties optional mode, which
+              will by default not bootstrap any properties. On a per-run basis
+              the $bootstrap/properties property can be set to bootstrap properties.
             experiments: Experiments to apply to a builder using the recipe. If
               the builder specifies an experiment, the experiment value from the
               recipe will be ignored.
@@ -62,8 +67,7 @@ def _recipe_for_package(cipd_package):
             use_python3 = use_python3,
         )
 
-        if bootstrappable:
-            register_bootstrappable_recipe(name)
+        register_recipe_bootstrappability(name, bootstrappable)
 
         register_recipe_experiments(name, experiments or {})
 
@@ -193,6 +197,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:findit/chromium/single_revision",
+    bootstrappable = PROPERTIES_OPTIONAL,
 )
 
 build_recipe(
