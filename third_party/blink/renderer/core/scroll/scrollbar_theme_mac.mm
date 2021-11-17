@@ -127,37 +127,44 @@ static ScrollbarPainterMap& GetScrollbarPainterMap() {
   return *map;
 }
 
-static int ScrollbarThicknessInternal(NSControlSize control_size,
-                                      NSScrollerStyle scroller_style) {
-  ScrollbarPainter scrollbar_painter =
-      [NSClassFromString(@"NSScrollerImp") scrollerImpWithStyle:scroller_style
-                                                    controlSize:control_size
-                                                     horizontal:NO
-                                           replacingScrollerImp:nil];
-  if ([scrollbar_painter respondsToSelector:@selector(setExpanded:)]) {
-    [scrollbar_painter setExpanded:YES];
+// Values returned by NSScrollerImp's methods for querying sizes of various
+// elements.
+struct NSScrollerImpValues {
+  float track_width;
+  float track_box_width;
+  float knob_min_length;
+  float track_overlap_end_inset;
+  float knob_overlap_end_inset;
+  float track_end_inset;
+  float knob_end_inset;
+};
+const NSScrollerImpValues& GetScrollbarPainterValues(bool overlay,
+                                                     EScrollbarWidth width) {
+  static NSScrollerImpValues overlay_small_values = {
+      14.0, 14.0, 26.0, 0.0, 0.0, 0.0, 1.0,
+  };
+  static NSScrollerImpValues overlay_regular_values = {
+      16.0, 16.0, 26.0, 0.0, 0.0, 0.0, 1.0,
+  };
+  static NSScrollerImpValues legacy_small_values = {
+      11.0, 11.0, 16.0, 0.0, 0.0, 0.0, 2.0,
+  };
+  static NSScrollerImpValues legacy_regular_values = {
+      15.0, 15.0, 20.0, 0.0, 0.0, 0.0, 2.0,
+  };
+  if (overlay) {
+    return (width == EScrollbarWidth::kThin) ? overlay_small_values
+                                             : overlay_regular_values;
+  } else {
+    return (width == EScrollbarWidth::kThin) ? legacy_small_values
+                                             : legacy_regular_values;
   }
-  return [scrollbar_painter trackBoxWidth];
 }
-
-static int OverlayScrollbarThickness(NSControlSize control_size) {
-  static int small_scrollbar_thickness =
-      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleOverlay);
-  static int regular_scrollbar_thickness =
-      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleOverlay);
-
-  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
-                                            : regular_scrollbar_thickness;
-}
-
-static int LegacyScrollbarThickness(NSControlSize control_size) {
-  static int small_scrollbar_thickness =
-      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleLegacy);
-  static int regular_scrollbar_thickness =
-      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleLegacy);
-
-  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
-                                            : regular_scrollbar_thickness;
+const NSScrollerImpValues& GetScrollbarPainterValues(
+    const Scrollbar& scrollbar) {
+  return GetScrollbarPainterValues(
+      ScrollbarThemeMac::RecommendedScrollerStyle() == NSScrollerStyleOverlay,
+      scrollbar.CSSScrollbarWidth());
 }
 
 ScrollbarThemeMac::ScrollbarThemeMac() {
@@ -443,14 +450,9 @@ int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip,
                                           EScrollbarWidth scrollbar_width) {
   if (scrollbar_width == EScrollbarWidth::kNone)
     return 0;
-
-  NSControlSize control_size = scrollbar_width == EScrollbarWidth::kThin
-                                   ? NSControlSizeSmall
-                                   : NSControlSizeRegular;
-
-  return RecommendedScrollerStyle() == NSScrollerStyleOverlay
-             ? OverlayScrollbarThickness(control_size) * scale_from_dip
-             : LegacyScrollbarThickness(control_size) * scale_from_dip;
+  const auto& painter_values =
+      GetScrollbarPainterValues(UsesOverlayScrollbars(), scrollbar_width);
+  return painter_values.track_box_width * scale_from_dip;
 }
 
 bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
@@ -472,12 +474,11 @@ void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
 }
 
 bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) {
-  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
-  DCHECK(painter);
+  const auto& painter_values = GetScrollbarPainterValues(scrollbar);
   int min_length_for_thumb =
-      [painter knobMinLength] + [painter trackOverlapEndInset] +
-      [painter knobOverlapEndInset] +
-      2 * ([painter trackEndInset] + [painter knobEndInset]);
+      painter_values.knob_min_length + painter_values.track_overlap_end_inset +
+      painter_values.knob_overlap_end_inset +
+      2 * (painter_values.track_end_inset + painter_values.knob_end_inset);
   return scrollbar.Enabled() &&
          (scrollbar.Orientation() == kHorizontalScrollbar
               ? scrollbar.Width()
@@ -497,9 +498,8 @@ IntRect ScrollbarThemeMac::TrackRect(const Scrollbar& scrollbar) {
 }
 
 int ScrollbarThemeMac::MinimumThumbLength(const Scrollbar& scrollbar) {
-  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
-  DCHECK(painter);
-  return [painter knobMinLength];
+  const auto& painter_values = GetScrollbarPainterValues(scrollbar);
+  return painter_values.knob_min_length;
 }
 
 void ScrollbarThemeMac::UpdateEnabledState(const Scrollbar& scrollbar) {
