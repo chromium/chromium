@@ -55,6 +55,9 @@ editing.TextEditHandler = class {
     /** @private {AutomationEditableText} */
     this.editableText_;
 
+    /** @private {!Array<AutomationIntent>} */
+    this.inferredIntents_ = [];
+
     chrome.automation.getDesktop(function(desktop) {
       // ChromeVox handles two general groups of text fields:
       // A rich text field is one where selection gets placed on a DOM
@@ -103,7 +106,23 @@ editing.TextEditHandler = class {
       return;
     }
 
-    this.editableText_.onUpdate(evt.intents);
+    let intents = evt.intents;
+
+    // Check for inferred intents applied by other modules e.g. CommandHandler.
+    // Be strict about what's allowed and limit only to overriding set
+    // selections.
+    if (this.inferredIntents_.length > 0 &&
+        (evt.intents.length === 0 ||
+         evt.intents.some(
+             intent => intent.command ===
+                     chrome.automation.IntentCommandType.SET_SELECTION ||
+                 intent.command ===
+                     chrome.automation.IntentCommandType.CLEAR_SELECTION))) {
+      intents = this.inferredIntents_;
+    }
+    this.inferredIntents_ = [];
+
+    this.editableText_.onUpdate(intents);
   }
 
   /**
@@ -132,6 +151,15 @@ editing.TextEditHandler = class {
         this.node_;
     ChromeVoxState.instance.navigateToRange(
         cursors.Range.fromNode(after), true, {}, true);
+  }
+
+  /**
+   * Injects intents into the stream of editing events. In particular, |intents|
+   * will be applied to the next processed edfiting event.
+   * @param {!Array<AutomationIntent>} intents
+   */
+  injectInferredIntents(intents) {
+    this.inferredIntents_ = intents;
   }
 
   /**

@@ -406,6 +406,16 @@ CommandHandler.onCommand = function(command) {
       speechProps['phoneticCharacters'] = true;
       current = current.move(cursors.Unit.CHARACTER, dir);
       break;
+    case 'nativeNextCharacter':
+    case 'nativePreviousCharacter':
+      if (DesktopAutomationHandler.instance.textEditHandler) {
+        DesktopAutomationHandler.instance.textEditHandler.injectInferredIntents(
+            [{
+              command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+              textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER
+            }]);
+      }
+      return true;
     case 'nextWord':
       shouldSetSelection = true;
       didNavigate = true;
@@ -417,6 +427,16 @@ CommandHandler.onCommand = function(command) {
       didNavigate = true;
       current = current.move(cursors.Unit.WORD, dir);
       break;
+    case 'nativeNextWord':
+    case 'nativePreviousWord':
+      if (DesktopAutomationHandler.instance.textEditHandler) {
+        DesktopAutomationHandler.instance.textEditHandler.injectInferredIntents(
+            [{
+              command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+              textBoundary: chrome.automation.IntentTextBoundaryType.WORD_END
+            }]);
+      }
+      return true;
     case 'forward':
     case 'nextLine':
       didNavigate = true;

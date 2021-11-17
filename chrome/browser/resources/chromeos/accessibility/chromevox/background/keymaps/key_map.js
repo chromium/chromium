@@ -245,6 +245,14 @@ KeyMap.BINDINGS_ = [
         {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}}
   },
   {
+    command: 'nativeNextCharacter',
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}}
+  },
+  {
+    command: 'nativePreviousCharacter',
+    sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}}
+  },
+  {
     command: 'nextWord',
     sequence: {
       cvoxModifier: true,
@@ -257,6 +265,16 @@ KeyMap.BINDINGS_ = [
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]}
     }
+  },
+  {
+    command: 'nativeNextWord',
+    sequence:
+        {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}}
+  },
+  {
+    command: 'nativePreviousWord',
+    sequence:
+        {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}}
   },
   {
     command: 'nextButton',

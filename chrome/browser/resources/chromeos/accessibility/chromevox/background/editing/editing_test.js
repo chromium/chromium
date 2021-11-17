@@ -1682,6 +1682,67 @@ TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
   });
 });
 
+TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestionsNoIntents', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox" id="textbox">
+      <p>Start</p>
+      <span>I </span>
+      <span role="suggestion" aria-description="Username">
+        <span role="insertion">was</span>
+        <span role="deletion">am</span></span><span> typing</span>
+      <p>End</p>
+    </div>
+    <script>
+      const textbox = document.getElementById('textbox');
+      let firstRightSkipped = false;
+      textbox.addEventListener('keydown', event => {
+        if (event.keyCode === 40) {
+          return;
+        }
+
+        if (!firstRightSkipped) {
+          firstRightSkipped = true;
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const contentEditable = document.activeElement;
+        const selection = getSelection();
+        selection.removeAllRanges();
+        const range = new Range();
+        const text = contentEditable.children[2].children[0].firstChild;
+        range.setStart(text, 3);
+        range.setEnd(text, 3);
+        selection.addRange(range);
+      });
+    </script>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    mockFeedback.call(this.press(KeyCode.DOWN))
+        .expectSpeech(' typing')
+        // Move forward through line.
+
+        // This first right arrow is allowed to be processed by the content
+        // editable.
+        .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+        .expectSpeech('I')
+
+        // This next right is swallowed by the content editable mimicking custom
+        // rich editors. It manually moves selection (and looses intent data).
+        // We infer it by getting a command mapped for a raw control right arrow
+        // key.
+        .call(doCmd('nativeNextWord'))
+        .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+        .expectSpeech('Suggest', 'Username', 'Insert', 'was', 'Insert end')
+        .replay();
+  });
+});
+
 TEST_F('ChromeVoxEditingTest', 'Separator', function() {
   // In the past, an ARIA leaf role would cause subtree content to be removed.
   // However, the new decision is to not remove any content the user might
