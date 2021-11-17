@@ -2567,6 +2567,17 @@
      }
     }
    },
+   "mediacapture-streams": {
+    "crashtests": {
+     "enumerateDevices-after-discard-1.https.html": [
+      "d1f4bab1458147a71ffa757b28653ff7e3285c81",
+      [
+       null,
+       {}
+      ]
+     ]
+    }
+   },
    "portals": {
     "portals-no-frame-crash.html": [
      "c87afa38c29bf98344c9d01039ed6bf9af1d5d96",
@@ -238871,10 +238882,6 @@
       "cb3001cdbfe8fcd75806421e4e32518ad439a3cb",
       []
      ],
-     "generic-family-keywords-002-expected.txt": [
-      "d5bc087326c52f7a9a0b883beab087e820e3c6b0",
-      []
-     ],
      "idlharness-expected.txt": [
       "2885179da4a9d847125c223b7957c70cabee9c03",
       []
@@ -239233,7 +239240,7 @@
        []
       ],
       "font-family-keywords.js": [
-       "caa3e75dd0ff5700b648dd8d436b46b6fbce7734",
+       "09bcf85c9fa5ef4f151785cdb5f477eb16040af8",
        []
       ],
       "font-weight-bolder-001-ref.png": [
@@ -250929,7 +250936,7 @@
        []
       ],
       "sticky-util.js": [
-       "969cededcbe658a8d25c0cf9cabb97d86d965a77",
+       "074c25c81f4759e41253b14e2893b407bfeda7da",
        []
       ]
      },
@@ -261634,11 +261641,11 @@
       ],
       "support": {
        "empty-urls.css": [
-        "ceed358f348425ad82404b94551bb2a17e5eb533",
+        "0559e3b2352519e00cc5196dc99a6ab69e8ae90e",
         []
        ],
        "fragment-only-urls.css": [
-        "20bd9dab99ac4fe13e90f118a22fb0c9767da897",
+        "2c39a087e9eeb786967751acbbbda112ad590ff9",
         []
        ],
        "relative-urls.css": [
@@ -264233,10 +264240,6 @@
      ],
      "flex-serialization-expected.txt": [
       "895f6b93d7201ad1bb1a9fe27370d6ebf8d4dbf6",
-      []
-     ],
-     "font-family-serialization-001-expected.txt": [
-      "a0c731e91ef755dc94667966df644172113baa46",
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
@@ -274233,24 +274236,8 @@
         "c7ed5ebe28be0a72522eb7ede93da033551d718a",
         []
        ],
-       "blank.html": [
-        "c50eddd41faba2ecc8928e459288fe612b999170",
-        []
-       ],
-       "click.html": [
-        "8cb03b74d5ecee7462f2fb82a6a7c3008c87db25",
-        []
-       ],
        "empty_fragment_iframe.html": [
         "26b28a0d7dcb912dc1f1131b98993bb29d3a18c1",
-        []
-       ],
-       "form.html": [
-        "6523a82b3930912f175115d2a82d8fd4ed016152",
-        []
-       ],
-       "href.html": [
-        "eccadadf41a873d9b50f643dcdc5fd83336f1605",
         []
        ],
        "initial-empty-document": {
@@ -274370,6 +274357,10 @@
         ]
        },
        "resources": {
+        "blank.html": [
+         "c50eddd41faba2ecc8928e459288fe612b999170",
+         []
+        ],
         "child-navigates-parent-destination.html": [
          "bb8ba4e6989597efeb1326c9acddbcfe64074d10",
          []
@@ -274390,8 +274381,20 @@
          "0b49e13d651d0fde96e112752f4c19f89b4398bc",
          []
         ],
+        "click.html": [
+         "8cb03b74d5ecee7462f2fb82a6a7c3008c87db25",
+         []
+        ],
         "document-domain-set-to-site.sub.html": [
          "3c4355c452946df5761ad5955f354cfb4558284a",
+         []
+        ],
+        "form.html": [
+         "6523a82b3930912f175115d2a82d8fd4ed016152",
+         []
+        ],
+        "href.html": [
+         "eccadadf41a873d9b50f643dcdc5fd83336f1605",
          []
         ],
         "message-opener.html": [
@@ -293633,7 +293636,7 @@
      []
     ],
     "MediaDevices-after-discard.https-expected.txt": [
-     "cf2e33861ed5a6cc16af022a5495d8ee6a93d058",
+     "b587a7a68d48b04dee508f0d0aadee8496c0792a",
      []
     ],
     "MediaDevices-enumerateDevices-not-allowed-camera.https-expected.txt": [
@@ -293670,6 +293673,10 @@
     ],
     "OWNERS": [
      "cc43ec1bbbb855066a4311812296c1cff7bf1d15",
+     []
+    ],
+    "enumerateDevices-with-navigation.https-expected.txt": [
+     "c35673acac3c235892fca941e979184a6d26eb4c",
      []
     ],
     "historical.https-expected.txt": [
@@ -345212,7 +345219,7 @@
        ]
       ],
       "border-radius-valid.html": [
-       "287f95e175539af94697bf65b59204f62565787d",
+       "584211f09ab00d4ea45203c95cc5ed3048282db6",
        [
         null,
         {}
@@ -349143,7 +349150,7 @@
       ]
      ],
      "generic-family-keywords-002.html": [
-      "7399860b03c6cd69dc48750b884221177112373b",
+      "3edd5dc97f70d651829b0712aeaf408c3a492999",
       [
        null,
        {}
@@ -355940,7 +355947,7 @@
        ]
       ],
       "position-sticky-nested-bottom.html": [
-       "b9b73cc486f6924c07429ba3d78889d3f78df3a4",
+       "34fb3b32fc97903a9ca7d8cfb13bb1fc4f15314d",
        [
         null,
         {}
@@ -355954,7 +355961,7 @@
        ]
       ],
       "position-sticky-nested-right.html": [
-       "f5314224b2b7654b705066c8d38be9ee98ec641d",
+       "0f7e43f35ad7e41df0e8624943815ed9701e766e",
        [
         null,
         {}
@@ -367204,14 +367211,14 @@
      ],
      "urls": {
       "empty.html": [
-       "3082a51c42053a64989a49c8ecb3d08819fecb89",
+       "374856754569cb2837537a4ce67dfc16bd393165",
        [
         null,
         {}
        ]
       ],
       "fragment-only.html": [
-       "c97feef7d439c546f7f476b674b0fb252fb58b25",
+       "a7153adf8f8437bdf54768c58915141ed6cef4c0",
        [
         null,
         {}
@@ -368498,7 +368505,7 @@
       ]
      ],
      "font-family-serialization-001.html": [
-      "6c59b985c4fd5483b4c3f186e2917a20b428ee5b",
+      "436ce7f5c138d824013964c6d88e227e009e1772",
       [
        null,
        {}
@@ -404772,49 +404779,49 @@
         ]
        ],
        "005.html": [
-        "4a044bb250ca6c0b209a4e1dc68621b88f9c0cdf",
+        "a87e6e9b3ddd0e95c984cdcdc28798639d5a1c5d",
         [
          null,
          {}
         ]
        ],
        "006.html": [
-        "1e7aa20209c86eaeaae3e9ac27be753709f44693",
+        "17b3123faa726cb88ddf07592556a604f9656258",
         [
          null,
          {}
         ]
        ],
        "007.html": [
-        "d4bcfc2903203e15789c8e44d2f48f3dcbe381fc",
+        "dbb23ee644660400bd9492ca19a45a36a4f3e069",
         [
          null,
          {}
         ]
        ],
        "008.html": [
-        "7d1495a08562b19755cba8ba9a90ca85a5bd3272",
+        "3201d0679dfdeffd1e011d6c24e925e83959eb53",
         [
          null,
          {}
         ]
        ],
        "009.html": [
-        "0fcd1d37f5c07061234e15c2173abc51d516171a",
+        "d963bed2bf4139de63623072d7fa1ee755932b54",
         [
          null,
          {}
         ]
        ],
        "010.html": [
-        "585cddc48e54bebdb8663593c9d9648de642f029",
+        "606ad82f48f340a74b75aa85cfc4f788baeb09d3",
         [
          null,
          {}
         ]
        ],
        "011.html": [
-        "fe6b8dbc3560fba9e16e276b399154e47fd45b6a",
+        "4d542679686cef609158c799e816d635605e71e3",
         [
          null,
          {}
@@ -404863,28 +404870,28 @@
         ]
        ],
        "anchor-fragment-form-submit-longfragment.html": [
-        "8c4c77014fc92be94b7f71dd0fb2bfc7ee9a8a8c",
+        "8b9802f5890470672ad8fdd5a6383ae06ca18a2f",
         [
          null,
          {}
         ]
        ],
        "anchor-fragment-form-submit-withpath.html": [
-        "6bff51c9c6f28011e22b39f2bac98ef9098a1c14",
+        "823174181ed2a46c20907e4a9c7afffa234c0f0b",
         [
          null,
          {}
         ]
        ],
        "anchor-fragment-form-submit.html": [
-        "57e44f180856d6f8aa2d57b45a20c140e99d71c0",
+        "e0c0e6f82d9f41aa4183978643b0d515281dc687",
         [
          null,
          {}
         ]
        ],
        "anchor-jsurl-form-submit.html": [
-        "b0534cd52e51e7f13ee42a2ae6e1602d3071d270",
+        "1bf5d3595a86cca2cc9075d480fe6c58b1ca9e0a",
         [
          null,
          {}
@@ -438577,7 +438584,7 @@
         ]
        ],
        "select-event.html": [
-        "09626a5a5cef0acf4b92bdfcbeece88b6d1693be",
+        "cb54b64592e191619d0543cd923d18e97994e518",
         [
          null,
          {
@@ -455791,7 +455798,7 @@
      ]
     ],
     "MediaDevices-after-discard.https.html": [
-     "9b2faea6f1f33c7784f5877f6508754aeadf4f73",
+     "f1b51fadf8417e1538af93dbb013b2ae0513e4cb",
      [
       null,
       {}
@@ -455979,6 +455986,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "enumerateDevices-with-navigation.https.html": [
+     "d951c1cdffa8a888a8ec529394119ad58a141aa5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "historical.https.html": [
@@ -499776,7 +499792,7 @@
      ]
     ],
     "measure-l3.any.js": [
-     "24c27c483515ed65e38377d480877dd4af9ffdab",
+     "642b55ab635e2c021d99c1aaf3e924ca2c5c0c29",
      [
       "user-timing/measure-l3.any.html",
       {
