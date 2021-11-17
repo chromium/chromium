@@ -35,6 +35,12 @@ namespace {
 const char kFirstSpeechResult[] = "the brown fox";
 const char kSecondSpeechResult[] = "the brown fox jumped over the lazy dog";
 
+const char kEnglishLocale[] = "en-US";
+
+inline const void SetLocale(const std::string& locale) {
+  g_browser_process->SetApplicationLocale(locale);
+}
+
 // A mocked version instance of SodaInstaller for testing purposes.
 class MockSodaInstaller : public speech::SodaInstaller {
  public:
@@ -86,6 +92,7 @@ class ProjectorClientImplUnitTest : public testing::Test {
             base::BindRepeating(&ProjectorClientImplUnitTest::
                                     CreateTestSpeechRecognitionService,
                                 base::Unretained(this)));
+    SetLocale(kEnglishLocale);
     soda_installer_ = std::make_unique<MockSodaInstaller>();
     soda_installer_->NotifySodaInstalledForTesting();
     projector_client_ =

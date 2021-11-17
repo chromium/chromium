@@ -879,8 +879,13 @@ const char kProjectorCreationFlowEnabled[] =
 const char kChromadToCloudMigrationEnabled[] =
     "ash.chromad_to_cloud_migration_enabled";
 
-// NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
-// into this file should not be renamed, since they may be synced.
+// A string pref that tracks the language installed for the Projector creation
+// flow.
+const char kProjectorCreationFlowLanguage[] =
+    "ash.projector.projectorCreationFlowLanguage";
+
+// NOTE: New prefs should start with the "ash." prefix. Existing prefs
+// moved into this file should not be renamed, since they may be synced.
 
 }  // namespace prefs
 }  // namespace ash

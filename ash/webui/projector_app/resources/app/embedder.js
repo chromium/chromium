@@ -66,5 +66,12 @@ Polymer({
       }
       client.onScreencastsStateChange(pendingScreencasts);
     });
+
+    this.addWebUIListener(
+        'onSodaInstalled',
+        () => {
+            // TODO(b/197164300): Pass this information to google3 deployed
+            // content in iframe.
+        });
   },
 });

@@ -24,6 +24,14 @@ namespace {
 
 constexpr int kSodaCleanUpDelayInDays = 30;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+inline std::string GetProjectorLanguageCode(PrefService* pref_service) {
+  return pref_service->GetString(ash::prefs::kProjectorCreationFlowLanguage);
+}
+
+#endif  // IS_CHROMEOS_ASH
+
 }  // namespace
 
 namespace speech {
@@ -92,8 +100,11 @@ void SodaInstaller::Init(PrefService* profile_prefs,
             .empty()) {
       // TODO(crbug.com/1200667): Register the default language used by
       // Dictation on ChromeOS.
-      // TODO(crbug.com/1165437): Register the default language used by
-      // Projector on ChromeOS.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      RegisterLanguage(GetProjectorLanguageCode(profile_prefs), global_prefs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
       RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
                        global_prefs);
     }

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
 
+#include <memory>
 #include <set>
 
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 
 namespace network {
 namespace mojom {
@@ -38,6 +41,12 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OnNewScreencastPreconditionChanged(bool can_start) override;
   const std::set<ash::PendingScreencast>& GetPendingScreencasts()
       const override;
+  bool ShouldDownloadSoda() override;
+  bool IsSpeechRecognitionAvailable() override;
+  void InstallSoda() override;
+  void OnSodaInstallProgress(int combined_progress) override;
+  void OnSodaInstallError() override;
+  void OnSodaInstalled() override;
 
  private:
   void NotifyScreencastsPendingStatusChanged(
@@ -47,6 +56,9 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
   // TODO(b/201468756): Create a PendingScreencastManager to own this set.
   std::set<ash::PendingScreencast> pending_screencasts_;
+
+  std::unique_ptr<ProjectorSodaInstallationController>
+      soda_installation_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

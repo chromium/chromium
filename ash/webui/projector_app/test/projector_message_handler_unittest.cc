@@ -271,7 +271,8 @@ TEST_F(ProjectorMessageHandlerUnitTest, CanStartNewSession) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
-  message_handler()->OnSodaProgress(50);
+  static_cast<ProjectorAppClient::Observer*>(message_handler())
+      ->OnSodaProgress(50);
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallProgressUpdated);
@@ -279,13 +280,18 @@ TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {
-  message_handler()->OnSodaError();
+  static_cast<ProjectorAppClient::Observer*>(message_handler())->OnSodaError();
   const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallError);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
+  ON_CALL(mock_app_client(), ShouldDownloadSoda())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_app_client(), IsSpeechRecognitionAvailable())
+      .WillByDefault(testing::Return(false));
+
   base::ListValue list_args;
   list_args.Append(base::Value(kShouldDownloadSodaCallback));
 
@@ -296,10 +302,12 @@ TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
   EXPECT_EQ(call_data.arg1()->GetString(), kShouldDownloadSodaCallback);
   EXPECT_EQ(call_data.arg2()->GetBool(), true);
-  EXPECT_EQ(call_data.arg3()->GetBool(), false);
+  EXPECT_EQ(call_data.arg3()->GetBool(), true);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
+  ON_CALL(mock_app_client(), InstallSoda()).WillByDefault(testing::Return());
+
   base::ListValue list_args;
   list_args.Append(base::Value(kInstallSodaCallback));
 
@@ -310,7 +318,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
   EXPECT_EQ(call_data.arg1()->GetString(), kInstallSodaCallback);
   EXPECT_EQ(call_data.arg2()->GetBool(), true);
-  EXPECT_EQ(call_data.arg3()->GetBool(), false);
+  EXPECT_EQ(call_data.arg3()->GetBool(), true);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {

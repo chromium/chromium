@@ -40,6 +40,8 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     pref_service_->registry()->RegisterBooleanPref(
         ash::prefs::kProjectorCreationFlowEnabled, true);
     pref_service_->registry()->RegisterStringPref(
+        ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale);
+    pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
 
     chromeos::DBusThreadManager::Initialize();

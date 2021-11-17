@@ -2146,6 +2146,8 @@ static_library("ui") {
       "ash/projector/projector_app_client_impl.h",
       "ash/projector/projector_client_impl.cc",
       "ash/projector/projector_client_impl.h",
+      "ash/projector/projector_soda_installation_controller.cc",
+      "ash/projector/projector_soda_installation_controller.h",
       "ash/quick_answers/quick_answers_browser_client_impl.cc",
       "ash/quick_answers/quick_answers_browser_client_impl.h",
       "ash/quick_answers/quick_answers_controller_impl.cc",

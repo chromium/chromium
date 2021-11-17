@@ -7,8 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -218,6 +220,13 @@ void ProjectorMessageHandler::RegisterMessages() {
                                          base::Unretained(this)));
 }
 
+void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
+    const std::set<PendingScreencast>& pending_screencast) {
+  AllowJavascript();
+  FireWebUIListener("onScreencastsStateChange",
+                    ScreencastListToValue(pending_screencast));
+}
+
 void ProjectorMessageHandler::OnSodaProgress(int combined_progress) {
   AllowJavascript();
   FireWebUIListener("onSodaInstallProgressUpdated",
@@ -229,11 +238,9 @@ void ProjectorMessageHandler::OnSodaError() {
   FireWebUIListener("onSodaInstallError");
 }
 
-void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
-    const std::set<PendingScreencast>& pending_screencast) {
+void ProjectorMessageHandler::OnSodaInstalled() {
   AllowJavascript();
-  FireWebUIListener("onScreencastsStateChange",
-                    ScreencastListToValue(pending_screencast));
+  FireWebUIListener("onSodaInstalled");
 }
 
 void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
@@ -360,19 +367,18 @@ void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
 void ProjectorMessageHandler::ShouldDownloadSoda(
     const base::Value::ConstListView args) {
   AllowJavascript();
-  // TODO(b/200205765): Add checks on whether the install soda button should be
-  // shown.
-  const auto& js_callback_id = args[0].GetString();
-  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
+
+  // The device should be eligible to download SODA and SODA should not have
+  // already been downloaded on the device.
+  ResolveJavascriptCallback(
+      args[0], base::Value(ProjectorAppClient::Get()->ShouldDownloadSoda()));
 }
 
 void ProjectorMessageHandler::InstallSoda(
     const base::Value::ConstListView args) {
   AllowJavascript();
-
-  // TODO(b/200205765): Trigger SODA installation.
-  const auto& js_callback_id = args[0].GetString();
-  ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(false));
+  ProjectorAppClient::Get()->InstallSoda();
+  ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
 void ProjectorMessageHandler::OnError(const base::Value::ConstListView args) {

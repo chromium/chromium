@@ -78,12 +78,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // ProjectorAppClient:Observer:
   void OnNewScreencastPreconditionChanged(bool can_start) override;
 
-  // Used to notify the SWA the SODA installation progress.
-  void OnSodaProgress(int combined_progress);
-
-  // Used to notify the SWA that SODA installation failed.
-  void OnSodaError();
-
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
   // ProjectorAppClient::Observer:
@@ -91,6 +85,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // updates the pending list in Projector SWA.
   void OnScreencastsPendingStatusChanged(
       const std::set<PendingScreencast>& pending_screencast) override;
+  void OnSodaProgress(int percentage) override;
+  void OnSodaError() override;
+  void OnSodaInstalled() override;
 
  private:
   // Requested by the Projector SWA to list the available accounts (primary and

@@ -57,6 +57,17 @@ class ProjectorAppClient {
     // Observes the pending screencast state change events.
     virtual void OnScreencastsPendingStatusChanged(
         const std::set<PendingScreencast>& pending_screencast) = 0;
+
+    // Notifies the observer the SODA binary and language pack download and
+    // installation progress.
+    virtual void OnSodaProgress(int combined_progress) = 0;
+
+    // Notifies the observer that an error occurred during installation.
+    virtual void OnSodaError() = 0;
+
+    // Notifies the observer that installation of SODA binary and at least one
+    // language pack has finished.
+    virtual void OnSodaInstalled() = 0;
   };
 
   ProjectorAppClient(const ProjectorAppClient&) = delete;
@@ -79,6 +90,28 @@ class ProjectorAppClient {
 
   // Returns pending screencast uploaded by primary user.
   virtual const std::set<PendingScreencast>& GetPendingScreencasts() const = 0;
+
+  // Checks if device is eligible to trigger SODA installer.
+  virtual bool ShouldDownloadSoda() = 0;
+
+  // Returns true if SODA binary is downloaded and the language associated with
+  // the user's locale is installed.
+  virtual bool IsSpeechRecognitionAvailable() = 0;
+
+  // Triggers the installation of SODA (Speech On-Device API) binary and the
+  // corresponding language pack for projector.
+  virtual void InstallSoda() = 0;
+
+  // Notifies the client the SODA binary and language pack download and
+  // installation progress.
+  virtual void OnSodaInstallProgress(int combined_progress) = 0;
+
+  // Notifies the client that an error occurred during installation.
+  virtual void OnSodaInstallError() = 0;
+
+  // Notifies the client that installation of SODA binary and at least one
+  // language pack has finished.
+  virtual void OnSodaInstalled() = 0;
 
  protected:
   ProjectorAppClient();

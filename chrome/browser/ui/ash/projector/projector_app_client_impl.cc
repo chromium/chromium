@@ -4,14 +4,36 @@
 
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 
+#include <string>
+
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/projector/projector_controller.h"
+#include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/soda/constants.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+
+namespace {
+
+constexpr char kUsEnglishLocale[] = "en-US";
+
+inline const std::string& GetLocale() {
+  return g_browser_process->GetApplicationLocale();
+}
+
+inline const speech::LanguageCode GetLocaleLanguageCode() {
+  return speech::GetLanguageCode(GetLocale());
+}
+
+}  // namespace
 
 // static
 void ProjectorAppClientImpl::RegisterProfilePrefs(
@@ -19,16 +41,23 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ash::prefs::kProjectorCreationFlowEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(
+      ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-ProjectorAppClientImpl::ProjectorAppClientImpl() = default;
+ProjectorAppClientImpl::ProjectorAppClientImpl() {
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition)) {
+    return;
+  }
+
+  soda_installation_controller_ =
+      std::make_unique<ProjectorSodaInstallationController>(
+          this, ash::ProjectorController::Get());
+}
+
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;
-
-signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
-  return IdentityManagerFactory::GetForProfile(profile);
-}
 
 void ProjectorAppClientImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -36,6 +65,12 @@ void ProjectorAppClientImpl::AddObserver(Observer* observer) {
 
 void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
+  return IdentityManagerFactory::GetForProfile(profile);
 }
 
 network::mojom::URLLoaderFactory*
@@ -64,4 +99,37 @@ void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
     const std::set<ash::PendingScreencast>& pending_screencast) {
   for (auto& observer : observers_)
     observer.OnScreencastsPendingStatusChanged(pending_screencast);
+}
+
+bool ProjectorAppClientImpl::ShouldDownloadSoda() {
+  return soda_installation_controller_ &&
+         soda_installation_controller_->ShouldDownloadSoda(
+             GetLocaleLanguageCode());
+}
+
+void ProjectorAppClientImpl::InstallSoda() {
+  DCHECK(soda_installation_controller_);
+
+  soda_installation_controller_->InstallSoda(GetLocale());
+}
+
+void ProjectorAppClientImpl::OnSodaInstallProgress(int combined_progress) {
+  for (auto& observer : observers_)
+    observer.OnSodaProgress(combined_progress);
+}
+
+void ProjectorAppClientImpl::OnSodaInstallError() {
+  for (auto& observer : observers_)
+    observer.OnSodaError();
+}
+
+void ProjectorAppClientImpl::OnSodaInstalled() {
+  for (auto& observer : observers_)
+    observer.OnSodaInstalled();
+}
+
+bool ProjectorAppClientImpl::IsSpeechRecognitionAvailable() {
+  return soda_installation_controller_ &&
+         soda_installation_controller_->IsSodaAvailable(
+             GetLocaleLanguageCode());
 }
