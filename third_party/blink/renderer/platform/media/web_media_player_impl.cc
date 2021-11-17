@@ -14,9 +14,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,11 +56,13 @@
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/media_buildflags.h"
 #include "media/remoting/remoting_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
+#include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
-#include "third_party/blink/public/platform/media/power_status_helper.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -79,6 +83,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/renderer/platform/media/power_status_helper.h"
 #include "third_party/blink/renderer/platform/media/text_track_impl.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
@@ -340,6 +345,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
     UrlIndex* url_index,
     std::unique_ptr<VideoFrameCompositor> compositor,
+    scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces,
     std::unique_ptr<WebMediaPlayerParams> params)
     : frame_(frame),
       main_task_runner_(frame->GetTaskRunner(TaskType::kMediaElementEvent)),
@@ -378,13 +384,29 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                               base::Unretained(this))),
       will_play_helper_(nullptr),
-      demuxer_override_(params->TakeDemuxerOverride()),
-      power_status_helper_(params->TakePowerStatusHelper()) {
+      demuxer_override_(params->TakeDemuxerOverride()) {
   DVLOG(1) << __func__;
   DCHECK(adjust_allocated_memory_cb_);
   DCHECK(renderer_factory_selector_);
   DCHECK(client_);
   DCHECK(delegate_);
+
+  if (base::FeatureList::IsEnabled(media::kMediaPowerExperiment)) {
+    // The battery monitor is only available through the blink provider.
+    DCHECK(remote_interfaces);
+    auto battery_monitor_cb = base::BindRepeating(
+        [](scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy>
+               remote_interfaces) {
+          mojo::PendingRemote<device::mojom::blink::BatteryMonitor>
+              battery_monitor;
+          remote_interfaces->GetInterface(
+              battery_monitor.InitWithNewPipeAndPassReceiver());
+          return battery_monitor;
+        },
+        remote_interfaces);
+    power_status_helper_ =
+        std::make_unique<PowerStatusHelper>(std::move(battery_monitor_cb));
+  }
 
   weak_this_ = weak_factory_.GetWeakPtr();
 

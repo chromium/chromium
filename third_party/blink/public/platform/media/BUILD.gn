@@ -16,7 +16,6 @@ source_set("media") {
     "key_system_config_selector.h",
     "lru.h",
     "multi_buffer.h",
-    "power_status_helper.h",
     "remote_playback_client_wrapper_impl.h",
     "resource_fetch_context.h",
     "url_index.h",
@@ -31,10 +30,8 @@ source_set("media") {
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/mojom",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:blink_headers",
-    "//ui/gfx/geometry",
     "//url",
   ]
 

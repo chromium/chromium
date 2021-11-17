@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
@@ -82,6 +83,7 @@ class RasterContextProvider;
 
 namespace blink {
 class PowerStatusHelper;
+class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoDecodeStatsReporter;
 class VideoFrameCompositor;
@@ -112,6 +114,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
       UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
+      scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces,
       std::unique_ptr<WebMediaPlayerParams> params);
   WebMediaPlayerImpl(const WebMediaPlayerImpl&) = delete;
   WebMediaPlayerImpl& operator=(const WebMediaPlayerImpl&) = delete;

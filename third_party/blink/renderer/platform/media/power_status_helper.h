@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
@@ -11,7 +11,7 @@
 #include "media/base/video_codecs.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
+#include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,7 +26,7 @@ namespace blink {
 class BLINK_PLATFORM_EXPORT PowerStatusHelper {
  public:
   using CreateBatteryMonitorCB = base::RepeatingCallback<
-      mojo::PendingRemote<device::mojom::BatteryMonitor>()>;
+      mojo::PendingRemote<device::mojom::blink::BatteryMonitor>()>;
 
   // Bits used to construct UMA buckets.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -106,7 +106,7 @@ class BLINK_PLATFORM_EXPORT PowerStatusHelper {
   void OnAnyStateChange();
 
   // Handle updates about the current battery status.
-  void OnBatteryStatus(device::mojom::BatteryStatusPtr battery_status);
+  void OnBatteryStatus(device::mojom::blink::BatteryStatusPtr battery_status);
 
   // Start monitoring if we haven't already.  Any outstanding callbacks will be
   // cancelled if monitoring was already in progress.
@@ -141,11 +141,11 @@ class BLINK_PLATFORM_EXPORT PowerStatusHelper {
   // experiment, according to the MediaPowerExperimentManager?
   bool experiment_state_ = false;
 
-  mojo::Remote<device::mojom::BatteryMonitor> battery_monitor_;
+  mojo::Remote<device::mojom::blink::BatteryMonitor> battery_monitor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_POWER_STATUS_HELPER_H_

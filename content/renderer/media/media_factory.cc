@@ -46,13 +46,11 @@
 #include "media/renderers/default_renderer_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/service_manager/public/cpp/connect.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
-#include "third_party/blink/public/platform/media/power_status_helper.h"
 #include "third_party/blink/public/platform/media/remote_playback_client_wrapper_impl.h"
 #include "third_party/blink/public/platform/media/resource_fetch_context.h"
 #include "third_party/blink/public/platform/media/url_index.h"
@@ -480,26 +478,6 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   interface_broker_->GetInterface(
       metrics_provider.InitWithNewPipeAndPassReceiver());
 
-  std::unique_ptr<blink::PowerStatusHelper> power_status_helper;
-  if (base::FeatureList::IsEnabled(media::kMediaPowerExperiment)) {
-    // The battery monitor is only available through the blink provider.
-    // TODO(liberato): Should we expose this via |remote_interfaces_|?
-    scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
-        remote_interfaces =
-            blink::Platform::Current()->GetBrowserInterfaceBroker();
-    auto battery_monitor_cb = base::BindRepeating(
-        [](scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
-               remote_interfaces) {
-          mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor;
-          remote_interfaces->GetInterface(
-              battery_monitor.InitWithNewPipeAndPassReceiver());
-          return battery_monitor;
-        },
-        remote_interfaces);
-    power_status_helper = std::make_unique<blink::PowerStatusHelper>(
-        std::move(battery_monitor_cb));
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner>
       video_frame_compositor_task_runner;
   const auto surface_layer_mode = GetSurfaceLayerMode(MediaPlayerType::kNormal);
@@ -543,8 +521,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
       render_frame_->GetRenderFrameMediaPlaybackOptions()
           .is_background_video_track_optimization_supported,
       GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
-                                                            media_task_runner),
-      std::move(power_status_helper));
+                                                            media_task_runner));
 
   auto vfc = std::make_unique<blink::VideoFrameCompositor>(
       params->video_frame_compositor_task_runner(), std::move(submitter));
@@ -552,6 +529,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   auto* media_player = new blink::WebMediaPlayerImpl(
       web_frame, client, encrypted_client, delegate,
       std::move(factory_selector), url_index_.get(), std::move(vfc),
+      blink::Platform::Current()->GetBrowserInterfaceBroker(),
       std::move(params));
 
   return media_player;

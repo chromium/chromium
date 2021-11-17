@@ -34,8 +34,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
     bool is_background_suspend_enabled,
     bool is_background_video_playback_enabled,
     bool is_background_video_track_optimization_supported,
-    std::unique_ptr<media::Demuxer> demuxer_override,
-    std::unique_ptr<PowerStatusHelper> power_status_helper)
+    std::unique_ptr<media::Demuxer> demuxer_override)
     : defer_load_cb_(defer_load_cb),
       audio_renderer_sink_(audio_renderer_sink),
       media_log_(std::move(media_log)),
@@ -58,8 +57,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
           is_background_video_playback_enabled),
       is_background_video_track_optimization_supported_(
           is_background_video_track_optimization_supported),
-      demuxer_override_(std::move(demuxer_override)),
-      power_status_helper_(std::move(power_status_helper)) {}
+      demuxer_override_(std::move(demuxer_override)) {}
 
 WebMediaPlayerParams::~WebMediaPlayerParams() = default;
 

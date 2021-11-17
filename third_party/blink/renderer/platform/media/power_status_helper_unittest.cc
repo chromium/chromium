@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/power_status_helper.h"
+#include "third_party/blink/renderer/platform/media/power_status_helper.h"
 
 #include <memory>
 #include <tuple>
@@ -14,7 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/pipeline_metadata.h"
-#include "services/device/public/mojom/battery_status.mojom.h"
+#include "services/device/public/mojom/battery_status.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +26,7 @@ using ::testing::Values;
 
 class PowerStatusHelperTest : public testing::Test {
  public:
-  class MockBatteryMonitor : public device::mojom::BatteryMonitor {
+  class MockBatteryMonitor : public device::mojom::blink::BatteryMonitor {
    public:
     MOCK_METHOD0(DidGetBatteryMonitor, void());
     MOCK_METHOD0(DidQueryNextStatus, void());
@@ -38,7 +38,7 @@ class PowerStatusHelperTest : public testing::Test {
         ProvidePowerUpdate(0, 0);
     }
 
-    // device::mojom::BatteryMonitor
+    // device::mojom::blink::BatteryMonitor
     void QueryNextStatus(QueryNextStatusCallback callback) override {
       DidQueryNextStatus();
       callback_ = std::move(callback);
@@ -46,7 +46,8 @@ class PowerStatusHelperTest : public testing::Test {
 
     // Would be nice to use a MockCallback for this, but a move-only return type
     // doesn't seem to work.
-    mojo::PendingRemote<device::mojom::BatteryMonitor> GetBatteryMonitor() {
+    mojo::PendingRemote<device::mojom::blink::BatteryMonitor>
+    GetBatteryMonitor() {
       DidGetBatteryMonitor();
       switch (remote_type_) {
         case RemoteType::kConnected:
@@ -60,7 +61,7 @@ class PowerStatusHelperTest : public testing::Test {
           return pending;
         }
         case RemoteType::kEmpty:
-          return mojo::PendingRemote<device::mojom::BatteryMonitor>();
+          return mojo::PendingRemote<device::mojom::blink::BatteryMonitor>();
       }
     }
 
@@ -74,15 +75,16 @@ class PowerStatusHelperTest : public testing::Test {
     // Provide a battery update via |callback_|.
     void ProvidePowerUpdate(bool is_charging, float current_level) {
       EXPECT_TRUE(callback_);
-      device::mojom::BatteryStatusPtr status =
-          device::mojom::BatteryStatus::New(is_charging, 0, /* charging time */
-                                            0, /* discharging time */
-                                            current_level);
+      device::mojom::blink::BatteryStatusPtr status =
+          device::mojom::blink::BatteryStatus::New(is_charging,
+                                                   /*charging_time=*/0,
+                                                   /*discharging_time=*/0,
+                                                   current_level);
       std::move(callback_).Run(std::move(status));
       base::RunLoop().RunUntilIdle();
     }
 
-    mojo::Receiver<device::mojom::BatteryMonitor> receiver_{this};
+    mojo::Receiver<device::mojom::blink::BatteryMonitor> receiver_{this};
 
     // If false, then GetBatteryMonitor will not return a monitor.
     enum class RemoteType {
