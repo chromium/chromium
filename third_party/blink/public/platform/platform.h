@@ -205,10 +205,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns a theme engine. Should be non-null.
   virtual WebThemeEngine* ThemeEngine();
 
-  // AppCache  ----------------------------------------------------------
-
-  virtual bool IsURLSupportedForAppCache(const WebURL& url) { return false; }
-
   // Audio --------------------------------------------------------------
 
   virtual double AudioHardwareSampleRate() { return 0; }

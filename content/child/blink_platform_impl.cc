@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "content/app/resources/grit/content_resources.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/appcache_interfaces.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
@@ -220,10 +219,6 @@ blink::WebCrypto* BlinkPlatformImpl::Crypto() {
 blink::ThreadSafeBrowserInterfaceBrokerProxy*
 BlinkPlatformImpl::GetBrowserInterfaceBroker() {
   return browser_interface_broker_proxy_.get();
-}
-
-bool BlinkPlatformImpl::IsURLSupportedForAppCache(const blink::WebURL& url) {
-  return IsSchemeSupportedForAppCache(url);
 }
 
 bool BlinkPlatformImpl::IsURLSavableForSavableResource(
