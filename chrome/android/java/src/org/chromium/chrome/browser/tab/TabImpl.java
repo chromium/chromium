@@ -1646,8 +1646,13 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             // 2. User-enabled request desktop site in site settings.
             Profile profile =
                     IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-            boolean shouldRequestDesktopSite = getWebContents() != null
-                    && TabUtils.isDesktopSiteEnabled(profile, getWebContents().getVisibleUrl());
+            boolean shouldRequestDesktopSite;
+            if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
+                shouldRequestDesktopSite = getWebContents() != null
+                        && TabUtils.isDesktopSiteEnabled(profile, getWebContents().getVisibleUrl());
+            } else {
+                shouldRequestDesktopSite = TabUtils.isDesktopSiteGlobalEnabled(profile);
+            }
 
             if (shouldRequestDesktopSite != currentRequestDesktopSite) {
                 // TODO(crbug.com/1243758): Confirm if a new histogram should be used.

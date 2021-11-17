@@ -333,7 +333,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   prerender::NoStatePrefetchTabHelper::CreateForWebContents(web_contents);
   RecentlyAudibleHelper::CreateForWebContents(web_contents);
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteGlobal)) {
+  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
     RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
         web_contents);
   }

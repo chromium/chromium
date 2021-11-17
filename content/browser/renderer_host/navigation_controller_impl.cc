@@ -1176,7 +1176,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1266277): Clean up the logic of setting
     // |overriding_user_agent_changed| post-launch.
-    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteGlobal)) {
+    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
       // Must honor user agent overrides in the |navigation_request|, such as
       // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
       // result, besides comparing |pending_entry_|'s user agent against
@@ -1201,7 +1201,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1266277): Clean up the logic of setting
     // |overriding_user_agent_changed| post-launch.
-    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteGlobal)) {
+    if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
       // Must honor user agent overrides in the |navigation_request|, such as
       // from things like RequestDesktopSiteWebContentsObserverAndroid. As a
       // result, besides checking |pending_entry_|'s user agent, also need to
