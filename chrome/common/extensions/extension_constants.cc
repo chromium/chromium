@@ -115,7 +115,6 @@ const char kGoogleSpeechSynthesisExtensionPath[] =
 const char kGoogleSpeechSynthesisExtensionId[] =
     "gjjabgpgjpampikjhjpfhneeoapjbjaf";
 const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
-const char kCameraAppPath[] = "chromeos/camera";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kAppStateNotInstalled[] = "not_installed";

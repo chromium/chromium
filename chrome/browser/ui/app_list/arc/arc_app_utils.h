@@ -45,7 +45,6 @@ extern const char kGoogleDuoAppId[];
 extern const char kGoogleMapsAppId[];
 extern const char kGooglePhotosAppId[];
 extern const char kInfinitePainterAppId[];
-extern const char kLegacyCameraAppId[];
 extern const char kLightRoomAppId[];
 extern const char kPlayBooksAppId[];
 extern const char kPlayGamesAppId[];

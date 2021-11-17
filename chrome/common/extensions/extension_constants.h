@@ -219,8 +219,6 @@ extern const char kEspeakSpeechSynthesisExtensionPath[];
 extern const char kEspeakSpeechSynthesisExtensionId[];
 // The extension id of the wallpaper manager application.
 extern const char kWallpaperManagerId[];
-// Path to preinstalled Chrome camera app.
-extern const char kCameraAppPath[];
 #endif
 
 // What causes an extension to be installed? Used in histograms, so don't

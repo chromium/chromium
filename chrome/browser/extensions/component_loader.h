@@ -196,7 +196,6 @@ class ComponentLoader {
   void AddImageLoaderExtension();
   void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
-  void AddChromeCameraApp();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<const Extension> CreateExtension(

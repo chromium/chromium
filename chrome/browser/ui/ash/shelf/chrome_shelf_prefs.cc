@@ -64,14 +64,6 @@ const char kLacrosChromeAppPrefix[] = "Default###";
 
 bool skip_pinned_apps_from_sync_for_test = false;
 
-bool IsLegacyCameraAppId(const std::string& app_id) {
-  return app_id ==
-             "ngmkobaiicipbagcngcmilfkhejlnfci" ||  // Migration Camera App.
-         app_id == "goamfaniemdfcajgcmmflhchgkmbngka" ||  // Google Camera App.
-         app_id == "obfofkigjfamlldmipdegnjlcpincibc" ||  // Legacy Camera App.
-         app_id == "iniodglblcgmngkgdipeiclkdjjpnlbn";  // Internal Camera App.
-}
-
 bool IsAppIdArcPackage(const std::string& app_id) {
   return app_id.find('.') != app_id.npos;
 }
