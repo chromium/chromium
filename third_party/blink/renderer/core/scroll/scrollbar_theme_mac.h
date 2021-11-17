@@ -43,6 +43,7 @@ class CORE_EXPORT ScrollbarThemeMac : public ScrollbarTheme {
   ~ScrollbarThemeMac() override;
 
   void RegisterScrollbar(Scrollbar&) override;
+  bool IsScrollbarRegistered(Scrollbar&) const;
 
   // On Mac, the painting code itself animates the opacity so there's no need
   // to disable in order to make the scrollbars invisible. In fact,

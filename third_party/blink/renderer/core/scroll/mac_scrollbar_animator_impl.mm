@@ -16,6 +16,21 @@
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
+namespace blink {
+namespace {
+
+typedef HeapHashMap<WeakMember<const Scrollbar>, MacScrollbarImpl*>
+    ScrollbarToAnimatorMap;
+
+ScrollbarToAnimatorMap& GetScrollbarToAnimatorMap() {
+  DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorMap>, map,
+                      (MakeGarbageCollected<ScrollbarToAnimatorMap>()));
+  return *map;
+}
+
+}  // namespace
+}  // namespace blink
+
 namespace {
 bool SupportsUIStateTransitionProgress() {
   // FIXME: This is temporary until all platforms that support ScrollbarPainter
@@ -48,11 +63,20 @@ blink::ScrollbarThemeMac* MacOverlayScrollbarTheme(
              : nil;
 }
 
-ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
+bool IsScrollbarRegistered(blink::Scrollbar& scrollbar) {
   if (blink::ScrollbarThemeMac* scrollbar_theme =
-          MacOverlayScrollbarTheme(scrollbar.GetTheme()))
-    return scrollbar_theme->PainterForScrollbar(scrollbar);
+          MacOverlayScrollbarTheme(scrollbar.GetTheme())) {
+    return scrollbar_theme->IsScrollbarRegistered(scrollbar);
+  }
+  return false;
+}
 
+ScrollbarPainter ScrollbarPainterForScrollbar(
+    const blink::Scrollbar& scrollbar) {
+  if (auto* mac_scrollbar_impl =
+          blink::MacScrollbarImpl::GetForScrollbar(scrollbar)) {
+    return mac_scrollbar_impl->painter();
+  }
   return nil;
 }
 
@@ -600,6 +624,94 @@ class BlinkScrollbarPartAnimationTimer {
 @end
 
 namespace blink {
+
+MacScrollbarImpl::MacScrollbarImpl(
+    Scrollbar& scrollbar,
+    base::scoped_nsobject<ScrollbarPainterController> painter_controller,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    ScrollbarThemeMac* mac_theme,
+    std::unique_ptr<MacScrollbarImpl> old_scrollbar)
+
+    : is_horizontal_(scrollbar.Orientation() == kHorizontalScrollbar),
+      painter_controller_(painter_controller) {
+  painter_delegate_.reset([[BlinkScrollbarPainterDelegate alloc]
+      initWithScrollbar:&scrollbar
+             taskRunner:task_runner]);
+
+  const NSScrollerStyle style = [painter_controller_ scrollerStyle];
+  const NSControlSize size =
+      (scrollbar.CSSScrollbarWidth() == EScrollbarWidth::kThin)
+          ? NSControlSizeSmall
+          : NSControlSizeRegular;
+
+  ScrollbarPainter old_painter = nil;
+  if (old_scrollbar) {
+    old_painter = old_scrollbar->painter();
+    if (is_horizontal_)
+      DCHECK_EQ(old_painter, [painter_controller_ horizontalScrollerImp]);
+    else
+      DCHECK_EQ(old_painter, [painter_controller_ verticalScrollerImp]);
+  }
+
+  base::scoped_nsobject<ScrollbarPainter> new_painter(
+      [NSClassFromString(@"NSScrollerImp") scrollerImpWithStyle:style
+                                                    controlSize:size
+                                                     horizontal:is_horizontal_
+                                           replacingScrollerImp:old_painter],
+      base::scoped_policy::RETAIN);
+  old_scrollbar.reset();
+
+  if (is_horizontal_)
+    [painter_controller_ setHorizontalScrollerImp:new_painter];
+  else
+    [painter_controller_ setVerticalScrollerImp:new_painter];
+
+  [new_painter setDelegate:painter_delegate_];
+  observer_.reset([[BlinkScrollbarObserver alloc]
+      initWithScrollbar:&scrollbar
+                painter:new_painter]);
+
+  GetScrollbarToAnimatorMap().Set(&scrollbar, this);
+
+  mac_theme->SetNewPainterForScrollbar(scrollbar, painter());
+}
+
+MacScrollbarImpl::~MacScrollbarImpl() {
+  auto it = GetScrollbarToAnimatorMap().find([observer_ scrollbar]);
+  DCHECK(it != GetScrollbarToAnimatorMap().end());
+  DCHECK_EQ(it->value, this);
+
+  if (is_horizontal_)
+    DCHECK_EQ([painter_controller_ horizontalScrollerImp], painter());
+  else
+    DCHECK_EQ([painter_controller_ verticalScrollerImp], painter());
+
+  [painter() setDelegate:nil];
+  [painter_delegate_ invalidate];
+  painter_delegate_.reset();
+
+  if (is_horizontal_)
+    [painter_controller_ setHorizontalScrollerImp:nil];
+  else
+    [painter_controller_ setVerticalScrollerImp:nil];
+  observer_.reset();
+
+  GetScrollbarToAnimatorMap().erase(it);
+}
+
+// static
+MacScrollbarImpl* MacScrollbarImpl::GetForScrollbar(
+    const Scrollbar& scrollbar) {
+  auto it = GetScrollbarToAnimatorMap().find(&scrollbar);
+  if (it != GetScrollbarToAnimatorMap().end())
+    return it->value;
+  return nullptr;
+}
+
+ScrollbarPainter MacScrollbarImpl::painter() {
+  return [observer_ painter];
+}
+
 MacScrollbarAnimatorImpl::MacScrollbarAnimatorImpl(
     ScrollableArea* scrollable_area)
     : task_runner_(scrollable_area->GetCompositorTaskRunner()),
@@ -619,18 +731,11 @@ MacScrollbarAnimatorImpl::MacScrollbarAnimatorImpl(
 
 void MacScrollbarAnimatorImpl::Dispose() {
   BEGIN_BLOCK_OBJC_EXCEPTIONS;
-  ScrollbarPainter horizontal_scrollbar_painter =
-      [scrollbar_painter_controller_ horizontalScrollerImp];
-  [horizontal_scrollbar_painter setDelegate:nil];
 
-  ScrollbarPainter vertical_scrollbar_painter =
-      [scrollbar_painter_controller_ verticalScrollerImp];
-  [vertical_scrollbar_painter setDelegate:nil];
-
+  horizontal_scrollbar_.reset();
+  vertical_scrollbar_.reset();
   [scrollbar_painter_controller_delegate_ invalidate];
   [scrollbar_painter_controller_ setDelegate:nil];
-  [horizontal_scrollbar_painter_delegate_ invalidate];
-  [vertical_scrollbar_painter_delegate_ invalidate];
   END_BLOCK_OBJC_EXCEPTIONS;
 
   initial_scrollbar_paint_task_handle_.Cancel();
@@ -687,59 +792,35 @@ void MacScrollbarAnimatorImpl::ContentsResized() const {
 }
 
 void MacScrollbarAnimatorImpl::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
+  if (!IsScrollbarRegistered(scrollbar))
     return;
 
-  DCHECK(!vertical_scrollbar_painter_delegate_);
-  vertical_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:vertical_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setVerticalScrollerImp:painter];
+  DCHECK(!vertical_scrollbar_);
+  vertical_scrollbar_ = std::make_unique<MacScrollbarImpl>(
+      scrollbar, scrollbar_painter_controller_, task_runner_,
+      MacOverlayScrollbarTheme(scrollable_area_->GetPageScrollbarTheme()),
+      nullptr);
 }
 
 void MacScrollbarAnimatorImpl::WillRemoveVerticalScrollbar(
     Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  DCHECK_EQ([scrollbar_painter_controller_ verticalScrollerImp], painter);
-
-  if (!painter)
-    DCHECK(!vertical_scrollbar_painter_delegate_);
-
-  [painter setDelegate:nil];
-  [vertical_scrollbar_painter_delegate_ invalidate];
-  vertical_scrollbar_painter_delegate_.reset();
-  [scrollbar_painter_controller_ setVerticalScrollerImp:nil];
+  vertical_scrollbar_.reset();
 }
 
 void MacScrollbarAnimatorImpl::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  if (!painter)
+  if (!IsScrollbarRegistered(scrollbar))
     return;
 
-  DCHECK(!horizontal_scrollbar_painter_delegate_);
-  horizontal_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
-                                                    taskRunner:task_runner_]);
-
-  [painter setDelegate:horizontal_scrollbar_painter_delegate_];
-  [scrollbar_painter_controller_ setHorizontalScrollerImp:painter];
+  DCHECK(!horizontal_scrollbar_);
+  horizontal_scrollbar_ = std::make_unique<MacScrollbarImpl>(
+      scrollbar, scrollbar_painter_controller_, task_runner_,
+      MacOverlayScrollbarTheme(scrollable_area_->GetPageScrollbarTheme()),
+      nullptr);
 }
 
 void MacScrollbarAnimatorImpl::WillRemoveHorizontalScrollbar(
     Scrollbar& scrollbar) {
-  ScrollbarPainter painter = ScrollbarPainterForScrollbar(scrollbar);
-  DCHECK_EQ([scrollbar_painter_controller_ horizontalScrollerImp], painter);
-
-  if (!painter)
-    DCHECK(!horizontal_scrollbar_painter_delegate_);
-
-  [painter setDelegate:nil];
-  [horizontal_scrollbar_painter_delegate_ invalidate];
-  horizontal_scrollbar_painter_delegate_.reset();
-  [scrollbar_painter_controller_ setHorizontalScrollerImp:nil];
+  horizontal_scrollbar_.reset();
 }
 
 bool MacScrollbarAnimatorImpl::SetScrollbarsVisibleForTesting(bool show) {
@@ -748,8 +829,13 @@ bool MacScrollbarAnimatorImpl::SetScrollbarsVisibleForTesting(bool show) {
   else
     [scrollbar_painter_controller_ hideOverlayScrollers];
 
-  [vertical_scrollbar_painter_delegate_ updateVisibilityImmediately:show];
-  [horizontal_scrollbar_painter_delegate_ updateVisibilityImmediately:show];
+  if (vertical_scrollbar_) {
+    [vertical_scrollbar_->painter_delegate() updateVisibilityImmediately:show];
+  }
+  if (horizontal_scrollbar_) {
+    [horizontal_scrollbar_->painter_delegate()
+        updateVisibilityImmediately:show];
+  }
   return true;
 }
 
@@ -762,23 +848,12 @@ void MacScrollbarAnimatorImpl::UpdateScrollerStyle() {
   if (!mac_theme)
     return;
 
-  NSScrollerStyle new_style = [scrollbar_painter_controller_ scrollerStyle];
-
   if (Scrollbar* vertical_scrollbar = scrollable_area_->VerticalScrollbar()) {
     vertical_scrollbar->SetNeedsPaintInvalidation(kAllParts);
 
-    ScrollbarPainter old_vertical_painter =
-        [scrollbar_painter_controller_ verticalScrollerImp];
-    ScrollbarPainter new_vertical_painter = [NSClassFromString(@"NSScrollerImp")
-        scrollerImpWithStyle:new_style
-                 controlSize:NSRegularControlSize
-                  horizontal:NO
-        replacingScrollerImp:old_vertical_painter];
-    [old_vertical_painter setDelegate:nil];
-    [new_vertical_painter setDelegate:vertical_scrollbar_painter_delegate_];
-    [scrollbar_painter_controller_ setVerticalScrollerImp:new_vertical_painter];
-    mac_theme->SetNewPainterForScrollbar(*vertical_scrollbar,
-                                         new_vertical_painter);
+    vertical_scrollbar_ = std::make_unique<MacScrollbarImpl>(
+        *vertical_scrollbar, scrollbar_painter_controller_, task_runner_,
+        mac_theme, std::move(vertical_scrollbar_));
 
     // The different scrollbar styles have different thicknesses, so we must
     // re-set the frameRect to the new thickness, and the re-layout below will
@@ -793,20 +868,9 @@ void MacScrollbarAnimatorImpl::UpdateScrollerStyle() {
           scrollable_area_->HorizontalScrollbar()) {
     horizontal_scrollbar->SetNeedsPaintInvalidation(kAllParts);
 
-    ScrollbarPainter old_horizontal_painter =
-        [scrollbar_painter_controller_ horizontalScrollerImp];
-    ScrollbarPainter new_horizontal_painter =
-        [NSClassFromString(@"NSScrollerImp")
-            scrollerImpWithStyle:new_style
-                     controlSize:NSRegularControlSize
-                      horizontal:YES
-            replacingScrollerImp:old_horizontal_painter];
-    [old_horizontal_painter setDelegate:nil];
-    [new_horizontal_painter setDelegate:horizontal_scrollbar_painter_delegate_];
-    [scrollbar_painter_controller_
-        setHorizontalScrollerImp:new_horizontal_painter];
-    mac_theme->SetNewPainterForScrollbar(*horizontal_scrollbar,
-                                         new_horizontal_painter);
+    horizontal_scrollbar_ = std::make_unique<MacScrollbarImpl>(
+        *horizontal_scrollbar, scrollbar_painter_controller_, task_runner_,
+        mac_theme, std::move(horizontal_scrollbar_));
 
     // The different scrollbar styles have different thicknesses, so we must
     // re-set the

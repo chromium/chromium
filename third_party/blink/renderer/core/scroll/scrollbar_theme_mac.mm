@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h"
 #include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -41,17 +42,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
-@interface BlinkScrollbarObserver : NSObject {
-  blink::Scrollbar* _scrollbar;
-  base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
-  BOOL _suppressSetScrollbarsHidden;
-  CGFloat _saved_knob_alpha;
-}
-- (instancetype)
-    initWithScrollbar:(blink::Scrollbar*)scrollbar
-              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
-@end
 
 @implementation BlinkScrollbarObserver
 
@@ -71,6 +61,10 @@
 
 - (id)painter {
   return _scrollbarPainter;
+}
+
+- (blink::Scrollbar*)scrollbar {
+  return _scrollbar;
 }
 
 - (void)setSuppressSetScrollbarsHidden:(BOOL)value {
@@ -115,16 +109,6 @@ static ScrollbarSet& GetScrollbarSet() {
   DEFINE_STATIC_LOCAL(Persistent<ScrollbarSet>, set,
                       (MakeGarbageCollected<ScrollbarSet>()));
   return *set;
-}
-
-typedef HeapHashMap<WeakMember<Scrollbar>,
-                    base::scoped_nsobject<BlinkScrollbarObserver>>
-    ScrollbarPainterMap;
-
-static ScrollbarPainterMap& GetScrollbarPainterMap() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollbarPainterMap>, map,
-                      (MakeGarbageCollected<ScrollbarPainterMap>()));
-  return *map;
 }
 
 // Values returned by NSScrollerImp's methods for querying sizes of various
@@ -218,45 +202,23 @@ ScrollbarPart ScrollbarThemeMac::PartsToInvalidateOnThumbPositionChange(
 
 void ScrollbarThemeMac::RegisterScrollbar(Scrollbar& scrollbar) {
   GetScrollbarSet().insert(&scrollbar);
-
-  NSControlSize size;
-  if (scrollbar.CSSScrollbarWidth() == EScrollbarWidth::kThin)
-    size = NSControlSizeSmall;
-  else
-    size = NSControlSizeRegular;
-
-  bool is_horizontal = scrollbar.Orientation() == kHorizontalScrollbar;
-  base::scoped_nsobject<ScrollbarPainter> scrollbar_painter([[NSClassFromString(
-      @"NSScrollerImp") scrollerImpWithStyle:RecommendedScrollerStyle()
-                                 controlSize:size
-                                  horizontal:is_horizontal
-                        replacingScrollerImp:nil] retain]);
-  base::scoped_nsobject<BlinkScrollbarObserver> observer(
-      [[BlinkScrollbarObserver alloc] initWithScrollbar:&scrollbar
-                                                painter:scrollbar_painter]);
-
-  GetScrollbarPainterMap().insert(&scrollbar, observer);
-  UpdateEnabledState(scrollbar);
-  UpdateScrollbarOverlayColorTheme(scrollbar);
 }
 
-void ScrollbarThemeMac::SetNewPainterForScrollbar(
-    Scrollbar& scrollbar,
-    ScrollbarPainter new_painter) {
-  base::scoped_nsobject<ScrollbarPainter> scrollbar_painter(
-      [new_painter retain]);
-  base::scoped_nsobject<BlinkScrollbarObserver> observer(
-      [[BlinkScrollbarObserver alloc] initWithScrollbar:&scrollbar
-                                                painter:scrollbar_painter]);
-  GetScrollbarPainterMap().Set(&scrollbar, observer);
+bool ScrollbarThemeMac::IsScrollbarRegistered(Scrollbar& scrollbar) const {
+  return GetScrollbarSet().Contains(&scrollbar);
+}
+
+void ScrollbarThemeMac::SetNewPainterForScrollbar(Scrollbar& scrollbar,
+                                                  ScrollbarPainter) {
   UpdateEnabledState(scrollbar);
   UpdateScrollbarOverlayColorTheme(scrollbar);
 }
 
 ScrollbarPainter ScrollbarThemeMac::PainterForScrollbar(
     const Scrollbar& scrollbar) const {
-  auto it = GetScrollbarPainterMap().find(const_cast<Scrollbar*>(&scrollbar));
-  return it != GetScrollbarPainterMap().end() ? [it->value painter] : nil;
+  if (auto* mac_scrollbar_impl = MacScrollbarImpl::GetForScrollbar(scrollbar))
+    return mac_scrollbar_impl->painter();
+  return nil;
 }
 
 WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
@@ -387,10 +349,8 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
   // ScrollbarPainter in ways that are unknown. It is important to leave
   // these in place because we use ScrollbarPainter to populate |thumb_size|
   // and because the ScrollAnimator doesn't animate correctly without them.
-  {
-    base::scoped_nsobject<BlinkScrollbarObserver> observer(
-        GetScrollbarPainterMap().at(const_cast<Scrollbar*>(&scrollbar)),
-        base::scoped_policy::RETAIN);
+  if (auto* mac_scrollbar_impl = MacScrollbarImpl::GetForScrollbar(scrollbar)) {
+    BlinkScrollbarObserver* observer = mac_scrollbar_impl->observer();
     ScrollbarPainter scrollbar_painter = [observer painter];
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
 
