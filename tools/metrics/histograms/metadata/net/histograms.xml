@@ -2400,10 +2400,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkErrorLogging.SignedExchangeRequestOutcome"
-    enum="NetNetworkErrorLoggingRequestOutcome" expires_after="M99">
-  <owner>horo@chromium.org</owner>
+    enum="NetNetworkErrorLoggingRequestOutcome" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     When Network Error Logging observes a completed request of signed exchange
     that might generate a report, what happens to it. NEL observes all requests,

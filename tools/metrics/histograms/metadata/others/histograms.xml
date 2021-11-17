@@ -14966,10 +14966,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertificateFetch.CacheHit"
-    enum="BooleanCacheHit" expires_after="M99">
+    enum="BooleanCacheHit" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records if the fetched Signed Exchange certchain was served from HTTP cache
     or not.
@@ -14977,30 +14976,27 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.CertVerificationResult" enum="NetErrorCodes"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Reports the result of Signed Exchange cert verification, including success.
   </summary>
 </histogram>
 
 <histogram name="SignedExchange.CTVerificationResult" enum="CTComplianceStatus"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Reports the result of Signed Exchange CT verification, including success.
   </summary>
 </histogram>
 
 <histogram name="SignedExchange.FallbackRedirectLoop" enum="BooleanDetected"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records true when a fallback redirect of Signed Exchange has failed with
     ERR_TO_MANY_REDIRECTS.
@@ -15011,10 +15007,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.LoadResult2" enum="SignedExchangeLoadResult"
-    expires_after="2022-04-03">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records the result of loading a resource from Signed HTTP Exchange. Emitted
     each time a response is handled as Signed Exchange.
@@ -15022,10 +15017,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPResponseStatus" enum="OCSPResponseStatus"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The status of OCSP response in Signed Exchange certificates. Reported each
     time Signed Exchange's OCSP check is performed.
@@ -15033,10 +15027,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.OCSPRevocationStatus"
-    enum="OCSPRevocationStatus" expires_after="M99">
+    enum="OCSPRevocationStatus" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Reports the revocation status of OCSP response in Signed Exchange
     certificates. Emitted when Signed Exchange's OCSP check is performed, but
@@ -15045,10 +15038,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.LoadResult2"
-    enum="SignedExchangeLoadResult" expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    enum="SignedExchangeLoadResult" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records if the prefetched Signed Exchange was properly formatted and passed
     verification steps. Reported for each completed SignedExchange prefetch.
@@ -15056,10 +15048,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Precision.30Seconds"
-    enum="BooleanUsage" expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    enum="BooleanUsage" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records if the prefetched Signed Exchange was actually the target of a
     navigation which happened within 30 seconds. Reported when a corresponding
@@ -15069,10 +15060,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Prefetch.Recall.30Seconds" enum="BooleanUsage"
-    expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Records how much Signed Exchange navigations were prefetched and not
     prefetched. Matched against 30 seconds window. Reported for each Signed
@@ -15081,10 +15071,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.Expired"
-    units="seconds" expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    units="seconds" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Recorded when Signed Exchange signature was expired. Records the time delta
     between current time and signature's &quot;expires&quot; value.
@@ -15092,10 +15081,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationError.NotYetValid"
-    units="seconds" expires_after="M99">
+    units="seconds" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Recorded when Signed Exchange signature was not yet valid. Records the time
     delta between current time and signature's &quot;date&quot; value.
@@ -15103,10 +15091,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.SignatureVerificationResult"
-    enum="SignedExchangeSignatureVerificationResult" expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    enum="SignedExchangeSignatureVerificationResult" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Reports the result of Signed Exchange signature verification, including
     success.
@@ -15114,10 +15101,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Failure" units="ms"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The amount of time elapsed to fetch certificate chain from certUrl, for
     which the fetch has failed.
@@ -15125,10 +15111,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.CertificateFetch.Success" units="ms"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The amount of time elapsed to fetch certificate chain from certUrl, for
     which the fetch has succeeded.
@@ -15136,10 +15121,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.Time.SignatureVerify" units="ms"
-    expires_after="M99">
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>kinuko@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The amount of time that elapsed during
     SignedExchangeSignatureVerifier::Verify.
@@ -15147,10 +15131,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.TimeUntilExpiration" units="seconds"
-    expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     Number of seconds until the Signed Exchange's expiration time. Recorded when
     Signed Exchange signature verification is performed, and emitted only for
@@ -15159,10 +15142,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingDuration" units="ms"
-    expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The amount of time elapsed to ping the original publisher of the Signed
     Exchanges.
@@ -15170,10 +15152,9 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.ValidityPingResult"
-    enum="SignedExchangeValidityPingResult" expires_after="M99">
-  <owner>kinuko@chromium.org</owner>
+    enum="SignedExchangeValidityPingResult" expires_after="2022-05-17">
   <owner>ksakamoto@chromium.org</owner>
-  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
   <summary>Reports the result of the Signed Exchange validity ping.</summary>
 </histogram>
 
