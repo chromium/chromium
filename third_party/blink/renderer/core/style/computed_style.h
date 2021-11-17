@@ -286,7 +286,7 @@ class ComputedStyle : public ComputedStyleBase,
   StyleCachedData& EnsureCachedData() const;
 
   bool HasCachedPseudoElementStyles() const;
-  PseudoElementStyleCache* GetPseudoElementStyleCache() const;
+  CORE_EXPORT PseudoElementStyleCache* GetPseudoElementStyleCache() const;
   PseudoElementStyleCache& EnsurePseudoElementStyleCache() const;
 
   Vector<AtomicString>* GetVariableNamesCache() const;
@@ -3088,6 +3088,7 @@ class ComputedStyle : public ComputedStyleBase,
       TextDecorationEqualDoesNotRequireRecomputeInkOverflow);
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
                            TextDecorationNotEqualRequiresRecomputeInkOverflow);
+  FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, ScrollbarStyleNoExcessiveCaching);
 };
 
 inline bool ComputedStyle::HasAnyPseudoElementStyles() const {

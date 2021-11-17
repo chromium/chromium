@@ -146,13 +146,16 @@ CustomScrollbar::GetScrollbarPseudoElementStyle(ScrollbarPart part_type,
   }
   if (!element->GetLayoutObject())
     return nullptr;
-  const ComputedStyle* source_style = element->GetLayoutObject()->Style();
+  const ComputedStyle* source_style = StyleSource()->GetLayoutObject()->Style();
   scoped_refptr<const ComputedStyle> part_style =
       element->UncachedStyleForPseudoElement(
           StyleRequest(pseudo_id, this, part_type, source_style));
   if (!part_style)
     return nullptr;
-  return source_style->AddCachedPseudoElementStyle(std::move(part_style));
+  if (part_style->DependsOnFontMetrics()) {
+    element->SetScrollbarPseudoElementStylesDependOnFontMetrics(true);
+  }
+  return part_style;
 }
 
 void CustomScrollbar::DestroyScrollbarParts() {

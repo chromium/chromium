@@ -1009,6 +1009,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool HasUndoStack() const;
   void SetHasUndoStack(bool);
 
+  // For font-related style invalidation.
+  void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool);
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

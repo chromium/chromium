@@ -177,6 +177,12 @@ class ElementRareData final : public NodeRareData {
   }
   bool HasUndoStack() const { return has_undo_stack_; }
   void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
+  bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
+    return scrollbar_pseudo_element_styles_depend_on_font_metrics_;
+  }
+  void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
+    scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
+  }
 
   AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
@@ -280,12 +286,11 @@ class ElementRareData final : public NodeRareData {
   Member<ContainerQueryData> container_query_data_;
   std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
 
-  // NOTE: Booleans should be contiguous since the compiler will optimize them
-  // into a single memory address.
-  bool did_attach_internals_ = false;
-  bool should_force_legacy_layout_for_child_ = false;
-  bool style_should_force_legacy_layout_ = false;
-  bool has_undo_stack_ = false;
+  unsigned did_attach_internals_ : 1;
+  unsigned should_force_legacy_layout_for_child_ : 1;
+  unsigned style_should_force_legacy_layout_ : 1;
+  unsigned has_undo_stack_ : 1;
+  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

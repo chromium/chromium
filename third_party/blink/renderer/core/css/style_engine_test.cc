@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -4788,6 +4789,73 @@ TEST_F(StyleEngineTest, LegacyListItemRebuildRootCrash) {
   doc_elm->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
   // Should not crash
   UpdateAllLifecyclePhases();
+}
+
+// Regression test for https://crbug.com/1270190
+TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+    .a {
+      width: 50px;
+      height: 50px;
+      background-color: magenta;
+      overflow-y: scroll;
+      margin: 5px;
+      float: left;
+    }
+
+    .b {
+      height: 100px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: green;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: red;
+    }
+    </style>
+    <div class="a" id="container">
+      <div class="b">
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  // We currently don't cache ::-webkit-scrollbar-* pseudo element styles, so
+  // the cache is always empty. If we decide to cache them, we should make sure
+  // that the cache size remains bounded.
+
+  Element* container = GetDocument().getElementById("container");
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+
+  PaintLayerScrollableArea* area =
+      container->GetLayoutBox()->GetScrollableArea();
+  Scrollbar* scrollbar = area->VerticalScrollbar();
+  CustomScrollbar* custom_scrollbar = To<CustomScrollbar>(scrollbar);
+
+  scrollbar->SetHoveredPart(kThumbPart);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+  EXPECT_EQ("#ff0000", custom_scrollbar->GetPart(kThumbPart)
+                           ->Style()
+                           ->BackgroundColor()
+                           .GetColor()
+                           .Serialized());
+
+  scrollbar->SetHoveredPart(kNoPart);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+  EXPECT_EQ("#008000", custom_scrollbar->GetPart(kThumbPart)
+                           ->Style()
+                           ->BackgroundColor()
+                           .GetColor()
+                           .Serialized());
 }
 
 }  // namespace blink
