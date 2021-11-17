@@ -48,11 +48,9 @@ ClassicScript* ClassicScript::CreateUnspecifiedScript(
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
     const WebScriptSource& source,
     SanitizeScriptErrors sanitize_script_errors) {
-  TextPosition position(OrdinalNumber::FromOneBasedInt(source.start_line),
-                        OrdinalNumber::First());
   return ClassicScript::CreateUnspecifiedScript(
       ScriptSourceCode(source.code, ScriptSourceLocationType::kUnknown,
-                       nullptr /* cache_handler */, source.url, position),
+                       nullptr /* cache_handler */, source.url),
       sanitize_script_errors);
 }
 

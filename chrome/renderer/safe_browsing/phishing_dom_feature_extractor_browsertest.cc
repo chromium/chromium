@@ -216,8 +216,8 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
   void RemoveIframe() {
     blink::WebLocalFrame* main_frame = GetMainFrame();
     ASSERT_TRUE(main_frame);
-    main_frame->ExecuteScript(blink::WebString(
-        "document.body.removeChild(document.getElementById('frame1'));"));
+    main_frame->ExecuteScript(blink::WebScriptSource(blink::WebString(
+        "document.body.removeChild(document.getElementById('frame1'));")));
   }
 
   bool success_;

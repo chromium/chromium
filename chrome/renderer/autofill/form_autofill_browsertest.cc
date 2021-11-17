@@ -5570,8 +5570,8 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
   EXPECT_EQ(u"firstname", fields[0].name);
   EXPECT_EQ(u"firstname", field.name);
 
-  frame->ExecuteScript(
-      WebString("document.getElementById('firstname').remove();"));
+  frame->ExecuteScript(blink::WebScriptSource(
+      WebString("document.getElementById('firstname').remove();")));
   form = {};
   EXPECT_FALSE(WebFormElementToFormData(web_form, control_element, nullptr,
                                         EXTRACT_NONE, &form, &field));

@@ -68,7 +68,7 @@ TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
       GetNonTrivialMainFrameFeatures(),
       testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
 
-  MainFrame().ExecuteScript(WebString("socket.close();"));
+  MainFrame().ExecuteScript(WebScriptSource(WebString("socket.close();")));
 
   EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(GetNonTrivialMainFrameFeatures(),

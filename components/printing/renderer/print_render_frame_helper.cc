@@ -124,7 +124,8 @@ void ExecuteScript(blink::WebLocalFrame* frame,
   std::string json;
   base::JSONWriter::Write(parameters, &json);
   std::string script = base::StringPrintf(script_format, json.c_str());
-  frame->ExecuteScript(blink::WebString::FromUTF8(script));
+  frame->ExecuteScript(
+      blink::WebScriptSource(blink::WebString::FromUTF8(script)));
 }
 
 int GetDPI(const mojom::PrintParams& print_params) {

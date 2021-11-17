@@ -487,7 +487,7 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
   // because WPT reftests never access this object.
   if (is_wpt_test && is_main_test_window && !web_frame->Parent() &&
       !web_frame->Opener()) {
-    web_frame->ExecuteScript(blink::WebString(
+    web_frame->ExecuteScript(blink::WebScriptSource(blink::WebString(
         R"(if (!window.testRunner._wpt_reftest_setup) {
           window.testRunner._wpt_reftest_setup = true;
 
@@ -516,7 +516,7 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
               document.fonts.ready.then(() => window.testRunner.notifyDone());
             }
           });
-        })"));
+        })")));
   }
 }
 
@@ -1104,7 +1104,7 @@ TestRunnerBindings::EvaluateScriptInIsolatedWorldAndReturnValue(
   if (invalid_ || world_id <= 0 || world_id >= (1 << 29))
     return {};
 
-  blink::WebScriptSource source = blink::WebString::FromUTF8(script);
+  blink::WebScriptSource source(blink::WebString::FromUTF8(script));
   return GetWebFrame()->ExecuteScriptInIsolatedWorldAndReturnValue(
       world_id, source, blink::BackForwardCacheAware::kAllow);
 }
@@ -1115,7 +1115,7 @@ void TestRunnerBindings::EvaluateScriptInIsolatedWorld(
   if (invalid_ || world_id <= 0 || world_id >= (1 << 29))
     return;
 
-  blink::WebScriptSource source = blink::WebString::FromUTF8(script);
+  blink::WebScriptSource source(blink::WebString::FromUTF8(script));
   GetWebFrame()->ExecuteScriptInIsolatedWorld(
       world_id, source, blink::BackForwardCacheAware::kAllow);
 }
