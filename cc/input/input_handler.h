@@ -214,6 +214,13 @@ class CC_EXPORT InputHandler {
     // detected a case where it cannot reliably target a scroll node and needs
     // the main thread to perform a hit test.
     bool needs_main_thread_hit_test = false;
+
+    // Used only in scroll unification. Tells the caller that we have performed
+    // the scroll (i.e. updated the offset in the scroll tree) on the compositor
+    // thread, but we will need a main thread lifecycle update + commit before
+    // the user will see the new pixels (for example, because the scroller does
+    // not have a composited layer).
+    bool needs_main_thread_repaint = false;
   };
 
   enum class TouchStartOrMoveEventListenerType {

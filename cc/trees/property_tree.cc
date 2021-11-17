@@ -1271,6 +1271,10 @@ bool ScrollTree::IsComposited(const ScrollNode& node) const {
   return node.is_composited;
 }
 
+bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
+  return node.is_composited && !node.main_thread_scrolling_reasons;
+}
+
 void ScrollTree::clear() {
   PropertyTree<ScrollNode>::clear();
 

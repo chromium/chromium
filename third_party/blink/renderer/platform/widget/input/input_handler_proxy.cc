@@ -169,7 +169,7 @@ cc::SnapFlingController::GestureScrollUpdateInfo GetGestureScrollUpdateInfo(
 
 cc::ScrollBeginThreadState RecordScrollingThread(
     bool scrolling_on_compositor_thread,
-    bool blocked_on_main_thread_event_handler,
+    bool blocked_on_main_at_begin,
     WebGestureDevice device) {
   const char* kWheelHistogramName = "Renderer4.ScrollingThread.Wheel";
   const char* kTouchHistogramName = "Renderer4.ScrollingThread.Touch";
@@ -177,7 +177,7 @@ cc::ScrollBeginThreadState RecordScrollingThread(
   auto status = cc::ScrollBeginThreadState::kScrollingOnMain;
   if (scrolling_on_compositor_thread) {
     status =
-        blocked_on_main_thread_event_handler
+        blocked_on_main_at_begin
             ? cc::ScrollBeginThreadState::kScrollingOnCompositorBlockedOnMain
             : cc::ScrollBeginThreadState::kScrollingOnCompositor;
   }
@@ -421,7 +421,8 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     // DROP the ScrollEnd. We call this to ensure symmetry between
     // RecordScrollBegin and RecordScrollEnd but we should probably be avoiding
     // this if the scroll never starts. https://crbug.com/1082601.
-    RecordMainThreadScrollingReasons(gesture_event->SourceDevice(), 0);
+    RecordMainThreadScrollingReasons(gesture_event->SourceDevice(), 0, false,
+                                     false);
 
     // If the main thread failed to return a scroller for whatever reason,
     // consider the ScrollBegin to be dropped.
@@ -839,22 +840,27 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
 
 void InputHandlerProxy::RecordMainThreadScrollingReasons(
     WebGestureDevice device,
-    uint32_t reasons) {
+    uint32_t reasons_from_scroll_begin,
+    bool was_main_thread_hit_tested,
+    bool needs_main_thread_repaint) {
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kScrollbar &&
       device != WebGestureDevice::kTouchscreen) {
     return;
   }
 
-  // NonCompositedScrollReasons should only be set on the main thread.
-  DCHECK(
-      !cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(reasons));
+  // The "NonCompositedScrollReasons" are only reported by the pre-unification
+  // main thread event handling path.
+  DCHECK(!cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
+      reasons_from_scroll_begin));
 
   // This records whether a scroll is handled on the main or compositor
   // threads. Note: scrolls handled on the compositor but blocked on main due
   // to event handlers are still considered compositor scrolls.
   const bool is_compositor_scroll =
-      reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain;
+      reasons_from_scroll_begin ==
+          cc::MainThreadScrollingReason::kNotScrollingOnMain &&
+      !needs_main_thread_repaint;
 
   absl::optional<EventDisposition> disposition =
       (device == WebGestureDevice::kTouchpad ? mouse_wheel_result_
@@ -866,20 +872,47 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
   bool blocked_on_main_thread_handler =
       disposition.has_value() && disposition == DID_NOT_HANDLE;
 
+  bool blocked_on_main_at_begin =
+      blocked_on_main_thread_handler || was_main_thread_hit_tested;
+
   auto scroll_start_state = RecordScrollingThread(
-      is_compositor_scroll, blocked_on_main_thread_handler, device);
+      is_compositor_scroll, blocked_on_main_at_begin, device);
   input_handler_->RecordScrollBegin(GestureScrollInputType(device),
                                     scroll_start_state);
 
+  uint32_t reportable_reasons = reasons_from_scroll_begin;
   if (blocked_on_main_thread_handler) {
     // We should also collect main thread scrolling reasons if a scroll event
     // scrolls on impl thread but is blocked by main thread event handlers.
-    reasons |= (device == WebGestureDevice::kTouchpad
-                    ? cc::MainThreadScrollingReason::kWheelEventHandlerRegion
-                    : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
+    reportable_reasons |=
+        (device == WebGestureDevice::kTouchpad
+             ? cc::MainThreadScrollingReason::kWheelEventHandlerRegion
+             : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
+  }
+  if (was_main_thread_hit_tested) {
+    reportable_reasons |= cc::MainThreadScrollingReason::kFailedHitTest;
   }
 
-  RecordScrollReasonsMetric(device, reasons);
+  if (needs_main_thread_repaint) {
+    // With scroll unification, most of the values in MainThreadScrollingReason
+    // aren't reflected in reasons_from_scroll_begin, since we are not scrolling
+    // "on main" from ThreadedInputHandler's perspective. But we still want to
+    // log a reason to UMA if the user will not see new pixels until the next
+    // BeginMainFrame. We use kNoScrollingLayer here to cover scenarios that
+    // were reported pre-unification as one of:
+    //
+    //   kHasBackgroundAttachmentFixedObjects
+    //   kThreadedScrollingDisabled
+    //   kNonFastScrollableRegion
+    //   kNotOpaqueForTextAndLCDText
+    //   kCantPaintScrollingBackgroundAndLCDText
+    //
+    // TODO(crbug.com/1082590): Add new plumbing to distinguish between these in
+    // the post-unification world?
+    reportable_reasons |= cc::MainThreadScrollingReason::kNoScrollingLayer;
+  }
+
+  RecordScrollReasonsMetric(device, reportable_reasons);
 }
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
@@ -975,7 +1008,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   }
 
   RecordMainThreadScrollingReasons(gesture_event.SourceDevice(),
-                                   scroll_status.main_thread_scrolling_reasons);
+                                   scroll_status.main_thread_scrolling_reasons,
+                                   scroll_state.is_main_thread_hit_tested(),
+                                   scroll_status.needs_main_thread_repaint);
 
   InputHandlerProxy::EventDisposition result = DID_NOT_HANDLE;
   scroll_sequence_ignored_ = false;

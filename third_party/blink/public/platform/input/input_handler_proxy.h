@@ -208,12 +208,6 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
     return currently_active_gesture_device_.value();
   }
 
- protected:
-  void RecordMainThreadScrollingReasons(blink::WebGestureDevice device,
-                                        uint32_t reasons);
-  void RecordScrollingThreadStatus(blink::WebGestureDevice device,
-                                   uint32_t reasons);
-
  private:
   friend class test::TestInputHandlerProxy;
   friend class test::InputHandlerProxyTest;
@@ -286,6 +280,11 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void set_event_attribution_enabled(bool enabled) {
     event_attribution_enabled_ = enabled;
   }
+
+  void RecordMainThreadScrollingReasons(blink::WebGestureDevice device,
+                                        uint32_t reasons_from_scroll_begin,
+                                        bool was_main_thread_hit_tested,
+                                        bool needs_main_thread_repaint);
 
   InputHandlerProxyClient* client_;
 

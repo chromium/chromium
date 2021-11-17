@@ -287,7 +287,7 @@ class TestInputHandlerProxy : public InputHandlerProxy {
       : InputHandlerProxy(input_handler, client) {}
   void RecordMainThreadScrollingReasonsForTest(WebGestureDevice device,
                                                uint32_t reasons) {
-    RecordMainThreadScrollingReasons(device, reasons);
+    RecordMainThreadScrollingReasons(device, reasons, false, false);
   }
 
   MOCK_METHOD0(SetNeedsAnimateInput, void());
@@ -3626,6 +3626,68 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   EXPECT_EQ(expected_disposition_,
             HandleInputEventWithLatencyInfo(input_handler_.get(),
                                             gesture_scroll_end_));
+}
+
+TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
+       ImplHandled_MainThreadHitTest) {
+  if (!base::FeatureList::IsEnabled(features::kScrollUnification))
+    return;
+
+  expected_disposition_ = InputHandlerProxy::DID_HANDLE;
+  VERIFY_AND_RESET_MOCKS();
+
+  gesture_.data.scroll_begin.scrollable_area_element_id = 1;
+  gesture_.data.scroll_begin.main_thread_hit_tested = true;
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(
+          _, cc::ScrollBeginThreadState::kScrollingOnCompositorBlockedOnMain))
+      .Times(1);
+
+  gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
+  EXPECT_EQ(expected_disposition_,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+
+  VERIFY_AND_RESET_MOCKS();
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples("Renderer4.MainThreadWheelScrollReason"),
+      testing::ElementsAre(base::Bucket(
+          GetBucketSample(cc::MainThreadScrollingReason::kFailedHitTest), 1)));
+}
+
+TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
+       ImplHandled_MainThreadRepaint) {
+  if (!base::FeatureList::IsEnabled(features::kScrollUnification))
+    return;
+
+  expected_disposition_ = InputHandlerProxy::DID_HANDLE;
+  VERIFY_AND_RESET_MOCKS();
+
+  cc::InputHandler::ScrollStatus scroll_status = kImplThreadScrollState;
+  scroll_status.needs_main_thread_repaint = true;
+
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(scroll_status));
+  EXPECT_CALL(
+      mock_input_handler_,
+      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnMain))
+      .Times(1);
+
+  gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
+  EXPECT_EQ(expected_disposition_,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+
+  VERIFY_AND_RESET_MOCKS();
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples("Renderer4.MainThreadWheelScrollReason"),
+      testing::ElementsAre(base::Bucket(
+          GetBucketSample(cc::MainThreadScrollingReason::kNoScrollingLayer),
+          1)));
 }
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest, WheelScrollHistogram) {

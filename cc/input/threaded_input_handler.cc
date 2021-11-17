@@ -124,20 +124,23 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
   ClearCurrentlyScrollingNode();
 
   ElementId target_element_id = scroll_state->target_element_id();
+  ScrollTree& scroll_tree = GetScrollTree();
+  bool unification_enabled =
+      base::FeatureList::IsEnabled(features::kScrollUnification);
 
   if (target_element_id && !scroll_state->is_main_thread_hit_tested()) {
     TRACE_EVENT_INSTANT0("cc", "Latched scroll node provided",
                          TRACE_EVENT_SCOPE_THREAD);
     // If the caller passed in an element_id we can skip all the hit-testing
     // bits and provide a node straight-away.
-    scrolling_node = GetScrollTree().FindNodeFromElementId(target_element_id);
+    scrolling_node = scroll_tree.FindNodeFromElementId(target_element_id);
 
     // In unified scrolling, if we found a node we get to scroll it.
-    if (!base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    if (!unification_enabled) {
       // We still need to confirm the targeted node exists and can scroll on
       // the compositor.
       if (scrolling_node) {
-        scroll_status = TryScroll(GetScrollTree(), scrolling_node);
+        scroll_status = TryScroll(scroll_tree, scrolling_node);
         if (IsMainThreadScrolling(scroll_status, scrolling_node))
           scroll_on_main_thread = true;
       }
@@ -153,8 +156,8 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
       // unification is enabled and the targeted scroller comes back from a
       // main thread hit test.
       DCHECK(scroll_state->data()->is_main_thread_hit_tested);
-      DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
-      starting_node = GetScrollTree().FindNodeFromElementId(target_element_id);
+      DCHECK(unification_enabled);
+      starting_node = scroll_tree.FindNodeFromElementId(target_element_id);
 
       if (!starting_node) {
         // The main thread sent us an element_id that the compositor doesn't
@@ -167,7 +170,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
         scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
         return scroll_status;
       }
-    } else {
+    } else {  // !target_element_id
       TRACE_EVENT_INSTANT0("cc", "Hit Testing for ScrollNode",
                            TRACE_EVENT_SCOPE_THREAD);
       gfx::Point viewport_point(scroll_state->position_x(),
@@ -176,7 +179,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
           gfx::ScalePoint(gfx::PointF(viewport_point),
                           compositor_delegate_.DeviceScaleFactor());
 
-      if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+      if (unification_enabled) {
         if (scroll_state->data()->is_main_thread_hit_tested) {
           // The client should have discarded the scroll when the hit test came
           // back with an invalid element id. If we somehow get here, we should
@@ -226,7 +229,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
         }
 
         starting_node = scroll_hit_test.scroll_node;
-      } else {
+      } else {  // !unification_enabled
         LayerImpl* layer_impl =
             ActiveTree().FindLayerThatIsHitByPoint(device_viewport_point);
 
@@ -273,7 +276,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
   if (scroll_on_main_thread) {
     // Under scroll unification we can request a main thread hit test, but we
     // should never send scrolls to the main thread.
-    DCHECK(!base::FeatureList::IsEnabled(features::kScrollUnification));
+    DCHECK(!unification_enabled);
 
     RecordCompositorSlowScrollMetric(type, MAIN_THREAD);
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_ON_MAIN_THREAD;
@@ -308,8 +311,13 @@ InputHandler::ScrollStatus ThreadedInputHandler::ScrollBegin(
             MainThreadScrollingReason::kNotScrollingOnMain);
   DCHECK_EQ(scroll_status.thread,
             InputHandler::ScrollThread::SCROLL_ON_IMPL_THREAD);
+  DCHECK(scrolling_node);
 
   ActiveTree().SetCurrentlyScrollingNode(scrolling_node);
+  if (unification_enabled &&
+      !scroll_tree.CanRealizeScrollsOnCompositor(*scrolling_node)) {
+    scroll_status.needs_main_thread_repaint = true;
+  }
 
   DidLatchToScroller(*scroll_state, type);
 

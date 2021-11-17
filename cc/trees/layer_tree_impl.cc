@@ -229,19 +229,14 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
   // immediate changes in the compositor, we want the scroll to propagate
   // through Blink in a commit and have Blink update properties, paint,
   // compositing, etc. Thus, we avoid mutating the transform tree in this case.
-  // TODO(bokan): We SetNeedsCommit in LTHI when a scroll happens but in a
-  // normal compositor scroll there isn't much urgency for a commit to be
-  // scheduled. We should look into what we can do to make sure this is
-  // proritized accordingly. https://crbug.com/1082618.
-  bool can_realize_scroll_on_compositor =
+  bool should_realize_scroll_on_compositor =
       !base::FeatureList::IsEnabled(features::kScrollUnification) ||
-      (scroll_node->is_composited &&
-       !scroll_node->main_thread_scrolling_reasons);
+      scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node);
 
   DCHECK(scroll_node->transform_id != TransformTree::kInvalidNodeId);
   TransformTree& transform_tree = property_trees()->transform_tree;
   auto* transform_node = transform_tree.Node(scroll_node->transform_id);
-  if (can_realize_scroll_on_compositor) {
+  if (should_realize_scroll_on_compositor) {
     if (transform_node->scroll_offset !=
         scroll_tree.current_scroll_offset(id)) {
       transform_node->scroll_offset = scroll_tree.current_scroll_offset(id);

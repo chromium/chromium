@@ -513,6 +513,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // repainting.
   bool IsComposited(const ScrollNode& node) const;
 
+  // Returns true iff the node is composited and does not have any non-transient
+  // main-thread scrolling reasons (see main_thread_scrolling_reason.h).
+  bool CanRealizeScrollsOnCompositor(const ScrollNode& node) const;
+
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;
