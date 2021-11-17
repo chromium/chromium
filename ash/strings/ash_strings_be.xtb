@@ -326,6 +326,7 @@
 <translation id="334252345105450327">Зрабіць здымак экрана</translation>
 <translation id="3351879221545518001">Вы трансліруеце экран.</translation>
 <translation id="3364721542077212959">Інструменты стыла</translation>
+<translation id="3365977133351922112">Тэлефон знаходзіцца занадта далёка. Паднясіце яго бліжэй.</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3371140690572404006">Прылада USB-C (пярэдні порт справа)</translation>
 <translation id="3375634426936648815">Падключана</translation>
@@ -378,6 +379,7 @@
 <translation id="3665889125180354336">Запіс з мікрафона</translation>
 <translation id="3680908746918359504">Выдаліць усе маркеры</translation>
 <translation id="36813544980941320">Інфармацыя пра сеткі Wi-Fi будзе абагульвацца паміж тэлефонам і прыладай <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Вэб-сайты</translation>
 <translation id="3701206655856637070">Месца захоўвання файлаў, атрыманых у выніку здымання экрана, можна змяніць</translation>
 <translation id="3702809606464356667">Паказаны вокны бягучага працоўнага стала. Каб пераключыцца на рэжым паказу вокнаў усіх працоўных сталоў, націсніце стрэлку ўверх</translation>
 <translation id="3702846122927433391">Насельніцтва Нігерыі</translation>
@@ -601,6 +603,7 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
 <translation id="5199367439331364630">Каб увайсці на прыладзе Chromebook, увядзіце пароль</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{яшчэ 1 апавяшчэнне}one{яшчэ # апавяшчэнне}few{яшчэ # апавяшчэнні}many{яшчэ # апавяшчэнняў}other{яшчэ # апавяшчэння}}</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="5208059991603368177">Уключана</translation>
@@ -883,6 +886,7 @@
 <translation id="7398254312354928459">Пераключана падключэнне да сеткі</translation>
 <translation id="7405710164030118432">Каб разблакіраваць прыладу, увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="7406608787870898861">Завяршыце наладжванне мабільнай сеткі</translation>
+<translation id="740790383907119240">Ярлыкі праграм</translation>
 <translation id="741244894080940828">перавод адзінак вымярэння</translation>
 <translation id="7413851974711031813">Каб закрыць, націсніце Escape</translation>
 <translation id="742594950370306541">Камера выкарыстоўваецца.</translation>
@@ -985,6 +989,7 @@
 <translation id="8061464966246066292">Высокая кантраснасць</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Уключана, усе праграмы</translation>
+<translation id="8120151603115102514">На тэлефоне не выкарыстоўваецца функцыя экрана блакіроўкі. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8132487352815776550">Схаваць субцітры</translation>
@@ -1033,6 +1038,7 @@
 <translation id="8473301994082929012">Арганізацыя <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> функцыю "<ph name="FEATURE_NAME" />".</translation>
 <translation id="8477270416194247200">Каб скасаваць, націсніце "Alt+Пошук" або "Shift".</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth на прыладзе Chromebook выключаны. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8513108775083588393">Аўтапаварот</translation>
 <translation id="851458219935658693">Паказ вокнаў бягучага працоўнага стала, выбраны пераключальнік</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>

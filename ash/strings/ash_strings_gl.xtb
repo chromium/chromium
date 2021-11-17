@@ -326,6 +326,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="334252345105450327">Fai unha captura de pantalla</translation>
 <translation id="3351879221545518001">Agora estás emitindo a pantalla.</translation>
 <translation id="3364721542077212959">Ferramentas de lapis óptico</translation>
+<translation id="3365977133351922112">O teu teléfono está demasiado lonxe. Achégao.</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3371140690572404006">Dispositivo USB‑C (porto dereito frontal)</translation>
 <translation id="3375634426936648815">Función conectada</translation>
@@ -603,6 +604,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5199367439331364630">Para iniciar sesión no Chromebook, mete o contrasinal</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5208059991603368177">Activado</translation>
@@ -885,6 +887,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7398254312354928459">Cambiouse a conexión de rede</translation>
 <translation id="7405710164030118432">Para desbloquear o dispositivo, introduce o código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Remata de configurar a túa rede de telefonía móbil</translation>
+<translation id="740790383907119240">Atallos da aplicación</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7413851974711031813">Para pechar o diálogo, preme a tecla Escape</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
@@ -987,6 +990,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8098591350844501178">Deter a emisión da pantalla en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Si, para todas</translation>
+<translation id="8120151603115102514">O teu teléfono non ten unha pantalla de bloqueo. Para desbloquear o Chromebook, escribe o contrasinal.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132487352815776550">Deter subtítulos</translation>
@@ -1035,6 +1039,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Preme Alt + Buscar ou Maiúsculas para cancelar.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">O Bluethooth do teu Chromebook está desactivado. Para desbloquealo, escribe o contrasinal.</translation>
 <translation id="8513108775083588393">Xirar autom.</translation>
 <translation id="851458219935658693">Seleccionouse o botón de opción para mostrar as ventás do escritorio actual</translation>
 <translation id="8517041960877371778">É posible que o teu <ph name="DEVICE_TYPE" /> non cargue mentres estea acendido.</translation>

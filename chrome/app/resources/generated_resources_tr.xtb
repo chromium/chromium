@@ -2387,6 +2387,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3449393517661170867">Sekmeli yeni pencere</translation>
 <translation id="3449839693241009168">Komutları <ph name="EXTENSION_NAME" /> uygulamasına göndermek için <ph name="SEARCH_KEY" /> tuşuna basın</translation>
 <translation id="3450157232394774192">Boşta Kalma Durumu Kullanma Yüzdesi</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" />, şimdi kablosuz ağa bağlanarak bir güncelleme indirmenizi gerektiriyor.</translation>
 <translation id="3451753556629288767">Dosya türlerini açmasına izin verilen siteler</translation>
 <translation id="3452999110156026232">Ebeveyn Erişimi</translation>
 <translation id="3453612417627951340">Yetkilendirme gerektiriyor</translation>
@@ -4253,6 +4254,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5472627187093107397">Bu site için şifreleri kaydet</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN en az bir karakter olmalıdır}other{PIN en az # karakter olmalıdır}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" />, şimdi kablosuz ağa bağlanarak bir güncelleme indirmenizi gerektiriyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).</translation>
 <translation id="5481273127572794904">Birden fazla dosyayı otomatik olarak indirmesine izin verilmeyen siteler</translation>
 <translation id="5481941284378890518">Yakınlardaki Yazıcıları Ekle</translation>
 <translation id="5483785310822538350">Dosya ve cihaz erişimini iptal et</translation>
@@ -4676,6 +4678,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="592880897588170157">PDF dosyalarını Chrome'da otomatik olarak açmak yerine indir</translation>
 <translation id="592919310198008711">Uzantıyı tıkladığımda</translation>
 <translation id="5932124097031739492">Linux başarıyla yeni sürüme geçirildi.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" />, hemen <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi gerektiriyor.</translation>
 <translation id="5932224571077948991">Site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> marka USB cihaz</translation>
 <translation id="5932441198730183141">Bu Google Meet hardware cihazını kaydetmek için yeterli kullanılabilir lisansa sahip değilsiniz. Daha fazla lisans satın almak için lütfen satış temsilcisiyle iletişime geçin. Bu mesajın yanlışlıkla görüntülendiğini düşünüyorsanız lütfen destek birimiyle bağlantı kurun.</translation>

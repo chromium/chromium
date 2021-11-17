@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">משהו השתבש במהלך הכניסה לחשבון.</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
 <translation id="1923342640370224680">בשעה האחרונה</translation>
+<translation id="1930989359703290198">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
 <translation id="1965935827552890526">‏יש לסיים את הפעילות בחלון Chrome הפתוח הנוסף.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay
 
 כדי לשנות את ההגדרה הזו צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">מנוהל על-ידי הארגון שלך.
+<ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">מספר כרטיס לא חוקי</translation>
 <translation id="4808744395915275922">עדכונים</translation>
 <translation id="4818522717893377262">הוספת שפה…</translation>

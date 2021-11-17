@@ -326,6 +326,7 @@
 <translation id="334252345105450327">יצירת צילום מסך</translation>
 <translation id="3351879221545518001">מתבצעת עכשיו העברה של מסך.</translation>
 <translation id="3364721542077212959">כלי סטיילוס</translation>
+<translation id="3365977133351922112">הטלפון שלך רחוק מדי. צריך לקרב את הטלפון.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3371140690572404006">‏מכשיר עם יציאת USB-C (יציאה ימנית-קדמית)</translation>
 <translation id="3375634426936648815">מחובר</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
 <translation id="5199367439331364630">‏כדי לבטל את נעילת ה-Chromebook, עליך להזין סיסמה</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}two{# התראות נוספות}many{# התראות נוספות}other{# התראות נוספות}}</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
@@ -884,6 +886,7 @@
 <translation id="7398254312354928459">חיבור הרשת הוחלף</translation>
 <translation id="7405710164030118432">‏כדי לבטל את נעילת המכשיר, יש להזין את קוד גישת ההורה של Family Link</translation>
 <translation id="7406608787870898861">סיום ההגדרה של הרשת הסלולרית</translation>
+<translation id="740790383907119240">קיצורי דרך של אפליקציות</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="7413851974711031813">‏יש להקיש על "Esc" לסגירה</translation>
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
@@ -988,6 +991,7 @@
 <translation id="8061464966246066292">ניגודיות גבוהה</translation>
 <translation id="8098591350844501178">הפסקת העברת המסך אל <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">מופעל, כל האפליקציות</translation>
+<translation id="8120151603115102514">‏לטלפון שלך אין מסך נעילה. כדי לבטל את נעילת ה-Chromebook, עליך להזין סיסמה.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132487352815776550">להפסקת הכתוביות</translation>
@@ -1036,6 +1040,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> את <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">‏החיבור של ה-Chromebook ל-Bluetooth כבוי. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
 <translation id="8513108775083588393">סיבוב אוטומטי</translation>
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, לחצן הבחירה נבחר</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>

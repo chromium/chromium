@@ -326,6 +326,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="334252345105450327">Ekran görüntüsü al</translation>
 <translation id="3351879221545518001">Şu anda ekranı yayınlıyorsunuz.</translation>
 <translation id="3364721542077212959">Ekran kalemi araçları</translation>
+<translation id="3365977133351922112">Telefonunuz çok uzakta. Telefonunuzu daha yakına getirin.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3371140690572404006">USB-C cihaz (sağ ön bağlantı noktası)</translation>
 <translation id="3375634426936648815">Bağlı</translation>
@@ -602,6 +603,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
 <translation id="5199367439331364630">Chromebook'unuzda oturum açmak için şifreyi girin</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 diğer bildirim}other{# diğer bildirim}}</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
@@ -885,6 +887,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7398254312354928459">Ağ bağlantısı değiştirildi</translation>
 <translation id="7405710164030118432">Bu cihazın kilidini açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="7406608787870898861">Mobil ağınızın kurulumunu tamamlayın</translation>
+<translation id="740790383907119240">Uygulama Kısayolları</translation>
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="7413851974711031813">Kapatmak için escape tuşuna basın</translation>
 <translation id="742594950370306541">Kamera kullanımda.</translation>
@@ -987,6 +990,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8061464966246066292">Yüksek kontrast</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> cihazına yayınını durdur</translation>
 <translation id="8113423164597455979">Açık, tümü</translation>
+<translation id="8120151603115102514">Telefonunuzda kilit ekranı etkinleştirilmemiş. Chromebook'unuzun kilidini açmak için şifreyi girin.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8132487352815776550">Altyazıları durdur</translation>
@@ -1035,6 +1039,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> özelliğine sahip.</translation>
 <translation id="8477270416194247200">İptal etmek için Alt+Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
+<translation id="85123341071060231">Chromebook’unuzun Bluetooth'u kapalı. Chromebook'unuzun kilidini açmak için şifreyi girin.</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>

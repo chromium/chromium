@@ -326,6 +326,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
+<translation id="3365977133351922112">Telefonen är för långt bort. Flytta telefonen närmare.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3371140690572404006">USB-C-enhet (främre porten på högra sidan)</translation>
 <translation id="3375634426936648815">Ansluten</translation>
@@ -602,6 +603,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5199367439331364630">Ange lösenordet om du vill logga in på Chromebook</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 avisering till}other{# aviseringar till}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="5208059991603368177">På</translation>
@@ -884,6 +886,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7398254312354928459">Bytte nätverksanslutning</translation>
 <translation id="7405710164030118432">Lås upp enheten genom att ange föräldraåtkomstkoden för Family Link</translation>
 <translation id="7406608787870898861">Slutför konfigureringen av mobilnätverket</translation>
+<translation id="740790383907119240">Genvägar till appar</translation>
 <translation id="741244894080940828">Räkna om</translation>
 <translation id="7413851974711031813">Stäng genom att trycka på Esc</translation>
 <translation id="742594950370306541">Kameran används.</translation>
@@ -986,6 +989,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8061464966246066292">Hög kontrast</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Alla appar på</translation>
+<translation id="8120151603115102514">Telefonen saknar låsskärm. Lås upp Chromebook med lösenordet.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8132487352815776550">Stoppa textning</translation>
@@ -1034,6 +1038,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Avbryt genom att trycka på Alt + söktangenten eller Skift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />. Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth har inaktiverats på Chromebook. Lås upp Chromebook med lösenordet.</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>

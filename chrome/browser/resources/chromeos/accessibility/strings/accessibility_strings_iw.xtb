@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">העתקה</translation>
 <translation id="135978014023467274">‏ChromeVox עודכן לגירסה 63.</translation>
 <translation id="1360699455582016846">יש ללחוץ על הפריט שמתחת למפתח הניתוב <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">מעבר לתו הבא</translation>
 <translation id="1377925789329510816">‏זו הכותרת האחרונה. יש ללחוץ על מקש החיפוש ועל H כדי לחזור לכותרת הראשונה. לחלופין, יש ללחוץ על מקש החיפוש, על Shift ועל H כדי לעבור אל הכותרת השנייה בדף הזה.</translation>
 <translation id="138218114945450791">כחול בהיר</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">תיבת סימון</translation>
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2462626033734746142">קבוצת לחצני בחירה</translation>
+<translation id="2467741090055146971">ביטול הבחירה</translation>
 <translation id="2471138580042810658">כותרת 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{כוכבית}two{# סימני כוכבית}many{# סימני כוכבית}other{# סימני כוכבית}}</translation>
 <translation id="2490721194269245365">חום ורוד</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">אין ווידג'ט קודם של מדיה</translation>
 <translation id="4855927945655956315">‏מקשים חיוניים: Control</translation>
 <translation id="4862744964787595316">לא מודגש</translation>
+<translation id="4865995900839719272">מעבר לשורה הקודמת</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">‏אפשר רישום TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, כרטיסייה</translation>
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5310788376443009632">הוסר:</translation>
+<translation id="5316825363044614340">מעבר לשורה הבאה</translation>
 <translation id="5320727453979144100">מצב דביק מופעל</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{פסיק}two{# פסיקים}many{# פסיקים}other{# פסיקים}}</translation>
 <translation id="532485153932049746">עיצוב טקסט
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">אין שדה טופס קודם</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">עזרה</translation>
 <translation id="7317017974771324508">נבחר באופן חלקי</translation>
 <translation id="7322442671176251901">גילוי באמצעות מגע</translation>
 <translation id="7344012264516629579">‏דוגמאות לפקודות קפיצה נוספות: קפיצה באמצעות קישור, לחצן או תיבת סימון. רשימה מלאה של פקודות קפיצה מופיעה בתפריטי ChromeVox, שאותם ניתן לפתוח על ידי הקשה על מקש החיפוש ועל מקש הנקודה.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">‏מדריך של ChromeVox</translation>
 <translation id="9040132695316389094">כותרת 1</translation>
 <translation id="9061884144798498064">יש לבחור טבלת ברייל 8 נקודות:</translation>
+<translation id="9063946545000394379">מעבר לתו הקודם</translation>
 <translation id="9065283790526219006">‎+popup‎</translation>
 <translation id="9065912140022662363">אין עוד לחצני בחירה</translation>
 <translation id="9067522039955793016">מעבר דף</translation>

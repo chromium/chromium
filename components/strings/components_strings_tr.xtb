@@ -82,6 +82,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="124116460088058876">Diğer diller</translation>
 <translation id="1243027604378859286">Yazar:</translation>
 <translation id="1246424317317450637">Kalın</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="1250759482327835220">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve fatura adresinizi Google Hesabınıza kaydedin.</translation>
 <translation id="1252799212227771492">E-Tablo oluştur düğmesi, hızlıca yeni bir Google E-Tablosu oluşturmak için Enter'a basın</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (senkronize edildi)</translation>
@@ -319,6 +320,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="192020519938775529">{COUNT,plural, =0{Yok}=1{1 site}other{# site}}</translation>
 <translation id="1923390796829649802">Erişilebilirlik ayarlarını yönetin düğmesi, Chrome OS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Enter'a basın</translation>
 <translation id="1924727005275031552">Yeni</translation>
+<translation id="1927439593081478069">Chrome güvenlik kontrolü yürüt düğmesi. Chrome ayarlarında güvenlik kontrolü yürütmek için Enter'a basın</translation>
 <translation id="1939175642807587452">Bildirim göndermek isteyebilir</translation>
 <translation id="1945968466830820669">Kuruluşunuzun hesabına erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="1947454675006758438">Sağ üstte tel zımba</translation>
@@ -338,6 +340,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2003709556000175978">Şifrenizi şimdi sıfırlayın</translation>
 <translation id="2003775180883135320">Üstte dörtlü delik</translation>
 <translation id="201174227998721785">Chrome ayarlarında izinleri ve sitelerde depolanan verileri yönetin</translation>
+<translation id="2019607688127825327">Erişilebilirlik ayarlarını yönetin düğmesi. Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Enter'a basın</translation>
 <translation id="2025115093177348061">Artırılmış gerçeklik</translation>
 <translation id="2025186561304664664">Proxy, otomatik yapılandırıldı değerine ayarlandı.</translation>
 <translation id="2025891858974379949">Güvenli olmayan içerik</translation>
@@ -503,6 +506,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2556876185419854533">Düzenlemeyi &amp;Geri Al</translation>
 <translation id="2570734079541893434">Ayarları yönet</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="2576880857912732701">Güvenlik ayarlarını yönet düğmesi. Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetmek için Enter'a basın</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> adlı yayıncıdan. Bunu ve diğer <ph name="OTHER_ARTICLE_COUNT" /> haberi okuyun.</translation>
 <translation id="2587841377698384444">Dizin API'sı Kimliği:</translation>
@@ -547,6 +551,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2713444072780614174">Beyaz</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında ödemelerinizi ve kredi kartı bilgilerinizi yönetmek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="2721148159707890343">İstek başarılı oldu</translation>
+<translation id="2723669454293168317">Chrome ayarlarında güvenlik kontrolü yürütün</translation>
 <translation id="2726001110728089263">Yan Tepsi</translation>
 <translation id="2728127805433021124">Sunucunun sertifikası, zayıf bir imza algoritması kullanılarak imzalanmış.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
@@ -577,6 +582,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2859806420264540918">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor.</translation>
 <translation id="287596039013813457">Dost Canlısı</translation>
 <translation id="2876489322757410363">Harici bir uygulama üzerinden ödeme gerçekleştirmek için Gizli moddan çıkılıyor. Devam etmek istiyor musunuz?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında Güvenli Tarama ve diğer özellikleri yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="2878197950673342043">Poster katlama</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Pencere yerleşimi</translation>
@@ -682,6 +688,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3229041911291329567">Cihazınız ve tarayıcınızla ilgili sürüm bilgileri</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> numaralı kartın CVC kodunu girin</translation>
 <translation id="3234666976984236645">Her zaman bu sitedeki önemli içeriği algıla</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tarayıcınızın görünümünü özelleştirmek için sekmeye, ardından Enter'a basın</translation>
 <translation id="3240791268468473923">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası açıldı</translation>
 <translation id="3249845759089040423">Modern</translation>
 <translation id="3252266817569339921">Fransızca</translation>
@@ -725,6 +732,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
       • Çevrenizin 3D haritasını oluşturma ve kamera konumunu takip etme
       • Kameranızı kullanma</translation>
 <translation id="337363190475750230">Temel hazırlık iptal edildi</translation>
+<translation id="3375754925484257129">Chrome güvenlik kontrolü yürüt</translation>
 <translation id="3377144306166885718">Sunucu TLS'nin eski bir sürümünü kullandı.</translation>
 <translation id="3377188786107721145">Politika ayrıştırma hatası</translation>
 <translation id="3377736046129930310">Kartları daha hızlı onaylamak için ekran kilidini kullanın</translation>
@@ -765,6 +773,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3462200631372590220">Gelişmiş bilgileri gizle</translation>
 <translation id="3467763166455606212">Kart sahibinin adı zorunludur</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, şu anda açık, açık Sekmeye geçmek için Sekmeye ve sonra enter tuşuna basın</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, açık olan tüm gizli pencereleri kapatmak için sekmeye, ardından Enter'a basın</translation>
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3484560055331845446">Google Hesabınıza erişimi kaybedebilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
 <translation id="3487845404393360112">Tepsi 4</translation>
@@ -803,6 +812,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> için sanal kart</translation>
 <translation id="3614103345592970299">Boyut 2</translation>
 <translation id="361438452008624280">Liste girişi "<ph name="LANGUAGE_ID" />": Bilinmeyen veya desteklenmeyen dil.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında güvenlik kontrolü yürütmek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="3615877443314183785">Geçerli bir son kullanma tarihi girin</translation>
 <translation id="36224234498066874">Tarama Verilerini Temizle...</translation>
 <translation id="362276910939193118">Tam Geçmişi Göster</translation>
@@ -1594,6 +1604,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6218753634732582820">Adres Chromium'dan kaldırılsın mı?</translation>
 <translation id="622039917539443112">Paralel katlama</translation>
 <translation id="6221345481584921695">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım tespit etti<ph name="END_LINK" />. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır. Kötü amaçlı içerik, kötü amaçlı yazılım dağıtımcısı olduğu bilinen <ph name="SUBRESOURCE_HOST" /> kaynağından gelmektedir.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6240447795304464094">Google Pay logosu</translation>
 <translation id="6241121617266208201">Önerileri gizle</translation>
@@ -1612,6 +1623,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6279098320682980337">Sanal kart numarası doldurulmadı mı? Kopyalamak için kart detaylarını tıklayın</translation>
 <translation id="6280223929691119688">Bu adrese teslimat yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="6282194474023008486">Posta kodu</translation>
+<translation id="6285507000506177184">Chrome'da indirilenleri yönetin düğmesi. Chrome'da indirdiğiniz dosyaları yönetmek için Enter'a basın</translation>
 <translation id="6289939620939689042">Sayfa Rengi</translation>
 <translation id="6290238015253830360">Önerilen makaleler burada görünür</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1727,6 +1739,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6689249931105087298">Siyah nokta sıkıştırma ile göreli</translation>
 <translation id="6689271823431384964">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz. Kart sahibinin adı hesabınızdan gelir.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabı'nda cihazınızı bulmak için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="6696588630955820014">Bu sekmeyi paylaş düğmesi. Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşmak için Enter'a basın</translation>
 <translation id="6698381487523150993">Oluşturma tarihi:</translation>
 <translation id="6702919718839027939">Sunum</translation>
 <translation id="6710213216561001401">Önceki</translation>
@@ -1932,6 +1945,7 @@ Ek ayrıntılar:
 <translation id="7392089738299859607">Adresi Güncelle</translation>
 <translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşın</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> adlı cihazınız yönetilmektedir</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows bilgisayarınızda Superfish yazılımı varsa bu hatayı görürsünüz.&lt;/p&gt;
       &lt;p&gt;Web'e ulaşabilmeniz amacıyla yazılımı geçici olarak devre dışı bırakmak için bu adımları uygulayın. Bu adımları gerçekleştirmek için yönetici ayrıcalıklarınızın olması gerekir.&lt;/p&gt;
@@ -2161,6 +2175,7 @@ Ek ayrıntılar:
 <translation id="810875025413331850">Yakında olan cihaz bulunamadı.</translation>
 <translation id="8116925261070264013">Ses kapatıldı</translation>
 <translation id="8118489163946903409">Ödeme yöntemi</translation>
+<translation id="8124639700796374294">Chrome'u özelleştir düğmesi. Tarayıcınızın görünümünü özelleştirmek için Enter'a basın</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8148608574971654810">PDF sürümü:</translation>
@@ -2344,6 +2359,7 @@ Ek ayrıntılar:
 <translation id="87601671197631245">Bu site, eski bir güvenlik yapılandırması kullanıyor. Bu siteye gönderildiğinde bilgileriniz (ör. şifreler, mesajlar veya kredi kartları) gösterilebilir.</translation>
 <translation id="8761567432415473239">Google Güvenli Tarama, yakın zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı programlar buldu<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB cihaz</translation>
+<translation id="8763986294015493060">Açık olan tüm gizli pencereleri kapat</translation>
 <translation id="8766943070169463815">Güvenli ödeme kimlik bilgisi doğrulama sayfası açıldı</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">Silmeyi &amp;yeniden yap</translation>
@@ -2357,6 +2373,7 @@ Ek ayrıntılar:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızdan Chrome'u güncellemek için Sekme'ye, sonra Enter'a basın</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="882338992931677877">Manuel Yuva</translation>
+<translation id="8834380158646307944">Gizli pencereleri kapat düğmesi. Açık olan tüm gizli pencereleri kapatmak için Enter'a basın</translation>
 <translation id="883848425547221593">Diğer Yer İşaretleri</translation>
 <translation id="884264119367021077">Gönderim adresi</translation>
 <translation id="884923133447025588">İptal mekanizması bulunamadı.</translation>
@@ -2410,6 +2427,7 @@ Ek ayrıntılar:
 <translation id="9020200922353704812">Kartın fatura adresi gerekli</translation>
 <translation id="9020542370529661692">Bu sayfa <ph name="TARGET_LANGUAGE" /> diline çevrildi</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşmak için sekmeye, ardından Enter'a basın</translation>
 <translation id="9025348182339809926">(Geçersiz)</translation>
 <translation id="9030265603405983977">Tek renk</translation>
 <translation id="9035022520814077154">Güvenlik hatası</translation>

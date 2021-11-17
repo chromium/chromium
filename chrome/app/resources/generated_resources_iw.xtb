@@ -2401,6 +2401,7 @@
 <translation id="3449393517661170867">חלון מרובה כרטיסיות חדש</translation>
 <translation id="3449839693241009168">יש ללחוץ על <ph name="SEARCH_KEY" /> כדי לשלוח פקודות אל <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">אחוז תפוסה במצב לא פעיל</translation>
+<translation id="3450180775417907283">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון.</translation>
 <translation id="3451753556629288767">יש הרשאה לפתיחת סוגי קבצים</translation>
 <translation id="3452999110156026232">גישה של הורה</translation>
 <translation id="3453612417627951340">יש צורך באישור</translation>
@@ -4265,6 +4266,7 @@
 <translation id="5472627187093107397">שמירת סיסמאות עבור האתר הזה</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{קוד האימות חייב להיות באורך של תו אחד לפחות}two{קוד האימות חייב להיות באורך של # תווים לפחות}many{קוד האימות חייב להיות באורך של # תווים לפחות}other{קוד האימות חייב להיות באורך של # תווים לפחות}}</translation>
+<translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
 <translation id="5483785310822538350">ביטול גישה לקבצים ולמכשירים</translation>
@@ -4687,6 +4689,7 @@
 <translation id="592880897588170157">‏הורדת קובצי PDF במקום פתיחה אוטומטית שלהם ב-Chrome</translation>
 <translation id="592919310198008711">בלחיצה על התוסף</translation>
 <translation id="5932124097031739492">‏מערכת Linux שודרגה בהצלחה.</translation>
+<translation id="5932209916647644605">כדי להיכנס אל <ph name="MANAGER" /> צריך לעדכן את <ph name="DEVICE_TYPE" /> באופן מיידי.</translation>
 <translation id="5932224571077948991">באתר מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="59324397759951282">‏התקן USB של <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">‏אין ברשותך מספיק רישיונות זמינים לשיוך המכשיר הזה ל-Google Meet. עליך לפנות למחלקת המכירות כדי לרכוש רישיונות נוספים. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>

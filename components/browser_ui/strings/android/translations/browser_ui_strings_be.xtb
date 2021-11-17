@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{Дазволены <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Спампоўванне завершана <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Заўсёды запытваць версію сайта для настольнага камп'ютара</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2490684707762498678">Пад кіраваннем праграмы "<ph name="APP_NAME" />"</translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">Адклікаць дазвол на доступ да прылады</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Выкарыстоўваецца 1 файл cookie}one{Выкарыстоўваецца # файл cookie}few{Выкарыстоўваюцца # файлы cookie}many{Выкарыстоўваюцца # файлаў cookie}other{Выкарыстоўваюцца # файла cookie}}</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
+<translation id="848952951823693243">Заўсёды запытваць версію сайта для мабільных прылад</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>

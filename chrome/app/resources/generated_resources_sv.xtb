@@ -2404,6 +2404,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3449393517661170867">Nytt fönster med flikar</translation>
 <translation id="3449839693241009168">Tryck på <ph name="SEARCH_KEY" /> om du vill skicka kommandon till <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Kapacitetsprocentsats för inaktivitet</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu.</translation>
 <translation id="3451753556629288767">Får öppna vissa filtyper</translation>
 <translation id="3452999110156026232">Föräldraåtkomst</translation>
 <translation id="3453612417627951340">Auktorisering behövs</translation>
@@ -4089,6 +4090,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5265562206369321422">Offline i mer än en vecka</translation>
 <translation id="5265797726250773323">Ett fel uppstod under installationen</translation>
 <translation id="5266113311903163739">Fel vid import av certifikatutfärdare</translation>
+<translation id="526622169288322445">Fler åtgärder för <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillåt alltid JavaScript på <ph name="HOST" /></translation>
@@ -4270,6 +4272,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5472627187093107397">Spara lösenord för den här webbplatsen</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden måste innehålla minst ett tecken}other{Pinkoden måste innehålla minst # tecken}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).</translation>
 <translation id="5481273127572794904">Får inte ladda ned flera filer automatiskt</translation>
 <translation id="5481941284378890518">Lägg till skrivare i närheten</translation>
 <translation id="5483785310822538350">Återkalla åtkomst till enheten och filer</translation>
@@ -4692,6 +4695,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="592880897588170157">Ladda ned PDF-filer i stället för att låta dem öppnas automatiskt i Chrome</translation>
 <translation id="592919310198008711">När jag klickar på tillägget</translation>
 <translation id="5932124097031739492">Linux har uppgraderats.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart.</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
 <translation id="59324397759951282">USB-enhet från <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Du har inte tillräckligt många licenser tillgängliga för att registrera den här maskinvaruenheten för Google Meet. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
@@ -5465,6 +5469,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6775163072363532304">Tillgängliga enheter visas här.</translation>
 <translation id="6777817260680419853">Omdirigeringen blockerades</translation>
 <translation id="6778737459546443941">Din förälder har inte godkänt den ännu</translation>
+<translation id="6779092717724412415">Om du vill lyfta fram text på det här sättet markerar du texten och högerklickar.</translation>
 <translation id="6779447100905857289">dina kundvagnar</translation>
 <translation id="677965093459947883">Mycket liten</translation>
 <translation id="6781005693196527806">&amp;Hantera sökmotorer …</translation>
@@ -6280,6 +6285,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7625823789272218216">Ny flik till vänster</translation>
 <translation id="7628201176665550262">Uppdateringsfrekvens</translation>
 <translation id="7629827748548208700">Flik: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Den här enheten hanteras av <ph name="MANAGER" /> och du måste logga in varje gång.</translation>
 <translation id="7631014249255418691">Säkerhetskopieringen av Linux-appar och Linux-filer är klar</translation>
 <translation id="7631205654593498032">När du ansluter enheter godkänner du att <ph name="DEVICE_TYPE" /> kan</translation>
 <translation id="7631887513477658702">Öppna &amp;alltid filer av denna typ</translation>

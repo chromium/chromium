@@ -326,6 +326,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="334252345105450327">Izradi snimku zaslona</translation>
 <translation id="3351879221545518001">Trenutačno emitirate zaslon.</translation>
 <translation id="3364721542077212959">Alati pisaljke</translation>
+<translation id="3365977133351922112">Telefon je predaleko. Približite telefon.</translation>
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3371140690572404006">USB-C uređaj (prednji desni priključak)</translation>
 <translation id="3375634426936648815">Povezano</translation>
@@ -602,6 +603,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5176318573511391780">Snimanje dijela zaslona</translation>
 <translation id="5199367439331364630">Da biste se prijavili na Chromebook, unesite zaporku</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Još jedna obavijest}one{Još # obavijest}few{Još # obavijesti}other{Još # obavijesti}}</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
 <translation id="5208059991603368177">Uključeno</translation>
@@ -884,6 +886,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7398254312354928459">Promijenjena je mrežna veza</translation>
 <translation id="7405710164030118432">Da biste otključali uređaj, unesite kôd za roditeljski pristup Family Linka</translation>
 <translation id="7406608787870898861">Dovršite postavljanje mobilne mreže</translation>
+<translation id="740790383907119240">Aplikacijski prečaci</translation>
 <translation id="741244894080940828">preračunavanje</translation>
 <translation id="7413851974711031813">Pritisnite tipku escape da biste zatvorili</translation>
 <translation id="742594950370306541">Fotoaparat je aktivan.</translation>
@@ -986,6 +989,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8098591350844501178">Zaustavi emitiranje zaslona na prijamniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uklj., sve ap.</translation>
+<translation id="8120151603115102514">Telefon nema zaključan zaslon. Da biste otključali Chromebook, unesite zaporku.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132487352815776550">Zaustavi titlove</translation>
@@ -1034,6 +1038,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ima <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + Pretraživanje ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Bluetooth na Chromebooku je isključen. Da biste otključali Chromebook, unesite zaporku.</translation>
 <translation id="8513108775083588393">Autom. zakret.</translation>
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>

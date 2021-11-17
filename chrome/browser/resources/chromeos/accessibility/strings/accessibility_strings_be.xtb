@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">скапіраваць</translation>
 <translation id="135978014023467274">ChromeVox абноўлены да версіі 63!</translation>
 <translation id="1360699455582016846">Націснуць на элемент пад ключом маршрутызацыі <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">перайсці да наступнага сімвала</translation>
 <translation id="1377925789329510816">Гэта апошні загаловак. Націсніце "Пошук"+H, каб прагартаць да першага загалоўка, або "Пошук"+Shift+H, каб перайсці да другога загалоўка на гэтай старонцы.</translation>
 <translation id="138218114945450791">Светла-сіні</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Поле для птушкі</translation>
 <translation id="2461822463642141190">Цяпер</translation>
 <translation id="2462626033734746142">Група кнопак-пераключальнікаў</translation>
+<translation id="2467741090055146971">скасаваць выбар</translation>
 <translation id="2471138580042810658">Загаловак 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{зорачка}one{# зорачка}few{# зорачкі}many{# зорачак}other{# зорачкі}}</translation>
 <translation id="2490721194269245365">Ружова-карычневы</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Няма папярэдняга мультымедыйнага віджэта</translation>
 <translation id="4855927945655956315">Асноўныя клавішы: Ctrl</translation>
 <translation id="4862744964787595316">Не паўтлустым шрыфтам</translation>
+<translation id="4865995900839719272">перайсці на папярэдні радок</translation>
 <translation id="4866956062845190338">пункт меню з кнопкай-пераключальнікам</translation>
 <translation id="4867316986324544967">Уключыць вядзенне журнала сінтэзу маўлення</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, укладка</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5310788376443009632">выдалены:</translation>
+<translation id="5316825363044614340">перайсці на наступны радок</translation>
 <translation id="5320727453979144100">Рэжым заліпання клавіш уключаны</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{коска}one{# коска}few{# коскі}many{# косак}other{# коскі}}</translation>
 <translation id="532485153932049746">Фармаціраванне тэксту
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Няма папярэдняга поля формы</translation>
 <translation id="731121099745151312">элдрва</translation>
+<translation id="7313717760367325059">паказаць даведку</translation>
 <translation id="7317017974771324508">часткова выбрана</translation>
 <translation id="7322442671176251901">Азнаямленне дотыкам</translation>
 <translation id="7344012264516629579">Вы можаце выкарыстоўваць дадатковыя каманды хуткага пераходу і з дапамогай іх пераходзіць да патрэбных спасылак, кнопак, палёў для птушак і не толькі. Поўны спіс каманд хуткага пераходу даступны ў меню ChromeVox. Каб адкрыць меню, націсніце Пошук + клавішу з кропкай.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Дапаможнік па ChromeVox</translation>
 <translation id="9040132695316389094">Загаловак 1</translation>
 <translation id="9061884144798498064">Выберыце васьмікропкавую табліцу Брайля:</translation>
+<translation id="9063946545000394379">перайсці да папярэдняга сімвала</translation>
 <translation id="9065283790526219006">+успл.акно</translation>
 <translation id="9065912140022662363">Няма наступнай кнопкі-пераключальніка</translation>
 <translation id="9067522039955793016">Разрыў старонкі</translation>

@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Odobrena su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Preuzimanje je dovršeno: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Uvijek zahtijevaj web-lokaciju za računalo</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2490684707762498678">Upravlja: <ph name="APP_NAME" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">Opozovi odobrenje uređaja</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Koristi se jedan kolačić}one{Koristi se # kolačić}few{Koriste se # kolačića}other{Koristi se # kolačića}}</translation>
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
+<translation id="848952951823693243">Uvijek zahtijevaj web-lokaciju za mobilne uređaje</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli zaslon</translation>
 <translation id="857943718398505171">Dopušteno (preporučeno)</translation>

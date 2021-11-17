@@ -272,6 +272,13 @@
 <translation id="1352799151662469739">AC gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="1353416417709895349">DNS müdahale kontrollerini ve bunu mu demek istediniz "http://intranetsite/" bilgi çubuklarını devre dışı bırak.</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
+<translation id="1355050231181289439"> Bu politika, eşleştirmeleri iyileştirilen uluslararası klavye kısayollarının etkinleştirilip etkinleştirilmeyeceğini kontrol eder.
+      Bu özellik, klavye kısayollarının uluslararası klavye düzenlerinde tutarlı bir şekilde çalışmasını sağlar ve eski kısayolları kullanımdan kaldırır.
+
+      Bu politika devre dışı bırakılırsa iyileştirilmiş uluslararası klavye kısayolları devre dışı bırakılır.
+      Bu politika etkinleştirilirse iyileştirilmiş uluslararası klavye kısayolları etkinleştirilir.
+      Bu politika ayarlanmadan bırakılırsa hem yönetilen cihazlar için hem de tüketiciye ait cihazlar için etkin olur.
+      Bunun, yönetilen kullanıcıların kullanımdan kaldırılmış eski kısayolları kullanmaya devam edebilmelerini sağlamaya yönelik geçici bir politika olduğunu unutmayın. Bu politika, özelleştirilmiş klavye kısayolları kullanıma sunulduktan sonra kullanımdan kaldırılacaktır.</translation>
 <translation id="1359553908012294236">Bu politika doğru seçeneğine ayarlanırsa veya yapılandırılmazsa <ph name="PRODUCT_NAME" />, misafir modunda giriş yapılmasına izin verir. Misafir modunda girişler, tüm pencerelerin gizli modda açıldığı <ph name="PRODUCT_NAME" /> profilleridir.
 
       Bu politika yanlış seçeneğine ayarlanırsa, <ph name="PRODUCT_NAME" /> misafir profillerinin başlatılmasına izin vermez.</translation>
@@ -778,6 +785,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Fast Transition kullanılmaz.</translation>
 <translation id="1972134432340252414">Tarayıcı işlemindeki eski uzantı noktalarını engelle</translation>
 <translation id="1977581177449752640">Politika ayarlanırsa uzaktan erişim ana makinesi, <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> erişimi için kimlik doğrulaması yapmak üzere, belirtilen yayıncı CN'sine (Ortak Ad) sahip bir istemci sertifikası kullanır. Mevcut istemci sertifikalarından herhangi birinin kullanılabilmesi için bunu <ph name="WILDCARD_VALUE" /> olarak ayarlayın. Boş bırakılır veya ayarlanmazsa bu özellik devre dışı bırakılır.</translation>
+<translation id="1984423899110408165">Chrome geçmişi sayfasında arama yolculuklarını göster</translation>
 <translation id="1986003348976870087">Kullanıcıdan oturum açma ekranında istemci sertifikası seçmesini isteme.</translation>
 <translation id="1988345404999458987">Kullanılabilir yazdırma sunucularının yapılandırmalarını sağlar.
 
@@ -1499,6 +1507,14 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="2725855586003209701">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar kısa süre önce oturum açan cihaz kullanıcılarının listesini bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar kullanıcı listesini bildirmez.</translation>
+<translation id="2725944143509568512">Bu politika, Chrome geçmişi sayfasında arama yolculuklarının görünürlüğünü kontrol eder.
+
+      Politika, Etkin değerine ayarlanırsa arama yolculukları chrome://history/journeys adresinde görülebilir.
+
+      Politika, Devre Dışı değerine ayarlanırsa arama yolculukları chrome://history/journeys adresinde görülemez.
+
+      Politika ayarlanmadan bırakılırsa arama yolculukları varsayılan olarak chrome://history/journeys adresinde görülebilir ve kullanıcılar, arama yolculuklarının görünürlüğünü değiştirebilir.
+      </translation>
 <translation id="2730419309754848345">PDF'yi Resim Olarak Yazdır Varsayılan Ayar</translation>
 <translation id="2731627323327011390">ARC uygulamalarına ilişkin <ph name="PRODUCT_OS_NAME" /> sertifikalarının kullanımını devre dışı bırak</translation>
 <translation id="2742843273354638707">Chrome Web Mağazası uygulamasını ve alt bilgi bağlantısını Yeni Sekme Sayfası'nda ve <ph name="PRODUCT_OS_NAME" /> uygulama başlatıcısında gizle.
@@ -2147,6 +2163,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa DTC kapatılır. Cihazdan telemetri ve teşhis verilerini toplayamaz, işleyemez veya raporlayamaz.</translation>
 <translation id="3450649825886735618">Yazım hatalarının düzeltilmesine yardımcı olması için herhangi bir Google web hizmeti kullanma</translation>
+<translation id="3451422488938880786"> Yeniden eşleştirilen uluslararası klavye kısayollarının etkinleştirilmesine/devre dışı bırakılmasına olanak tanır</translation>
 <translation id="3451901387456196887">Kullanıcılara <ph name="PRODUCT_NAME" /> menüsünde erişim kodu kullanarak veya QR kodu tarayarak yayın cihazı seçme olanağı verilir.</translation>
 <translation id="3456292544936505775">Bu politika, <ph name="PRODUCT_OS_NAME" /> cihazının güncellemeleri otomatik olarak denetlemesine izin verilmeyen zaman aralıklarını kontrol eder.
       Bu politika, boş olmayan bir zaman aralıkları listesine ayarlandığında:
@@ -2184,6 +2201,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
        Engellenenler listesi değerinin <ph name="ALL_EXTENSIONS" /> olması, tüm uzantıların engellendiği ve kullanıcıların yalnızca izin verilenler listesindeki uzantıları yükleyebileceği anlamına gelir.
 
        Varsayılan olarak tüm uzantılara izin verilir. Ancak uzantıları politikaya göre yasakladıysanız bu politikayı değiştirmek için izin verilen uzantılar listesini kullanın.</translation>
+<translation id="3501606938635483637">Uluslararası klavye kısayolları, tuşların klavyedeki yeriyle değil glifiyle eşleştirilir.</translation>
 <translation id="3502555714327823858">Tüm dupleks modlara izin ver</translation>
 <translation id="350443680860256679">ARC'yi yapılandır</translation>
 <translation id="350797926066071931">Google Çeviri'yi etkinleştir</translation>
@@ -3139,6 +3157,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4802905909524200151"><ph name="TPM_FIRMWARE_UPDATE_TPM" /> donanım yazılımını güncelleme davranışını yapılandır</translation>
 <translation id="4804828344300125154">Kullanıcı oturumu kapatıldığında her zaman cihazı yeniden başlat.</translation>
 <translation id="4807950475297505572">Yeterli boş alan sağlanıncaya kadar en seyrek kullanılan kullanıcılar kaldırılır</translation>
+<translation id="4811210934875253713">Arama yolculukları chrome://history/journeys adresinde görülebilir.</translation>
 <translation id="4812270373673968774">Politikayı Always (Her zaman) değerine ayarlamak, <ph name="PRODUCT_OS_NAME" /> rafını otomatik gizler. Politikayı Never (Hiçbir zaman) değerine ayarlamak, rafın otomatik gizlenmesine hiçbir zaman izin vermez.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa rafın otomatik gizlenip gizlenmeyeceğine kullanıcı karar verir.</translation>
@@ -4404,6 +4423,30 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
           Uyarı mesajı yalnızca boşta kalma işlemi, çıkış yapma veya cihazı kapatma olduğunda gösterilir.</translation>
 <translation id="6331943515692769234">Önceki kullanıcı aracısı GREASE algoritmasını kullanmaya zorla.</translation>
+<translation id="6332192586629642626">Arama yolculukları chrome://history/journeys adresinde görülemez.</translation>
+<translation id="6332489309596092806">Politikayı ayarlamak, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcıların kaldıramadığı veya kapatamadığı web uygulamalarının listesini belirtir.
+
+      Politikanın her liste öğesi, zorunlu üyeye sahip bir nesnedir:
+      <ph name="URL_LABEL" /> (yüklenecek web uygulamasının URL'si)
+
+      ve isteğe bağlı 5 üye:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (web uygulamasının açılma yöntemini belirlemek için — varsayılan yeni sekmedir)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (<ph name="LINUX_OS_NAME" /> ve
+      <ph name="MS_WIN_NAME" /> masaüstü kısayolları oluşturulmak istenirse doğru değerine ayarlanmalıdır).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> sürüm 90'dan başlayarak, Progresif Web Uygulaması (PWA) değilse uygulama adını veya PWA ise ancak yüklemenin tamamlanabilmesi için kimlik doğrulama gerekiyorsa geçici olarak yüklenen uygulama adını geçersiz kılmanıza olanak tanır.) Hem <ph name="CUSTOM_NAME_LABEL" /> hem de <ph name="FALLBACK_APP_NAME_LABEL" /> sağlanmışsa ikincisi dikkate alınmaz.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (<ph name="PRODUCT_NAME" /> sürüm 96'dan itibaren tüm web uygulamaları ve PWA'lar için uygulama adını kalıcı olarak geçersiz kılmanıza olanak tanır. Şu anda yalnızca <ph name="PRODUCT_OS_NAME" /> işletim sisteminde desteklenmektedir.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (<ph name="PRODUCT_NAME" /> sürüm 96'dan itibaren yüklü uygulamaların uygulama simgesini geçersiz kılmanıza olanak tanır. Simgeler; kare şeklinde, maksimum 1 MB boyutunda ve jpeg, png, gif, webp, ico biçimlerinden birinde olmalıdır. Karma değeri, simge dosyasının SHA256 karma değeri olmalıdır.) Şu anda yalnızca <ph name="PRODUCT_OS_NAME" /> işletim sisteminde desteklenmektedir.)
+
+      Uygulamaları <ph name="PRODUCT_OS_NAME" /> rafına sabitlemek için <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> politikasına bakın.</translation>
 <translation id="6332546092866098577">Bu sitelerde File System API üzerinden okuma erişimini engelle</translation>
 <translation id="6334330017384340264">Bu politika, uygulama başına kullanım kısıtlamaları için hangi uygulamalara ve URL'lere izin verilmesi gerektiğini belirtir.
         Yapılandırılmış izin verilenler listesi, uygulama başına süre sınırlarına sahip belirtilen kullanıcı için <ph name="PRODUCT_OS_NAME" /> üzerinde yüklü uygulamalara uygulanır.
@@ -5845,6 +5888,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika Etkin değerine ayarlanırsa kullanıcı <ph name="LACROS_NAME" /> tarayıcıyı kullanabilir.</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
+<translation id="8025620823136567878">Uluslararası klavye kısayolları, tuşların glifiyle değil klavyedeki yeriyle eşleştirilir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8028814157747157754">Varsayılan arama sağlayıcısını etkinleştir ve kullanıcıların arama sağlayıcısı listesini değiştirmesine izin ver</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
@@ -6621,6 +6665,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8931555638815157255">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar düzenli olarak işletim sistemi ve donanım yazılımı sürümlerini bildirir.
 
       Politika Devre Dışı değerine ayarlanırsa kayıtlı cihazlar sürüm bilgisi vermez.</translation>
+<translation id="8934618237639919190">Arama yolculukları varsayılan olarak chrome://history/journeys adresinde görülebilir ve kullanıcılar, arama yolculuklarının görünürlüğünü değiştirebilir.</translation>
 <translation id="8937282917198525844"> M81'den başlayarak, standart form kontrol öğelerine (ör. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) iyileştirilmiş erişilebilirlik ve daha iyi platform bütünlüğü ile yenilenmiş bir görünüm ve tarz sağlandı. Bu politika, M84'e kadar "eski" form kontrol öğelerini geri yükler.
 
       Bu politika True (Doğru) değerine ayarlanırsa tüm siteler için "eski" form kontrol öğeleri kullanılır.

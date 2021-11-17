@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Nie zezwalaj witrynom na łączenie się z urządzeniami MIDI</translation>
 <translation id="1088654056000736875">Chrome usuwa złośliwe oprogramowanie z komputera...</translation>
 <translation id="1088659085457112967">Włącz tryb czytnika</translation>
+<translation id="1089606299949659462">Sprawdzanie zakończone</translation>
 <translation id="1090126737595388931">Brak aplikacji uruchomionych w tle</translation>
 <translation id="1090541560108055381">Przed sparowaniem urządzeń sprawdź, czy wyświetla się na nich ten sam kod</translation>
 <translation id="1091767800771861448">Naciśnij ESCAPE, aby pominąć aktualizację (tylko nieoficjalne kompilacje).</translation>
@@ -1428,6 +1429,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2454247629720664989">Słowo kluczowe</translation>
 <translation id="2454264884354864965">Kamera jest wyłączona</translation>
+<translation id="2454524890947537054">Czy chcesz zaakceptować prośbę o dostęp do strony?</translation>
 <translation id="245650153866130664">Aby automatycznie odświeżać zgłoszenie, zaznacz opcję „Zapamiętaj hasło”. Hasło będzie przechowywane wyłącznie na Twoim urządzeniu.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> chce skopiować pliki z dysku <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Obecnie na kanale <ph name="CHANNEL_NAME" /></translation>
@@ -1829,6 +1831,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2861301611394761800">Aktualizacja systemu zakończona. Uruchom system ponownie.</translation>
 <translation id="2861941300086904918">Menedżer zabezpieczeń klienta rodzimego</translation>
 <translation id="2862815659905780618">Usuń środowisko programistyczne Linuksa</translation>
+<translation id="2864272167277395865">Wybierz urządzenie:</translation>
 <translation id="2864601841139725659">Ustawianie zdjęcia profilowego</translation>
 <translation id="2865919525181940183">Zrzut ekranu z widocznymi na nim teraz programami</translation>
 <translation id="286674810810214575">Sprawdzam źródła zasilania...</translation>
@@ -3239,6 +3242,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4364830672918311045">Wyświetlanie powiadomień</translation>
 <translation id="4366138410738374926">Rozpoczęto drukowanie</translation>
 <translation id="4369121877634339065">Przeciągnij po dowolnym obrazie, aby wyszukać</translation>
+<translation id="4369215744064167350">Zaakceptowano prośbę dotyczącą strony</translation>
 <translation id="4370975561335139969">Podany adres e-mail i hasło nie pasują do siebie</translation>
 <translation id="4373966964907728675">Przesyłanie pulpitu</translation>
 <translation id="4374831787438678295">Instalator Linuksa</translation>
@@ -3930,6 +3934,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5117139026559873716">Odłącz telefon od urządzenia <ph name="DEVICE_TYPE" />. Te urządzenia nie będą już łączyć się ze sobą automatycznie.</translation>
 <translation id="5117930984404104619">Monitorowanie działania innych rozszerzeń, w tym otwieranych adresów URL</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Aby otworzyć stronę <ph name="APPROVED_URL" />, kliknij tutaj</translation>
 <translation id="5121052518313988218">System operacyjny w Twoim kontenerze Linuksa nie jest już obsługiwany. Nie będzie otrzymywać kolejnych aktualizacji zabezpieczeń ani poprawek błędów, a funkcje, które teraz działają, mogą nieoczekiwanie zacząć sprawiać problemy. Aby nadal używać Linuksa, uaktualnij go do najnowszej wersji.</translation>
 <translation id="5121130586824819730">Dysk twardy jest pełny. Zapisz w innej lokalizacji lub zwolnij miejsce na dysku.</translation>
 <translation id="5123433949759960244">Piłka do koszykówki</translation>
@@ -4038,6 +4043,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
 <translation id="5235750401727657667">Zmiana strony, która wyświetla się, gdy otwierasz nową kartę</translation>
 <translation id="5236374273162681467">Aby łatwo korzystać z nich na wszystkich swoich urządzeniach, możesz przenieść je na swoje konto Google</translation>
+<translation id="523862956770478816">Uprawnienia do strony</translation>
 <translation id="5242724311594467048">Włączyć rozszerzenie „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5243522832766285132">Spróbuj ponownie za kilka chwil</translation>
 <translation id="5244474230056479698">Synchronizacja z <ph name="EMAIL" /></translation>
@@ -4065,6 +4071,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5265562206369321422">Offline od ponad tygodnia</translation>
 <translation id="5265797726250773323">Błąd podczas instalowania</translation>
 <translation id="5266113311903163739">Błąd importowania urzędu certyfikacji</translation>
+<translation id="526622169288322445">Więcej działań dotyczących: <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Niepowodzenie drukowania</translation>
 <translation id="5275352920323889391">Pies</translation>
 <translation id="527605982717517565">Zawsze zezwalaj na wykonywanie kodu JavaScript w witrynie <ph name="HOST" /></translation>
@@ -5326,6 +5333,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6635674640674343739">Nie można nawiązać połączenia z siecią. Sprawdź połączenie internetowe i spróbuj jeszcze raz.</translation>
 <translation id="6635944431854494329">Właściciel może kontrolować tę funkcję, wybierając Ustawienia &gt; Zaawansowane &gt; Automatycznie wysyłaj do Google dane diagnostyczne i informacje o użytkowaniu.</translation>
 <translation id="6635956300022133031">Wybierz i dostosuj głosy do zamiany tekstu na mowę</translation>
+<translation id="6636623428211296678">Zobacz więcej ustawień poniżej lub zakończ</translation>
 <translation id="6639554308659482635">Pamięć SQLite</translation>
 <translation id="6640268266988685324">Otwórz kartę</translation>
 <translation id="6642720633335369752">Aby zobaczyć wszystkie otwarte okna aplikacji, przesuń palcem w górę od dołu ekranu i przytrzymaj.</translation>
@@ -5441,6 +5449,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6775163072363532304">Tu pojawią się dostępne urządzenia.</translation>
 <translation id="6777817260680419853">Przekierowanie zostało zablokowane</translation>
 <translation id="6778737459546443941">Twój rodzic jeszcze na to nie zezwolił</translation>
+<translation id="6779092717724412415">Aby utworzyć wyróżnienie takie jak to, zaznacz dowolny tekst i kliknij prawym przyciskiem myszy.</translation>
 <translation id="6779447100905857289">Twoje koszyki</translation>
 <translation id="677965093459947883">Bardzo mała</translation>
 <translation id="6781005693196527806">&amp;Zarządzaj wyszukiwarkami…</translation>
@@ -6256,6 +6265,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7625823789272218216">Nowa karta po lewej</translation>
 <translation id="7628201176665550262">Częstotliwość odświeżania</translation>
 <translation id="7629827748548208700">Karta: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Administrator tego urządzenia (<ph name="MANAGER" />) wymaga logowania się za każdym razem.</translation>
 <translation id="7631014249255418691">Pomyślnie utworzono kopię zapasową aplikacji i plików Linuksa</translation>
 <translation id="7631205654593498032">Łącząc swoje urządzenia, zgadzasz się na to, by Twój <ph name="DEVICE_TYPE" /> mógł:</translation>
 <translation id="7631887513477658702">&amp;Zawsze otwieraj pliki tego typu</translation>
@@ -6603,6 +6613,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7946586320617670168">Źródło musi być bezpieczne</translation>
 <translation id="794676567536738329">Potwierdź uprawnienia</translation>
 <translation id="7947962633355574091">K&amp;opiuj adres wideo</translation>
+<translation id="7948407723851303488">Wszystkie strony w domenie <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Aby dodać formy płatności Google Pay lub nimi zarządzać, wejdź na swoje <ph name="BEGIN_LINK" />konto Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Strony mogą prosić o dostęp do tekstu i obrazów w schowku</translation>
 <translation id="795282463722894016">Przywracanie ukończone</translation>
@@ -7670,6 +7681,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9053893665344928494">Zapamiętaj mój wybór</translation>
 <translation id="9055636786322918818">Wymusza szyfrowanie RC4. Używanie tej opcji jest ryzykowne, ponieważ szyfrowanie RC4 nie zapewnia bezpieczeństwa.</translation>
 <translation id="9056810968620647706">Nie znaleziono żadnych dopasowań.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> chce uzyskać dostęp do tych treści:</translation>
 <translation id="9057354806206861646">Harmonogram aktualizacji</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Błąd w wierszach od <ph name="ERROR_LINE_START" /> do <ph name="ERROR_LINE_END" /></translation>

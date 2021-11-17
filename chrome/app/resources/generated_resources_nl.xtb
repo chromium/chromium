@@ -4071,6 +4071,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5265562206369321422">Langer dan een week offline</translation>
 <translation id="5265797726250773323">Fout bij het installeren</translation>
 <translation id="5266113311903163739">Fout bij het importeren van de certificeringsinstantie</translation>
+<translation id="526622169288322445">Meer acties voor <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Afdrukken mislukt</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">JavaScript altijd toestaan op <ph name="HOST" /></translation>
@@ -5449,6 +5450,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6775163072363532304">Beschikbare apparaten zie je hier.</translation>
 <translation id="6777817260680419853">Omleiding geblokkeerd</translation>
 <translation id="6778737459546443941">Je ouder of voogd heeft dit nog niet goedgekeurd</translation>
+<translation id="6779092717724412415">Selecteer tekst en klik met de rechtermuisknop om een markering zoals deze te maken.</translation>
 <translation id="6779447100905857289">je winkelwagens</translation>
 <translation id="677965093459947883">Zeer klein</translation>
 <translation id="6781005693196527806">Zoek&amp;machines beheren…</translation>
@@ -6264,6 +6266,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7625823789272218216">Nieuw tabblad aan de linkerkant</translation>
 <translation id="7628201176665550262">Vernieuwingssnelheid</translation>
 <translation id="7629827748548208700">Tabblad: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="7631205654593498032">Door je apparaten te koppelen geef je de <ph name="DEVICE_TYPE" /> toestemming om:</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>
