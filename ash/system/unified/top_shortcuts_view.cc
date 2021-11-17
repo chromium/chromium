@@ -15,11 +15,11 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
+#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
@@ -202,30 +202,27 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   }
 
   bool reboot = shell->shutdown_controller()->reboot_on_shutdown();
-
-  power_button_ = new IconButton(
+  power_button_ = new TopShortcutButton(
       base::BindRepeating(&UnifiedSystemTrayController::HandlePowerAction,
                           base::Unretained(controller)),
-      IconButton::Type::kSmall, kUnifiedMenuPowerIcon,
+      kUnifiedMenuPowerIcon,
       reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN);
   power_button_->SetID(VIEW_ID_POWER_BUTTON);
   container_->AddChildView(power_button_);
 
   if (can_show_settings && can_lock_screen) {
-    lock_button_ = new IconButton(
+    lock_button_ = new TopShortcutButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleLockAction,
                             base::Unretained(controller)),
-        IconButton::Type::kSmall, kUnifiedMenuLockIcon,
-        IDS_ASH_STATUS_TRAY_LOCK);
+        kUnifiedMenuLockIcon, IDS_ASH_STATUS_TRAY_LOCK);
     container_->AddChildView(lock_button_);
   }
 
   if (can_show_settings) {
-    settings_button_ = new IconButton(
+    settings_button_ = new TopShortcutButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleSettingsAction,
                             base::Unretained(controller)),
-        IconButton::Type::kSmall, kUnifiedMenuSettingsIcon,
-        IDS_ASH_STATUS_TRAY_SETTINGS);
+        kUnifiedMenuSettingsIcon, IDS_ASH_STATUS_TRAY_SETTINGS);
     container_->AddChildView(settings_button_);
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(

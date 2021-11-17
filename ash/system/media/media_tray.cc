@@ -172,10 +172,9 @@ void MediaTray::SetPinnedToShelf(bool pinned) {
 }
 
 MediaTray::PinButton::PinButton()
-    : IconButton(
+    : TopShortcutButton(
           base::BindRepeating(&PinButton::ButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kSmall,
           MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
           MediaTray::IsPinnedToShelf()
               ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT

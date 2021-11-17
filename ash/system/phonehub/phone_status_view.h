@@ -9,6 +9,7 @@
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tri_view.h"
+#include "ash/system/unified/top_shortcut_button.h"
 #include "base/gtest_prod_util.h"
 
 namespace views {
@@ -18,8 +19,6 @@ class Separator;
 }  // namespace views
 
 namespace ash {
-
-class IconButton;
 
 // The header row at the top of the Phone Hub panel, showing phone title and
 // status (wifi, volime, etc.).
@@ -67,7 +66,7 @@ class ASH_EXPORT PhoneStatusView : public TriView,
   views::ImageView* battery_icon_ = nullptr;
   views::Label* battery_label_ = nullptr;
   views::Separator* separator_ = nullptr;
-  IconButton* settings_button_ = nullptr;
+  TopShortcutButton* settings_button_ = nullptr;
 };
 
 }  // namespace ash

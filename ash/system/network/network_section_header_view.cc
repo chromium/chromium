@@ -10,7 +10,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -359,10 +358,10 @@ void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
   can_add_esim_button_be_enabled_ = enabled;
   const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
                                                     : kAddCellularNetworkIcon;
-  add_esim_button_ = new IconButton(
+  add_esim_button_ = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kSmall, icon, GetAddESimTooltipMessageId());
+      icon, GetAddESimTooltipMessageId());
 
   add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
 
@@ -420,11 +419,10 @@ void WifiSectionHeaderView::OnToggleToggled(bool is_on) {
 }
 
 void WifiSectionHeaderView::AddExtraButtons(bool enabled) {
-  auto* join_button = new IconButton(
+  auto* join_button = new TopShortcutButton(
       base::BindRepeating(&WifiSectionHeaderView::JoinButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kSmall, vector_icons::kWifiAddIcon,
-      IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+      vector_icons::kWifiAddIcon, IDS_ASH_STATUS_TRAY_OTHER_WIFI);
   join_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, join_button);
   join_button_ = join_button;

@@ -12,7 +12,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/status_area_widget.h"
@@ -135,10 +134,10 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   separator_->SetPreferredHeight(kSeparatorHeight);
   AddView(TriView::Container::CENTER, separator_);
 
-  settings_button_ = new IconButton(
+  settings_button_ = new TopShortcutButton(
       base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
                           base::Unretained(delegate)),
-      IconButton::Type::kSmall, kSystemMenuSettingsIcon,
+      kSystemMenuSettingsIcon,
       IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL);
   AddView(TriView::Container::END, settings_button_);
 
