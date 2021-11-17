@@ -164,6 +164,7 @@ suite('PrivacyReviewPage', function() {
   /**
    * @param {!{
    *   headerTextExpected: (string|undefined),
+   *   headerImgSrcExpected: (string|undefined),
    *   isSettingFooterVisibleExpected: (boolean|undefined),
    *   isBackButtonVisibleExpected: (boolean|undefined),
    *   isWelcomeFragmentVisibleExpected: (boolean|undefined),
@@ -177,6 +178,7 @@ suite('PrivacyReviewPage', function() {
    */
   function assertCardComponentsVisible({
     headerTextExpected,
+    headerImgSrcExpected,
     isSettingFooterVisibleExpected,
     isBackButtonVisibleExpected,
     isWelcomeFragmentVisibleExpected,
@@ -192,6 +194,11 @@ suite('PrivacyReviewPage', function() {
       assertEquals(
           headerTextExpected,
           page.shadowRoot.querySelector('#headerLabel').innerText);
+      assertTrue(!!headerImgSrcExpected);
+      assertEquals(
+          'chrome://settings/privacy/images/privacy_review/' +
+              headerImgSrcExpected,
+          page.shadowRoot.querySelector('#headerImage').src);
     }
     assertEquals(
         !!isSettingFooterVisibleExpected,
@@ -270,6 +277,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.MSBB);
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewMsbbCardHeader'),
+      headerImgSrcExpected: 'msbb_graphic.svg',
       isSettingFooterVisibleExpected: true,
       isMsbbFragmentVisibleExpected: true,
     });
@@ -280,6 +288,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.CLEAR_ON_EXIT);
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewClearOnExitCardHeader'),
+      headerImgSrcExpected: 'clear_on_exit_graphic.svg',
       isSettingFooterVisibleExpected: true,
       isBackButtonVisibleExpected: true,
       isClearOnExitFragmentVisibleExpected: true,
@@ -291,6 +300,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.HISTORY_SYNC);
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewHistorySyncCardHeader'),
+      headerImgSrcExpected: 'history_sync_graphic.svg',
       isSettingFooterVisibleExpected: true,
       isBackButtonVisibleExpected: true,
       isHistorySyncFragmentVisibleExpected: true,
@@ -302,6 +312,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.SAFE_BROWSING);
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewSafeBrowsingCardHeader'),
+      headerImgSrcExpected: 'safe_browsing_graphic.svg',
       isSettingFooterVisibleExpected: true,
       isBackButtonVisibleExpected: true,
       isSafeBrowsingFragmentVisibleExpected: true,
@@ -313,6 +324,7 @@ suite('PrivacyReviewPage', function() {
     assertQueryParameter(PrivacyReviewStep.COOKIES);
     assertCardComponentsVisible({
       headerTextExpected: page.i18n('privacyReviewCookiesCardHeader'),
+      headerImgSrcExpected: 'cookies_graphic.svg',
       isSettingFooterVisibleExpected: true,
       isBackButtonVisibleExpected: true,
       isCookiesFragmentVisibleExpected: true,
