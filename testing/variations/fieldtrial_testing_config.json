@@ -6300,30 +6300,6 @@
             ]
         }
     ],
-    "PrivacySettingsHats": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "en_site_id": "JJjyyFs1g0ugnJ3q1cK0QHY2qJGX",
-                        "no-sandbox": "true",
-                        "probability": "1.0",
-                        "survey": "settings-privacy"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDesktopMigration",
-                        "HappinessTrackingSurveysForDesktopSettingsPrivacy"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProbabilisticCryptidRenderer": [
         {
             "platforms": [
