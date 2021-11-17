@@ -115,14 +115,11 @@ class MaskedImageView : public views::ImageView {
   SearchResult::IconShape shape_;
 };
 
-SearchResultView::SearchResultView(
-    SearchResultListView* list_view,
-    AppListViewDelegate* view_delegate,
-    SearchResultPageDialogController* dialog_controller,
-    SearchResultViewType view_type)
+SearchResultView::SearchResultView(SearchResultListView* list_view,
+                                   AppListViewDelegate* view_delegate,
+                                   SearchResultViewType view_type)
     : list_view_(list_view),
       view_delegate_(view_delegate),
-      dialog_controller_(dialog_controller),
       view_type_(view_type) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
@@ -582,7 +579,10 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
             result()->title(),
             base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
                            weak_ptr_factory_.GetWeakPtr()));
-        dialog_controller_->Show(std::move(dialog));
+        list_view_->app_list_main_view()
+            ->contents_view()
+            ->search_result_page_view()
+            ->ShowAnchoredDialog(std::move(dialog));
         break;
       }
       case SearchResultActionType::kAppend:

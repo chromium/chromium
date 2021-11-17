@@ -25,7 +25,6 @@ class AppListFolderView;
 class AppListViewDelegate;
 class FolderBackgroundView;
 class SearchBoxView;
-class SearchResultPageDialogController;
 
 // Contains the views for the bubble version of the launcher. It looks like a
 // system tray bubble. It does not derive from TrayBubbleView because it takes
@@ -107,13 +106,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void DisableFocusForShowingActiveFolder(bool disabled);
 
   AppListViewDelegate* const view_delegate_;
-
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
-
-  // Controller for showing a modal dialog in search results page.
-  std::unique_ptr<SearchResultPageDialogController>
-      search_page_dialog_controller_;
-
   SearchBoxView* search_box_view_ = nullptr;
   views::View* separator_ = nullptr;
   AppListBubbleAppsPage* apps_page_ = nullptr;

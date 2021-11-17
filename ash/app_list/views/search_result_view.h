@@ -36,7 +36,6 @@ class AppListViewDelegate;
 class MaskedImageView;
 class SearchResult;
 class SearchResultListView;
-class SearchResultPageDialogController;
 
 // SearchResultView displays a SearchResult.
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
@@ -59,7 +58,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   SearchResultView(SearchResultListView* list_view,
                    AppListViewDelegate* view_delegate,
-                   SearchResultPageDialogController* dialog_controller,
                    SearchResultViewType view_type);
 
   SearchResultView(const SearchResultView&) = delete;
@@ -136,11 +134,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   bool IsRichImage() const;
 
   // Parent list view. Owned by views hierarchy.
-  SearchResultListView* const list_view_;
+  SearchResultListView* list_view_;
 
-  AppListViewDelegate* const view_delegate_;
-
-  SearchResultPageDialogController* const dialog_controller_;
+  AppListViewDelegate* view_delegate_;
 
   MaskedImageView* icon_ = nullptr;              // Owned by views hierarchy.
   views::ImageView* badge_icon_ = nullptr;       // Owned by views hierarchy.

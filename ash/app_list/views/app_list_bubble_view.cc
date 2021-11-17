@@ -21,7 +21,6 @@
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -179,12 +178,9 @@ void AppListBubbleView::InitContentsView(
   // include empty space below the visible icons.
   layout->SetFlexForView(apps_page_, 1);
 
-  search_page_dialog_controller_ =
-      std::make_unique<SearchResultPageDialogController>(this);
   search_page_ =
       contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(
-          view_delegate_, search_page_dialog_controller_.get(),
-          search_box_view_));
+          view_delegate_, search_box_view_));
   search_page_->SetVisible(false);
 }
 
@@ -320,7 +316,6 @@ void AppListBubbleView::ShowEmbeddedAssistantUI() {
 
   apps_page_->SetVisible(false);
   search_page_->SetVisible(false);
-  search_page_dialog_controller_->SetEnabled(false);
   assistant_page_->SetVisible(true);
   assistant_page_->RequestFocus();
 }
@@ -381,7 +376,6 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   const bool has_search = search_box_view_->HasSearch();
   apps_page_->SetVisible(!has_search);
   search_page_->SetVisible(has_search);
-  search_page_dialog_controller_->SetEnabled(has_search);
   assistant_page_->SetVisible(false);
 
   // Ask the controller to start the search.

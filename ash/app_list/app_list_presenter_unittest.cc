@@ -157,7 +157,6 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
   suggestion_result->set_is_omnibox_search(true);
-  suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
   actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
@@ -165,28 +164,6 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   suggestion_result->SetActions(actions);
 
   return suggestion_result;
-}
-
-// Verifies the current search result page anchored dialog bounds.
-// The dialog is expected to be positioned horizontally centered within the
-// search box bounds.
-void SanityCheckSearchResultsAnchoredDialogBounds(
-    const views::Widget* dialog,
-    const SearchBoxView* search_box_view) {
-  auto horizontal_center_offset = [](const gfx::Rect& inner,
-                                     const gfx::Rect& outer) -> int {
-    return outer.CenterPoint().x() - inner.CenterPoint().x();
-  };
-
-  const gfx::Rect dialog_bounds = dialog->GetWindowBoundsInScreen();
-  const gfx::Rect search_box_bounds =
-      search_box_view->GetWidget()->GetWindowBoundsInScreen();
-  // The dialog should be horizontally centered within the search box.
-  EXPECT_EQ(0, horizontal_center_offset(dialog_bounds, search_box_bounds));
-  // Verify the confirmation dialog is positioned with the top within search
-  // box bounds.
-  EXPECT_GT(dialog_bounds.y(), search_box_bounds.y());
-  EXPECT_LT(dialog_bounds.y(), search_box_bounds.bottom());
 }
 
 }  // namespace
@@ -295,10 +272,33 @@ class AppListPresenterTest : public AshTestBase,
 
   views::DialogDelegate* GetSearchResultPageAnchoredDialog() {
     return search_result_page()
-        ->dialog_for_test()
+        ->anchored_dialog_for_test()
         ->widget()
         ->widget_delegate()
         ->AsDialogDelegate();
+  }
+
+  // Verifies the current search result page anchored dialog bounds.
+  // The dialog is expected to be positioned horizontally centered within the
+  // search box bounds.
+  void SanityCheckSearchResultsAnchoredDialogBounds(
+      const views::Widget* dialog) {
+    auto horizontal_center_offset = [](const gfx::Rect& inner,
+                                       const gfx::Rect& outer) -> int {
+      return outer.CenterPoint().x() - inner.CenterPoint().x();
+    };
+
+    const gfx::Rect dialog_bounds = dialog->GetWindowBoundsInScreen();
+    const gfx::Rect search_box_bounds = GetAppListView()
+                                            ->search_box_view()
+                                            ->GetWidget()
+                                            ->GetWindowBoundsInScreen();
+    // The dialog should be horizontally centered within the search box.
+    EXPECT_EQ(0, horizontal_center_offset(dialog_bounds, search_box_bounds));
+    // Verify the confirmation dialog is positioned with the top within search
+    // box bounds.
+    EXPECT_GT(dialog_bounds.y(), search_box_bounds.y());
+    EXPECT_LT(dialog_bounds.y(), search_box_bounds.bottom());
   }
 
   // Returns the |dialog| vertical offset from the top of the search box bounds.
@@ -358,67 +358,15 @@ class AppListBubbleAndTabletTest
     return !productivity_launcher_param();
   }
 
-  SearchBoxView* GetSearchBoxView() {
-    return should_show_bubble_launcher()
-               ? GetAppListTestHelper()->GetBubbleSearchBoxView()
-               : GetAppListTestHelper()->GetAppListView()->search_box_view();
-  }
-
-  SearchResultPageView* GetFullscreenSearchPage() {
-    return GetAppListTestHelper()
-        ->GetAppListView()
-        ->app_list_main_view()
-        ->contents_view()
-        ->search_result_page_view();
-  }
-
   bool AppListSearchResultPageVisible() {
     return should_show_bubble_launcher()
                ? GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible()
-               : GetFullscreenSearchPage()->GetVisible();
-  }
-
-  SearchResultContainerView* GetDefaultSearchResultListView() {
-    if (should_show_bubble_launcher()) {
-      return GetAppListTestHelper()
-          ->GetProductivityLauncherSearchView()
-          ->result_container_views_for_test()[0];
-    }
-    if (productivity_launcher_param()) {
-      return GetFullscreenSearchPage()
-          ->productivity_launcher_search_view_for_test()
-          ->result_container_views_for_test()[0];
-    }
-    return GetFullscreenSearchPage()->GetSearchResultListViewForTest();
-  }
-
-  ResultSelectionController* GetResultSelectionController() {
-    if (should_show_bubble_launcher()) {
-      return GetAppListTestHelper()
-          ->GetProductivityLauncherSearchView()
-          ->result_selection_controller_for_test();
-    }
-
-    if (productivity_launcher_param()) {
-      return GetFullscreenSearchPage()
-          ->productivity_launcher_search_view_for_test()
-          ->result_selection_controller_for_test();
-    }
-
-    return GetFullscreenSearchPage()->result_selection_controller();
-  }
-
-  SearchResultPageAnchoredDialog* GetSearchResultPageDialog() {
-    return should_show_bubble_launcher()
-               ? GetAppListTestHelper()->GetBubbleSearchPageDialog()
-               : GetAppListTestHelper()->GetFullscreenSearchPageDialog();
-  }
-
-  views::DialogDelegate* GetSearchResultPageDialogDelegate() {
-    return GetSearchResultPageDialog()
-        ->widget()
-        ->widget_delegate()
-        ->AsDialogDelegate();
+               : GetAppListTestHelper()
+                     ->GetAppListView()
+                     ->app_list_main_view()
+                     ->contents_view()
+                     ->search_result_page_view()
+                     ->GetVisible();
   }
 
   ContinueSectionView* GetContinueSectionView() {
@@ -438,13 +386,6 @@ class AppListBubbleAndTabletTest
                ? GetAppListTestHelper()->GetBubbleLauncherAppsSeparatorView()
                : GetAppListTestHelper()
                      ->GetFullscreenLauncherAppsSeparatorView();
-  }
-
-  void LongPressAt(const gfx::Point& point) {
-    ui::TouchEvent long_press(ui::ET_GESTURE_LONG_PRESS, point,
-                              base::TimeTicks::Now(),
-                              ui::PointerDetails(ui::EventPointerType::kTouch));
-    GetEventGenerator()->Dispatch(&long_press);
   }
 
   void EnsureLauncherShown() {
@@ -867,16 +808,20 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
-TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
+TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
+  ShowZeroStateSearchInHalfState();
 
-  // Show search page.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, 0);
-  EXPECT_TRUE(AppListSearchResultPageVisible());
+  // Mark the suggested content info as dismissed so that it does not interfere
+  // with the layout.
+  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
+  GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->search_result_page_view()
+      ->GetPrivacyContainerViewForTest()
+      ->Update();
 
-  // Add suggestion results - the result that will be tested is in
+  // Add a zero state suggestion results - the result that will be tested is in
   // the second place.
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
@@ -884,17 +829,16 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   // The result list is updated asynchronously.
-  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->WaitUntilIdle();
 
-  SearchResultBaseView* result_view =
-      GetDefaultSearchResultListView()->GetResultViewAt(1);
+  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(1);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
 
   // Make sure the search results page is laid out after adding result action
   // buttons.
-  result_view->GetWidget()->LayoutRootViewIfNecessary();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_TRUE(result_view->actions_view());
   EXPECT_EQ(1u, result_view->actions_view()->children().size());
@@ -902,37 +846,38 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
 
   // The remove action button is visible on hover only.
   EXPECT_FALSE(action_view->GetVisible());
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(result_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(action_view->GetVisible());
 
   // Record the current result selection before clicking the remove action
   // button.
   ResultSelectionController* result_selection_controller =
-      GetResultSelectionController();
+      search_result_page()->result_selection_controller();
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
   ResultLocationDetails* result_location =
       result_selection_controller->selected_location_details();
 
   // Ensure layout after the action view visibility has been updated.
-  result_view->GetWidget()->LayoutRootViewIfNecessary();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Click the remove action button, this should surface a confirmation dialog.
-  generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  ClickMouseAt(action_view->GetBoundsInScreen().CenterPoint());
 
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
                   .empty());
-  ASSERT_TRUE(GetSearchResultPageDialog());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   // Cancel the dialog - the app list should remain in the search result page,
   // the suggestion removal dialog should be hidden, and no result action should
   // be invoked.
-  GetSearchResultPageDialogDelegate()->CancelDialog();
+  GetSearchResultPageAnchoredDialog()->CancelDialog();
 
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(GetSearchResultPageDialog());
+  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
+  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
@@ -944,17 +889,16 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
             result_selection_controller->selected_location_details());
 
   // Click remove suggestion action button again.
-  generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  ClickMouseAt(action_view->GetBoundsInScreen().CenterPoint());
 
   // Expect the removal confirmation dialog - this time, accept it.
-  ASSERT_TRUE(GetSearchResultPageDialog());
-  GetSearchResultPageDialogDelegate()->AcceptDialog();
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  GetSearchResultPageAnchoredDialog()->AcceptDialog();
 
   // The app list should remain showing search results, the dialog should be
   // closed, and result removal action should be invoked.
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(GetSearchResultPageDialog());
+  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
+  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
 
   // The result selection should be at the same position.
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
@@ -970,16 +914,10 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
   EXPECT_EQ(expected_actions, invoked_actions);
 }
 
-TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
+TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
+  ShowZeroStateSearchInHalfState();
 
-  // Show search page.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, 0);
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-
-  // Add suggestion results - the result that will be tested is in
+  // Add a zero state suggestion results - the result that will be tested is in
   // the second place.
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
@@ -988,15 +926,14 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
-  SearchResultBaseView* result_view =
-      GetDefaultSearchResultListView()->GetResultViewAt(1);
+  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(1);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
 
   // Make sure the search results page is laid out after adding result action
   // buttons.
-  result_view->GetWidget()->LayoutRootViewIfNecessary();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Long tap on the search result. This should show the removal confirmation
   // dialog.
@@ -1007,16 +944,15 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
                   .empty());
-  ASSERT_TRUE(GetSearchResultPageDialog());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   // Cancel the dialog - the app list should remain in the search result page,
   // the suggestion removal dialog should be hidden, and no result action should
   // be invoked.
-  GetSearchResultPageDialogDelegate()->CancelDialog();
+  GetSearchResultPageAnchoredDialog()->CancelDialog();
 
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(GetSearchResultPageDialog());
-
+  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
+  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
@@ -1027,13 +963,13 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
 
   // Expect the removal confirmation dialog - this time, accept it.
-  ASSERT_TRUE(GetSearchResultPageDialog());
-  GetSearchResultPageDialogDelegate()->AcceptDialog();
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  GetSearchResultPageAnchoredDialog()->AcceptDialog();
 
   // The app list should remain showing search results, the dialog should be
   // closed, and result removal action should be invoked.
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(GetSearchResultPageDialog());
+  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
+  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
   EXPECT_FALSE(result_view->selected());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
@@ -1062,14 +998,13 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   // Show remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(search_result_page()->dialog_for_test());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   views::Widget* const confirmation_dialog =
-      search_result_page()->dialog_for_test()->widget();
+      search_result_page()->anchored_dialog_for_test()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
-  SanityCheckSearchResultsAnchoredDialogBounds(
-      confirmation_dialog, GetAppListView()->search_box_view());
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
   const gfx::Rect initial_dialog_bounds =
       confirmation_dialog->GetWindowBoundsInScreen();
 
@@ -1078,7 +1013,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
-  ASSERT_TRUE(search_result_page()->dialog_for_test());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   EXPECT_NE(confirmation_dialog->GetLayer()->transform(), gfx::Transform());
   EXPECT_EQ(confirmation_dialog->GetLayer()->GetTargetTransform(),
@@ -1109,39 +1044,35 @@ TEST_P(AppListPresenterTest,
 
   // Show the remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(search_result_page()->dialog_for_test());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   views::Widget* const confirmation_dialog =
-      search_result_page()->dialog_for_test()->widget();
+      search_result_page()->anchored_dialog_for_test()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
   SCOPED_TRACE("Initial confirmation dialog bounds");
-  SanityCheckSearchResultsAnchoredDialogBounds(
-      confirmation_dialog, GetAppListView()->search_box_view());
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
   const int dialog_margin =
       GetSearchResultsAnchoredDialogTopOffset(confirmation_dialog);
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
-  ASSERT_TRUE(search_result_page()->dialog_for_test());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   // Verify that the confirmation dialog followed the search box widget.
   SCOPED_TRACE("Confirmation dialog bounds after transition");
-  SanityCheckSearchResultsAnchoredDialogBounds(
-      confirmation_dialog, GetAppListView()->search_box_view());
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
   EXPECT_EQ(dialog_margin,
             GetSearchResultsAnchoredDialogTopOffset(confirmation_dialog));
 }
 
-TEST_P(AppListBubbleAndTabletTest,
+TEST_P(AppListPresenterTest,
        TransitionToAppsContainerClosesRemoveSuggestionDialog) {
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
-
-  // Show search page.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, 0);
-  EXPECT_TRUE(AppListSearchResultPageVisible());
+  generator->GestureTapAt(GetPointInsideSearchbox());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
@@ -1149,8 +1080,7 @@ TEST_P(AppListBubbleAndTabletTest,
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
-  SearchResultBaseView* result_view =
-      GetDefaultSearchResultListView()->GetResultViewAt(0);
+  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
@@ -1160,47 +1090,38 @@ TEST_P(AppListBubbleAndTabletTest,
       ui::ET_GESTURE_LONG_PRESS, result_view->GetBoundsInScreen().CenterPoint(),
       base::TimeTicks::Now(), ui::PointerDetails(ui::EventPointerType::kTouch));
   GetEventGenerator()->Dispatch(&long_press);
-  ASSERT_TRUE(GetSearchResultPageDialog());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   views::Widget* const confirmation_dialog =
-      GetSearchResultPageDialog()->widget();
+      search_result_page()->anchored_dialog_for_test()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog,
-                                               GetSearchBoxView());
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
 
   // Verify that transition to apps page hides the removal confirmation dialog.
   views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
-  GetSearchBoxView()->ClearSearchAndDeactivateSearchBox();
-  EXPECT_FALSE(AppListSearchResultPageVisible());
+  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
 
   widget_close_waiter.Wait();
 }
 
-TEST_P(AppListBubbleAndTabletTest,
-       RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
+TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // Enable virtual keyboard for this test.
   KeyboardController* const keyboard_controller =
       Shell::Get()->keyboard_controller();
   keyboard_controller->SetEnableFlag(
       keyboard::KeyboardEnableFlag::kCommandLineEnabled);
 
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
+  ShowZeroStateSearchInHalfState();
 
-  // Show search page.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_A, 0);
-  EXPECT_TRUE(AppListSearchResultPageVisible());
-
-  // Add a suggestion result.
+  // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
-  SearchResultBaseView* result_view =
-      GetDefaultSearchResultListView()->GetResultViewAt(0);
+  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
@@ -1210,9 +1131,8 @@ TEST_P(AppListBubbleAndTabletTest,
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Show remove suggestion dialog.
-  result_view->GetWidget()->LayoutRootViewIfNecessary();
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(GetSearchResultPageDialog());
+  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
 
   // The search box should have lost the focus, which should have hidden the
   // keyboard.
@@ -1222,17 +1142,21 @@ TEST_P(AppListBubbleAndTabletTest,
   // changed the position of the search box - the confirmation dialog should
   // have followed it).
   views::Widget* const confirmation_dialog =
-      GetSearchResultPageDialog()->widget();
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog,
-                                               GetSearchBoxView());
+      search_result_page()->anchored_dialog_for_test()->widget();
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
 
   views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
-  GetSearchBoxView()->ClearSearchAndDeactivateSearchBox();
-  EXPECT_FALSE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 
+  // Go to peeking state, and verify the keyboard is not reshown.
+  GetAppListView()->SetState(AppListViewState::kPeeking);
+  GetAppListTestHelper()->WaitUntilIdle();
   // Exiting the search results page should close the dialog.
   widget_close_waiter.Wait();
+  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
+
+  GetAppListTestHelper()->DismissAndRunLoop();
+  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 }
 
 // Verifies that the downward mouse drag on AppsGridView's first page should

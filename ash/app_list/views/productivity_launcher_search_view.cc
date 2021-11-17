@@ -45,9 +45,8 @@ constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 ProductivityLauncherSearchView::ProductivityLauncherSearchView(
     AppListViewDelegate* view_delegate,
-    SearchResultPageDialogController* dialog_controller,
     SearchBoxView* search_box_view)
-    : dialog_controller_(dialog_controller), search_box_view_(search_box_view) {
+    : search_box_view_(search_box_view) {
   DCHECK(view_delegate);
   DCHECK(search_box_view_);
   SetUseDefaultFillLayout(true);
@@ -85,8 +84,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   // kBestMatch is always the first list view shown.
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-          /*main_view=*/nullptr, view_delegate, dialog_controller_,
-          absl::nullopt));
+          /*main_view=*/nullptr, view_delegate, absl::nullopt));
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
@@ -100,7 +98,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   for (size_t i = 0; i < category_count; ++i) {
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-            /*main_view=*/nullptr, view_delegate, dialog_controller_, i));
+            /*main_view=*/nullptr, view_delegate, i));
     add_result_container(result_container);
   }
 
