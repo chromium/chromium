@@ -5,18 +5,15 @@
 #ifndef ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_COLLAPSE_BUTTON_H_
 
-#include "ash/style/icon_button.h"
-#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
 // The button with `kUnifiedMenuExpandIcon`. This button can be set as expanded
 // or collapsed through SetExpandedAmount and the icon will be rotated on the
 // `expanded_amount_`. Expanded is the default state.
-class CollapseButton : public IconButton {
+class CollapseButton : public views::ImageButton {
  public:
-  METADATA_HEADER(CollapseButton);
-
   explicit CollapseButton(PressedCallback callback);
 
   CollapseButton(const CollapseButton&) = delete;
@@ -27,8 +24,11 @@ class CollapseButton : public IconButton {
   // Change the expanded state. The icon will change.
   void SetExpandedAmount(double expanded_amount);
 
-  // IconButton:
+  // views::ImageButton:
+  gfx::Size CalculatePreferredSize() const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   double expanded_amount_ = 1.0;

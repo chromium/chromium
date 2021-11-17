@@ -6,18 +6,25 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/icon_button.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/element_style.h"
+#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
 CollapseButton::CollapseButton(PressedCallback callback)
-    : IconButton(std::move(callback),
-                 IconButton::Type::kSmallFloating,
-                 kUnifiedMenuExpandIcon,
-                 IDS_ASH_STATUS_TRAY_COLLAPSE) {}
+    : ImageButton(std::move(callback)) {
+  views::InstallCircleHighlightPathGenerator(this);
+  TrayPopupUtils::ConfigureTrayPopupButton(this);
+}
 
 CollapseButton::~CollapseButton() = default;
 
@@ -31,6 +38,10 @@ void CollapseButton::SetExpandedAmount(double expanded_amount) {
   SchedulePaint();
 }
 
+gfx::Size CollapseButton::CalculatePreferredSize() const {
+  return gfx::Size(kTrayItemSize, kTrayItemSize);
+}
+
 void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::ScopedCanvas scoped(canvas);
   canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
@@ -39,7 +50,16 @@ void CollapseButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
 }
 
-BEGIN_METADATA(CollapseButton, IconButton)
-END_METADATA
+const char* CollapseButton::GetClassName() const {
+  return "CollapseButton";
+}
+
+void CollapseButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  element_style::DecorateFloatingIconButton(this, kUnifiedMenuExpandIcon);
+  views::FocusRing::Get(this)->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
 
 }  // namespace ash
