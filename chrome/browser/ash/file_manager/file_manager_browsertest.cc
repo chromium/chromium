@@ -274,7 +274,13 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayDrive").TabletMode(),
         TestCase("fileDisplayDrive"),
         TestCase("fileDisplayDriveOffline").Offline(),
+        TestCase("fileDisplayDriveOffline").Offline().FilesSwa(),
         TestCase("fileDisplayDriveOnline"),
+        TestCase("fileDisplayDriveOnline").FilesSwa(),
+        TestCase("fileDisplayDriveOnlineNewWindow").DontObserveFileTasks(),
+        TestCase("fileDisplayDriveOnlineNewWindow")
+            .DontObserveFileTasks()
+            .FilesSwa(),
         TestCase("fileDisplayComputers"),
         TestCase("fileDisplayMtp"),
         TestCase("fileDisplayUsb"),

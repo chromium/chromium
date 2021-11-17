@@ -168,12 +168,9 @@ testcase.fileDisplayDriveOffline = async () => {
 
 /**
  * Tests file display rendering in online Google Drive.
+ * @param {string} appId the id for the window to check the file display.
  */
-testcase.fileDisplayDriveOnline = async () => {
-  // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
-
+async function checkDriveOnlineDisplay(appId) {
   // Retrieve all file list row entries.
   const fileEntry = '#file-list .table-row';
   const elements = await remoteCall.callRemoteTestUtil(
@@ -184,6 +181,35 @@ testcase.fileDisplayDriveOnline = async () => {
   for (let i = 0; i < elements.length; ++i) {
     chrome.test.assertEq('1', elements[i].styles.opacity);
   }
+}
+
+/**
+ * Tests file display rendering in online Google Drive.
+ */
+testcase.fileDisplayDriveOnline = async () => {
+  // Open Files app on Drive.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+
+  await checkDriveOnlineDisplay(appId);
+};
+
+/**
+ * Tests file display rendering in online Google Drive when opening via OpenItem
+ * function.
+ */
+testcase.fileDisplayDriveOnlineNewWindow = async () => {
+  // Open Files app on the Drive directory.
+  await addEntries(['drive'], BASIC_DRIVE_ENTRY_SET);
+  await sendTestMessage({name: 'launchAppOnDrive'});
+
+  // Wait for app window to open.
+  const appId = await remoteCall.waitForWindow('files#');
+
+  // Wait for Files app to finish loading.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  await checkDriveOnlineDisplay(appId);
 };
 
 /**

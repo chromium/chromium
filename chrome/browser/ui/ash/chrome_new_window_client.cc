@@ -263,13 +263,15 @@ bool OpenFilesSwa(Profile* const profile,
   }
 
   std::u16string title;
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.allowed_paths =
+      ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
   GURL files_swa_url =
       ::file_manager::util::GetFileManagerMainPageUrlWithParams(
           ui::SelectFileDialog::SELECT_NONE, title,
           /*current_directory_url=*/directory_url,
           /*selection_url=*/{},
-          /*target_name=*/{},
-          /*file_types=*/nullptr,
+          /*target_name=*/{}, &file_type_info,
           /*file_type_index=*/0,
           /*search_query=*/{},
           /*show_android_picker_apps=*/false);
