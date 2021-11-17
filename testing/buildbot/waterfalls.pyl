@@ -2189,11 +2189,13 @@
         'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
-          'mac_mini_intel_gpu_stable',
+          'mac_mini_intel_gpu_experimental',
         ],
+        # Currently the experimental driver is identical to the stable
+        # driver. If it's upgraded, change these test_suites to be the same as
+        # 'Dawn Mac x64 Release (Intel)'.
         'test_suites': {
-          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Dawn Mac x64 Release (AMD)': {
@@ -4587,10 +4589,12 @@
           'limited_capacity_bot',
           'win10_intel_hd_630_experimental',
         ],
+        # When the experimental driver is identical to the stable driver, this
+        # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
+        # should be running the same test_suites as
+        # 'Win10 FYI x64 Release (Intel HD 630)'
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_win_gtests',
-          'isolated_scripts': 'gpu_desktop_representative_perf_fyi_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Win10 FYI x64 Exp Release (NVIDIA)': {
@@ -4605,9 +4609,7 @@
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (NVIDIA)'
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_win_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
-          'isolated_scripts': 'gpu_fyi_win_optional_and_representative_perf_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {

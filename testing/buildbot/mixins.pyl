@@ -1052,9 +1052,9 @@
   'win10_intel_hd_630_experimental': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-26.20.100.7870|8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
+        'gpu': '8086:5912-26.20.100.8141|8086:3e92-26.20.100.8141',
         'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -1095,7 +1095,7 @@
       'dimensions': {
         'gpu': '10de:1cb3-27.21.14.5148',
         'os': 'Windows-10-18363',
-        'pool': 'chromium.tests.gpu.experimental',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
