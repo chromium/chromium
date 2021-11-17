@@ -331,6 +331,7 @@ static_library("location_bar") {
   ]
   deps = [
     ":buildflags",
+    "//build:chromeos_buildflags",
     "//components/dom_distiller/core:core",
     "//components/search_engines",
     "//components/strings",
@@ -341,6 +342,10 @@ static_library("location_bar") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/crosapi/cpp:cpp" ]
+  }
 
   if ((!is_android || enable_vr) && !is_ios) {
     deps += [ ":vector_icons" ]

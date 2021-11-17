@@ -12,6 +12,8 @@ component("cpp") {
   sources = [
     "crosapi_constants.cc",
     "crosapi_constants.h",
+    "gurl_os_handler_utils.cc",
+    "gurl_os_handler_utils.h",
     "keystore_service_util.cc",
     "keystore_service_util.h",
     "scoped_allow_sync_call.cc",
@@ -33,5 +35,8 @@ source_set("unit_tests") {
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
-  sources = [ "keystore_service_util_unittest.cc" ]
+  sources = [
+    "gurl_os_handler_unittest.cc",
+    "keystore_service_util_unittest.cc",
+  ]
 }

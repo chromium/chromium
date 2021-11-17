@@ -600,8 +600,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 32
-// Next id: 31
+// Next version: 33
+// Next id: 32
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -801,6 +801,12 @@ struct BrowserInitParams {
   // is present for Ash.
   [MinVersion=31]
   bool is_unfiltered_bluetooth_device_enabled@30;
+
+  // Internal chrome:// URLs which can be handled by Ash. These are sent from
+  // Ash to Lacros at startup so Lacros knows which URLs are OK to forward.
+  // Added in M97.
+  [MinVersion=32]
+  array<url.mojom.Url>? accepted_internal_ash_urls@31;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

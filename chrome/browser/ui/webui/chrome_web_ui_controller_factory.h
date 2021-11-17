@@ -55,6 +55,17 @@ class ChromeWebUIControllerFactory : public content::WebUIControllerFactory {
                         const std::vector<int>& desired_sizes_in_pixel,
                         favicon_base::FaviconResultsCallback callback) const;
 
+#if defined(OS_CHROMEOS)
+  // Called to retrieve a list of URLs which can be handled by this browser.
+  // For Ash this means that they are shown in an SWA application and for
+  // Lacros it means that Lacros will handle them themselves.
+  std::vector<GURL> GetListOfAcceptableURLs();
+
+  // Determines if the given URL can be handled by any known handler.
+  // Note that the provided |url| needs to be sanitized.
+  bool CanHandleUrl(const GURL& url);
+#endif
+
  protected:
   ChromeWebUIControllerFactory();
   ~ChromeWebUIControllerFactory() override;

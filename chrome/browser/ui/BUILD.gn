@@ -682,6 +682,9 @@ static_library("ui") {
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
     ]
   }
+  if (is_chromeos) {
+    deps += [ "//chromeos/crosapi/cpp:cpp" ]
+  }
 
   if (!is_fuchsia) {
     deps += [ "//components/crash/core/app" ]
