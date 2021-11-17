@@ -84,15 +84,6 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
       std::unique_ptr<webrtc::VideoEncoderFactory> hardware_encoder_factory)
       : hardware_encoder_factory_(std::move(hardware_encoder_factory)) {}
 
-  webrtc::VideoEncoderFactory::CodecInfo QueryVideoEncoder(
-      const webrtc::SdpVideoFormat& format) const override {
-    const webrtc::VideoEncoderFactory* factory =
-        IsFormatSupported(hardware_encoder_factory_.get(), format)
-            ? hardware_encoder_factory_.get()
-            : &software_encoder_factory_;
-    return factory->QueryVideoEncoder(format);
-  }
-
   std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
       const webrtc::SdpVideoFormat& format) override {
     const bool supported_in_software =
