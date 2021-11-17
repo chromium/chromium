@@ -2410,6 +2410,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-password-manager-branding-update",
+    "owners": [ "alionadangla", "bwwilliams"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "enable-payment-request-basic-card",
     "owners": [ "maxlg", "web-payments-team@google.com" ],
     // This flag is used by developers to disable the "basic-card" method, to

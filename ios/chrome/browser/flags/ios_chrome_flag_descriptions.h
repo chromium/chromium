@@ -218,6 +218,11 @@ extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
 extern const char kEnableWebChannelsName[];
 extern const char kEnableWebChannelsDescription[];
 
+// Title and description for the flag to enable updated password manager
+// branding.
+extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
+extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
+
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];

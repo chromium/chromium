@@ -812,6 +812,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableShortenedPasswordAutoFillInstructionDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableShortenedPasswordAutoFillInstruction)},
+    {"enable-password-manager-branding-update",
+     flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateName,
+     flag_descriptions::kIOSEnablePasswordManagerBrandingUpdateDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSEnablePasswordManagerBrandingUpdate)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

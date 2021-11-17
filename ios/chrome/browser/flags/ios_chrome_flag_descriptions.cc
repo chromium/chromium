@@ -245,6 +245,11 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on websites that users followed.";
 
+const char kIOSEnablePasswordManagerBrandingUpdateName[] =
+    "Enable new Google Password Manager branding";
+const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
+    "Updates icons, strings, and views for Google Password Manager.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
