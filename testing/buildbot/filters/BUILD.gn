@@ -97,6 +97,7 @@ source_set("chromeos_filters") {
     "//testing/buildbot/filters/chromeos.base_unittests.filter",
     "//testing/buildbot/filters/chromeos.browser_tests.filter",
     "//testing/buildbot/filters/chromeos.media_unittests.filter",
+    "//testing/buildbot/filters/chromeos.sandbox_linux_unittests.filter",
     "//testing/buildbot/filters/chromeos.services_unittests.filter",
     "//testing/buildbot/filters/chromeos.unit_tests.filter",
   ]
