@@ -1911,7 +1911,6 @@ crbug.com/1083820 [ Mac ] fast/scrolling/document-level-wheel-event-listener-pas
 # expectation files. The following tests with [ Failure ] don't have failure
 # expectation files because they contain local path names.
 # Use crbug.com/490511 for untriaged failures.
-crbug.com/749492 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Skip ]
 crbug.com/490511 external/wpt/html/browsers/offline/application-cache-api/api_update.https.html [ Failure Pass ]
 crbug.com/108417 external/wpt/html/rendering/non-replaced-elements/tables/table-border-1.html [ Failure ]
 crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/color.html [ Failure ]
@@ -7279,3 +7278,7 @@ crbug.com/1271044 http/tests/devtools/application-panel/resources-panel-on-navig
 crbug.com/1271044 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
 crbug.com/1271044 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
 crbug.com/1271044 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
+
+# Security OWP fixit week
+crbug.com/1270355 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
+
