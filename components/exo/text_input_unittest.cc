@@ -325,6 +325,8 @@ TEST_F(TextInputTest, InsertCharNormalKey) {
 }
 
 TEST_F(TextInputTest, SurroundingText) {
+  TestingInputMethodObserver observer(GetInputMethod());
+
   gfx::Range range;
   EXPECT_FALSE(text_input()->GetTextRange(&range));
   EXPECT_FALSE(text_input()->GetCompositionTextRange(&range));
@@ -332,6 +334,9 @@ TEST_F(TextInputTest, SurroundingText) {
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
+  text_input()->Activate(surface());
+
+  EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   std::u16string text = u"surrounding\u3000text";
   text_input()->SetSurroundingText(text, gfx::Range(11, 12));
 

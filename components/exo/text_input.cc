@@ -86,6 +86,11 @@ void TextInput::SetSurroundingText(const std::u16string& text,
                                    const gfx::Range& cursor_pos) {
   surrounding_text_ = text;
   cursor_pos_ = cursor_pos;
+
+  // TODO(b/206068262): Consider introducing an API to notify surrounding text
+  // update explicitly.
+  if (input_method_)
+    input_method_->OnCaretBoundsChanged(this);
 }
 
 void TextInput::SetTypeModeFlags(ui::TextInputType type,
