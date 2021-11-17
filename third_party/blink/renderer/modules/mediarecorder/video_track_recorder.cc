@@ -94,7 +94,7 @@ void NotifyEncoderSupportKnown(base::OnceClosure callback) {
 
   media::GpuVideoAcceleratorFactories* const gpu_factories =
       Platform::Current()->GetGpuFactories();
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
     DVLOG(2) << "Couldn't initialize GpuVideoAcceleratorFactories";
     std::move(callback).Run();
     return;
@@ -112,7 +112,7 @@ media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
 
   media::GpuVideoAcceleratorFactories* const gpu_factories =
       Platform::Current()->GetGpuFactories();
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
     DVLOG(2) << "Couldn't initialize GpuVideoAcceleratorFactories";
     return media::VideoEncodeAccelerator::SupportedProfiles();
   }

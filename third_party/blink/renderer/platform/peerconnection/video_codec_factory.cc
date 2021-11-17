@@ -212,7 +212,7 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateHWVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   std::unique_ptr<webrtc::VideoEncoderFactory> encoder_factory;
 
-  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled() &&
+  if (gpu_factories && gpu_factories->IsGpuVideoEncodeAcceleratorEnabled() &&
       Platform::Current()->IsWebRtcHWEncodingEnabled()) {
     encoder_factory = std::make_unique<RTCVideoEncoderFactory>(gpu_factories);
   }
@@ -231,9 +231,10 @@ std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(
     media::DecoderFactory* media_decoder_factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space) {
-  const bool use_hw_decoding = gpu_factories != nullptr &&
-                               gpu_factories->IsGpuVideoAcceleratorEnabled() &&
-                               Platform::Current()->IsWebRtcHWDecodingEnabled();
+  const bool use_hw_decoding =
+      gpu_factories != nullptr &&
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled() &&
+      Platform::Current()->IsWebRtcHWDecodingEnabled();
 
   // If RTCVideoDecoderStreamAdapter is used then RTCVideoDecoderFactory can
   // support both SW and HW decoding, and should therefore always be

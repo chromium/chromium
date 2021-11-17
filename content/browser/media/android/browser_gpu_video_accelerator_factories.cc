@@ -79,7 +79,11 @@ BrowserGpuVideoAcceleratorFactories::BrowserGpuVideoAcceleratorFactories(
 BrowserGpuVideoAcceleratorFactories::~BrowserGpuVideoAcceleratorFactories() =
     default;
 
-bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
+bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoDecodeAcceleratorEnabled() {
+  return false;
+}
+
+bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return false;
 }
 

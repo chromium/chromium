@@ -108,7 +108,11 @@ MockGpuVideoAcceleratorFactories::MockGpuVideoAcceleratorFactories(
 
 MockGpuVideoAcceleratorFactories::~MockGpuVideoAcceleratorFactories() = default;
 
-bool MockGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoDecodeAcceleratorEnabled() {
+  return true;
+}
+
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 

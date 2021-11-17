@@ -149,7 +149,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
   // Perfer an external decoder since one will only exist if it is hardware
   // accelerated.
   if (external_decoder_factory_ && gpu_factories &&
-      gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
     // |gpu_factories_| requires that its entry points be called on its
     // |GetTaskRunner()|. Since |pipeline_| will own decoders created from the
     // factories, require that their message loops are identical.
@@ -162,7 +162,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
 
 #if defined(OS_FUCHSIA)
   // TODO(crbug.com/1122116): Minimize Fuchsia-specific code paths.
-  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+  if (gpu_factories && gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
     auto* context_provider = gpu_factories->GetMediaContextProvider();
 
     // GetMediaContextProvider() may return nullptr when the context was lost

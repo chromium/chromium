@@ -32,7 +32,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   ~MockGpuVideoAcceleratorFactories() override;
 
-  bool IsGpuVideoAcceleratorEnabled() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
 
   MOCK_METHOD1(GetChannelToken,
                void(gpu::mojom::GpuChannel::GetChannelTokenCallback));

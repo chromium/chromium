@@ -67,14 +67,16 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_video_gpu_memory_buffers,
       bool enable_media_stream_gpu_memory_buffers,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_remote);
 
   // media::GpuVideoAcceleratorFactories implementation.
-  bool IsGpuVideoAcceleratorEnabled() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
   void GetChannelToken(
       gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;
@@ -160,7 +162,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_gpu_memory_buffer_video_frames_for_video,
       bool enable_gpu_memory_buffer_video_frames_for_media_stream,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
@@ -209,7 +212,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   const bool enable_video_gpu_memory_buffers_;
   const bool enable_media_stream_gpu_memory_buffers_;
   // Whether video acceleration encoding/decoding should be enabled.
-  const bool video_accelerator_enabled_;
+  const bool video_decode_accelerator_enabled_;
+  const bool video_encode_accelerator_enabled_;
 
   gfx::ColorSpace rendering_color_space_;
 

@@ -107,7 +107,7 @@ bool IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled())
     return false;
 
   auto supported_profiles =

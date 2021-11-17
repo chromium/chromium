@@ -17,7 +17,7 @@ void CreateVideoEncodeAccelerator(
 
   media::GpuVideoAcceleratorFactories* gpu_factories =
       RenderThreadImpl::current()->GetGpuFactories();
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
     std::move(callback).Run(nullptr,
                             std::unique_ptr<media::VideoEncodeAccelerator>());
     return;
@@ -42,7 +42,7 @@ GetSupportedVideoEncodeAcceleratorProfiles() {
 #else
   media::GpuVideoAcceleratorFactories* gpu_factories =
       RenderThreadImpl::current()->GetGpuFactories();
-  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
+  if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled())
     return media::VideoEncodeAccelerator::SupportedProfiles();
   return gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
       media::VideoEncodeAccelerator::SupportedProfiles());
