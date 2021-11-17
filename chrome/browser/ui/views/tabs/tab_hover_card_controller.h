@@ -87,6 +87,10 @@ class TabHoverCardController : public views::ViewObserver,
 
   const views::View* GetTargetAnchorView() const;
 
+  // Determines if `target_tab_` is still valid. Call this when entering
+  // TabHoverCardController from an asynchronous callback.
+  bool TargetTabIsValid() const;
+
   // Helper for recording metrics when a card becomes fully visible to the user.
   void OnCardFullyVisible();
 
