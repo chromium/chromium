@@ -57,6 +57,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -980,16 +981,14 @@ void ProfileMenuViewBase::Reset() {
   scroll_view->ClipHeightTo(0, GetMaxHeight());
   scroll_view->SetContents(std::move(components));
 
-  // Create a grid layout to set the menu width.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, kMenuWidth,
-                     kMenuWidth);
-  layout->StartRow(1.0f, 0);
-  layout->AddView(std::move(scroll_view));
+  // Create a table layout to set the menu width.
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(
+          views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
+          views::TableLayout::kFixedSize,
+          views::TableLayout::ColumnSize::kFixed, kMenuWidth, kMenuWidth)
+      .AddRows(1, 1.0f);
+  AddChildView(std::move(scroll_view));
 }
 
 void ProfileMenuViewBase::FocusFirstProfileButton() {
