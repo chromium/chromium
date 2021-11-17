@@ -114,8 +114,8 @@ display::Display X11ScreenOzone::GetDisplayMatching(
   return matching_display ? *matching_display : GetPrimaryDisplay();
 }
 
-void X11ScreenOzone::SetScreenSaverSuspended(bool suspend) {
-  SuspendX11ScreenSaver(suspend);
+bool X11ScreenOzone::SetScreenSaverSuspended(bool suspend) {
+  return SuspendX11ScreenSaver(suspend);
 }
 
 bool X11ScreenOzone::IsScreenSaverActive() const {

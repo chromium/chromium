@@ -64,7 +64,7 @@ class WaylandScreen : public PlatformScreen {
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
-  void SetScreenSaverSuspended(bool suspend) override;
+  bool SetScreenSaverSuspended(bool suspend) override;
   bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;

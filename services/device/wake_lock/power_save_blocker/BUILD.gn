@@ -59,10 +59,10 @@ source_set("power_save_blocker") {
       ]
     } else {
       sources += [ "power_save_blocker_linux.cc" ]
-      deps += [ "//ui/display" ]
     }
     deps += [
       "//dbus",
+      "//ui/display",
       "//ui/gfx",
     ]
   } else if (is_mac) {

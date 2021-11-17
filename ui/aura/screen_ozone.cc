@@ -97,8 +97,8 @@ display::Display ScreenOzone::GetPrimaryDisplay() const {
   return platform_screen_->GetPrimaryDisplay();
 }
 
-void ScreenOzone::SetScreenSaverSuspended(bool suspend) {
-  platform_screen_->SetScreenSaverSuspended(suspend);
+bool ScreenOzone::SetScreenSaverSuspended(bool suspend) {
+  return platform_screen_->SetScreenSaverSuspended(suspend);
 }
 
 bool ScreenOzone::IsScreenSaverActive() const {

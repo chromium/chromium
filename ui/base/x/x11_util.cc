@@ -823,12 +823,13 @@ bool IsX11WindowFullScreen(x11::Window window) {
   return window_rect.size() == gfx::Size(width, height);
 }
 
-void SuspendX11ScreenSaver(bool suspend) {
+bool SuspendX11ScreenSaver(bool suspend) {
   static const bool kScreenSaverAvailable = IsX11ScreenSaverAvailable();
   if (!kScreenSaverAvailable)
-    return;
+    return false;
 
   x11::Connection::Get()->screensaver().Suspend({suspend});
+  return true;
 }
 
 void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
