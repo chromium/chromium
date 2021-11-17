@@ -1243,7 +1243,14 @@ class UnionType(IdlType):
 
     @property
     def type_name_without_extended_attributes(self):
-        return 'Or'.join([member.type_name for member in self.member_types])
+        # The type name of union type is defined as a concatenation of the type
+        # names of each member type, _in order_, putting "Or" in-between each
+        # name.  However, there is (almost) no benefit to follow this exact
+        # definition, or even it's harmful because each instance of UnionType
+        # could have different type names even when the types are
+        # indistinguishable.  Thus, we sort the type names of each member type.
+        return 'Or'.join(
+            sorted(member.type_name for member in self.member_types))
 
     def apply_to_all_composing_elements(self, callback):
         try:
