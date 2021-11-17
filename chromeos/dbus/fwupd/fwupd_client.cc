@@ -39,9 +39,6 @@ class FwupdClientImpl : public FwupdClient {
   void Init(dbus::Bus* bus) override {
     DCHECK(bus);
 
-    if (!features::IsFirmwareUpdaterAppEnabled())
-      return;
-
     proxy_ = bus->GetObjectProxy(kFwupdServiceName,
                                  dbus::ObjectPath(kFwupdServicePath));
     DCHECK(proxy_);
@@ -54,7 +51,7 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestUpdates(const std::string& device_id) override {
-    DCHECK(IsInitialized());
+    CHECK(features::IsFirmwareUpdaterAppEnabled());
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
     dbus::MessageWriter writer(&method_call);
@@ -68,7 +65,7 @@ class FwupdClientImpl : public FwupdClient {
   }
 
   void RequestDevices() override {
-    DCHECK(IsInitialized());
+    CHECK(features::IsFirmwareUpdaterAppEnabled());
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetDevicesMethodName);
     proxy_->CallMethodWithErrorResponse(
@@ -78,9 +75,6 @@ class FwupdClientImpl : public FwupdClient {
   }
 
  private:
-  // Return true if the client has been initialized.
-  bool IsInitialized() { return proxy_; }
-
   // Pops a string-to-variant-string dictionary from the reader.
   std::unique_ptr<base::DictionaryValue> PopStringToStringDictionary(
       dbus::MessageReader* reader) {
@@ -226,6 +220,10 @@ class FwupdClientImpl : public FwupdClient {
 
   // TODO(swifton): This is a stub implementation.
   void OnDeviceAddedReceived(dbus::Signal* signal) {
+    // Do nothing if the feature is not enabled.
+    if (!features::IsFirmwareUpdaterAppEnabled())
+      return;
+
     if (client_is_in_testing_mode_) {
       ++device_signal_call_count_for_testing_;
     }
