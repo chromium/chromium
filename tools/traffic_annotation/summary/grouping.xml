@@ -30,6 +30,36 @@ hidden="true" so that these annotations don't show up in the document.
     </sender>
   </group>
   <group name="ChromeOS" hidden="true">
+    <sender name="ChromeOS Unsorted">
+      <traffic_annotation unique_id="ambient_client"/>
+      <traffic_annotation unique_id="ambient_photo_cache"/>
+      <traffic_annotation unique_id="ambient_photo_controller"/>
+      <traffic_annotation unique_id="app_suggestion_get_favicon"/>
+      <traffic_annotation unique_id="arc_auth_code_fetcher"/>
+      <traffic_annotation unique_id="calendar_get_events"/>
+      <traffic_annotation unique_id="chrome_plugin_vm_api"/>
+      <traffic_annotation unique_id="chromebook_mail_api"/>
+      <traffic_annotation unique_id="cros_launcher_omnibox"/>
+      <traffic_annotation unique_id="customization_wallpaper_downloader"/>
+      <traffic_annotation unique_id="edu_account_login_profile_image_fetcher"/>
+      <traffic_annotation unique_id="fast_pair_footprints_request"/>
+      <traffic_annotation unique_id="ime_url_downloader"/>
+      <traffic_annotation unique_id="image_downloader"/>
+      <traffic_annotation unique_id="kiosk_app_icon"/>
+      <traffic_annotation unique_id="launcher_item_suggest"/>
+      <traffic_annotation unique_id="management_ui_customer_logo"/>
+      <traffic_annotation unique_id="network_traversal_ice_config_fetcher"/>
+      <traffic_annotation unique_id="remote_apps_image_downloader"/>
+      <traffic_annotation unique_id="remote_command_screenshot"/>
+      <traffic_annotation unique_id="secondary_account_consent_logger"/>
+      <traffic_annotation unique_id="side_search_availability_test"/>
+      <traffic_annotation unique_id="smb_netbios_name_query"/>
+      <traffic_annotation unique_id="supervised_users_denylist"/>
+      <traffic_annotation unique_id="tachyon_ice_config_fetcher"/>
+      <traffic_annotation unique_id="terms_of_service_fetch"/>
+      <traffic_annotation unique_id="url_icon_source_fetch"/>
+      <traffic_annotation unique_id="wallpaper_fetcher"/>
+    </sender>
     <!-- ChromeOS-specific features -->
     <sender name="ChromeOS Recovery">
       <traffic_annotation unique_id="cros_recovery_image_download"/>
