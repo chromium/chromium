@@ -40,6 +40,7 @@
 
 using ::testing::_;
 using ::testing::Between;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -108,7 +109,7 @@ class StorageQueueTest
         : base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>>(
               sequenced_task_runner) {
       DETACH_FROM_SEQUENCE(mock_uploader_checker_);
-      upload_progress_.assign("Start\n");
+      upload_progress_.assign("\nStart\n");
     }
     MockUpload(const MockUpload& other) = delete;
     MockUpload& operator=(const MockUpload& other) = delete;
@@ -156,6 +157,7 @@ class StorageQueueTest
       upload_progress_.append("Complete: ")
           .append(status.ToString())
           .append("\n");
+      LOG(ERROR) << "TestUploader: " << upload_progress_ << "End\n";
       UploadComplete(uploader_id, status);
     }
 
@@ -183,7 +185,6 @@ class StorageQueueTest
    protected:
     virtual ~MockUpload() {
       DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
-      LOG(ERROR) << "TestUploader: " << upload_progress_ << "End\n";
     }
 
    private:
@@ -210,19 +211,21 @@ class StorageQueueTest
     explicit TestUploader(StorageQueueTest* self)
         : uploader_id_(next_uploader_id.fetch_add(1)),
           last_record_digest_map_(&self->last_record_digest_map_),
-          sequenced_task_runner_(self->sequenced_task_runner_),
+          main_thread_task_runner_(self->main_thread_task_runner_),
           mock_upload_(base::MakeRefCounted<::testing::NiceMock<MockUpload>>(
-              sequenced_task_runner_)) {
+              main_thread_task_runner_)) {
       DETACH_FROM_SEQUENCE(test_uploader_checker_);
     }
 
     ~TestUploader() override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      DCHECK(!mock_upload_);
     }
 
     void ProcessRecord(EncryptedRecord encrypted_record,
                        base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      DCHECK(mock_upload_);
       auto sequence_information = encrypted_record.sequence_information();
       // Decompress encrypted_wrapped_record if is was compressed.
       WrappedRecord wrapped_record;
@@ -250,10 +253,11 @@ class StorageQueueTest
                     uint64_t count,
                     base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+      DCHECK(mock_upload_);
       // Verify generation match.
       if (generation_id_.has_value() &&
           generation_id_.value() != sequence_information.generation_id()) {
-        sequenced_task_runner_->PostTask(
+        main_thread_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(
                 [](SequenceInformation sequence_information,
@@ -285,7 +289,7 @@ class StorageQueueTest
                          sequence_information.generation_id()),
           absl::nullopt);
 
-      sequenced_task_runner_->PostTask(
+      main_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               [](uint64_t count, SequenceInformation sequence_information,
@@ -307,9 +311,12 @@ class StorageQueueTest
 
     void Completed(Status status) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-      sequenced_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&MockUpload::DoUploadComplete, mock_upload_,
-                                    uploader_id_, status));
+      DCHECK(mock_upload_);
+      main_thread_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&MockUpload::DoUploadComplete,
+                         std::move(mock_upload_),  // No longer needed.
+                         uploader_id_, status));
     }
 
     // Helper class for setting up mock uploader expectations of a successful
@@ -330,8 +337,10 @@ class StorageQueueTest
                     UploadComplete(Eq(uploader_id_), Eq(status)))
             .InSequence(uploader_->test_upload_sequence_,
                         uploader_->test_encounter_sequence_)
-            .WillOnce(WithoutArgs(
-                Invoke(waiter_, &test::TestCallbackWaiter::Signal)));
+            .WillOnce(DoAll(
+                WithoutArgs(Invoke(waiter_, &test::TestCallbackWaiter::Signal)),
+                WithoutArgs(
+                    Invoke([]() { LOG(ERROR) << "Completion signaled"; }))));
         return std::move(uploader_);
       }
 
@@ -410,7 +419,7 @@ class StorageQueueTest
     void ScheduleVerifyRecord(SequenceInformation sequence_information,
                               WrappedRecord wrapped_record,
                               base::OnceCallback<void(bool)> processed_cb) {
-      sequenced_task_runner_->PostTask(
+      main_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&TestUploader::VerifyRecord, base::Unretained(this),
                          std::move(sequence_information),
@@ -495,7 +504,8 @@ class StorageQueueTest
     absl::optional<int64_t> generation_id_;
     LastRecordDigestMap* const last_record_digest_map_;
 
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+    // Single task runner where all EXPECTs will happen.
+    const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
     scoped_refptr<::testing::NiceMock<MockUpload>> mock_upload_;
 
@@ -575,7 +585,7 @@ class StorageQueueTest
   void AsyncStartMockUploader(
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-    sequenced_task_runner_->PostTask(
+    main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](UploaderInterface::UploadReason reason,
@@ -609,6 +619,7 @@ class StorageQueueTest
   Status WriteRecord(const Record record) {
     EXPECT_TRUE(storage_queue_) << "StorageQueue not created yet";
     test::TestEvent<Status> write_event;
+    LOG(ERROR) << "Write data='" << record.data() << "'";
     storage_queue_->Write(std::move(record), write_event.cb());
     return write_event.result();
   }
@@ -621,6 +632,10 @@ class StorageQueueTest
   void ConfirmOrDie(absl::optional<std::int64_t> sequencing_id,
                     bool force = false) {
     test::TestEvent<Status> c;
+    LOG(ERROR) << "Confirm force=" << force << " seq="
+               << (sequencing_id.has_value()
+                       ? base::NumberToString(sequencing_id.value())
+                       : "null");
     storage_queue_->Confirm(sequencing_id, force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
@@ -629,10 +644,9 @@ class StorageQueueTest
   std::string dm_token_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()})};
+  // Single task runner where all EXPECTs will happen - main thread.
+  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_{
+      base::ThreadTaskRunnerHandle::Get()};
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;

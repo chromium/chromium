@@ -1286,8 +1286,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
           base::Unretained(storage_queue_->write_contexts_queue_.front()));
     }
 
-    // If no uploader is needed, we are done.
-    if (!async_start_upload_cb_) {
+    // If uploads are not immediate, we are done.
+    if (!storage_queue_->options_.upload_period().is_zero()) {
       return;
     }
 
@@ -1453,11 +1453,6 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     storage_queue_->write_contexts_queue_.pop_front();
     in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
 
-    // Prepare uploader, if need to run it after Write.
-    if (storage_queue_->options_.upload_period().is_zero()) {
-      async_start_upload_cb_ = storage_queue_->async_start_upload_cb_;
-    }
-
     DCHECK(!buffer_.empty());
     StatusOr<scoped_refptr<SingleFile>> assign_result =
         storage_queue_->AssignLastFile(buffer_.size());
@@ -1501,9 +1496,6 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   // Write buffer. When filled in (after encryption), |WriteRecord| can be
   // executed. Empty until encryption is done.
   std::string buffer_;
-
-  // Upload provider.
-  AsyncStartUploaderCb async_start_upload_cb_;
 
   SEQUENCE_CHECKER(write_sequence_checker_);
 };

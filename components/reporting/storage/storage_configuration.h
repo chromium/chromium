@@ -140,7 +140,7 @@ class QueueOptions {
   // When file exceeds this size, the new file is created
   // for further records. Note that each file must have at least
   // one record before it is closed, regardless of that record size.
-  uint64_t max_single_file_size_ = 1 * 1024LL * 1024LL; // 1 MiB
+  uint64_t max_single_file_size_ = 1 * 1024LL * 1024LL;  // 1 MiB
 };
 
 }  // namespace reporting

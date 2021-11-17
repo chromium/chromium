@@ -16,7 +16,6 @@
 namespace reporting {
 namespace error {
 // These values must match error codes defined in google/rpc/code.proto
-// (https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto)
 // This also must match the order EnterpriseCloudReportingStatusCode at
 // tools/metrics/histograms/enums.xml and the integer of option shouldn't be
 // changed.
