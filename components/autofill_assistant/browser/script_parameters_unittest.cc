@@ -106,6 +106,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"OVERLAY_COLORS", "#123456"},
        {"ENABLE_TTS", "true"},
        {"CALLER", "3"},
+       {"SOURCE", "4"},
        {"DETAILS_SHOW_INITIAL", "true"},
        {"DETAILS_TITLE", "title"},
        {"DETAILS_DESCRIPTION_LINE_1", "line1"},
@@ -128,6 +129,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(parameters.GetOverlayColors(), Eq("#123456"));
   EXPECT_THAT(parameters.GetEnableTts(), Eq(true));
   EXPECT_THAT(parameters.GetCaller(), Eq(3));
+  EXPECT_THAT(parameters.GetSource(), Eq(4));
   EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));
   EXPECT_THAT(parameters.GetDetailsDescriptionLine1(), Eq("line1"));

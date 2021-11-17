@@ -95,6 +95,10 @@ const char kEnableTtsParameterName[] = "ENABLE_TTS";
 // values are integers, corresponding to the caller proto in the backend.
 const char kCallerParameterName[] = "CALLER";
 
+// Parameter name of the SOURCE script parameter. Note that the corresponding
+// values are integers, corresponding to the source proto in the backend.
+const char kSourceParameterName[] = "SOURCE";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 6> kAllowlistedTriggerScriptParameters = {
@@ -237,6 +241,10 @@ absl::optional<bool> ScriptParameters::GetEnableTts() const {
 
 absl::optional<int> ScriptParameters::GetCaller() const {
   return GetTypedParameter<int>(parameters_, kCallerParameterName);
+}
+
+absl::optional<int> ScriptParameters::GetSource() const {
+  return GetTypedParameter<int>(parameters_, kSourceParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetDetailsShowInitial() const {
