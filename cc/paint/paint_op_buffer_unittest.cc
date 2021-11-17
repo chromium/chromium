@@ -10,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
@@ -42,6 +43,7 @@
 using testing::_;
 using testing::AtLeast;
 using testing::Contains;
+using testing::Key;
 using testing::Mock;
 using testing::NiceMock;
 using testing::NotNull;
@@ -1536,18 +1538,22 @@ void PushDrawRRectOps(PaintOpBuffer* buffer) {
   ValidateOps<DrawRRectOp>(buffer);
 }
 
-SkottieFrameDataMap GetTestImagesForSkottie(const SkottieWrapper& skottie,
+SkottieFrameDataMap GetTestImagesForSkottie(SkottieWrapper& skottie,
                                             const SkRect& skottie_rect,
-                                            PaintFlags::FilterQuality quality) {
+                                            PaintFlags::FilterQuality quality,
+                                            float t) {
   SkottieFrameDataMap images;
-  for (const auto& asset_pair :
-       skottie.GetImageAssetMetadata().asset_storage()) {
-    SkottieFrameData frame_data;
-    frame_data.image = CreateBitmapImage(
-        gfx::Size(skottie_rect.width() / 2, skottie_rect.height() / 2));
-    frame_data.quality = quality;
-    images[HashSkottieResourceId(asset_pair.first)] = std::move(frame_data);
-  }
+  skottie.Seek(
+      t, base::BindLambdaForTesting([&](SkottieResourceIdHash asset_id,
+                                        sk_sp<SkImage>& image_out,
+                                        SkSamplingOptions& sampling_out) {
+        SkottieFrameData frame_data;
+        frame_data.image = CreateBitmapImage(
+            gfx::Size(skottie_rect.width() / 2, skottie_rect.height() / 2));
+        frame_data.quality = quality;
+        images[asset_id] = std::move(frame_data);
+        return SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+      }));
   return images;
 }
 
@@ -1557,7 +1563,7 @@ void PushDrawSkottieOps(PaintOpBuffer* buffer) {
     buffer->push<DrawSkottieOp>(
         test_skotties[i], test_skottie_rects[i], test_skottie_floats[i],
         GetTestImagesForSkottie(*test_skotties[i], test_skottie_rects[i],
-                                PaintFlags::FilterQuality::kHigh));
+                                PaintFlags::FilterQuality::kHigh, /*t=*/0));
   }
   ValidateOps<DrawSkottieOp>(buffer);
 }
@@ -3476,7 +3482,7 @@ TEST(PaintOpBufferTest,
   buffer.push<DrawSkottieOp>(
       skottie, input_rect, input_t,
       GetTestImagesForSkottie(*skottie, input_rect,
-                              PaintFlags::FilterQuality::kHigh));
+                              PaintFlags::FilterQuality::kHigh, input_t));
 
   // Serialize
   TestOptionsProvider options_provider;
@@ -3498,29 +3504,6 @@ TEST(PaintOpBufferTest,
   ASSERT_FALSE(deserialized_buffer);
 }
 
-TEST(PaintOpBufferTest, DrawSkottieOpConstructorInitializesImages) {
-  scoped_refptr<SkottieWrapper> skottie =
-      CreateSkottieFromString(kLottieDataWith2Assets);
-  SkRect skottie_rect = SkRect::MakeWH(100, 100);
-  SkottieFrameDataMap images_in = GetTestImagesForSkottie(
-      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
-  ASSERT_EQ(images_in.size(), 2u);
-  ASSERT_TRUE(images_in.contains(HashSkottieResourceId("image_0")));
-  ASSERT_TRUE(images_in.contains(HashSkottieResourceId("image_1")));
-  DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1, images_in);
-  ASSERT_EQ(skottie_op.images.size(), 2u);
-  ASSERT_TRUE(skottie_op.images.contains(HashSkottieResourceId("image_0")));
-  EXPECT_EQ(skottie_op.images.at(HashSkottieResourceId("image_0")).image,
-            images_in.at(HashSkottieResourceId("image_0")).image);
-  EXPECT_EQ(skottie_op.images.at(HashSkottieResourceId("image_0")).quality,
-            PaintFlags::FilterQuality::kHigh);
-  ASSERT_TRUE(skottie_op.images.contains(HashSkottieResourceId("image_1")));
-  EXPECT_EQ(skottie_op.images.at(HashSkottieResourceId("image_1")).image,
-            images_in.at(HashSkottieResourceId("image_1")).image);
-  EXPECT_EQ(skottie_op.images.at(HashSkottieResourceId("image_1")).quality,
-            PaintFlags::FilterQuality::kHigh);
-}
-
 TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageAssets) {
   scoped_refptr<SkottieWrapper> skottie =
       CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/5);
@@ -3540,7 +3523,7 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageProvider) {
       CreateSkottieFromString(kLottieDataWith2Assets);
   SkRect skottie_rect = SkRect::MakeWH(100, 100);
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
-      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
+      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
   DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1, images_in);
   PlaybackParams playback_params(/*image_provider=*/nullptr);
@@ -3559,10 +3542,6 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
   scoped_refptr<SkottieWrapper> skottie =
       CreateSkottieFromString(kLottieDataWith2Assets);
   SkRect skottie_rect = SkRect::MakeWH(100, 100);
-  SkottieFrameDataMap images_in = GetTestImagesForSkottie(
-      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
-  ASSERT_FALSE(images_in.empty());
-  DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1, images_in);
   std::vector<SkSize> src_rect_offset = {SkSize::Make(2.0f, 2.0f),
                                          SkSize::Make(3.0f, 3.0f)};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f),
@@ -3574,13 +3553,27 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
   PlaybackParams playback_params(&image_provider);
   ASSERT_TRUE(image_provider.decoded_images().empty());
   {
+    SkottieFrameDataMap images_in = GetTestImagesForSkottie(
+        *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.25f);
+    ASSERT_THAT(images_in, Contains(Key(HashSkottieResourceId("image_0"))));
+    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.25, images_in);
+    NiceMock<MockCanvas> canvas;
+    EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
+    DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
+    ASSERT_EQ(image_provider.decoded_images().size(), 1u);
+    EXPECT_THAT(image_provider.decoded_images(),
+                Contains(MatchesPaintImage(
+                    images_in.at(HashSkottieResourceId("image_0")).image)));
+  }
+  {
+    SkottieFrameDataMap images_in = GetTestImagesForSkottie(
+        *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.75f);
+    ASSERT_THAT(images_in, Contains(Key(HashSkottieResourceId("image_1"))));
+    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.75, images_in);
     NiceMock<MockCanvas> canvas;
     EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
     ASSERT_EQ(image_provider.decoded_images().size(), 2u);
-    EXPECT_THAT(image_provider.decoded_images(),
-                Contains(MatchesPaintImage(
-                    images_in.at(HashSkottieResourceId("image_0")).image)));
     EXPECT_THAT(image_provider.decoded_images(),
                 Contains(MatchesPaintImage(
                     images_in.at(HashSkottieResourceId("image_1")).image)));
@@ -3601,7 +3594,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpWithImages) {
       CreateSkottieFromString(kLottieDataWith2Assets);
   SkRect skottie_rect = SkRect::MakeWH(100, 100);
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
-      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
+      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
   buffer.push<DrawSkottieOp>(skottie, skottie_rect, /*t=*/0.1f, images_in);
   EXPECT_TRUE(buffer.HasDiscardableImages());
@@ -3619,7 +3612,7 @@ TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpWithImages) {
       CreateSkottieFromString(kLottieDataWith2Assets);
   SkRect skottie_rect = SkRect::MakeWH(100, 100);
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
-      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
+      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
   DrawSkottieOp op(skottie, skottie_rect, /*t=*/0.1f, images_in);
   EXPECT_TRUE(PaintOp::OpHasDiscardableImages(&op));

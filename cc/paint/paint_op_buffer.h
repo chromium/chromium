@@ -29,6 +29,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -49,7 +50,6 @@ namespace cc {
 class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
-class SkottieWrapper;
 class TransferCacheDeserializeHelper;
 class TransferCacheSerializeHelper;
 
@@ -828,10 +828,12 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
   SkottieFrameDataMap images;
 
  private:
-  static sk_sp<SkImage> GetImageAssetForRaster(
-      const SkottieFrameData& frame_data,
+  SkottieWrapper::FrameDataFetchResult GetImageAssetForRaster(
       SkCanvas* canvas,
-      const PlaybackParams& params);
+      const PlaybackParams& params,
+      SkottieResourceIdHash asset_id,
+      sk_sp<SkImage>& image_out,
+      SkSamplingOptions& sampling_out) const;
 
   DrawSkottieOp();
 };

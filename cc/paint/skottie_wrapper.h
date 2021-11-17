@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
@@ -51,38 +52,48 @@ class CC_PAINT_EXPORT SkottieWrapper
   // does not change during SkottieWrapper's lifetime.
   virtual const SkottieResourceMetadataMap& GetImageAssetMetadata() const = 0;
 
-  // Sets the |image| to use for the asset in the animation with the given
-  // |asset_id_hash| (use GetImageAssetMetadata() to get all available assets).
-  // Returns false if the |asset_id_hash| is unknown. This should be invoked
-  // before each call to Draw():
-  //
-  // (Set images for frame 1)
-  // SetImageForAsset(<asset_a>, <image_a_1>)
-  // SetImageForAsset(<asset_b>, <image_b_1>)
-  // Draw(<frame_1>)
-  // (Set images for frame 2)
-  // SetImageForAsset(<asset_a>, <image_a_2>)
-  // SetImageForAsset(<asset_b>, <image_b_2>)
-  // Draw(<frame_2>)
-  // ...
-  //
-  // If an image is not set for an asset before a call to Draw(), the most
-  // recently set image is reused for that animation frame. It is an error if no
-  // image has ever been set for an asset, and Draw() requires one.
-  //
-  // |sampling| controls the resampling quality when resizing the |image| for
-  // the animation. Skottie also supports a
-  // skresources::ImageAsset::FrameData::matrix field, but there is no use case
-  // for that currently.
-  //
-  // Must be called from the same thread as Draw().
-  virtual bool SetImageForAsset(SkottieResourceIdHash asset_id_hash,
-                                sk_sp<SkImage> image,
-                                SkSamplingOptions sampling) = 0;
+  // FrameDataCallback is implemented by the caller and invoked
+  // synchronously during calls to Seek() and Draw(). The callback is used by
+  // SkottieWrapper to fetch the corresponding image for each asset that is
+  // present in the frame with the desired timestamp. It is invoked once for
+  // each asset. A null callback may be passed to Seek() and Draw() if the
+  // animation is known to not have any image assets.
+  enum class FrameDataFetchResult {
+    // A new image is available for the given asset, and the callback's output
+    // parameters have been filled with the new frame data.
+    NEW_DATA_AVAILABLE,
+    // The callback's output parameters have not been filled and will be
+    // ignored by SkottieWrapper. In this case, SkottieWrapper will reuse the
+    // frame data that was most recently provided for the given asset (it caches
+    // this internally). If no frame data has ever been provided for this asset,
+    // a null image will be passed to Skottie's Animation during Seek(); this
+    // is acceptable if there's no rendering.
+    NO_UPDATE,
+  };
+  // The callback's implementation must synchronously fill the output
+  // arguments. |asset_id| is guaranteed to be a valid asset that's present
+  // in GetImageAssetMetadata().
+  using FrameDataCallback = base::RepeatingCallback<FrameDataFetchResult(
+      SkottieResourceIdHash asset_id,
+      sk_sp<SkImage>& image_out,
+      SkSamplingOptions& sampling_out)>;
+
+  // Seeks to the normalized time instant |t|, but does not render. This method
+  // is thread safe.
+  virtual void Seek(float t, FrameDataCallback frame_data_cb) = 0;
+  // Variant with null FrameDataCallback() if the animation does not have image
+  // assets.
+  void Seek(float t);
 
   // A thread safe call that will draw an image with bounds |rect| for the
   // frame at normalized time instant |t| onto the |canvas|.
-  virtual void Draw(SkCanvas* canvas, float t, const SkRect& rect) = 0;
+  virtual void Draw(SkCanvas* canvas,
+                    float t,
+                    const SkRect& rect,
+                    FrameDataCallback frame_data_cb) = 0;
+  // Variant with null FrameDataCallback() if the animation does not have image
+  // assets.
+  void Draw(SkCanvas* canvas, float t, const SkRect& rect);
 
   virtual float duration() const = 0;
   virtual SkSize size() const = 0;

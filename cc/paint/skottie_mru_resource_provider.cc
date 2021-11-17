@@ -8,38 +8,50 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace cc {
+namespace {
 
-SkottieMRUResourceProvider::ImageAsset::ImageAsset(
-    base::StringPiece resource_id)
-    : resource_id_(resource_id) {
-  // The thread on which the animation is loaded may not necessarily match the
-  // thread on which rendering occurs; hence, detach the SequenceChecker.
-  DETACH_FROM_SEQUENCE(render_sequence_checker_);
-}
+class ImageAssetImpl : public skresources::ImageAsset {
+ public:
+  using FrameData = skresources::ImageAsset::FrameData;
+  using FrameDataCallback = SkottieWrapper::FrameDataCallback;
 
-SkottieMRUResourceProvider::ImageAsset::~ImageAsset() = default;
+  ImageAssetImpl(SkottieResourceIdHash asset_id,
+                 FrameDataCallback frame_data_cb)
+      : asset_id_(asset_id), frame_data_cb_(std::move(frame_data_cb)) {
+    DCHECK(frame_data_cb_);
+  }
 
-void SkottieMRUResourceProvider::ImageAsset::SetCurrentFrameData(
-    FrameData frame_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(render_sequence_checker_);
-  current_frame_data_ = std::move(frame_data);
-}
+  bool isMultiFrame() override { return true; }
 
-bool SkottieMRUResourceProvider::ImageAsset::isMultiFrame() {
-  return true;
-}
+  FrameData getFrameData(float t) override {
+    FrameData new_frame_data;
+    SkottieWrapper::FrameDataFetchResult result = frame_data_cb_.Run(
+        asset_id_, new_frame_data.image, new_frame_data.sampling);
+    switch (result) {
+      case SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE:
+        current_frame_data_ = std::move(new_frame_data);
+        break;
+      case SkottieWrapper::FrameDataFetchResult::NO_UPDATE:
+        break;
+    }
+    return current_frame_data_;
+  }
 
-SkottieMRUResourceProvider::FrameData
-SkottieMRUResourceProvider::ImageAsset::getFrameData(float t) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(render_sequence_checker_);
-  DCHECK(current_frame_data_.image)
-      << "No image available for asset " << resource_id_ << " at time " << t;
-  return current_frame_data_;
-}
+ private:
+  const SkottieResourceIdHash asset_id_;
+  const FrameDataCallback frame_data_cb_;
+  FrameData current_frame_data_;
+};
 
-SkottieMRUResourceProvider::SkottieMRUResourceProvider() = default;
+}  // namespace
+
+SkottieMRUResourceProvider::SkottieMRUResourceProvider(
+    FrameDataCallback frame_data_cb)
+    : frame_data_cb_(std::move(frame_data_cb)) {}
 
 SkottieMRUResourceProvider::~SkottieMRUResourceProvider() = default;
 
@@ -47,12 +59,6 @@ const SkottieResourceMetadataMap&
 SkottieMRUResourceProvider::GetImageAssetMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return image_asset_metadata_;
-}
-
-const SkottieMRUResourceProvider::ImageAssetMap&
-SkottieMRUResourceProvider::GetImageAssetMap() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return image_asset_map_;
 }
 
 sk_sp<skresources::ImageAsset> SkottieMRUResourceProvider::loadImageAsset(
@@ -64,9 +70,8 @@ sk_sp<skresources::ImageAsset> SkottieMRUResourceProvider::loadImageAsset(
                                            resource_id)) {
     return nullptr;
   }
-  auto new_asset = sk_sp<ImageAsset>(new ImageAsset(resource_id));
-  image_asset_map_[HashSkottieResourceId(resource_id)] = new_asset;
-  return new_asset;
+  return sk_make_sp<ImageAssetImpl>(HashSkottieResourceId(resource_id),
+                                    frame_data_cb_);
 }
 
 }  // namespace cc

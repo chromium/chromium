@@ -87,6 +87,7 @@ cc_component("paint") {
     "skottie_resource_metadata.h",
     "skottie_transfer_cache_entry.cc",
     "skottie_transfer_cache_entry.h",
+    "skottie_wrapper.cc",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",
     "solid_color_analyzer.h",

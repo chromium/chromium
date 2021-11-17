@@ -329,7 +329,7 @@ void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
         << "Rendering skottie frames with image assets directly to a "
            "SkiaPaintCanvas is currently not supported.";
   }
-  skottie->Draw(canvas_, t, dst);
+  skottie->Draw(canvas_, t, dst, SkottieWrapper::FrameDataCallback());
 }
 
 void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

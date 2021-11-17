@@ -4,7 +4,12 @@
 
 #include "cc/paint/skottie_mru_resource_provider.h"
 
+#include <utility>
+
+#include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_piece.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/skia_common.h"
@@ -24,12 +29,51 @@ using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
+class FrameDataStub {
+ public:
+  using FrameData = skresources::ImageAsset::FrameData;
+
+  void SetAssetFrameData(base::StringPiece asset_id,
+                         FrameData current_frame_data) {
+    asset_to_frame_data_[HashSkottieResourceId(asset_id)] =
+        std::move(current_frame_data);
+    asset_to_result_[HashSkottieResourceId(asset_id)] =
+        SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
+  }
+
+  void SetAssetResult(base::StringPiece asset_id,
+                      SkottieWrapper::FrameDataFetchResult current_result) {
+    asset_to_result_[HashSkottieResourceId(asset_id)] = current_result;
+  }
+
+  SkottieWrapper::FrameDataFetchResult GetFrameDataForAsset(
+      SkottieResourceIdHash asset_id,
+      sk_sp<SkImage>& image_out,
+      SkSamplingOptions& sampling_out) const {
+    if (asset_to_frame_data_.contains(asset_id)) {
+      image_out = asset_to_frame_data_.at(asset_id).image;
+      sampling_out = asset_to_frame_data_.at(asset_id).sampling;
+    }
+    return asset_to_result_.contains(asset_id)
+               ? asset_to_result_.at(asset_id)
+               : SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+  }
+
+ private:
+  base::flat_map<SkottieResourceIdHash, FrameData> asset_to_frame_data_;
+  base::flat_map<SkottieResourceIdHash, SkottieWrapper::FrameDataFetchResult>
+      asset_to_result_;
+};
+
 class SkottieMRUResourceProviderTest : public ::testing::Test {
  protected:
   SkottieMRUResourceProviderTest()
-      : provider_(sk_make_sp<SkottieMRUResourceProvider>()),
+      : provider_(sk_make_sp<SkottieMRUResourceProvider>(
+            base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
+                                base::Unretained(&frame_data_stub_)))),
         provider_base_(provider_.get()) {}
 
+  FrameDataStub frame_data_stub_;
   const sk_sp<SkottieMRUResourceProvider> provider_;
   skresources::ResourceProvider* const provider_base_;
 };
@@ -38,18 +82,17 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {
   sk_sp<skresources::ImageAsset> asset = provider_base_->loadImageAsset(
       "test-resource-path", "test-resource-name", "test-resource-id");
   PaintImage image_1 = CreateBitmapImage(gfx::Size(10, 10));
-  SkottieMRUResourceProvider::ImageAssetMap assets =
-      provider_->GetImageAssetMap();
-  ASSERT_THAT(assets, Contains(Key(HashSkottieResourceId("test-resource-id"))));
-  assets[HashSkottieResourceId("test-resource-id")]->SetCurrentFrameData(
-      {.image = image_1.GetSwSkImage()});
+  frame_data_stub_.SetAssetFrameData("test-resource-id",
+                                     {.image = image_1.GetSwSkImage()});
   EXPECT_THAT(asset->getFrameData(/*t=*/0).image, Eq(image_1.GetSwSkImage()));
   // The same image should be re-used for the next timestamp.
+  frame_data_stub_.SetAssetResult(
+      "test-resource-id", SkottieWrapper::FrameDataFetchResult::NO_UPDATE);
   EXPECT_THAT(asset->getFrameData(/*t=*/0.1).image, Eq(image_1.GetSwSkImage()));
   // Now the new image should be used.
   PaintImage image_2 = CreateBitmapImage(gfx::Size(20, 20));
-  assets[HashSkottieResourceId("test-resource-id")]->SetCurrentFrameData(
-      {.image = image_2.GetSwSkImage()});
+  frame_data_stub_.SetAssetFrameData("test-resource-id",
+                                     {.image = image_2.GetSwSkImage()});
   EXPECT_THAT(asset->getFrameData(/*t=*/0.2).image, Eq(image_2.GetSwSkImage()));
 }
 
@@ -59,18 +102,11 @@ TEST_F(SkottieMRUResourceProviderTest, ProvidesFrameDataForMultipleAssets) {
   sk_sp<skresources::ImageAsset> asset_2 = provider_base_->loadImageAsset(
       "test-resource-path", "test-resource-name", "test-resource-id-2");
   PaintImage image_1 = CreateBitmapImage(gfx::Size(10, 10));
-  SkottieMRUResourceProvider::ImageAssetMap assets =
-      provider_->GetImageAssetMap();
-  ASSERT_THAT(assets, SizeIs(2));
-  ASSERT_THAT(assets,
-              Contains(Key(HashSkottieResourceId("test-resource-id-1"))));
-  assets[HashSkottieResourceId("test-resource-id-1")]->SetCurrentFrameData(
-      {.image = image_1.GetSwSkImage()});
+  frame_data_stub_.SetAssetFrameData("test-resource-id-1",
+                                     {.image = image_1.GetSwSkImage()});
   PaintImage image_2 = CreateBitmapImage(gfx::Size(20, 20));
-  ASSERT_THAT(assets,
-              Contains(Key(HashSkottieResourceId("test-resource-id-2"))));
-  assets[HashSkottieResourceId("test-resource-id-2")]->SetCurrentFrameData(
-      {.image = image_2.GetSwSkImage()});
+  frame_data_stub_.SetAssetFrameData("test-resource-id-2",
+                                     {.image = image_2.GetSwSkImage()});
   EXPECT_THAT(asset_1->getFrameData(/*t=*/0).image, Eq(image_1.GetSwSkImage()));
   EXPECT_THAT(asset_2->getFrameData(/*t=*/0).image, Eq(image_2.GetSwSkImage()));
 }

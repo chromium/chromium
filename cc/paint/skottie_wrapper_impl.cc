@@ -4,12 +4,16 @@
 
 #include "cc/paint/skottie_wrapper.h"
 
+#include <functional>
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -39,25 +43,19 @@ class SkottieLogWriter : public skottie::Logger {
 
 class SkottieWrapperImpl : public SkottieWrapper {
  public:
-  static scoped_refptr<SkottieWrapperImpl> Create(
-      base::span<const uint8_t> data,
-      std::vector<uint8_t> owned_data) {
-    // The underlying assumption here is that |skottie::Animation::Builder|
-    // loads image assets on initialization rather than doing so lazily at
-    // |render()| time. This is the case currently, and there will be unit test
-    // failures if this does not hold at some point in the future.
-    const auto mru_resource_provider = sk_make_sp<SkottieMRUResourceProvider>();
-    sk_sp<skottie::Animation> animation =
-        skottie::Animation::Builder()
-            .setLogger(sk_make_sp<SkottieLogWriter>())
-            .setResourceProvider(skresources::CachingResourceProvider::Make(
-                mru_resource_provider))
-            .make(reinterpret_cast<const char*>(data.data()), data.size());
-    return base::WrapRefCounted(new SkottieWrapperImpl(
-        animation, std::move(owned_data), base::FastHash(data),
-        mru_resource_provider->GetImageAssetMetadata(),
-        mru_resource_provider->GetImageAssetMap()));
-  }
+  SkottieWrapperImpl(base::span<const uint8_t> data,
+                     std::vector<uint8_t> owned_data)
+      : SkottieWrapperImpl(
+            data,
+            owned_data,
+            // * Unretained is safe because SkottieMRUResourceProvider cannot
+            //   outlive SkottieWrapperImpl.
+            // * Binding "this" in the constructor is safe because the frame
+            //   data callback is only triggered during calls to
+            //   |animation_->seek()|.
+            sk_make_sp<SkottieMRUResourceProvider>(base::BindRepeating(
+                &SkottieWrapperImpl::RunCurrentFrameDataCallback,
+                base::Unretained(this)))) {}
 
   SkottieWrapperImpl(const SkottieWrapperImpl&) = delete;
   SkottieWrapperImpl& operator=(const SkottieWrapperImpl&) = delete;
@@ -69,25 +67,22 @@ class SkottieWrapperImpl : public SkottieWrapper {
     return image_asset_metadata_;
   }
 
-  bool SetImageForAsset(SkottieResourceIdHash asset_id_hash,
-                        sk_sp<SkImage> image,
-                        SkSamplingOptions sampling) override {
-    auto asset_iter = image_assets_.find(asset_id_hash);
-    if (asset_iter == image_assets_.end()) {
-      LOG(ERROR) << "Failed to set image for unknown asset with id: "
-                 << asset_id_hash;
-      return false;
-    }
-    SkottieMRUResourceProvider::FrameData frame_data;
-    frame_data.image = std::move(image);
-    frame_data.sampling = sampling;
-    SkottieMRUResourceProvider::ImageAsset& asset = *asset_iter->second;
-    asset.SetCurrentFrameData(std::move(frame_data));
-    return true;
+  void Seek(float t, FrameDataCallback frame_data_cb) override
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock lock(lock_);
+    // There's no need to reset |current_frame_data_cb_| to null when finished.
+    // The callback is guaranteed to only be invoked synchronously during calls
+    // to |animation_->seek/render()|, and not thereafter.
+    current_frame_data_cb_ = std::move(frame_data_cb);
+    animation_->seek(t);
   }
 
-  void Draw(SkCanvas* canvas, float t, const SkRect& rect) override {
+  void Draw(SkCanvas* canvas,
+            float t,
+            const SkRect& rect,
+            FrameDataCallback frame_data_cb) override LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
+    current_frame_data_cb_ = std::move(frame_data_cb);
     animation_->seek(t);
     animation_->render(canvas, &rect);
   }
@@ -105,20 +100,36 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
  private:
   SkottieWrapperImpl(
-      sk_sp<skottie::Animation> animation,
+      base::span<const uint8_t> data,
       std::vector<uint8_t> raw_data,
-      uint32_t id,
-      const SkottieResourceMetadataMap& image_asset_metadata,
-      const SkottieMRUResourceProvider::ImageAssetMap& image_assets)
-      : animation_(animation),
+      const sk_sp<SkottieMRUResourceProvider>& mru_resource_provider)
+      : animation_(
+            skottie::Animation::Builder()
+                .setLogger(sk_make_sp<SkottieLogWriter>())
+                .setResourceProvider(skresources::CachingResourceProvider::Make(
+                    mru_resource_provider))
+                .make(reinterpret_cast<const char*>(data.data()), data.size())),
         raw_data_(std::move(raw_data)),
-        id_(id),
-        image_asset_metadata_(image_asset_metadata),
-        image_assets_(image_assets) {}
+        id_(base::FastHash(data)),
+        // The underlying assumption here is that |skottie::Animation::Builder|
+        // loads image assets on initialization rather than doing so lazily at
+        // |render()| time. This is the case currently, and there will be unit
+        // test failures if this does not hold at some point in the future.
+        image_asset_metadata_(mru_resource_provider->GetImageAssetMetadata()) {}
 
   ~SkottieWrapperImpl() override = default;
 
+  FrameDataFetchResult RunCurrentFrameDataCallback(
+      SkottieResourceIdHash asset_id_hash,
+      sk_sp<SkImage>& image_out,
+      SkSamplingOptions& sampling_out) EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    lock_.AssertAcquired();
+    DCHECK(current_frame_data_cb_);
+    return current_frame_data_cb_.Run(asset_id_hash, image_out, sampling_out);
+  }
+
   base::Lock lock_;
+  FrameDataCallback current_frame_data_cb_ GUARDED_BY(lock_);
   sk_sp<skottie::Animation> animation_;
 
   // The raw byte data is stored for serialization across OOP-R. This is only
@@ -131,7 +142,6 @@ class SkottieWrapperImpl : public SkottieWrapper {
   const uint32_t id_;
 
   const SkottieResourceMetadataMap image_asset_metadata_;
-  const SkottieMRUResourceProvider::ImageAssetMap image_assets_;
 };
 
 }  // namespace
@@ -140,14 +150,16 @@ class SkottieWrapperImpl : public SkottieWrapper {
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
     std::vector<uint8_t> data) {
   base::span<const uint8_t> data_span(data);
-  return SkottieWrapperImpl::Create(data_span, std::move(data));
+  return base::WrapRefCounted(
+      new SkottieWrapperImpl(data_span, std::move(data)));
 }
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
     base::span<const uint8_t> data) {
-  return SkottieWrapperImpl::Create(data,
-                                    /*owned_data=*/std::vector<uint8_t>());
+  return base::WrapRefCounted(
+      new SkottieWrapperImpl(data,
+                             /*owned_data=*/std::vector<uint8_t>()));
 }
 
 }  // namespace cc

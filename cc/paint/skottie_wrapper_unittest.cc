@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,14 +25,31 @@
 namespace cc {
 namespace {
 
+using ::testing::_;
 using ::testing::Contains;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Key;
+using ::testing::Mock;
 using ::testing::Ne;
 using ::testing::NotNull;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+
+class MockFrameDataCallback {
+ public:
+  MOCK_METHOD(SkottieWrapper::FrameDataFetchResult,
+              OnAssetLoaded,
+              (SkottieResourceIdHash asset_id_hash,
+               sk_sp<SkImage>& image_out,
+               SkSamplingOptions& sampling_out));
+
+  SkottieWrapper::FrameDataCallback Get() {
+    return base::BindRepeating(&MockFrameDataCallback::OnAssetLoaded,
+                               base::Unretained(this));
+  }
+};
 
 TEST(SkottieWrapperTest, LoadsValidLottieFileNonSerializable) {
   scoped_refptr<SkottieWrapper> skottie =
@@ -104,43 +122,50 @@ TEST(SkottieWrapperTest, LoadsImageAssetsMetadata) {
                               .NormalizePathSeparators())));
 }
 
-TEST(SkottieWrapperTest, SetImageForAsset) {
+TEST(SkottieWrapperTest, LoadsCorrectAssetsForDraw) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWith2Assets.data()),
-          kLottieDataWith2Assets.length()));
+      CreateSkottieFromString(kLottieDataWith2Assets);
   ASSERT_TRUE(skottie->is_valid());
   ::testing::NiceMock<MockCanvas> canvas;
-  EXPECT_TRUE(skottie->SetImageForAsset(
-      HashSkottieResourceId("image_0"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
-      SkSamplingOptions()));
-  EXPECT_TRUE(skottie->SetImageForAsset(
-      HashSkottieResourceId("image_1"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
-      SkSamplingOptions()));
-  skottie->Draw(&canvas, /*t=*/0.1, SkRect::MakeWH(500, 500));
-  EXPECT_TRUE(skottie->SetImageForAsset(
-      HashSkottieResourceId("image_0"),
-      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage(),
-      SkSamplingOptions()));
-  EXPECT_TRUE(skottie->SetImageForAsset(
-      HashSkottieResourceId("image_1"),
-      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage(),
-      SkSamplingOptions()));
-  skottie->Draw(&canvas, /*t=*/0.2, SkRect::MakeWH(500, 500));
+  MockFrameDataCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _));
+  skottie->Draw(&canvas, /*t=*/0.25, SkRect::MakeWH(500, 500),
+                mock_callback.Get());
+  Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _));
+  skottie->Draw(&canvas, /*t=*/0.75, SkRect::MakeWH(500, 500),
+                mock_callback.Get());
+  Mock::VerifyAndClearExpectations(&mock_callback);
 }
 
-TEST(SkottieWrapperTest, SetImageForUnknownAsset) {
+TEST(SkottieWrapperTest, AllowsNullFrameDataCallbackForDraw) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWith2Assets.data()),
-          kLottieDataWith2Assets.length()));
+      CreateSkottieFromString(kLottieDataWithoutAssets1);
   ASSERT_TRUE(skottie->is_valid());
-  EXPECT_FALSE(skottie->SetImageForAsset(
-      HashSkottieResourceId("unknown-asset"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
-      SkSamplingOptions()));
+  // Just verify that this call does not cause a CHECK failure.
+  ::testing::NiceMock<MockCanvas> canvas;
+  skottie->Draw(&canvas, /*t=*/0, SkRect::MakeWH(500, 500),
+                SkottieWrapper::FrameDataCallback());
+}
+
+TEST(SkottieWrapperTest, LoadsCorrectAssetsForSeek) {
+  scoped_refptr<SkottieWrapper> skottie =
+      CreateSkottieFromString(kLottieDataWith2Assets);
+  ASSERT_TRUE(skottie->is_valid());
+  ::testing::NiceMock<MockCanvas> canvas;
+  MockFrameDataCallback mock_callback;
+  EXPECT_CALL(mock_callback,
+              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _));
+  skottie->Seek(/*t=*/0.25, mock_callback.Get());
+  Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback,
+              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _));
+  skottie->Seek(/*t=*/0.75, mock_callback.Get());
+  Mock::VerifyAndClearExpectations(&mock_callback);
 }
 
 }  // namespace

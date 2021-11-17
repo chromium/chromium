@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/stl_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
@@ -19,7 +20,6 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
-#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -1639,27 +1639,25 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
 void DrawSkottieOp::Raster(const DrawSkottieOp* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
-  for (const auto& image_asset_pair : op->images) {
-    const SkottieResourceIdHash& asset_id_hash = image_asset_pair.first;
-    const SkottieFrameData& frame_data = image_asset_pair.second;
-    sk_sp<SkImage> sk_image =
-        GetImageAssetForRaster(frame_data, canvas, params);
-    DCHECK(sk_image) << "Failed to fetch SkImage for Skottie image asset "
-                     << asset_id_hash;
-    if (!op->skottie->SetImageForAsset(
-            asset_id_hash, std::move(sk_image),
-            PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality))) {
-      NOTREACHED() << "Unknown skottie image asset received: " << asset_id_hash;
-    }
-  }
-  op->skottie->Draw(canvas, op->t, op->dst);
+  // Binding unretained references in the callback is safe because Draw()'s API
+  // guarantees that the callback is invoked synchronously.
+  op->skottie->Draw(
+      canvas, op->t, op->dst,
+      base::BindRepeating(&DrawSkottieOp::GetImageAssetForRaster,
+                          base::Unretained(op), canvas, std::cref(params)));
 }
 
-sk_sp<SkImage> DrawSkottieOp::GetImageAssetForRaster(
-    const SkottieFrameData& frame_data,
+SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     SkCanvas* canvas,
-    const PlaybackParams& params) {
-  sk_sp<SkImage> sk_image;
+    const PlaybackParams& params,
+    SkottieResourceIdHash asset_id,
+    sk_sp<SkImage>& sk_image,
+    SkSamplingOptions& sampling_out) const {
+  auto images_iter = images.find(asset_id);
+  if (images_iter == images.end())
+    return SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
+
+  const SkottieFrameData& frame_data = images_iter->second;
   if (params.image_provider) {
     // There is no use case for applying dark mode filters to skottie images
     // currently.
@@ -1680,7 +1678,11 @@ sk_sp<SkImage> DrawSkottieOp::GetImageAssetForRaster(
     if (!sk_image)
       sk_image = frame_data.image.GetSwSkImage();
   }
-  return sk_image;
+  DCHECK(sk_image) << "Failed to fetch SkImage for Skottie image asset "
+                   << asset_id;
+  sampling_out =
+      PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
+  return SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE;
 }
 
 void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
