@@ -116,4 +116,28 @@ void HttpsLatencySampler::OnHttpsLatencyRoutineCompleted(
     metric_callbacks_.pop();
   }
 }
+
+absl::optional<MetricEventType> HttpsLatencyEventDetector::DetectEvent(
+    const MetricData& previous_metric_data,
+    const MetricData& current_metric_data) {
+  const auto& previous_https_latency_data =
+      previous_metric_data.telemetry_data()
+          .networks_telemetry()
+          .https_latency_data();
+  const auto& current_https_latency_data = current_metric_data.telemetry_data()
+                                               .networks_telemetry()
+                                               .https_latency_data();
+
+  if ((!previous_https_latency_data.has_verdict() &&
+       current_https_latency_data.verdict() == RoutineVerdict::PROBLEM) ||
+      (previous_https_latency_data.has_verdict() &&
+       current_https_latency_data.verdict() !=
+           previous_https_latency_data.verdict()) ||
+      current_https_latency_data.problem() !=
+          previous_https_latency_data.problem()) {
+    return MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE;
+  }
+
+  return absl::nullopt;
+}
 }  // namespace reporting

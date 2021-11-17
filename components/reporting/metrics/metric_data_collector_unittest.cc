@@ -19,6 +19,7 @@
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {
@@ -32,14 +33,14 @@ class FakeEventDetector : public EventDetector {
 
   ~FakeEventDetector() override = default;
 
-  bool DetectEvent(const MetricData& previous_metric_data,
-                   MetricData* current_metric_data) override {
+  absl::optional<MetricEventType> DetectEvent(
+      const MetricData& previous_metric_data,
+      const MetricData& current_metric_data) override {
     previous_metric_list_.emplace_back(previous_metric_data);
     if (!has_event_) {
-      return false;
+      return absl::nullopt;
     }
-    current_metric_data->mutable_event_data();
-    return true;
+    return MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE;
   }
 
   void SetHasEvent(bool has_event) { has_event_ = has_event; }

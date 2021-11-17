@@ -17,6 +17,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -117,11 +118,11 @@ class PeriodicCollector : public CollectorBase {
 class EventDetector {
  public:
   virtual ~EventDetector() = default;
-  // Check if there is a new event present in `current_metric_data`.
-  // If an event is detected add it to `current_metric_data` and return true,
-  // otherwise return false.
-  virtual bool DetectEvent(const MetricData& previous_metric_data,
-                           MetricData* current_metric_data) = 0;
+  // Check if there is a new event present in `current_metric_data` and return
+  // it if found.
+  virtual absl::optional<MetricEventType> DetectEvent(
+      const MetricData& previous_metric_data,
+      const MetricData& current_metric_data) = 0;
 };
 
 class AdditionalSamplersCollector {

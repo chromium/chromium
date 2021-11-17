@@ -8,7 +8,10 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/sampler.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
@@ -57,6 +60,21 @@ class HttpsLatencySampler : public Sampler {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HttpsLatencySampler> weak_ptr_factory_{this};
+};
+
+class HttpsLatencyEventDetector : public EventDetector {
+ public:
+  HttpsLatencyEventDetector() = default;
+
+  HttpsLatencyEventDetector(const HttpsLatencyEventDetector&) = delete;
+  HttpsLatencyEventDetector& operator=(const HttpsLatencyEventDetector&) =
+      delete;
+
+  ~HttpsLatencyEventDetector() override = default;
+
+  absl::optional<MetricEventType> DetectEvent(
+      const MetricData& previous_metric_data,
+      const MetricData& current_metric_data) override;
 };
 }  // namespace reporting
 

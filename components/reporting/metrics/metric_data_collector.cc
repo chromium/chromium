@@ -192,12 +192,13 @@ void PeriodicEventCollector::OnMetricDataCollected(MetricData metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
-  const bool event_detected =
-      event_detector_->DetectEvent(last_collected_data_, &metric_data);
+  absl::optional<MetricEventType> event =
+      event_detector_->DetectEvent(last_collected_data_, metric_data);
   last_collected_data_ = std::move(metric_data);
-  if (!event_detected) {
+  if (!event.has_value()) {
     return;
   }
+  last_collected_data_.mutable_event_data()->set_type(event.value());
 
   additional_samplers_collector_->CollectAll(
       base::BindOnce(&PeriodicEventCollector::OnAdditionalMetricDataCollected,

@@ -108,12 +108,15 @@ message TelemetryData {
   optional NetworksTelemetry networks_telemetry = 1;
 }
 
+enum MetricEventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  NETWORK_HTTPS_LATENCY_CHANGE = 1;
+}
+
 // Indicates one of the following conditions occurred on the device, data
 // associated with the event will be reported as TelemetryData.
 message EventData {
-  enum EventType { EVENT_TYPE_UNSPECIFIED = 0; }
-
-  optional EventType type = 1;
+  optional MetricEventType type = 1;
 }
 
 // Main message to be reported, can contain `InfoData`, `TelemetryData`, or
