@@ -992,6 +992,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(ExecJs(rfh_b.get(), "history.back();"));
   ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
 
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kRelatedActiveContentsExist,
+       BackForwardCacheMetrics::NotRestoredReason::kBrowsingInstanceNotSwapped},
+      {}, {ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents}, {}, {},
+      FROM_HERE);
+
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new
   //    BrowsingInstance.
@@ -1014,6 +1020,55 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_FALSE(rfh_b_new.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_b_new->IsInBackForwardCache());
+}
+
+// A popup will prevent a page from entering BFCache. Test that after closing a
+// popup, the page is not stopped from entering. This tries to close the popup
+// at the last moment.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title2.html"));
+
+  // Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+
+  // Open a popup.
+  Shell* popup = OpenPopup(rfh_a.get(), url_a, "");
+  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+
+  // Start navigating to B, the response will be delayed.
+  TestNavigationObserver observer(web_contents());
+  shell()->LoadURL(url_b);
+
+  // When the request is received, close the popup.
+  response.WaitForRequest();
+  RenderFrameHostImplWrapper rfh_popup(popup->web_contents()->GetMainFrame());
+  ASSERT_TRUE(ExecJs(rfh_popup.get(), "window.close();"));
+  ASSERT_TRUE(rfh_popup.WaitUntilRenderFrameDeleted());
+
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+
+  // Send the response.
+  response.Send(net::HTTP_OK, "text/html", "foo");
+  response.Done();
+  observer.Wait();
+
+  // A is in BFCache.
+  EXPECT_EQ(0u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // A is restored from BFCache.
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  ExpectRestored(FROM_HERE);
 }
 
 // Navigate from A(B) to C and go back.
