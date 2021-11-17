@@ -142,13 +142,14 @@ void CastAudioRenderer::Flush(base::OnceClosure callback) {
 
 void CastAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
-         is_at_end_of_stream_);
   DCHECK(output_connection_);
 
   if (last_pushed_timestamp_.is_min()) {
     return;
   }
+
+  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
+         is_at_end_of_stream_);
 
   // At this point, there is no more pending demuxer read,
   // so all the previous tasks associated with the current timeline
@@ -288,7 +289,8 @@ void CastAudioRenderer::SetBufferState(::media::BufferingState buffer_state) {
 
 void CastAudioRenderer::SetMediaTime(base::TimeDelta time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped));
+  DCHECK(CurrentPlaybackStateEquals(PlaybackState::kStopped) ||
+         CurrentPlaybackStateEquals(PlaybackState::kStarting));
 
   {
     base::AutoLock lock(timeline_lock_);
@@ -507,14 +509,14 @@ void CastAudioRenderer::OnNextBuffer(int64_t media_timestamp_microseconds,
   if (GetPlaybackState() == PlaybackState::kStopped) {
     return;
   }
-  if (GetPlaybackState() == PlaybackState::kStarting) {
-    SetPlaybackState(PlaybackState::kPlaying);
-  }
   if (reference_timestamp_microseconds >= 0l &&
       media_timestamp_microseconds >= 0l) {
     media_pos_ = base::Microseconds(media_timestamp_microseconds);
     reference_time_ =
         base::TimeTicks::FromInternalValue(reference_timestamp_microseconds);
+    if (GetPlaybackState() == PlaybackState::kStarting) {
+      SetPlaybackState(PlaybackState::kPlaying);
+    }
   }
   RUN_ON_MAIN_THREAD(ScheduleFetchNextBuffer);
 }
