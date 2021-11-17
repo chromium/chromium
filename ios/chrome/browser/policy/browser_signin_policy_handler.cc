@@ -38,18 +38,6 @@ bool BrowserSigninPolicyHandler::CheckPolicySettings(
   if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
-  if (!IsForcedBrowserSigninEnabled()) {
-    absl::optional<int> optional_int_value = value->GetIfInt();
-    if (optional_int_value) {
-      const int int_value = optional_int_value.value();
-      if (int_value == static_cast<int>(BrowserSigninMode::kForced)) {
-        // Don't return false because in this case the policy falls back to
-        // BrowserSigninMode::kEnabled
-        errors->AddError(policy_name(), IDS_POLICY_LEVEL_ERROR);
-      }
-    }
-  }
-
   return true;
 }
 
@@ -71,23 +59,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
-  switch (static_cast<BrowserSigninMode>(int_value)) {
-    case BrowserSigninMode::kForced:
-      if (IsForcedBrowserSigninEnabled()) {
-        prefs->SetInteger(prefs::kBrowserSigninPolicy,
-                          static_cast<int>(BrowserSigninMode::kForced));
-        break;
-      }
-      FALLTHROUGH;
-    case BrowserSigninMode::kEnabled:
-      prefs->SetInteger(prefs::kBrowserSigninPolicy,
-                        static_cast<int>(BrowserSigninMode::kEnabled));
-      break;
-    case BrowserSigninMode::kDisabled:
-      prefs->SetInteger(prefs::kBrowserSigninPolicy,
-                        static_cast<int>(BrowserSigninMode::kDisabled));
-      break;
-  }
+  prefs->SetInteger(prefs::kBrowserSigninPolicy, int_value);
 }
 
 }  // namespace policy

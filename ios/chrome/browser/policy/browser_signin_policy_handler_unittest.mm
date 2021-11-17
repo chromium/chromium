@@ -71,9 +71,6 @@ const char* BrowserSigninModeToString(BrowserSigninMode mode) {
 // Check that calling `ApplyPolicySettings` set the preference
 // to the correct value when policies overrides "BrowserSignin".
 TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableForcedSignInPolicy);
-
   struct TestCase {
     BrowserSigninMode mode;
     int expected_pref_value;
@@ -114,9 +111,6 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings) {
 // Check that calling `ApplyPolicySettings` does not set the
 // preference when policies does not overrides "BrowserSignin".
 TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableForcedSignInPolicy);
-
   std::string error;
   Schema schema = Schema::Parse(kTestSchema, &error);
   ASSERT_EQ(error, "");
@@ -133,9 +127,6 @@ TEST_F(BrowserSigninPolicyHandlerTest, ApplyPolicySettings_NoOverride) {
 // Check that `CheckPolicySettings` does not report an error if
 // policies overrides "BrowserSignin" to support values.
 TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableForcedSignInPolicy);
-
   std::string error;
   Schema schema = Schema::Parse(kTestSchema, &error);
   ASSERT_EQ(error, "");
@@ -160,26 +151,6 @@ TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings) {
     EXPECT_FALSE(errors.HasError("BrowserSignin"))
         << "For mode: " << BrowserSigninModeToString(mode);
   }
-}
-
-// Check that `CheckPolicySettings` reports an error if policies
-// overrides "BrowserSignin" to `BrowserSigninMode::kForced`.
-TEST_F(BrowserSigninPolicyHandlerTest, CheckPolicySettings_Forced) {
-  std::string error;
-  Schema schema = Schema::Parse(kTestSchema, &error);
-  ASSERT_EQ(error, "");
-
-  BrowserSigninPolicyHandler handler(schema);
-
-  PolicyMap policies;
-
-  PolicyMap::Entry entry;
-  entry.set_value(base::Value(static_cast<int>(BrowserSigninMode::kForced)));
-  policies.Set("BrowserSignin", std::move(entry));
-
-  PolicyErrorMap errors;
-  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.HasError("BrowserSignin"));
 }
 
 }  // namespace
