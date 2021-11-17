@@ -7,7 +7,7 @@ load("//lib/bootstrap.star", "register_bootstrappable_recipe")
 _RECIPE_NAME_PREFIX = "recipe:"
 
 def _recipe_for_package(cipd_package):
-    def recipe(*, name, cipd_version = None, recipe = None, bootstrappable = False):
+    def recipe(*, name, cipd_version = None, recipe = None, use_python3 = False, bootstrappable = False):
         """Declare a recipe for the given package.
 
         A wrapper around luci.recipe with a fixed cipd_package and some
@@ -47,6 +47,7 @@ def _recipe_for_package(cipd_package):
             cipd_version = cipd_version,
             recipe = recipe,
             use_bbagent = True,
+            use_python3 = use_python3,
         )
 
         if bootstrappable:
@@ -206,6 +207,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:tricium_clang_tidy_wrapper",
+    use_python3 = True,
 )
 
 build_recipe(

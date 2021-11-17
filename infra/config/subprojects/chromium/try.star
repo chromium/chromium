@@ -1269,7 +1269,6 @@ try_.chromium_linux_builder(
     name = "linux-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     goma_jobs = goma.jobs.J150,
-    experiments = {"luci.recipes.use_python3": 100},
 )
 
 try_.chromium_linux_builder(
