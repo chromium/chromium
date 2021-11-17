@@ -23,6 +23,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/features.h"
@@ -53,13 +54,6 @@
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #else
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
-#endif
-
-#include "ui/gfx/buffer_format_util.h"
-
-#if defined(WAYLAND_GBM)
-#include "ui/gfx/linux/gbm_wrapper.h"  // nogncheck
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
 #endif
 
 #if BUILDFLAG(USE_GTK)
@@ -252,22 +246,6 @@ class OzonePlatformWayland : public OzonePlatform,
     surface_factory_ = std::make_unique<WaylandSurfaceFactory>(
         connection_.get(), buffer_manager_.get());
     overlay_manager_ = std::make_unique<WaylandOverlayManager>();
-#if defined(WAYLAND_GBM)
-    const base::FilePath drm_node_path = path_finder_.GetDrmRenderNodePath();
-    if (drm_node_path.empty()) {
-      LOG(WARNING) << "Failed to find drm render node path.";
-    } else {
-      DrmRenderNodeHandle handle;
-      if (!handle.Initialize(drm_node_path)) {
-        LOG(WARNING) << "Failed to initialize drm render node handle.";
-      } else {
-        auto gbm = CreateGbmDevice(handle.PassFD().release());
-        if (!gbm)
-          LOG(WARNING) << "Failed to initialize gbm device.";
-        buffer_manager_->set_gbm_device(std::move(gbm));
-      }
-    }
-#endif
   }
 
   const PlatformProperties& GetPlatformProperties() override {

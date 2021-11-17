@@ -230,7 +230,9 @@ TEST_P(WaylandSurfaceFactoryTest,
   // SwapCompletionCallbacks run.
   gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
 
-  buffer_manager_gpu_->set_gbm_device(std::make_unique<MockGbmDevice>());
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+  buffer_manager_gpu_->gbm_device_ = std::make_unique<MockGbmDevice>();
+  buffer_manager_gpu_->supports_dmabuf_ = true;
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
@@ -476,7 +478,9 @@ TEST_P(WaylandSurfaceFactoryTest,
   // SwapCompletionCallbacks.
   gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
 
-  buffer_manager_gpu_->set_gbm_device(std::make_unique<MockGbmDevice>());
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+  buffer_manager_gpu_->gbm_device_ = std::make_unique<MockGbmDevice>();
+  buffer_manager_gpu_->supports_dmabuf_ = true;
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
@@ -777,9 +781,11 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
 TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
 
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+
   // When gbm is not available, only canvas can be created with viz process
   // used.
-  EXPECT_FALSE(buffer_manager_gpu_->gbm_device());
+  EXPECT_FALSE(buffer_manager_gpu_->GetGbmDevice());
 
   auto* gl_ozone = surface_factory_->GetGLOzone(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
@@ -788,14 +794,23 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   EXPECT_FALSE(gl_surface);
 
   // Now, set gbm.
-  buffer_manager_gpu_->set_gbm_device(std::make_unique<MockGbmDevice>());
+  buffer_manager_gpu_->gbm_device_ = std::make_unique<MockGbmDevice>();
 
+  // It's still impossible to create the device if supports_dmabuf is false.
+  EXPECT_FALSE(buffer_manager_gpu_->GetGbmDevice());
+  gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
+  EXPECT_FALSE(gl_surface);
+
+  // Now set supports_dmabuf.
+  buffer_manager_gpu_->supports_dmabuf_ = true;
+  EXPECT_TRUE(buffer_manager_gpu_->GetGbmDevice());
   gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
   EXPECT_TRUE(gl_surface);
 
   // Reset gbm now. WaylandConnectionProxy can reset it when zwp is not
   // available. And factory must behave the same way as previously.
-  buffer_manager_gpu_->set_gbm_device(nullptr);
+  buffer_manager_gpu_->gbm_device_ = nullptr;
+  EXPECT_FALSE(buffer_manager_gpu_->GetGbmDevice());
   gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
   EXPECT_FALSE(gl_surface);
 }

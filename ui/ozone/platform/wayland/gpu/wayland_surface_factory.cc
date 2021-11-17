@@ -92,7 +92,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
-  if (!buffer_manager_->gbm_device())
+  if (!buffer_manager_->GetGbmDevice())
     return nullptr;
   return gl::InitializeGLSurface(
       new GbmSurfacelessWayland(buffer_manager_, window));

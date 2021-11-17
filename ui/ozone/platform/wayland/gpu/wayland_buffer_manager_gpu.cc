@@ -16,6 +16,12 @@
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
 #include "ui/ozone/public/overlay_plane.h"
 
+#if defined(WAYLAND_GBM)
+#include "ui/gfx/linux/gbm_wrapper.h"
+#include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
+#include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
+#endif
+
 namespace mojo {
 // static
 ui::ozone::mojom::WaylandOverlayConfigPtr
@@ -68,15 +74,11 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_acquire_fence,
     bool supports_non_backed_solid_color_buffers) {
   supported_buffer_formats_with_modifiers_ = buffer_formats_with_modifiers;
-
-#if defined(WAYLAND_GBM)
-  if (!supports_dma_buf)
-    set_gbm_device(nullptr);
-#endif
   supports_viewporter_ = supports_viewporter;
   supports_acquire_fence_ = supports_acquire_fence;
   supports_non_backed_solid_color_buffers_ =
       supports_non_backed_solid_color_buffers;
+  supports_dmabuf_ = supports_dma_buf;
 
   BindHostInterface(std::move(remote_host));
 
@@ -268,6 +270,40 @@ void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
       FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::DestroyBufferInternal,
                                 base::Unretained(this), widget, buffer_id));
 }
+
+#if defined(WAYLAND_GBM)
+GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
+  if (!supports_dmabuf_)
+    return nullptr;
+
+  if (gbm_device_ || use_fake_gbm_device_for_test_)
+    return gbm_device_.get();
+
+  DrmRenderNodePathFinder path_finder;
+  const base::FilePath drm_node_path = path_finder.GetDrmRenderNodePath();
+  if (drm_node_path.empty()) {
+    supports_dmabuf_ = false;
+    LOG(WARNING) << "Failed to find drm render node path.";
+    return nullptr;
+  }
+
+  DrmRenderNodeHandle handle;
+  if (!handle.Initialize(drm_node_path)) {
+    supports_dmabuf_ = false;
+    LOG(WARNING) << "Failed to initialize drm render node handle.";
+    return nullptr;
+  }
+
+  gbm_device_ = CreateGbmDevice(handle.PassFD().release());
+  if (!gbm_device_) {
+    supports_dmabuf_ = false;
+    LOG(WARNING) << "Failed to initialize gbm device.";
+    return nullptr;
+  }
+
+  return gbm_device_.get();
+}
+#endif  // defined(WAYLAND_GBM)
 
 void WaylandBufferManagerGpu::AddBindingWaylandBufferManagerGpu(
     mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver) {

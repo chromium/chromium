@@ -20,16 +20,13 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
 
-#if defined(WAYLAND_GBM)
-#include "ui/gfx/linux/gbm_device.h"  // nogncheck
-#endif
-
 namespace gfx {
 enum class SwapResult;
 }  // namespace gfx
 
 namespace ui {
 
+class GbmDevice;
 class WaylandConnection;
 class WaylandSurfaceGpu;
 class WaylandWindow;
@@ -135,10 +132,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
 #if defined(WAYLAND_GBM)
   // Returns a gbm_device based on a DRM render node.
-  GbmDevice* gbm_device() const { return gbm_device_.get(); }
-  void set_gbm_device(std::unique_ptr<GbmDevice> gbm_device) {
-    gbm_device_ = std::move(gbm_device);
-  }
+  GbmDevice* GetGbmDevice();
 #endif
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
@@ -159,6 +153,12 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   uint32_t AllocateBufferID();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
+                           GbmSurfacelessWaylandCommitOverlaysCallbacksTest);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
+                           GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest);
+
   void CreateDmabufBasedBufferInternal(base::ScopedFD dmabuf_fd,
                                        gfx::Size size,
                                        const std::vector<uint32_t>& strides,
@@ -201,6 +201,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 #if defined(WAYLAND_GBM)
   // A DRM render node based gbm device.
   std::unique_ptr<GbmDevice> gbm_device_;
+  // When set, avoids creating a real gbm_device. Instead, tests that set
+  // this variable to true must set own instance of the GbmDevice. See the
+  // CreateSurfaceCheckGbm for example.
+  bool use_fake_gbm_device_for_test_ = false;
 #endif
   // Whether Wayland server allows buffer submission with acquire fence.
   bool supports_acquire_fence_ = false;
@@ -212,6 +216,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Determines whether solid color overlays can be delegated without a backing
   // image via a wayland protocol.
   bool supports_non_backed_solid_color_buffers_ = false;
+
+  // Determines whether Wayland server supports Wayland protocols that allow to
+  // export wl_buffers backed by dmabuf.
+  bool supports_dmabuf_ = false;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
