@@ -5,6 +5,7 @@
 #include "content/browser/prerender/prerender_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -24,6 +25,10 @@ PrerenderCancelledInterface GetCancelledInterfaceType(
   return PrerenderCancelledInterface::kUnknown;
 }
 
+int32_t InterfaceNameHasher(const std::string& interface_name) {
+  return static_cast<int32_t>(base::HashMetricNameAs32Bits(interface_name));
+}
+
 }  // namespace
 
 // Called by MojoBinderPolicyApplier. This function records the Mojo interface
@@ -33,6 +38,14 @@ void RecordPrerenderCancelledInterface(const std::string& interface_name) {
       GetCancelledInterfaceType(interface_name);
   base::UmaHistogramEnumeration(
       "Prerender.Experimental.PrerenderCancelledInterface", interface_type);
+  if (interface_type == PrerenderCancelledInterface::kUnknown) {
+    // These interfaces can be required by embedders, or not set to kCancel
+    // expclitly, e.g., channel-associated interfaces. Record these interfaces
+    // with the sparse histogram to ensure all of them are tracked.
+    base::UmaHistogramSparse(
+        "Prerender.Experimental.PrerenderUnknownCancelledInterface",
+        InterfaceNameHasher(interface_name));
+  }
 }
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {

@@ -69054,6 +69054,19 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="kNotificationService"/>
 </enum>
 
+<enum name="PrerenderCancelledUnknownInterface">
+  <summary>
+    Enumerates names of Mojo interfaces. Work as supplementary information for
+    PrerenderCancelledInterface.kUnknown. See comments in
+    InterfaceNameHasher(content/browser/prerender/prerender_metrics.cc) for how
+    to update the enums.
+  </summary>
+  <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
+  <int value="191605727" label="content.mojom.PepperHost"/>
+  <int value="1984681860"
+      label="chrome.mojom.OpenSearchDescriptionDocumentHandler"/>
+</enum>
+
 <enum name="PrerenderCookieSendType">
   <obsolete>
     Deprecated March 13 2015.

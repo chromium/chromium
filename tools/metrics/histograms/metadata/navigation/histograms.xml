@@ -1601,6 +1601,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Prerender.Experimental.PrerenderCancelledUnknownInterface"
+    enum="PrerenderCancelledUnknownInterface" expires_after="2022-01-27">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>lingqi@chromium.org</owner>
+  <summary>
+    This histogram tracks the interfaces that
+    Prerender.Experimental.PrerenderCancelledInterface fails to track. It is
+    needed because:
+
+    * Embedders can set their own policies, so Prerender2 cannot map all of them
+    to enums.
+
+    * Channel-associated interfaces' policies are set to kCancel implicitly.
+    It's hard to track all of them, especially the newly added
+    channel-associated interfaces.
+
+    This sparse histogram allows Prerender2 to record all of these interfaces
+    separately.
+
+    It is recored by MojoBinderPolicyApplier in the browser process once it
+    receives the binding request of a kCancel Mojo interface and cannot find an
+    accurate enum type for this interface.
+  </summary>
+</histogram>
+
 <histogram
     name="Prerender.Experimental.PrerenderHostCancelReasonBeforeActivation"
     enum="PrerenderHostFinalStatus" expires_after="2021-08-06">
