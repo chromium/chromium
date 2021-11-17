@@ -28,6 +28,10 @@ class MEDIA_EXPORT KeySystemProperties {
   // could be supported, but "org.chromium.baz" should NOT be supported.
   virtual bool IsSupportedKeySystem(const std::string& key_system) const;
 
+  // Whether the base key system should be used for all supported key systems
+  // when creating CDMs.
+  virtual bool ShouldUseBaseKeySystemName() const;
+
   // Returns whether |init_data_type| is supported by this key system.
   virtual bool IsSupportedInitDataType(
       EmeInitDataType init_data_type) const = 0;

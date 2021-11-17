@@ -999,7 +999,7 @@ void KeySystemConfigSelector::SelectConfig(
   //     agent, reject promise with a NotSupportedError. String comparison
   //     is case-sensitive.
   if (!key_system.ContainsOnlyASCII()) {
-    std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
+    std::move(cb).Run(Status::kUnsupportedKeySystem, "", nullptr, nullptr);
     return;
   }
 
@@ -1007,7 +1007,7 @@ void KeySystemConfigSelector::SelectConfig(
 
   std::string key_system_ascii = key_system.Ascii();
   if (!key_systems_->IsSupportedKeySystem(key_system_ascii)) {
-    std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
+    std::move(cb).Run(Status::kUnsupportedKeySystem, "", nullptr, nullptr);
     return;
   }
 
@@ -1029,7 +1029,7 @@ void KeySystemConfigSelector::SelectConfig(
   // Therefore, always support Clear Key key system and only check settings for
   // other key systems.
   if (!is_encrypted_media_enabled && !media::IsClearKey(key_system_ascii)) {
-    std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
+    std::move(cb).Run(Status::kUnsupportedKeySystem, "", nullptr, nullptr);
     return;
   }
 
@@ -1090,14 +1090,20 @@ void KeySystemConfigSelector::SelectConfigInternal(
              EmeFeatureRequirement::kRequired);
         cdm_config.use_hw_secure_codecs =
             config_state.AreHwSecureCodecsRequired();
+
+        std::string key_system = request->key_system;
+        if (key_systems_->ShouldUseBaseKeySystemName(key_system))
+          key_system = key_systems_->GetBaseKeySystemName(key_system);
+
         std::move(request->cb)
-            .Run(Status::kSupported, &accumulated_configuration, &cdm_config);
+            .Run(Status::kSupported, key_system, &accumulated_configuration,
+                 &cdm_config);
         return;
     }
   }
 
   // 6.4. Reject promise with a NotSupportedError.
-  std::move(request->cb).Run(Status::kUnsupportedConfigs, nullptr, nullptr);
+  std::move(request->cb).Run(Status::kUnsupportedConfigs, "", nullptr, nullptr);
 }
 
 void KeySystemConfigSelector::OnPermissionResult(

@@ -12,6 +12,11 @@ bool KeySystemProperties::IsSupportedKeySystem(
   return key_system == GetBaseKeySystemName();
 }
 
+bool KeySystemProperties::ShouldUseBaseKeySystemName() const {
+  // By default, use the sub key system names for creating CDMs.
+  return false;
+}
+
 SupportedCodecs KeySystemProperties::GetSupportedHwSecureCodecs() const {
   return EME_CODEC_NONE;
 }

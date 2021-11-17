@@ -55,11 +55,14 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   class Reporter;
 
   // Callback for `KeySystemConfigSelector::SelectConfig()`.
+  // `key_system` is the same as the requested key system in most cases unless
+  // a sub key system is queried and the base key system should be used.
   // `accumulated_configuration` and `cdm_config` are non-null iff `status` is
   // `kSupported`.
   void OnConfigSelected(
       WebEncryptedMediaRequest request,
       KeySystemConfigSelector::Status status,
+      const std::string& key_system,
       WebMediaKeySystemConfiguration* accumulated_configuration,
       media::CdmConfig* cdm_config);
 

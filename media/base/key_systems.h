@@ -32,8 +32,16 @@ class MEDIA_EXPORT KeySystems {
   // Refreshes the list of available key systems if it may be out of date.
   virtual void UpdateIfNeeded() = 0;
 
+  // Gets the base key system name, e.g. "org.chromium.foo".
+  virtual std::string GetBaseKeySystemName(
+      const std::string& key_system) const = 0;
+
   // Returns whether |key_system| is a supported key system.
   virtual bool IsSupportedKeySystem(const std::string& key_system) const = 0;
+
+  // Whether the base key system name should be used for CDM creation.
+  virtual bool ShouldUseBaseKeySystemName(
+      const std::string& key_system) const = 0;
 
   // Returns whether AesDecryptor can be used for the given |key_system|.
   virtual bool CanUseAesDecryptor(const std::string& key_system) const = 0;

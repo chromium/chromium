@@ -210,9 +210,9 @@ class ClearKeyProperties : public KeySystemProperties {
 // appropriate glue/adapter code, and added all the appropriate data to
 // KeySystemsImpl. Only then should you change this function.
 static bool IsPotentiallySupportedKeySystem(const std::string& key_system) {
-  // Known and supported key systems.
   if (key_system == kWidevineKeySystem)
     return true;
+
   if (key_system == kClearKeyKeySystem)
     return true;
 
@@ -249,36 +249,30 @@ class KeySystemsImpl : public KeySystems {
 
   // Implementation of KeySystems interface.
   void UpdateIfNeeded() override;
-
+  std::string GetBaseKeySystemName(
+      const std::string& key_system) const override;
   bool IsSupportedKeySystem(const std::string& key_system) const override;
-
+  bool ShouldUseBaseKeySystemName(const std::string& key_system) const override;
   bool CanUseAesDecryptor(const std::string& key_system) const override;
-
   bool IsSupportedInitDataType(const std::string& key_system,
                                EmeInitDataType init_data_type) const override;
-
   EmeConfigRule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
       EncryptionScheme encryption_scheme) const override;
-
   EmeConfigRule GetContentTypeConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& container_mime_type,
       const std::vector<std::string>& codecs) const override;
-
   EmeConfigRule GetRobustnessConfigRule(
       const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override;
-
   EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override;
-
   EmeFeatureSupport GetPersistentStateSupport(
       const std::string& key_system) const override;
-
   EmeFeatureSupport GetDistinctiveIdentifierSupport(
       const std::string& key_system) const override;
 
@@ -605,10 +599,34 @@ void KeySystemsImpl::AddMimeTypeCodecMaskForTesting(
   RegisterMimeType(mime_type, static_cast<EmeCodec>(codecs_mask));
 }
 
+std::string KeySystemsImpl::GetBaseKeySystemName(
+    const std::string& key_system) const {
+  const auto* properties = GetKeySystemProperties(key_system);
+  if (!properties) {
+    NOTREACHED() << "Key system support should have been checked";
+    return key_system;
+  }
+
+  return properties->GetBaseKeySystemName();
+}
+
 bool KeySystemsImpl::IsSupportedKeySystem(const std::string& key_system) const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   return GetKeySystemProperties(key_system);
+}
+
+bool KeySystemsImpl::ShouldUseBaseKeySystemName(
+    const std::string& key_system) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  const auto* properties = GetKeySystemProperties(key_system);
+  if (!properties) {
+    NOTREACHED() << "Key system support should have been checked";
+    return false;
+  }
+
+  return properties->ShouldUseBaseKeySystemName();
 }
 
 bool KeySystemsImpl::CanUseAesDecryptor(const std::string& key_system) const {
