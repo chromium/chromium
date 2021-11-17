@@ -62,7 +62,15 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
 
 namespace ui {
 
-WaylandBufferManagerGpu::WaylandBufferManagerGpu() = default;
+WaylandBufferManagerGpu::WaylandBufferManagerGpu() {
+#if defined(WAYLAND_GBM)
+  // The path_finder and the handle do syscalls, which are permitted before
+  // the sandbox entry. After the gpu enters the sandbox, they fail. Thus,
+  // open the handle early and store it.
+  OpenAndStoreDrmRenderNodeFd();
+#endif
+}
+
 WaylandBufferManagerGpu::~WaylandBufferManagerGpu() = default;
 
 void WaylandBufferManagerGpu::Initialize(
@@ -279,28 +287,17 @@ GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
   if (gbm_device_ || use_fake_gbm_device_for_test_)
     return gbm_device_.get();
 
-  DrmRenderNodePathFinder path_finder;
-  const base::FilePath drm_node_path = path_finder.GetDrmRenderNodePath();
-  if (drm_node_path.empty()) {
+  if (!drm_render_node_fd_.is_valid()) {
     supports_dmabuf_ = false;
-    LOG(WARNING) << "Failed to find drm render node path.";
     return nullptr;
   }
 
-  DrmRenderNodeHandle handle;
-  if (!handle.Initialize(drm_node_path)) {
-    supports_dmabuf_ = false;
-    LOG(WARNING) << "Failed to initialize drm render node handle.";
-    return nullptr;
-  }
-
-  gbm_device_ = CreateGbmDevice(handle.PassFD().release());
+  gbm_device_ = CreateGbmDevice(drm_render_node_fd_.release());
   if (!gbm_device_) {
     supports_dmabuf_ = false;
     LOG(WARNING) << "Failed to initialize gbm device.";
     return nullptr;
   }
-
   return gbm_device_.get();
 }
 #endif  // defined(WAYLAND_GBM)
@@ -428,5 +425,24 @@ void WaylandBufferManagerGpu::SubmitPresentationOnOriginThread(
   if (surface)
     surface->OnPresentation(buffer_id, feedback);
 }
+
+#if defined(WAYLAND_GBM)
+void WaylandBufferManagerGpu::OpenAndStoreDrmRenderNodeFd() {
+  DrmRenderNodePathFinder path_finder;
+  const base::FilePath drm_node_path = path_finder.GetDrmRenderNodePath();
+  if (drm_node_path.empty()) {
+    LOG(WARNING) << "Failed to find drm render node path.";
+    return;
+  }
+
+  DrmRenderNodeHandle handle;
+  if (!handle.Initialize(drm_node_path)) {
+    LOG(WARNING) << "Failed to initialize drm render node handle.";
+    return;
+  }
+
+  drm_render_node_fd_ = handle.PassFD();
+}
+#endif
 
 }  // namespace ui

@@ -199,6 +199,11 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       const gfx::PresentationFeedback& feedback);
 
 #if defined(WAYLAND_GBM)
+  // Finds drm render node, opens it and stores the handle into
+  // |drm_render_node_fd|.
+  void OpenAndStoreDrmRenderNodeFd();
+  // Used by the gbm_device for self creation.
+  base::ScopedFD drm_render_node_fd_;
   // A DRM render node based gbm device.
   std::unique_ptr<GbmDevice> gbm_device_;
   // When set, avoids creating a real gbm_device. Instead, tests that set
