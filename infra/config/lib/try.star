@@ -569,6 +569,7 @@ def orchestrator_pair_builders(
         compilator_name,
         compilator_os,
         compilator_goma_jobs = None,
+        compilator_grace_period = defaults.get_value("grace_period", None),
         compilator_builderless = not settings.is_main,
         orchestrator_builderless = not settings.is_main,
         **common_kwargs):
@@ -625,6 +626,7 @@ def orchestrator_pair_builders(
         },
         os = compilator_os,
         description_html = compilator_description,
+        grace_period = compilator_grace_period,
         **common_kwargs
     )
     return orchestrator_builder, compilator_builder
