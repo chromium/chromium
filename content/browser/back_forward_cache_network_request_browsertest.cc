@@ -12,6 +12,8 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
 // This file contains back-/forward-cache tests for fetching from the network.
+// It was forked from
+// https://source.chromium.org/chromium/chromium/src/+/main:content/browser/back_forward_cache_browsertest.cc;drc=748acc7b301b489567691500c558c5fde8cfd538
 //
 // When adding tests please also add WPTs. See
 // third_party/blink/web_tests/external/wpt/html/browsers/browsing-the-web/back-forward-cache/README.md

@@ -16,7 +16,8 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
 // This file contains back-/forward-cache tests for the
-// `Cache-control: no-store` header.
+// `Cache-control: no-store` header. It was forked from
+// https://source.chromium.org/chromium/chromium/src/+/main:content/browser/back_forward_cache_browsertest.cc;drc=b339487e39ad6ae93af30fa8fcb37dc61bd138ec
 //
 // When adding tests please also add WPTs. See
 // third_party/blink/web_tests/external/wpt/html/browsers/browsing-the-web/back-forward-cache/README.md
