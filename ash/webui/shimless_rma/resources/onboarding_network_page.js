@@ -116,6 +116,16 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Set to true to when connected to at least one active network.
+       * @protected
+       */
+      isOnline_: {
+        type: Boolean,
+        value: false,
+        observer: 'onIsOnlineChange_',
+      },
     };
   }
 
@@ -155,6 +165,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
           (network) => [chromeos.networkConfig.mojom.NetworkType.kWiFi,
                         chromeos.networkConfig.mojom.NetworkType.kEthernet,
       ].includes(network.type));
+
+      this.isOnline_ = this.networks_.some(function(network) {
+        return OncMojo.connectionStateIsConnected(network.connectionState);
+      });
     });
   }
 
@@ -293,6 +307,18 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.networkSelectionComplete();
+  }
+
+  /** @private */
+  onIsOnlineChange_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-next-button-label',
+        {
+          bubbles: true,
+          composed: true,
+          detail: this.isOnline_ ? 'nextButtonLabel' : 'skipButtonLabel'
+        },
+        ));
   }
 }
 

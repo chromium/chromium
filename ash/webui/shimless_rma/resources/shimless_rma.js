@@ -77,6 +77,7 @@ const StateComponentMapping = {
     componentIs: 'onboarding-network-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
+    buttonNextLabelKey: 'skipButtonLabel',
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
