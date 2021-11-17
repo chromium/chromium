@@ -389,6 +389,6 @@ public class LensUtils {
     public static boolean useSearchImageWithGoogleLensItemName() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME, false);
+                USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME, true);
     }
 }

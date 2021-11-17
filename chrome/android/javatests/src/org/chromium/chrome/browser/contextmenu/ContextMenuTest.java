@@ -844,7 +844,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Feature({"Browser", "ContextMenu"})
     @CommandLineFlags.Add({"enable-features="
                     + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled"})
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:useSearchImageWithGoogleLensItemName/false"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void
     testSearchWithGoogleLensMenuItemName() throws Throwable {

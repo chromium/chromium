@@ -2697,24 +2697,6 @@
             ]
         }
     ],
-    "ContextMenuSearchWithGoogleLens": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithUpdatedMenuItemString_20210325",
-                    "params": {
-                        "useSearchImageWithGoogleLensItemName": "true"
-                    },
-                    "enable_features": [
-                        "ContextMenuSearchWithGoogleLens"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextMenuShopWithGoogleLens": [
         {
             "platforms": [
