@@ -270,8 +270,8 @@ TEST_F(CellularESimProfileHandlerImplTest, EuiccWithProfiles) {
       /*euicc_num=*/1, hermes::profile::State::kActive,
       /*activation_code=*/"code2");
 
-  // Add one kTesting and one kProvisioning profile. These profiles are ignored
-  // and should never be returned by CellularESimProfileHandlerImpl.
+  // Add one kTesting and one kProvisioning profile. These profiles should not
+  // be ignored if they are returned from Hermes.
   AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kInactive,
       /*activation_code=*/"code3", hermes::profile::ProfileClass::kTesting);
@@ -289,11 +289,15 @@ TEST_F(CellularESimProfileHandlerImplTest, EuiccWithProfiles) {
   EXPECT_EQ(1u, NumObserverEvents());
 
   std::vector<CellularESimProfile> profiles = GetESimProfiles();
-  EXPECT_EQ(2u, profiles.size());
+  EXPECT_EQ(4u, profiles.size());
   EXPECT_EQ(CellularESimProfile::State::kPending, profiles[0].state());
   EXPECT_EQ("code1", profiles[0].activation_code());
   EXPECT_EQ(CellularESimProfile::State::kActive, profiles[1].state());
   EXPECT_EQ("code2", profiles[1].activation_code());
+  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[2].state());
+  EXPECT_EQ("code3", profiles[2].activation_code());
+  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[3].state());
+  EXPECT_EQ("code4", profiles[3].activation_code());
 
   // Update profile properties; GetESimProfiles() should return the new values.
   HermesProfileClient::Properties* profile_properties1 =
@@ -306,9 +310,11 @@ TEST_F(CellularESimProfileHandlerImplTest, EuiccWithProfiles) {
   EXPECT_EQ(2u, NumObserverEvents());
 
   profiles = GetESimProfiles();
-  EXPECT_EQ(2u, profiles.size());
+  EXPECT_EQ(4u, profiles.size());
   EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[0].state());
   EXPECT_EQ(CellularESimProfile::State::kPending, profiles[1].state());
+  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[2].state());
+  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[3].state());
 
   // Unset prefs; no profiles should exist.
   SetDevicePrefs(/*set_to_null=*/true);

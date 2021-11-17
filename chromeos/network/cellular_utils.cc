@@ -65,13 +65,9 @@ std::vector<CellularESimProfile> GenerateProfilesFromEuicc(
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
 
-    // Only consider profiles of type kOperational. Other profile types are only
-    // used for testing and should not be exposed to the UI.
-    if (profile_properties->profile_class().value() !=
-        hermes::profile::ProfileClass::kOperational) {
-      continue;
-    }
-
+    // Hermes only exposes eSIM profiles with relevant profile class. e.g.
+    // Test profiles are exposed only when Hermes is put into test mode.
+    // No additional profile filtering is done on Chrome side.
     profiles.emplace_back(
         FromProfileState(profile_properties->state().value()), profile_path,
         eid, profile_properties->iccid().value(),
