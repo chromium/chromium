@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#activation-triggering-input-event">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="/resources/testdriver.js"></script>
@@ -17,8 +18,7 @@
   <script>
     promise_test(async () => {
         var actions = new test_driver.Actions();
-        actions_promise = actions
-            .pointerMove(0, 0, {origin: document.body})
+        actions.pointerMove(0, 0, {origin: document.body})
             .pointerDown({button: actions.ButtonType.RIGHT})
             .pointerUp({button: actions.ButtonType.RIGHT})
             .send();
