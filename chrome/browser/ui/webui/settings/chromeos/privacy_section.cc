@@ -256,10 +256,17 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
       {"smartPrivacySubtext", IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT},
+      {"smartPrivacyDesc", IDS_OS_SETTINGS_SMART_PRIVACY_DESC},
+      {"smartPrivacyScreenLockTitle",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_TITLE},
+      {"smartPrivacyScreenLockSubtext",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_SUBTEXT},
       {"smartPrivacySnoopingTitle",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE},
       {"smartPrivacySnoopingSubtext",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
+      {"smartPrivacySnoopingIcon", IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_ICON},
+      {"smartPrivacySnoopingDim", IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_DIM},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

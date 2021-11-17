@@ -1,6 +1,69 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  cr-radio-group {
+    display: flex;
+    flex-flow: column wrap;
+  }
+
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  .left-float-graphic {
+    float: left;
+    height: 200px;
+    margin-inline-end: 10px;
+  }
+
+  .large-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    --iron-icon-stroke-color: var(--cros-icon-color-prominent);
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+    margin-bottom: 10px;
+  }
+
+  .banner {
+    display: inline-block;
+    margin: 0 0 10px 0;
+    padding: 0 10px 10px 10px;
+  }
+</style>
+
+<div class="banner underbar">
+  <!-- No alt since image is purely decorative. -->
+  <img class="left-float-graphic"
+       src="chrome://os-settings/images/smart_privacy.svg"
+       alt="" aria-hidden="true">
+  <div>
+    <iron-icon class="large-icon" icon="cr:security">
+    </iron-icon>
+  </div>
+  <div>
+    $i18n{smartPrivacyDesc}
+  </div>
+</div>
+<!-- TODO(crbug.com/1262869): Currently inert. Once the screen dim
+                              feature has an associated preference,
+                              reference it from here. -->
+<settings-toggle-button class="underbar"
+    label="$i18n{smartPrivacyScreenLockTitle}"
+    sub-label="$i18n{smartPrivacyScreenLockSubtext}">
+</settings-toggle-button>
 <settings-toggle-button
     pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
     label="$i18n{smartPrivacySnoopingTitle}"
     sub-label="$i18n{smartPrivacySnoopingSubtext}">
 </settings-toggle-button>
+<iron-collapse id="snoopingProtectionOptions"
+    opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
+  <div class="settings-box continuation embedded">
+    <cr-radio-group>
+      <cr-radio-button name="dim" class="list-item"
+          label="$i18n{smartPrivacySnoopingDim}">
+      </cr-radio-button>
+      <cr-radio-button name="icon" class="list-item"
+          label="$i18n{smartPrivacySnoopingIcon}">
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+</iron-collapse>

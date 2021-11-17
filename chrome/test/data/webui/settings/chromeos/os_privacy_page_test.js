@@ -96,6 +96,19 @@ suite('PrivacyPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  /**
+   * Returns true if the element exists and has not been 'removed' by the
+   * Polymer template system.
+   * @param {string} selector The ID of the element about which to query.
+   * @return {boolean} Whether or not the element has been masked by the
+   *                   template system.
+   * @private
+   */
+  function elementExists(selector) {
+    const el = privacyPage.$$(selector);
+    return (el !== null) && (el.style.display !== 'none');
+  }
+
   test('Suggested content, pref disabled', async () => {
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
@@ -240,6 +253,36 @@ suite('PrivacyPageTests', function() {
         settings.routes.FINGERPRINT);
     assertTrue(privacyPage.showPasswordPromptDialog_);
   });
+
+
+  test('Smart privacy hidden when feature disabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: false,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertFalse(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  test('Smart privacy shown when feature enabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertTrue(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
+  //                          once it has been added.
 });
 
 suite('PrivacePageTest_OfficialBuild', async () => {
