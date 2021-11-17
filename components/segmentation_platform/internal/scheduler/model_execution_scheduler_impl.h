@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
@@ -29,12 +30,14 @@ class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
-  ModelExecutionSchedulerImpl(std::vector<Observer*>&& observers,
-                              SegmentInfoDatabase* segment_database,
-                              SignalStorageConfig* signal_storage_config,
-                              ModelExecutionManager* model_execution_manager,
-                              base::Clock* clock,
-                              const PlatformOptions& platform_options);
+  ModelExecutionSchedulerImpl(
+      std::vector<Observer*>&& observers,
+      SegmentInfoDatabase* segment_database,
+      SignalStorageConfig* signal_storage_config,
+      ModelExecutionManager* model_execution_manager,
+      base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
+      base::Clock* clock,
+      const PlatformOptions& platform_options);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -73,6 +76,10 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // The class that executes the models.
   ModelExecutionManager* model_execution_manager_;
+
+  // The set of all known segments.
+  base::flat_set<optimization_guide::proto::OptimizationTarget>
+      all_segment_ids_;
 
   // The time provider.
   base::Clock* clock_;

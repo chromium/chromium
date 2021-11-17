@@ -211,8 +211,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
     observers.push_back(key_and_selector.second.get());
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       std::move(observers), segment_info_database_.get(),
-      signal_storage_config_.get(), model_execution_manager_.get(), clock_,
-      platform_options_);
+      signal_storage_config_.get(), model_execution_manager_.get(),
+      all_segment_ids_, clock_, platform_options_);
 
   signal_filter_processor_->OnSignalListUpdated();
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
