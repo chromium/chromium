@@ -220,9 +220,6 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
     EGLuint64KHR frame_id;
   };
 
-  // Commit the |pending_overlays_| and clear the vector. Returns false if any
-  // fail to be committed.
-  bool CommitAndClearPendingOverlays();
   void UpdateSwapEvents(EGLuint64KHR newFrameId, bool newFrameIdIsValid);
   void TraceSwapEvents(EGLuint64KHR oldFrameId);
 
@@ -236,8 +233,6 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
 
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_external_;
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_internal_;
-
-  std::vector<GLSurfaceOverlay> pending_overlays_;
 
   // Stored in separate vectors so we can pass the egl timestamps
   // directly to the EGL functions.

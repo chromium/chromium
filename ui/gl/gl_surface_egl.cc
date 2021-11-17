@@ -1699,11 +1699,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffers(
       "width", GetSize().width(),
       "height", GetSize().height());
 
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
-
   EGLuint64KHR new_frame_id = 0;
   bool new_frame_id_is_valid = true;
   if (use_egl_timestamps_) {
@@ -2043,10 +2038,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffersWithDamage(
     const std::vector<int>& rects,
     PresentationCallback callback) {
   DCHECK(supports_swap_buffer_with_damage_);
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
 
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
       presentation_helper_.get(), std::move(callback));
@@ -2069,10 +2060,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceEGL:PostSubBuffer", "width", width,
                "height", height);
   DCHECK(supports_post_sub_buffer_);
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
   if (surface_origin_ == gfx::SurfaceOrigin::kTopLeft) {
     // With EGL_SURFACE_ORIENTATION_INVERT_Y_ANGLE the contents are rendered
     // inverted, but the PostSubBuffer rectangle is still measured from the
@@ -2091,24 +2078,13 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
 }
 
 bool NativeViewGLSurfaceEGL::SupportsCommitOverlayPlanes() {
-#if defined(OS_ANDROID)
-  return true;
-#else
   return false;
-#endif
 }
 
 gfx::SwapResult NativeViewGLSurfaceEGL::CommitOverlayPlanes(
     PresentationCallback callback) {
-  DCHECK(SupportsCommitOverlayPlanes());
-  // Here we assume that the overlays scheduled on this surface will display
-  // themselves to the screen right away in |CommitAndClearPendingOverlays|,
-  // rather than being queued and waiting for a "swap" signal.
-  GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
-      presentation_helper_.get(), std::move(callback));
-  if (!CommitAndClearPendingOverlays())
-    scoped_swap_buffers.set_result(gfx::SwapResult::SWAP_FAILED);
-  return scoped_swap_buffers.result();
+  NOTREACHED();
+  return gfx::SwapResult::SWAP_FAILED;
 }
 
 bool NativeViewGLSurfaceEGL::OnMakeCurrent(GLContext* context) {
@@ -2135,14 +2111,8 @@ bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
     GLImage* image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-#if !defined(OS_ANDROID)
   NOTIMPLEMENTED();
   return false;
-#else
-  pending_overlays_.push_back(
-      GLSurfaceOverlay(image, std::move(gpu_fence), overlay_plane_data));
-  return true;
-#endif
 }
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
@@ -2151,21 +2121,6 @@ NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
   if (window_)
     ANativeWindow_release(window_);
 #endif
-}
-
-bool NativeViewGLSurfaceEGL::CommitAndClearPendingOverlays() {
-  if (pending_overlays_.empty())
-    return true;
-
-  bool success = true;
-#if defined(OS_ANDROID)
-  for (auto& overlay : pending_overlays_)
-    success &= overlay.ScheduleOverlayPlane(window_);
-  pending_overlays_.clear();
-#else
-  NOTIMPLEMENTED();
-#endif
-  return success;
 }
 
 PbufferGLSurfaceEGL::PbufferGLSurfaceEGL(const gfx::Size& size)
