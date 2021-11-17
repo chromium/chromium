@@ -6649,7 +6649,6 @@ crbug.com/1222097 external/wpt/mediacapture-image/detached-HTMLCanvasElement.htm
 crbug.com/1222097 http/tests/canvas/captureStream-on-detached-canvas.html [ Skip ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Skip ]
-crbug.com/1222097 virtual/shared_array_buffer_on_desktop/http/tests/devtools/security/interstitial-sidebar.js [ Skip ]
 crbug.com/1222097 virtual/wasm-site-isolated-code-cache/http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Skip ]
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Skip ]
 
@@ -6844,7 +6843,6 @@ crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-atta
 crbug.com/1243933 [ Win7 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure ]
 
 # Sheriff 2021-09-03
-crbug.com/1246238 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
 crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-09-06
