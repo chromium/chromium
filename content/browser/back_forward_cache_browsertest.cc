@@ -8042,6 +8042,66 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
     EXPECT_FALSE(fenced_frame_host->IsInBackForwardCache());
 }
 
+// A testing subclass that limits the cache size to 1 for ease of testing
+// evictions.
+class CacheSizeOneBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
+                              base::NumberToString(1));
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CacheSizeOneBackForwardCacheBrowserTest,
+                       ReplacedNavigationEntry) {
+  // Set the bfcache value to 1 to ensure that the test fails if a page
+  // that replaces the current history entry is stored in back-forward cache.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.test", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_b->IsInBackForwardCache());
+
+  // 3) Navigate to a new page by replacing the location. The old page can't
+  // be navigated back to and we should not store it in the back-forward
+  // cache.
+  EXPECT_TRUE(
+      ExecJs(shell(), JsReplace("window.location.replace($1);", url_c)));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  RenderFrameHostImplWrapper rfh_c(current_frame_host());
+
+  // 4) Confirm A is still in BackForwardCache and it wasn't evicted due to the
+  // cache size limit, which would happen if we tried to store a new page in the
+  // cache in the previous step.
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 5) Confirm that navigating backwards goes back to A.
+  shell()->web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+  EXPECT_EQ(rfh_a->GetVisibilityState(), PageVisibilityState::kVisible);
+
+  // Go forward again, should return to C
+  shell()->web_contents()->GetController().GoForward();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_c.get(), current_frame_host());
+  EXPECT_EQ(rfh_c->GetVisibilityState(), PageVisibilityState::kVisible);
+}
+
 // BEFORE ADDING A NEW TEST HERE
 // Read the note at the top about the other files you could add it to.
 }  // namespace content
