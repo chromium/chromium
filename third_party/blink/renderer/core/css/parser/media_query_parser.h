@@ -54,6 +54,41 @@ class CORE_EXPORT MediaQueryParser {
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-type
   static String ConsumeType(CSSParserTokenRange&);
 
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-comparison
+  static MediaQueryOperator ConsumeComparison(CSSParserTokenRange&);
+
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-name
+  //
+  // The <mf-name> is only consumed if the name is allowed in the current
+  // mode.
+  String ConsumeAllowedName(CSSParserTokenRange&);
+
+  // Like ConsumeAllowedName, except returns null if the name has a min-
+  // or max- prefix.
+  String ConsumeUnprefixedName(CSSParserTokenRange&);
+
+  enum class NameAffinity {
+    // <mf-name> appears on the left, e.g. width < 10px.
+    kLeft,
+    // <mf-name> appears on the right, e.g. 10px > width.
+    kRight
+  };
+
+  // Helper function for parsing features with a single MediaQueryOperator,
+  // for example 'width <= 10px', or '10px = width'.
+  //
+  // NameAffinity::kLeft means |lhs| will be interpreted as the <mf-name>,
+  // otherwise |rhs| will be interpreted as the <mf-name>.
+  //
+  // Note that this function accepts CSSParserTokenRanges by *value*, unlike
+  // Consume* functions, and that nullptr is returned if either |lhs|
+  // or |rhs| aren't fully consumed.
+  std::unique_ptr<MediaQueryExpNode> ParseNameValueComparison(
+      CSSParserTokenRange lhs,
+      MediaQueryOperator op,
+      CSSParserTokenRange rhs,
+      NameAffinity);
+
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
@@ -67,23 +102,14 @@ class CORE_EXPORT MediaQueryParser {
   };
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
-  //
-  // TODO(crbug.com/962417): Only a limited form of the grammar is
-  // currently supported.
   std::unique_ptr<MediaQueryExpNode> ConsumeCondition(
       CSSParserTokenRange&,
       ConditionMode = ConditionMode::kNormal);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-  //
-  // TODO(crbug.com/962417): Only a limited form of the grammar is
-  // currently supported.
   std::unique_ptr<MediaQueryExpNode> ConsumeInParens(CSSParserTokenRange&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
-  //
-  // TODO(crbug.com/962417): Only a limited form of the grammar is
-  // currently supported.
   std::unique_ptr<MediaQuery> ConsumeQuery(CSSParserTokenRange&);
 
   // Used for ParserType::kMediaConditionParser.

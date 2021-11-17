@@ -7,12 +7,14 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaQuerySet(
@@ -81,6 +83,32 @@ bool ConsumeUntilCommaInclusive(CSSParserTokenRange& range) {
   return false;
 }
 
+bool IsComparisonDelimiter(UChar c) {
+  return c == '<' || c == '>' || c == '=';
+}
+
+CSSParserTokenRange ConsumeUntilComparisonOrColon(CSSParserTokenRange& range) {
+  const CSSParserToken* first = range.begin();
+  while (!range.AtEnd()) {
+    const CSSParserToken& token = range.Peek();
+    if ((token.GetType() == kDelimiterToken &&
+         IsComparisonDelimiter(token.Delimiter())) ||
+        token.GetType() == kColonToken) {
+      break;
+    }
+    range.ConsumeComponentValue();
+  }
+  return range.MakeSubRange(first, range.begin());
+}
+
+bool IsLtLe(MediaQueryOperator op) {
+  return op == MediaQueryOperator::kLt || op == MediaQueryOperator::kLe;
+}
+
+bool IsGtGe(MediaQueryOperator op) {
+  return op == MediaQueryOperator::kGt || op == MediaQueryOperator::kGe;
+}
+
 }  // namespace
 
 MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
@@ -100,6 +128,83 @@ String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
   return range.ConsumeIncludingWhitespace().Value().ToString();
 }
 
+MediaQueryOperator MediaQueryParser::ConsumeComparison(
+    CSSParserTokenRange& range) {
+  const CSSParserToken& first = range.Peek();
+  if (first.GetType() != kDelimiterToken)
+    return MediaQueryOperator::kNone;
+  DCHECK(IsComparisonDelimiter(first.Delimiter()));
+  switch (first.Delimiter()) {
+    case '=':
+      range.ConsumeIncludingWhitespace();
+      return MediaQueryOperator::kEq;
+    case '<':
+      range.Consume();
+      if (ConsumeIfDelimiter(range, '='))
+        return MediaQueryOperator::kLe;
+      range.ConsumeWhitespace();
+      return MediaQueryOperator::kLt;
+    case '>':
+      range.Consume();
+      if (ConsumeIfDelimiter(range, '='))
+        return MediaQueryOperator::kGe;
+      range.ConsumeWhitespace();
+      return MediaQueryOperator::kGt;
+  }
+
+  NOTREACHED();
+  return MediaQueryOperator::kNone;
+}
+
+String MediaQueryParser::ConsumeAllowedName(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kIdentToken)
+    return g_null_atom;
+  String name =
+      AttemptStaticStringCreation(range.Peek().Value().ToString().LowerASCII());
+  if (!IsMediaFeatureAllowedInMode(name))
+    return g_null_atom;
+  range.ConsumeIncludingWhitespace();
+  return name;
+}
+
+String MediaQueryParser::ConsumeUnprefixedName(CSSParserTokenRange& range) {
+  String name = ConsumeAllowedName(range);
+  if (name.IsNull())
+    return name;
+  DCHECK_EQ(name, name.LowerASCII());
+  if (name.StartsWith("min-") || name.StartsWith("max-"))
+    return g_null_atom;
+  return name;
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ParseNameValueComparison(
+    CSSParserTokenRange lhs,
+    MediaQueryOperator op,
+    CSSParserTokenRange rhs,
+    NameAffinity name_affinity) {
+  if (name_affinity == NameAffinity::kRight)
+    std::swap(lhs, rhs);
+
+  String feature_name = ConsumeUnprefixedName(lhs);
+  if (feature_name.IsNull() || !lhs.AtEnd())
+    return nullptr;
+
+  auto value = MediaQueryExpValue::Consume(feature_name, rhs, fake_context_,
+                                           execution_context_);
+
+  if (!value || !rhs.AtEnd())
+    return nullptr;
+
+  auto left = MediaQueryExpComparison();
+  auto right = MediaQueryExpComparison(*value, op);
+
+  if (name_affinity == NameAffinity::kRight)
+    std::swap(left, right);
+
+  return std::make_unique<MediaQueryFeatureExpNode>(
+      MediaQueryExp::Create(feature_name, MediaQueryExpBounds(left, right)));
+}
+
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
     CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kLeftParenthesisToken)
@@ -109,16 +214,26 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
   block.ConsumeWhitespace();
   range.ConsumeWhitespace();
 
-  if (block.Peek().GetType() != kIdentToken)
-    return nullptr;
+  // Because we don't know exactly where <mf-name> appears in the grammar, we
+  // split |block| on top-level separators, and parse each segment
+  // individually.
+  //
+  // Local variables names in this function are chosen with the expectation
+  // that we are heading towards the most complicated form of <mf-range>:
+  //
+  //  <mf-value> <mf-gt> <mf-name> <mf-gt> <mf-value>
+  //
+  // Which corresponds to the local variables:
+  //
+  //  <segment1> <op1> <segment2> <op2> <segment3>
 
-  String feature_name = block.ConsumeIncludingWhitespace().Value().ToString();
-
-  if (!IsMediaFeatureAllowedInMode(feature_name))
-    return nullptr;
+  CSSParserTokenRange segment1 = ConsumeUntilComparisonOrColon(block);
 
   // <mf-boolean> = <mf-name>
   if (block.AtEnd()) {
+    String feature_name = ConsumeAllowedName(segment1);
+    if (feature_name.IsNull() || !segment1.AtEnd())
+      return nullptr;
     auto exp = MediaQueryExp::Create(feature_name, block, fake_context_,
                                      execution_context_);
     if (!exp.IsValid())
@@ -127,19 +242,92 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
   }
 
   // <mf-plain> = <mf-name> : <mf-value>
-  if (block.Peek().GetType() != kColonToken)
+  if (block.Peek().GetType() == kColonToken) {
+    block.ConsumeIncludingWhitespace();
+    if (block.AtEnd())
+      return nullptr;
+    String feature_name = ConsumeAllowedName(segment1);
+    if (feature_name.IsNull() || !segment1.AtEnd())
+      return nullptr;
+    auto exp = MediaQueryExp::Create(feature_name, block, fake_context_,
+                                     execution_context_);
+    if (!exp.IsValid() || !block.AtEnd())
+      return nullptr;
+    return std::make_unique<MediaQueryFeatureExpNode>(exp);
+  }
+
+  if (!RuntimeEnabledFeatures::CSSMediaQueries4Enabled())
     return nullptr;
-  block.ConsumeIncludingWhitespace();
+
+  // Otherwise <mf-range>:
+  //
+  // <mf-range> = <mf-name> <mf-comparison> <mf-value>
+  //            | <mf-value> <mf-comparison> <mf-name>
+  //            | <mf-value> <mf-lt> <mf-name> <mf-lt> <mf-value>
+  //            | <mf-value> <mf-gt> <mf-name> <mf-gt> <mf-value>
+
+  MediaQueryOperator op1 = ConsumeComparison(block);
+  DCHECK_NE(op1, MediaQueryOperator::kNone);
+
+  CSSParserTokenRange segment2 = ConsumeUntilComparisonOrColon(block);
+
+  // If the block ended, the feature must be on the following form:
+  //
+  //  <segment1> <op1> <segment2>
+  //
+  // We don't know which of <segment1> and <segment2> should be interpreted as
+  // the <mf-name> and which should be interpreted as <mf-value>. We have to
+  // try both.
+  if (block.AtEnd()) {
+    // Try: <mf-name> <mf-comparison> <mf-value>
+    if (auto node = ParseNameValueComparison(segment1, op1, segment2,
+                                             NameAffinity::kLeft)) {
+      return node;
+    }
+
+    // Otherwise: <mf-value> <mf-comparison> <mf-name>
+    return ParseNameValueComparison(segment1, op1, segment2,
+                                    NameAffinity::kRight);
+  }
+
+  // Otherwise, the feature must be on the form:
+  //
+  // <segment1> <op1> <segment2> <op2> <segment3>
+  //
+  // This grammar is easier to deal with, since <mf-name> can only appear
+  // at <segment2>.
+  MediaQueryOperator op2 = ConsumeComparison(block);
+  if (op2 == MediaQueryOperator::kNone)
+    return nullptr;
+
+  // Mixing [lt, le] and [gt, ge] is not allowed by the grammar.
+  const bool both_lt_le = IsLtLe(op1) && IsLtLe(op2);
+  const bool both_gt_ge = IsGtGe(op1) && IsGtGe(op2);
+  if (!(both_lt_le || both_gt_ge))
+    return nullptr;
 
   if (block.AtEnd())
     return nullptr;
 
-  auto exp = MediaQueryExp::Create(feature_name, block, fake_context_,
-                                   execution_context_);
-  if (!exp.IsValid() || !block.AtEnd())
+  String feature_name = ConsumeUnprefixedName(segment2);
+  if (feature_name.IsNull() || !segment2.AtEnd())
     return nullptr;
 
-  return std::make_unique<MediaQueryFeatureExpNode>(exp);
+  auto left_value = MediaQueryExpValue::Consume(
+      feature_name, segment1, fake_context_, execution_context_);
+  if (!left_value || !segment1.AtEnd())
+    return nullptr;
+
+  CSSParserTokenRange& segment3 = block;
+  auto right_value = MediaQueryExpValue::Consume(
+      feature_name, segment3, fake_context_, execution_context_);
+  if (!right_value || !segment3.AtEnd())
+    return nullptr;
+
+  return std::make_unique<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
+      feature_name,
+      MediaQueryExpBounds(MediaQueryExpComparison(*left_value, op1),
+                          MediaQueryExpComparison(*right_value, op2))));
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(

@@ -14,9 +14,11 @@
 namespace blink {
 namespace {
 
+using css_parsing_utils::AtDelimiter;
 using css_parsing_utils::AtIdent;
 using css_parsing_utils::ConsumeAngle;
 using css_parsing_utils::ConsumeIdSelector;
+using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
 CSSParserContext* MakeContext() {
@@ -172,6 +174,52 @@ TEST(CSSParsingUtilsTest, ConsumeIfIdent_Stream) {
   EXPECT_FALSE(ConsumeIfIdent(stream, "bar"));
   EXPECT_TRUE(AtIdent(stream.Peek(), "foo"));
   EXPECT_TRUE(ConsumeIfIdent(stream, "foo"));
+  EXPECT_EQ(kCommaToken, stream.Peek().GetType());
+}
+
+TEST(CSSParsingUtilsTest, AtDelimiter_Range) {
+  String text = "foo,<,10px";
+  auto tokens = CSSTokenizer(text).TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // foo
+  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // ,
+  EXPECT_TRUE(AtDelimiter(range.Consume(), '<'));   // <
+  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // ,
+  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // 10px
+  EXPECT_FALSE(AtDelimiter(range.Consume(), '<'));  // EOF
+}
+
+TEST(CSSParsingUtilsTest, AtDelimiter_Stream) {
+  String text = "foo,<,10px";
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // foo
+  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // ,
+  EXPECT_TRUE(AtDelimiter(stream.Consume(), '<'));   // <
+  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // ,
+  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // 10px
+  EXPECT_FALSE(AtDelimiter(stream.Consume(), '<'));  // EOF
+}
+
+TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Range) {
+  String text = "<,=,10px";
+  auto tokens = CSSTokenizer(text).TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  EXPECT_TRUE(AtDelimiter(range.Peek(), '<'));
+  EXPECT_FALSE(ConsumeIfDelimiter(range, '='));
+  EXPECT_TRUE(AtDelimiter(range.Peek(), '<'));
+  EXPECT_TRUE(ConsumeIfDelimiter(range, '<'));
+  EXPECT_EQ(kCommaToken, range.Peek().GetType());
+}
+
+TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Stream) {
+  String text = "<,=,10px";
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));
+  EXPECT_FALSE(ConsumeIfDelimiter(stream, '='));
+  EXPECT_TRUE(AtDelimiter(stream.Peek(), '<'));
+  EXPECT_TRUE(ConsumeIfDelimiter(stream, '<'));
   EXPECT_EQ(kCommaToken, stream.Peek().GetType());
 }
 

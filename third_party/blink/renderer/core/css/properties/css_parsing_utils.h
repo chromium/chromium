@@ -562,6 +562,18 @@ bool ConsumeIfIdent(T& range_or_stream, const char* ident) {
   return true;
 }
 
+inline bool AtDelimiter(const CSSParserToken& token, UChar c) {
+  return token.GetType() == kDelimiterToken && token.Delimiter() == c;
+}
+
+template <typename T>
+bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
+  if (!AtDelimiter(range_or_stream.Peek(), c))
+    return false;
+  range_or_stream.ConsumeIncludingWhitespace();
+  return true;
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink
 
