@@ -10,6 +10,10 @@
 
 @implementation ShellTrustedVaultProvider
 
+- (instancetype)initWithAuthService:(ShellAuthService*)authService {
+  return [super init];
+}
+
 #pragma mark - CWVTrustedVaultProvider
 
 - (void)addTrustedVaultObserver:(CWVTrustedVaultObserver*)observer {

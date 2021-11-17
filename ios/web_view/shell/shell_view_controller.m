@@ -270,7 +270,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
 
-  _trustedVaultProvider = [[ShellTrustedVaultProvider alloc] init];
+  _trustedVaultProvider =
+      [[ShellTrustedVaultProvider alloc] initWithAuthService:_authService];
   CWVSyncController.trustedVaultProvider = _trustedVaultProvider;
 
   CWVWebViewConfiguration* configuration =
