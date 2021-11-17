@@ -58,10 +58,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
   // overridden for testing.
   bool IsRadioUtilsSupported();
 
-  // Returns true when radio data activity is dormant.
+  // Returns true when an incoming network event such as creating URLLoader and
+  // resolving a host name could trigger a radio wakeup.
   // TODO(crbug.com/1232623): Consider optimizing this function. This function
   // uses Android's platform APIs which add non-negligible overheads.
   bool ShouldRecordRadioWakeupTrigger();
+
+  // Updated when ShouldRecordRadioWakeupTrigger() is called.
+  base::android::RadioDataActivity last_radio_data_activity_ =
+      base::android::RadioDataActivity::kNone;
 
   // Radio state overrides for testing.
   absl::optional<base::android::RadioDataActivity>

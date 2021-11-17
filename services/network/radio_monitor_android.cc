@@ -72,8 +72,17 @@ bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
           ? radio_activity_override_for_testing_
           : base::android::RadioUtils::GetCellDataActivity();
 
-  return radio_activity.has_value() &&
-         *radio_activity == base::android::RadioDataActivity::kDormant;
+  if (!radio_activity.has_value())
+    return false;
+
+  // When the last activity was dormant, don't treat this event as a wakeup
+  // trigger since there could be state transition delay and startup latency.
+  bool should_record =
+      *radio_activity == base::android::RadioDataActivity::kDormant &&
+      last_radio_data_activity_ != base::android::RadioDataActivity::kDormant;
+  last_radio_data_activity_ = *radio_activity;
+
+  return should_record;
 }
 
 }  // namespace network
