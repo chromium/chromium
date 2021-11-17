@@ -16,9 +16,9 @@ preprocess_folder = "preprocessed"
 # `static_resource_files` are non-js files, e.g. image, html, css
 static_js_files = [
   "common/constants.ts",
-  "common/iframe_api.js",
   "common/utils.js",
 
+  "trusted/iframe_api.ts",
   "trusted/mojo_interface_provider.ts",
   "trusted/personalization_actions.js",
   "trusted/personalization_app.js",
@@ -30,6 +30,7 @@ static_js_files = [
   "trusted/personalization_test_api.js",
   "trusted/utils.js",
 
+  "untrusted/iframe_api.ts",
   "untrusted/setup.js",
 ]
 
@@ -95,12 +96,22 @@ copy("copy_mojo_to_trusted") {
       [ "$target_gen_dir/$preprocess_folder/trusted/{{source_file_part}}" ]
 }
 
+# This is to work around the problem untrusted/ cannot access shared resources
+# in chrome://. In the future when we merge trusted/ and untrusted/ we should
+# remove this.
+copy("copy_js_to_common") {
+  deps = [ "//ui/webui/resources/js:modulize_local" ]
+  sources = [ "$root_gen_dir/ui/webui/resources/js/assert.m.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/common/{{source_file_part}}" ]
+}
+
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
 
   in_files = static_js_files + polymer_js_files + [
+               "common/assert.m.js",
                "trusted/personalization_app.mojom-webui.js",
                "untrusted/untrusted_shared_vars_css.js",
              ]
@@ -114,6 +125,7 @@ ts_library("build_ts") {
   definitions = []
 
   extra_deps = [
+    ":copy_js_to_common",
     ":copy_mojo_to_trusted",
     ":preprocess",
     ":preprocess_generated",

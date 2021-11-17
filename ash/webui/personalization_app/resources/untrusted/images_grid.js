@@ -5,10 +5,12 @@
 import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
+
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {EventType, ImageTile} from '../common/constants.js';
-import {selectImage, validateReceivedData} from '../common/iframe_api.js';
 import {isSelectionEvent} from '../common/utils.js';
+import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';
 
 /**
  * @fileoverview Responds to |SendImageTilesEvent| from trusted. Handles user

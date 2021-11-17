@@ -38,10 +38,6 @@ void AddResources(content::WebUIDataSource* source) {
     if (ShouldIncludeResource(resource))
       source->AddResourcePath(resource.path, resource.id);
   }
-  // Mirror assert.m.js here so that it is accessible at the same path in
-  // trusted and untrusted context.
-  source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
-
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",

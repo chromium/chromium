@@ -5,10 +5,12 @@
 import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
+
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
 import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user

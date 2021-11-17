@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './styles.js';
 import '../common/icons.js';
 import '../common/styles.js';
-import {assert} from '/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getLoadingPlaceholderAnimationDelay} from '../common/utils.js';
 import {isSelectionEvent} from '../common/utils.js';

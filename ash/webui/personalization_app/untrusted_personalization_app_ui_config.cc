@@ -83,10 +83,6 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
           base::StartsWith(resource.path, "common"))
         source->AddResourcePath(resource.path, resource.id);
     }
-    // Mirror assert.m.js here so that it is accessible at the same path in
-    // trusted and untrusted context.
-    source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
-
     // Add WebUI resources like polymer and iron-list so that it is accessible
     // inside untrusted iframe.
     source->AddResourcePaths(base::make_span(kWebuiGeneratedResources,
